@@ -1,0 +1,31 @@
+{% for product in Products %}
+    <div class="file-box" >
+        <div class="file" >
+            {% if product.state == "Success"%}
+                {% if product.product_id != "datadesk"%}
+                    <a href="{{ request.route_url('download', product_id=product.celery_taskid) }}" >
+                {% else %}
+                    <a id="{{product.celery_taskid}}$#%%#${{product.output_id}}" class="btn_datadesk">
+                {% endif %}
+            {% endif%}
+                    <span class="corner" ></span>
+
+                    <div class="icon">
+                        <i class="fa fa-file" style="color:{% if product.state == "Success" %}#1ab394{% else %} {% if product.state =="Pending..." %}#f8ac59{% else %}#ed5565{% endif %}{% endif %}"></i>
+                    </div>
+                    <div class="file-name">
+
+                        {% if product.state != "Success"%}
+                            {{product.state}}
+                        {% else %}
+                            {{product.output_id}}
+                        {% endif %}
+                        <br/>
+                        <small>{{ _("Added") }}: {{product.datetime_added}}</small>
+                    </div>
+            {% if product.state == "Success"%}
+                </a>
+            {% endif%}
+        </div>
+    </div>
+{% endfor%}

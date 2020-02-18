@@ -1,0 +1,163 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob - Select treatments") }}</title>
+{% endblock title %}
+
+{% block css %}
+    {% cssresource request,'coreresources','icheck' %}
+    {% cssresource request,'coreresources','datatables' %}
+{% endblock css %}
+
+{% block topScripts %}
+    {% jsresource request,'coreresources','icheck' %}
+    {% jsresource request,'coreresources','datatables' %}
+    {% jsresource request,'coreresources','prjtechnologies' %}
+{% endblock topScripts %}
+
+{% block pageheading %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>{{ _("Select treatments") }}</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
+                </li>
+                <li class="active">
+                    <strong>{{ _("Select treatments") }}</strong>
+                </li>
+            </ol>
+            <a href="https://climmob.net/blog/wiki/2019/09/30/select-treatments/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
+        </div>
+        <div class="col-lg-2">
+
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block pagecontent %}
+    <div class="row" style="height: 100%">
+        <div class="col-lg-12 " style="height: 100%">
+            <div class="ibox float-e-margins" style="height: 100%; margin-bottom: 0px">
+                <div class="ibox-title">
+                    <h5>{{ _("Add factors and levels") }}</h5>
+                    <div class="ibox-tools">
+
+                    </div>
+                </div>
+                <div class="ibox-content animated fadeInRightBig" style="height: 89%">
+
+                    {% if error_summary %}
+                        {% for key, error in error_summary.items() %}
+                            <div class="alert alert-block alert-danger fade in" id="loginErrorMessage">
+                                <button id="{{ key }}" data-dismiss="alert" class="close close-sm"
+                                        type="button">
+                                    <i class="fa fa-times"></i>
+                                </button>
+                                <strong>{{ _("Error!") }}</strong> {{ error }}.
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <!--div class="row">
+                        <div class="input-group col-xs-6 ">
+                            <input type="text" placeholder="Search" class="input-sm form-control" id="SearchInTable">
+                            <span class="input-group-btn"><button type="button" class="btn btn-sm btn-primary"> Go!</button> </span>
+                        </div>
+                    </div>
+                    <div class="row" style="height: 83%; max-height: 83%;overflow-y:auto">
+                        <div class="table-responsive">
+                            <table class="table table-striped" id="tabletechnologies">
+                                <tbody>
+                                    {% for val in TechnologiesInProject %}
+                                        <tr>
+                                            <td style="width: 15%">
+                                                <input type="checkbox"  checked class="i-checks" id="element_{{ val.tech_id }}_exists">
+                                            </td>
+                                            <td style="width: 60%">
+                                                <b>{{ val.tech_name }}</b> {{ _('with') }} {{ val.quantity }} {{ _('Aliases') }}
+                                            </td>
+                                            <td>
+                                                <button type="button" class="dd-nodrag btn btn-primary btn-xs addAlias" onclick="location.href='{{ request.route_url('prjtechaliases', projectid=projectid, tech_id=val.tech_id) }}';" >{% if val.quantity == 0 %}Add{% else %}Modify{% endif %} Alias</button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+
+                                    {% for val in TechnologiesUser %}
+                                        <tr>
+                                            <td style="width: 15%">
+                                                <input type="checkbox" class="i-checks" id="element_{{ val.tech_id }}_new">
+                                            </td>
+                                            <td style="width: 60%">
+                                                <b>{{ val.tech_name }}</b>
+                                            </td>
+                                            <td></td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div-->
+                    <div class="row" style="height: 83%; max-height: 83%;overflow-y:auto">
+
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered table-hover dataTables-example" >
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>{{ _("Factors") }}</th>
+                                        <th>{{ _("Select levels") }}</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for val in TechnologiesInProject %}
+                                        <tr>
+                                            <td class="text-center" style="width: 15%">
+                                                <input type="checkbox"  checked class="i-checks" id="element_{{ val.tech_id }}_exists">
+                                            </td>
+                                            <td style="width: 60%">
+                                                <b>{{ val.tech_name }}</b> {{ _('with') }} {{ val.quantity }} {{ _('levels') }}
+                                            </td>
+                                            <td class="center text-right">
+                                                <button class="btn btn-default btn-circle" onclick="location.href='{{ request.route_url('prjtechaliases', projectid=projectid, tech_id=val.tech_id) }}';" type="button" title="View/edit levels"><i class="fa fa-list-ul"></i></button>
+                                                <!--button type="button" class="dd-nodrag btn btn-primary btn-xs addAlias" onclick="location.href='{{ request.route_url('prjtechaliases', projectid=projectid, tech_id=val.tech_id) }}';" >{% if val.quantity == 0 %}Add{% else %}Modify{% endif %} Alias</button-->
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+
+                                    {% for val in TechnologiesUser %}
+                                        <tr>
+                                            <td class="text-center" style="width: 15%">
+                                                <input type="checkbox" class="i-checks" id="element_{{ val.tech_id }}_new">
+                                            </td>
+                                            <td style="width: 60%">
+                                                <b>{{ val.tech_name }}</b>
+                                            </td>
+                                            <td></td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <form class="form-horizontal" role="form" method="post" action="{{ request.path }}">
+                        <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                        <input type="text" id="txt_technologies_included" name="txt_technologies_included" style="width: 100%;display:none">
+                        <input type="text" id="txt_technologies_excluded" name="txt_technologies_excluded" style="width: 100%; display:none">
+                        <div class="row" style="padding-top: 10px; height: 50px">
+                            <div class="col-md-12">
+                                <button class="btn btn-primary clm-actions" name="btn_save_technologies" type="submit" id="btn_save_technologies"><i class="fa fa-check"></i>&nbsp;{{ _("Save changes") }}</button>
+                                <button class="btn btn-default pull-right clm-actions" name="cancelorder" type="submit">{{ _("Undo changes") }}</button>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock pagecontent %}

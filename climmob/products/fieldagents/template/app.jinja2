@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/animate.css" rel="stylesheet">
+        <link href="css/style.css" rel="stylesheet">
+    </head>
+    <body style="background-color: #fff">
+        {{ var }}
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox" >
+                    <div class="ibox-title text-center" style="padding: revert;border-color: #ffffff">
+                        <img src="img/prueba.png" style="width: 500px">
+                        <h1>{{ tittle }}:{{ projectid }}</h1>
+                        
+                    </div>
+                    <div class="ibox-content" style="border-color: #ffffff">
+
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th class="text-center">{{ Name }}</th>
+                                <th class="text-center">{{ Username }}</th>
+                                <th class="text-center">{{ Password }}</th>
+                                <th class="text-center">{{ QR }}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                {% for fieldagent in fieldagents %}
+                                    <tr>
+                                        <td style="vertical-align: middle;">{{ fieldagent.enum_name }}</td>
+                                        <td style="vertical-align: middle;">{{ fieldagent.enum_id }}</td>
+                                        <td style="vertical-align: middle;">{{ fieldagent.enum_password }}</td>
+                                        <td class="text-center"><img src="img/{{ fieldagent.enum_id }}_{{ fieldagent.user_name }}.png" style="width: 100px"></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </body>
+</html>

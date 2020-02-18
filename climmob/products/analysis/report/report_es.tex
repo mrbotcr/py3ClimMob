@@ -1,0 +1,167 @@
+
+\documentclass[10pt]{article}
+\usepackage{graphicx}
+\usepackage[bottom=0.5in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{tabularx}
+\usepackage{ragged2e}
+\usepackage[space]{grffile}
+\begin{document}
+\begin{titlepage}
+\setlength{\voffset}{-0.5in}
+\setlength{\parindent}{1em}
+\setlength{\parskip}{1em}
+\renewcommand{\baselinestretch}{1.5}
+\rmfamily
+
+
+
+\begin{center}
+	\includegraphics[width=3.9in,height=2.2in]{\VAR{{logos[0]}}}
+    \includegraphics[width=2.9in,height=0.6in]{\VAR{{logos[1]}}}
+\end{center}
+
+
+\textbf{Tu informe ClimMob}
+
+	Estás leyendo un informe generado por ClimMob. Este es un paquete de software para analizar datos generados por la ciencia ciudadana o el Crowdsourcing.
+
+\textbf{Introduction}
+En agricultura, las condiciones ambientales locales determinan en gran medida qué soluciones tecnológicas son las más adecuadas. En suelos secos, por ejemplo, las variedades de cultivos resistentes a la sequía superarán a otras variedades, pero en suelos húmedos estas mismas variedades pueden ser peores que la mayoría. No solo la sequía, sino toda una gama de problemas que incluyen calor excesivo, inundaciones, nuevas plagas y enfermedades tienden a intensificarse con el cambio climático. Esta multitud de factores limitantes requiere múltiples soluciones tecnológicas, probadas en diversos entornos. \par
+La ciencia ciudadana se basa en la cooperación de ciudadanos científicos u observadores (remunerados o no). Los investigadores asignan micro tareas (observaciones, experimentos ...) que, una vez completados y reunidos, contribuyen con una gran cantidad de información a la ciencia. Una de las ventajas de la ciencia ciudadana es que los investigadores agrícolas pueden obtener acceso a muchos entornos mediante el crowdsourcing de sus experimentos. A medida que los agricultores contribuyen con su tiempo, habilidades y conocimientos a la investigación, los investigadores pueden hacer más pruebas que en una configuración tradicional. Además, los científicos ciudadanos adquieren nuevos conocimientos, habilidades e información útiles para futuros desafíos de su trabajo.
+\newline
+\pagebreak
+
+
+\textbf{ClimMob}
+
+El objetivo principal de ClimMob es ayudar a los agricultores a adaptarse a climas variables y cambiantes. ClimMob fue creado como parte de la investigación de Bioversity International en el Programa de Investigación del CGIAR sobre Cambio Climático, Agricultura y Seguridad Alimentaria (CCAFS). Sirve para preparar y analizar experimentos de ciencia ciudadana en los que un gran número de agricultores observan y comparan diferentes opciones tecnológicas en una amplia gama de condiciones ambientales (van Etten 2011). \par
+El software ClimMob asigna un número limitado de artículos (generalmente 3 variedades de cultivos o prácticas agrícolas) a cada agricultor, que comparará su desempeño. Cada agricultor obtiene una combinación diferente de artículos extraídos de un conjunto de artículos mucho más grande. Se cree que las comparaciones de este tipo son una forma muy confiable de obtener datos de observadores humanos (Martin 2004). Una vez que se han recopilado los resultados de las micro tareas, ClimMob crea una imagen de todo el conjunto de objetos asignados, combinando todas las observaciones. ClimMob no solo reconstruye el orden general de los elementos, sino que también tiene en cuenta las diferencias y similitudes entre los observadores y las condiciones bajo las cuales observan. Asigna observadores similares a grupos que cada uno corresponde a un perfil de preferencia diferente. Los grupos se crean sobre la base de variables como las características de la trama, la geografía, la edad, el género ... \par
+ClimMob utiliza un método estadístico publicado recientemente para analizar los datos de clasificación (Strobl et al. 2011). Genera automáticamente informes analíticos, así como hojas de información individualizadas para cada participante. Con suerte, ClimMob ayudará a muchos investigadores agrícolas a comenzar a utilizar enfoques de crowdsourcing para acelerar la adaptación al cambio climático.
+Complementario a las microtaks realizadas por los agricultores, se realiza un monitoreo ambiental detallado, utilizando sensores nuevos y baratos (Mittra et al. 2013), permite comparar entre sitios y predecir el rendimiento de la variedad de cultivos para nuevos lugares.
+
+\vfill
+\noindent\makebox[\linewidth]{\rule{\textwidth}{0.4pt}}
+
+\textbf{Como citar}
+
+	Si publica los resultados generados con ClimMob, debe citar varios artículos a medida que el paquete se basa en diversas contribuciones. Van Etten (2011) introdujo la filosofía de crowdsourcing detrás de ClimMob. Es importante mencionar que ClimMob se implementa en R, un software de análisis gratuito y de código abierto (R Development Core Team 2012). Metodológicamente, si informa sobre los resultados del árbol, debe mencionar que ClimMob aplica el método del árbol Bradley-Terry publicado por Strobl et al. (2011) Para citar al propio ClimMob, mencione Van Etten \ & Calderer (2015).
+
+\pagebreak
+
+\textbf{Interpretación}
+
+Aquí hay algunos consejos para ayudarlo a interpretar los resultados que siguen. \par
+Las primeras tres tablas que siguen ofrecen un resumen de las variables, los elementos que ingresaron al análisis y las características evaluadas en el informe del proyecto. \par
+Posteriormente hay una figura de árbol de Bradley-Terry para cada combinación de las variables explicativas elegidas. La figura ofrece una representación visual de cómo se formaron los grupos y sus perfiles de preferencia. \ Par
+En la figura del árbol Bradley-Terry, los valores en los rectángulos inferiores (llamados nodos terminales) valen el valor de los elementos. Worth reescala los puntajes para sumar uno, para cada grupo (nodo) que ha sido identificado. Representa el grado de éxito de cada elemento del grupo. Cada nodo representa un grupo de observadores y tiene una figura y tabla de estimación relativa correspondiente al lado del árbol de Bradley-Terry. \par
+La figura de estimación relativa da una idea del mejor y el peor elemento en el nodo correspondiente. Las tablas están destinadas a usuarios avanzados que desean realizar cálculos adicionales con los resultados preliminares mostrados. \par
+Si tiene alguna pregunta adicional sobre cómo se calculan los árboles de Bradley-Terry y las estimaciones de los nodos, consulte el documento de Strobl et al. (2011).
+
+\pagebreak
+\newline
+
+\begin{flushleft}
+	\textbf{Datos y resultados}\hfill \break
+	%------------------
+	\begin{tabularx}{\textwidth}{ X | c  }
+		\hline
+		\textbf{Variable} & \textbf{Valor} \\ \hline
+
+		{% for v in vars %}
+			{{ v.var }} & {{ v.val }} \\ \hline
+
+		{% endfor %}
+
+	\end{tabularx}\newline \newline
+
+
+	%------------------
+	\textbf{Tipos de articulos}\hfill \break
+	\begin{tabularx}{\textwidth}{ X  }
+		\hline
+		\textbf{Nombres} \\ \hline
+
+		{% for o in objs %}
+			{{ o.techId }} & {{ o.aliasId }} \\ \hline
+
+		{% endfor %}
+
+
+	\end{tabularx}\newline \newline
+
+	%------------------
+	\textbf{Características de cada ítem evaluado}\hfill \break
+
+	\begin{tabularx}{\textwidth}{ X  }
+		\hline
+		\textbf{Características evaluadas} \\ \hline
+
+			{% for c in carac %}
+				{{ c.caracId }} - {{ c.name }} \\ \hline
+
+			{% endfor %}
+
+
+	\end{tabularx}\newline \newline
+\end{flushleft}
+\pagebreak
+
+%for caracteristica in caracteristicas # obtener: variables explicativas, pplot estimacion relativa, tabla de desempeño
+
+{% for c in carac %}
+	\begin{flushleft}
+
+		\textbf{ {{ c.caracId }} - CARACTERÍSTICA:  {{ c.name }} }\newline
+		No ha seleccionado variables explicativas.
+
+
+		\includegraphics[width=0.3\linewidth]{\VAR{{c.varE}}}
+		%\begin{figure}[htbp]
+		%	\centering
+		%		\includesvg{\VAR{{c.varE}}}
+		%\end{figure}
+
+
+
+
+		\newline
+		Rendimiento relativo en el único nodo
+
+		{% for er in c.estR_plot%}
+			%{{er}}
+			\includegraphics[width=0.6\linewidth]{\VAR{{er}}}
+		{% endfor %}
+
+
+
+		\begin{tabularx}{\textwidth}{ X | c | c | c | c }
+			\hline
+			\textbf{Item} & \textbf{Estimación} & \textbf{Standard.Error} & \textbf{Quasi.Standard.Error} & \textbf{Quasi.Variance} \\ \hline
+
+					{% for r in c.results %}
+						{{r.obj}} & {{r.est}} & {{r.errEsr}} & {{r.errCuaStd}} & {{r.cuaVrnz}} \\ \hline
+					{% endfor %}
+
+		\end{tabularx}\newline \newline
+
+	\end{flushleft}
+	\pagebreak
+
+{% endfor %}
+
+\textbf{References}
+
+\justify
+
+	-  van Etten, J. and Calderer, L. 2015. ClimMob. Crowdsourcing climate-smart agriculture. R package. \hfill \break
+	-  van Etten, J. 2011. Crowdsourcing crop improvement in sub-Saharan Africa: A proposal for a scalable and inclusive approach to food security. IDS Bulletin 42(4), 102-110.\hfill \break
+	-  Martin, G.J. 2004. Ethnobotany. A Methods Manual. London: Earthscan.\hfill \break
+	-  Carolin Strobl, Florian Wickelmaier, Achim Zeileis (2011). Accounting for individual differences in Bradley-Terry models by means of recursive partitioning. Journal of Educational and Behavioral Statistics, 36(2), 135-153. doi:10.3102/1076998609359791\hfill \break
+	-  Mittra, S., J. van Etten, and T. Franco. 2013. iButtons manual.\hfill \break
+	-  Verzani, J. gWidgets2. R package on GitHub\hfill \break
+	-  R Development Core Team (2014). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. ISBN 3-900051-07-0, URL http://www.R-project.org/\hfill \break
+
+\end{titlepage}
+
+\end{document}	

@@ -1,0 +1,28 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>ClimMob | Set question values </title>
+{% endblock title %}
+
+
+{% block bodyattributes %} style="background:#f8fafb" {% endblock bodyattributes %}
+
+{% block body %}
+    {% snippet 'snippets/question/values/questionvalues.jinja2',qdata=qdata,qid=qid,error_summary=error_summary,redirect=redirect,qoptions=qoptions,request=request %}
+{% endblock body%}
+
+
+{% if redirect == True%}
+    {% block toastr %}
+        {# Overwrite the toaster so it does not trigger the popup #}
+    {% endblock toastr %}
+{% endif %}
+
+{% block script %}
+    {% if redirect == True %}
+        {# If a new question is just added or edited then redirect the mainwindo to such project #}
+        <script>
+            window.top.location.href = "{{ request.route_url('qlibrary') }}";
+        </script>
+    {% endif %}
+{% endblock script %}

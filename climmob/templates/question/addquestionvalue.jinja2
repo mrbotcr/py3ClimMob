@@ -1,0 +1,70 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob | Add option") }}</title>
+{% endblock title %}
+
+{% block css %}
+    {% cssresource request,'coreresources','switch' %}
+{% endblock css %}
+
+{% block topScripts %}
+    {% jsresource request,'coreresources','addoption' %}
+{% endblock topScripts %}
+
+{% block pageheading %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>{{ _("Add option") }}</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
+                </li>
+                <li >
+                    <a href="{{ request.route_url('qlibrary', user_name=activeUser.login) }}">{{ _("Questions library") }}</a>
+                </li>
+                <li>
+                    <a>{{ _("Question") }}: {{ qdata.question_desc }}</a>
+                </li>
+                <li class="active">
+                    <a href="{{ request.route_url('questionvalues', qid=qid) }}">{{ _("Question options") }}</a>
+                </li>
+                <li>
+                    <strong>{{ _("Add option") }}</strong>
+                </li>
+            </ol>
+            <a href="https://climmob.net/blog/wiki/2019/09/30/question-options-add-option/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
+        </div>
+        <div class="col-lg-2">
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block pagecontent %}
+    <div class="row" style="height: 100%">
+        <div class="col-lg-6 " style="height: 100%">
+            <div class="ibox float-e-margins" style="height: 100%; margin-bottom: 0px">
+                <div class="ibox-title">
+                    <h5>{{ _("Add option") }}</h5>
+                    <div class="ibox-tools">
+                        <button type="button" onclick="location.href='{{ request.route_url('questionvalues', qid=qid) }}';" class="btn btn-default btn-xs pull-right">{{ _("Go back") }}</button>
+                    </div>
+                </div>
+                <div class="ibox-content" style="height: 89%">
+                    {% snippet 'snippets/error.jinja2', error_summary=error_summary %}
+                    <div class="error-desc">
+                        <form class="form-horizontal" role="form" method="post" action="{{ request.path }}">
+
+                            {% snippet 'snippets/question/values/option-form.jinja2', formdata=formdata,request=request,showid=true %}
+                            <div class="text-center">
+                                <button class="btn btn-primary" type="submit" name="btn_add_group"> {{ _('Add') }}</button>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock pagecontent%}

@@ -1,0 +1,92 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob | Prepare data collection") }}</title>
+{% endblock title %}
+
+{% block css %}
+    {% cssresource request,'coreresources','sweet' %}
+{% endblock css %}
+
+{% block topScripts %}
+    {% jsresource request,'coreresources','sweet' %}
+    {% jsresource request,'coreresources','delete' %}
+{% endblock topScripts %}
+
+{% block pageheading %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>{{ _("Prepare data collection") }}</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
+                </li>
+                <li class="active">
+                    <strong>{{  _("Prepare data collection") }}</strong>
+                </li>
+            </ol>
+            <a href="https://climmob.net/blog/wiki/2019/09/30/prepare-data-collection/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
+        </div>
+        <div class="col-lg-2">
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block pagecontent %}
+    <div class="row">
+        <div class="col-lg-12 ">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{{ _("Active data collection moments") }} </h5>
+                    <div class="ibox-tools">
+                        <a href="{{ request.route_url('newassessment', projectid=projectid) }}"  class="btn btn-primary btn-xs pull-right clm-grpactions" style="margin-right: 20px">{{ _("Add new data collection moment") }}</a>
+                    </div>
+                </div>
+                <div class="ibox-content animated fadeInRightBig" >
+                    {% if assessments %}
+                        <table class="table table-striped">
+                            <tbody>
+                            <tr>
+                                <th class="text-center">{{ _('Data collection moment') }}</th>
+                                <th class="text-center">{{ _('Interval in days') }}</th>
+                                <th class="text-center"></th>
+                            </tr>
+
+                            {% for assessment in assessments %}
+                                <tr>
+                                    {% if assessment.totquestions > 0 %}
+                                        <td class="text-center"> {{ assessment.ass_desc }} <span class="label label-success">{{ assessment.totquestions }} {{ request.h.pluralize(_("question"),assessment.totquestions) }}</span> {% if assessment.ass_final == 1 %}<span class="label label-danger" title="You need to check this">{{ _("Overall characteristic and performance questions") }}</span>{% endif %}</td>
+                                    {% else %}
+                                        <td class="text-center"> {{ assessment.ass_desc }} <span class="label label-danger">0 {{ _("questions") }}</span> {% if assessment.ass_final == 1 %}<span class="label label-danger" title="You need to check this">{{ _("Overall characteristic and performance questions") }}</span>{% endif %}</td>
+                                    {% endif %}
+                                    <td class="text-center"> {{ assessment.ass_days }}</td>
+                                    <td class="text-center">
+                                        {% if assessment.ass_status == 0 %}
+                                            <a class="btn btn-default btn-circle" href="{{ request.route_url('assessmentdetail', projectid=projectid,assessmentid=assessment.ass_cod) }}" title="Set questions"><i class="fa fa-list-ul"></i></a>
+                                            <a class="btn btn-warning btn-circle" href="{{ request.route_url('modifyassessment', projectid=projectid,assessmentid=assessment.ass_cod) }}" title="Edit data collection moment"><i class="fa fa-pencil"></i></a>
+                                            <button class="btn btn-danger btn-circle"  onclick="showDelete('{{ request.route_url('deleteassessment', projectid=projectid,assessmentid=assessment.ass_cod) }}','{{ _("Do you really want to remove this data collection ?") }}','{{ request.session.get_csrf_token() }}')" title="Remove data collection"><i class="fa fa-times"></i></button>
+                                        {% else %}
+                                            {% if assessment.ass_status == 1 %}
+                                                {{ _('On going') }}
+                                            {% endif %}
+                                            {% if assessment.ass_status == 2 %}
+                                                {{ _('Closed') }}
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <div style="width: 100%; text-align: center">
+                            <h3><b>{{ _("There are no data collection moments.") }}</b></h3>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock pagecontent%}

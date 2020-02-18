@@ -1,0 +1,33 @@
+{% block qstitemcontent %}
+    {{ question.question_notes }}
+    {% if question.question_dtype == 5 or question.question_dtype == 6 %}
+        <br>
+        <br>
+        <table>
+            <tr class="clm-option">
+                <td colspan="2" align="center">
+                    <b>{{ _('Answers') }}</b><br></td>
+            </tr>
+            {% for option in QuestionsOptions %}
+                {% if option.question_id == question.question_id %}
+                    <tr class="clm-option">
+                        <td>
+                            {% if question.question_dtype == 5 %}
+                                <input type="radio" disabled
+                                       checked>&nbsp;
+                            {% endif %}
+
+                            {% if question.question_dtype == 6 %}
+                                <input type="checkbox"
+                                       disabled checked>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {{ option.value_desc }}
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </table>
+    {% endif %}
+{% endblock qstitemcontent %}

@@ -1,0 +1,58 @@
+<div class="table-responsive">
+    <table class="table table-striped table-bordered table-hover dataTables-example" >
+        <thead>
+        <tr>
+
+            {% if showTitle %}
+                <th>{{ _("Question") }}</th>
+            {% endif %}
+                <th>{{ _("Description") }}</th>
+                <th>{{ _("Actions") }}</th>
+
+        </tr>
+        </thead>
+        <tbody>
+        {% for question in UserQuestion %}
+            <tr class="gradeX">
+                {% if showTitle %}
+                    <td class="center">{{ question.question_code }}</td>
+                {% endif %}
+                <td class="text-left">{% snippet 'snippets/question/question-title.jinja2', question=question %} </td>
+                <td class="center text-right">
+
+                    {% if showtools %}
+                        {% if question.question_dtype == 5 or question.question_dtype == 6 %}
+                            <button class="btn btn-default btn-circle" onclick="location.href='{{ request.route_url('questionvalues', qid=question.question_id) }}'" type="button" title="{{ _("View/edit options") }}"><i class="fa fa-list-ul"></i></button>
+                        {% endif %}
+                        {% if question.question_dtype == 9 %}
+                            <button class="btn btn-default btn-circle" onclick="location.href='{{ request.route_url('questioncharacteristics', qid=question.question_id) }}'" type="button" title="{{ _("Edit comparison phrases") }}"><i class="fa fa-commenting-o"></i></button>
+                        {% endif %}
+                        {% if question.question_dtype == 10 %}
+                            <button class="btn btn-default btn-circle" onclick="location.href='{{ request.route_url('questionperformance', qid=question.question_id) }}'" type="button" title="{{ _("Edit performance statement") }}"><i class="fa fa-commenting-o"></i></button>
+                        {% endif %}
+
+                        {% if question.assigned == 0%}
+                        <button class="btn btn-warning btn-circle" onclick="location.href='{{ request.route_url('modifyquestion', qid=question.question_id) }}'" type="button" title="{{ _("Edit question") }}"><i class="fa fa-pencil"></i></button>
+                        <button class="btn btn-danger btn-circle" onclick="showDelete('{{ request.route_url('deletequestion', qid=question.question_id) }}','{{ _("Do you really want to remove this question ?") }}','{{ request.session.get_csrf_token() }}')" type="button" title="{{ _("Remove question") }}"><i class="fa fa-times"></i></button>
+                        {% endif %}
+                    {% else %}
+                        {% if showTitle %}
+                            {% if question.question_dtype == 5 or question.question_dtype == 6 %}
+                                <button class="btn btn-default btn-circle" onclick="location.href='{{ request.route_url('questionvalues', qid=question.question_id) }}'" type="button" title="{{ _("View options") }}"><i class="fa fa-list-ul"></i></button>
+                            {% endif %}
+                            {% if question.question_dtype == 9 %}
+                                <button class="btn btn-default btn-circle" onclick="location.href='{{ request.route_url('questioncharacteristics', qid=question.question_id) }}'" type="button" title="{{ _("View comparison phrases") }}"><i class="fa fa-commenting-o"></i></button>
+                            {% endif %}
+                            {% if question.question_dtype == 10 %}
+                                <button class="btn btn-default btn-circle" onclick="location.href='{{ request.route_url('questionperformance', qid=question.question_id) }}'" type="button" title="{{ _("View performance statement") }}"><i class="fa fa-commenting-o"></i></button>
+                            {% endif %}
+                        {% else %}
+                            {% snippet 'snippets/question/question-item-menu.jinja2', question=question, showCheck=True %}
+                        {% endif %}
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>

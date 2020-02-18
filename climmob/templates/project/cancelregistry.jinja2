@@ -1,0 +1,58 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob | Cancel registry") }}</title>
+{% endblock title %}
+
+{% block pageheading %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>{{ _("Cancel registry") }}</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
+                </li>
+                <li class="active">
+                    <strong>{{ _("Cancel registry") }}</strong>
+                </li>
+            </ol>
+            <a href="https://climmob.net/blog/wiki/2019/10/01/cancel-registry/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
+        </div>
+        <div class="col-lg-2">
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block pagecontent %}
+    {% if redirect == False %}
+        {% block dltqstmessage %}
+            <div class="text-center">
+                <h2 class="font-bold text-danger">{{ _("You are going to cancel the registration") }}<br/><span style="color: red">{{ _("All submitted data will be deleted!") }}</span></h2>
+                <p>
+                <div class="error-desc">
+                    <h3>{{ _("Are you sure you that want to cancel the registration of participants?") }}</h3>
+            </div>
+                <form class="form-horizontal" role="form" method="post" action="{{ request.path }}">
+                    <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                    <button class="btn btn-danger" type="submit" name="cancelRegistry"> {{ _('Cancel the registration') }}</button>
+                </form>
+            </div>
+        {% endblock dltqstmessage %}
+    {% endif %}
+{% endblock pagecontent%}
+
+{% if redirect == True %}
+    {% block toastr %}
+        {# Overwrite the toaster so it does not trigger the popup #}
+    {% endblock toastr %}
+{% endif %}
+
+{% block script %}
+    {% if redirect == True %}
+        {# If a new question is just added or edited then redirect the mainwindo to such project #}
+        <script>
+            window.top.location.href = "{{ request.route_url('dashboard') }}";
+        </script>
+    {% endif %}
+{% endblock script %}

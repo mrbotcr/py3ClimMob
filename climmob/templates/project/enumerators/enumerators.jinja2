@@ -1,0 +1,117 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob | Assign field agents") }}</title>
+{% endblock title %}
+
+{% block css %}
+    {% cssresource request,'coreresources','sweet' %}
+{% endblock css %}
+
+{% block topScripts %}
+    {% jsresource request,'coreresources','sweet' %}
+    {% jsresource request,'coreresources','delete' %}
+{% endblock topScripts %}
+
+{% block pageheading %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>{{ _("Assign field agents") }}</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
+                </li>
+                <li class="active">
+                    <strong>{{ _("Assign field agents") }}</strong>
+                </li>
+            </ol>
+            <a href="https://climmob.net/blog/wiki/2019/09/30/assign-field-agents/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
+        </div>
+        <div class="col-lg-2">
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block pagecontent %}
+    <div class="row" style="height: 100%">
+        <div class="col-lg-12 " style="height: 100%">
+            <div class="ibox float-e-margins" style="height: 100%; margin-bottom: 0px">
+                <div class="ibox-title">
+                    <h5>{{ _("Field agents") }}</h5>
+                    <div class="ibox-tools">
+                        <a href="{{ request.route_url('addprjenumerators', projectid=projectid) }}"  class="btn btn-primary btn-xs pull-right">{{ _("Assign field agent") }}</a>
+                    </div>
+                </div>
+                <div class="ibox-content" style="height: 89%">
+                    {% if enumerators %}
+                        <table class="table table-striped table-bordered">
+                            <tbody>
+                            <tr>
+                                <th class="text-center" >{{ _('Name') }}</th>
+                                <th class="text-center" >{{ _('Number of submissions by form') }}</th>
+                                <th class="text-center" >{{ _('Actions') }}</th>
+                            </tr>
+
+                            {% for enumerator in enumerators %}
+
+                                <tr>
+                                    <td style="vertical-align: middle;">
+                                        {% if enumerator.enum_active == 1 %}
+                                            {{ enumerator.enum_name }}
+                                        {% else %}
+                                            {{ enumerator.enum_name }} <span class="label label-danger">{{ _("Cannot submit data") }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="">
+                                        {% set havePersons = namespace(count=0) %}
+
+                                        {% for user in workByUser.registry%}
+                                            {% if enumerator.enum_id == user.user_name %}
+                                                {{ _("Registry") }}: {{ user.count }}
+                                                {% set havePersons.count = user.count %}
+                                            {% endif %}
+                                        {% endfor %}
+
+                                        {% if havePersons.count == 0 %}
+                                            {{ _("Registry") }}: 0
+                                        {% endif %}
+                                        <br>
+                                        {% for assessment in assessments %}
+                                            {% set havePersons = namespace(count=0) %}
+
+                                            {% for user in workByUser[assessment.ass_cod]%}
+                                                {% if enumerator.enum_id == user.user_name %}
+                                                    {{ _("Assessment") }} {{ assessment.ass_desc }}: {{ user.count }}<br>
+                                                    {% set havePersons.count = user.count %}
+                                                {% endif %}
+                                            {% endfor %}
+
+                                            {% if havePersons.count == 0 %}
+                                                {{ _("Assessment") }} {{ assessment.ass_desc }}: 0 <br>
+                                            {% endif %}
+                                        {% endfor %}
+
+                                    </td>
+
+                                    <td class="text-center" style="vertical-align: middle;">
+                                        <button onclick="showDelete('{{ request.route_url('removeprjenumerator', projectid=projectid,enumeratorid=enumerator.enum_id) }}','{{ _("Do you really want to remove this enumerator ?") }}','{{ request.session.get_csrf_token() }}')" type="button" class="btn btn-sm btn-danger">{{ _("Remove") }}</button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+
+                            </tbody>
+                        </table>
+                        <div style="width: 100%; text-align: center">
+                            <h3><b><a href="{{ request.route_url('productList') }}">{{ _("You can download a .pdf document with the information and QR of the field agents for the ODK Collect configuration.") }}</a></b></h3>
+                        </div>
+                    {% else %}
+                        <div style="width: 100%; text-align: center">
+                            <h3><b>{{ _("No data to display. Go to assign field agent") }}</b></h3>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock pagecontent%}

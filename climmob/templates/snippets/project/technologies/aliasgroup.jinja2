@@ -1,0 +1,69 @@
+<div class="col-lg-6 ">
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+            {% if title == 'Included' %}
+                <h5>{{ title }} ({{ _('Drop up to exclude') }})</h5>
+            {% else %}
+                <h5>{{ title }} ({{ _('Drop down to include') }})</h5>
+            {% endif %}
+            <div class="ibox-tools">
+
+            </div>
+        </div>
+        <div class="ibox-content" >
+            <div id="content_{{ title }}">
+                {% if title == 'Included' %}
+                    <h3>{{ _("Alias from libraries") }}</h3>
+                    {% set state = 'exists' %}
+                {% else %}
+                    {% set state = 'new' %}
+                {% endif %}
+                <ul id="sortable_technologies_{{ title }}" style="list-style-type: none;">
+                    {% for val in alias %}
+                        <li class="list-primary" id="element_{{ val.alias_id }}_{{ state }}">
+                            <ol class="dd-list" data-type="root">
+                                <li class="dd-nochildren" data-id="QST" data-type="question">
+                                    <div class="dd-handle">
+                                        {% if title == 'Included' %}
+                                            <i class="fa fa-arrows text-danger"></i>  {{ val.alias_name }}
+                                        {% else %}
+                                            <i class="fa fa-arrows text-info"></i> {{ val.alias_name }}
+                                        {% endif %}
+
+                                    </div>
+                                </li>
+                            </ol>
+                        </li>
+                    {% endfor %}
+                </ul>
+
+                {% if title == 'Included' %}
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-10">
+                            <h3>{{ _("Aliases included for this project") }}</h3>
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-primary pull-right clm-actions aliasExtra" name="addnewaliastechnology" type="submit" onclick="location.href='{{ request.route_url('addprjtechalias', projectid=projectid, tech_id=tech_id) }}';">{{ _("Add new alias") }}</button>
+                        </div>
+                    </div>
+
+                    <ul style="list-style-type: none;">
+                        {% for val in aliasExtra %}
+                            <li class="list-primary" id="element_{{ val.alias_id }}">
+                                <ol class="dd-list" data-type="root">
+                                    <li class="dd-nochildren" data-id="QST" data-type="question">
+                                        <div class="dd-handle">
+                                            <button type="button" class="dd-nodrag btn btn-danger btn-xs pull-right aliasExtra" onclick="location.href='{{ request.route_url('deleteprjtechalias', projectid=projectid, tech_id=tech_id, alias_id=val.alias_id) }}';">{{ _("Delete") }}</button>
+                                            <i class="fa fa-lock text-info" style="color: #286090"></i> {{ val.alias_name }}
+                                        </div>
+                                    </li>
+                                </ol>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

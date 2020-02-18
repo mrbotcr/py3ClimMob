@@ -1,0 +1,121 @@
+
+\documentclass[10pt]{article}
+\usepackage{graphicx}
+\usepackage[bottom=0.5in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{tabularx}
+\usepackage{longtable}
+
+\begin{document}
+\begin{titlepage}
+\pagenumbering{gobble}
+\setlength{\voffset}{-0.5in}
+\setlength{\parindent}{1em}
+\setlength{\parskip}{1em}
+\renewcommand{\baselinestretch}{1.5}
+\rmfamily
+
+
+{% for u in users %}
+
+	\textbf{Thank you for participating!}
+	\newline
+	\newline
+	{{ u.uname }} \newline
+	{{ u.family }} \newline
+	{{ u.div2 }} \newline
+	{{ u.div1 }} \newline
+
+
+	These are the results of the experiment you contributed to.
+
+	\begin{flushleft}
+		\textbf{You received the following varieties to rank: }\hfill \break
+		%------------------
+		\begin{tabularx}{\textwidth}{ X | c  }
+			\hline
+			\textbf{Variety} & \textbf{Name} \\ \hline
+
+			{% for v in u.var_by_user%}
+				{{v.var}} & {{v.name}} \\ \hline
+			{% endfor %}
+
+
+		\end{tabularx}\newline \newline
+
+		\textbf{You ranked these varieties in the following order: }\hfill \break
+		\begin{tabularx}{\textwidth}{ X | c | c | c  }
+			\hline
+			\textbf{Characteristic}
+			{% for c in u.carac_by_user[0].pos %}
+				& \textbf{ {{loop.index}} }
+			{% endfor%}
+			\\ \hline
+
+			%\textbf{Characteristic} & \textbf{Best} & \textbf{Second} & \textbf{Worst} \\ \hline
+
+			{% for c in u.carac_by_user %}
+				%{{c.carac}} & {{c.pos}} & {{c.second}} & {{c.worst}} \\ \hline
+				{{c.carac}}{% for r in c.pos %} & {{r}} {%endfor%} \\ \hline
+
+
+			{% endfor %}
+
+		\end{tabularx}
+
+	\end{flushleft}
+
+	\pagebreak
+
+	\begin{flushleft}
+		These are the best and the worst Varieties you and observers with the similar characteristics received:\hfill \break \newline
+		%------------------
+		\begin{tabularx}{\textwidth}{ X | X  }
+			\hline
+			\textbf{Position} & \textbf{Name} \\ \hline
+
+			{% for p in u.positions %}
+
+				{{p.pos}} & {{p.var}} \\ \hline
+			{% endfor %}
+
+
+
+		\end{tabularx}\newline \newline
+
+ \begin{longtable}{|*3{p{2cm}|}}
+    \hline
+    {\bf First} & {\bf Second} & {\bf Third} \\ \hline
+
+    Text   & Other Text    & Other Text 2 \\
+           & Other Text 3  &              \\
+           & Other Text 4  &              \\ \hline
+
+    Text 5 & Other Text 6  & Other Text 7 \\
+           & Other Text 8  &              \\
+           & Other Text 9  &              \\ \hline
+\end{longtable}
+
+\begin{center}
+  \begin{tabular}{ l | c | r }
+    \hline
+    1 & 2 & 3 \\ \hline
+    4 & 5 & 6 \\ \hline
+    7 & 8 & 9 \\
+    \hline
+  \end{tabular}
+\end{center}
+
+
+
+	\end{flushleft}
+	\pagebreak
+
+{% endfor %}
+
+
+\end{titlepage}
+
+\end{document}	
+
+

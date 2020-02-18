@@ -1,0 +1,345 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob | Questions library") }}</title>
+{% endblock title %}
+
+{% block css %}
+    {% cssresource request,'coreresources','datatables' %}
+    {% cssresource request,'coreresources','sweet' %}
+    {% cssresource request,'coreresources','shuffle' %}
+    {% cssresource request,'coreresources','toastr' %}
+{% endblock css %}
+
+{% block topScripts %}
+    {% jsresource request,'coreresources','qlibrary' %}
+    {% jsresource request,'coreresources','sweet' %}
+    {% jsresource request,'coreresources','delete' %}
+    {% jsresource request,'coreresources','shuffle' %}
+    {% jsresource request,'coreresources','toastr' %}
+{% endblock topScripts %}
+
+{% block pageheading %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>{{ _("Questions library") }}</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
+                </li>
+                <li>
+                    {% if activeUser.login == showing %}
+                        <a href="{{ request.route_url('dashboard') }}">{{ _("My questions") }}</a>
+                    {% else %}
+                        <a href="{{ request.route_url('dashboard') }}">{{ _("ClimMob") }}</a>
+                    {% endif %}
+                </li>
+                <li class="active">
+                    <strong>{{ _("Questions library") }}</strong>
+                </li>
+            </ol>
+            <a href=" https://climmob.net/blog/wiki/2019/09/30/questions-library/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
+        </div>
+        <div class="col-lg-2">
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block pagecontent %}
+
+    {% if activeUser.login == showing %}
+        <div class="row">
+            <div class="col-md-12">
+                <div class="ibox">
+                    <div class="ibox-title" >
+                        <h5 style="float: initial">{{ _("Categories form") }}</h5>
+                    </div>
+
+                    <div class="ibox-content " >
+                        <div class="form-group col-sm-12">
+                            <label class="col-sm-2 control-label" style="height: 35px;margin-top: 6px">{{ _("Category name:") }}</label>
+                            <div class="col-sm-4">
+                                <input  type="text" style="display: none" id="qstgroups_id" class="form-control " value=""  name="qstgroups_id" placeholder=" ">
+                                <input  type="text" id="qstgroups_name" class="form-control " value="" required="" name="qstgroups_name" placeholder=" ">
+                            </div>
+                            <div class="col-sm-6" style="height: 35px;margin-top: 6px">
+                                <button id="btnNewCategory" onclick="" type="submit" class="btn btn-primary btn-xs">{{ _("Add category") }}</button>
+                                <button id="btnUpdateCategory" style="display: none" onclick="" type="submit" class="btn btn-warning btn-xs">{{ _("Update category") }}</button>
+                                <button id="btnCancelUpdate" style="display: none" onclick="" type="submit" class="btn btn-default btn-xs">{{ _("Cancel") }}</button>
+                            </div>
+                        </div>
+                        <br>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="row" id="allInformation">
+        <div class="col-md-12">
+            <div class="ibox">
+                <div class="ibox-title text-center" >
+                    <h5 style="float: initial">{{ _("Categories of questions") }}</h5>
+                    <br>
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                        <label class="btn btn-outline-primary active">
+                            <input type="radio" name="shuffle-filter" value="all" checked="checked"/>{{ _('All') }}
+                        </label>
+                        {% for category in Categories %}
+
+                            <label class="btn btn-outline-primary">
+                                <input type="radio" name="shuffle-filter" value="{{ category.qstgroups_id }}"/>{{ category.qstgroups_name }}
+                            </label>
+
+                        {% endfor %}
+                    </div>
+                    <div class="text-center">
+                        <br>
+                        {% if activeUser.login == showing %}
+                            {% for category in Categories %}
+                                <div class="forHidden col-sm-12" id="options_{{ category.qstgroups_id}}" style="display:none;" data-groups='["{{ category.qstgroups_id}}"]'>
+                                {% if category.user_name == activeUser.login%}
+                                    <button class="btn btn-warning btn-xs" onclick="updateCategory('{{ category.qstgroups_id }}','{{ category.qstgroups_name }}')" type="button" title="{{ _("Update category") }}"><i class="fa fa-pencil"></i> {{ _("Update category") }}</button>
+                                    {% if category.count == 0 %}
+                                        <button class="btn btn-danger btn-xs" onclick="deleteCategory('{{ category.qstgroups_id }}')"  type="button" title="{{ _("Remove category") }}"><i class="fa fa-times"></i> {{ _("Remove category") }}</button>
+                                    {% endif %}
+                                {% endif %}
+                                <button onclick="location.href='{{ request.route_url('newquestion', category_id= category.qstgroups_id, category_user= category.user_name) }}','Add question','Add question'" type="button" class="btn btn-primary btn-xs">{{ _("Add question") }}</button>
+
+                                </div>
+                            {% endfor %}
+                            <div class="forHidden col-sm-12" id="options_all" style="display:block;" data-groups='["all"]'>
+                                <button onclick="location.href='{{ request.route_url('newquestion',category_id= "0", category_user= activeUser.login) }}','Add question','Add question'" type="button" class="btn btn-primary btn-xs">{{ _("Add question") }}</button>
+                            </div>
+                            <br>
+                            <br>
+                        {% endif %}
+
+
+                        <div class="col-sm-4" style="margin-top: 5px;"></div>
+                        <div class="row form-horizontal form-group col-sm-4" style="margin-top: 5px;">
+
+                            <label class="col-sm-2 control-label">{{ _("Search") }}</label>
+                            <div class="col-sm-10">
+                                <input class="form-control js-shuffle-search" type="search" id="filters-search-input" />
+                            </div>
+                        </div>
+                        <div class="col-sm-4" style="margin-top: 5px;"></div>
+                        <br>
+                        <br>
+                        <br>
+                    </div>
+                </div>
+
+                <div class="ibox-content text-center " >
+
+                    <h3>{{ _("Questions by category...") }}</h3>
+                    <div class=" my-shuffle col-sm-12 " style="float: initial">
+                        {% for question in UserQuestion %}
+                            {% if activeUser.login == showing %}
+                                {% snippet 'snippets/question/question-shuffle.jinja2', request=request,question=question, showTitle = True, showtools=True,color="white" %}
+                            {% else %}
+                                {% snippet 'snippets/question/question-shuffle.jinja2', request=request,question=question, showTitle = True, showLogo=True, showtools=False,color="white"%}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div class="col-1 my-sizer-element" style="max-width: 1px; max-height: 1px"></div>
+                    <br>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+{#    <div class="row">#}
+{#        {% if activeUser.login != "bioversity" %}#}
+{#            <div class="col-md-6">#}
+{#                <div class="ibox float-e-margins">#}
+{#                    <div class="ibox-title">#}
+{#                        <h5>{{ _("ClimMob library") }}</h5>#}
+{#                    </div>#}
+{#                    <div class="ibox-content">#}
+{#                        {% snippet 'snippets/question/question-table.jinja2', request=request, UserQuestion =ClimMobQuestion, showTitle = True, showtools=False %}#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{##}
+{#            <div class="col-md-6">#}
+{#                <div class="ibox float-e-margins">#}
+{#                    <div class="ibox-title">#}
+{#                        <h5>{{ _("User library") }}</h5>#}
+{#                        <div class="ibox-tools">#}
+{#                            <button onclick="location.href='{{ request.route_url('newquestion') }}','Add question','Add question'" type="button" class="btn btn-primary btn-xs pull-right">{{ _("Add question") }}</button>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <div class="ibox-content">#}
+{#                        <div class="row">#}
+{#                            <div class="col-md-12">#}
+{#                                {% snippet 'snippets/question/question-table.jinja2', request=request, UserQuestion =UserQuestion, showTitle = True, showtools=True %}#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        {% else %}#}
+{#            <div class="col-md-12">#}
+{#                <div class="ibox float-e-margins">#}
+{#                    <div class="ibox-title">#}
+{#                        <h5>{{ _("ClimMob library") }}</h5>#}
+{#                        <div class="ibox-tools">#}
+{#                            <button onclick="location.href='{{ request.route_url('newquestion') }}'" type="button" class="btn btn-primary btn-xs pull-right">{{ _("Add question") }}</button>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <div class="ibox-content">#}
+{#                        {% snippet 'snippets/question/question-table.jinja2', request=request, UserQuestion =UserQuestion, showtools=True %}#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        {% endif %}#}
+{#    </div>#}
+
+
+    <script>
+        $('body').css('overflow-y','scroll');
+        var Shuffle = window.Shuffle;
+        var jQuery = window.jQuery;
+        var myShuffle = new Shuffle(document.querySelector('.my-shuffle'), {
+            itemSelector: '.feed-item',
+            sizer: '.my-sizer-element',
+            buffer: 1,
+        });
+
+        jQuery('input[name="shuffle-filter"]').on('change', function (evt) {
+            var input = evt.currentTarget;
+            if (input.checked) {
+                myShuffle.filter(input.value);
+                $(".forHidden").css("display","none")
+                $("#options_"+input.value).css("display","block")
+
+                //$(".forRefresh").css("width","49%");
+            }
+        });
+
+        $("#btnNewCategory").click(function () {
+            actionCategory('new')
+        })
+
+        $("#btnUpdateCategory").click(function () {
+            actionCategory('update')
+        })
+
+        toastr.options = {
+                closeButton: true,
+                progressBar: true,
+                showMethod: 'slideDown',
+                timeOut: 4000
+            };
+
+
+        function actionCategory(action) {
+            if ($("#qstgroups_name").val() != "") {
+                $.ajax({
+                    url: '{{ request.route_url('categories') }}',
+                    datatype: "json",
+                    type: "POST",
+                    data: {
+                        "csrf_token": '{{ request.session.get_csrf_token() }}',
+                        "action": action,
+                        "qstgroups_name": $("#qstgroups_name").val(),
+                        "qstgroups_id": $("#qstgroups_id").val()
+                    },
+                    success: function (respuesta) {
+
+                        if(respuesta['result'] == "error")
+                        {
+                            toastr.error(respuesta['error']);
+                        }else{
+                            toastr.success(respuesta['success']);
+                            location.href = window.location.href;
+                        }
+                    },
+                    error: function (respuesta) {
+                        alert("error")
+                        toastr.error("Error");
+                    }
+                });
+            }
+            else {
+                toastr.error("{{ _("Write the name of the category") }}")
+                $("#qstgroups_name").val().focus()
+            }
+        }
+
+        function updateCategory(id,name) {
+            $("#qstgroups_name").val(name)
+            $("#qstgroups_name").focus();
+            $("#qstgroups_id").val(id)
+            $("#btnUpdateCategory").css("display","inline-block")
+            $("#btnCancelUpdate").css("display","inline-block")
+            $("#btnNewCategory").css("display","none")
+            $("#allInformation").css("display","none")
+        }
+
+        $("#btnCancelUpdate").click(function () {
+            $("#qstgroups_name").val("")
+            $("#qstgroups_id").val("")
+            $("#btnUpdateCategory").css("display","none")
+            $("#btnCancelUpdate").css("display","none")
+            $("#btnNewCategory").css("display","block")
+            $("#allInformation").css("display","block")
+        })
+
+        function deleteCategory(id) {
+            $("#qstgroups_id").val(id)
+            $("#qstgroups_name").val(' ')
+            actionCategory('delete')
+        }
+
+        jQuery('.js-shuffle-search').on('keyup', function (evt) {
+            var input = evt.currentTarget;
+            var searchText = input.value.toLowerCase();
+
+            myShuffle.filter(function (element, shuffle) {
+
+                // If there is a current filter applied, ignore elements that don't match it.
+                if (shuffle.group !== Shuffle.ALL_ITEMS) {
+                    // Get the item's groups.
+                    var groups = JSON.parse(element.getAttribute('data-groups'));
+                    var isElementInCurrentGroup = groups.indexOf(shuffle.group) !== -1;
+
+                    // Only search elements in the current group
+                    if (!isElementInCurrentGroup) {
+                        return false;
+                    }
+                }
+
+                var titleText = element.getAttribute('data-title').toLowerCase().trim();
+                return titleText.indexOf(searchText) !== -1;
+            });
+
+        });
+
+        /*function post_table_change() {
+            var table_name = $("#table_name").val();
+            var table_desc = $("#table_desc").val();
+
+            $.post("{{ request.url }}",
+                {
+                    table_name: table_name,
+                    table_desc: table_desc,
+                    csrf_token: "{{ request.session.get_csrf_token() }}"
+                },
+                function (data, status) {
+                    if ((data.status === "changed") && (status === "success"))
+                    {
+                        $("#desc_" + table_name).text(table_desc);
+                        $("#edit_table_desc").modal('hide');
+                    }
+                });
+        }*/
+
+
+    </script>
+
+{% endblock pagecontent %}

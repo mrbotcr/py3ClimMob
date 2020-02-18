@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {% block meta %}
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% endblock meta %}
+
+    {% block title %}
+        <title>{{ _("ClimMob") }}</title>
+    {% endblock title %}
+
+    {% block css %}
+        {% cssresource request,'coreresources','style' %}
+        {% cssresource request,'coreresources','sweet' %}
+    {% endblock css %}
+
+    {% block topScripts %}
+        {% jsresource request,'coreresources','dashboard' %}
+        {% jsresource request,'coreresources','sweet' %}
+        {% jsresource request,'coreresources','delete' %}
+    {% endblock topScripts %}
+
+</head>
+
+{% set withsidebar = [] %}
+
+<body class="{% block bodyclass %}{% endblock bodyclass %}" {% block bodyattributes %}{% endblock bodyattributes %}>
+{% block body %}
+    <div id="wrapper">
+        {% block mainavbar %}
+            <nav class="navbar-default navbar-static-side" role="navigation">
+                <div class="sidebar-collapse">
+                    <ul class="nav metismenu" id="side-menu">
+                        {% block mainavheader %}
+                            <li class="nav-header">
+                                <div class="dropdown profile-element">
+                                    <span>
+                                        {% block mnavuserimage %}
+                                            <img alt="image" class="img-circle" src="{{ activeUser.gravatarURL }}" />
+                                        {% endblock mnavuserimage %}
+                                    </span>
+                                    {% block mnavuserdm %}
+                                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                                        <span class="clear">
+                                            {% block mnavuserdetails %}
+                                                <span class="block m-t-xs"> <strong class="font-bold">{{ activeUser.fullName }}</strong></span>
+                                                <span class="text-muted text-xs block">{{ _("Actions") }} <b class="caret"></b></span>
+                                            {% endblock mnavuserdetails %}
+                                        </span>
+                                        </a>
+                                        <ul class="dropdown-menu animated fadeInRight m-t-xs">
+                                            {% block mnavusermitems %}
+                                                <li><a href="{{ request.route_url('profile') }}">{{ _("Profile") }}</a></li>
+                                                <li class="divider"></li>
+                                                <li><a href="{{ request.route_url('logout') }}">{{ _("Logout") }}</a></li>
+                                            {% endblock mnavusermitems %}
+                                        </ul>
+                                    {% endblock mnavuserdm %}
+                                </div>
+                                <div class="logo-element">
+                                    {% block mainavlogo %}
+                                        CM
+                                    {% endblock mainavlogo %}
+                                </div>
+                            </li>
+                        {% endblock mainavheader %}
+                        {% block mainavitems %}
+                            <li>
+                                <a href="{{ request.route_url('dashboard') }}"><i class="fa fa-th-large"></i> <span class="nav-label">{{ _("Main menu") }}</span></a>
+                            </li>
+                            <li class="active" style="border-left: initial;background: initial">
+                                <a href="#"><i class="fa fa-book"></i> <span class="nav-label">{{ _("Library") }}</span><span class="fa arrow"></span></a>
+                                <ul class="nav nav-second-level collapse" style="border-left: initial;background: initial">
+                                    <li><a href="{{ request.route_url('enumerators') }}"><i class="fa fa-group"></i> <span class="nav-label">{{ _("Field agents") }}</span></a></li>
+                                    <li><a href="{{ request.route_url('usertechnologies') }}"><i class="fa fa-flask"></i> <span class="nav-label">{{ _("Treatments") }}</span></a></li>
+                                    <li class="active" style="border-left: initial;background: initial">
+                                        <a href="#"><i class="fa fa-comment"></i> <span class="nav-label">{{ _("Questions") }}</span><span class="fa arrow"></span></a>
+                                        <ul class="nav nav-third-level collapse">
+                                            <li><a href="{{ request.route_url('qlibrary',user_name =activeUser.login) }}"><i class="fa fa-user"></i> <span class="nav-label">{{ _("My questions") }}</span></a></li>
+                                            {% if activeUser.login != 'bioversity' %}
+                                                <li><a href="{{ request.route_url('qlibrary',user_name='bioversity') }}"><i class="fa fa-book"></i> <span class="nav-label">{{ _("ClimMob") }}</span></a></li>
+                                            {% endif %}
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="{{ request.route_url('productList') }}"><i class="fa fa-cloud-download"></i> <span class="nav-label">{{ _("Downloads") }}</span></a>
+                            </li>
+                        {% endblock mainavitems %}
+                    </ul>
+                </div>
+            </nav>
+        {% endblock mainavbar %}
+        <div id="page-wrapper" class="gray-bg">
+            {% block header %}
+                <div class="row border-bottom">
+                    <nav class="navbar navbar-static-top  " role="navigation" style="margin-bottom: 0">
+                        <div class="navbar-header" style="min-width: 50%">
+                            {% block headwelcome %}
+                                <a class="navbar-minimalize minimalize-styl-2 btn btn-primary" href="#"><i class="fa fa-bars"></i> </a>
+                                <h2 style="margin: 14px 5px 5px 20px"> <span style="color: #1ab492">{{ _("ClimMob") }}</span></h2>
+                            {% endblock headwelcome %}
+
+{#                        <div>#}
+{#                            {{ _('Language') }}:#}
+{#                            <select id="language">#}
+{#                                <option id="en" value="en">English</option>#}
+{#                                <option id="es" value="es">Español</option>#}
+{#                                <option id="es" value="fr">Frances</option>#}
+{#                            </select>#}
+{#                        </div>#}
+                        </div>
+                        <ul class="nav navbar-top-links navbar-right">
+                            {% block headitems %}
+                                <li>
+
+                                </li>
+                                {#<li class="dropdown">
+                                    <a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
+                                        <i class="fa fa-bell"></i>  <span class="label label-primary">8</span>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-alerts">
+                                        <li>
+                                            <a href="mailbox.html">
+                                                <div>
+                                                    <i class="fa fa-envelope fa-fw"></i> You have 16 messages
+                                                    <span class="pull-right text-muted small">4 minutes ago</span>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <li class="divider"></li>
+                                        <li>
+                                            <a href="profile.html">
+                                                <div>
+                                                    <i class="fa fa-twitter fa-fw"></i> 3 New Followers
+                                                    <span class="pull-right text-muted small">12 minutes ago</span>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <li class="divider"></li>
+                                        <li>
+                                            <a href="grid_options.html">
+                                                <div>
+                                                    <i class="fa fa-upload fa-fw"></i> Server Rebooted
+                                                    <span class="pull-right text-muted small">4 minutes ago</span>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <li class="divider"></li>
+                                        <li>
+                                            <div class="text-center link-block">
+                                                <a href="notifications.html">
+                                                    <strong>See All Alerts</strong>
+                                                    <i class="fa fa-angle-right"></i>
+                                                </a>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </li>#}
+                                <li>
+                                    <a href="{{ request.route_url('logout') }}">
+                                        <i class="fa fa-sign-out"></i> {{ _("Log out") }}
+                                    </a>
+                                </li>
+                                <li>
+                                    {% block headsidebar %}
+                                        <a class="right-sidebar-toggle">
+                                            <i class="fa fa-tasks"> </i> {{ _("Projects") }}
+                                            {% do withsidebar.append(1) %}
+                                        </a>
+                                    {% endblock headsidebar %}
+                                </li>
+                            {% endblock headitems %}
+                        </ul>
+                    </nav>
+                </div>
+            {% endblock header %}
+            {% block pageheading %}
+                {% if hasActiveProject %}
+                    <div class="row wrapper border-bottom white-bg page-heading">
+                        <div class="col-sm-12 text-center">
+                            <div class="ibox collapsed">
+                                <div class="ibox-title">
+
+                                    <h2 class="text-center">{{ activeProject.project_name }}</h2>
+                                    <a href="https://climmob.net/blog/wiki/2019/09/30/main-menu/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
+                                    <div class="ibox-tools">
+                                        <a class="collapse-link">
+                                            <i class="fa fa-chevron-up"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="ibox-content">
+                                    {{ activeProject.project_abstract }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endblock pageheading %}
+            <div class="wrapper wrapper-content">
+                {% block pagecontent %}
+                    {% if hasActiveProject %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="ibox float-e-margins">
+                                    <div class="ibox-title">
+                                        <h5>{{ _("Project definition") }}</h5>
+                                        <div class="ibox-tools">
+                                            <div class="row">
+                                                <div class="col-md-9">
+
+                                                </div>
+                                                <div class="col-md-3 pull-right">
+                                                    <div class="small" style="text-align: left">{{ pcompleted }}% {{ _("Completed") }}</div>
+                                                    <div class="progress progress-mini">
+                                                        <div style="width: {{ pcompleted }}%;" class="progress-bar progress-bar-success"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <div class="row">
+                                            <div class="col-md-10">
+                                                <a class="btn btn-primary btn-rounded btn-block" style="text-align: left" href="{{ request.route_url('prjenumerators',projectid=activeProject.project_cod) }}"><i class="fa fa-user-circle-o"></i> {{ _("Assign field agents") }}</a>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <p style="margin-top: 8px; text-align: center"><span class="label {% if progress.enumerators %}label-success{% else %}label-danger{% endif %}">{% if progress.enumerators %}{{ _("Completed") }}{% else %}{{ _("Pending") }}{% endif %}</span></p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-10">
+                                                {% if progress.regsubmissions == 0 %}
+                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left" href="{{ request.route_url('prjtechnologies',projectid=activeProject.project_cod) }}"><i class="fa fa-envira"></i> {{ _("Select treatments") }}</a>
+                                                {% else %}
+                                                    <a class="btn btn-default btn-rounded btn-block" style="text-align: left"><i class="fa fa-envira"></i> {{ _("Select treatments (locked)") }}</a>
+                                                {% endif %}
+                                            </div>
+                                            <div class="col-md-2">
+                                                <p style="margin-top: 8px; text-align: center">
+                                                    {% if progress.technology and progress.techalias %}
+                                                        <span class="label label-success">{{ _("Completed") }}</span>
+                                                    {% endif %}
+                                                    {% if progress.technology and not progress.techalias %}
+                                                        <span class="label label-warning" title="There are assigned treatments but without levels">{{ _("Partial") }}</span>
+                                                    {% endif %}
+                                                    {% if not progress.technology and not progress.techalias %}
+                                                        <span class="label label-danger">{{ _("Pending") }}</span>
+                                                    {% endif %}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-10">
+                                                {% if progress.regsubmissions == 0 %}
+                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left" href="{{ request.route_url('registry',projectid=activeProject.project_cod) }}"><i class="fa fa-address-card-o"></i> {{ _("Prepare participant registration") }}</a>
+                                                {% else %}
+                                                    <a class="btn btn-default btn-rounded btn-block" style="text-align: left"><i class="fa fa-address-card-o"></i> {{ _("Prepare participant registration form (locked)") }}</a>
+                                                {% endif %}
+                                            </div>
+                                            <div class="col-md-2">
+                                                <p style="margin-top: 8px; text-align: center;">
+                                                    {% if progress.registry %}
+                                                        <span class="label label-success">{{ _("Completed") }}</span>
+                                                    {% else %}
+                                                        <span class="label label-danger">{{ _("Pending") }}</span>
+                                                    {% endif %}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-10">
+
+                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left" href="{{ request.route_url('assessment',projectid=activeProject.project_cod) }}"><i class="fa fa-balance-scale"></i> {{ _("Prepare a data collection") }}</a>
+
+                                            </div>
+                                            <div class="col-md-2">
+                                                <p style="margin-top: 8px; text-align: center">
+                                                    {% if progress.assessment %}
+                                                        <span class="label label-success">{{ _("Completed") }}</span>
+                                                    {% else %}
+                                                        <span class="label label-danger">{{ _("Pending") }}</span>
+                                                    {% endif %}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <br>
+                                                <div class="text-center">
+                                                    <h3>{{ _("Share this link to people who wish to see the progress of your project") }}:</h3>
+                                                    <br>
+                                                    <input readonly class=" btn-default " style="margin-bottom: 5px; padding: 6px 12px; border-color: #1ab394; border-radius: 3px" type="text" id="aForCopy" value="{{ request.route_url("projectInformation", id = encrypted) }}" size="40">
+                                                    <button class="btn btn-default" onclick="copy()">{{ _("Copy to clipboard") }}</button>
+                                                </div>
+                                                <hr>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <a class="btn btn-warning btn-rounded btn-block" href="{{ request.route_url('modifyproject',projectid=activeProject.project_cod) }}"><i class="fa fa-wrench"></i> {{ _("Update project settings") }}</a>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <a class="btn btn-danger btn-rounded btn-block" onclick="showDelete('{{ request.route_url('deleteproject',projectid=activeProject.project_cod) }}','{{ _("Do you really want to remove this project ?") }}','{{ request.session.get_csrf_token() }}','{{ request.route_url('dashboard') }}')"><i class="fa fa-trash"></i> {{ _("Delete project") }}</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="ibox float-e-margins">
+                                    <div class="ibox-title">
+                                        <h5>{{ _("Participant registration") }}</h5>
+                                        <div class="ibox-tools">
+                                            <div class="row">
+                                                <div class="col-md-9">
+
+                                                </div>
+                                                <div class="col-md-3 pull-right">
+                                                    {% set pbtype = "progress-bar-info" %}
+                                                    {% if progress.regsubmissions == 0 %}
+                                                        <div class="small" style="text-align: left">{{ _("Not yet started") }}</div>
+                                                    {% endif %}
+                                                    {% if progress.regsubmissions == 1 %}
+                                                        <div class="small" style="text-align: left">{{ _("On going") }}</div>
+                                                    {% endif %}
+                                                    {% if progress.regsubmissions == 2 %}
+                                                        <div class="small" style="text-align: left">{{ _("Closed") }}</div>
+                                                        {% if progress.regperc >= 100 %}
+                                                            {% set pbtype = "progress-bar-success" %}
+                                                        {% else %}
+                                                            {% set pbtype = "progress-bar-warning" %}
+                                                        {% endif %}
+                                                    {% endif %}
+                                                    <div class="progress progress-mini">
+                                                        <div style="width: {{ progress.regperc }}%;" class="progress-bar {{ pbtype }}"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <div class="row">
+                                            {% if progress.regsubmissions == 0 %}
+                                                {% if progress.enumerators == true and progress.technology == true and progress.techalias == true and progress.registry == true %}
+                                                    <div class="col-md-12">
+                                                        <button class="btn btn-primary btn-rounded btn-block" onclick="location.href='{{ request.route_url('combinations',projectid=activeProject.project_cod) }}'"><i class="fa fa-play"></i> {{ _("Generate treatment packages") }}<br/> {{ _("and open the registration of participants") }}</button>
+                                                    </div>
+                                                {% else %}
+                                                    <div class="col-md-12">
+                                                        <div class="text-center">{{ _("You can start the registration of participants once the project has field agents, treatments, levels and a registration form") }}</div>
+                                                    </div>
+                                                {% endif %}
+                                            {% else %}
+                                                <div class="col-md-12">
+                                                    <div class="text-center"><h3>{{ _("To submit data let your field assistants know that they need to setup ODK Collect to the following address") }}:<br/><span style="color: #1ab394">{{ request.application_url }}/{{ activeUser.login }}</span></h3></div>
+                                                    <div class="text-center"><img style="max-width: 150px" src="{{ request.route_url('projectqr',projectid=activeProject.project_cod) }}"></div>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+
+                                        {% if progress.regsubmissions == 1 or progress.regsubmissions == 2  %}
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <h3>{{ _("Statistics") }}</h3>
+                                                    <table class="table table-striped">
+                                                        <tbody>
+                                                        <tr>
+                                                            <td>{{ _("Total Sample") }}: </td>
+                                                            <td>{{ activeProject.project_numobs }}</td>
+                                                            <td></td>
+                                                        </tr>
+                                                        <tr >
+                                                            <td style="vertical-align: inherit">{{ _("Number submissions") }}: </td>
+                                                            <td style="vertical-align: inherit">{{ progress.regtotal }} {% if progress.regtotal > 0 %}({{  ((progress.regtotal * 100)/activeProject.project_numobs)|round(1, 'floor') }}%){% endif %}</td>
+                                                            {% if progress.regtotal > 0 %}
+                                                                <td >
+                                                                    <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{ request.route_url('EditDataRegistry',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-table"></i> {{ _("View data") }}</a>
+                                                                    <br>
+                                                                    <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{ request.route_url('downloadDataRegistry',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data") }}</a>
+                                                                    <br>
+                                                                    <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('uploadDataRegistry',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-cloud-upload"></i> {{ _("Upload data") }}</a>
+                                                                </td>
+                                                            {% endif %}
+                                                        </tr>
+                                                        <tr>
+                                                            <td >{{ _("Last submission") }}</td>
+                                                            <td >{{ progress.lastreg }}</td>
+                                                            <td></td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                        {% if progress.regsubmissions == 1  or progress.regsubmissions == 2 %}
+                                            <div class="row">
+                                                {% if progress.regsubmissions == 1 %}
+                                                    {% if progress.regtotal > 0 %}
+                                                        <div class="col-md-4">
+                                                            <button onclick="location.href ='{{ request.route_url('closeregistry',projectid=activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block" href="#"><i class="fa fa-stop"></i> {{ _("Finish the registration") }}</button>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <button onclick="location.href ='{{ request.route_url('cancelregistry',projectid=activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block" href="#"><i class="fa fa-undo"></i> {{ _("Cancel the registration") }}</button>
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="col-md-4">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <button onclick="location.href = '{{ request.route_url('cancelregistry',projectid=activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block" href="#"><i class="fa fa-undo"></i> {{ _("Cancel the registration") }}</button>
+                                                        </div>
+                                                    {% endif %}
+                                                {% endif %}
+                                                {% if progress.regsubmissions == 2 %}
+                                                    <div class="col-md-4">
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        {% if progress.assessments|length == 0 %}
+                                                            <button onclick="location.href = '{{ request.route_url('cancelregistry',projectid=activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block" href="#"><i class="fa fa-undo"></i> {{ _("Cancel the registration") }}</button>
+                                                        {% endif %}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="ibox float-e-margins">
+                                    <div class="ibox-title">
+                                        <h5>{{ _("Data collection") }}</h5>
+                                        <div class="ibox-tools">
+                                            <div class="row">
+                                                <div class="col-md-9">
+
+                                                </div>
+                                                <div class="col-md-3 pull-right">
+                                                    {% if progress.asssubmissions == 0 %}
+                                                        <div class="small">{{ _("Not yet started") }}</div>
+                                                    {% endif %}
+                                                    {% if showAnalysis == 1 %}
+                                                        {% if allassclosed == False %}
+                                                            <div class="small">{{ _("On going") }}</div>
+                                                            {% else %}
+                                                                <div class="small">{{ _("Closed") }}</div>
+                                                            {% endif %}
+                                                    {% endif %}
+                                                    {% if progress.asssubmissions == 2 %}
+                                                        <div class="small">{{ _("Closed") }}</div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <div class="row">
+
+                                            {% if pcompleted == 100 and progress.regsubmissions == 2  %}
+                                                <div class="col-md-12">
+                                                    <div class="text-center">
+                                                        <span style="font-size: 16px;font-weight: 600;" title="{{ _("You have included ")}}{{ progress.analysisControl.Characteristics }}{{ _(" characteristics") }}"><i  class="fa {% if progress.analysisControl.Characteristics > 0 %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.Characteristics > 0 %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Characteristics") }}</span>
+                                                        <span style="font-size: 16px;font-weight: 600;" title="{{ _("You have included ")}}{{ progress.analysisControl.Performance }}{{ _(" performance evaluations") }}"><i  class="fa {% if progress.analysisControl.Performance > 0 %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.Performance > 0 %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Performance evaluations") }}</span>
+                                                        <span style="font-size: 16px;font-weight: 600;" title="{{ _("You have included ")}}{{ progress.analysisControl.Explanatory }}{{ _(" explanatory variables") }}"><i  class="fa {% if progress.analysisControl.Explanatory > 0 %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.Explanatory > 0 %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Explanatory variables") }}</span>
+                                                        <br>
+                                                        <span style="font-size: 16px;font-weight: 600;" {% if progress.analysisControl.overralCharacteristic !="" %}title="{{ _("You have included this question in the assessment") }}: '{{ progress.analysisControl.overralCharacteristic }}'" {% endif %}><i  class="fa {% if progress.analysisControl.overralCharacteristic !="" %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.overralCharacteristic != "" %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Overall characteristic") }}</span>
+                                                        <span style="font-size: 16px;font-weight: 600;" {% if progress.analysisControl.overralPerformance !="" %}title="{{ _("You have included this question in the assessment") }}: '{{ progress.analysisControl.overralPerformance }}'" {% endif %}><i  class="fa {% if progress.analysisControl.overralPerformance !="" %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.overralPerformance != "" %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Overall performance") }}</span>
+                                                    </div>
+                                                    <br>
+                                                    {% if progress.usableAssessments|length > 0 %}
+                                                        <button onclick="location.href = '{{ request.route_url('startassessments',projectid=activeProject.project_cod) }}'" class="btn btn-primary btn-rounded btn-block" ><i class="fa fa-play"></i> {{ _("Start an assessment") }}</button>
+                                                    {% endif %}
+                                                </div>
+                                            {% else %}
+                                                <div class="col-md-12">
+                                                    <div class="text-center">{{ _("You can start the data collection once the registration of participants is closed and the project definition is completed") }}</div>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        {% if pcompleted == 100 and  progress.assessments|length > 0%}
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    {% if showAnalysis %}
+                                                        <h3>{{ _("Statistics") }}</h3>
+                                                        {% endif %}
+                                                    {% for assessment in progress.assessments %}
+                                                        {% if assessment.ass_status == 1 or assessment.ass_status == 2 %}
+                                                        <div class="ibox collapsed">
+                                                            <div class="ibox-title">
+                                                                <h5>{{ assessment.ass_desc }}</h5>
+                                                                <div class="ibox-tools">
+                                                                    <div class="row">
+                                                                        <div class="col-md-6">
+
+                                                                        </div>
+                                                                        <div class="col-md-1 pull-right">
+                                                                            <a class="collapse-link">
+                                                                                <i class="fa fa-chevron-up"></i>
+                                                                            </a>
+                                                                        </div>
+                                                                        <div class="col-md-5 pull-right">
+                                                                            {% set pbtype = "progress-bar-info" %}
+                                                                            {% if progress.asssubmissions == 0 %}
+                                                                                <div class="small" style="text-align: left">{{ _("Not yet started") }}</div>
+                                                                            {% endif %}
+                                                                            {% if assessment.ass_status == 1 %}
+                                                                                <div class="small" style="text-align: left">{{ _("On going") }}</div>
+                                                                            {% endif %}
+                                                                            {% if assessment.ass_status == 2 %}
+                                                                                <div class="small" style="text-align: left">{{ _("Closed") }}</div>
+                                                                                {% if assessment.assperc >= 100 %}
+                                                                                    {% set pbtype = "progress-bar-success" %}
+                                                                                {% else %}
+                                                                                    {% set pbtype = "progress-bar-warning" %}
+                                                                                {% endif %}
+                                                                            {% endif %}
+                                                                            <div class="progress progress-mini">
+                                                                                <div style="width: {{ assessment.assperc }}%;" class="progress-bar {{ pbtype }}"></div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="ibox-content">
+                                                                <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <table class="table table-striped">
+                                                                            <tbody>
+                                                                            <tr>
+                                                                                <td>{{ _("Total Sample") }}: </td>
+                                                                                <td>{{ assessment.submissions }}</td>
+                                                                                <td></td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td style="vertical-align: inherit">{{ _("Number submissions") }}: </td>
+                                                                                <td style="vertical-align: inherit">{{ assessment.asstotal }} {% if assessment.asstotal > 0 %}({{ assessment.assperc }}%){% endif %}</td>
+                                                                                {% if assessment.asstotal > 0 %}
+                                                                                    <td>
+                                                                                        <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{ request.route_url('EditDataAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}" href="#"><i class="fa fa-table"></i> {{ _("View data") }}</a>
+                                                                                        <br>
+                                                                                        <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{ request.route_url('downloadDataAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-cloud-download"></i> {{ _("Download data") }}</a>
+                                                                                        <br>
+                                                                                        <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('uploadDataAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-cloud-upload"></i> {{ _("Upload data") }}</a>
+                                                                                    </td>
+
+                                                                                {% endif %}
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td>{{ _("Last submission") }}</td>
+                                                                                <td>{{ assessment.lastass }}</td>
+                                                                                <td></td>
+                                                                            </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="row">
+                                                                    <div class="col-md-6">
+                                                                        {% if assessment.ass_status == 1 %}
+                                                                            <a class="btn btn-danger btn-rounded btn-block" onclick="location.href = '{{ request.route_url('cancelassessment',projectid=activeProject.project_cod,assessmentid=assessment.ass_cod) }}'"><i class="fa fa-stop"></i> {{ _("Cancel") }} {{ assessment.ass_desc }}</a>
+                                                                        {% endif %}
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        {% if assessment.asstotal > 0 %}
+                                                                            {% if assessment.ass_status == 1 %}
+                                                                                <a class="btn btn-danger btn-rounded btn-block" onclick="location.href = '{{ request.route_url('closeassessment',projectid=activeProject.project_cod,assessmentid=assessment.ass_cod) }}'"><i class="fa fa-stop"></i> {{ _("Finish") }} {{ assessment.ass_desc }}</a>
+                                                                            {% endif %}
+                                                                        {% endif %}
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+{#                                            {% if progress.asssubmissions == 1 %}#}
+{#                                                <div class="row">#}
+{#                                                    <div class="col-md-4">#}
+{#                                                    </div>#}
+{#                                                    <div class="col-md-4">#}
+{#                                                    </div>#}
+{#                                                    <div class="col-md-4">#}
+{#                                                        <a class="btn btn-danger btn-rounded btn-block" onclick="showCancelAssessments('{{ request.route_url('cancelassessment',projectid=activeProject.project_cod) }}');" ><i class="fa fa-undo"></i> Cancel the data collection</a>#}
+{#                                                    </div>#}
+{#                                                </div>#}
+{#                                            {% endif %}#}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% if total_ass_records > 0 %}
+                                    <div class="ibox float-e-margins" >
+                                        <div class="ibox-title">
+                                            <h5>{{ _("Analysis") }}</h5>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <a class="btn btn-success btn-rounded btn-block " onclick="location.href = '{{request.route_url('createAnalysis')}}' "><i class="fa fa-bar-chart-o"></i> {{ _("Select variables to analyze") }}</a>
+                                            <br>
+                                        </div>
+
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="middle-box text-center loginscreen animated fadeInDown">
+                            <p>{{ _("Lets start!") }}</p>
+                            <a class="btn btn-primary" href="{{ request.route_url('newproject') }}">{{ _("Create a new project") }}</a>
+                            <br>
+                            <br>
+                            <a href="https://climmob.net/blog/wiki/2019/09/30/main-menu/" target="_blank"><img style="width: 50px; height: 50px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
+                        </div>
+                    {% endif %}
+                {% endblock pagecontent %}
+            </div>
+            <div class="footer">
+                {% block footer %}
+                    <div class="pull-right">
+                        0.6 (20170727)
+                    </div>
+                    <div>
+                        <strong>{{ _("Copyright") }}</strong> {{ _("Bioversity International &copy; 2017") }}
+                    </div>
+                {% endblock footer %}
+            </div>
+        </div>
+
+        {% if withsidebar %}
+            <div id="right-sidebar" class="animated">
+                <div class="sidebar-container">
+                    <ul class="nav nav-tabs navs-3">
+                        {% block sidebartabs %}
+                            <li class="active"><a data-toggle="tab" href="#tab-1">
+                                {{ _("Projects") }}
+                            </a></li>
+{#                            <li class=""><a data-toggle="tab" href="#tab-2">#}
+{#                                <i class="fa fa-gear"></i>#}
+{#                            </a></li>#}
+                        {% endblock sidebartabs %}
+                    </ul>
+                    <div class="tab-content">
+                        {% block sidebarcontent %}
+                            <div id="tab-1" class="tab-pane active">
+                                <div class="sidebar-title">
+                                    <h3> <i class="fa fa-cube"></i> {{ _("Latest projects") }}</h3>
+                                    {% if hasActiveProject %}
+                                        <small><i class="fa fa-tim"></i> {{ _("You have") }} {{ userProjects|length }} {{ request.h.pluralize(_("project"),userProjects|length) }}.</small>
+                                    {% else %}
+                                        <small><i class="fa fa-tim"></i> {{ _("You don't have projects.") }}</small>
+                                    {% endif %}
+                                    <br/>
+                                    <a class="btn btn-primary" href="{{ request.route_url('newproject') }}">{{ _("Add new project") }}</a>
+                                </div>
+                                <ul class="sidebar-list">
+                                    {% if hasActiveProject %}
+                                        {% for project in userProjects %}
+                                            {% snippet 'snippets/dashboard/project_details.jinja2',project=project,request=request  %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        {% endblock sidebarcontent %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock body %}
+
+{% block bodybottom %}
+    <div class="modal inmodal" id="modal1" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content animated fadeIn">
+                <div class="modal-header">
+                    <button type="button" class="close" onclick="closeModal()"><span aria-hidden="true">&times;</span><span class="sr-only">{{ _("Close") }}</span></button>
+                    <h4 class="modal-title" id="modaltitle">{{ _("Terms of service") }}</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div id="modaliframecont" class="embed-responsive embed-responsive-16by9">
+                        <iframe class="embed-responsive-item" id="modaliframe"></iframe>
+                    </div>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button id="modalmainbutton"type="button" class="btn btn-primary pull-left" onclick="$('#modaliframe').contents().find('.clm-act-button').trigger( 'click' );">{{ _("Somethind here") }}</button>
+                    <button type="button" class="btn btn-white" onclick="closeModal()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock bodybottom %}
+
+{% block toastr %}
+    {% set toastrmessage = request.session.pop_flash() %}
+    {% if toastrmessage|length > 0 %}
+        <script>
+            toastr.options = {
+                closeButton: true,
+                progressBar: true,
+                showMethod: 'slideDown',
+                timeOut: 4000
+            };
+            toastr.success("{{ toastrmessage[0] }}");
+        </script>
+    {% endif %}
+{% endblock toastr %}
+
+{% block script %}
+
+    <script>
+        $(document).ready(function() {
+            var selectedLanguage = readCookie('_LOCALE_');
+            if (selectedLanguage != null)
+                $('#language').val(selectedLanguage);
+            $("#language").bind('change', function() {
+                //on change set cookie and...
+                setCookie('_LOCALE_', this.value, 365);
+                location.reload();
+            });
+        });
+
+        function setCookie(cookieName, cookieValue, nDays) {
+            var today = new Date();
+            var expire = new Date();
+
+            if (nDays==null || nDays==0)
+                nDays=1;
+
+            expire.setTime(today.getTime() + 3600000*24*nDays);
+            document.cookie = cookieName+"="+escape(cookieValue) + ";expires="+expire.toGMTString() + ";path=/";
+        }
+
+        function readCookie(name) {
+            var nameEQ = name + "=";
+            var ca = document.cookie.split(';');
+            for(var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+        
+    
+        function copy() {
+            var copyText = document.getElementById("aForCopy");
+
+             /* Select the text field */
+            copyText.select();
+
+            /* Copy the text inside the text field */
+            document.execCommand("copy");
+
+        }
+
+    </script>
+
+{% endblock script %}
+
+</body>
+
+</html>

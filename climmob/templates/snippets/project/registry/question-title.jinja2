@@ -1,0 +1,16 @@
+{% set fatype = "fa-keyboard-o" %}
+{% set qtype = "Text input" %}
+{% set others = 0 %}
+
+{% if item.question_dtype == 1 %} {% set fatype = "fa-keyboard-o" %} {% set qtype = _("Text") %} {% endif %}
+{% if item.question_dtype == 2 %} {% set fatype = "fa-sort-numeric-asc" %} {% set qtype = "Decimal" %} {% endif %}
+{% if item.question_dtype == 3 %} {% set fatype = "fa-sort-numeric-asc" %} {% set qtype = "Integer" %} {% endif %}
+{% if item.question_dtype == 4 %} {% set fatype = "fa-map-marker" %} {% set qtype = "Localization" %} {% endif %}
+{% if item.question_dtype == 5 %} {% set fatype = "fa-dot-circle-o" %} {% set qtype = "Select one" %} {% set others = 1 %} {% endif %}
+{% if item.question_dtype == 6 %} {% set fatype = "fa-check-square-o" %} {% set qtype = "Select Multiple" %} {% set others = 1 %} {% endif %}
+{% if item.question_dtype == 7 %} {% set fatype = "fa-barcode" %} {% set qtype = "Package" %} {% endif %}
+{% if item.question_dtype == 8 %} {% set fatype = "fa-users" %} {% set qtype = "Observer" %} {% endif %}
+{% if item.question_dtype == 9 %} {% set fatype = "fa-th-list" %} {% set qtype = "Characteristic" %} {% endif %}
+{% if item.question_dtype == 10 %} {% set fatype = "fa-list-alt" %} {% set qtype = "Performance" %} {% endif %}
+
+<i class="fa {{ fatype }}"></i> <b>{{ item.question_desc }}</b> - Type: {{ qtype }}

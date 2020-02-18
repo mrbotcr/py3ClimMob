@@ -1,0 +1,20 @@
+<div class="form-group">
+    <label class="col-sm-4 control-label">{{ _('Data collection moment:') }}</label>
+    <div class="col-sm-8"><input type="text" class="form-control" value="{{ data.ass_desc }}" id="ass_desc" name="ass_desc" placeholder=" "></div>
+</div>
+<div class="form-group">
+    <label class="col-sm-4 control-label">{{ _('Interval in days:') }}</label>
+    <div class="col-sm-8"><input type="number" class="form-control" value="{{ data.ass_days }}" id="ass_days" name="ass_days" placeholder=" "><span class="help-block m-b-none text-left">{{ _("This data collection is done after how many days from the distribution of the packages.") }}</span></div>
+</div>
+<div class="form-group">
+    {% if final_visible %}
+        <label class="col-sm-4 control-label">{{ _("Does this data collection will have the overall characteristic and performace questions ?") }}</label>
+        <div class="col-sm-8">
+            <input type="checkbox" id="ckb_final"
+                   name="ass_final" data-on-color="success"
+                   data-off-color="danger" data-on-text="{{ _('YES') }}"
+                   data-off-text="{{ _('NO') }}" {% if data.ass_final == 'on' %} checked="" {% endif %}>
+            <span class="help-block m-b-none text-left">{{ _('The final data collection must to include the overall characteristic and overall performance questions') }}</span>
+        </div>
+    {% endif %}
+</div>

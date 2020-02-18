@@ -1,0 +1,8 @@
+<input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+<div class="form-group">
+    <label class="col-sm-2 control-label">{{ _("Statement") }}:</label>
+    <div class="col-sm-10">
+        <input type="text" class="form-control " value="{{ qdata.question_perfstmt }}" required="" name="question_perfstmt" placeholder=" " {% if editable != True %}readonly{%endif%}>
+        <span class="help-block m-b-none text-left">{{ _("e.g., In terms of taste, how does") }} &#123;&#123;{{ _("option") }}&#125;&#125; {{ _("compares with the variety you usually use?") }}</span>
+    </div>
+</div>

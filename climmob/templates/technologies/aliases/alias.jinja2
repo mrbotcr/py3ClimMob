@@ -1,0 +1,67 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob | New Treatment levels") }}</title>
+{% endblock title %}
+
+{% block css %}
+    {% cssresource request,'coreresources','datatables' %}
+    {% cssresource request,'coreresources','sweet' %}
+{% endblock css %}
+
+{% block topScripts %}
+    {% jsresource request,'coreresources','alias' %}
+    {% jsresource request,'coreresources','datatables' %}
+    {% jsresource request,'coreresources','sweet' %}
+    {% jsresource request,'coreresources','delete' %}
+{% endblock topScripts %}
+
+{% block pageheading %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>{{ _("Treatment levels") }}</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
+                </li>
+                <li >
+                    <a href="{{ request.route_url('usertechnologies') }}">{{ _("Treatments library") }}</a>
+                </li>
+                <li >
+                    <a>{{ _("Treatment") }}: {{ tech.tech_name }}</a>
+                </li>
+                <li class="active">
+                    <strong>{{ _("Treatment levels") }}</strong>
+                </li>
+            </ol>
+            <a href="https://climmob.net/blog/wiki/2019/09/30/treatment-levels/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
+        </div>
+        <div class="col-lg-2">
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block pagecontent %}
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{{ _("Treatment levels") }}</h5>
+                    <div class="ibox-tools">
+                        <button onclick="location.href='{{ request.route_url('newuseralias', technologyid=formdata["tech_id"]) }}';" type="button" class="btn btn-primary btn-xs pull-right clm-grpactions" style="margin-right: 20px">{{ _("Add new level") }}</button>
+                    </div>
+                </div>
+                <div class="ibox-content animated fadeInRightBig" >
+                    {% if Alias %}
+                        {% snippet 'snippets/technologies/aliases/technologiesAlias-table.jinja2', request=request, Alias =Alias, formdata=formdata, activeUser=activeUser%}
+                    {% else %}
+                        <div style="width: 100%; text-align: center">
+                            <h3><b>{{ _("There are no levels to display") }}</b></h3>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

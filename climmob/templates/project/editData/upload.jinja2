@@ -1,0 +1,68 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob | Upload data") }}</title>
+{% endblock title %}
+
+{% block pageheading %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>{{ _("Upload data") }}</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
+                </li>
+                <li class="active">
+                    <strong>{{ _("Upload data") }}</strong>
+                </li>
+            </ol>
+            <a href="https://climmob.net/blog/wiki/2019/10/21/upload-data/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
+        </div>
+        <div class="col-lg-2">
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block pagecontent %}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{{ _("Select the file you want to upload") }}</h5>
+                </div>
+                <div class="ibox-content" >
+                    <div class="form-group">
+                        {% if error_summary %}
+                            {% for key, error in error_summary.items() %}
+                                <div class="alert alert-danger alert-dismissable">
+                                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        <form method="post" class="form-horizontal" action="{{ request.path }}">
+                            <input type="file" id="inputFile" name="inputFile" onchange="cargar_json(this);" style="text-align: center; margin: auto;"><br>
+                            <input style="display:none" type="text" id="dataUpload" name="dataUpload">
+                            <input style="display:none" type="text" id="dataNeccessaryUpload" name="dataNeccessaryUpload">
+                            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                            <div class="text-center">
+                                <button type="submit" style="display:none;text-align: center;margin: auto;" name="btn_uploadData" id="btn_uploadData" class="btn btn-primary clm-actions">{{ _("Update data") }}</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock pagecontent%}
+
+{% block script %}
+    {% if correct == True %}
+        {# If a new project is just added then redirect the mainwindo to such project #}
+        <script>
+            window.top.location.href = "{{ request.route_url('dashboard',_query={'project':projectid}) }}";
+        </script>
+    {% endif %}
+{% endblock script %}

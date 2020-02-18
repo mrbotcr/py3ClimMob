@@ -1,0 +1,83 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob | Treatments library") }}</title>
+{% endblock title %}
+
+{% block css %}
+    {% cssresource request,'coreresources','datatables' %}
+    {% cssresource request,'coreresources','sweet' %}
+{% endblock css %}
+
+{% block topScripts %}
+    {% jsresource request,'coreresources','technologies' %}
+    {% jsresource request,'coreresources','datatables' %}
+    {% jsresource request,'coreresources','sweet' %}
+    {% jsresource request,'coreresources','delete' %}
+{% endblock topScripts %}
+
+{% block pageheading %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>{{ _("Treatments library") }}</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
+                </li>
+                <li class="active">
+                    <strong>{{ _("Treatments library") }}</strong>
+                </li>
+            </ol>
+            <a href="https://climmob.net/blog/wiki/2019/09/30/treatments-library/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
+        </div>
+        <div class="col-lg-2">
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block pagecontent %}
+    <div class="row">
+        {% if activeUser.login != "bioversity" %}
+            <div class="col-md-6">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>{{ _("ClimMob library") }}</h5>
+                    </div>
+                    <div class="ibox-content">
+                        {% snippet 'snippets/technologies/technologies-table.jinja2', request=request, UserTechs =ClimMobTechs, User = "bioversity", showtools=True %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>{{ _("User library") }}</h5>
+                        <div class="ibox-tools">
+                            <button onclick="location.href='{{ request.route_url('newusertechnology') }}'" type="button" class="btn btn-primary btn-xs pull-right">{{ _("Add treatment") }}</button>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        {% snippet 'snippets/technologies/technologies-table.jinja2', request=request, UserTechs =UserTechs, User = "", showtools=True %}
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-md-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>{{ _("ClimMob library") }}</h5>
+                        <div class="ibox-tools">
+                            <button onclick="location.href='{{ request.route_url('newusertechnology') }}'" type="button" class="btn btn-primary btn-xs pull-right">{{ _("Add treatment") }}</button>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        {% snippet 'snippets/technologies/technologies-table.jinja2', request=request, UserTechs =UserTechs, User = "", showtools=True %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock pagecontent %}

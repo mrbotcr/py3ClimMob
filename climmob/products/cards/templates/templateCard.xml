@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="202mm"
+   height="68mm"
+   viewBox="0 0 202 68"
+   version="1.1"
+   id="svg3728"
+   inkscape:version="0.92.3 (unknown)"
+   sodipodi:docname="templateCard.svg">
+  <defs
+     id="defs3722" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1"
+     inkscape:cx="469.30702"
+     inkscape:cy="228.96553"
+     inkscape:document-units="mm"
+     inkscape:current-layer="g65"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1004"
+     inkscape:window-x="0"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata3725">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Capa 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-229)">
+    <g
+       id="g65"
+       transform="translate(-3.4769716,228.43703)">
+      <rect
+         style="fill:#ffffff;fill-opacity:1;stroke:#0d0e0f;stroke-width:0.48239866;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         y="2.2893384"
+         x="6.1277595"
+         height="64.153198"
+         width="197.45851"
+         id="rect3730" />
+      <image
+         sodipodi:absref="{{bioversity}}"
+         xlink:href="{{bioversity}}"
+         inkscape:label="#image225"
+         width="26.251646"
+         height="25.095959"
+         preserveAspectRatio="none"
+         id="qrid"
+         x="13"
+         y="2.766263" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4573"
+         d="M 13,50.73073 H 201.001"
+         style="fill:#000000;fill-opacity:1;stroke:#209127;stroke-width:0.80813479;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <text
+         transform="scale(0.9622133,1.0392706)"
+         inkscape:label="#text77"
+         id="projectid"
+         y="39.740067"
+         x="13.025793"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;line-height:0%;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.20952217"
+         xml:space="preserve"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;line-height:125%;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.20952217"
+           y="39.740067"
+           x="13.025793"
+           id="tspan75"
+           sodipodi:role="line">Project PI:</tspan></text>
+      <text
+         transform="scale(0.9622133,1.0392706)"
+         inkscape:label="#text77"
+         id="projectid-6"
+         y="61.531696"
+         x="13.520853"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:0%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.20952217"
+         xml:space="preserve"><tspan
+           y="61.531696"
+           x="13.520853"
+           id="tspan874"
+           sodipodi:role="line">Contact:</tspan></text>
+      <text
+         transform="scale(0.9622133,1.0392706)"
+         inkscape:label="#text77"
+         id="projectid-9"
+         y="56.998993"
+         x="38.132618"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:0%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.20952217"
+         xml:space="preserve"><tspan
+           id="tspan4647"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.20952217"
+           y="56.998993"
+           x="38.132618"
+           sodipodi:role="line">{{projectpiemail}}</tspan></text>
+      <text
+         transform="scale(0.9622133,1.0392706)"
+         inkscape:label="#text77"
+         id="projectid-9-0"
+         y="61.531696"
+         x="38.213577"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:0%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.20952217"
+         xml:space="preserve"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.20952217"
+           y="61.531696"
+           x="38.213577"
+           id="tspan75-9-8"
+           sodipodi:role="line">{{projectpinumber}}</tspan></text>
+      <text
+         transform="scale(1.011408,0.98872068)"
+         inkscape:label="#text77"
+         id="packageid"
+         y="35.212402"
+         x="11.795008"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:8.46666622px;line-height:0%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.33324936"
+         xml:space="preserve"><tspan
+           y="35.212402"
+           x="11.795008"
+           id="tspan868"
+           sodipodi:role="line">{{projectname}}</tspan></text>
+      <text
+         transform="scale(0.9622133,1.0392706)"
+         inkscape:label="#text77"
+         id="projectid-3"
+         y="57.682846"
+         x="13.164286"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:0%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.20952217"
+         xml:space="preserve"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.20952217"
+           y="57.682846"
+           x="13.164286"
+           id="tspan75-1"
+           sodipodi:role="line">Email:</tspan></text>
+      <text
+         transform="scale(0.9622133,1.0392706)"
+         inkscape:label="#text77"
+         id="projectid-62"
+         y="45.792732"
+         x="13.025793"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;line-height:0%;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.20952217"
+         xml:space="preserve"><tspan
+           y="45.792732"
+           x="13.025793"
+           id="tspan870"
+           sodipodi:role="line">{{projectpi}}</tspan></text>
+      <text
+         transform="scale(0.9622133,1.0392706)"
+         inkscape:label="#text77"
+         id="projectid-62-5"
+         y="57.274601"
+         x="170.39972"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;line-height:0%;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.20952217"
+         xml:space="preserve"><tspan
+           id="tspan4715-6"
+           sodipodi:role="line"
+           x="170.39972"
+           y="57.274601"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.20952217">{{projectcreationdate}}</tspan></text>
+      <text
+         transform="scale(0.9622133,1.0392706)"
+         inkscape:label="#text77"
+         id="projectid-62-50"
+         y="53.150139"
+         x="13.164286"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:0%;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.20952217"
+         xml:space="preserve"><tspan
+           y="53.150139"
+           x="13.164286"
+           id="tspan4715-64"
+           sodipodi:role="line"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.20952217">Package: </tspan></text>
+      <text
+         transform="scale(0.9622133,1.0392706)"
+         inkscape:label="#text77"
+         id="projectid-9-6"
+         y="53.150124"
+         x="38.132618"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:0%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.20952217"
+         xml:space="preserve"><tspan
+           id="tspan4647-2"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.20952217"
+           y="53.150124"
+           x="38.132618"
+           sodipodi:role="line">{{package}}</tspan></text>
+      <text
+         transform="scale(0.9622133,1.0392706)"
+         inkscape:label="#text77"
+         id="projectid-62-56"
+         y="46.23439"
+         x="174.40356"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:50.79999924px;line-height:0%;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.20952217"
+         xml:space="preserve"><tspan
+           y="46.23439"
+           x="174.40356"
+           id="tspan902"
+           sodipodi:role="line">{{letter}}</tspan></text>
+      <image
+         inkscape:label="#image225"
+         width="43"
+         height="43"
+         preserveAspectRatio="none"
+         id="qrid-3"
+         x="125.07697"
+         y="7.0670757"
+         xlink:href="{{qrid}}"
+         sodipodi:absref="{{qrid}}" />
+    </g>
+  </g>
+</svg>

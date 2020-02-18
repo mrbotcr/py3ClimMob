@@ -1,0 +1,81 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob | Update question") }}</title>
+{% endblock title %}
+
+{% block css %}
+    {% cssresource request,'coreresources','switch' %}
+    {% cssresource request,'coreresources','select2' %}
+{% endblock css %}
+
+{% block topScripts %}
+    {% jsresource request,'coreresources','addquestion' %}
+    {% jsresource request,'coreresources','select2' %}
+{% endblock topScripts %}
+
+{% block pageheading %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>{{ _("Update question") }}</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
+                </li>
+                <li class="active">
+                    <a href="{{ request.route_url('qlibrary',user_name=activeUser.login) }}">{{ _("Questions library") }}</a>
+                </li>
+                <li class="active">
+                    <strong>{{ _("Update question") }}</strong>
+                </li>
+            </ol>
+            <a href="https://climmob.net/blog/wiki/2019/09/30/update-question/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
+        </div>
+        <div class="col-lg-2">
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block pagecontent %}
+    <div class="row" style="height: 100%">
+        <div class="col-lg-6 " style="height: 100%">
+            <div class="ibox float-e-margins" style="height: 100%; margin-bottom: 0px">
+                <div class="ibox-title">
+                    <h5>{{ _("Update question") }}</h5>
+                    <div class="ibox-tools">
+
+                    </div>
+                </div>
+                <div class="ibox-content" style="height: 89%">
+                    {% snippet 'snippets/error.jinja2', error_summary=error_summary %}
+
+                    <form class="form-horizontal" role="form" method="post" action="{{ request.path }}">
+
+                        {% snippet 'snippets/question/question-form.jinja2',formdata=formdata, request=request, Categories =Categories, hasCode=False%}
+                        <div class="pull-right">
+                            <button type="submit" name="btn_add_question" class="btn btn-warning"> {{ _('Update question') }}</button>
+                        </div>
+                    </form>
+                    <br>
+                    <br>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock pagecontent%}
+
+{% if redirect == True %}
+    {% block toastr %}
+        {# Overwrite the toaster so it does not trigger the popup #}
+    {% endblock toastr %}
+{% endif %}
+
+{% block script %}
+    {% if redirect == True %}
+         {#  If a new question is just added or edited then redirect the mainwindo to such project#}
+        <script>
+            window.top.location.href = "{{ request.route_url('qlibrary', user_name=activeUser.login) }}";
+        </script>
+    {% endif %}
+{% endblock script %}

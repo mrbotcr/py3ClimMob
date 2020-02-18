@@ -1,0 +1,134 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob - Form editor") }}</title>
+{% endblock title %}
+
+{% block css %}
+    {% cssresource request,'coreresources','nestable' %}
+    {% cssresource request,'coreresources','sweet' %}
+{% endblock css %}
+
+{% block topScripts %}
+    {% jsresource request,'coreresources','registry' %}
+    {% jsresource request,'coreresources','sweet' %}
+    {% jsresource request,'coreresources','delete' %}
+{% endblock topScripts %}
+
+{% block pageheading %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>{{ _("Form editor") }}</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
+                </li>
+                <li>
+                    <a href="{{ request.route_url('assessment',projectid=projectid) }}">{{ _("Prepare data collection") }}</a>
+                </li>
+                <li class="active">
+                    <strong>{{  _("Data collection moment") }}: {{ assinfo.ass_desc }}</strong>
+                </li>
+            </ol>
+            <a href="https://climmob.net/blog/wiki/2019/09/30/data-collection-moment/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
+        </div>
+        <div class="col-lg-2">
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block pagecontent %}
+    <div class="row">
+        <div class="col-lg-10">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{{ _("Form editor ") }}</h5>
+                    <div class="ibox-tools">
+                        <button onclick="location.href='{{ request.route_url('assessment', projectid=projectid) }}';" type="button" class="btn btn-default btn-xs pull-right clm-grpactions">{{ _("Go back") }}</button>
+{#                        <button onclick="location.href='{{ request.route_url('assessmentpreview', projectid=projectid,assessmentid=assessmentid) }}';" type="button" class="btn btn-success btn-xs pull-right clm-grpactions" style="margin-right: 20px">Preview</button>#}
+                        <button onclick="location.href='{{ request.route_url('newassessmentgroup', projectid=projectid,assessmentid=assessmentid) }}';" type="button" class="btn btn-primary btn-xs pull-right clm-grpactions" style="margin-right: 20px">{{ _("Add new section") }}</button>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    {% snippet 'snippets/error.jinja2', error_summary=error_summary %}
+
+                    <div class="dd" id="nestable" style="max-width: revert">
+                        <ol class="dd-list" data-type="root">
+                            {% for item in data %}
+                                {% if item.closeGrp %}
+                                    </ol>
+                                {% endif %}
+                                {% if item.closeQst %}
+                                    </li>
+                                {% endif %}
+                                {% if item.createGRP %}
+                                    <li class="dd-item" data-id="GRP{{ item.section_id }}" data-type="group">
+                                        <div class="dd-handle" style="min-height: 33px; height: auto ">
+                                            <div class="dd-nodrag btn-group pull-right">
+                                                <div class="ibox-tools">
+                                                {% if item.grpCannotDelete == False %}
+                                                    <button onclick="showDelete('{{ request.route_url('deleteassessmentgroup', projectid=projectid, assessmentid=assessmentid, groupid=item.section_id) }}','{{ _("Do you really want to remove this section ?") }}','{{ request.session.get_csrf_token() }}')" type="button" class="btn btn-danger btn-xs dropdown-toggle clm-grpactions" >{{ _("Remove section") }}</button>
+                                                {% endif %}
+                                                <button onclick="location.href='{{ request.route_url('modifyassessmentgroup', projectid=projectid,assessmentid=assessmentid,groupid=item.section_id) }}';" type="button" class="btn btn-warning btn-xs dropdown-toggle clm-grpactions" >{{ _("Update section") }}</button>
+                                                <button onclick="location.href='{{ request.route_url('newassessmentquestion', projectid=projectid, assessmentid=assessmentid, groupid=item.section_id) }}';" type="button" class="btn btn-primary btn-xs dropdown-toggle clm-grpactions" >{{ _("Add question") }}</button>
+                                                </div>
+{#                                                <button data-toggle="dropdown" class="btn btn-default btn-xs dropdown-toggle clm-grpactions">Actions <span class="caret"></span></button>#}
+{#                                                <ul class="dropdown-menu">#}
+{#                                                    <li><a style="color: black" href="{{ request.route_url('modifyassessmentgroup', projectid=projectid,assessmentid=assessmentid,groupid=item.section_id) }}">Modify section</a></li>#}
+{#                                                    {% if item.grpCannotDelete == False %}#}
+{#                                                        <li><a style="color: black" href="{{ request.route_url('deleteassessmentgroup', projectid=projectid, assessmentid=assessmentid, groupid=item.section_id) }}">Remove section</a></li>#}
+{#                                                    {% endif %}#}
+{#                                                    <li class="divider"></li>#}
+{#                                                    <li><a style="color: black" href='{{ request.route_url('newassessmentquestion', projectid=projectid, assessmentid=assessmentid, groupid=item.section_id) }}'>Add question</a></li>#}
+{#                                                </ul>#}
+                                            </div>
+                                            <i class="fa fa-object-group"></i><b> {{ _("Section:") }} </b>{{ item.section_name }} ({{ item.section_content }})
+                                        </div>
+                                        {% if item.hasQuestions %}
+                                        <ol class="dd-list">
+                                            <li class="dd-item dd-nochildren" data-id="QST{{ item.question_id }}" data-type="question">
+                                                <div class="dd-handle" style="min-height: 33px; height: auto ">
+                                                    {% if item.question_reqinasses == 0 %}
+                                                        <button type="button" class="dd-nodrag btn btn-danger btn-xs pull-right" onclick="deleteQuestion('QST{{ item.question_id }}')">{{ _("Delete") }}</button>
+                                                    {% endif %}
+                                                    {% snippet 'snippets/project/registry/question-title.jinja2', item=item %}
+                                                </div>
+                                            </li>
+                                        {% endif %}
+                                {% else %}
+                                    <li class="dd-item dd-nochildren" data-id="QST{{ item.question_id }}" data-type="question">
+                                        <div class="dd-handle" style="min-height: 33px; height: auto ">
+                                            {% if item.question_reqinasses == 0 %}
+                                                <button type="button" class="dd-nodrag btn btn-danger btn-xs pull-right" onclick="deleteQuestion('QST{{ item.question_id }}')">{{ _("Delete") }}</button>
+                                            {% endif %}
+                                            {% snippet 'snippets/project/registry/question-title.jinja2', item=item %}
+                                        </div>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            {% if finalCloseQst %}
+                                </ol>
+                            {% endif %}
+                            {% if data|length > 0 %}
+                                </li>
+                            {% endif %}
+                        </ol>
+                    </div>
+                    <form class="form-horizontal" role="form" method="post" action="{{ request.path }}">
+                        <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                        <textarea id="nestable-output" name="neworder" class="form-control" style="display:none;"></textarea>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <button class="btn btn-primary clm-actions" name="saveorder" type="submit" id="saveorder"><i class="fa fa-check"></i>&nbsp;{{ _("Save the order of the questions") }}</button>
+                                <button class="btn btn-default pull-right clm-actions" name="cancelorder" type="submit">{{ _("Undo the order of the questions") }}</button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock pagecontent %}

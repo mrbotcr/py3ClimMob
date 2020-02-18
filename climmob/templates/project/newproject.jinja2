@@ -1,0 +1,79 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob | New project") }}</title>
+{% endblock title %}
+
+{% block css %}
+    {% cssresource request,'coreresources','switch' %}
+    {% cssresource request,'coreresources','tags' %}
+{% endblock css %}
+
+{% block topScripts %}
+    {% jsresource request,'coreresources','switch' %}
+    {% jsresource request,'coreresources','addproject' %}
+{% endblock topScripts %}
+
+{% block pageheading %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>{{ _("Create project") }}</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
+                </li>
+                <li class="active">
+                    <strong>{{ _("Create project") }}</strong>
+                </li>
+            </ol>
+        </div>
+        <div class="col-lg-2">
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block pagecontent %}
+    {% if newproject == False %}
+        {% if error_summary %}
+            {% for key, error in error_summary.items() %}
+                <div class="alert alert-danger alert-dismissable">
+                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                    {{ error }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" class="form-horizontal" action="{{ request.path }}">
+            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+            {% block newprjform %}
+                {% snippet 'snippets/project/project_form.jinja2', dataworking=dataworking, edit=False %}
+
+                <button type="submit" name="btn_addNewProject" id="btn_addNewProject" class="btn btn-primary pull-right">{{ _("Create project") }}</button>
+
+            {% endblock newprjform %}
+
+            <br>
+            <br>
+            <br>
+        </form>
+    {% endif %}
+{% endblock pagecontent %}
+
+
+{% if newproject == True %}
+    {% block toastr %}
+        {# Overwrite the toaster so it does not trigger the popup #}
+    {% endblock toastr %}
+{% endif %}
+
+{% block script %}
+    {% if newproject == False %}
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDQTpXj82d8UpCi97wzo_nKXL7nYrd4G70"></script>
+    {% else %}
+        {# If a new project is just added then redirect the mainwindo to such project #}
+        <script>
+            window.top.location.href = "{{ request.route_url('dashboard',_query={'project':dataworking.project_cod}) }}";
+        </script>
+    {% endif %}
+{% endblock script %}

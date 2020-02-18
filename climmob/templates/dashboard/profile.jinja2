@@ -1,0 +1,151 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob | Profile") }}</title>
+{% endblock title %}
+
+{% block pageheading %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>{{ _("Profile") }}</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
+                </li>
+                <li class="active">
+                    <strong>{{ _("Profile") }}</strong>
+                </li>
+            </ol>
+            <a href="https://climmob.net/blog/wiki/2019/10/02/profile/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
+        </div>
+        <div class="col-lg-2">
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block pagecontent %}
+    {% block profiletop %}
+        <div class="row m-b-lg m-t-lg">
+            <div class="col-md-6">
+                <div class="profile-image">
+                    <img src="{{ activeUser.gravatarURL }}" class="img-circle circle-border m-b-md" alt="profile">
+                </div>
+                <div class="profile-info">
+                    {% block profileinfo %}
+                        <div class="">
+                            <div>
+                                <h2 class="no-margins">
+                                    {{ activeUser.userData.user_fullname }} ({{ activeUser.userData.user_name }})
+                                </h2>
+                                <h4>{{ activeUser.userData.user_email }}</h4>
+                                <small>
+                                    {% if activeUser.userData.user_about == "" %}{{ _("There is no information about yourself. Edit your profile") }} {% else %} {{ activeUser.userData.user_about }} {% endif %}
+                                </small>
+                                <p><hr><a href="{{ request.route_url('editprofile') }}" class="btn btn-sm btn-primary"> {{ _("Edit profile") }}</a></p>
+                            </div>
+                        </div>
+                    {% endblock profileinfo %}
+                </div>
+            </div>
+            <div class="col-md-6">
+                {% block profilestats %}
+                    <table class="table small m-b-xs">
+                        <tbody>
+                        <tr>
+                            <td>
+                                <strong>{{ userstats.totprojects }}</strong> {{ _("Projects") }}
+                            </td>
+                            <td>
+                                <strong>{{ _("Last project") }} </strong>{{ userstats.lastproject }}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <strong>{{ _("Joined") }}</strong> {{ activeUser.getJoinDate(request) }}
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                {% endblock profilestats %}
+            </div>
+        </div>
+    {% endblock profiletop %}
+    {% block profilebottom %}
+        <div class="row">
+            <div class="col-lg-12">
+                {% block profiledetails %}
+                    <div class="ibox float-e-margins">
+                        {% block profiletitle %}
+                            <div class="ibox-title">
+                                <h5>{{ _("About") }} {{activeUser.userData.user_fullname  }}</h5>
+                            </div>
+                        {% endblock profiletitle %}
+                        <div class="ibox-content">
+                            {% block profiledata %}
+                                <table class="table small m-b-xs">
+                                    <tbody>
+                                    <tr>
+                                        <td>
+                                            <strong>{{ _("Country") }}</strong>
+                                        </td>
+                                        <td>
+                                            {{ activeUser.getCntyName(request) }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>{{ _("Sector") }}</strong>
+                                        </td>
+                                        <td>
+                                            {{ activeUser.getSectName(request) }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>{{ _("Organization") }}</strong>
+                                        </td>
+                                        <td>
+                                            {{ activeUser.userData.user_organization }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>{{ _("API Key") }}</strong>
+                                        </td>
+                                        <td>
+                                            {{ activeUser.getAPIKey(request) }}
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            {% endblock profiledata %}
+                        </div>
+                    </div>
+                {% endblock profiledetails %}
+            </div>
+{#            <div class="col-lg-4 m-b-lg">#}
+{#                {% block profiletline %}#}
+{#                    <div id="vertical-timeline" class="vertical-container light-timeline no-margins">#}
+{#                        {% for activity in activities %}#}
+{#                            <div class="vertical-timeline-block">#}
+{#                                <div class="vertical-timeline-icon {{ activity.color }}">#}
+{#                                    <i class="fa {{ activity.icon }}"></i>#}
+{#                                </div>#}
+{##}
+{#                                <div class="vertical-timeline-content">#}
+{#                                    <h2>{{ activity.type }}</h2>#}
+{#                                    <p>{{ activity.message }}</p>#}
+{##}
+{#                                    <small>{{ activity.date }}</small>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        {% endfor %}#}
+{##}
+{#                    </div>#}
+{#                {% endblock profiletline %}#}
+{#            </div>#}
+        </div>
+    {% endblock profilebottom %}
+{% endblock %}

@@ -1,0 +1,34 @@
+<div class="table-responsive">
+    <table class="table table-striped table-bordered table-hover dataTables-example" >
+        <thead>
+        <tr>
+            <th>{{ _("Combination of levels") }}</th>
+            {% for tech in techs %}
+                <th>{{  tech.tech_name }}</th>
+            {% endfor %}
+            <th>{{ _("Action") }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for comb in combArray %}
+            <tr class="gradeX">
+                <td class="center">{{ comb.ncomb }}</td>
+                {% for element in comb.elements %}
+                    <td>{{ element.alias_name }}</td>
+                {% endfor %}
+                <td class="center text-center">
+                    <form method="post" action="{{ request.url }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf }}">
+                        <input type="hidden" name="scroll" class="clm-scroll" value="{{ scrollPos }}">
+                        {% if comb.comb_usable == 1 %}
+                            <button title="{{ _("Click to toggle") }}" type="submit" name="remove{{  comb.ncomb }}" class="btn btn-xs btn-rounded btn-primary">{{ _("Included") }}</button>
+                        {% else %}
+                            <button title="{{ _("Click to toggle") }}" type="submit" name="add{{  comb.ncomb }}" class="btn btn-xs btn-rounded btn-danger">{{ _("Excluded") }}</button>
+                        {% endif %}
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
