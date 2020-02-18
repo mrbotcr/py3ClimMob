@@ -17,7 +17,7 @@ requires = [
     'transaction',
     'zope.sqlalchemy',
     'waitress',
-    'webhelpers',
+    'WebHelpers2==2.0',
     'pyutilib== 5.4.1',
     'pyramid_fanstatic',
     'mysql-connector-python',
