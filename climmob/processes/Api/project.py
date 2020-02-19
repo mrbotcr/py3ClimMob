@@ -1,5 +1,3 @@
-from ...models import Project,User,mapFromSchema
+from ...models import Project, User, mapFromSchema
 
-__all__ = [
-
-]
+__all__ = []

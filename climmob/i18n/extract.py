@@ -1,12 +1,12 @@
 from jinja2.ext import babel_extract as extract_jinja2
 import climmob.config.jinja_extensions as je
 
-jinja_extensions = '''
+jinja_extensions = """
                     jinja2.ext.do, jinja2.ext.with_,
                     climmob.config.jinja_extensions.SnippetExtension,
                     climmob.config.jinja_extensions.ResourceExtension,
                     climmob.config.jinja_extensions.extendThis,
-                   '''
+                   """
 
 # This function take badly formatted html with strings etc and make it beautiful
 # generally remove surlus whitespace and kill \n this will break <code><pre>
@@ -19,7 +19,7 @@ def jinja2_cleaner(fileobj, *args, **kw):
     # :Copyright (C) 2007 Open Knowledge Foundation
     # :license: AGPL V3, see LICENSE for more details.
 
-    kw['options']['extensions'] = jinja_extensions
+    kw["options"]["extensions"] = jinja_extensions
 
     raw_extract = extract_jinja2(fileobj, *args, **kw)
 
@@ -28,8 +28,7 @@ def jinja2_cleaner(fileobj, *args, **kw):
         if isinstance(message, str):
             message = je.regularise_html(message)
         elif message is not None:
-            message = (je.regularise_html(message[0])
-                       ,je.regularise_html(message[1]))
+            message = (je.regularise_html(message[0]), je.regularise_html(message[1]))
 
         yield lineno, func, message, finder
 
@@ -41,7 +40,6 @@ def extract_climmob(fileobj, *args, **kw):
     # This code is based on CKAN
     # :Copyright (C) 2007 Open Knowledge Foundation
     # :license: AGPL V3, see LICENSE for more details.
-
 
     fileobj.read()
     output = jinja2_cleaner(fileobj, *args, **kw)

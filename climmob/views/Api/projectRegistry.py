@@ -1,24 +1,48 @@
 from ..classes import apiView
 
-from ...processes import projectExists, getRegistryQuestions, availableRegistryQuestions, QuestionsOptions, addRegistryGroup, modifyRegistryGroup, exitsRegistryGroup, canDeleteTheGroup, \
-                         deleteRegistryGroup, projectRegStatus, getQuestionData, canUseTheQuestion, addRegistryQuestionToGroup, deleteRegistryQuestionFromGroup, exitsQuestionInGroup, \
-                         haveTheBasicStructure, haveTheBasic, getRegistryGroup,getRegistryQuestionsApi,saveRegistryOrder
+from ...processes import (
+    projectExists,
+    getRegistryQuestions,
+    availableRegistryQuestions,
+    QuestionsOptions,
+    addRegistryGroup,
+    modifyRegistryGroup,
+    exitsRegistryGroup,
+    canDeleteTheGroup,
+    deleteRegistryGroup,
+    projectRegStatus,
+    getQuestionData,
+    canUseTheQuestion,
+    addRegistryQuestionToGroup,
+    deleteRegistryQuestionFromGroup,
+    exitsQuestionInGroup,
+    haveTheBasicStructure,
+    haveTheBasic,
+    getRegistryGroup,
+    getRegistryQuestionsApi,
+    saveRegistryOrder,
+)
 
 from pyramid.response import Response
 import json
 import datetime
 
+
 class readProjectRegistry_view(apiView):
     def processView(self):
 
         if self.request.method == "GET":
-            obligatory = [u'project_cod']
-            dataworking = json.loads(self.request.params['Body'])
+            obligatory = [u"project_cod"]
+            dataworking = json.loads(self.request.params["Body"])
 
             if sorted(obligatory) == sorted(dataworking.keys()):
-                exitsproject = projectExists(self.user.login, dataworking['project_cod'], self.request)
+                exitsproject = projectExists(
+                    self.user.login, dataworking["project_cod"], self.request
+                )
                 if exitsproject:
-                    data = getRegistryQuestions(self.user.login, dataworking['project_cod'], self.request)
+                    data = getRegistryQuestions(
+                        self.user.login, dataworking["project_cod"], self.request
+                    )
                     # The following is to help jinja2 to render the groups and questions
                     # This because the scope constraint makes it difficult to control
                     sectionID = -99
@@ -52,10 +76,15 @@ class readProjectRegistry_view(apiView):
                             data[a]["hasQuestions"] = False
                     finalCloseQst = data[len(data) - 1]["hasQuestions"]
 
-                    response = Response(status=200, body=json.dumps({'data':data,'finalCloseQst':finalCloseQst}))
+                    response = Response(
+                        status=200,
+                        body=json.dumps({"data": data, "finalCloseQst": finalCloseQst}),
+                    )
                     return response
                 else:
-                    response = Response(status=401, body=self._("There is no a project with that code."))
+                    response = Response(
+                        status=401, body=self._("There is no a project with that code.")
+                    )
                     return response
             else:
                 response = Response(status=401, body=self._("Error in the JSON."))
@@ -63,21 +92,40 @@ class readProjectRegistry_view(apiView):
         else:
             response = Response(status=401, body=self._("Only accepts GET method."))
             return response
+
 
 class readPossibleQuestionsForRegistryGroup_view(apiView):
     def processView(self):
 
         if self.request.method == "GET":
-            obligatory = [u'project_cod']
-            dataworking = json.loads(self.request.params['Body'])
+            obligatory = [u"project_cod"]
+            dataworking = json.loads(self.request.params["Body"])
 
             if sorted(obligatory) == sorted(dataworking.keys()):
-                exitsproject = projectExists(self.user.login, dataworking['project_cod'], self.request)
+                exitsproject = projectExists(
+                    self.user.login, dataworking["project_cod"], self.request
+                )
                 if exitsproject:
-                    response = Response(status=200, body=json.dumps({'Questions':availableRegistryQuestions(self.user.login,dataworking['project_cod'],self.request),'QuestionsOptions': QuestionsOptions(self.user.login, self.request)}))
+                    response = Response(
+                        status=200,
+                        body=json.dumps(
+                            {
+                                "Questions": availableRegistryQuestions(
+                                    self.user.login,
+                                    dataworking["project_cod"],
+                                    self.request,
+                                ),
+                                "QuestionsOptions": QuestionsOptions(
+                                    self.user.login, self.request
+                                ),
+                            }
+                        ),
+                    )
                     return response
                 else:
-                    response = Response(status=401, body=self._("There is no a project with that code."))
+                    response = Response(
+                        status=401, body=self._("There is no a project with that code.")
+                    )
                     return response
             else:
                 response = Response(status=401, body=self._("Error in the JSON."))
@@ -86,16 +134,17 @@ class readPossibleQuestionsForRegistryGroup_view(apiView):
             response = Response(status=401, body=self._("Only accepts GET method."))
             return response
 
+
 class addRegistryGroup_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u'project_cod',u'section_name',u'section_content']
+            obligatory = [u"project_cod", u"section_name", u"section_content"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
-                dataworking['user_name'] = self.user.login
-                dataworking['section_color'] = None
+                dataworking["user_name"] = self.user.login
+                dataworking["section_color"] = None
 
                 dataInParams = True
                 for key in dataworking.keys():
@@ -103,27 +152,49 @@ class addRegistryGroup_view(apiView):
                         dataInParams = False
 
                 if dataInParams:
-                    exitsproject = projectExists(self.user.login, dataworking['project_cod'], self.request)
+                    exitsproject = projectExists(
+                        self.user.login, dataworking["project_cod"], self.request
+                    )
                     if exitsproject:
-                        if projectRegStatus(self.user.login, dataworking['project_cod'], self.request):
+                        if projectRegStatus(
+                            self.user.login, dataworking["project_cod"], self.request
+                        ):
 
-                            haveTheBasicStructure(self.user.login,dataworking['project_cod'],self.request)
+                            haveTheBasicStructure(
+                                self.user.login,
+                                dataworking["project_cod"],
+                                self.request,
+                            )
 
-                            addgroup, message = addRegistryGroup(dataworking, self,"API")
+                            addgroup, message = addRegistryGroup(
+                                dataworking, self, "API"
+                            )
                             if not addgroup:
                                 response = Response(status=401, body=message)
                                 return response
                             else:
-                                response = Response(status=200, body=json.dumps(message))
+                                response = Response(
+                                    status=200, body=json.dumps(message)
+                                )
                                 return response
                         else:
-                            response = Response(status=401, body=self._("You can not create groups. You started the registry."))
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "You can not create groups. You started the registry."
+                                ),
+                            )
                             return response
                     else:
-                        response = Response(status=401, body=self._("There is not a project with that code."))
+                        response = Response(
+                            status=401,
+                            body=self._("There is not a project with that code."),
+                        )
                         return response
                 else:
-                    response = Response(status=401, body=self._("Not all parameters have data."))
+                    response = Response(
+                        status=401, body=self._("Not all parameters have data.")
+                    )
                     return response
             else:
                 response = Response(status=401, body=self._("Error in the JSON."))
@@ -132,16 +203,22 @@ class addRegistryGroup_view(apiView):
             response = Response(status=401, body=self._("Only accepts POST method."))
             return response
 
+
 class updateRegistryGroup_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u'project_cod',u'group_cod',u'section_name',u'section_content']
+            obligatory = [
+                u"project_cod",
+                u"group_cod",
+                u"section_name",
+                u"section_content",
+            ]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
-                dataworking['user_name'] = self.user.login
-                dataworking['section_color'] = None
+                dataworking["user_name"] = self.user.login
+                dataworking["section_color"] = None
 
                 dataInParams = True
                 for key in dataworking.keys():
@@ -149,29 +226,49 @@ class updateRegistryGroup_view(apiView):
                         dataInParams = False
 
                 if dataInParams:
-                    exitsproject = projectExists(self.user.login, dataworking['project_cod'], self.request)
+                    exitsproject = projectExists(
+                        self.user.login, dataworking["project_cod"], self.request
+                    )
                     if exitsproject:
-                        if projectRegStatus(self.user.login, dataworking['project_cod'], self.request):
-                            exitsGroup = exitsRegistryGroup(dataworking,self)
+                        if projectRegStatus(
+                            self.user.login, dataworking["project_cod"], self.request
+                        ):
+                            exitsGroup = exitsRegistryGroup(dataworking, self)
                             if exitsGroup:
                                 mdf, message = modifyRegistryGroup(dataworking, self)
                                 if not mdf:
                                     response = Response(status=401, body=message)
                                     return response
                                 else:
-                                    response = Response(status=200, body=self._("Group updated successfully."))
+                                    response = Response(
+                                        status=200,
+                                        body=self._("Group updated successfully."),
+                                    )
                                     return response
                             else:
-                                response = Response(status=401, body=self._("There is not a group with that code."))
+                                response = Response(
+                                    status=401,
+                                    body=self._("There is not a group with that code."),
+                                )
                                 return response
                         else:
-                            response = Response(status=401, body=self._("You can not update groups. You started the registry."))
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "You can not update groups. You started the registry."
+                                ),
+                            )
                             return response
                     else:
-                        response = Response(status=401, body=self._("There is not a project with that code."))
+                        response = Response(
+                            status=401,
+                            body=self._("There is not a project with that code."),
+                        )
                         return response
                 else:
-                    response = Response(status=401, body=self._("Not all parameters have data."))
+                    response = Response(
+                        status=401, body=self._("Not all parameters have data.")
+                    )
                     return response
             else:
                 response = Response(status=401, body=self._("Error in the JSON."))
@@ -179,17 +276,18 @@ class updateRegistryGroup_view(apiView):
         else:
             response = Response(status=401, body=self._("Only accepts POST method."))
             return response
+
 
 class deleteRegistryGroup_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u'project_cod',u'group_cod']
+            obligatory = [u"project_cod", u"group_cod"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
-                dataworking['user_name'] = self.user.login
-                dataworking['section_color'] = None
+                dataworking["user_name"] = self.user.login
+                dataworking["section_color"] = None
 
                 dataInParams = True
                 for key in dataworking.keys():
@@ -197,34 +295,64 @@ class deleteRegistryGroup_view(apiView):
                         dataInParams = False
 
                 if dataInParams:
-                    exitsproject = projectExists(self.user.login, dataworking['project_cod'], self.request)
+                    exitsproject = projectExists(
+                        self.user.login, dataworking["project_cod"], self.request
+                    )
                     if exitsproject:
-                        if projectRegStatus(self.user.login, dataworking['project_cod'], self.request):
-                            exitsGroup = exitsRegistryGroup(dataworking,self)
+                        if projectRegStatus(
+                            self.user.login, dataworking["project_cod"], self.request
+                        ):
+                            exitsGroup = exitsRegistryGroup(dataworking, self)
                             if exitsGroup:
-                                candelete = canDeleteTheGroup(dataworking,self.request)
+                                candelete = canDeleteTheGroup(dataworking, self.request)
                                 if candelete:
-                                    deleted, message = deleteRegistryGroup(self.user.login, dataworking['project_cod'], dataworking['group_cod'],self.request)
+                                    deleted, message = deleteRegistryGroup(
+                                        self.user.login,
+                                        dataworking["project_cod"],
+                                        dataworking["group_cod"],
+                                        self.request,
+                                    )
                                     if not deleted:
                                         response = Response(status=401, body=message)
                                         return response
                                     else:
-                                        response = Response(status=200, body=self._("Group deleted successfully."))
+                                        response = Response(
+                                            status=200,
+                                            body=self._("Group deleted successfully."),
+                                        )
                                         return response
                                 else:
-                                    response = Response(status=401, body=self._("You can not delete this group because you have questions required for the registry."))
+                                    response = Response(
+                                        status=401,
+                                        body=self._(
+                                            "You can not delete this group because you have questions required for the registry."
+                                        ),
+                                    )
                                     return response
                             else:
-                                response = Response(status=401, body=self._("There is not a group with that code."))
+                                response = Response(
+                                    status=401,
+                                    body=self._("There is not a group with that code."),
+                                )
                                 return response
                         else:
-                            response = Response(status=401, body=self._("You can not delete groups. You started the registry."))
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "You can not delete groups. You started the registry."
+                                ),
+                            )
                             return response
                     else:
-                        response = Response(status=401, body=self._("There is not a project with that code."))
+                        response = Response(
+                            status=401,
+                            body=self._("There is not a project with that code."),
+                        )
                         return response
                 else:
-                    response = Response(status=401, body=self._("Not all parameters have data."))
+                    response = Response(
+                        status=401, body=self._("Not all parameters have data.")
+                    )
                     return response
             else:
                 response = Response(status=401, body=self._("Error in the JSON."))
@@ -232,16 +360,17 @@ class deleteRegistryGroup_view(apiView):
         else:
             response = Response(status=401, body=self._("Only accepts POST method."))
             return response
+
 
 class addQuestionToGroupRegistry_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u'project_cod',u'group_cod',u'question_id']
+            obligatory = [u"project_cod", u"group_cod", u"question_id"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
-                dataworking['user_name'] = self.user.login
+                dataworking["user_name"] = self.user.login
 
                 dataInParams = True
                 for key in dataworking.keys():
@@ -249,39 +378,86 @@ class addQuestionToGroupRegistry_view(apiView):
                         dataInParams = False
 
                 if dataInParams:
-                    exitsproject = projectExists(self.user.login, dataworking['project_cod'], self.request)
+                    exitsproject = projectExists(
+                        self.user.login, dataworking["project_cod"], self.request
+                    )
                     if exitsproject:
-                        if projectRegStatus(self.user.login, dataworking['project_cod'], self.request):
-                            exitsGroup = exitsRegistryGroup(dataworking,self)
+                        if projectRegStatus(
+                            self.user.login, dataworking["project_cod"], self.request
+                        ):
+                            exitsGroup = exitsRegistryGroup(dataworking, self)
                             if exitsGroup:
-                                data, editable = getQuestionData(self.user.login, dataworking["question_id"],self.request)
+                                data, editable = getQuestionData(
+                                    self.user.login,
+                                    dataworking["question_id"],
+                                    self.request,
+                                )
                                 if data:
-                                    if canUseTheQuestion(self.user.login,dataworking['project_cod'],dataworking['question_id'],self.request):
-                                        dataworking['section_id'] = dataworking['group_cod']
-                                        addq, message = addRegistryQuestionToGroup(dataworking, self.request)
+                                    if canUseTheQuestion(
+                                        self.user.login,
+                                        dataworking["project_cod"],
+                                        dataworking["question_id"],
+                                        self.request,
+                                    ):
+                                        dataworking["section_id"] = dataworking[
+                                            "group_cod"
+                                        ]
+                                        addq, message = addRegistryQuestionToGroup(
+                                            dataworking, self.request
+                                        )
                                         if not addq:
-                                            response = Response(status=401,body=message)
+                                            response = Response(
+                                                status=401, body=message
+                                            )
                                             return response
                                         else:
-                                            response = Response(status=200, body=self._("The question was added to the record"))
+                                            response = Response(
+                                                status=200,
+                                                body=self._(
+                                                    "The question was added to the record"
+                                                ),
+                                            )
                                             return response
                                     else:
-                                        response = Response(status=401, body=self._("The question is already assigned to registry or can not be used in this section."))
+                                        response = Response(
+                                            status=401,
+                                            body=self._(
+                                                "The question is already assigned to registry or can not be used in this section."
+                                            ),
+                                        )
                                         return response
                                 else:
-                                    response = Response(status=401, body=self._("You do not have a question with this id."))
+                                    response = Response(
+                                        status=401,
+                                        body=self._(
+                                            "You do not have a question with this id."
+                                        ),
+                                    )
                                     return response
                             else:
-                                response = Response(status=401, body=self._("There is not a group with that code."))
+                                response = Response(
+                                    status=401,
+                                    body=self._("There is not a group with that code."),
+                                )
                                 return response
                         else:
-                            response = Response(status=401, body=self._("You can not add questions. You started the registry."))
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "You can not add questions. You started the registry."
+                                ),
+                            )
                             return response
                     else:
-                        response = Response(status=401, body=self._("There is not a project with that code."))
+                        response = Response(
+                            status=401,
+                            body=self._("There is not a project with that code."),
+                        )
                         return response
                 else:
-                    response = Response(status=401, body=self._("Not all parameters have data."))
+                    response = Response(
+                        status=401, body=self._("Not all parameters have data.")
+                    )
                     return response
             else:
                 response = Response(status=401, body=self._("Error in the JSON."))
@@ -289,16 +465,17 @@ class addQuestionToGroupRegistry_view(apiView):
         else:
             response = Response(status=401, body=self._("Only accepts POST method."))
             return response
+
 
 class deleteQuestionFromGroupRegistry_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u'project_cod',u'group_cod',u'question_id']
+            obligatory = [u"project_cod", u"group_cod", u"question_id"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
-                dataworking['user_name'] = self.user.login
+                dataworking["user_name"] = self.user.login
 
                 dataInParams = True
                 for key in dataworking.keys():
@@ -306,43 +483,93 @@ class deleteQuestionFromGroupRegistry_view(apiView):
                         dataInParams = False
 
                 if dataInParams:
-                    exitsproject = projectExists(self.user.login, dataworking['project_cod'], self.request)
+                    exitsproject = projectExists(
+                        self.user.login, dataworking["project_cod"], self.request
+                    )
                     if exitsproject:
-                        if projectRegStatus(self.user.login, dataworking['project_cod'], self.request):
-                            exitsGroup = exitsRegistryGroup(dataworking,self)
+                        if projectRegStatus(
+                            self.user.login, dataworking["project_cod"], self.request
+                        ):
+                            exitsGroup = exitsRegistryGroup(dataworking, self)
                             if exitsGroup:
-                                data, editable = getQuestionData(self.user.login, dataworking["question_id"],self.request)
+                                data, editable = getQuestionData(
+                                    self.user.login,
+                                    dataworking["question_id"],
+                                    self.request,
+                                )
                                 if data:
-                                    if data['question_reqinreg'] == 1:
-                                        response = Response(status=401, body=self._("You can not delete this question because is required in the registry."))
+                                    if data["question_reqinreg"] == 1:
+                                        response = Response(
+                                            status=401,
+                                            body=self._(
+                                                "You can not delete this question because is required in the registry."
+                                            ),
+                                        )
                                         return response
                                     else:
 
-                                        if exitsQuestionInGroup(dataworking, self.request):
-                                            deleted, message = deleteRegistryQuestionFromGroup(dataworking,self.request)
+                                        if exitsQuestionInGroup(
+                                            dataworking, self.request
+                                        ):
+                                            (
+                                                deleted,
+                                                message,
+                                            ) = deleteRegistryQuestionFromGroup(
+                                                dataworking, self.request
+                                            )
                                             if not deleted:
-                                                response = Response(status=401, body=message)
+                                                response = Response(
+                                                    status=401, body=message
+                                                )
                                                 return response
                                             else:
-                                                response = Response(status=200, body=self._("Question deleted successfully."))
+                                                response = Response(
+                                                    status=200,
+                                                    body=self._(
+                                                        "Question deleted successfully."
+                                                    ),
+                                                )
                                                 return response
                                         else:
-                                            response = Response(status=401,  body=self._("You do not have a question with this id in this group."))
+                                            response = Response(
+                                                status=401,
+                                                body=self._(
+                                                    "You do not have a question with this id in this group."
+                                                ),
+                                            )
                                             return response
                                 else:
-                                    response = Response(status=401, body=self._("You do not have a question with this id."))
+                                    response = Response(
+                                        status=401,
+                                        body=self._(
+                                            "You do not have a question with this id."
+                                        ),
+                                    )
                                     return response
                             else:
-                                response = Response(status=401, body=self._("There is not a group with that code."))
+                                response = Response(
+                                    status=401,
+                                    body=self._("There is not a group with that code."),
+                                )
                                 return response
                         else:
-                            response = Response(status=401, body=self._("You can not delete questions. You started the registry."))
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "You can not delete questions. You started the registry."
+                                ),
+                            )
                             return response
                     else:
-                        response = Response(status=401, body=self._("There is not a project with that code."))
+                        response = Response(
+                            status=401,
+                            body=self._("There is not a project with that code."),
+                        )
                         return response
                 else:
-                    response = Response(status=401, body=self._("Not all parameters have data."))
+                    response = Response(
+                        status=401, body=self._("Not all parameters have data.")
+                    )
                     return response
             else:
                 response = Response(status=401, body=self._("Error in the JSON."))
@@ -351,15 +578,16 @@ class deleteQuestionFromGroupRegistry_view(apiView):
             response = Response(status=401, body=self._("Only accepts POST method."))
             return response
 
+
 class orderRegistryQuestions_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u'project_cod',u'order']
+            obligatory = [u"project_cod", u"order"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
-                dataworking['user_name'] = self.user.login
+                dataworking["user_name"] = self.user.login
 
                 dataInParams = True
                 for key in dataworking.keys():
@@ -367,14 +595,22 @@ class orderRegistryQuestions_view(apiView):
                         dataInParams = False
 
                 if dataInParams:
-                    exitsproject = projectExists(self.user.login, dataworking['project_cod'], self.request)
+                    exitsproject = projectExists(
+                        self.user.login, dataworking["project_cod"], self.request
+                    )
                     if exitsproject:
-                        if projectRegStatus(self.user.login, dataworking['project_cod'], self.request):
-                            if haveTheBasic(self.user.login,dataworking['project_cod'],self.request):
+                        if projectRegStatus(
+                            self.user.login, dataworking["project_cod"], self.request
+                        ):
+                            if haveTheBasic(
+                                self.user.login,
+                                dataworking["project_cod"],
+                                self.request,
+                            ):
                                 try:
-                                    originalData = json.loads(dataworking['order'])
+                                    originalData = json.loads(dataworking["order"])
 
-                                    groups    = []
+                                    groups = []
                                     questions = []
                                     questionWithoutGroup = False
 
@@ -382,42 +618,99 @@ class orderRegistryQuestions_view(apiView):
                                         if item["type"] == "question":
                                             questionWithoutGroup = True
                                         else:
-                                            groups.append(int(item["id"].replace("GRP","")))
+                                            groups.append(
+                                                int(item["id"].replace("GRP", ""))
+                                            )
                                             if "children" in item.keys():
                                                 for children in item["children"]:
-                                                    questions.append(int(children["id"].replace("QST","")))
+                                                    questions.append(
+                                                        int(
+                                                            children["id"].replace(
+                                                                "QST", ""
+                                                            )
+                                                        )
+                                                    )
 
                                     if not questionWithoutGroup:
-                                        groupsInProject = getRegistryGroup(dataworking, self)
+                                        groupsInProject = getRegistryGroup(
+                                            dataworking, self
+                                        )
                                         if sorted(groupsInProject) == sorted(groups):
-                                            questionsInProject = getRegistryQuestionsApi(dataworking,self)
-                                            if sorted(questionsInProject) == sorted(questions):
-                                                modified, error = saveRegistryOrder(self.user.login, dataworking['project_cod'], originalData,self.request)
-                                                response = Response(status=200, body=self._("The order of the groups and questions was changed."))
+                                            questionsInProject = getRegistryQuestionsApi(
+                                                dataworking, self
+                                            )
+                                            if sorted(questionsInProject) == sorted(
+                                                questions
+                                            ):
+                                                modified, error = saveRegistryOrder(
+                                                    self.user.login,
+                                                    dataworking["project_cod"],
+                                                    originalData,
+                                                    self.request,
+                                                )
+                                                response = Response(
+                                                    status=200,
+                                                    body=self._(
+                                                        "The order of the groups and questions was changed."
+                                                    ),
+                                                )
                                                 return response
                                             else:
-                                                response = Response(status=401, body=self._("You are ordering questions that are not part of the form."))
+                                                response = Response(
+                                                    status=401,
+                                                    body=self._(
+                                                        "You are ordering questions that are not part of the form."
+                                                    ),
+                                                )
                                                 return response
                                         else:
-                                            response = Response(status=401, body=self._("You are ordering groups that are not part of the form."))
+                                            response = Response(
+                                                status=401,
+                                                body=self._(
+                                                    "You are ordering groups that are not part of the form."
+                                                ),
+                                            )
                                             return response
                                     else:
-                                        response = Response(status=401, body=self._("Questions cannot be outside a group"))
+                                        response = Response(
+                                            status=401,
+                                            body=self._(
+                                                "Questions cannot be outside a group"
+                                            ),
+                                        )
                                         return response
-                                except :
-                                    response = Response(status=401, body=self._("Error in the JSON order."))
+                                except:
+                                    response = Response(
+                                        status=401,
+                                        body=self._("Error in the JSON order."),
+                                    )
                                     return response
                             else:
-                                response = Response(status=401, body=self._("No group and questions to order. You need to read the project registry."))
+                                response = Response(
+                                    status=401,
+                                    body=self._(
+                                        "No group and questions to order. You need to read the project registry."
+                                    ),
+                                )
                                 return response
                         else:
-                            response = Response(status=401, body=self._("You can not order the groups and questions. You started the registry."))
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "You can not order the groups and questions. You started the registry."
+                                ),
+                            )
                             return response
                     else:
-                        response = Response(status=401, body=self._("There is not a project with that code."))
+                        response = Response(
+                            status=401,
+                            body=self._("There is not a project with that code."),
+                        )
                         return response
                 else:
-                    response = Response(status=401, body=self._("Not all parameters have data."))
+                    response = Response(
+                        status=401, body=self._("Not all parameters have data.")
+                    )
                     return response
             else:
                 response = Response(status=401, body=self._("Error in the JSON."))

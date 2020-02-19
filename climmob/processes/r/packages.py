@@ -1,19 +1,21 @@
 import os
-from subprocess import check_call,CalledProcessError
+from subprocess import check_call, CalledProcessError
 import logging
+
 log = logging.getLogger(__name__)
 
-__all__ = [
-    'runRcreatePackages'
-]
+__all__ = ["runRcreatePackages"]
 
-def runRcreatePackages(user,project,sample,ncomparisons,combinations,request):
-    path = os.path.join(request.registry.settings['user.repository'], *[user,project])
+
+def runRcreatePackages(user, project, sample, ncomparisons, combinations, request):
+    path = os.path.join(request.registry.settings["user.repository"], *[user, project])
     if not os.path.exists(path):
         os.makedirs(path)
         rrepo = os.path.join(path, "r")
         os.makedirs(rrepo)
-        rscript = os.path.join(request.registry.settings['r.scripts'], "randomization.R")
+        rscript = os.path.join(
+            request.registry.settings["r.scripts"], "randomization.R"
+        )
         inputFile = os.path.join(rrepo, user + "_" + project + ".in")
         outputFile = os.path.join(rrepo, user + "_" + project + ".out")
 
@@ -30,10 +32,10 @@ def runRcreatePackages(user,project,sample,ncomparisons,combinations,request):
         args.append(rscript)
         args.append(inputFile)
         args.append(outputFile)
-        #try:
+        # try:
         check_call(args)
         return outputFile
-        #except CalledProcessError as e:
+        # except CalledProcessError as e:
         #    msg = "Error dropping schema \n"
         #    msg = msg + "Error: \n"
         #    msg = msg + e.message + "\n"

@@ -10,17 +10,15 @@ def dummy_request(dbsession):
 
 class BaseTest(unittest.TestCase):
     def setUp(self):
-        self.config = testing.setUp(settings={
-            'sqlalchemy.url': 'sqlite:///:memory:'
-        })
-        self.config.include('.models')
+        self.config = testing.setUp(settings={"sqlalchemy.url": "sqlite:///:memory:"})
+        self.config.include(".models")
         settings = self.config.get_settings()
 
         from .models import (
             get_engine,
             get_session_factory,
             get_tm_session,
-            )
+        )
 
         self.engine = get_engine(settings)
         session_factory = get_session_factory(self.engine)
@@ -29,6 +27,7 @@ class BaseTest(unittest.TestCase):
 
     def init_database(self):
         from .models.meta import Base
+
         Base.metadata.create_all(self.engine)
 
     def tearDown(self):
@@ -40,26 +39,26 @@ class BaseTest(unittest.TestCase):
 
 
 class TestMyViewSuccessCondition(BaseTest):
-
     def setUp(self):
         super(TestMyViewSuccessCondition, self).setUp()
         self.init_database()
 
         from .models import User
+
         query = self.session.query(User)
         one = query.first()
 
-
     def test_passing_view(self):
         from .views.basic_views import home_view
+
         info = home_view(dummy_request(self.session))
-        self.assertEqual(info['one'].name, 'one')
-        self.assertEqual(info['project'], 'Climmob')
+        self.assertEqual(info["one"].name, "one")
+        self.assertEqual(info["project"], "Climmob")
 
 
 class TestMyViewFailureCondition(BaseTest):
-
     def test_failing_view(self):
         from .views.basic_views import home_view
+
         info = home_view(dummy_request(self.session))
         self.assertEqual(info.status_int, 500)

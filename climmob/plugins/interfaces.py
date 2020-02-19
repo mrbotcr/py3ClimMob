@@ -1,4 +1,4 @@
-'''
+"""
 
 This file declares the PCA interfaces and their methods:
 
@@ -6,29 +6,29 @@ This code is based on CKAN
 :Copyright (C) 2007 Open Knowledge Foundation
 :license: AGPL V3, see LICENSE for more details.
 
-'''
+"""
 
 
 __all__ = [
-    'Interface',
-    'IRoutes',
-    'IConfig',
-    'IResource',
-    'ISchema',
-    'IPluginObserver',
-    'IPluralize',
-    'IPackage',
-    'ISubmissionStorage',
-    'IProduct',
-    'ITemplateHelpers'
+    "Interface",
+    "IRoutes",
+    "IConfig",
+    "IResource",
+    "ISchema",
+    "IPluginObserver",
+    "IPluralize",
+    "IPackage",
+    "ISubmissionStorage",
+    "IProduct",
+    "ITemplateHelpers",
 ]
 
 
 from inspect import isclass
 from pyutilib.component.core import Interface as _pca_Interface
 
-class Interface(_pca_Interface):
 
+class Interface(_pca_Interface):
     @classmethod
     def provided_by(cls, instance):
         return cls.implemented_by(instance.__class__)
@@ -42,12 +42,14 @@ class Interface(_pca_Interface):
         except AttributeError:
             return False
 
+
 class IRoutes(Interface):
     """
     Plugin into the creation of routes of the host program.
 
     """
-    def before_mapping(self,config):
+
+    def before_mapping(self, config):
         """
         Called before the mapping of router of the host app.
 
@@ -56,7 +58,7 @@ class IRoutes(Interface):
         """
         return []
 
-    def after_mapping(self,config):
+    def after_mapping(self, config):
         """
         Called after the mapping of router of the host app
 
@@ -64,6 +66,7 @@ class IRoutes(Interface):
         :return Returns a dict array [{'name':'myroute','path':'/myroute','view',viewDefinition,'renderer':'renderere_used'}]
         """
         return []
+
 
 class IConfig(Interface):
     """
@@ -76,6 +79,7 @@ class IConfig(Interface):
 
         :param config: ``pyramid.config`` object
         """
+
 
 class IResource(Interface):
     """
@@ -111,12 +115,13 @@ class IResource(Interface):
         """
         raise NotImplementedError("add_css_resources must be implemented in subclasses")
 
+
 class ISchema(Interface):
     """
         Allows to hook into the schema processes and add new fields into it
     """
 
-    def update_schema(self,config):
+    def update_schema(self, config):
         """
         Called by the host application so plugins can add new fields to the project schema
 
@@ -134,12 +139,12 @@ class ISchema(Interface):
         return []
 
 
-
 class IPluralize(Interface):
     """
         Allows to hook into the pluralization function so plugins can extend the pluralization of climmob
     """
-    def pluralize(self,noun,locale):
+
+    def pluralize(self, noun, locale):
         """
             Called the packages are created
 
@@ -153,7 +158,10 @@ class IPackage(Interface):
     """
         Allows to hook into the creation of packages
     """
-    def after_create_packages(self,request,user,project,processName,options,packages):
+
+    def after_create_packages(
+        self, request, user, project, processName, options, packages
+    ):
         """
             Called the packages are created
 
@@ -172,7 +180,8 @@ class ISubmissionStorage(Interface):
         Data first lands in XML format and through ODK tools (XMLToJSON) is transformed into JSON format
         which is easy to understand and edit
     """
-    def before_save_in_json(self,request,user,project,data):
+
+    def before_save_in_json(self, request, user, project, data):
         """
             Called before the JSON data is stored into the server and before
             is processed into the final MySQL database.
@@ -188,7 +197,7 @@ class ISubmissionStorage(Interface):
             Warning: Any keys that you add will not enter the MySQL unless you also extend beforeSaveInMySQL
         """
 
-    def before_save_in_mysql(self,request,user,project,manifest):
+    def before_save_in_mysql(self, request, user, project, manifest):
         """
             Called before the data is stored in the MySQL database.
             You can use this to made changes in the manifest before data is stored
@@ -203,10 +212,12 @@ class ISubmissionStorage(Interface):
             Warning: Any elements that you add will not enter the MySQL unless you also extend beforeSaveInJSON
         """
 
+
 class IProduct(Interface):
     """
         Allows to hook into Climmob's Celery task manager.
     """
+
     def register_products(self, config):
         """
             Called by the host application so plugins can add new products
@@ -245,6 +256,7 @@ class IPluginObserver(Interface):
         Called after a plugin has been unloaded.
         This method is passed the instantiated service object.
         """
+
 
 class ITemplateHelpers(Interface):
     """

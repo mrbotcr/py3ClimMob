@@ -1,6 +1,7 @@
 import json
 import csv
 
+
 def getRealData(lkptables, rtable, rfield, value):
     for lkp in lkptables:
         if lkp["name"] == rtable:
@@ -10,7 +11,7 @@ def getRealData(lkptables, rtable, rfield, value):
 
 
 def createCSV(outputPath, inputFile):
-    myFile = open(outputPath, 'w')
+    myFile = open(outputPath, "w")
     with myFile:
         writer = csv.writer(myFile)
 
@@ -35,16 +36,27 @@ def createCSV(outputPath, inputFile):
                 fieldsDataRow = []
                 # DATOS DEL REGISTRO
                 for field in data["registry"]["fields"]:
-                    fieldsDataRow.append(str(row['REG_' + field["name"]]).replace(",", ""))
+                    fieldsDataRow.append(
+                        str(row["REG_" + field["name"]]).replace(",", "")
+                    )
 
                 for assessment in data["assessments"]:
                     for field in assessment["fields"]:
                         if field["rtable"] != None:
-                            result = getRealData(assessment["lkptables"], field["rtable"], field["rfield"],
-                                                 row['ASS' + assessment["code"] + "_" + field["name"]])
+                            result = getRealData(
+                                assessment["lkptables"],
+                                field["rtable"],
+                                field["rfield"],
+                                row["ASS" + assessment["code"] + "_" + field["name"]],
+                            )
                             fieldsDataRow.append(str(result).replace(",", ""))
                         else:
                             fieldsDataRow.append(
-                                str(row['ASS' + assessment["code"] + "_" + field["name"]]).replace(",", ""))
+                                str(
+                                    row[
+                                        "ASS" + assessment["code"] + "_" + field["name"]
+                                    ]
+                                ).replace(",", "")
+                            )
 
                 writer.writerow(fieldsDataRow)

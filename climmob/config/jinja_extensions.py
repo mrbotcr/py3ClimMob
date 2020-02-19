@@ -17,25 +17,29 @@ def initialize(pathToTemplates):
     jinjaEnv.loader = FileSystemLoader(pathToTemplates)
     jinjaEnv.add_extension(ext.i18n)
     jinjaEnv.add_extension(SnippetExtension)
-    #jinjaEnv.add_extension(ResourceExtension)
+    # jinjaEnv.add_extension(ResourceExtension)
     jinjaEnv.add_extension(JSResourceExtension)
     jinjaEnv.add_extension(CSSResourceExtension)
     jinjaEnv.add_extension(extendThis)
 
 
 def render_snippet(template_name, **kw):
-    ''' This function will render the snippet.
+    """ This function will render the snippet.
 
     This code is based on CKAN 
     :Copyright (C) 2007 Open Knowledge Foundation
     :license: AGPL V3, see LICENSE for more details.
 
-     '''
+     """
     request = get_current_request()
 
     template = jinjaEnv.get_template(template_name)
-    output = template.render(kw, renderer='snippet',_=request.translate)
-    output = '\n<!-- Snippet %s start -->\n%s\n<!-- Snippet %s end -->\n' % (template_name, output, template_name)
+    output = template.render(kw, renderer="snippet", _=request.translate)
+    output = "\n<!-- Snippet %s start -->\n%s\n<!-- Snippet %s end -->\n" % (
+        template_name,
+        output,
+        template_name,
+    )
     return literal(output)
 
 
@@ -132,7 +136,7 @@ class BaseExtension(ext.Extension):
 
 
 class ResourceExtension(BaseExtension):
-    ''' 
+    """ 
 
     This allows the inclusion of resources from templates
     Useful in combination with tag {% extend_this %}
@@ -144,9 +148,9 @@ class ResourceExtension(BaseExtension):
     :Copyright (C) 2007 Open Knowledge Foundation
     :license: AGPL V3, see LICENSE for more details.
 
-    '''
+    """
 
-    tags = ['resource']
+    tags = ["resource"]
 
     @classmethod
     def _call(cls, args, kwargs):
@@ -158,7 +162,8 @@ class ResourceExtension(BaseExtension):
         if args[0] == "CSS":
             resource = r.getCSSResource(args[1])
             resource.need()
-        return ''
+        return ""
+
 
 def render_resource(request, library_name, resource_type, resource_id):
     if resource_type == "JS" or resource_type == "CSS":
@@ -185,9 +190,8 @@ def render_resource(request, library_name, resource_type, resource_id):
         return ""
 
 
-
 class SnippetExtension(BaseExtension):
-    ''' 
+    """ 
 
     This tags inject small portions of reusable code i.e. snippets
     into a jinja2 template
@@ -199,9 +203,9 @@ class SnippetExtension(BaseExtension):
     :license: AGPL V3, see LICENSE for more details.
 
 
-    '''
+    """
 
-    tags = ['snippet']
+    tags = ["snippet"]
 
     @classmethod
     def _call(cls, args, kwargs):
@@ -228,8 +232,9 @@ class CSSResourceExtension(BaseExtension):
         assert len(kwargs) == 0
         return render_resource(args[0], args[1], "CSS", args[2])
 
+
 def regularise_html(html):
-    ''' Take badly formatted html with strings 
+    """ Take badly formatted html with strings 
 
 
     This code is based on CKAN 
@@ -237,16 +242,16 @@ def regularise_html(html):
     :license: AGPL V3, see LICENSE for more details.
 
 
-    '''
+    """
 
     if html is None:
         return
-    html = re.sub('\n', ' ', html)
-    matches = re.findall('(<[^>]*>|%[^%]\([^)]*\)\w|[^<%]+|%)', html)
+    html = re.sub("\n", " ", html)
+    matches = re.findall("(<[^>]*>|%[^%]\([^)]*\)\w|[^<%]+|%)", html)
     for i in range(len(matches)):
         match = matches[i]
-        if match.startswith('<') or match.startswith('%'):
+        if match.startswith("<") or match.startswith("%"):
             continue
-        matches[i] = re.sub('\s{2,}', ' ', match)
-    html = ''.join(matches)
+        matches[i] = re.sub("\s{2,}", " ", match)
+    html = "".join(matches)
     return html

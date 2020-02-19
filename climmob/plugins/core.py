@@ -1,11 +1,11 @@
-'''
+"""
 Provides plugin services to climmob
 
 This code is based on CKAN 
 :Copyright (C) 2007 Open Knowledge Foundation
 :license: AGPL V3, see LICENSE for more details.
 
-'''
+"""
 
 from pkg_resources import iter_entry_points
 from pyutilib.component.core import implements
@@ -17,19 +17,25 @@ from pyutilib.component.core import Plugin as _pca_Plugin
 from .interfaces import IPluginObserver
 
 __all__ = [
-    'PluginImplementations', 'implements',
-    'PluginNotFoundException', 'Plugin', 'SingletonPlugin',
-    'load', 'load_all', 'unload', 'unload_all',
-    'get_plugin',
-    'plugin_loaded',
+    "PluginImplementations",
+    "implements",
+    "PluginNotFoundException",
+    "Plugin",
+    "SingletonPlugin",
+    "load",
+    "load_all",
+    "unload",
+    "unload_all",
+    "get_plugin",
+    "plugin_loaded",
 ]
 
 # Entry point group.
-PLUGINS_ENTRY_POINT_GROUP = 'climmob.plugins'
- #Entry point for celery tasks
+PLUGINS_ENTRY_POINT_GROUP = "climmob.plugins"
+# Entry point for celery tasks
 
 # Entry point for test plugins.
-TEST_PLUGINS_ENTRY_POINT_GROUP = 'climmob.test_plugins'
+TEST_PLUGINS_ENTRY_POINT_GROUP = "climmob.test_plugins"
 
 GROUPS = [
     PLUGINS_ENTRY_POINT_GROUP,
@@ -44,58 +50,58 @@ _PLUGINS_SERVICE = {}
 
 
 class PluginNotFoundException(Exception):
-    '''
+    """
     Raised when a requested plugin cannot be found.
-    '''
+    """
 
 
 class Plugin(_pca_Plugin):
-    '''
+    """
     Base class for plugins which require multiple instances.
 
     Unless you need multiple instances of your plugin object you should
     probably use SingletonPlugin.
-    '''
+    """
 
 
 class SingletonPlugin(_pca_SingletonPlugin):
-    '''
+    """
     Base class for plugins which are singletons (ie most of them)
 
     One singleton instance of this class will be created when the plugin is
     loaded. Subsequent calls to the class constructor will always return the
     same singleton instance.
-    '''
+    """
 
 
 def get_plugin(plugin):
-    ''' Get an instance of a active plugin by name.  This is helpful for
-    testing. '''
+    """ Get an instance of a active plugin by name.  This is helpful for
+    testing. """
     if plugin in _PLUGINS_SERVICE:
         return _PLUGINS_SERVICE[plugin]
 
 
 def load_all(settings):
-    '''
+    """
     Load all plugins listed in the 'pcaexample.plugins' settings variable.
-    '''
+    """
     # Clear any loaded plugins
     unload_all()
 
-    plugins = settings.get(PLUGINS_ENTRY_POINT_GROUP, '').split()
+    plugins = settings.get(PLUGINS_ENTRY_POINT_GROUP, "").split()
     load(*plugins)
 
 
 def load(*plugins):
-    '''
+    """
     Load named plugin(s).
-    '''
+    """
     output = []
 
     observers = PluginImplementations(IPluginObserver)
     for plugin in plugins:
         if plugin in _PLUGINS:
-            raise Exception('Plugin {} already loaded'.format(plugin))
+            raise Exception("Plugin {} already loaded".format(plugin))
 
         service = _get_service(plugin)
         for observer_plugin in observers:
@@ -121,17 +127,17 @@ def load(*plugins):
 
 
 def unload_all():
-    '''
+    """
     Unload (deactivate) all loaded plugins in the reverse order that they
     were loaded.
-    '''
+    """
     unload(*reversed(_PLUGINS))
 
 
 def unload(*plugins):
-    '''
+    """
     Unload named plugin(s).
-    '''
+    """
 
     observers = PluginImplementations(IPluginObserver)
 
@@ -141,7 +147,7 @@ def unload(*plugins):
             if plugin in _PLUGINS_SERVICE:
                 del _PLUGINS_SERVICE[plugin]
         else:
-            raise Exception('Cannot unload plugin {}'.format(plugin))
+            raise Exception("Cannot unload plugin {}".format(plugin))
 
         service = _get_service(plugin)
         for observer_plugin in observers:
@@ -156,33 +162,30 @@ def unload(*plugins):
 
 
 def plugin_loaded(name):
-    '''
+    """
     See if a particular plugin is loaded.
-    '''
+    """
     if name in _PLUGINS:
         return True
     return False
 
 
 def _get_service(plugin_name):
-    '''
+    """
     Return a service (ie an instance of a plugin class).
 
     :param plugin_name: the name of a plugin entry point
     :type plugin_name: string
 
     :return: the service object
-    '''
+    """
 
     if isinstance(plugin_name, str):
         for group in GROUPS:
-            iterator = iter_entry_points(
-                group=group,
-                name=plugin_name
-            )
+            iterator = iter_entry_points(group=group, name=plugin_name)
             plugin = next(iterator, None)
             if plugin:
                 return plugin.load()(name=plugin_name)
         raise PluginNotFoundException(plugin_name)
     else:
-        raise TypeError('Expected a plugin name', plugin_name)
+        raise TypeError("Expected a plugin name", plugin_name)
