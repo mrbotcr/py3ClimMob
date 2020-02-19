@@ -65,7 +65,7 @@ def create_index_html(
         "emailDesc": _("Email"),
     }
 
-    options = {"crop-w": 754}
+    options = {"crop-w": 754, "log-level": "none"}
 
     with open(html, "w") as f:
 

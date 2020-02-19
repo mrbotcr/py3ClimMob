@@ -39,7 +39,7 @@ def create_index_html(html, png, qrid, packageid, projectid, projectname, projec
         "projectname": projectname,
         "projectdate": projectdate,
     }
-    options = {"crop-w": 384}
+    options = {"crop-w": 384, "log-level": "none"}
 
     with open(html, "w") as f:
 
