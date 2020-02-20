@@ -43,53 +43,55 @@ def createReports(locale, path, user, projectid, data, info, infosheet):
         except Exception as e:
             print("We can't create the CSV." + str(e))
 
-    pathScript = (
-        os.path.join(PATH, "modelo")
-        .replace(" ", "\ ")
-        .replace("(", "\(")
-        .replace(")", "\)")
-    )
+    pathScript = "/home/bmadriz/temp/ClimMobAnalysis/ClimMob.R"
 
-    print(
-        "Rscript "
-        + pathScript
-        + "/climmobv3_analysis21022019.R "
-        + pathInputFiles
-        + "/info.json"
-        + " "
-        + pathInputFiles
-        + "/data.json"
-        + " result.json "
-        + pathouttemp
-        + " TRUE "
-        + infosheet
-    )
+
     os.system(
         "Rscript "
         + pathScript
-        + "/climmobv3_analysis21022019.R "
-        + pathInputFiles
-        + "/info.json"
         + " "
-        + pathInputFiles
-        + "/data.json"
-        + " result.json "
+        + pathInputFiles + "/data.json"
+        + " "
+        + pathInputFiles+ "/info.json"
+        + " "
         + pathouttemp
         + " TRUE "
-        + infosheet
+        + " en "
+        + " docx "
+        + " participant "
+        + " item "
     )
 
-    createTheDocuments(
-        locale,
-        path,
-        pathout,
-        pathInputFiles,
-        pathouttemp,
-        "Report",
-        pathouttemp + "/result.json",
-        infosheet,
-        projectid,
-    )
+    report = pathouttemp + "/" + projectid + "_report.docx"
+    #reportInfo = output_dirtemp + "/" + output_fname + "_INFOS.pdf"
+    reportData = pathouttemp + "/Report_data.csv"
+    file_paths = []
+
+    if os.path.exists(report):
+        file_paths.append(report)
+
+    #if os.path.exists(reportInfo):
+    #    file_paths.append(reportInfo)
+
+    if os.path.exists(reportData):
+        file_paths.append(reportData)
+
+    with ZipFile(pathout + "/reports_" + projectid + ".zip", "w") as zipReport:
+        # writing each file one by one
+        for file in file_paths:
+            zipReport.write(file, basename(file))
+
+    # createTheDocuments(
+    #     locale,
+    #     path,
+    #     pathout,
+    #     pathInputFiles,
+    #     pathouttemp,
+    #     "Report",
+    #     pathouttemp + "/result.json",
+    #     infosheet,
+    #     projectid,
+    # )
 
     return ""
 

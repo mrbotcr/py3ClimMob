@@ -16,7 +16,7 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 
 @celeryApp.task(base=celeryTask, soft_time_limit=7200, time_limit=7200)
 def createFieldAgentsReport(locale, url, user, path, projectid, fieldagents):
-    print("entraaaaaa tarea")
+    #print("entraaaaaa tarea")
     parts = __file__.split("/products/")
     this_file_path = parts[0] + "/locale"
     try:

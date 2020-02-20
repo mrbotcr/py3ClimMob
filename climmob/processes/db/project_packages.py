@@ -205,18 +205,24 @@ def create_packages_with_r(user, project, request):
         for comb in combData:
             combinations.append(comb.comb_code)
         if combinations:
-            r_file = open(rfile, "w")
-            r_file.write(str(prjData.project_numcom) + "\n")
-            r_file.write(str(prjData.project_numobs) + "\n")
-            r_file.write(str(len(combinations)) + "\n")
-            for comb in combinations:
-                r_file.write(str(comb) + "\n")
-            r_file.close()
+            #r_file = open(rfile, "w")
+            #r_file.write(str(prjData.project_numcom) + "\n")
+            #r_file.write(str(prjData.project_numobs) + "\n")
+            #r_file.write(str(len(combinations)) + "\n")
+            #for comb in combinations:
+            #    r_file.write(str(comb) + "\n")
+            #r_file.close()
 
             args = []
             args.append("Rscript")
             args.append(request.registry.settings["r.random.script"])
-            args.append(rfile)
+            args.append(str(prjData.project_numcom))
+            args.append(str(prjData.project_numobs))
+            args.append(str(len(combinations)))
+            args.append("inames=c("+', '.join(map(str, combinations))+")")
+            args.append(rout)
+
+            #print(' '.join(map(str, args)))
             try:
                 check_call(args)
                 request.dbsession.query(Package).filter(
