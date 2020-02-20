@@ -103,4 +103,5 @@ def createFieldAgentsReport(locale, url, user, path, projectid, fieldagents):
     html = HTML(filename=pathouttemp + "/fieldagents_" + projectid + ".html")
     html.write_pdf(pathoutput + "/fieldagents_" + projectid + ".pdf")
 
+    sh.rmtree(pathouttemp)
     return ""

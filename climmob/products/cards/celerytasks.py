@@ -206,5 +206,6 @@ def createCards(path, projectid, packages):
     # import shutil
     # shutil.rmtree(path)
     # shutil.rmtree(pathqrs)
+    sh.rmtree(path)
 
     return ""

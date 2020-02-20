@@ -43,8 +43,23 @@ def createReports(locale, path, user, projectid, data, info, infosheet):
         except Exception as e:
             print("We can't create the CSV." + str(e))
 
-    pathScript = "/home/bmadriz/temp/ClimMobAnalysis"
+    parts = __file__.split("/products/")
+    this_file_path = parts[0] + "/locale"
+    try:
+        es = gettext.translation(
+            "climmob", localedir=this_file_path, languages=[locale]
+        )
+        es.install()
+        _ = es.gettext
+    except:
+        locale = "en"
+        es = gettext.translation(
+            "climmob", localedir=this_file_path, languages=[locale]
+        )
+        es.install()
+        _ = es.gettext
 
+    pathScript = "/home/bmadriz/temp/ClimMobAnalysis"
 
     os.system(
         "Rscript "
@@ -56,23 +71,23 @@ def createReports(locale, path, user, projectid, data, info, infosheet):
         + " "
         + pathouttemp
         + " TRUE "
-        + " en "
+        + " "+locale+" "
         + " docx "
-        + " participant "
-        + " item "
+        + " " + _("participant")
+        + " " + _("item")
         + " "+pathScript
     )
 
     report = pathouttemp + "/" + projectid + "_report.docx"
-    #reportInfo = output_dirtemp + "/" + output_fname + "_INFOS.pdf"
+    reportInfo = pathouttemp + "/" + projectid + "_infosheets.docx"
     reportData = pathouttemp + "/Report_data.csv"
     file_paths = []
 
     if os.path.exists(report):
         file_paths.append(report)
 
-    #if os.path.exists(reportInfo):
-    #    file_paths.append(reportInfo)
+    if os.path.exists(reportInfo):
+        file_paths.append(reportInfo)
 
     if os.path.exists(reportData):
         file_paths.append(reportData)
@@ -93,6 +108,9 @@ def createReports(locale, path, user, projectid, data, info, infosheet):
     #     infosheet,
     #     projectid,
     # )
+
+    sh.rmtree(pathouttemp)
+    sh.rmtree(pathInputFiles)
 
     return ""
 
