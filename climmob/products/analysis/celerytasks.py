@@ -43,12 +43,12 @@ def createReports(locale, path, user, projectid, data, info, infosheet):
         except Exception as e:
             print("We can't create the CSV." + str(e))
 
-    pathScript = "/home/bmadriz/temp/ClimMobAnalysis/ClimMob.R"
+    pathScript = "/home/bmadriz/temp/ClimMobAnalysis"
 
 
     os.system(
         "Rscript "
-        + pathScript
+        + pathScript +"/ClimMob.R"
         + " "
         + pathInputFiles + "/data.json"
         + " "
@@ -60,6 +60,7 @@ def createReports(locale, path, user, projectid, data, info, infosheet):
         + " docx "
         + " participant "
         + " item "
+        + " "+pathScript
     )
 
     report = pathouttemp + "/" + projectid + "_report.docx"
