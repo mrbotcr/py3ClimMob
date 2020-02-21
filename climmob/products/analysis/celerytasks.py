@@ -59,7 +59,7 @@ def createReports(locale, path, user, projectid, data, info, infosheet):
         es.install()
         _ = es.gettext
 
-    pathScript = "/home/bmadriz/temp/ClimMobAnalysis"
+    pathScript = "/home/ubuntu/new_r_code/ClimMob-analysis"
 
     os.system(
         "Rscript "
@@ -109,8 +109,8 @@ def createReports(locale, path, user, projectid, data, info, infosheet):
     #     projectid,
     # )
 
-    sh.rmtree(pathouttemp)
-    sh.rmtree(pathInputFiles)
+    #sh.rmtree(pathouttemp)
+    #sh.rmtree(pathInputFiles)
 
     return ""
 
