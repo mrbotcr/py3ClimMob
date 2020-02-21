@@ -121,7 +121,9 @@ def getUserByEmail(email, request):
         .first()
     )
     if result is not None:
-        return User(mapFromSchema(result)), decodeData(request, result.user_password)
+        return User(mapFromSchema(result)), decodeData(request, result.user_password).decode(
+            "utf-8"
+        )
     return None, None
 
 
