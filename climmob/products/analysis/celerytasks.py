@@ -109,8 +109,8 @@ def createReports(locale, path, user, projectid, data, info, infosheet):
     #     projectid,
     # )
 
-    sh.rmtree(pathouttemp)
-    sh.rmtree(pathInputFiles)
+    #sh.rmtree(pathouttemp)
+    #sh.rmtree(pathInputFiles)
 
     return ""
 
