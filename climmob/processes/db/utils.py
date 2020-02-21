@@ -13,7 +13,7 @@ __all__ = [
 
 def getCountryList(request):
     countries = []
-    results = request.dbsession.query(Country).all()
+    results = request.dbsession.query(Country).order_by(Country.cnty_name).all()
     for result in results:
         try:
             # name = unicode(result.cnty_name.decode('cp1252').encode('utf-8'))
