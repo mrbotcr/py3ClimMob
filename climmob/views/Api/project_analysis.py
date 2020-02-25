@@ -12,7 +12,11 @@ class readDataOfProjectView_api(apiView):
             if "Body" in self.request.params:
 
                 obligatory = [u"project_cod"]
-                dataworking = json.loads(self.request.params["Body"])
+                try:
+                    dataworking = json.loads(self.request.params["Body"])
+                except:
+                    response = Response(status=401,body=self._("Error in the JSON, It does not have the 'body' parameter."))
+                    return response
 
                 if sorted(obligatory) == sorted(dataworking.keys()):
 

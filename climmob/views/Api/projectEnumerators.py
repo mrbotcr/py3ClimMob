@@ -19,7 +19,11 @@ class addProjectEnumerator_view(apiView):
 
         if self.request.method == "POST":
             obligatory = [u"project_cod", u"enum_id"]
-            dataworking = json.loads(self.request.params["Body"])
+            try:
+                dataworking = json.loads(self.request.params["Body"])
+            except:
+                response = Response(status=401,body=self._("Error in the JSON, It does not have the 'body' parameter."))
+                return response
 
             if sorted(obligatory) == sorted(dataworking.keys()):
                 exitsproject = projectExists(
@@ -87,7 +91,11 @@ class readProjectEnumerators_view(apiView):
 
         if self.request.method == "GET":
             obligatory = [u"project_cod"]
-            dataworking = json.loads(self.request.params["Body"])
+            try:
+                dataworking = json.loads(self.request.params["Body"])
+            except:
+                response = Response(status=401,body=self._("Error in the JSON, It does not have the 'body' parameter."))
+                return response
 
             if sorted(obligatory) == sorted(dataworking.keys()):
                 exitsproject = projectExists(
@@ -123,7 +131,11 @@ class readPossibleProjectEnumerators_view(apiView):
 
         if self.request.method == "GET":
             obligatory = [u"project_cod"]
-            dataworking = json.loads(self.request.params["Body"])
+            try:
+                dataworking = json.loads(self.request.params["Body"])
+            except:
+                response = Response(status=401,body=self._("Error in the JSON, It does not have the 'body' parameter."))
+                return response
 
             if sorted(obligatory) == sorted(dataworking.keys()):
                 exitsproject = projectExists(
@@ -159,7 +171,11 @@ class deleteProjectEnumerator_view(apiView):
 
         if self.request.method == "POST":
             obligatory = [u"project_cod", u"enum_id"]
-            dataworking = json.loads(self.request.params["Body"])
+            try:
+                dataworking = json.loads(self.request.params["Body"])
+            except:
+                response = Response(status=401,body=self._("Error in the JSON, It does not have the 'body' parameter."))
+                return response
 
             if sorted(obligatory) == sorted(dataworking.keys()):
                 exitsproject = projectExists(

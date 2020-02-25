@@ -540,7 +540,7 @@
                                                                             </tr>
                                                                             <tr>
                                                                                 <td style="vertical-align: inherit">{{ _("Number submissions") }}: </td>
-                                                                                <td style="vertical-align: inherit">{{ assessment.asstotal }} {% if assessment.asstotal > 0 %}({{ assessment.assperc }}%){% endif %}</td>
+                                                                                <td style="vertical-align: inherit">{{ assessment.asstotal }} {% if assessment.asstotal > 0 %}({{ assessment.assperc|round(1, 'floor') }}%){% endif %}</td>
                                                                                 {% if assessment.asstotal > 0 %}
                                                                                     <td>
                                                                                         <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{ request.route_url('EditDataAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}" href="#"><i class="fa fa-table"></i> {{ _("View data") }}</a>

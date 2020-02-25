@@ -90,10 +90,7 @@ class readTechnologies_view(apiView):
                 status=200,
                 body=json.dumps(
                     list(
-                        merge(
-                            getUserTechs(self.user.login, self.request),
-                            getUserTechs("bioversity", self.request),
-                        )
+                        [*getUserTechs(self.user.login, self.request),*getUserTechs("bioversity", self.request)]
                     )
                 ),
             )
@@ -102,6 +99,16 @@ class readTechnologies_view(apiView):
             response = Response(status=401, body=self._("Only accepts GET method."))
             return response
 
+"""list(
+
+        getUserTechs(self.user.login, self.request),getUserTechs("bioversity", self.request)
+
+)"""
+def merge_two_dicts(x, y):
+    """Given two dicts, merge them into a new dict as a shallow copy."""
+    z = x.copy()
+    z.update(y)
+    return z
 
 class updateTechnology_view(apiView):
     def processView(self):

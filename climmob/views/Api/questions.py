@@ -228,10 +228,7 @@ class readQuestions_view(apiView):
                 status=200,
                 body=json.dumps(
                     list(
-                        merge(
-                            UserQuestion(self.user.login, self.request),
-                            UserQuestion("bioversity", self.request),
-                        )
+                        [*UserQuestion(self.user.login, self.request), *UserQuestion("bioversity", self.request)]
                     )
                 ),
             )
@@ -470,7 +467,12 @@ class readQuestionValues_view(apiView):
         if self.request.method == "GET":
             obligatory = [u"question_id", "user_name"]
 
-            dataworking = json.loads(self.request.params["Body"])
+            try:
+                dataworking = json.loads(self.request.params["Body"])
+            except:
+                response = Response(status=401,
+                                    body=self._("Error in the JSON, It does not have the 'body' parameter."))
+                return response
             dataworking["user_name"] = self.user.login
 
             if sorted(obligatory) == sorted(dataworking.keys()):

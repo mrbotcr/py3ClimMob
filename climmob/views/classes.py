@@ -357,7 +357,7 @@ class apiView(object):
                     self.body = self.request.params["Body"]
                 except:
                     response = Response(
-                        status=401, body=self.request.translate("Body non-existent")
+                        status=401, body=self.request.translate("Error in the JSON, It does not have the 'body' parameter.")
                     )
                     return response
 
