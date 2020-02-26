@@ -806,10 +806,10 @@ class pushJsonToRegistry_view(apiView):
                                                             f = open(pathfinal, "w")
                                                             f.write(json.dumps(_json))
                                                             f.close()
-
                                                             storeJSONInMySQL(
                                                                 "REG",
                                                                 self.user.login,
+                                                                None,
                                                                 dataworking[
                                                                     "project_cod"
                                                                 ],

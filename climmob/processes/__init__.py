@@ -23,3 +23,4 @@ from .Api.project import *
 from .db.analysis import *
 from .db.qstgroups import *
 from .db.progress import *
+from .db.json import *

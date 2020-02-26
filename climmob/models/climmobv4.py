@@ -8,7 +8,9 @@ from sqlalchemy import (
     Integer,
     LargeBinary,
     Numeric,
+    UnicodeText,
     String,
+    Unicode,
     Text,
     text,
 )
@@ -883,3 +885,65 @@ class User(Base):
 
     country = relationship(u"Country")
     sector = relationship(u"Sector")
+
+
+class RegistryJsonLog(Base):
+    __tablename__ = "registry_jsonlog"
+    __table_args__ = (
+
+        ForeignKeyConstraint(
+            ["user_name", "project_cod"],
+            [u"project.user_name", u"project.project_cod"],
+            #ondelete=u"CASCADE",
+        ),
+        ForeignKeyConstraint(
+        ["enum_user", "enum_id"],
+        [u"enumerator.user_name", u"enumerator.enum_id"],
+        #ondelete=u"CASCADE",
+    )
+    )
+
+    user_name = Column(String(80), primary_key=True, nullable=False)
+    project_cod = Column(String(80), primary_key=True, nullable=False)
+    log_id = Column(Unicode(64), primary_key=True, nullable=False)
+    enum_user = Column(String(80), primary_key=True, nullable=False)
+    enum_id = Column(String(80), primary_key=True, nullable=False)
+
+    log_dtime = Column(DateTime)
+    json_file = Column(UnicodeText)
+    log_file = Column(UnicodeText)
+    status = Column(Integer)
+
+    project = relationship(u"Project")
+    enumerator = relationship(u"Enumerator")
+
+
+class AssessmentJsonLog(Base):
+    __tablename__ = "assesment_jsonlog"
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["user_name", "project_cod", "ass_cod"],
+            [u"assessment.user_name", u"assessment.project_cod", u"assessment.ass_cod"],
+            #ondelete=u"CASCADE",
+        ),
+        ForeignKeyConstraint(
+            ["enum_user", "enum_id"],
+            [u"enumerator.user_name", u"enumerator.enum_id"],
+            #ondelete=u"CASCADE",
+        ),
+        {"mysql_engine": "InnoDB", "mysql_charset": "utf8"},
+    )
+
+    user_name = Column(String(80), primary_key=True, nullable=False)
+    project_cod = Column(String(80), primary_key=True, nullable=False)
+    ass_cod = Column(String(80), primary_key=True, nullable=False)
+    log_id = Column(Unicode(64), primary_key=True, nullable=False)
+    enum_user = Column(String(80), primary_key=True, nullable=False)
+    enum_id = Column(String(80), primary_key=True, nullable=False)
+    log_dtime = Column(DateTime)
+    json_file = Column(UnicodeText)
+    log_file = Column(UnicodeText)
+    status = Column(Integer)
+
+    assessment = relationship(u"Assessment")
+    enumerator = relationship(u"Enumerator")

@@ -5,6 +5,8 @@ jinja_extensions = """
                     jinja2.ext.do, jinja2.ext.with_,
                     climmob.config.jinja_extensions.SnippetExtension,
                     climmob.config.jinja_extensions.ResourceExtension,
+                    climmob.config.jinja_extensions:JSResourceExtension,
+                    climmob.config.jinja_extensions:CSSResourceExtension,
                     climmob.config.jinja_extensions.extendThis,
                    """
 

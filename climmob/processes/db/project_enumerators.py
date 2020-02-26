@@ -69,7 +69,7 @@ def seeProgress(user, project, request):
             dct = dict(qst)
             for key, value in dct.items():
                 if isinstance(value, str):
-                    dct[key] = value.decode("utf8")
+                    dct[key] = value
             result.append(dct)
         all["registry"] = result
     except:
@@ -95,7 +95,7 @@ def seeProgress(user, project, request):
                 dct = dict(qst)
                 for key, value in dct.iteritems():
                     if isinstance(value, str):
-                        dct[key] = value.decode("utf8")
+                        dct[key] = value
                 result.append(dct)
 
             all[assessment["ass_cod"]] = result

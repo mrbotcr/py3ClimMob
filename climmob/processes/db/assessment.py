@@ -89,16 +89,18 @@ def exitsAssessmentGroup(data, self):
         return True
 
 
-def projectAsessmentStatus(user, project, request):
+def projectAsessmentStatus(user, project, ass_cod, request):
     result = (
-        request.dbsession.query(Project)
-        .filter(Project.user_name == user, Project.project_cod == project)
+        request.dbsession.query(Assessment)
+        .filter(Assessment.user_name == user, Assessment.project_cod == project, Assessment.ass_cod == ass_cod)
         .first()
     )
-    if result.project_assstatus == 0:
-        return True
-    else:
-        return False
+    if result:
+        if result.ass_status == 0:
+            return True
+        else:
+            return False
+    return False
 
 
 def AsessmentStatus(user, project, assessment, request):

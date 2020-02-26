@@ -90,37 +90,37 @@ class addNewAssessment_view(apiView):
                         self.user.login, dataworking["project_cod"], self.request
                     )
                     if exitsproject:
-                        if projectAsessmentStatus(
-                            self.user.login, dataworking["project_cod"], self.request
-                        ):
-                            if dataworking["ass_days"].isdigit():
-                                added, msg = addProjectAssessment(
-                                    dataworking, self.request, "API"
-                                )
-                                if not added:
-                                    response = Response(status=401, body=msg)
-                                    return response
-                                else:
-                                    response = Response(
-                                        status=200, body=json.dumps(msg)
-                                    )
-                                    return response
+                        #if projectAsessmentStatus(
+                        #    self.user.login, dataworking["project_cod"], dataworking["ass_cod"], self.request
+                        #):
+                        if dataworking["ass_days"].isdigit():
+                            added, msg = addProjectAssessment(
+                                dataworking, self.request, "API"
+                            )
+                            if not added:
+                                response = Response(status=401, body=msg)
+                                return response
                             else:
                                 response = Response(
-                                    status=401,
-                                    body=self._(
-                                        "The parameter ass_days must be a number."
-                                    ),
+                                    status=200, body=json.dumps(msg)
                                 )
                                 return response
                         else:
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "You can not add assessments. You already started the data collection."
+                                    "The parameter ass_days must be a number."
                                 ),
                             )
                             return response
+                        #else:
+                        #    response = Response(
+                        #        status=401,
+                        #        body=self._(
+                        #            "You can not add assessments. You already started the data collection."
+                        #        ),
+                        #    )
+                        #    return response
                     else:
                         response = Response(
                             status=401,
@@ -159,35 +159,27 @@ class updateProjectAssessment_view(apiView):
                         self.user.login, dataworking["project_cod"], self.request
                     )
                     if exitsproject:
-                        if projectAsessmentStatus(
-                            self.user.login, dataworking["project_cod"], self.request
-                        ):
-                            if dataworking["ass_days"].isdigit():
-                                if assessmentExists(
-                                    self.user.login,
-                                    dataworking["project_cod"],
-                                    dataworking["ass_cod"],
-                                    self.request,
-                                ):
-                                    mdf, msg = modifyProjectAssessment(
-                                        dataworking, self.request
-                                    )
-                                    if not mdf:
-                                        response = Response(status=401, body=msg)
-                                        return response
-                                    else:
-                                        response = Response(
-                                            status=200,
-                                            body=self._(
-                                                "Assessment updated successfully."
-                                            ),
-                                        )
-                                        return response
+                        #if projectAsessmentStatus(
+                        #    self.user.login, dataworking["project_cod"], dataworking["ass_cod"], self.request
+                        #):
+                        if dataworking["ass_days"].isdigit():
+                            if assessmentExists(
+                                self.user.login,
+                                dataworking["project_cod"],
+                                dataworking["ass_cod"],
+                                self.request,
+                            ):
+                                mdf, msg = modifyProjectAssessment(
+                                    dataworking, self.request
+                                )
+                                if not mdf:
+                                    response = Response(status=401, body=msg)
+                                    return response
                                 else:
                                     response = Response(
-                                        status=401,
+                                        status=200,
                                         body=self._(
-                                            "There is not a assessment with that code."
+                                            "Assessment updated successfully."
                                         ),
                                     )
                                     return response
@@ -195,7 +187,7 @@ class updateProjectAssessment_view(apiView):
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "The parameter ass_days must be a number."
+                                        "There is not a assessment with that code."
                                     ),
                                 )
                                 return response
@@ -203,10 +195,18 @@ class updateProjectAssessment_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "You can not update assessments. You already started the data collection."
+                                    "The parameter ass_days must be a number."
                                 ),
                             )
                             return response
+                        #else:
+                        #    response = Response(
+                        #        status=401,
+                        #        body=self._(
+                        #            "You can not update assessments. You already started the data collection."
+                        #        ),
+                        #    )
+                        #    return response
                     else:
                         response = Response(
                             status=401,
@@ -245,15 +245,14 @@ class deleteProjectAssessment_view(apiView):
                         self.user.login, dataworking["project_cod"], self.request
                     )
                     if exitsproject:
-                        if projectAsessmentStatus(
-                            self.user.login, dataworking["project_cod"], self.request
+                        if assessmentExists(
+                            self.user.login,
+                            dataworking["project_cod"],
+                            dataworking["ass_cod"],
+                            self.request,
                         ):
-
-                            if assessmentExists(
-                                self.user.login,
-                                dataworking["project_cod"],
-                                dataworking["ass_cod"],
-                                self.request,
+                            if projectAsessmentStatus(
+                                    self.user.login, dataworking["project_cod"], dataworking["ass_cod"], self.request
                             ):
                                 delete, msg = deleteProjectAssessment(
                                     self.user.login,
@@ -274,7 +273,7 @@ class deleteProjectAssessment_view(apiView):
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "There is not a assessment with that code."
+                                        "You can not delete the assessment."
                                     ),
                                 )
                                 return response
@@ -282,7 +281,7 @@ class deleteProjectAssessment_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "You can not update assessments. You already started the data collection."
+                                    "There is not a assessment with that code."
                                 ),
                             )
                             return response
@@ -431,14 +430,15 @@ class createAssessmentGroup_view(apiView):
                         self.user.login, dataworking["project_cod"], self.request
                     )
                     if exitsproject:
-                        if projectAsessmentStatus(
-                            self.user.login, dataworking["project_cod"], self.request
+
+                        if assessmentExists(
+                            self.user.login,
+                            dataworking["project_cod"],
+                            dataworking["ass_cod"],
+                            self.request,
                         ):
-                            if assessmentExists(
-                                self.user.login,
-                                dataworking["project_cod"],
-                                dataworking["ass_cod"],
-                                self.request,
+                            if projectAsessmentStatus(
+                                    self.user.login, dataworking["project_cod"], dataworking["ass_cod"], self.request
                             ):
                                 haveTheBasicStructureAssessment(
                                     self.user.login,
@@ -471,7 +471,7 @@ class createAssessmentGroup_view(apiView):
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "There is not a assessment with that code."
+                                        "You can not update assessments. You already started the data collection."
                                     ),
                                 )
                                 return response
@@ -479,7 +479,7 @@ class createAssessmentGroup_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "You can not update assessments. You already started the data collection."
+                                    "There is not a assessment with that code."
                                 ),
                             )
                             return response
@@ -528,14 +528,15 @@ class updateAssessmentGroup_view(apiView):
                         self.user.login, dataworking["project_cod"], self.request
                     )
                     if exitsproject:
-                        if projectAsessmentStatus(
-                            self.user.login, dataworking["project_cod"], self.request
+
+                        if assessmentExists(
+                            self.user.login,
+                            dataworking["project_cod"],
+                            dataworking["ass_cod"],
+                            self.request,
                         ):
-                            if assessmentExists(
-                                self.user.login,
-                                dataworking["project_cod"],
-                                dataworking["ass_cod"],
-                                self.request,
+                            if projectAsessmentStatus(
+                                    self.user.login, dataworking["project_cod"], dataworking["ass_cod"], self.request
                             ):
                                 exitsGroup = exitsAssessmentGroup(dataworking, self)
                                 if exitsGroup:
@@ -574,7 +575,7 @@ class updateAssessmentGroup_view(apiView):
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "There is not a assessment with that code."
+                                        "You can not update assessments. You already started the data collection."
                                     ),
                                 )
                                 return response
@@ -582,7 +583,7 @@ class updateAssessmentGroup_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "You can not update assessments. You already started the data collection."
+                                    "There is not a assessment with that code."
                                 ),
                             )
                             return response
@@ -625,14 +626,15 @@ class deleteAssessmentGroup_view(apiView):
                         self.user.login, dataworking["project_cod"], self.request
                     )
                     if exitsproject:
-                        if projectAsessmentStatus(
-                            self.user.login, dataworking["project_cod"], self.request
+
+                        if assessmentExists(
+                            self.user.login,
+                            dataworking["project_cod"],
+                            dataworking["ass_cod"],
+                            self.request,
                         ):
-                            if assessmentExists(
-                                self.user.login,
-                                dataworking["project_cod"],
-                                dataworking["ass_cod"],
-                                self.request,
+                            if projectAsessmentStatus(
+                                    self.user.login, dataworking["project_cod"], dataworking["ass_cod"], self.request
                             ):
                                 exitsGroup = exitsAssessmentGroup(dataworking, self)
                                 if exitsGroup:
@@ -680,7 +682,7 @@ class deleteAssessmentGroup_view(apiView):
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "There is not a assessment with that code."
+                                        "You can not update assessments. You already started the data collection."
                                     ),
                                 )
                                 return response
@@ -688,7 +690,7 @@ class deleteAssessmentGroup_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "You can not update assessments. You already started the data collection."
+                                    "There is not a assessment with that code."
                                 ),
                             )
                             return response
@@ -739,14 +741,14 @@ class readPossibleQuestionForAssessmentGroup_view(apiView):
                         self.user.login, dataworking["project_cod"], self.request
                     )
                     if exitsproject:
-                        if projectAsessmentStatus(
-                            self.user.login, dataworking["project_cod"], self.request
-                        ):
-                            if assessmentExists(
+                        if assessmentExists(
                                 self.user.login,
                                 dataworking["project_cod"],
                                 dataworking["ass_cod"],
                                 self.request,
+                        ):
+                            if projectAsessmentStatus(
+                                    self.user.login, dataworking["project_cod"], dataworking["ass_cod"], self.request
                             ):
 
                                 response = Response(
@@ -770,7 +772,7 @@ class readPossibleQuestionForAssessmentGroup_view(apiView):
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "There is not a assessment with that code."
+                                        "You can not update assessments. You already started the data collection."
                                     ),
                                 )
                                 return response
@@ -778,7 +780,7 @@ class readPossibleQuestionForAssessmentGroup_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "You can not read the possible question for assessments. You already started the data collection."
+                                    "There is not a assessment with that code."
                                 ),
                             )
                             return response
@@ -821,14 +823,14 @@ class addQuestionToGroupAssessment_view(apiView):
                         self.user.login, dataworking["project_cod"], self.request
                     )
                     if exitsproject:
-                        if projectAsessmentStatus(
-                            self.user.login, dataworking["project_cod"], self.request
-                        ):
-                            if assessmentExists(
+                        if assessmentExists(
                                 self.user.login,
                                 dataworking["project_cod"],
                                 dataworking["ass_cod"],
                                 self.request,
+                        ):
+                            if projectAsessmentStatus(
+                                    self.user.login, dataworking["project_cod"], dataworking["ass_cod"], self.request
                             ):
                                 exitsGroup = exitsAssessmentGroup(dataworking, self)
                                 if exitsGroup:
@@ -895,7 +897,7 @@ class addQuestionToGroupAssessment_view(apiView):
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "There is not a assessment with that code."
+                                        "You can not update assessments. You already started the data collection."
                                     ),
                                 )
                                 return response
@@ -903,7 +905,7 @@ class addQuestionToGroupAssessment_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "You can not update assessments. You already started the data collection."
+                                    "There is not a assessment with that code."
                                 ),
                             )
                             return response
@@ -946,14 +948,14 @@ class deleteQuestionFromGroupAssessment_view(apiView):
                         self.user.login, dataworking["project_cod"], self.request
                     )
                     if exitsproject:
-                        if projectAsessmentStatus(
-                            self.user.login, dataworking["project_cod"], self.request
-                        ):
-                            if assessmentExists(
+                        if assessmentExists(
                                 self.user.login,
                                 dataworking["project_cod"],
                                 dataworking["ass_cod"],
                                 self.request,
+                        ):
+                            if projectAsessmentStatus(
+                                    self.user.login, dataworking["project_cod"], dataworking["ass_cod"], self.request
                             ):
                                 exitsGroup = exitsAssessmentGroup(dataworking, self)
                                 if exitsGroup:
@@ -1022,7 +1024,7 @@ class deleteQuestionFromGroupAssessment_view(apiView):
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "There is not a assessment with that code."
+                                        "You can not update assessments. You already started the data collection."
                                     ),
                                 )
                                 return response
@@ -1030,7 +1032,7 @@ class deleteQuestionFromGroupAssessment_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "You can not update assessments. You already started the data collection."
+                                    "There is not a assessment with that code."
                                 ),
                             )
                             return response
@@ -1074,14 +1076,14 @@ class orderAssessmentQuestions_view(apiView):
                         self.user.login, dataworking["project_cod"], self.request
                     )
                     if exitsproject:
-                        if projectAsessmentStatus(
-                            self.user.login, dataworking["project_cod"], self.request
-                        ):
-                            if assessmentExists(
+                        if assessmentExists(
                                 self.user.login,
                                 dataworking["project_cod"],
                                 dataworking["ass_cod"],
                                 self.request,
+                        ):
+                            if projectAsessmentStatus(
+                                    self.user.login, dataworking["project_cod"], dataworking["ass_cod"], self.request
                             ):
                                 try:
                                     originalData = json.loads(dataworking["order"])
@@ -1165,7 +1167,7 @@ class orderAssessmentQuestions_view(apiView):
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "There is not a assessment with that code."
+                                        "You can not update assessments. You already started the data collection."
                                     ),
                                 )
                                 return response
@@ -1173,7 +1175,7 @@ class orderAssessmentQuestions_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "You can not update assessments. You already started the data collection."
+                                    "There is not a assessment with that code."
                                 ),
                             )
                             return response

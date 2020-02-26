@@ -168,7 +168,7 @@ def deleteEnumerator(user, enumerator, request):
         ).delete()
         return True, ""
     except Exception as e:
-        print(str(e))
+        #print(str(e))
         return False, e
 
 

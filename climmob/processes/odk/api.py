@@ -12,8 +12,10 @@ from ...processes import (
     isAssessmentOpen,
     assessmentExists,
     projectExists,
-    packageExist,
+    packageExist
 )
+from ..db.json import addJsonLog
+from pyramid.response import Response
 from subprocess import check_call, CalledProcessError, Popen, PIPE
 import logging
 import climmob.plugins as p
@@ -358,7 +360,7 @@ def storeError(
         return False, str(e)
 
 
-def storeJSONInMySQL(type, userid, projectid, assessmentid, JSONFile, request):
+def storeJSONInMySQL(type, userid, userEnum, projectid, assessmentid, JSONFile, request):
     schema = userid + "_" + projectid
     if type == "REG":
         manifestFile = os.path.join(
@@ -369,6 +371,7 @@ def storeJSONInMySQL(type, userid, projectid, assessmentid, JSONFile, request):
             request.registry.settings["user.repository"],
             *[userid, projectid, "db", "reg", "custom.js"]
         )
+
     else:
         manifestFile = os.path.join(
             request.registry.settings["user.repository"],
@@ -376,7 +379,11 @@ def storeJSONInMySQL(type, userid, projectid, assessmentid, JSONFile, request):
         )
         jsFile = ""
 
+    #print(JSONFile)
     importedFile = os.path.splitext(JSONFile)[0] + ".imp"
+    #print(importedFile)
+    importedFile = '/'.join(JSONFile.split('/')[:-2])+"/myimportedFile.imp"
+
     logFile = os.path.splitext(JSONFile)[0] + ".log"
     jsonPath = os.path.dirname(JSONFile)
     mapPath = os.path.join(jsonPath, *["maps"])
@@ -414,7 +421,7 @@ def storeJSONInMySQL(type, userid, projectid, assessmentid, JSONFile, request):
         print("*********************666")
         print(" ".join(args))
         print("*********************666")
-        storeError(
+        """storeError(
             fileuid,
             type,
             userid,
@@ -424,7 +431,12 @@ def storeJSONInMySQL(type, userid, projectid, assessmentid, JSONFile, request):
             stdout,
             " ".join(args),
             request,
-        )
+        )"""
+        
+        if userEnum != None:
+            addJsonLog(request,type,userid, userEnum,projectid,assessmentid,fileuid, JSONFile, logFile)
+
+
     return True
 
 
@@ -476,7 +488,7 @@ def convertXMLToJSON(
                 outfile.write(jsonString)
             # Now we store the data in MySQL
             storeJSONInMySQL(
-                submissionType, userid, projectID, assessmentID, JSONFile, request
+                submissionType, userid, userEnum,projectID, assessmentID, JSONFile, request
             )
         except CalledProcessError as e:
             print("1")

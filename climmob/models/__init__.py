@@ -45,6 +45,8 @@ from .climmobv4 import (
     I18nQstoption,
     Tasks,
     finishedTasks,
+    RegistryJsonLog,
+    AssessmentJsonLog,
     storageErrors,
 )
 
