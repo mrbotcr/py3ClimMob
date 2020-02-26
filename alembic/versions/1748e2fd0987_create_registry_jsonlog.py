@@ -31,7 +31,7 @@ def upgrade():
     mysql_default_charset='utf8',
     mysql_engine='InnoDB'
     )
-    op.drop_table('jsonlog')
+    #op.drop_table('jsonlog')
     # ### end Alembic commands ###
 
 
