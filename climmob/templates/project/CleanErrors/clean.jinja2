@@ -1,0 +1,250 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob | Clean error logs") }}</title>
+{% endblock title %}
+
+{% block pageheading %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>{{ _("Clean error logs") }}</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
+                </li>
+                <li class="active">
+                    <strong>{{ _("Clean error logs") }}</strong>
+                </li>
+            </ol>
+            <a href="" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
+        </div>
+        <div class="col-lg-2">
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block pagecontent %}
+
+    <style>
+    .vertical-timeline-content{
+        background: #F2F2F2;
+    }
+
+    .vertical-timeline-content:before{
+        border-right: 7px solid #F2F2F2;
+    }
+    </style>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{{ _("Select the error") }}</h5>
+                </div>
+                <div class="ibox-content" >
+                    <div id="vertical-timeline" class="vertical-container light-timeline no-margins" >
+
+
+                        {% for log in Logs %}
+                            <div class="vertical-timeline-block">
+                                <div class="vertical-timeline-icon navy-bg">
+                                    <i class="fa fa-bug"></i>
+                                </div>
+
+                                <div class="vertical-timeline-content">
+                                    <h2>{{ log.enum_name }}</h2>
+                                    <p>{{ _("Error") }}: {{ log.detail }}</p>
+
+                                    <div style="width: 100%;text-align: center">
+                                        <span >{{ log.log_dtime }}</span><br>
+                                        {% if formId == "registry" %}
+                                            <a class="btn btn-primary btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('CleanErrorLogsDetails',projectid=log.project_cod,formid='registry',logid=log.log_id) }}">{{ _("Show error") }}</a>
+                                        {% else %}
+                                            <a class="btn btn-primary btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('CleanErrorLogsDetailsAssessment',projectid=log.project_cod,formid='assessment',codeid=codeid,logid=log.log_id) }}">{{ _("Show error") }}</a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if logId != "" %}
+            <div class="col-md-8">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>{{ _("Information collected") }}</h5>
+                    </div>
+                    <div class="ibox-content" >
+                        <form class="form-horizontal" role="form" method="post" action="{{ request.path }}">
+                            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+
+                            <div style="text-align: center">
+                                {% if Data["data"] %}
+                                    <h3><b>{{ _("Compare the information and apply the indicated action") }}</b></h3>
+                                {% else %}
+                                    <h3><b>{{ _("The duplicate problem has been fixed in the 'Edit data' section") }}<br>{{ _("Now you can process the information") }}</b></h3>
+                                {% endif %}
+                            </div>
+                            <table class="table table-striped table-bordered">
+                                <thread>
+                                    <tr>
+                                        <th class="text-center">{{ _('Question') }}</th>
+                                        <th class="text-center">{{ _('Data Base') }}</th>
+                                        <th class="text-center">{{ _('Error') }}</th>
+                                    </tr>
+                                </thread>
+                                {% if formId == "registry" %}
+                                    <tbody>
+                                        {% for column in Structure %}
+                                            <tr>
+                                                <td>{{ column[1] }}</td>
+                                                <td>
+                                                    {% if Data["data"] %}
+                                                        {% if column[2] == "select1" %}
+                                                            {% for model in Data["colModel"] %}
+                                                                {% if model["name"] == column[0] %}
+                                                                    {{ model["editoptions"]["value"][Data["data"][0][column[0]]] }}
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        {% else %}
+                                                            {%if column[2] == "select"%}
+
+                                                                {% for model in Data["colModel"] %}
+                                                                    {% if model["name"] == column[0] %}
+                                                                        {% for selected in Data["data"][0][column[0]]%}
+                                                                            {{ model["editoptions"]["value"][selected] }}<br>
+                                                                        {% endfor %}
+                                                                    {% endif %}
+                                                                {% endfor %}
+
+                                                            {% else %}
+                                                                {{ Data["data"][0][column[0]] }}
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if column[2] == "select1" %}
+                                                        {% for model in Data["colModel"] %}
+                                                            {% if model["name"] == column[0] %}
+                                                                {{ model["editoptions"]["value"][New[column[0]]] }}
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        {%if column[2] == "select"%}
+
+                                                            {% for model in Data["colModel"] %}
+                                                                {% if model["name"] == column[0] %}
+                                                                    {% for selected in New[column[0]].split(" ")%}
+                                                                        {{ model["editoptions"]["value"][selected] }}<br>
+                                                                    {% endfor %}
+                                                                {% endif %}
+                                                            {% endfor %}
+
+                                                        {% else %}
+                                                            {% if column[0] == "qst162" %}
+                                                                <select id="newqst" name="newqst" class="form-control" required="">
+                                                                    {% for values in PosibleValues %}
+                                                                        <option value="{{ activeUser.login }}-{{ values }}-{{ proId }}" {% if values == New[column[0]] %}selected="selected"{% endif %} >{{ _("Package") }} #{{ values }}</option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                            {% else %}
+                                                                {{ New[column[0]] }}
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+
+                                {% else %}
+                                    <tbody>
+                                        {% for groups in Structure %}
+                                            {% for quest in groups %}
+                                                <tr>
+                                                    <td>{{ quest[1] }}</td>
+                                                    <td>
+                                                        {% if Data["data"] %}
+                                                            {% if quest[2] == "select1" %}
+                                                                {% for model in Data["colModel"] %}
+                                                                    {% if model["name"] == quest[0] %}
+                                                                        {{ model["editoptions"]["value"][Data["data"][0][quest[0]]] }}
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            {% else %}
+                                                                {%if quest[2] == "select"%}
+
+                                                                    {% for model in Data["colModel"] %}
+                                                                        {% if model["name"] == quest[0] %}
+                                                                            {% for selected in Data["data"][0][quest[0]]%}
+                                                                                {{ model["editoptions"]["value"][selected] }}<br>
+                                                                            {% endfor %}
+                                                                        {% endif %}
+                                                                    {% endfor %}
+
+                                                                {% else %}
+                                                                    {{ Data["data"][0][quest[0]] }}
+                                                                {% endif %}
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        {% if quest[2] == "select1" %}
+                                                            {% if quest[0] != "qst163" %}
+                                                                {% for model in Data["colModel"] %}
+                                                                    {% if model["name"] == quest[0] %}
+                                                                        {{ model["editoptions"]["value"][New[quest[0]]] }}
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            {% else %}
+                                                                {{ Pos }}
+                                                                <select id="newqst2" name="newqst2" class="form-control" required="">
+                                                                    {% for values in PosibleValues %}
+                                                                        <option value="{{ values[0] }}" {% if values[1] == New[quest[0]] %}selected="selected"{% endif %} >{{ values[1] }}</option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                            {% endif %}
+                                                        {% else %}
+                                                            {%if quest[2] == "select"%}
+
+                                                                {% for model in Data["colModel"] %}
+                                                                    {% if model["name"] == quest[0] %}
+                                                                        {% for selected in New[quest[0]].split(" ")%}
+                                                                            {{ model["editoptions"]["value"][selected] }}<br>
+                                                                        {% endfor %}
+                                                                    {% endif %}
+                                                                {% endfor %}
+
+                                                            {% else %}
+                                                                    {{ New[quest[0]] }}
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                        {% endfor %}
+                                    </tbody>
+                                {% endif %}
+                            </table>
+                            <div style=" text-align: center">
+                                <button type="submit" name="submit" id="submit" class="btn btn-primary ">{{ _("Update") }}</button>
+                                <br><br>
+                                <button type="submit" name="discard" id="discard" class="btn btn-warning">{{ _("Discard") }}</button>
+                            </div>
+                        </form>
+
+                    </div>
+
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock pagecontent%}
+

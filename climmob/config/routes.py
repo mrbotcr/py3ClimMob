@@ -106,7 +106,7 @@ from ..views.techaliases import (
     modifyalias_view,
     deletealias_view,
 )
-
+from ..views.cleanErrorLogs import cleanErrorLogs_view
 from ..views.test import test_view
 
 from ..views.productsList import productsView, downloadView, downloadJsonView, dataView
@@ -867,6 +867,42 @@ def loadRoutes(config):
         )
     )
 
+    #Errors reviews
+    routes.append(
+        addRoute(
+            "CleanErrorLogs",
+            "/project/{projectid}/form/{formid}/CleanErrorLogs",
+            cleanErrorLogs_view,
+            "project/CleanErrors/clean.jinja2",
+        )
+    )
+
+    routes.append(
+        addRoute(
+            "CleanErrorLogsDetails",
+            "/project/{projectid}/form/{formid}/logId/{logid}/CleanErrorLogs",
+            cleanErrorLogs_view,
+            "project/CleanErrors/clean.jinja2",
+        )
+    )
+
+    routes.append(
+        addRoute(
+            "CleanErrorLogsAssessment",
+            "/project/{projectid}/form/{formid}/{codeid}/CleanErrorLogs",
+            cleanErrorLogs_view,
+            "project/CleanErrors/clean.jinja2",
+        )
+    )
+
+    routes.append(
+        addRoute(
+            "CleanErrorLogsDetailsAssessment",
+            "/project/{projectid}/form/{formid}/{codeid}/logId/{logid}/CleanErrorLogs",
+            cleanErrorLogs_view,
+            "project/CleanErrors/clean.jinja2",
+        )
+    )
     # ODK forms
     routes.append(addRoute("odkformlist", "/{userid}/formList", formList_view, None))
     routes.append(

@@ -13,6 +13,8 @@ from ...models import (
     Assessment,
     Products,
     Prjalia,
+    RegistryJsonLog,
+    AssessmentJsonLog
 )
 from ..db.question import getQuestionOptions
 import datetime, os, glob
@@ -581,8 +583,17 @@ def getProjectProgress(user, project, request):
         except:
             submissions = 0
 
+        errorsCount =(
+            request.dbsession.query(RegistryJsonLog)
+            .filter(RegistryJsonLog.user_name == user)
+            .filter(RegistryJsonLog.project_cod == project)
+            .filter(RegistryJsonLog.status == 1)
+            .count()
+        )
+
         result["lastreg"] = getLastRegistrySubmissionDate(user, project, request)
         result["regtotal"] = submissions
+        result["regerrors"] = errorsCount
         result["regperc"] = (submissions * 100) / totSubmissions
         if arstatus.project_regstatus == 1:
             result["regsubmissions"] = 1
@@ -626,6 +637,16 @@ def getProjectProgress(user, project, request):
             lastAss = getLastAssessmentSubmissionDate(
                 user, project, assessment.ass_cod, request
             )
+
+            errorsCount = (
+                request.dbsession.query(AssessmentJsonLog)
+                    .filter(AssessmentJsonLog.user_name == user)
+                    .filter(AssessmentJsonLog.project_cod == project)
+                    .filter(AssessmentJsonLog.ass_cod == assessment.ass_cod)
+                    .filter(AssessmentJsonLog.status == 1)
+                    .count()
+            )
+
             assessmentArray.append(
                 {
                     "ass_cod": assessment.ass_cod,
@@ -634,6 +655,7 @@ def getProjectProgress(user, project, request):
                     "asstotal": totSubmissions,
                     "assperc": (totSubmissions * 100) / submissions,
                     "submissions": submissions,
+                    "errors": errorsCount,
                     "lastass": lastAss,
                 }
             )
@@ -655,6 +677,7 @@ def getProjectProgress(user, project, request):
                     "asstotal": 0,
                     "assperc": 0,
                     "submissions": submissions,
+                    "errors" :0,
                     "lastass": request.translate("Without submissions"),
                 }
             )

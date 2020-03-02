@@ -5,6 +5,11 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{{ _("ClimMob | 404 Error") }}</title>
+
+        {% block css %}
+            {% cssresource request,'coreresources','style' %}
+        {% endblock css %}
+</head>
     </head>
 
     <body class="gray-bg">

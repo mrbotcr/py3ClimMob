@@ -380,12 +380,21 @@
                                                             {% if progress.regtotal > 0 %}
                                                                 <td >
                                                                     <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{ request.route_url('EditDataRegistry',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-table"></i> {{ _("View data") }}</a>
-                                                                    <br>
-                                                                    <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{ request.route_url('downloadDataRegistry',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data") }}</a>
-                                                                    <br>
-                                                                    <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('uploadDataRegistry',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-cloud-upload"></i> {{ _("Upload data") }}</a>
+{#                                                                    <br>#}
+{#                                                                    <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{ request.route_url('downloadDataRegistry',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data") }}</a>#}
+{#                                                                    <br>#}
+{#                                                                    <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('uploadDataRegistry',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-cloud-upload"></i> {{ _("Upload data") }}</a>#}
                                                                 </td>
                                                             {% endif %}
+                                                        </tr>
+                                                        <tr>
+                                                            <td {% if progress.regerrors > 0 and progress.regsubmissions == 1%}style="color: #ed5565;" {% endif %}>{{ _("Submissions with errors") }}:</td>
+                                                            <td {% if progress.regerrors > 0 and progress.regsubmissions == 1%}style="color: #ed5565;" {% endif %}>{{ progress.regerrors }}</td>
+                                                            <td>
+                                                                {% if progress.regerrors > 0 and progress.regsubmissions == 1%}
+                                                                    <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('CleanErrorLogs',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-bug"></i> {{ _("Clean error logs") }}</a>
+                                                                {% endif %}
+                                                            </td>
                                                         </tr>
                                                         <tr>
                                                             <td >{{ _("Last submission") }}</td>
@@ -544,13 +553,22 @@
                                                                                 {% if assessment.asstotal > 0 %}
                                                                                     <td>
                                                                                         <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{ request.route_url('EditDataAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}" href="#"><i class="fa fa-table"></i> {{ _("View data") }}</a>
-                                                                                        <br>
-                                                                                        <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{ request.route_url('downloadDataAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-cloud-download"></i> {{ _("Download data") }}</a>
-                                                                                        <br>
-                                                                                        <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('uploadDataAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-cloud-upload"></i> {{ _("Upload data") }}</a>
+{#                                                                                        <br>#}
+{#                                                                                        <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{ request.route_url('downloadDataAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-cloud-download"></i> {{ _("Download data") }}</a>#}
+{#                                                                                        <br>#}
+{#                                                                                        <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('uploadDataAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-cloud-upload"></i> {{ _("Upload data") }}</a>#}
                                                                                     </td>
 
                                                                                 {% endif %}
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td {% if assessment.errors > 0 and assessment.ass_status == 1%}style="color: #ed5565;" {% endif %}>{{ _("Submissions with errors") }}:</td>
+                                                                                <td {% if assessment.errors > 0 and assessment.ass_status == 1%}style="color: #ed5565;" {% endif %}>{{ assessment.errors }}</td>
+                                                                                <td>
+                                                                                    {% if assessment.errors > 0 and assessment.ass_status == 1%}
+                                                                                        <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('CleanErrorLogsAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-bug"></i> {{ _("Clean error logs") }}</a>
+                                                                                    {% endif %}
+                                                                                </td>
                                                                             </tr>
                                                                             <tr>
                                                                                 <td>{{ _("Last submission") }}</td>
