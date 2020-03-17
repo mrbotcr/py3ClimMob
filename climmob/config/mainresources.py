@@ -12,7 +12,7 @@ def createResources(apppath, config):
         "coreresources", "fontawesome", "inspinia/font-awesome/css/font-awesome.css"
     )
     r.add_css_resource(
-        "coreresources", "chosen", "inspinia/css/plugins/chosen/bootstrap-chosen.css", "bootstrap"
+        "coreresources", "chosen", "inspinia/css/plugins/chosen/bootstrap-chosen.css"
     )
     r.add_css_resource(
         "coreresources", "toastr", "inspinia/css/plugins/toastr/toastr.min.css"
