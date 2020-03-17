@@ -208,11 +208,11 @@
                             <div class="col-md-6">
                                 <div class="ibox float-e-margins">
                                     <div class="ibox-title">
-                                        <h5>{{ _("Project definition") }}</h5>
+
                                         <div class="ibox-tools">
                                             <div class="row">
                                                 <div class="col-md-9">
-
+                                                    <h5>{{ _("Project definition") }}</h5>
                                                 </div>
                                                 <div class="col-md-3 pull-right">
                                                     <div class="small" style="text-align: left">{{ pcompleted }}% {{ _("Completed") }}</div>
@@ -314,11 +314,11 @@
                             <div class="col-md-6">
                                 <div class="ibox float-e-margins">
                                     <div class="ibox-title">
-                                        <h5>{{ _("Participant registration") }}</h5>
+
                                         <div class="ibox-tools">
                                             <div class="row">
                                                 <div class="col-md-9">
-
+                                                    <h5>{{ _("Participant registration") }}</h5>
                                                 </div>
                                                 <div class="col-md-3 pull-right">
                                                     {% set pbtype = "progress-bar-info" %}
@@ -355,11 +355,11 @@
                                                         <div class="text-center">{{ _("You can start the registration of participants once the project has field agents, treatments, levels and a registration form") }}</div>
                                                     </div>
                                                 {% endif %}
-                                            {% else %}
-                                                <div class="col-md-12">
-                                                    <div class="text-center"><h3>{{ _("To submit data let your field assistants know that they need to setup ODK Collect to the following address") }}:<br/><span style="color: #1ab394">{{ request.application_url }}/{{ activeUser.login }}</span></h3></div>
-                                                    <div class="text-center"><img style="max-width: 150px" src="{{ request.route_url('projectqr',projectid=activeProject.project_cod) }}"></div>
-                                                </div>
+{#                                            {% else %}#}
+{#                                                <div class="col-md-12">#}
+{#                                                    <div class="text-center"><h3>{{ _("To submit data let your field assistants know that they need to setup ODK Collect to the following address") }}:<br/><span style="color: #1ab394">{{ request.application_url }}/{{ activeUser.login }}</span></h3></div>#}
+{#                                                    <div class="text-center"><img style="max-width: 150px" src="{{ request.route_url('projectqr',projectid=activeProject.project_cod) }}"></div>#}
+{#                                                </div>#}
                                             {% endif %}
                                         </div>
 
@@ -372,34 +372,33 @@
                                                         <tr>
                                                             <td>{{ _("Total Sample") }}: </td>
                                                             <td>{{ activeProject.project_numobs }}</td>
-                                                            <td></td>
                                                         </tr>
                                                         <tr >
                                                             <td style="vertical-align: inherit">{{ _("Number submissions") }}: </td>
                                                             <td style="vertical-align: inherit">{{ progress.regtotal }} {% if progress.regtotal > 0 %}({{  ((progress.regtotal * 100)/activeProject.project_numobs)|round(1, 'floor') }}%){% endif %}</td>
-                                                            {% if progress.regtotal > 0 %}
-                                                                <td >
-                                                                    <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{ request.route_url('EditDataRegistry',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-table"></i> {{ _("View data") }}</a>
-{#                                                                    <br>#}
-{#                                                                    <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{ request.route_url('downloadDataRegistry',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data") }}</a>#}
-{#                                                                    <br>#}
-{#                                                                    <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('uploadDataRegistry',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-cloud-upload"></i> {{ _("Upload data") }}</a>#}
-                                                                </td>
-                                                            {% endif %}
+
                                                         </tr>
                                                         <tr>
                                                             <td {% if progress.regerrors > 0 and progress.regsubmissions == 1%}style="color: #ed5565;" {% endif %}>{{ _("Submissions with errors") }}:</td>
                                                             <td {% if progress.regerrors > 0 and progress.regsubmissions == 1%}style="color: #ed5565;" {% endif %}>{{ progress.regerrors }}</td>
-                                                            <td>
-                                                                {% if progress.regerrors > 0 and progress.regsubmissions == 1%}
-                                                                    <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('CleanErrorLogs',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-bug"></i> {{ _("Clean error logs") }}</a>
-                                                                {% endif %}
-                                                            </td>
                                                         </tr>
                                                         <tr>
                                                             <td >{{ _("Last submission") }}</td>
                                                             <td >{{ progress.lastreg }}</td>
-                                                            <td></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="2">
+                                                                {% if progress.regtotal > 0 %}
+                                                                    <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{ request.route_url('EditDataRegistry',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-table"></i> {{ _("View data") }}</a>
+                                                                    <br>
+                                                                    <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{ request.route_url('downloadDataRegistry',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data") }}</a>
+                                                                    <br>
+                                                                    <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('uploadDataRegistry',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-cloud-upload"></i> {{ _("Upload data") }}</a>
+                                                                {% endif %}
+                                                                {% if progress.regerrors > 0 and progress.regsubmissions == 1%}
+                                                                    <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('CleanErrorLogs',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-bug"></i> {{ _("Clean error logs") }}</a>
+                                                                {% endif %}
+                                                            </td>
                                                         </tr>
                                                         </tbody>
                                                     </table>
@@ -410,30 +409,21 @@
                                             <div class="row">
                                                 {% if progress.regsubmissions == 1 %}
                                                     {% if progress.regtotal > 0 %}
-                                                        <div class="col-md-4">
+                                                        <div class="col-md-6">
                                                             <button onclick="location.href ='{{ request.route_url('closeregistry',projectid=activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block" href="#"><i class="fa fa-stop"></i> {{ _("Finish the registration") }}</button>
                                                         </div>
-                                                        <div class="col-md-4">
-                                                        </div>
-                                                        <div class="col-md-4">
+                                                        <div class="col-md-6">
                                                             <button onclick="location.href ='{{ request.route_url('cancelregistry',projectid=activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block" href="#"><i class="fa fa-undo"></i> {{ _("Cancel the registration") }}</button>
                                                         </div>
                                                     {% else %}
-                                                        <div class="col-md-4">
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                        </div>
-                                                        <div class="col-md-4">
+                                                        <div class="col-md-12">
                                                             <button onclick="location.href = '{{ request.route_url('cancelregistry',projectid=activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block" href="#"><i class="fa fa-undo"></i> {{ _("Cancel the registration") }}</button>
                                                         </div>
                                                     {% endif %}
                                                 {% endif %}
                                                 {% if progress.regsubmissions == 2 %}
-                                                    <div class="col-md-4">
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                    </div>
-                                                    <div class="col-md-4">
+
+                                                    <div class="col-md-12">
                                                         {% if progress.assessments|length == 0 %}
                                                             <button onclick="location.href = '{{ request.route_url('cancelregistry',projectid=activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block" href="#"><i class="fa fa-undo"></i> {{ _("Cancel the registration") }}</button>
                                                         {% endif %}
@@ -545,35 +535,33 @@
                                                                             <tr>
                                                                                 <td>{{ _("Total Sample") }}: </td>
                                                                                 <td>{{ assessment.submissions }}</td>
-                                                                                <td></td>
                                                                             </tr>
                                                                             <tr>
                                                                                 <td style="vertical-align: inherit">{{ _("Number submissions") }}: </td>
                                                                                 <td style="vertical-align: inherit">{{ assessment.asstotal }} {% if assessment.asstotal > 0 %}({{ assessment.assperc|round(1, 'floor') }}%){% endif %}</td>
-                                                                                {% if assessment.asstotal > 0 %}
-                                                                                    <td>
-                                                                                        <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{ request.route_url('EditDataAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}" href="#"><i class="fa fa-table"></i> {{ _("View data") }}</a>
-{#                                                                                        <br>#}
-{#                                                                                        <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{ request.route_url('downloadDataAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-cloud-download"></i> {{ _("Download data") }}</a>#}
-{#                                                                                        <br>#}
-{#                                                                                        <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('uploadDataAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-cloud-upload"></i> {{ _("Upload data") }}</a>#}
-                                                                                    </td>
 
-                                                                                {% endif %}
                                                                             </tr>
                                                                             <tr>
                                                                                 <td {% if assessment.errors > 0 and assessment.ass_status == 1%}style="color: #ed5565;" {% endif %}>{{ _("Submissions with errors") }}:</td>
                                                                                 <td {% if assessment.errors > 0 and assessment.ass_status == 1%}style="color: #ed5565;" {% endif %}>{{ assessment.errors }}</td>
-                                                                                <td>
-                                                                                    {% if assessment.errors > 0 and assessment.ass_status == 1%}
-                                                                                        <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('CleanErrorLogsAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-bug"></i> {{ _("Clean error logs") }}</a>
-                                                                                    {% endif %}
-                                                                                </td>
                                                                             </tr>
                                                                             <tr>
                                                                                 <td>{{ _("Last submission") }}</td>
                                                                                 <td>{{ assessment.lastass }}</td>
-                                                                                <td></td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td colspan="2">
+                                                                                    {% if assessment.asstotal > 0 %}
+                                                                                        <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{ request.route_url('EditDataAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}" href="#"><i class="fa fa-table"></i> {{ _("View data") }}</a>
+                                                                                        <br>
+                                                                                        <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{ request.route_url('downloadDataAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-cloud-download"></i> {{ _("Download data") }}</a>
+                                                                                        <br>
+                                                                                        <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('uploadDataAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-cloud-upload"></i> {{ _("Upload data") }}</a>
+                                                                                    {% endif %}
+                                                                                    {% if assessment.errors > 0 and assessment.ass_status == 1%}
+                                                                                        <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('CleanErrorLogsAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-bug"></i> {{ _("Clean error logs") }}</a>
+                                                                                    {% endif %}
+                                                                                </td>
                                                                             </tr>
                                                                             </tbody>
                                                                         </table>
@@ -581,18 +569,25 @@
                                                                 </div>
 
                                                                 <div class="row">
-                                                                    <div class="col-md-6">
-                                                                        {% if assessment.ass_status == 1 %}
-                                                                            <a class="btn btn-danger btn-rounded btn-block" onclick="location.href = '{{ request.route_url('cancelassessment',projectid=activeProject.project_cod,assessmentid=assessment.ass_cod) }}'"><i class="fa fa-stop"></i> {{ _("Cancel") }} {{ assessment.ass_desc }}</a>
-                                                                        {% endif %}
-                                                                    </div>
-                                                                    <div class="col-md-6">
-                                                                        {% if assessment.asstotal > 0 %}
+                                                                    {% if assessment.asstotal > 0 %}
+                                                                        <div class="col-md-6">
                                                                             {% if assessment.ass_status == 1 %}
                                                                                 <a class="btn btn-danger btn-rounded btn-block" onclick="location.href = '{{ request.route_url('closeassessment',projectid=activeProject.project_cod,assessmentid=assessment.ass_cod) }}'"><i class="fa fa-stop"></i> {{ _("Finish") }} {{ assessment.ass_desc }}</a>
                                                                             {% endif %}
-                                                                        {% endif %}
-                                                                    </div>
+                                                                        </div>
+                                                                        <div class="col-md-6">
+                                                                            {% if assessment.ass_status == 1 %}
+                                                                                <a class="btn btn-danger btn-rounded btn-block" onclick="location.href = '{{ request.route_url('cancelassessment',projectid=activeProject.project_cod,assessmentid=assessment.ass_cod) }}'"><i class="fa fa-stop"></i> {{ _("Cancel") }} {{ assessment.ass_desc }}</a>
+                                                                            {% endif %}
+                                                                        </div>
+                                                                    {% else %}
+                                                                        <div class="col-md-12">
+                                                                            {% if assessment.ass_status == 1 %}
+                                                                                <a class="btn btn-danger btn-rounded btn-block" onclick="location.href = '{{ request.route_url('cancelassessment',projectid=activeProject.project_cod,assessmentid=assessment.ass_cod) }}'"><i class="fa fa-stop"></i> {{ _("Cancel") }} {{ assessment.ass_desc }}</a>
+                                                                            {% endif %}
+                                                                        </div>
+                                                                    {% endif %}
+
                                                                 </div>
 
                                                             </div>

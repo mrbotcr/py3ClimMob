@@ -15,6 +15,7 @@ from ..processes import (
     generateRegistryPreview,
     setRegistryStatus,
     getProjectProgress,
+    clean_registry_error_logs
 )
 from climmob.products import stopTasksByProcess
 from pyramid.response import FileResponse
@@ -281,9 +282,16 @@ class cancelRegistry_view(privateView):
         if self.request.method == "POST":
             if "cancelRegistry" in self.request.params.keys():
                 setRegistryStatus(self.user.login, projectid, 0, self.request)
-                redirect = True
+                clean_registry_error_logs(self.request, projectid, self.user.login)
 
                 stopTasksByProcess(self.request, self.user.login, projectid)
+
+                self.returnRawViewResult = True
+                return HTTPFound(
+                    location=self.request.route_url(
+                        "dashboard"
+                    )
+                )
 
         return {"activeUser": self.user, "redirect": redirect}
 
@@ -300,7 +308,12 @@ class closeRegistry_view(privateView):
         if self.request.method == "POST":
             if "closeRegistry" in self.request.params.keys():
                 setRegistryStatus(self.user.login, projectid, 2, self.request)
-                redirect = True
+                self.returnRawViewResult = True
+                return HTTPFound(
+                    location=self.request.route_url(
+                        "dashboard"
+                    )
+                )
 
         return {"activeUser": self.user, "redirect": redirect, "progress": progress}
 

@@ -180,7 +180,7 @@ def startTheRegistry(self, projectid):
 
     create_qr_packages(self.request, self.user.login, projectid, ncombs, packages)
 
-    create_cards(self.request, self.user.login, projectid, packages)
+    #create_cards(self.request, self.user.login, projectid, packages)
 
     create_packages_excell(
         self.request,

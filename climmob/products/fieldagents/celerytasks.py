@@ -85,6 +85,9 @@ def createFieldAgentsReport(locale, url, user, path, projectid, fieldagents):
         "Password": _("Password"),
         "QR": _("QR"),
         "fieldagents": fieldagents,
+        "URLInstruction1": _("To configure the ODK Collect server manually use the following URL"),
+        "URL": url,
+        "Instruction2": _("Use the respective username and password shown in the following table")
     }
 
     env = Environment(

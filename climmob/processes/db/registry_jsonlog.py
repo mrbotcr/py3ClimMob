@@ -4,7 +4,7 @@ import os
 from xml.dom import minidom
 
 all = [
-    "get_registry_logs","get_error_from_log","get_registry_log_by_log","update_registry_status_log"
+    "get_registry_logs","get_error_from_log","get_registry_log_by_log","update_registry_status_log","clean_registry_error_logs"
 ]
 
 def get_registry_logs(request, user_name, project_cod):
@@ -74,3 +74,10 @@ def get_error_from_log(inputFileLog):
 
     else:
         return "Error: The .log file don't exits"
+
+def clean_registry_error_logs(request, projectid, user):
+    try:
+        request.dbsession.query(RegistryJsonLog).filter(RegistryJsonLog.user_name == user).filter(RegistryJsonLog.project_cod == projectid).delete()
+        return True, ""
+    except Exception as e:
+        return False, str(e)

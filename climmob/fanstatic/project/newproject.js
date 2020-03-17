@@ -4,7 +4,7 @@ $(document).ready(function(){
         tagClass: 'label label-primary',
         cancelConfirmKeysOnEmpty: false,
     });
-    ClimMobMaps.init();
+    //ClimMobMaps.init();
 
     function isNumeric(value)
     {
@@ -36,6 +36,7 @@ $(document).ready(function(){
         ckb_localvariety.bootstrapSwitch('state',false);
 });
 
+/*
 var ClimMobMaps = function () {
 
     return {
@@ -86,4 +87,4 @@ var ClimMobMaps = function () {
 
     };
 
-}();
+}();*/

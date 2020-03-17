@@ -5,7 +5,7 @@ import os
 from xml.dom import minidom
 
 all = [
-    "get_assessment_logs","get_assessment_log_by_log","update_assessment_status_log"
+    "get_assessment_logs","get_assessment_log_by_log","update_assessment_status_log","clean_assessments_error_logs"
 ]
 
 def get_assessment_logs(request, user_name, project_cod, ass_cod):
@@ -56,3 +56,10 @@ def update_assessment_status_log(request, user, project, codeid,logid,status):
         return True, ""
     except Exception as e:
         return False, e
+
+def clean_assessments_error_logs(request, projectid, user, ass_cod):
+    try:
+        request.dbsession.query(AssessmentJsonLog).filter(AssessmentJsonLog.user_name == user).filter(AssessmentJsonLog.project_cod == projectid).filter(AssessmentJsonLog.ass_cod == ass_cod).delete()
+        return True, ""
+    except Exception as e:
+        return False, str(e)

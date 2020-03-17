@@ -6,7 +6,6 @@ import json
 from jinja2 import Environment, FileSystemLoader
 from zipfile import ZipFile
 from os.path import basename
-from .exportToCsv import createCSV
 import gettext
 
 PATH = os.path.dirname(os.path.abspath(__file__))
@@ -37,12 +36,6 @@ def createReports(locale, path, user, projectid, data, info, infosheet):
         jsonString = json.dumps(info, indent=4, ensure_ascii=False)
         outfile.write(jsonString)
 
-    if os.path.exists(pathInputFiles + "/info.json"):
-        try:
-            createCSV(pathouttemp + "/Report_data.csv", pathInputFiles + "/info.json")
-        except Exception as e:
-            print("We can't create the CSV." + str(e))
-
     parts = __file__.split("/products/")
     this_file_path = parts[0] + "/locale"
     try:
@@ -59,7 +52,8 @@ def createReports(locale, path, user, projectid, data, info, infosheet):
         es.install()
         _ = es.gettext
 
-    pathScript = "/home/ubuntu/new_r_code/ClimMob-analysis"
+    #pathScript = "/home/ubuntu/new_r_code/ClimMob-analysis"
+    pathScript = "/home/bmadriz/temp/ClimMobAnalysis"
 
     os.system(
         "Rscript "
@@ -79,23 +73,25 @@ def createReports(locale, path, user, projectid, data, info, infosheet):
     )
 
     report = pathouttemp + "/" + projectid + "_report.docx"
-    reportInfo = pathouttemp + "/" + projectid + "_infosheets.docx"
-    reportData = pathouttemp + "/Report_data.csv"
-    file_paths = []
-
+    #reportInfo = pathouttemp + "/" + projectid + "_infosheets.docx"
+    #reportData = pathouttemp + "/Report_data.csv"
+    #file_paths = []
     if os.path.exists(report):
-        file_paths.append(report)
+        os.system("mv "+report+" "+pathout+"/Report_"+projectid+".docx")
 
-    if os.path.exists(reportInfo):
-        file_paths.append(reportInfo)
-
-    if os.path.exists(reportData):
-        file_paths.append(reportData)
-
-    with ZipFile(pathout + "/reports_" + projectid + ".zip", "w") as zipReport:
-        # writing each file one by one
-        for file in file_paths:
-            zipReport.write(file, basename(file))
+    # if os.path.exists(report):
+    #     file_paths.append(report)
+    #
+    # if os.path.exists(reportInfo):
+    #     file_paths.append(reportInfo)
+    #
+    # if os.path.exists(reportData):
+    #     file_paths.append(reportData)
+    #
+    # with ZipFile(pathout + "/reports_" + projectid + ".zip", "w") as zipReport:
+    #     # writing each file one by one
+    #     for file in file_paths:
+    #         zipReport.write(file, basename(file))
 
     # createTheDocuments(
     #     locale,

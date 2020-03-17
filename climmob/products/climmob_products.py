@@ -151,4 +151,13 @@ def register_products(config):
     )
     products.append(fieldagents)
 
+    # DATA CSV
+    datacsv = addProduct("datacsv", "Information collected in the project.")
+    addMetadataToProduct(datacsv, "author", "Brandon Madriz")
+    addMetadataToProduct(datacsv, "version", "1.0")
+    addMetadataToProduct(
+        datacsv, "Licence", "Copyright (C) 2020 Bioversity International"
+    )
+    products.append(datacsv)
+
     return products
