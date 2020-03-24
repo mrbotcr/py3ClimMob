@@ -109,7 +109,7 @@ from ..views.techaliases import (
 from ..views.cleanErrorLogs import cleanErrorLogs_view
 from ..views.test import test_view
 
-from ..views.productsList import productsView, downloadView, downloadJsonView, dataView
+from ..views.productsList import productsView,generateProductView, downloadView, downloadJsonView, dataView
 
 from ..views.editData import editDataView, downloadDataView, uploadDataView
 
@@ -214,9 +214,12 @@ from ..views.Api.projectAssessmentStart import (
     readAssessmentStructure_view,
     pushJsonToAssessment_view,
 )
+
 from ..views.Api.project_analysis import readDataOfProjectView_api
 
 from ..views.project_analysis import analysisDataView
+
+from ..views.Bot.bot import sendFeedbackToBot_view, readFeedback_view
 from ..plugins.utilities import addRoute
 import climmob.plugins as p
 
@@ -802,6 +805,15 @@ def loadRoutes(config):
             "project/productsList/productsList.jinja2",
         )
     )
+    routes.append(
+        addRoute(
+            "generateProduct",
+            "/generateProduct/{projectid}/{productid}",
+            generateProductView,
+            None
+        )
+    )
+
     routes.append(addRoute("download", "/download/{product_id}", downloadView, None))
     routes.append(
         addRoute("downloadJson", "/downloadJson/{product_id}", downloadJsonView, "json")
@@ -968,8 +980,7 @@ def loadRoutes(config):
         )
     )
     # --------------------------------------------------------ClimMob API--------------------------------------------------------#
-    """
-    """
+
     # Create Project
     routes.append(
         addRoute("addproject_api", "/api/createProject", createProject_view, None)
@@ -1523,6 +1534,17 @@ def loadRoutes(config):
             readDataOfProjectView_api,
             None,
         )
+    )
+
+    # --------------------------------------------------------ClimMob Bot--------------------------------------------------------#
+
+    # Chat
+    routes.append(
+        addRoute("sendFeedbackToBot", "/bot/sendFeedbackToBot", sendFeedbackToBot_view, None)
+    )
+
+    routes.append(
+        addRoute("readFeedback","/bot/readFeedback",readFeedback_view, None)
     )
 
     # Testing routes. Remove them for production

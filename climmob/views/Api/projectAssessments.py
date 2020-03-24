@@ -418,7 +418,7 @@ class createAssessmentGroup_view(apiView):
 
             if sorted(obligatory) == sorted(dataworking.keys()):
                 dataworking["user_name"] = self.user.login
-                dataworking["section_color"] = None
+                dataworking["section_private"] = None
 
                 dataInParams = True
                 for key in dataworking.keys():
@@ -516,7 +516,7 @@ class updateAssessmentGroup_view(apiView):
 
             if sorted(obligatory) == sorted(dataworking.keys()):
                 dataworking["user_name"] = self.user.login
-                dataworking["section_color"] = None
+                dataworking["section_private"] = None
 
                 dataInParams = True
                 for key in dataworking.keys():
@@ -614,7 +614,7 @@ class deleteAssessmentGroup_view(apiView):
 
             if sorted(obligatory) == sorted(dataworking.keys()):
                 dataworking["user_name"] = self.user.login
-                dataworking["section_color"] = None
+                dataworking["section_private"] = None
 
                 dataInParams = True
                 for key in dataworking.keys():
@@ -729,7 +729,7 @@ class readPossibleQuestionForAssessmentGroup_view(apiView):
 
             if sorted(obligatory) == sorted(dataworking.keys()):
                 dataworking["user_name"] = self.user.login
-                dataworking["section_color"] = None
+                dataworking["section_private"] = None
 
                 dataInParams = True
                 for key in dataworking.keys():
@@ -811,7 +811,7 @@ class addQuestionToGroupAssessment_view(apiView):
 
             if sorted(obligatory) == sorted(dataworking.keys()):
                 dataworking["user_name"] = self.user.login
-                dataworking["section_color"] = None
+                dataworking["section_private"] = None
 
                 dataInParams = True
                 for key in dataworking.keys():
@@ -936,7 +936,7 @@ class deleteQuestionFromGroupAssessment_view(apiView):
 
             if sorted(obligatory) == sorted(dataworking.keys()):
                 dataworking["user_name"] = self.user.login
-                dataworking["section_color"] = None
+                dataworking["section_private"] = None
 
                 dataInParams = True
                 for key in dataworking.keys():

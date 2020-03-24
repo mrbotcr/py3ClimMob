@@ -45,11 +45,11 @@
                     <div class="ibox-content" style="height: 89%">
                         <div class="panel panel-info">
                             <div class="panel-heading">
-                                <i class="fa fa-info-circle"></i>{{ _("How to describe a performance question") }}
+                                <i class="fa fa-info-circle"></i>{{ _("How to describe a comparison with reference (check) question") }}
                             </div>
                             <div class="panel-body">
                                 <div style="max-height: 150px; overflow-y: scroll;">
-                                    <p style="margin-bottom: 0in; line-height: 100%">{{ _("Performance is a type of question that is used to compare the technologies being tested in a project with the current one in use by the farmer. For example, if a project is evaluating three different varieties of bean then the performance questions would be:") }}</p>
+                                    <p style="margin-bottom: 0in; line-height: 100%">{{ _("Comparison with reference (check) is a type of question that is used to compare the technologies being tested in a project with the current one in use by the farmer. For example, if a project is evaluating three different varieties of bean then the performance questions would be:") }}</p>
                                     <ul>
                                         <li/>
                                         <p style="margin-bottom: 0in; line-height: 100%">{{ _("In terms of taste, how does variety") }} <b>A</b> {{ _("compares with the variety you usually use?") }}</p>
@@ -74,7 +74,7 @@
                             {% snippet 'snippets/question/values/perf-form.jinja2', request=request,qdata=qdata, editable=editable %}
                             <div class="text-center">
                                 {% if editable %}
-                                    <button type="submit" name="btn_add_char" class="btn btn-warning"> {{ _('Save performance statement') }}</button>
+                                    <button type="submit" name="btn_add_char" class="btn btn-warning"> {{ _('Save') }}</button>
                                 {% endif %}
                             </div>
                         </form>

@@ -13,7 +13,7 @@ import logging
 
 log = logging.getLogger(__name__)
 
-from ..processes import getUserProjects, getActiveProject
+from ..processes import getUserProjects, getActiveProject, counterChat
 
 # ODKView is a Digest Authorization view. It automates all the Digest work
 class odkView(object):
@@ -231,6 +231,7 @@ class privateView(object):
             "activeUser": None,
             "hasActiveProject": None,
             "userProjects": [],
+            "counterChat": 0
         }
         self.viewResult = {}
         self.returnRawViewResult = False
@@ -255,6 +256,7 @@ class privateView(object):
         login = authenticated_userid(self.request)
         self.user = getUserData(login, self.request)
         self.classResult["activeUser"] = self.user
+        self.classResult["counterChat"] = counterChat(self.user.login,self.request)
 
         if self.user == None:
             return HTTPFound(location=self.request.route_url("login"))

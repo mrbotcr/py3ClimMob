@@ -52,10 +52,33 @@ def addQuestionsToAssessment(user, project, assessment, request):
     data["project_cod"] = project
     data["ass_cod"] = assessment
     data["section_id"] = 1
+    data["section_name"] = request.translate("Farmer selection")
+    data["section_content"] = request.translate("List of farmers included in the registration form")
+    data["section_order"] = 1
+    data["section_private"] = 1
+    newAsssection = Asssection(**data)
+    request.dbsession.add(newAsssection)
+    data = {}
+    data["user_name"] = user
+    data["project_cod"] = project
+    data["ass_cod"] = assessment
+    data["question_id"] = 163
+    data["section_user"] = user
+    data["section_project"] = project
+    data["section_assessment"] = assessment
+    data["section_id"] = 1
+    data["question_order"] = 1
+    newAssQuestion = AssDetail(**data)
+    request.dbsession.add(newAssQuestion)
+    data = {}
+    data["user_name"] = user
+    data["project_cod"] = project
+    data["ass_cod"] = assessment
+    data["section_id"] = 2
     data["section_name"] = request.translate("Main section")
     data["section_content"] = request.translate("General data")
-    data["section_order"] = 1
-    data["section_color"] = ""
+    data["section_order"] = 2
+    data["section_private"] = 0
     newAsssection = Asssection(**data)
     try:
         request.dbsession.add(newAsssection)
@@ -64,6 +87,7 @@ def addQuestionsToAssessment(user, project, assessment, request):
             .filter(Question.user_name == "bioversity")
             .filter(Question.question_reqinasses == 1)
             .filter(Question.question_visible == 1)
+            .filter(Question.question_code !="QST163")
             .all()
         )
         order = 1
@@ -86,7 +110,7 @@ def addQuestionsToAssessment(user, project, assessment, request):
                 data["section_user"] = user
                 data["section_project"] = project
                 data["section_assessment"] = assessment
-                data["section_id"] = 1
+                data["section_id"] = 2
                 data["question_order"] = order
                 order = order + 1
                 newAssQuestion = AssDetail(**data)
@@ -120,7 +144,7 @@ def addQuestionsToAssessment(user, project, assessment, request):
                     data["section_user"] = user
                     data["section_project"] = project
                     data["section_assessment"] = assessment
-                    data["section_id"] = 1
+                    data["section_id"] = 2
                     data["question_order"] = order
                     order = order + 1
                     newAssQuestion = AssDetail(**data)
@@ -158,7 +182,7 @@ def addRegistryQuestionsToProject(user, project, request):
     data["section_name"] = request.translate("Main section")
     data["section_content"] = request.translate("General data")
     data["section_order"] = 1
-    data["section_color"] = ""
+    data["section_private"] = 0
     newRegsection = Regsection(**data)
     try:
         request.dbsession.add(newRegsection)

@@ -52,6 +52,7 @@ def update_registry_status_log(request, user, project,logid,status):
         request.dbsession.query(RegistryJsonLog).filter(RegistryJsonLog.user_name == user).filter(RegistryJsonLog.project_cod == project).filter(RegistryJsonLog.log_id == logid).update(mappedData)
         return True, ""
     except Exception as e:
+        print(e)
         return False, e
 
 

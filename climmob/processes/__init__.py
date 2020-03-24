@@ -26,3 +26,4 @@ from .db.progress import *
 from .db.json import *
 from .db.registry_jsonlog import *
 from .db.assessment_jsonlog import *
+from .db.chat import *

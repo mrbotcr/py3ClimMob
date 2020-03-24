@@ -599,7 +599,7 @@ def getAssessmentQuestions(user, project, assessment, request):
         addQuestionsToAssessment(user, project, assessment, request)
 
     sql = (
-        "SELECT asssection.section_id,asssection.section_name,asssection.section_content,asssection.section_order,asssection.section_color,"
+        "SELECT asssection.section_id,asssection.section_name,asssection.section_content,asssection.section_order,asssection.section_private,"
         "question.question_id,question.question_desc,question.question_notes,question.question_dtype,IFNULL(assdetail.question_order,0) as question_order,"
         "question.question_reqinasses FROM asssection LEFT JOIN assdetail ON assdetail.section_user = asssection.user_name AND assdetail.section_project = asssection.project_cod "
         " AND assdetail.section_assessment = asssection.ass_cod AND assdetail.section_id = asssection.section_id "

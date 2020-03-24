@@ -59,9 +59,9 @@
                                     <div style="width: 100%;text-align: center">
                                         <span >{{ log.log_dtime }}</span><br>
                                         {% if formId == "registry" %}
-                                            <a class="btn btn-primary btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('CleanErrorLogsDetails',projectid=log.project_cod,formid='registry',logid=log.log_id) }}">{{ _("Show error") }}</a>
+                                            <a class="btn btn-primary btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('CleanErrorLogsDetails',projectid=log.project_cod,formid='registry',logid=log.log_id) }}">{{ _("Show conflicts") }}</a>
                                         {% else %}
-                                            <a class="btn btn-primary btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('CleanErrorLogsDetailsAssessment',projectid=log.project_cod,formid='assessment',codeid=codeid,logid=log.log_id) }}">{{ _("Show error") }}</a>
+                                            <a class="btn btn-primary btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('CleanErrorLogsDetailsAssessment',projectid=log.project_cod,formid='assessment',codeid=codeid,logid=log.log_id) }}">{{ _("Show conflicts") }}</a>
                                         {% endif %}
                                     </div>
                                 </div>
@@ -94,17 +94,20 @@
                                 <thread>
                                     <tr>
                                         <th class="text-center">{{ _('Question') }}</th>
-                                        <th class="text-center">{{ _('Data Base') }}</th>
-                                        <th class="text-center">{{ _('Error') }}</th>
+                                        <th class="text-center">{{ _('Recorded information without problem') }}</th>
+                                        <th class="text-center">{{ _('Conflicting information') }}</th>
                                     </tr>
                                 </thread>
-                                {% if formId == "registry" %}
-                                    <tbody>
+                                <tbody>
+                                    {% if formId == "registry" %}
                                         {% for column in Structure %}
-                                            <tr>
-                                                <td>{{ column[1] }}</td>
-                                                <td>
+                                            <tr style="{% if column[0] =="qst162" %}border: 2px solid #ed5565;{% endif %}">
+                                                <td style="vertical-align: middle">{{ column[1] }} </td>
+                                                <td style="vertical-align: middle">
                                                     {% if Data["data"] %}
+                                                        {% if column[0] =="qst162" %}
+                                                            <input type="text" name="txt_oldvalue" value="{{ Data["data"][0][column[0]] }}" style="display: none">
+                                                        {% endif %}
                                                         {% if column[2] == "select1" %}
                                                             {% for model in Data["colModel"] %}
                                                                 {% if model["name"] == column[0] %}
@@ -128,7 +131,7 @@
                                                         {% endif %}
                                                     {% endif %}
                                                 </td>
-                                                <td>
+                                                <td style="vertical-align: middle">
                                                     {% if column[2] == "select1" %}
                                                         {% for model in Data["colModel"] %}
                                                             {% if model["name"] == column[0] %}
@@ -161,16 +164,16 @@
                                                 </td>
                                             </tr>
                                         {% endfor %}
-                                    </tbody>
-
-                                {% else %}
-                                    <tbody>
+                                    {% else %}
                                         {% for groups in Structure %}
                                             {% for quest in groups %}
-                                                <tr>
-                                                    <td>{{ quest[1] }}</td>
-                                                    <td>
+                                                <tr style="{% if quest[0] =="qst163" %}border: 2px solid #ed5565;{% endif %}">
+                                                    <td style="vertical-align: middle;">{{ quest[1] }}</td>
+                                                    <td style="vertical-align: middle">
                                                         {% if Data["data"] %}
+                                                            {% if quest[0] =="qst163" %}
+                                                                <input type="text" name="txt_oldvalue" value="{{ Data["data"][0][quest[0]]}}" style="display: block">
+                                                            {% endif %}
                                                             {% if quest[2] == "select1" %}
                                                                 {% for model in Data["colModel"] %}
                                                                     {% if model["name"] == quest[0] %}
@@ -194,7 +197,7 @@
                                                             {% endif %}
                                                         {% endif %}
                                                     </td>
-                                                    <td>
+                                                    <td style="vertical-align: middle">
                                                         {% if quest[2] == "select1" %}
                                                             {% if quest[0] != "qst163" %}
                                                                 {% for model in Data["colModel"] %}
@@ -229,14 +232,19 @@
                                                 </tr>
                                                 {% endfor %}
                                         {% endfor %}
-                                    </tbody>
-                                {% endif %}
+                                    {% endif %}
+                                    <tr>
+                                        <td></td>
+                                        <td><button type="submit" name="discard" id="discard" class="btn btn-warning" style="white-space: normal !important;word-wrap: break-word !important;">{{ _("Keep previously registered information") }}</button></td>
+                                        <td><button type="submit" name="submit" id="submit" class="btn btn-primary " style="white-space: normal !important;word-wrap: break-word !important;">{{ _("Replace information with new data") }}</button></td>
+                                    </tr>
+                                </tbody>
                             </table>
-                            <div style=" text-align: center">
-                                <button type="submit" name="submit" id="submit" class="btn btn-primary ">{{ _("Update") }}</button>
-                                <br><br>
-                                <button type="submit" name="discard" id="discard" class="btn btn-warning">{{ _("Discard") }}</button>
-                            </div>
+{#                            <div style=" text-align: center">#}
+{#                                <button type="submit" name="submit" id="submit" class="btn btn-primary ">{{ _("Update") }}</button>#}
+{#                                <br><br>#}
+{#                                <button type="submit" name="discard" id="discard" class="btn btn-warning">{{ _("Discard") }}</button>#}
+{#                            </div>#}
                         </form>
 
                     </div>

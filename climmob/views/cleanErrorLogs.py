@@ -17,6 +17,8 @@ from climmob.processes import getQuestionsStructure
 import json
 import xml.etree.ElementTree as ET
 from ..processes.odk.api import storeJSONInMySQL
+import transaction
+from zope.sqlalchemy import mark_changed
 
 class cleanErrorLogs_view(privateView):
     def processView(self):
@@ -66,10 +68,23 @@ class cleanErrorLogs_view(privateView):
                                         key = get_key_form_manifest(formId, self, proId, "qst162", new_json)
                                         new_json[key] = dataworking["newqst"].split("-")[1]
 
+                                        if "txt_oldvalue" not in dataworking.keys():
+                                            dataworking["txt_oldvalue"] = -999
+
                                         with open(log, 'w') as json_file:
                                             json.dump(new_json, json_file)
 
-                                        storeJSONInMySQL("REG",self.user.login,new_json["_submitted_by"],proId,codeId,log,self.request)
+
+                                        if str(dataworking["txt_oldvalue"]) == str(dataworking["newqst"].split("-")[1]):
+
+                                            query = "Delete from " + self.user.login + "_" + proId + ".REG_geninfo where qst162='"+dataworking["newqst"].split("-")[1]+"'"
+                                            mySession = self.request.dbsession
+                                            transaction.begin()
+                                            mySession.execute(query)
+                                            mark_changed(mySession)
+                                            transaction.commit()
+
+                                        storeJSONInMySQL("REG", self.user.login, new_json["_submitted_by"], proId,codeId, log, self.request)
 
                                         update_registry_status_log(self.request,self.user.login, proId, logId,2)
 
@@ -83,8 +98,19 @@ class cleanErrorLogs_view(privateView):
                                         key = get_key_form_manifest(formId, self, proId, "qst163", new_json)
                                         new_json[key] = dataworking["newqst2"]
 
+                                        if "txt_oldvalue" not in dataworking.keys():
+                                            dataworking["txt_oldvalue"] = -999
+
                                         with open(log, 'w') as json_file:
                                             json.dump(new_json, json_file)
+
+                                        if str(dataworking["txt_oldvalue"]) == str(dataworking["newqst2"]):
+                                            query = "Delete from " + self.user.login + "_" + proId + ".ASS" + codeId + "_geninfo where qst163='" + dataworking["newqst2"] + "'"
+                                            mySession = self.request.dbsession
+                                            transaction.begin()
+                                            mySession.execute(query)
+                                            mark_changed(mySession)
+                                            transaction.commit()
 
                                         storeJSONInMySQL("ASS", self.user.login, new_json["_submitted_by"], proId,codeId, log, self.request)
 
@@ -128,8 +154,8 @@ class cleanErrorLogs_view(privateView):
                     query = "select qst162 from " + self.user.login + "_" + proId + ".REG_geninfo;"
                     mySession = self.request.dbsession
                     result = mySession.execute(query)
-                    #array = [int(new_json["qst162"])]
-                    array = []
+                    array = [int(new_json["qst162"])]
+                    #array = []
                     for y in range(1,proData["project_numobs"]+1):
                         array.append(y)
 

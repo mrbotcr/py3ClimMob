@@ -280,7 +280,7 @@ class readAssessmentStructure_view(apiView):
 
             if sorted(obligatory) == sorted(dataworking.keys()):
                 dataworking["user_name"] = self.user.login
-                dataworking["section_color"] = None
+                dataworking["section_private"] = None
 
                 dataInParams = True
                 for key in dataworking.keys():

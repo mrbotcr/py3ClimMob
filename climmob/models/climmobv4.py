@@ -132,7 +132,7 @@ class Asssection(Base):
     section_name = Column(String(120))
     section_content = Column(Text)
     section_order = Column(Integer)
-    section_color = Column(String(20))
+    section_private = Column(Integer, nullable=True)
 
     assessment = relationship(u"Assessment")
 
@@ -831,7 +831,7 @@ class Regsection(Base):
     section_name = Column(String(45))
     section_content = Column(Text)
     section_order = Column(Integer)
-    section_color = Column(String(20))
+    section_private = Column(Integer, nullable=True)
 
     project = relationship(u"Project")
 
@@ -949,3 +949,18 @@ class AssessmentJsonLog(Base):
 
     assessment = relationship(u"Assessment")
     enumerator = relationship(u"Enumerator")
+
+class Chat(Base):
+    __tablename__ = "chat"
+    __table_args__ = (
+        ForeignKeyConstraint(["user_name"], [u"user.user_name"], ondelete=u"CASCADE"),
+    )
+    user_name = Column(String(80), primary_key=True, nullable=False)
+    chat_id = Column(Integer, primary_key=True, nullable=False)
+    chat_message = Column(String(500))
+    chat_send = Column(Integer)
+    chat_read = Column(Integer)
+    chat_tofrom = Column(Integer)
+    chat_date = Column(DateTime)
+
+    project = relationship(u"User")

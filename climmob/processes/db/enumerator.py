@@ -125,8 +125,8 @@ def getEnumeratorData(user, id, request):
         .first()
     )
     result = mapFromSchema(res)
-
-    result["enum_password"] = decodeData(request, result["enum_password"]).decode(
+    if result:
+        result["enum_password"] = decodeData(request, result["enum_password"]).decode(
             "utf-8"
         )
     return result

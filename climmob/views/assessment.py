@@ -161,7 +161,7 @@ class newAssessmentSection_view(privateView):
                     tdata = self.getPostDict()
                     data["section_name"] = tdata["section_name"]
                     data["section_content"] = tdata["section_content"]
-                    data["section_color"] = None
+                    data["section_private"] = None
                     if data["section_name"] != "":
                         if data["section_content"] != "":
                             addgroup, message = addAssessmentGroup(data, self)

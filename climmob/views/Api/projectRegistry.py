@@ -154,7 +154,7 @@ class addRegistryGroup_view(apiView):
 
             if sorted(obligatory) == sorted(dataworking.keys()):
                 dataworking["user_name"] = self.user.login
-                dataworking["section_color"] = None
+                dataworking["section_private"] = None
 
                 dataInParams = True
                 for key in dataworking.keys():
@@ -228,7 +228,7 @@ class updateRegistryGroup_view(apiView):
 
             if sorted(obligatory) == sorted(dataworking.keys()):
                 dataworking["user_name"] = self.user.login
-                dataworking["section_color"] = None
+                dataworking["section_private"] = None
 
                 dataInParams = True
                 for key in dataworking.keys():
@@ -297,7 +297,7 @@ class deleteRegistryGroup_view(apiView):
 
             if sorted(obligatory) == sorted(dataworking.keys()):
                 dataworking["user_name"] = self.user.login
-                dataworking["section_color"] = None
+                dataworking["section_private"] = None
 
                 dataInParams = True
                 for key in dataworking.keys():
