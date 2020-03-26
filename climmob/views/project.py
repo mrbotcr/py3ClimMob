@@ -40,8 +40,8 @@ class newProject_view(privateView):
         dataworking["project_numobs"] = 0
         dataworking["project_numcom"] = 3
         dataworking["project_regstatus"] = 0
-        dataworking["project_lat"] = 9.90471351
-        dataworking["project_lon"] = -83.685279
+        #dataworking["project_lat"] = 9.90471351
+        #dataworking["project_lon"] = -83.685279
         dataworking["project_localvariety"] = "on"
         dataworking["project_cnty"] = None
 

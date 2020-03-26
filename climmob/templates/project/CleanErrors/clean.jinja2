@@ -7,13 +7,13 @@
 {% block pageheading %}
     <div class="row wrapper border-bottom white-bg page-heading">
         <div class="col-lg-10">
-            <h2>{{ _("Clean error logs") }}</h2>
+            <h2>{{ _("Solve conflicts") }}</h2>
             <ol class="breadcrumb">
                 <li>
                     <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
                 </li>
                 <li class="active">
-                    <strong>{{ _("Clean error logs") }}</strong>
+                    <strong>{{ _("Solve conflicts") }}</strong>
                 </li>
             </ol>
             <a href="" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
@@ -40,35 +40,57 @@
         <div class="col-md-4">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>{{ _("Select the error") }}</h5>
+                    <h5>{{ _("Select the conflict you want to solve") }}</h5>
                 </div>
                 <div class="ibox-content" >
-                    <div id="vertical-timeline" class="vertical-container light-timeline no-margins" >
-
-
+{#                    <div id="vertical-timeline" class="vertical-container light-timeline no-margins" >#}
+{#                        {% for log in Logs %}#}
+{#                            <div class="vertical-timeline-block">#}
+{#                                <div class="vertical-timeline-icon navy-bg">#}
+{#                                    <i class="fa fa-bug"></i>#}
+{#                                </div>#}
+{##}
+{#                                <div class="vertical-timeline-content">#}
+{#                                    <h2>{{ log.enum_name }}</h2>#}
+{#                                    <p>{{ _("Error") }}: {{ log.detail }}</p>#}
+{##}
+{#                                    <div style="width: 100%;text-align: center">#}
+{#                                        <span >{{ log.log_dtime }}</span><br>#}
+{#                                        {% if formId == "registry" %}#}
+{#                                            <a class="btn btn-primary btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('CleanErrorLogsDetails',projectid=log.project_cod,formid='registry',logid=log.log_id) }}">{{ _("Show conflicts") }}</a>#}
+{#                                        {% else %}#}
+{#                                            <a class="btn btn-primary btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('CleanErrorLogsDetailsAssessment',projectid=log.project_cod,formid='assessment',codeid=codeid,logid=log.log_id) }}">{{ _("Show conflicts") }}</a>#}
+{#                                        {% endif %}#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        {% endfor %}#}
+{#                    </div>#}
+                    <table style="width: 100%">
                         {% for log in Logs %}
-                            <div class="vertical-timeline-block">
-                                <div class="vertical-timeline-icon navy-bg">
-                                    <i class="fa fa-bug"></i>
-                                </div>
-
-                                <div class="vertical-timeline-content">
-                                    <h2>{{ log.enum_name }}</h2>
-                                    <p>{{ _("Error") }}: {{ log.detail }}</p>
-
-                                    <div style="width: 100%;text-align: center">
-                                        <span >{{ log.log_dtime }}</span><br>
-                                        {% if formId == "registry" %}
-                                            <a class="btn btn-primary btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('CleanErrorLogsDetails',projectid=log.project_cod,formid='registry',logid=log.log_id) }}">{{ _("Show conflicts") }}</a>
-                                        {% else %}
-                                            <a class="btn btn-primary btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('CleanErrorLogsDetailsAssessment',projectid=log.project_cod,formid='assessment',codeid=codeid,logid=log.log_id) }}">{{ _("Show conflicts") }}</a>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            </div>
+                            <tr>
+                                <td><h3 style="margin: 0px;">{{ log.enum_name }}</h3></td>
+                            </tr>
+                            <tr>
+                                <td><p style="margin: 0px;">{{ _("Error") }}: {{ log.detail }}</p></td>
+                            </tr>
+{#                            <tr>#}
+{#                                <td class="text-center"><span >{{ log.log_dtime }}</span></td>#}
+{#                            </tr>#}
+                            <tr>
+                                <td>
+                                    {% if formId == "registry" %}
+                                        <a class="btn btn-primary btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('CleanErrorLogsDetails',projectid=log.project_cod,formid='registry',logid=log.log_id) }}">{{ _("Show conflict") }}</a>
+                                    {% else %}
+                                        <a class="btn btn-primary btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('CleanErrorLogsDetailsAssessment',projectid=log.project_cod,formid='assessment',codeid=codeid,logid=log.log_id) }}">{{ _("Show conflict") }}</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><div class="hr-line-dashed" style="margin-top: 5px;margin-bottom: 10px;"></div></td>
+                            </tr>
                         {% endfor %}
-
-                    </div>
+                    </table>
                 </div>
             </div>
         </div>
@@ -172,7 +194,7 @@
                                                     <td style="vertical-align: middle">
                                                         {% if Data["data"] %}
                                                             {% if quest[0] =="qst163" %}
-                                                                <input type="text" name="txt_oldvalue" value="{{ Data["data"][0][quest[0]]}}" style="display: block">
+                                                                <input type="text" name="txt_oldvalue" value="{{ Data["data"][0][quest[0]]}}" style="display: none">
                                                             {% endif %}
                                                             {% if quest[2] == "select1" %}
                                                                 {% for model in Data["colModel"] %}

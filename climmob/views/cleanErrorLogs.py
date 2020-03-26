@@ -190,9 +190,25 @@ class cleanErrorLogs_view(privateView):
                     return {"Logs": get_assessment_logs(self.request, self.user.login, proId,codeId),"proId":proId, "codeid": codeId,"formId": formId, "logId": logId, "Structure": structure, "Data": json.loads(data),"New": new_json, "PosibleValues": array}
             else:
                 if formId == "registry":
-                    return {"Logs": get_registry_logs(self.request, self.user.login, proId),"proId":proId,"codeid":codeId,"formId":formId,"logId":logId}
+                    _info = get_registry_logs(self.request, self.user.login, proId)
+                    if not _info:
+                        self.returnRawViewResult = True
+                        return HTTPFound(
+                            location=self.request.route_url(
+                                "dashboard"
+                            )
+                        )
+                    return {"Logs": _info,"proId":proId,"codeid":codeId,"formId":formId,"logId":logId}
                 else:
-                    return {"Logs": get_assessment_logs(self.request, self.user.login, proId,codeId),"proId":proId, "codeid": codeId,"formId": formId, "logId": logId}
+                    _info = get_assessment_logs(self.request, self.user.login, proId,codeId)
+                    if not _info:
+                        self.returnRawViewResult = True
+                        return HTTPFound(
+                            location=self.request.route_url(
+                                "dashboard"
+                            )
+                        )
+                    return {"Logs": _info,"proId":proId, "codeid": codeId,"formId": formId, "logId": logId}
 
 
 

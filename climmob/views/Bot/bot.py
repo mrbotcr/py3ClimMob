@@ -18,7 +18,7 @@ class sendFeedbackToBot_view(apiView):
 
             if sorted(obligatory) == sorted(dataworking.keys()):
                 try:
-                    TOKEN = self.request.registry.settings.get('telegram.token').replace("'","")
+                    TOKEN = self.request.registry.settings.get('telegram.token')
                     bot = telebot.TeleBot(TOKEN)
                     send_message = bot.send_message("188669350", "User:\n"+self.user.login+"\nFull name:\n"+self.user.fullName+"\nEmail:\n"+self.user.email+"\nOrganization:\n"+self.user.organization+"\nMessage:\n"+str(dataworking["message"]))
                     message = {}

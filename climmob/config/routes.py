@@ -120,6 +120,7 @@ from ..views.Api.projectCreation import (
     readProjects_view,
     updateProject_view,
     deleteProject_view_api,
+    readListOfCountries_view
 )
 from ..views.Api.enumerators import (
     createEnumerator_view,
@@ -982,6 +983,9 @@ def loadRoutes(config):
     # --------------------------------------------------------ClimMob API--------------------------------------------------------#
 
     # Create Project
+    routes.append(
+        addRoute("readListOfCountries", "/api/readListOfCountries", readListOfCountries_view, None)
+    )
     routes.append(
         addRoute("addproject_api", "/api/createProject", createProject_view, None)
     )
