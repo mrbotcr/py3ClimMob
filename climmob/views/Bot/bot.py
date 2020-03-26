@@ -20,24 +20,27 @@ class sendFeedbackToBot_view(apiView):
                 try:
                     TOKEN = self.request.registry.settings.get('telegram.token')
                     bot = telebot.TeleBot(TOKEN)
-                    send_message = bot.send_message("188669350", "User:\n"+self.user.login+"\nFull name:\n"+self.user.fullName+"\nEmail:\n"+self.user.email+"\nOrganization:\n"+self.user.organization+"\nMessage:\n"+str(dataworking["message"]))
-                    message = {}
-                    message["user_name"] = self.user.login
-                    message["chat_id"] = send_message.message_id
-                    message["chat_message"] =dataworking["message"]
-                    message["chat_send"] = 1
-                    message["chat_read"] = 0
-                    message["chat_tofrom"] = 1
-                    message["chat_date"] = datetime.datetime.now()
+                    managers = self.request.registry.settings.get('telegram.managers')
+                    date = datetime.datetime.now()
+                    for manager in managers.split("|"):
+                        send_message = bot.send_message("188669350", "User:\n"+self.user.login+"\nFull name:\n"+self.user.fullName+"\nEmail:\n"+self.user.email+"\nOrganization:\n"+self.user.organization+"\nMessage:\n"+str(dataworking["message"]))
+                        message = {}
+                        message["user_name"] = self.user.login
+                        message["chat_id"] = send_message.message_id
+                        message["chat_message"] =dataworking["message"]
+                        message["chat_send"] = 1
+                        message["chat_read"] = 0
+                        message["chat_tofrom"] = 1
+                        message["chat_date"] = date
+                        add, out = addChat(message,self.request)
 
-                    add, out = addChat(message,self.request)
-                    if add:
-                        response = Response(status=200, body=json.dumps(readChatByUser(self.user.login, self.request), default=myconverter))
-                        return response
-                    else:
-                        print(out)
-                        response = Response(status=401, body=self._("Feedback could not be sent."))
-                        return response
+                    #if add:
+                    response = Response(status=200, body=json.dumps(readChatByUser(self.user.login, self.request), default=myconverter))
+                    return response
+                    #else:
+                    #    print(out)
+                    #    response = Response(status=401, body=self._("Feedback could not be sent."))
+                    #    return response
                 except:
                     response = Response(status=401, body=self._("Feedback could not be sent."))
                     return response

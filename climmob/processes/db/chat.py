@@ -28,7 +28,7 @@ def counterChat(user, request):
 def readChatByUser(user, request):
 
     result = (
-        request.dbsession.query(Chat).filter(Chat.user_name == user).order_by(Chat.chat_date).all()
+        request.dbsession.query(Chat.chat_date,Chat.user_name, Chat.chat_message, Chat.chat_send, Chat.chat_read, Chat.chat_tofrom).filter(Chat.user_name == user).order_by(Chat.chat_date).distinct().all()
     )
     res = mapFromSchema(result)
     result = {}
@@ -43,18 +43,14 @@ def readChatByUser(user, request):
                 result["read"].append(chat)
             else:
                 result["unread"].append(chat)
-                chat["chat_read"] = 1
-                updateChat(user, chat["chat_id"], chat, request)
-                chat["chat_read"] = 0
+
+    updateChat(user, request)
 
     return result
 
-def updateChat(user, id, data, request):
-    mappedData = mapToSchema(Chat, data)
+def updateChat(user, request):
     try:
-        request.dbsession.query(Chat).filter(Chat.user_name == user).filter(
-            Chat.chat_id == id
-        ).update(mappedData)
+        request.dbsession.query(Chat).filter(Chat.user_name == user).filter(Chat.chat_tofrom == 2).update({"chat_read":1})
         return True, ""
     except Exception as e:
         return False, e

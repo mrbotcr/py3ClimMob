@@ -7,7 +7,7 @@ import MySQLdb
 import datetime
 import json
 
-bot = telebot.TeleBot('xxxxxxxxxxxxxxxxx')
+bot = telebot.TeleBot('xxxxxxxxxxxxxxx')
 _id = "609114960"
 
 datos = ["localhost", "root", "Mapache1.", "climmob2020"] 
