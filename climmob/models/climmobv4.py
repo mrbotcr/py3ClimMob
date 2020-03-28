@@ -141,6 +141,7 @@ class Country(Base):
     __tablename__ = "country"
 
     cnty_cod = Column(String(3), primary_key=True)
+    cnty_iso = Column(String(3), nullable=True)
     cnty_name = Column(String(120))
 
 
