@@ -156,7 +156,7 @@ class modifyQuestion_view(privateView):
                     self.returnRawViewResult = True
                     return HTTPFound(
                         location=self.request.route_url(
-                            "qlibrary"
+                            "qlibrary", user_name=self.user.login
                         )
                     )
             else:
@@ -649,7 +649,7 @@ class newQuestion_view(privateView):
                             self.returnRawViewResult = True
                             return HTTPFound(
                                 location=self.request.route_url(
-                                    "qlibrary"
+                                    "qlibrary", user_name=self.user.login
                                 )
                             )
                 else:
