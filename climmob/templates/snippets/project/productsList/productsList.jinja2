@@ -16,7 +16,7 @@
                 {% set color = "#1c84c6" %}
             {% endif %}
             <tr>
-                <td>
+                <td style="vertical-align: middle;">
                     {% if product.product_id == "qrpackage" %}
                         {{ _("List of packages with QR for the registration form.") }}
                     {% else %}
@@ -47,10 +47,10 @@
                         {% endif %}
                     {% endif %}
                 </td>
-                <td class="text-center">
+                <td class="text-center" style="vertical-align: middle;">
                     {{ product.datetime_added }}
                 </td>
-                <td class="text-center">
+                <td class="text-center" style="vertical-align: middle;">
                     {% if product.output_mimetype == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" %}
                         <i class="fa fa-file-excel-o" aria-hidden="true" style="font-size: 17px;color: {{ color }}"></i>
                     {% else %}
