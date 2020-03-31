@@ -21,6 +21,7 @@
 
 
 {% block topScripts %}
+    {% jsresource request,'coreresources','toastr' %}
     {% if stage != 3 %}
         {% jsresource request,'coreresources','prjcombinations' %}
     {% endif %}
