@@ -51,7 +51,7 @@ class addEnumerator_view(privateView):
                             else:
                                 self.request.session.flash(
                                     self._(
-                                        "The enumerator was created successfully"
+                                        "The field agent was created successfully"
                                     )
                                 )
                                 self.returnRawViewResult = True
@@ -165,7 +165,7 @@ class modifyEnumerator_view(privateView):
 
                         else:
                             self.request.session.flash(
-                                self._("The enumerator was modified successfully")
+                                self._("The field agent was modified successfully")
                             )
                             self.returnRawViewResult = True
                             return HTTPFound(
@@ -176,7 +176,7 @@ class modifyEnumerator_view(privateView):
                     else:
                         error_summary = {
                             "nameempty": self._(
-                                "The name of the enumerator cannot be empty."
+                                "The name of the field agent cannot be empty."
                             )
                         }
                 else:

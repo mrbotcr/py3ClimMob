@@ -76,7 +76,8 @@ class newProject_view(privateView):
                                 self.returnRawViewResult = True
                                 return HTTPFound(
                                     location=self.request.route_url(
-                                        "dashboard"
+                                        "dashboard",
+                                        _query={"project": dataworking["project_cod"]},
                                     )
                                 )
                         else:

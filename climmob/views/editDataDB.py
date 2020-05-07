@@ -237,7 +237,11 @@ def fillDataTable(self, db, form, columns, file, code, where=""):
         # print "**********************77"
         sql = sql + col[0] + ","
 
-    sql = sql[:-1] + " from "+self.user.login + "_" + db+"."+form.upper() + code+"_geninfo "+ where +" order by surveyid;"
+    orderBy = "qst163"
+    if form == "reg":
+        orderBy = "qst162"
+
+    sql = sql[:-1] + " from "+self.user.login + "_" + db+"."+form.upper() + code+"_geninfo "+ where +" order by "+orderBy+";"
 
     # print sql
     # print "***************************************************************************"
