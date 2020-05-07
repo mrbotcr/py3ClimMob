@@ -23,7 +23,7 @@ class sendFeedbackToBot_view(apiView):
                     managers = self.request.registry.settings.get('telegram.managers')
                     date = datetime.datetime.now()
                     for manager in managers.split("|"):
-                        send_message = bot.send_message("188669350", "User:\n"+self.user.login+"\nFull name:\n"+self.user.fullName+"\nEmail:\n"+self.user.email+"\nOrganization:\n"+self.user.organization+"\nMessage:\n"+str(dataworking["message"]))
+                        send_message = bot.send_message(manager, "User:\n"+self.user.login+"\nFull name:\n"+self.user.fullName+"\nEmail:\n"+self.user.email+"\nOrganization:\n"+self.user.organization+"\nMessage:\n"+str(dataworking["message"]))
                         message = {}
                         message["user_name"] = self.user.login
                         message["chat_id"] = send_message.message_id
