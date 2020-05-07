@@ -241,7 +241,7 @@ def fillDataTable(self, db, form, columns, file, code, where=""):
     if form == "reg":
         orderBy = "qst162"
 
-    sql = sql[:-1] + " from "+self.user.login + "_" + db+"."+form.upper() + code+"_geninfo "+ where +" order by "+orderBy+";"
+    sql = sql[:-1] + " from "+self.user.login + "_" + db+"."+form.upper() + code+"_geninfo "+ where +" order by "+orderBy+"+0;"
 
     # print sql
     # print "***************************************************************************"
