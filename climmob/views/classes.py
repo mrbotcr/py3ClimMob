@@ -256,7 +256,6 @@ class privateView(object):
         login = authenticated_userid(self.request)
         self.user = getUserData(login, self.request)
         self.classResult["activeUser"] = self.user
-        self.classResult["counterChat"] = counterChat(self.user.login,self.request)
 
         if self.user == None:
             return HTTPFound(location=self.request.route_url("login"))
@@ -264,6 +263,7 @@ class privateView(object):
         self.classResult["userProjects"] = getUserProjects(
             self.user.login, self.request
         )
+        self.classResult["counterChat"] = counterChat(self.user.login, self.request)
         activeProjectData = getActiveProject(self.user.login, self.request)
         if activeProjectData:
             self.classResult["hasActiveProject"] = True

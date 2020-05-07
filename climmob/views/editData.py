@@ -108,8 +108,8 @@ class uploadDataView(privateView):
         code = ""
         # print proId
         # print formId
-        u.getJSResource("productsListaes").need()
-        u.getJSResource("uploadDatajq").need()
+        #u.getJSResource("productsListaes").need()
+        #u.getJSResource("uploadDatajq").need()
 
         if not projectExists(self.user.login, proId, self.request):
             raise HTTPNotFound()

@@ -71,7 +71,7 @@ class modifyQuestion_view(privateView):
         if not formdata or not editable:
             raise HTTPNotFound()
 
-        if formdata["question_alwaysinreg"] == 1:
+        """if formdata["question_alwaysinreg"] == 1:
             formdata["question_alwaysinreg"] = "on"
         else:
             formdata["question_alwaysinreg"] = "off"
@@ -80,7 +80,7 @@ class modifyQuestion_view(privateView):
             formdata["question_alwaysinasse"] = "on"
         else:
             formdata["question_alwaysinasse"] = "off"
-
+        """
         if formdata["question_requiredvalue"] == 1:
             formdata["question_requiredvalue"] = "on"
         else:
@@ -105,7 +105,7 @@ class modifyQuestion_view(privateView):
                 formdata["qstgroups_id"] = None
                 formdata["qstgroups_user"] = None
 
-            if "question_alwaysinreg" in formdata.keys():
+            """if "question_alwaysinreg" in formdata.keys():
                 formdata["question_alwaysinreg"] = 1
             else:
                 formdata["question_alwaysinreg"] = 0
@@ -114,6 +114,7 @@ class modifyQuestion_view(privateView):
                 formdata["question_alwaysinasse"] = 1
             else:
                 formdata["question_alwaysinasse"] = 0
+            """
 
             if "question_requiredvalue" in formdata.keys():
                 formdata["question_requiredvalue"] = 1
@@ -128,6 +129,7 @@ class modifyQuestion_view(privateView):
             if formdata["question_desc"] != "" and formdata["question_dtype"] != "":
                 updated, idorerror = updateQuestion(formdata, self.request)
                 if not updated:
+                    """
                     if formdata["question_alwaysinreg"] == 1:
                         formdata["question_alwaysinreg"] = "on"
                     else:
@@ -137,6 +139,7 @@ class modifyQuestion_view(privateView):
                         formdata["question_alwaysinasse"] = "on"
                     else:
                         formdata["question_alwaysinasse"] = "off"
+                    """
 
                     if formdata["question_requiredvalue"] == 1:
                         formdata["question_requiredvalue"] = "on"
@@ -160,6 +163,7 @@ class modifyQuestion_view(privateView):
                         )
                     )
             else:
+                """
                 if formdata["question_alwaysinreg"] == 1:
                     formdata["question_alwaysinreg"] = "on"
                 else:
@@ -169,7 +173,7 @@ class modifyQuestion_view(privateView):
                     formdata["question_alwaysinasse"] = "on"
                 else:
                     formdata["question_alwaysinasse"] = "off"
-
+                """
                 if formdata["question_requiredvalue"] == 1:
                     formdata["question_requiredvalue"] = "on"
                 else:
@@ -653,7 +657,7 @@ class newQuestion_view(privateView):
                                 )
                             )
                 else:
-                    if formdata["question_alwaysinreg"] == 1:
+                    """if formdata["question_alwaysinreg"] == 1:
                         formdata["question_alwaysinreg"] = "on"
                     else:
                         formdata["question_alwaysinreg"] = "off"
@@ -662,6 +666,7 @@ class newQuestion_view(privateView):
                         formdata["question_alwaysinasse"] = "on"
                     else:
                         formdata["question_alwaysinasse"] = "off"
+                    """
 
                     if formdata["question_requiredvalue"] == 1:
                         formdata["question_requiredvalue"] = "on"
@@ -678,6 +683,7 @@ class newQuestion_view(privateView):
                     }
 
             else:
+                """
                 if formdata["question_alwaysinreg"] == 1:
                     formdata["question_alwaysinreg"] = "on"
                 else:
@@ -687,7 +693,7 @@ class newQuestion_view(privateView):
                     formdata["question_alwaysinasse"] = "on"
                 else:
                     formdata["question_alwaysinasse"] = "off"
-
+                """
                 if formdata["question_requiredvalue"] == 1:
                     formdata["question_requiredvalue"] = "on"
                 else:
