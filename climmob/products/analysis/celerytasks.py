@@ -78,6 +78,8 @@ def createReports(locale, path, user, projectid, data, info, infosheet):
     #file_paths = []
     if os.path.exists(report):
         os.system("mv "+report+" "+pathout+"/Report_"+projectid+".docx")
+    else:
+        print("No existe el archivo")
 
     # if os.path.exists(report):
     #     file_paths.append(report)

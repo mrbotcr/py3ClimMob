@@ -426,7 +426,6 @@ def deleteProjectAssessment(user, project, assessment, request):
         request.dbsession.query(Assessment).filter(Assessment.user_name == user).filter(
             Assessment.project_cod == project
         ).filter(Assessment.ass_cod == assessment).delete()
-
         dropFile = os.path.join(
             request.registry.settings["user.repository"],
             *[user, project, "db", "ass", assessment, "drop.sql"]
@@ -441,6 +440,8 @@ def deleteProjectAssessment(user, project, assessment, request):
             with open(dropFile) as input_file:
                 proc = Popen(dropargs, stdin=input_file, stderr=PIPE, stdout=PIPE)
                 output, error = proc.communicate()
+                output = output.decode("utf-8")
+                error = error.decode("utf-8")
                 if output != "" or error != "":
                     print("Error dropping database 1***")
                     msg = "Error dropping database \n"
@@ -449,11 +450,10 @@ def deleteProjectAssessment(user, project, assessment, request):
                     msg = msg + error + "\n"
                     msg = msg + "Output: \n"
                     msg = msg + output + "\n"
-                    log.error(msg)
+                    log.error(str(msg))
 
         return True, ""
     except Exception as e:
-        print(str(e))
         return False, e
 
 

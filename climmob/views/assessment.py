@@ -463,6 +463,7 @@ class deleteassessmenthead_view(privateView):
             )
             error_summary = {}
             if self.request.method == "POST":
+                print(self.user.login, projectid, assessmentid)
                 error, msg = deleteProjectAssessment(
                     self.user.login, projectid, assessmentid, self.request
                 )
