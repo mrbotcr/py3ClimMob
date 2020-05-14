@@ -608,7 +608,7 @@ class newQuestion_view(privateView):
                             ):
                                 self.request.session.flash(
                                     self._(
-                                        "The question was successfully added. Add new values now"
+                                        "The question was successfully added. Configure the ranking of options now"
                                     )
                                 )
                                 self.returnRawViewResult = True
@@ -621,7 +621,7 @@ class newQuestion_view(privateView):
                                 if formdata["question_dtype"] == 9:
                                     self.request.session.flash(
                                         self._(
-                                            "The question was successfully added. Configure the characteristic now"
+                                            "The question was successfully added. Configure the comparison with check now"
                                         )
                                     )
                                     self.returnRawViewResult = True

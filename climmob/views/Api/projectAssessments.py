@@ -124,7 +124,7 @@ class addNewAssessment_view(apiView):
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is not a project with that code."),
+                            body=self._("There is no project with that code."),
                         )
                         return response
                 else:
@@ -179,7 +179,7 @@ class updateProjectAssessment_view(apiView):
                                     response = Response(
                                         status=200,
                                         body=self._(
-                                            "Assessment updated successfully."
+                                            "Data collection updated successfully."
                                         ),
                                     )
                                     return response
@@ -187,7 +187,7 @@ class updateProjectAssessment_view(apiView):
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "There is not a assessment with that code."
+                                        "There is no data collection with that code."
                                     ),
                                 )
                                 return response
@@ -203,14 +203,14 @@ class updateProjectAssessment_view(apiView):
                         #    response = Response(
                         #        status=401,
                         #        body=self._(
-                        #            "You can not update assessments. You already started the data collection."
+                        #            "You cannot update data collection moments. You already started the data collection."
                         #        ),
                         #    )
                         #    return response
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is not a project with that code."),
+                            body=self._("There is no project with that code."),
                         )
                         return response
                 else:
@@ -266,14 +266,14 @@ class deleteProjectAssessment_view(apiView):
                                 else:
                                     response = Response(
                                         status=200,
-                                        body=self._("Assessment deleted successfully."),
+                                        body=self._("Data collection moment deleted succesfully."),
                                     )
                                     return response
                             else:
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "You can not delete the assessment."
+                                        "You can not delete this group because you have questions required for the data collection moment."
                                     ),
                                 )
                                 return response
@@ -281,14 +281,14 @@ class deleteProjectAssessment_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "There is not a assessment with that code."
+                                    "There is no data collection with that code."
                                 ),
                             )
                             return response
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is not a project with that code."),
+                            body=self._("There is no project with that code."),
                         )
                         return response
                 else:
@@ -382,14 +382,14 @@ class readProjectAssessmentStructure_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "There is not a assessment with that code."
+                                    "There is no data collection with that code."
                                 ),
                             )
                             return response
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is not a project with that code."),
+                            body=self._("There is no project with that code."),
                         )
                         return response
                 else:
@@ -471,7 +471,7 @@ class createAssessmentGroup_view(apiView):
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "You can not update assessments. You already started the data collection."
+                                        "You cannot update data collection moments. You already started the data collection."
                                     ),
                                 )
                                 return response
@@ -479,14 +479,14 @@ class createAssessmentGroup_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "There is not a assessment with that code."
+                                    "There is no data collection with that code."
                                 ),
                             )
                             return response
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is not a project with that code."),
+                            body=self._("There is no project with that code."),
                         )
                         return response
                 else:
@@ -575,7 +575,7 @@ class updateAssessmentGroup_view(apiView):
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "You can not update assessments. You already started the data collection."
+                                        "You cannot update data collection moments. You already started the data collection."
                                     ),
                                 )
                                 return response
@@ -583,14 +583,14 @@ class updateAssessmentGroup_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "There is not a assessment with that code."
+                                    "There is no data collection with that code."
                                 ),
                             )
                             return response
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is not a project with that code."),
+                            body=self._("There is no project with that code."),
                         )
                         return response
                 else:
@@ -682,7 +682,7 @@ class deleteAssessmentGroup_view(apiView):
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "You can not update assessments. You already started the data collection."
+                                        "You cannot update data collection moments. You already started the data collection."
                                     ),
                                 )
                                 return response
@@ -690,14 +690,14 @@ class deleteAssessmentGroup_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "There is not a assessment with that code."
+                                    "There is no data collection with that code."
                                 ),
                             )
                             return response
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is not a project with that code."),
+                            body=self._("There is no project with that code."),
                         )
                         return response
                 else:
@@ -772,7 +772,7 @@ class readPossibleQuestionForAssessmentGroup_view(apiView):
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "You can not update assessments. You already started the data collection."
+                                        "You cannot update data collection moments. You already started the data collection."
                                     ),
                                 )
                                 return response
@@ -780,14 +780,14 @@ class readPossibleQuestionForAssessmentGroup_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "There is not a assessment with that code."
+                                    "There is no data collection with that code."
                                 ),
                             )
                             return response
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is not a project with that code."),
+                            body=self._("There is no project with that code."),
                         )
                         return response
                 else:
@@ -865,7 +865,7 @@ class addQuestionToGroupAssessment_view(apiView):
                                                 response = Response(
                                                     status=200,
                                                     body=self._(
-                                                        "The question was added to the assessment"
+                                                        "The question was added to the data collection moment."
                                                     ),
                                                 )
                                                 return response
@@ -873,7 +873,7 @@ class addQuestionToGroupAssessment_view(apiView):
                                             response = Response(
                                                 status=401,
                                                 body=self._(
-                                                    "The question is already assigned to assessment or can not be used in this section."
+                                                    "The question is already assigned to the data collection moment or cannot be used in this section."
                                                 ),
                                             )
                                             return response
@@ -881,7 +881,7 @@ class addQuestionToGroupAssessment_view(apiView):
                                         response = Response(
                                             status=401,
                                             body=self._(
-                                                "You do not have a question with this id."
+                                                "You do not have a question with this ID."
                                             ),
                                         )
                                         return response
@@ -897,7 +897,7 @@ class addQuestionToGroupAssessment_view(apiView):
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "You can not update assessments. You already started the data collection."
+                                        "You cannot update data collection moments. You already started the data collection."
                                     ),
                                 )
                                 return response
@@ -905,14 +905,14 @@ class addQuestionToGroupAssessment_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "There is not a assessment with that code."
+                                    "There is no data collection with that code."
                                 ),
                             )
                             return response
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is not a project with that code."),
+                            body=self._("There is no project with that code."),
                         )
                         return response
                 else:
@@ -969,7 +969,7 @@ class deleteQuestionFromGroupAssessment_view(apiView):
                                             response = Response(
                                                 status=401,
                                                 body=self._(
-                                                    "You can not delete this question because is required in the assessment."
+                                                    "You can not delete this question because is required for this data collection moment."
                                                 ),
                                             )
                                             return response
@@ -1000,7 +1000,7 @@ class deleteQuestionFromGroupAssessment_view(apiView):
                                                 response = Response(
                                                     status=401,
                                                     body=self._(
-                                                        "You do not have a question with this id in this group."
+                                                        "You do not have a question with this ID in this group."
                                                     ),
                                                 )
                                                 return response
@@ -1008,7 +1008,7 @@ class deleteQuestionFromGroupAssessment_view(apiView):
                                         response = Response(
                                             status=401,
                                             body=self._(
-                                                "You do not have a question with this id."
+                                                "You do not have a question with this ID."
                                             ),
                                         )
                                         return response
@@ -1024,7 +1024,7 @@ class deleteQuestionFromGroupAssessment_view(apiView):
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "You can not update assessments. You already started the data collection."
+                                        "You cannot update data collection moments. You already started the data collection."
                                     ),
                                 )
                                 return response
@@ -1032,14 +1032,14 @@ class deleteQuestionFromGroupAssessment_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "There is not a assessment with that code."
+                                    "There is no data collection with that code."
                                 ),
                             )
                             return response
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is not a project with that code."),
+                            body=self._("There is no project with that code."),
                         )
                         return response
                 else:
@@ -1129,7 +1129,7 @@ class orderAssessmentQuestions_view(apiView):
                                                 response = Response(
                                                     status=200,
                                                     body=self._(
-                                                        "The order of the groups and questions was changed."
+                                                        "The order of the groups and questions has been changed."
                                                     ),
                                                 )
                                                 return response
@@ -1167,7 +1167,7 @@ class orderAssessmentQuestions_view(apiView):
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "You can not update assessments. You already started the data collection."
+                                        "You cannot update data collection moments. You already started the data collection."
                                     ),
                                 )
                                 return response
@@ -1175,14 +1175,14 @@ class orderAssessmentQuestions_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "There is not a assessment with that code."
+                                    "There is no data collection with that code."
                                 ),
                             )
                             return response
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is not a project with that code."),
+                            body=self._("There is no project with that code."),
                         )
                         return response
                 else:

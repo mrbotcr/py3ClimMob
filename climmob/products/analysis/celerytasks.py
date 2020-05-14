@@ -162,7 +162,7 @@ def createTheDocuments(
 
     data_general["vars"] = [
         {
-            "var": _("Number of observers"),
+            "var": _("Number of participants"),
             "val": data_pre[data_pre["Characteristics"][0]]["nobs"][0],
         },
         {"var": _("Number of aspects to evaluate"), "val": len(data_pre["Items"])},

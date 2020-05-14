@@ -70,7 +70,7 @@ class editProfile_view(privateView):
                                     error_summary["ChangeProfile"] = uerror
                             else:
                                 error_summary["ChangeProfile"] = self._(
-                                    "Other user is using the same email adddress"
+                                    "User with the same email address has already been registered."
                                 )
                         else:
                             error_summary["ChangeProfile"] = self._(

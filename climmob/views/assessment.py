@@ -82,13 +82,13 @@ class modifyAssessmentSection_view(privateView):
                         else:
                             error_summary = {
                                 "sectiondescription": self._(
-                                    "The description of the group can not be empty."
+                                    "The description of the group cannot be empty."
                                 )
                             }
                     else:
                         error_summary = {
                             "sectionname": self._(
-                                "The name of the group can not be empty."
+                                "The name of the group cannot be empty."
                             )
                         }
             else:
@@ -463,7 +463,6 @@ class deleteassessmenthead_view(privateView):
             )
             error_summary = {}
             if self.request.method == "POST":
-                print(self.user.login, projectid, assessmentid)
                 error, msg = deleteProjectAssessment(
                     self.user.login, projectid, assessmentid, self.request
                 )

@@ -158,7 +158,7 @@ class createProject_view(apiView):
                         response = Response(
                             status=401,
                             body=self._(
-                                "For the project code only letters and numbers are allowed and the project code must start with a letter."
+                                "For the project code only letters and numbers are allowed. The project code must start with a letter."
                             ),
                         )
                         return response

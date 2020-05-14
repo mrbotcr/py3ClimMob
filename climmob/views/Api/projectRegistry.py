@@ -191,14 +191,14 @@ class addRegistryGroup_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "You can not create groups. You started the registry."
+                                    "You cannot create groups. You started registration."
                                 ),
                             )
                             return response
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is not a project with that code."),
+                            body=self._("There is no project with that code."),
                         )
                         return response
                 else:
@@ -265,14 +265,14 @@ class updateRegistryGroup_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "You can not update groups. You started the registry."
+                                    "You can not update groups. You started registration."
                                 ),
                             )
                             return response
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is not a project with that code."),
+                            body=self._("There is no project with that code."),
                         )
                         return response
                 else:
@@ -335,7 +335,7 @@ class deleteRegistryGroup_view(apiView):
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "You can not delete this group because you have questions required for the registry."
+                                            "You cannot delete this group because it contains questions required for the registration."
                                         ),
                                     )
                                     return response
@@ -349,14 +349,14 @@ class deleteRegistryGroup_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "You can not delete groups. You started the registry."
+                                    "You cannot delete groups. You started registration."
                                 ),
                             )
                             return response
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is not a project with that code."),
+                            body=self._("There is no project with that code."),
                         )
                         return response
                 else:
@@ -432,7 +432,7 @@ class addQuestionToGroupRegistry_view(apiView):
                                         response = Response(
                                             status=401,
                                             body=self._(
-                                                "The question is already assigned to registry or can not be used in this section."
+                                                "The question has already been assigned to the registration or cannot be used in this section."
                                             ),
                                         )
                                         return response
@@ -440,7 +440,7 @@ class addQuestionToGroupRegistry_view(apiView):
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "You do not have a question with this id."
+                                            "You do not have a question with this ID."
                                         ),
                                     )
                                     return response
@@ -454,14 +454,14 @@ class addQuestionToGroupRegistry_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "You can not add questions. You started the registry."
+                                    "You cannot add questions. You started registration."
                                 ),
                             )
                             return response
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is not a project with that code."),
+                            body=self._("There is no project with that code."),
                         )
                         return response
                 else:
@@ -512,7 +512,7 @@ class deleteQuestionFromGroupRegistry_view(apiView):
                                         response = Response(
                                             status=401,
                                             body=self._(
-                                                "You can not delete this question because is required in the registry."
+                                                "You can not delete this question because is required during registration."
                                             ),
                                         )
                                         return response
@@ -544,7 +544,7 @@ class deleteQuestionFromGroupRegistry_view(apiView):
                                             response = Response(
                                                 status=401,
                                                 body=self._(
-                                                    "You do not have a question with this id in this group."
+                                                    "You do not have a question with this ID in this group."
                                                 ),
                                             )
                                             return response
@@ -552,7 +552,7 @@ class deleteQuestionFromGroupRegistry_view(apiView):
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "You do not have a question with this id."
+                                            "You do not have a question with this ID."
                                         ),
                                     )
                                     return response
@@ -566,14 +566,14 @@ class deleteQuestionFromGroupRegistry_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "You can not delete questions. You started the registry."
+                                    "You cannot delete questions. You started the registration."
                                 ),
                             )
                             return response
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is not a project with that code."),
+                            body=self._("There is no project with that code."),
                         )
                         return response
                 else:
@@ -661,7 +661,7 @@ class orderRegistryQuestions_view(apiView):
                                                 response = Response(
                                                     status=200,
                                                     body=self._(
-                                                        "The order of the groups and questions was changed."
+                                                        "The order of the groups and questions has been changed."
                                                     ),
                                                 )
                                                 return response
@@ -699,7 +699,7 @@ class orderRegistryQuestions_view(apiView):
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "No group and questions to order. You need to read the project registry."
+                                        "No group and questions to order."
                                     ),
                                 )
                                 return response
@@ -707,14 +707,14 @@ class orderRegistryQuestions_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "You can not order the groups and questions. You started the registry."
+                                    "You cannot order the groups and questions. You have started the registration."
                                 ),
                             )
                             return response
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is not a project with that code."),
+                            body=self._("There is no project with that code."),
                         )
                         return response
                 else:

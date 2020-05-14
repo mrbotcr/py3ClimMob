@@ -165,7 +165,7 @@ class newRegistrySection_view(privateView):
                     else:
                         error_summary = {
                             "sectionname": self._(
-                                "The name of the group can not be empty."
+                                "The name of the group cannot be empty."
                             )
                         }
 

@@ -60,7 +60,7 @@ def create_index_html(
         "projectpinumber": projectpinumber,
         "projectcreationdate": projectcreationdate,
         "letter": letter,
-        "ProjectPi": _("Project Pi"),
+        "ProjectPi": _("Trial coordinator"),
         "packageDesc": _("Package"),
         "emailDesc": _("Email"),
     }

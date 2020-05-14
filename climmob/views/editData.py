@@ -160,14 +160,14 @@ class uploadDataView(privateView):
                         )
                         if output == 0:
                             error_summary = {
-                                "error": self._("You have information with errors.")
+                                "error": self._("The information you provided has errors.")
                             }
                         else:
                             correct = True
                             print("Termina la edicion de datos.")
                 else:
                     error_summary = {
-                        "error": self._("This data does not belong to this form.")
+                        "error": self._("These data do not belong to this form.")
                     }
 
                 return {

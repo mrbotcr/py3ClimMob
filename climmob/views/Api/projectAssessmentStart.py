@@ -74,7 +74,7 @@ class createProjectAssessment_view(apiView):
 
                                         response = Response(
                                             status=200,
-                                            body=self._("Assessment started."),
+                                            body=self._("Data collection started."),
                                         )
                                         return response
                                     else:
@@ -94,21 +94,21 @@ class createProjectAssessment_view(apiView):
                             else:
                                 response = Response(
                                     status=401,
-                                    body=self._("The assessment is already started."),
+                                    body=self._("Data collection has already started."),
                                 )
                                 return response
                         else:
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "You can not start the assessment because the registry has not been completed."
+                                    "You cannot add data collection moments. You alreaday started data collection."
                                 ),
                             )
                             return response
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is not a project with that code."),
+                            body=self._("There is not project with that code."),
                         )
                         return response
                 else:
@@ -160,7 +160,7 @@ class cancelAssessmentApi_view(apiView):
                             # setAssessmentStatus(self.user.login, dataworking['project_cod'], 0, self.request)
 
                             response = Response(
-                                status=200, body=self._("Assessment cancel.")
+                                status=200, body=self._("Cancel data collection")
                             )
                             return response
 
@@ -168,14 +168,14 @@ class cancelAssessmentApi_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "The assessment is not started. You can not cancel it."
+                                    "Data collection has not started. You cannot cancel it."
                                 ),
                             )
                             return response
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is not a project with that code."),
+                            body=self._("There is no project with that code."),
                         )
                         return response
                 else:
@@ -228,7 +228,7 @@ class closeAssessmentApi_view(apiView):
                                     self.request,
                                 )
                                 response = Response(
-                                    status=200, body=self._("Assessment closed.")
+                                    status=200, body=self._("Data collection closed.")
                                 )
                                 return response
 
@@ -236,7 +236,7 @@ class closeAssessmentApi_view(apiView):
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "There is not a assessment with that code."
+                                        "There is no data collection with that code."
                                     ),
                                 )
                                 return response
@@ -244,14 +244,14 @@ class closeAssessmentApi_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "The assessment is not started. You can not cancel it."
+                                    "Data collection has not started. You cannot cancel it."
                                 ),
                             )
                             return response
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is not a project with that code."),
+                            body=self._("There is no project with that code."),
                         )
                         return response
                 else:
@@ -317,20 +317,20 @@ class readAssessmentStructure_view(apiView):
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "There is not a assessment with that code."
+                                        "There is no data collection with that code."
                                     ),
                                 )
                                 return response
                         else:
                             response = Response(
                                 status=401,
-                                body=self._("The assessment is not started."),
+                                body=self._("Data collection has not started."),
                             )
                             return response
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is not a project with that code."),
+                            body=self._("There is no project with that code."),
                         )
                         return response
                 else:
@@ -646,7 +646,7 @@ class pushJsonToAssessment_view(apiView):
                                                                 response = Response(
                                                                     status=401,
                                                                     body=self._(
-                                                                        "The data could not be save. ERROR: "
+                                                                        "The data could not be saved. ERROR: "
                                                                         + errors[
                                                                             0
                                                                         ].getAttribute(
@@ -708,7 +708,7 @@ class pushJsonToAssessment_view(apiView):
                                         response = Response(
                                             status=401,
                                             body=self._(
-                                                "This assessment do not have structure."
+                                                "The data do not have structure."
                                             ),
                                         )
                                         return response
@@ -716,7 +716,7 @@ class pushJsonToAssessment_view(apiView):
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "This assessment is close. After you close the assessment no more data would be able to register."
+                                            "Data collection is closed. After you close data collection, no more data can be entered."
                                         ),
                                     )
                                     return response
@@ -724,20 +724,20 @@ class pushJsonToAssessment_view(apiView):
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "The assessment is not started."
+                                        "Data collection has not started."
                                     ),
                                 )
                                 return response
                         else:
                             response = Response(
                                 status=401,
-                                body=self._("There is not a assessment with that code."),
+                                body=self._("There is no data collection with that code."),
                             )
                             return response
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is not a project with that code."),
+                            body=self._("There is no project with that code."),
                         )
                         return response
                 else:

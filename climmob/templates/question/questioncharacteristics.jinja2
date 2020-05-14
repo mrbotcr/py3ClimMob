@@ -1,13 +1,13 @@
 {% extends 'dashboard/dashboard.jinja2' %}
 
 {% block title %}
-    <title>{{ _("ClimMob | Set triadic comparisons") }}</title>
+    <title>{{ _("ClimMob | Set characteristics") }}</title>
 {% endblock title %}
 
 {% block pageheading %}
     <div class="row wrapper border-bottom white-bg page-heading">
         <div class="col-lg-10">
-            <h2>{{ _("Define triadic comparisons") }}</h2>
+            <h2>{{ _("Define ranking of options") }}</h2>
             <ol class="breadcrumb">
                 <li>
                     <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
@@ -19,7 +19,7 @@
                     <a>{{ _("Question") }}: {{ qdata.question_desc }}</a>
                 </li>
                 <li class="active">
-                    <strong>{{ _("Triadic comparisons") }}</strong>
+                    <strong>{{ _("Characteristics") }}</strong>
                 </li>
             </ol>
             <a href="https://climmob.net/blog/wiki/2019/09/30/question-characteristics/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
@@ -37,7 +37,7 @@
                 <div class="ibox float-e-margins" style="height: 100%; margin-bottom: 0px">
 
                     <div class="ibox-title">
-                        <h5>{{ _("Describe the triadic comparison") }}</h5>
+                        <h5>{{ _("Describe the ranking variable") }}</h5>
                         <div class="ibox-tools">
 
                         </div>
@@ -45,15 +45,15 @@
                     <div class="ibox-content" style="height: 89%">
                         <div class="panel panel-info">
                             <div class="panel-heading">
-                                <i class="fa fa-info-circle"></i> {{ _("How to describe the triadic comparisons") }}
+                                <i class="fa fa-info-circle"></i> {{ _("How to describe the ranking variable") }}
                             </div>
                             <div class="panel-body">
                                 <div style="max-height: 150px; overflow-y: scroll;">
-                                    <p style="margin-bottom: 0.11in; line-height: 108%">{{ _("The triadic comparisons is a type of question that is used to compare three technologies based on a criterion. For example, if the criterion is 'taste' for varieties of bean you could do it in the following way:") }}</p>
+                                    <p style="margin-bottom: 0.11in; line-height: 108%">{{ _("A ranking of options is a type of question that is used to compare two of more technologies based on a criterion. For example, if the criterion is &ldquo;yield&rdquo; for varieties of bean you could do it in the following way:") }}</p>
 
-                                    <p style="margin-left: 0.5in; margin-bottom: 0in; line-height: 100%"><font color="#2f5496">{{ _("'Which variety tasted better?'") }} </font>{{ ("and") }}
+                                    <p style="margin-left: 0.5in; margin-bottom: 0in; line-height: 100%"><font color="#2f5496">{{ _("'Which variety yielded better?'") }} </font>{{ ("and") }}
                                     </p>
-                                    <p style="margin-left: 0.5in; margin-bottom: 0in; line-height: 100%"><font color="#2f5496">{{ _("'Which variety tasted worst?'") }}</font></p>
+                                    <p style="margin-left: 0.5in; margin-bottom: 0in; line-height: 100%"><font color="#2f5496">{{ _("'Which variety yielded worst?'") }}</font></p>
                                 </div>
                             </div>
                         </div>
@@ -62,7 +62,7 @@
                             {% snippet 'snippets/question/values/char-form.jinja2', request=request,qdata=qdata, editable=editable %}
                             <div class="text-center">
                                 {% if editable %}
-                                    <button type="submit" name="btn_add_char" class="btn btn-warning"> {{ _('Save statements') }}</button>
+                                    <button type="submit" name="btn_add_char" class="btn btn-warning"> {{ _('Save') }}</button>
                                 {% endif%}
                             </div>
                         </form>

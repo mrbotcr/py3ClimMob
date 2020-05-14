@@ -60,7 +60,7 @@
                                         {% if enumerator.enum_active == 1 %}
                                             {{ enumerator.enum_name }}
                                         {% else %}
-                                            {{ enumerator.enum_name }} <span class="label label-danger">{{ _("Cannot submit data") }}</span>
+                                            {{ enumerator.enum_name }} <span class="label label-danger">{{ _("Can not submit data") }}</span>
                                         {% endif %}
                                     </td>
 {#                                    <td class="">#}
@@ -95,7 +95,7 @@
 {#                                    </td>#}
 
                                     <td class="text-center" style="vertical-align: middle;">
-                                        <button onclick="showDelete('{{ request.route_url('removeprjenumerator', projectid=projectid,enumeratorid=enumerator.enum_id) }}','{{ _("Do you really want to remove this enumerator ?") }}','{{ request.session.get_csrf_token() }}')" type="button" class="btn btn-sm btn-danger">{{ _("Remove") }}</button>
+                                        <button onclick="showDelete('{{ request.route_url('removeprjenumerator', projectid=projectid,enumeratorid=enumerator.enum_id) }}','{{ _("Do you really want to remove this field agent?") }}','{{ request.session.get_csrf_token() }}')" type="button" class="btn btn-sm btn-danger">{{ _("Remove") }}</button>
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -103,7 +103,7 @@
                             </tbody>
                         </table>
                         <div style="width: 100%; text-align: center">
-                            <h3><b><a href="{{ request.route_url('productList') }}">{{ _("You can download a .pdf document with the information and QR of the field agents for the ODK Collect configuration.") }}</a></b></h3>
+                            <h3><b><a href="{{ request.route_url('productList') }}">{{ _("You can download a PDF document to configure ODK Collect on Android devices.") }}</a></b></h3>
                         </div>
                     {% else %}
                         <div style="width: 100%; text-align: center">

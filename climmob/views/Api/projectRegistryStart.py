@@ -130,7 +130,7 @@ class readProjectCombinations_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "You must have the enumerators, technologies, aliases and created the registry form for read the combinations."
+                                    "You must have the field agents, technologies, aliases and created the registration form to read the combinations."
                                 ),
                             )
                             return response
@@ -140,7 +140,7 @@ class readProjectCombinations_view(apiView):
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is not a project with that code."),
+                            body=self._("There is no project with that code."),
                         )
                         return response
                 else:
@@ -244,7 +244,7 @@ class setUsableCombinations_view(apiView):
                                         response = Response(
                                             status=401,
                                             body=self._(
-                                                "You do not have a combination with this id."
+                                                "You do not have a combination with this ID."
                                             ),
                                         )
                                         return response
@@ -252,7 +252,7 @@ class setUsableCombinations_view(apiView):
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "This project has not created the combinations."
+                                            "The combinations have not been created."
                                         ),
                                     )
                                     return response
@@ -260,20 +260,20 @@ class setUsableCombinations_view(apiView):
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "You must have the enumerators, technologies, aliases and created the registry form."
+                                        "You must have the field agents, technology options and registration form ready."
                                     ),
                                 )
                                 return response
                         else:
                             response = Response(
                                 status=401,
-                                body=self._("The registry is already started."),
+                                body=self._("Registration has already started."),
                             )
                             return response
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is not a project with that code."),
+                            body=self._("There is no project with that code."),
                         )
                         return response
                 else:
@@ -361,14 +361,14 @@ class createPackages_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "You must have the enumerators, technologies, aliases and created the registry form."
+                                    "You must have the field agents, technology options and registration form ready."
                                 ),
                             )
                             return response
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is not a project with that code."),
+                            body=self._("There is no project with that code."),
                         )
                         return response
                 else:
@@ -434,7 +434,7 @@ class createProjectRegistry_view(apiView):
                                         )
 
                                         response = Response(
-                                            status=200, body=self._("Registry started.")
+                                            status=200, body=self._("Registration started.")
                                         )
                                         return response
 
@@ -442,7 +442,7 @@ class createProjectRegistry_view(apiView):
                                         response = Response(
                                             status=401,
                                             body=self._(
-                                                "This project has not created the packages. You need to create the packages first."
+                                                "Packages have not available yet. You need to do the randomization first."
                                             ),
                                         )
                                         return response
@@ -458,20 +458,20 @@ class createProjectRegistry_view(apiView):
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "You must have the enumerators, technologies, aliases and created the registry form."
+                                        "You must have the field agents, technology options and registration form ready."
                                     ),
                                 )
                                 return response
                         else:
                             response = Response(
                                 status=401,
-                                body=self._("The registry is already started."),
+                                body=self._("Registration has already started."),
                             )
                             return response
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is not a project with that code."),
+                            body=self._("There is no project with that code."),
                         )
                         return response
                 else:
@@ -519,21 +519,21 @@ class cancelRegistryApi_view(apiView):
                             stopTasksByProcess(self.request, "create_packages")
 
                             response = Response(
-                                status=200, body=self._("Registry cancel.")
+                                status=200, body=self._("Cancel registration.")
                             )
                             return response
                         else:
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "The registry is not started. You can not cancel it."
+                                    "The registration has not started. You cannot cancel it."
                                 ),
                             )
                             return response
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is not a project with that code."),
+                            body=self._("There is no project with that code."),
                         )
                         return response
                 else:
@@ -586,14 +586,14 @@ class closeRegistryApi_view(apiView):
                                     self.request,
                                 )
                                 response = Response(
-                                    status=200, body=self._("Closed registry.")
+                                    status=200, body=self._("Closed registration.")
                                 )
                                 return response
                             else:
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "You can not close the registry because you do not have data."
+                                        "You cannot close the registration because you do not have data."
                                     ),
                                 )
                                 return response
@@ -601,14 +601,14 @@ class closeRegistryApi_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "The registry is not started. You can not cancel it."
+                                    "The registration has not started. You cannot cancel it."
                                 ),
                             )
                             return response
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is not a project with that code."),
+                            body=self._("There is no project with that code."),
                         )
                         return response
                 else:
@@ -664,13 +664,13 @@ class readRegistryStructure_view(apiView):
                             return response
                         else:
                             response = Response(
-                                status=401, body=self._("The registry is not started.")
+                                status=401, body=self._("Registration has not started.")
                             )
                             return response
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is not a project with that code."),
+                            body=self._("There is no project with that code."),
                         )
                         return response
                 else:
@@ -852,7 +852,7 @@ class pushJsonToRegistry_view(apiView):
                                                             response = Response(
                                                                 status=401,
                                                                 body=self._(
-                                                                    "ERROR: You do not have a package code with this id."
+                                                                    "ERROR: You do not have a package code with this ID."
                                                                 ),
                                                             )
                                                             return response
@@ -911,19 +911,19 @@ class pushJsonToRegistry_view(apiView):
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "The registry is close. After you close the registry no more participants would be able to register."
+                                        "Registration has closed. No more participants can be registered."
                                     ),
                                 )
                                 return response
                         else:
                             response = Response(
-                                status=401, body=self._("The registry is not started.")
+                                status=401, body=self._("Registration has not started.")
                             )
                             return response
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is not a project with that code."),
+                            body=self._("There is no project with that code."),
                         )
                         return response
                 else:

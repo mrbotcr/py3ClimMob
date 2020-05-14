@@ -51,7 +51,7 @@ class addEnumerator_view(privateView):
                             else:
                                 self.request.session.flash(
                                     self._(
-                                        "The field agent was created successfully"
+                                        "The field agent was created successfully."
                                     )
                                 )
                                 self.returnRawViewResult = True
@@ -63,7 +63,7 @@ class addEnumerator_view(privateView):
                         else:
                             error_summary = {
                                 "exists": self._(
-                                    "This enumerator name already exists."
+                                    "This field agent name already exists."
                                 )
                             }
                         #else:
@@ -75,7 +75,7 @@ class addEnumerator_view(privateView):
                     else:
                         error_summary = {
                             "passwordempty": self._(
-                                "The password of the enumerator cannot be empty."
+                                "The password of the field agent cannot be empty."
                             )
                         }
                 else:
@@ -165,7 +165,7 @@ class modifyEnumerator_view(privateView):
 
                         else:
                             self.request.session.flash(
-                                self._("The field agent was modified successfully")
+                                self._("The field agent was modified successfully.")
                             )
                             self.returnRawViewResult = True
                             return HTTPFound(
