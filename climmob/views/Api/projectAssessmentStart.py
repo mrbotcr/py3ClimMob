@@ -578,7 +578,7 @@ class pushJsonToAssessment_view(apiView):
                                                                         response = Response(
                                                                             status=401,
                                                                             body=self._(
-                                                                                "You has repeated data in the next column: "
+                                                                                "You have repeated data in the next column: "
                                                                                 + _var
                                                                                 + ". Remember that the options can not be repeated."
                                                                             ),
@@ -692,7 +692,7 @@ class pushJsonToAssessment_view(apiView):
                                                 response = Response(
                                                     status=401,
                                                     body=self._(
-                                                        "Error in the JSON sent by parameter. Check the permited Keys."
+                                                        "Error in the JSON sent by parameter. Check the permitted Keys."
                                                     ),
                                                 )
                                                 return response

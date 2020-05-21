@@ -128,7 +128,7 @@ class updateEnumerator_view(apiView):
                             response = Response(
                                 status=200,
                                 body=self._(
-                                    "The enumerator was modified successfully."
+                                    "The field agent was modified successfully."
                                 ),
                             )
                             return response

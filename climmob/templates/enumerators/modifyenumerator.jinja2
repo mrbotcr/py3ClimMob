@@ -54,7 +54,7 @@
                         <form class="form-horizontal" role="form" method="post" action="{{ request.path }}" >
                             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                             {% snippet 'snippets/enumerators/enumerator-form.jinja2', dataworking=dataworking, modify=true %}
-                            <button type="submit" class="btn btn-warning pull-right" name="btn_modify_enumerator"> {{ _('Update enumerator') }}</button>
+                            <button type="submit" class="btn btn-warning pull-right" name="btn_modify_enumerator"> {{ _('Update field agent') }}</button>
                             <br>
                         </form>
                     </div>

@@ -60,7 +60,7 @@
 
                     {% if dataForAnalysis.Characteristics %}
                         <div class="form-group">
-                            <b>{{ _("Rankings of options") }}</b>
+                            <b>{{ _("Overall performance ranking") }}</b>
                             <div class="col-lg-offset-2 col-lg-10">
                                 {%for c in dataForAnalysis.Characteristics%}
                                     <label style="font-weight: inherit"> <input class="checkbox i-checks" type="checkbox" id="characteristic_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
@@ -72,7 +72,7 @@
 
                     {% if dataForAnalysis.Performance%}
                         <div class="form-group">
-                            <b>{{ _("Comparisons with check") }}</b>
+                            <b>{{ _("Comparison with check") }}</b>
                             <div class="col-lg-offset-2 col-lg-10">
                                 {%for c in dataForAnalysis.Performance%}
                                     <label style="font-weight: inherit"> <input class="checkbox i-checks" type="checkbox" id="performance_{{c.id}}_add"><i></i> {{ c.name }}</label><br>

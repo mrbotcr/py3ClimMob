@@ -31,7 +31,7 @@
     <div class="col-sm-8">
         <select id="question_dtype" name="question_dtype" class="form-control">
             <option value="1" {% if formdata.question_dtype == 1 %}selected {% endif %}>{{ _('Text') }}</option>
-            <option value="9" {% if formdata.question_dtype == 9 %}selected {% endif %}>{{ _('Ranking of options') }}</option>
+            <option value="9" {% if formdata.question_dtype == 9 %}selected {% endif %}>{{ _('Overall performance ranking') }}</option>
             <option value="10" {% if formdata.question_dtype == 10 %}selected {% endif %}>{{ _('Comparison with check') }}</option>
             <option value="27" {% if formdata.question_dtype == 27 %}selected {% endif %}>{{ _('Location') }}</option>
 
