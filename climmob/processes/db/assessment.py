@@ -426,7 +426,6 @@ def deleteProjectAssessment(user, project, assessment, request):
         request.dbsession.query(Assessment).filter(Assessment.user_name == user).filter(
             Assessment.project_cod == project
         ).filter(Assessment.ass_cod == assessment).delete()
-
         dropFile = os.path.join(
             request.registry.settings["user.repository"],
             *[user, project, "db", "ass", assessment, "drop.sql"]
@@ -441,6 +440,8 @@ def deleteProjectAssessment(user, project, assessment, request):
             with open(dropFile) as input_file:
                 proc = Popen(dropargs, stdin=input_file, stderr=PIPE, stdout=PIPE)
                 output, error = proc.communicate()
+                output = output.decode("utf-8")
+                error = error.decode("utf-8")
                 if output != "" or error != "":
                     print("Error dropping database 1***")
                     msg = "Error dropping database \n"
@@ -449,11 +450,10 @@ def deleteProjectAssessment(user, project, assessment, request):
                     msg = msg + error + "\n"
                     msg = msg + "Output: \n"
                     msg = msg + output + "\n"
-                    log.error(msg)
+                    log.error(str(msg))
 
         return True, ""
     except Exception as e:
-        print(str(e))
         return False, e
 
 
@@ -599,7 +599,7 @@ def getAssessmentQuestions(user, project, assessment, request):
         addQuestionsToAssessment(user, project, assessment, request)
 
     sql = (
-        "SELECT asssection.section_id,asssection.section_name,asssection.section_content,asssection.section_order,asssection.section_color,"
+        "SELECT asssection.section_id,asssection.section_name,asssection.section_content,asssection.section_order,asssection.section_private,"
         "question.question_id,question.question_desc,question.question_notes,question.question_dtype,IFNULL(assdetail.question_order,0) as question_order,"
         "question.question_reqinasses FROM asssection LEFT JOIN assdetail ON assdetail.section_user = asssection.user_name AND assdetail.section_project = asssection.project_cod "
         " AND assdetail.section_assessment = asssection.ass_cod AND assdetail.section_id = asssection.section_id "

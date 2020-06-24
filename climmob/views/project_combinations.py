@@ -20,6 +20,7 @@ from ..products.cards.cards import create_cards
 from ..products.packages.packages import create_packages_excell
 from ..products.colors.colors import create_colors_cards
 from ..products.fieldagents.fieldagents import create_fieldagents_report
+import time
 
 import pprint
 
@@ -163,11 +164,12 @@ class projectCombinations_view(privateView):
 
                 startTheRegistry(self, projectid)
 
-                return {
-                    "activeUser": self.user,
-                    "projectid": projectid,
-                    "registryCreated": True,
-                }
+                self.returnRawViewResult = True
+                return HTTPFound(
+                    location=self.request.route_url(
+                        "dashboard"
+                    )
+                )
 
 
 def startTheRegistry(self, projectid):
@@ -179,8 +181,8 @@ def startTheRegistry(self, projectid):
     ncombs, packages = getPackages(self.user.login, projectid, self.request)
 
     create_qr_packages(self.request, self.user.login, projectid, ncombs, packages)
-
-    create_cards(self.request, self.user.login, projectid, packages)
+    time.sleep(1)
+    #create_cards(self.request, self.user.login, projectid, packages)
 
     create_packages_excell(
         self.request,
@@ -189,7 +191,7 @@ def startTheRegistry(self, projectid):
         packages,
         getTech(self.user.login, projectid, self.request),
     )
-
+    time.sleep(1)
     locale = self.request.locale_name
     create_fieldagents_report(
         locale,
@@ -207,6 +209,7 @@ def startTheRegistry(self, projectid):
         tech = searchTechnologiesInProject(self.user.login, projectid, self.request)
         if len(tech) == 1:
             if tech[0]["tech_name"] == "Colores" or tech[0]["tech_name"] == "Colors":
+                time.sleep(1)
                 create_colors_cards(self.request, self.user.login, projectid, packages)
     # Call extenal plugins here
 
