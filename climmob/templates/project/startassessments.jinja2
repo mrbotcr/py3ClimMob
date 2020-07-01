@@ -1,0 +1,87 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob | Start data collection") }}</title>
+{% endblock title %}
+
+{% block pageheading %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>{{ _("Start data collection") }}</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
+                </li>
+                <li class="active">
+                    <strong>{{ _("Start data collection") }}</strong>
+                </li>
+            </ol>
+            <a href="https://climmob.net/blog/wiki/2019/10/01/start-the-data-collection/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
+        </div>
+        <div class="col-lg-2">
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block pagecontent %}
+    {% if redirect == False %}
+        {% block dltqstmessage %}
+            <div class="row ">
+                <div class="col-lg-4 ">
+                    <div class="ibox float-e-margins " >
+                        <div class="ibox-content">
+                            {% if not checkPass %}
+                                {% for error in error_summary %}
+                                    <div class="alert alert-danger alert-dismissable">
+                                        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                                        {{ error.message }}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                            {% if checkPass %}
+                                <form id="start_assessment"  role="form" method="post" action="{{ request.path }}">
+                                    <div class="form-group">
+                                        <label>{{ _("Assessment") }}</label>
+                                        <select id="assessment_id" name="assessment_id" class="form-control">
+                                                {% for assessment in assessments %}
+                                                    <option value="{{ assessment.ass_cod }}">{{ assessment.ass_desc }}</option>>
+                                                {% endfor %}
+                                            </select>
+                                    </div>
+                                    <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                                    <button id="start_assessment_button" class="btn btn-primary pull-right" type="submit" name="startAssessment"> {{ _('Start data collection') }}</button>
+                                </form>
+                                <br>
+                                <br>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endblock dltqstmessage %}
+    {% endif %}
+{% endblock %}
+
+{% if redirect == True %}
+    {% block toastr %}
+        {# Overwrite the toaster so it does not trigger the popup #}
+    {% endblock toastr %}
+{% endif %}
+
+{% block script %}
+    {% if redirect == True %}
+        {# If a new question is just added or edited then redirect the mainwindo to such project #}
+        <script>
+            window.top.location.href = "{{ request.route_url('dashboard') }}";
+
+
+            $(document).ready(function() {
+            $('#start_assessment').submit(function() {
+                $(this).find("button[type='submit']").prop('disabled',true);
+            });
+        });
+
+        </script>
+    {% endif %}
+{% endblock script %}

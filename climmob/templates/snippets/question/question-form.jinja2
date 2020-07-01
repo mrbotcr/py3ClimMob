@@ -1,0 +1,176 @@
+
+
+
+
+<div id="form_basic">
+    <div class="form-group">
+        <label class="col-sm-4 control-label">{{ _("Variable code") }}</label>
+        <div class="col-sm-8">
+            <input style="display: none"  type="text" id="question_id" class="form-control" name="question_id" >
+            <input style="max-width: 170px" maxlength="16" type="text" id="question_code" class="form-control inputForQuestion" required="" name="question_code" oninvalid="this.setCustomValidity('{{ _("Write the variable code.") }}')" onchange="this.setCustomValidity('')">
+            <span class="help-block m-b-none text-left">{{ _("Column label for the database (without spaces or special characters), for example 'grainyield'") }}</span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-4 control-label">{{ _("Variable name") }}</label>
+        <div class="col-sm-8">
+            <input style="max-width: 270px" maxlength="30" type="text" id="question_name" class="form-control inputForQuestion" required="" name="question_name" oninvalid="this.setCustomValidity('{{ _("Write the variable name.") }}')" onchange="this.setCustomValidity('')">
+            <span class="help-block m-b-none text-left">{{ _("Short name for the variable, for example 'Grain Yield'") }}</span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-4 control-label">{{ _("Type") }}</label>
+        <div class="col-sm-8">
+            <select id="question_dtype" name="question_dtype" class="form-control inputForQuestionSelect">
+                <option value="1" >{{ _('Text') }}</option>
+                <option value="9" >{{ _('Ranking of options') }}</option>
+                <option value="10" >{{ _('Comparison with check') }}</option>
+                <option value="27" >{{ _('Location') }}</option>
+                <option value="2" >{{ _('Decimal') }}</option>
+                <option value="3" >{{ _('Integer') }}</option>
+                <option value="4" >{{ _('GeoPoint') }}</option>
+                <option value="5" >{{ _('Select one') }}</option>
+                <option value="6" >{{ _('Select multiple') }}</option>
+                <option value="11" >{{ _('Geotrace') }}</option>
+                <option value="12" >{{ _('Geoshape') }}</option>
+                <option value="13" >{{ _('Date') }}</option>
+                <option value="14" >{{ _('Time ') }}</option>
+                <option value="15" >{{ _('DateTime ') }}</option>
+                <option value="16" >{{ _('Image ') }}</option>
+                <option value="17" >{{ _('Audio ') }}</option>
+                <option value="18" >{{ _('Video ') }}</option>
+                <option value="19" >{{ _('Barcode/QR') }}</option>
+                {# <option value="7" {% if formdata.question_dtype == 7 %}selected {% endif %}>{{ _('Package') }}</option>
+                   <option value="8" {% if formdata.question_dtype == 8 %}selected {% endif %}>{{ _('Observer') }}</option>
+                #}
+                {% block qstformqtypes_extra %}
+                {% endblock qstformqtypes_extra %}
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-4 control-label">{{ _("Category") }}</label>
+        <div class="col-sm-8">
+            <select id="question_group" name="question_group" class="form-control inputForQuestionSelect">
+                {% for category in Categories %}
+                    <option value="{{ category.qstgroups_id  }}[*$%&]{{ category.user_name }}" >{{ category.qstgroups_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-4 control-label">{{ _("Answer required") }}</label>
+        <div class="col-sm-8">
+            <div class="switch">
+                <input type="checkbox" id="ckb_required_value" class="inputForQuestionCheck"
+                       name="question_requiredvalue" data-on-color="success"
+                       data-off-color="danger" data-on-text="{{ _('Yes') }}"
+                       data-off-text="{{ _('No') }}" >
+                <span class="help-block m-b-none text-left">{{ _("Providing an answer to this question is obligatory during data collection.") }}</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div id="form_simple_question" class="formExtraForQuestion">
+    <div class="form-group">
+        <label class="col-sm-4 control-label">{{ _("Question asked") }}</label>
+        <div class="col-sm-8">
+            <input type="text" class="form-control inputForQuestion" required="" name="question_desc" id="question_desc"  oninvalid="this.setCustomValidity('{{ _("Write the question asked.") }}')" onchange="this.setCustomValidity('')">
+            <span class="help-block m-b-none text-left">{{ _("Text of the question as shown in the ODK Collect app.") }}</span>
+        </div>
+    </div>
+
+    <div class="form-group" id="div_unit">
+        <label class="col-sm-4 control-label">{{ _("Unit") }}</label>
+        <div class="col-sm-8">
+            <input type="text" class="form-control inputForQuestion" id="question_unit" name="question_unit" placeholder=" ">
+        </div>
+    </div>
+</div>
+
+<div id="form_characteristics" class="formExtraForQuestion">
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <i class="fa fa-info-circle"></i> {{ _("How to describe the ranking variable") }}
+        </div>
+        <div class="panel-body">
+            <div >
+                <p style="margin-bottom: 0.11in; line-height: 108%">{{ _("A ranking of options is a type of question that is used to compare two of more technologies based on a criterion. For example, if the criterion is &ldquo;yield&rdquo; for varieties of bean you could do it in the following way:") }}</p>
+
+                <p style="margin-left: 0.5in; margin-bottom: 0in; line-height: 100%"><font color="#2f5496">{{ _("'Which variety yielded better?'") }} </font>{{ ("and") }}
+                </p>
+                <p style="margin-left: 0.5in; margin-bottom: 0in; line-height: 100%"><font color="#2f5496">{{ _("'Which variety yielded worst?'") }}</font></p>
+            </div>
+        </div>
+    </div>
+    {% snippet 'snippets/question/values/char-form.jinja2', request=request, editable=editable %}
+</div>
+
+<div id="form_performance" class="formExtraForQuestion">
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <i class="fa fa-info-circle"></i>{{ _("How to describe a comparison with check") }}
+        </div>
+        <div class="panel-body">
+            <div>
+                <p style="margin-bottom: 0in; line-height: 100%">{{ _("Comparison with check is a type of question that is used to compare the technologies being tested in a project with the current one in use by the farmer or a commonly used technology. For example, if a project is evaluating three different varieties of bean then the performance questions would be:") }}</p>
+                <ul>
+                    <li/>
+                    <p style="margin-bottom: 0in; line-height: 100%">{{ _("In terms of taste, how does variety") }} <b>A</b> {{ _("compares with the variety you usually use?") }}</p>
+                    <li/>
+                    <p style="margin-bottom: 0in; line-height: 100%">{{ _("In terms of taste, how does variety") }} <b>B</b> {{ _("compares with the variety you usually use?") }}</p>
+                    <li/>
+                    <p style="margin-bottom: 0in; line-height: 100%">{{ _("In terms of taste, how does variety") }} <b>C</b> {{ _("compares with the variety you usually use?") }}</p>
+                </ul>
+                <p style="margin-bottom: 0in; line-height: 100%"><a name="_GoBack"></a>
+                    {{ _("In ClimMob you define this with one statement with the wildcard") }}
+                    &#123;&#123;{{ _("option") }}&#125;&#125;. {{ _("For example:") }}</p>
+                <ul>
+                    <li/>
+                    <p style="margin-bottom: 0in; line-height: 100%">{{ _("In terms of taste, how does") }} <b>&#123;&#123;{{ _("option") }}&#125;&#125;</b> {{ _("compares with the variety you usually use?") }}</p>
+                </ul>
+                <p style="margin-bottom: 0in; line-height: 100%">{{ _("The user answers it with two choices 'Better' or 'Worst'") }}</p>
+            </div>
+        </div>
+    </div>
+    {% snippet 'snippets/question/values/perf-form.jinja2', request=request, editable=editable %}
+
+</div>
+
+<div id="form_options" class="formExtraForQuestion " >
+    <table style="width: 100%; border-collapse: collapse;border-color: #23c6c8;border-bottom: 1px solid transparent;border-top-left-radius: 3px;border-top-right-radius: 3px;" class="">
+        <thead class="panel panel-info">
+            <tr class="panel-heading">
+                <th class='text-center panel-heading' colspan="4">{{ _("Options for select") }}</th>
+            </tr>
+            <tr class="">
+                <th class='text-center'>{{ _("Label") }}</th>
+                <th class='text-center'>{{ _("Other specification") }}</th>
+                <th class='text-center'>{{ _("Delete option") }}</th>
+            </tr>
+        </thead>
+        <tbody id="tableForOptions" class="panel panel-info">
+
+        </tbody>
+    </table>
+    <br>
+    <div class="text-center">
+        <div class="btn-group">
+            <a id="btn_add_option"  name="btn_add_option" class="btn btn-primary text-center btnsQuestion"> {{ _('Add new option') }}</a>
+            <a id="btn_add_option_other"  name="btn_add_option_other" class="btn btn-success text-center btnsQuestion"> {{ _("Add option 'Other'") }}</a>
+            <a id="btn_add_option_na"  name="btn_add_option_na" class="btn btn-info text-center btnsQuestion"> {{ _("Add option 'Not applicable'") }}</a>
+        </div>
+    </div>
+
+</div>
+<br>
+<br>
+
+{% block qstform_extra %}
+{% endblock qstform_extra %}

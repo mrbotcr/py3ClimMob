@@ -1,0 +1,394 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob - Form editor") }}</title>
+{% endblock title %}
+
+{% block css %}
+    {% cssresource request,'coreresources','metro' %}
+    {% cssresource request,'coreresources','sweet' %}
+    {% cssresource request,'coreresources','jsTree' %}
+    {% cssresource request,'coreresources','tour' %}
+{% endblock css %}
+
+{% block topScripts %}
+    {% jsresource request,'coreresources','sweet' %}
+    {% jsresource request,'coreresources','jstree' %}
+    {% jsresource request,'coreresources','delete' %}
+    {% jsresource request,'coreresources','tour' %}
+{% endblock topScripts %}
+
+{% block pageheading %}
+    <div class="row wrapper border-bottom white-bg page-heading" id="div_for_help">
+        <div class="col-lg-10">
+            <h2>{{ _("Form editor") }}</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
+                </li>
+                <li>
+                    <a href="{{ request.route_url('assessment',projectid=projectid) }}">{{ _("Prepare data collection") }}</a>
+                </li>
+                <li class="active">
+                    <strong>{{  _("Data collection moment") }}: {{ assinfo.ass_desc }}</strong>
+                </li>
+            </ol>
+            <a href="https://climmob.net/blog/wiki/2019/09/30/data-collection-moment/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
+        </div>
+        <div class="col-lg-2">
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block pagecontent %}
+    <div class="row">
+        <div class="col-md-8">
+            <div class="col-md-6">
+                <div class="ibox">
+                    <div class="ibox-title" >
+                        <h5>{{ _("Available questions from library") }}</h5>
+                        <div class="ibox-tools">
+                            <a onclick="showHelp()" class="btn btn-xs btn-primary pull-right" style="margin-right: 20px">{{ _("Show help") }}</a>
+                        </div>
+                    </div>
+                    <div class="ibox-content" style="min-height: 400px" id="div_availables">
+                        {% snippet 'snippets/jstreeQuestions.jinja2', request=request, UserQuestion=UserQuestion, activeUser=activeUser, Categories=Categories, doActions=False, jstreeId="jstree2",eventClick=False, classByUser=False, classByAssesRequired=True %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>{{ _("Assessment form") }}</h5>
+                            <div class="ibox-tools">
+                            </div>
+                        </div>
+                        <div class="ibox-content" style="min-height: 400px" id="div_form">
+                            {% snippet 'snippets/error.jinja2', error_summary=error_summary %}
+
+                            {% snippet 'snippets/jstreeForm.jinja2', request=request, data=data, finalCloseQst=finalCloseQst, activeUser=activeUser, eventClick=False, classByUser=False, classByRegRequired=False, classByAssesRequired=True %}
+
+                            <form class="form-horizontal" role="form" method="post" action="{{ request.path }}" id="formFoSendInformation" style="display: none">
+                                <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                                <textarea id="nestable-output" name="neworder" class="form-control" style="display:none;"></textarea>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-12 extraDiv" id="form_section" >
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>{{ _("New section") }}</h5>
+                        </div>
+                        <div class="ibox-content">
+                            <form class="form-horizontal" role="form" method="post" id="formSection" action="{{ request.url }}">
+                                {% snippet 'snippets/error.jinja2', error_summary=error_summary %}
+
+                                {% snippet 'snippets/project/registry/groupform.jinja2' %}
+
+                                <div class="row" style="text-align: right; padding-right: 15px">
+                                    <div class="btn-group " >
+                                        <input id="btnCancelSection" type="submit" class="btn btn-default " value="{{ _("Clean") }}"></input>
+                                        <input id="btnNewSection"    style="display: none" type="submit" class="btn btn-primary btnsSection" value="{{ _("Save section") }}"></input>
+                                        <input id="btnUpdateSection" style="display: none" type="submit" class="btn btn-warning btnsSection" value="{{ _("Save section") }}"></input>
+                                        <input id="btnDeleteSection" style="display: none" onclick="showDeleteSection()" type="submit" class="btn btn-danger btnsSection" value="{{ _("Delete section") }}"></input>
+                                    </div>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="ibox">
+                <div class="ibox-title" >
+                    <h5>{{ _("Preview") }}</h5>
+                    <div class="ibox-tools">
+
+                    </div>
+                </div>
+                <div class="ibox-content " >
+                    <div id="htmlForPreview">
+                        {% snippet 'snippets/project/previewForm.jinja2', request=request, data=data, img1=request.url_for_static('static/landing/odk.png'), img2=request.url_for_static('static/landing/odk2.png'), img3=request.url_for_static('static/landing/odk3.png'), showPhone=True %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <style>
+        .jstree-icon {
+            color: #000000;
+            font-size: 18px;
+        }
+        .jstree-anchor {
+            height:auto !important;
+            white-space:normal !important;
+        }
+
+        .jstree-open newcategory {
+            color: #1E0FBE;
+            font-size: 18px;
+        }
+
+        .jstree-usercategory{
+            color: #1ab394;
+        }
+
+        .jstree-noeditable{
+            color: #ed5565;
+        }
+
+        .jstree-user{
+            color: #1ab394;
+        }
+
+    </style>
+
+    <script>
+        $(document).ready(function () {
+
+            cleanBtns();
+            $("#btnNewSection").css('display','initial');
+
+            $('#jstree1').jstree({
+                'core': {
+                    'check_callback': function(operation, node, node_parent, node_position, more) {
+
+                        if(node_parent.parent == null || node_parent.parents.length >1)
+                            return false;
+                    },
+                },
+                'plugins': ['types', 'dnd'],
+                'types' : {
+                    'default': {
+                        'icon': 'fa fa-folder'
+                    },
+                    'group': {
+                        'icon': 'fa fa-folder'
+                    },
+                    'question': {
+                        'icon': 'fa fa-folder'
+                    }
+                }
+
+            });
+
+            $("#jstree1").bind("copy_node.jstree", function(e, data) {
+                data.instance.set_id(data.node, data.original.id);
+                var v = $(this).jstree(true).get_json('#', {flat:true});
+
+                createJson(v)
+            });
+
+            $("#jstree1").bind("move_node.jstree", function(e, data) {
+                var v = $(this).jstree(true).get_json('#', {flat:true});
+
+                createJson(v)
+            });
+
+            $("#jstree1").bind("delete_node.jstree", function(e, data) {
+                var v = $(this).jstree(true).get_json('#', {flat:true});
+
+                createJson(v)
+            });
+
+            function createJson(v)
+            {
+                ArrayOfGroups = []
+                for(var i=0; i<v.length; i++)
+                {
+                    if (v[i].type=="group")
+                    {
+                        if(v[i].id != "createGroup")
+                        {
+                            ArrayOfQuestions = {"type": v[i].type, "id": v[i].id, "children": []}
+                            for (var y = i + 1; y < v.length; y++) {
+                                if (v[y].type == "group")
+                                    y = v.length + 1
+                                else
+                                    ArrayOfQuestions["children"].push({"type": v[y].type, "id": v[y].id})
+                            }
+                            ArrayOfGroups.push(ArrayOfQuestions)
+                        }
+                    }
+                }
+
+                $("#nestable-output").val(JSON.stringify(ArrayOfGroups))
+                $("#formFoSendInformation").css('display','initial')
+                refreshTheQuestions()
+                $("#div_availables").trigger('heightChange');
+
+            }
+
+            $('#jstree2').jstree({
+                'core': {
+                    'check_callback': function(operation, node, node_parent, node_position, more) {
+                        if(node_parent.parent == null || node_parent.parents.length >1 || node.li_attr["data-jstree"].search('youCanDelete') != -1)
+                            return false;
+                    }
+                },
+                'plugins': ['types', 'dnd'],
+                'types' : {
+                    'default': {
+                        'icon': 'fa fa-folder'
+                    }
+                }
+
+            });
+
+            $("#jstree2").bind("copy_node.jstree", function(e, data) {
+                data.instance.set_id(data.node, data.original.id);
+            });
+
+            function refreshTheQuestions() {
+
+                $.ajax({
+                    url: '{{ request.route_url('assessmentdetailSaveChanges', projectid=activeProject, assessmentid=assessmentid) }}',
+                    datatype: "json",
+                    type: "POST",
+                    data: {
+                        "csrf_token": '{{ request.session.get_csrf_token() }}',
+                        "neworder": $("#nestable-output").val(),
+                    },
+                    success: function (respuesta) {
+                        $("#htmlForPreview").html("")
+                        $("#htmlForPreview").html(respuesta)
+                        toastr.success("{{ _("Update already completed.") }}");
+                    },
+                    error: function (respuesta) {
+                        console.log(respuesta)
+                    }
+                });
+            }
+
+            $('#div_availables').bind('heightChange', function(){
+                $('#div_form').css('height','')
+                $('#div_availables').css('height','')
+                $('#div_form').css('overflow-y','initial')
+                $('#div_availables').css('overflow-y','initial')
+
+                availables = $('#div_availables').css('height').replace("px","");
+                form =$('#div_form').css('height').replace("px","");
+
+                if(availables<form){
+                    $('#div_form').css('height',availables)
+                    $('#div_form').css('overflow-y','scroll')
+                }else{
+                    $('#div_availables').css('height',form)
+                    $('#div_availables').css('overflow-y','scroll')
+                }
+            });
+
+            $("#div_availables").trigger('heightChange');
+
+        });
+
+        function showHelp()
+        {
+
+            var tour = new Tour({
+                steps: [
+                        {
+                            element: "#div_for_help",
+                            title: "{{ _("Prepare data collection") }}",
+                            content: "{{ _("Move the questions from left to right.") }}<img src='{{ request.url_for_static('static/gif/move_questions.gif') }}' />",
+                            placement: "bottom"
+                        }
+                       ],
+                template: "<div class='popover tour' style='border-color: #23c6c8; max-width: none; width:814px'><div class='arrow' ></div><h3 class='popover-title btn-info'></h3><div class='popover-content'></div><div class='popover-navigation'> <button class='btn btn-sm btn-secondary' data-role='end'>{{ _("Close") }}</button> </div>",
+                backdrop: true,
+                backdropContainer: 'body'
+            });
+
+            // Initialize the tour
+            tour.init();
+            tour.restart();
+        }
+
+        function cleanBtns()
+        {
+            $(".btnsSection").css('display','none')
+        }
+
+        function cleanInputs()
+        {
+            $(".inputSection").val("")
+        }
+
+        function seeSection(id, section_name, section_content, section_delete)
+        {
+            cleanBtns()
+            $("#txt_group_name").val(section_name)
+            $("#txt_group_desc").val(section_content)
+            $("#txt_section_id").val(id)
+
+            $("#btnUpdateSection").css('display','initial')
+            if(section_delete == "False")
+            {
+                $("#btnDeleteSection").css('display', 'initial')
+            }
+            $("#txt_group_name").focus()
+        }
+
+        function createSection()
+        {
+            $("#txt_group_name").focus()
+        }
+
+        $("#btnCancelSection").click(function () {
+            cleanBtns();
+            cleanInputs();
+        });
+
+        function showDeleteSection()
+        {
+            var urlAction = '{{ request.host_url }}/project/{{projectid}}/assessment/{{assessmentid}}/'+$("#txt_section_id").val()+'/delete'
+            showDelete(urlAction,'{{ _("Do you really want to remove this section?") }}','{{ request.session.get_csrf_token() }}')
+        }
+
+        function actionSection(action)
+        {
+            $.ajax({
+                url: '{{ request.route_url('assessmentSectionActions',projectid=projectid, assessmentid=assessmentid) }}',
+                datatype: "json",
+                type: "POST",
+                data: {
+                    "csrf_token": '{{ request.session.get_csrf_token() }}',
+                    "action": action,
+                    "section_name": $("#txt_group_name").val(),
+                    "section_content": $("#txt_group_desc").val(),
+                    "group_cod":$("#txt_section_id").val(),
+                },
+                success: function (respuesta) {
+
+                    if(respuesta['result'] == "error")
+                    {
+                        toastr.error(respuesta['error']);
+                    }else{
+                        toastr.success(respuesta['success']);
+                        location.href = window.location.href;
+                    }
+                },
+                error: function (respuesta) {
+                    toastr.error("Error:"+ respuesta);
+                }
+            });
+
+        }
+
+        $("#formSection").submit(function (e) {
+            e.preventDefault();
+            if ( e.originalEvent.submitter.id != "btnCancelSection" & e.originalEvent.submitter.id != "btnDeleteSection")
+                actionSection(e.originalEvent.submitter.id);
+        });
+    </script>
+{% endblock pagecontent %}

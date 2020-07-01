@@ -1,0 +1,123 @@
+usage: gunicorn [OPTIONS] [APP_MODULE]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -v, --version         show program's version number and exit
+  --proxy-protocol      Enable detect PROXY protocol (PROXY mode). [False]
+  --worker-connections INT
+                        The maximum number of simultaneous clients. [1000]
+  --statsd-host STATSD_ADDR
+                        ``host:port`` of the statsd server to log to. [None]
+  --max-requests-jitter INT
+                        The maximum jitter to add to the *max_requests*
+                        setting. [0]
+  --error-logfile FILE, --log-file FILE
+                        The Error log file to write to. [-]
+  -R, --enable-stdio-inheritance
+                        Enable stdio inheritance. [False]
+  -k STRING, --worker-class STRING
+                        The type of workers to use. [sync]
+  --ssl-version SSL_VERSION
+                        SSL version to use (see stdlib ssl module's) [2]
+  --suppress-ragged-eofs
+                        Suppress ragged EOFs (see stdlib ssl module's) [True]
+  --log-syslog          Send *Gunicorn* logs to syslog. [False]
+  --log-syslog-facility SYSLOG_FACILITY
+                        Syslog facility name [user]
+  --cert-reqs CERT_REQS
+                        Whether client certificate is required (see stdlib ssl
+                        module's) [0]
+  --preload             Load application code before the worker processes are
+                        forked. [False]
+  --keep-alive INT      The number of seconds to wait for requests on a Keep-
+                        Alive connection. [2]
+  --access-logfile FILE
+                        The Access log file to write to. [None]
+  -g GROUP, --group GROUP
+                        Switch worker process to run as this group. [1000]
+  --graceful-timeout INT
+                        Timeout for graceful workers restart. [30]
+  --do-handshake-on-connect
+                        Whether to perform SSL handshake on socket connect
+                        (see stdlib ssl module's) [False]
+  --spew                Install a trace function that spews every line
+                        executed by the server. [False]
+  -w INT, --workers INT
+                        The number of worker processes for handling requests.
+                        [1]
+  -n STRING, --name STRING
+                        A base to use with setproctitle for process naming.
+                        [None]
+  --no-sendfile         Disables the use of ``sendfile()``. [None]
+  -p FILE, --pid FILE   A filename to use for the PID file. [None]
+  -m INT, --umask INT   A bit mask for the file mode on files written by
+                        Gunicorn. [0]
+  --worker-tmp-dir DIR  A directory to use for the worker heartbeat temporary
+                        file. [None]
+  --limit-request-fields INT
+                        Limit the number of HTTP headers fields in a request.
+                        [100]
+  --pythonpath STRING   A comma-separated list of directories to add to the
+                        Python path. [None]
+  -c CONFIG, --config CONFIG
+                        The Gunicorn config file. [None]
+  --log-config FILE     The log config file to use. [None]
+  --check-config        Check the configuration. [False]
+  --statsd-prefix STATSD_PREFIX
+                        Prefix to use when emitting statsd metrics (a trailing
+                        ``.`` is added, []
+  --reload-engine STRING
+                        The implementation that should be used to power
+                        :ref:`reload`. [auto]
+  --proxy-allow-from PROXY_ALLOW_IPS
+                        Front-end's IPs from which allowed accept proxy
+                        requests (comma separate). [127.0.0.1]
+  --forwarded-allow-ips STRING
+                        Front-end's IPs from which allowed to handle set
+                        secure headers. [127.0.0.1]
+  --paste-global CONF   Set a PasteDeploy global config variable in
+                        ``key=value`` form. [[]]
+  --threads INT         The number of worker threads for handling requests.
+                        [1]
+  --max-requests INT    The maximum number of requests a worker will process
+                        before restarting. [0]
+  --chdir CHDIR         Chdir to specified directory before apps loading. [/ho
+                        me/cquiros/data/projects2017/climmob/software/climmob/
+                        ssl]
+  -D, --daemon          Daemonize the Gunicorn process. [False]
+  -u USER, --user USER  Switch worker processes to run as this user. [1000]
+  --limit-request-line INT
+                        The maximum size of HTTP request line in bytes. [4094]
+  --access-logformat STRING
+                        The access log format. [%(h)s %(l)s %(u)s %(t)s
+                        "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"]
+  --certfile FILE       SSL certificate file [None]
+  --paste STRING, --paster STRING
+                        Load a PasteDeploy config file. The argument may
+                        contain a ``#`` [None]
+  --log-syslog-to SYSLOG_ADDR
+                        Address to send syslog messages. [udp://localhost:514]
+  --log-syslog-prefix SYSLOG_PREFIX
+                        Makes Gunicorn use the parameter as program-name in
+                        the syslog entries. [None]
+  --ciphers CIPHERS     Ciphers to use (see stdlib ssl module's) [TLSv1]
+  --log-level LEVEL     The granularity of Error log outputs. [info]
+  -b ADDRESS, --bind ADDRESS
+                        The socket to bind. [['127.0.0.1:8000']]
+  -e ENV, --env ENV     Set environment variable (key=value). [[]]
+  --initgroups          If true, set the worker process's group access list
+                        with all of the [False]
+  --capture-output      Redirect stdout/stderr to Error log. [False]
+  --reload              Restart workers when code changes. [False]
+  --limit-request-field_size INT
+                        Limit the allowed size of an HTTP request header
+                        field. [8190]
+  -t INT, --timeout INT
+                        Workers silent for more than this many seconds are
+                        killed and restarted. [30]
+  --keyfile FILE        SSL key file [None]
+  --ca-certs FILE       CA certificates file [None]
+  --backlog INT         The maximum number of pending connections. [2048]
+  --logger-class STRING
+                        The logger you want to use to log events in Gunicorn.
+                        [gunicorn.glogging.Logger]

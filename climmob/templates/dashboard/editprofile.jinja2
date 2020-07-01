@@ -1,0 +1,187 @@
+{% extends 'dashboard/profile.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob | Edit Profile") }}</title>
+{% endblock title %}
+
+{% block css %}
+    {% cssresource request,'coreresources','select2' %}
+{% endblock css %}
+
+{% block topScripts %}
+    {% jsresource request,'coreresources','editprofile' %}
+{% endblock topScripts %}
+
+{% block pageheading %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>{{ _("Profile") }}</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
+                </li>
+                <li>
+                    <a href="{{ request.route_url('profile') }}">{{ _("Profile") }}</a>
+                </li>
+                <li class="active">
+                    <strong>{{ _("Edit") }}</strong>
+                </li>
+            </ol>
+            <a href="https://climmob.net/blog/wiki/2019/10/02/edit-profile/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
+        </div>
+        <div class="col-lg-2">
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block profileinfo %}
+    <div class="">
+        <div>
+            <h2 class="no-margins">
+                {{ activeUser.fullName }} ({{ activeUser.login }})
+            </h2>
+            <h4>{{ activeUser.email }}</h4>
+        </div>
+    </div>
+{% endblock %}
+
+{% block profilebottom %}
+    <div class="row">
+        <div class="col-lg-12">
+
+            {% block eprofilenotifications %}
+                {%  if error_summary %}
+                    {% for key, error in error_summary.items() %}
+                        <div class="alert alert-danger alert-dismissable">
+                            <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                {% if passChanged %}
+                    <div class="alert alert-success alert-dismissable">
+                        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                        {{ _("Your password was changed successfully.") }}
+                    </div>
+                {% endif %}
+
+                {% if profileUpdated %}
+                    <div class="alert alert-success alert-dismissable">
+                        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                        {{ _("Your profile was changed successfully.") }}
+                    </div>
+                {% endif %}
+            {% endblock eprofilenotifications %}
+
+            <div class="ibox float-e-margins">
+                {% block eprofiletitle %}
+                    <div class="ibox-title">
+                        <h5>{{ _("Edit profile information") }}</h5>
+                    </div>
+                {% endblock eprofiletitle %}
+                <div class="ibox-content">
+                    {% block eprofilecontent %}
+                        <form method="post" class="form-horizontal" action="{{ request.path }}">
+                            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">{{ _("Full Name") }}</label>
+                                <div class="col-sm-10"><input class="form-control" id="user_fullname" required="" name="user_fullname" value="{{ data.user_fullname  }}"></div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">{{ _("Email") }}</label>
+                                <div class="col-sm-10"><input type="email" class="form-control" id="user_email" required="" name="user_email" value="{{ data.user_email  }}"></div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">{{ _("About me") }}</label>
+                                <div class="col-sm-10"><textarea class="form-control" name="user_about" required="" id="user_about">{{ data.user_about }}</textarea></div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">{{ _("Organization") }}</label>
+                                <div class="col-sm-10"><input class="form-control" id="user_organization" required="" name="user_organization" value="{{ data.user_organization  }}"></div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">{{ _("Country") }}</label>
+                                <div class="col-sm-10">
+                                    <select id="user_cnty" name="user_cnty" class="form-control" required="">
+                                        {% for country in countries %}
+                                            <option value="{{ country.code }}" {% if country.code == data.user_cnty %}selected="selected"{% endif %} >{{ country.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">{{ _("Sector") }}</label>
+                                <div class="col-sm-10">
+                                    <select id="user_sector" name="user_sector" class="form-control" required="">
+                                        {% for sector in sectors %}
+                                            <option value="{{ sector.code }}" {% if sector.code == data.user_sector %}selected="selected"{% endif %} >{{ sector.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <div class="col-sm-2">
+                                    <button type="submit" name="saveprofile" id="saveprofile" class="btn btn-primary block full-width m-b">{{ _("Update profile") }}</button>
+                                </div>
+                            </div>
+
+                        </form>
+                    {% endblock eprofilecontent %}
+                </div>
+            </div>
+
+            <div class="ibox float-e-margins">
+                {% block chgpasstitle %}
+                    <div class="ibox-title">
+                        <h5>{{ _("Change password") }}</h5>
+                    </div>
+                {% endblock chgpasstitle %}
+                <div class="ibox-content">
+                    {% block chgpasscontent %}
+                        <form method="post" class="form-horizontal" action="{{ request.path }}">
+                            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">{{ _("Current password") }}</label>
+                                <div class="col-sm-10"><input type="password" class="form-control" required="" id="user_password1" name="user_password1" ></div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">{{ _("New Password") }}</label>
+                                <div class="col-sm-10"><input type="password" class="form-control" id="user_password2" required="" name="user_password2" ></div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">{{ _("Re-type New Password") }}</label>
+                                <div class="col-sm-10"><input type="password" class="form-control" id="user_password3" required="" name="user_password3" ></div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+
+                            <div class="form-group">
+                                <div class="col-sm-2">
+                                    <button type="submit" name="changepass" id="changepass" class="btn btn-primary block full-width m-b">{{ _("Change password") }}</button>
+                                </div>
+                            </div>
+                        </form>
+                    {% endblock chgpasscontent %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}

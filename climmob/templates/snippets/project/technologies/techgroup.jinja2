@@ -1,0 +1,44 @@
+<div class="col-lg-6 " >
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+            {% if title == 'Included' %}
+                <h5>{{ title }} ({{ _('Drop up to exclude') }})</h5>
+            {% else %}
+                <h5>{{ title }} ({{ _('Drop down to include') }})</h5>
+            {% endif %}
+            <div class="ibox-tools">
+
+            </div>
+        </div>
+        <div class="ibox-content">
+            {% if title == 'Included' %}
+                {% set state = 'exists' %}
+            {% else %}
+                {% set state = 'new' %}
+            {% endif %}
+            <ul id="sortable_technologies_{{ title }}" style="list-style-type: none;">
+                {% for val in technologies %}
+                    <li class="list-primary" id="element_{{ val.tech_id }}_{{ state }}">
+                        <ol class="dd-list" data-type="root">
+                            <li class="dd-nochildren" data-id="QST" data-type="question">
+                                <div class="dd-handle">
+
+                                    {% if title == 'Included' %}
+
+                                        <i class="fa fa-arrows text-danger"></i>
+                                        <b>{{ val.tech_name }}</b> {{ _('with') }} {{ val.quantity }} {{ _('Aliases') }}
+
+                                        <button type="button" class="dd-nodrag btn btn-primary btn-xs pull-right addAlias" onclick="location.href='{{ request.route_url('prjtechaliases', projectid=projectid, tech_id=val.tech_id) }}';" >{% if val.quantity == 0 %}{{ _("Add") }}{% else %}{{ _("Modify") }}{% endif %} {{ _("Alias") }}</button>
+
+                                    {% else %}
+                                        <i class="fa fa-arrows text-info "></i> {{ val.tech_name }}
+                                    {% endif %}
+                                </div>
+                            </li>
+                        </ol>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>

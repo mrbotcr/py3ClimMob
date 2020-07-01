@@ -1,0 +1,149 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob - Select combinations") }}</title>
+{% endblock title %}
+
+
+
+
+
+
+{% block css %}
+    {% cssresource request,'coreresources','jquerysteps' %}
+
+    {% if stage != 3 %}
+        {% cssresource request,'coreresources','datatables' %}
+    {% endif %}
+{% endblock css %}
+
+
+
+
+{% block topScripts %}
+    {% jsresource request,'coreresources','toastr' %}
+    {% if stage != 3 %}
+        {% jsresource request,'coreresources','prjcombinations' %}
+    {% endif %}
+{% endblock topScripts %}
+
+
+
+{% block pageheading %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>{{ _("Generate packages with technology options and open the registration of participants") }}</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
+                </li>
+                <li class="active">
+                    <strong>{{  _("Packages") }}</strong>
+                </li>
+            </ol>
+            <a href="https://climmob.net/blog/wiki/2019/09/30/generate-treatment-packages-and-open-the-registration-of-participants/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
+        </div>
+        <div class="col-lg-2">
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block pagecontent %}
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                </div>
+                <div class="ibox-content">
+                    <div style="margin-left: 10px; margin-right: 10px">
+                        <div class="row" id="header">
+
+                            {% set stage1Color = 'gray-bg' %}
+                            {% set stage2Color = 'gray-bg' %}
+                            {% set stage3Color = 'gray-bg' %}
+                            {% set stage1State = 'disabled' %}
+                            {% set stage2State = 'disabled' %}
+                            {% set stage3State = 'disabled' %}
+
+                            {% if stage == 1 %}
+                                {% set stage1Color = 'navy-bg' %}
+                                {% set stage1State = '' %}
+                            {% endif %}
+
+                            {% if stage == 2 %}
+                                {% set stage2Color = 'navy-bg' %}
+                                {% set stage2State = '' %}
+                            {% endif %}
+
+                            {% if stage == 3 %}
+                                {% set stage3Color = 'navy-bg' %}
+                                {% set stage3State = '' %}
+                            {% endif %}
+
+                            <div class="col-xs-6">
+                                <div class="widget style1 {{ stage1Color }}" style="padding: 10px 20px">
+                                    <div class="row vertical-align">
+                                        <div class="col-xs-12 text-left">
+                                            <h3 class="font-bold"><span class="step {{ stage1State }}">1</span> {{ _("Set combinations") }}</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-6">
+                                <div class="widget style1 {{ stage2Color }}" style="padding: 10px 20px">
+                                    <div class="row vertical-align">
+                                        <div class="col-xs-12 text-left">
+                                            <h3 class="font-bold"><span class="step {{ stage2State }}">2</span> {{ _("Review packages") }}</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="stage" value="{{ stage  }}">
+
+                        </div>
+                        <div class="row">
+                            <div id="content">
+                                {% if stage == 1 %}
+                                    <input type="hidden" id="numelements" value="{{ combArray|length  }}">
+                                    <input type="hidden" id="elemsperpage" value="{{ combArray|length / techs|length  }}">
+                                    <div class="col-md-12">
+                                        {% snippet 'snippets/project/registry/create/combination_table.jinja2', techs=techs,combArray=combArray,request=request,csrf=csrf,scrollPos=scrollPos %}
+                                    </div>
+                                {% endif %}
+                                {% if stage == 2 %}
+                                    <div class="col-md-12">
+                                        {% snippet 'snippets/project/registry/create/package_table.jinja2',ncombs=ncombs,packages=packages, tech=tech %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="row" id="footer">
+                            <div class="col-md-12">
+                                    {% if stage == 1 %}
+                                        <button type="button" style="margin-left: 10px" onclick="this.disabled=true; this.innerText='Creating packages. Please wait…'; location.href='{{ request.route_url("combinations", projectid=projectid, _query={"stage":2})}}'"  class="btn btn-primary pull-right">{{ _("Next step") }}</button>
+                                        <button type="button" class="btn btn-default disabled pull-right">{{ _("Previous step") }}</button>
+                                    {% endif %}
+                                    {% if stage == 2 %}
+                                        <button type="button" style="margin-left: 10px" onclick="this.disabled=true; this.innerText='Opening the registration of participants. Please wait…'; location.href='{{ request.route_url("combinations", projectid=projectid, _query={"stage":3})}}'" class="btn btn-success pull-right">{{ _("Save packages") }}</button>
+                                        <button type="button" onclick="location.href='{{ request.route_url("combinations", projectid=projectid, _query={"stage":1})}}'" class="btn  btn-primary pull-right">{{ _("Previous step") }}</button>
+                                    {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock pagecontent %}
+
+{% block script %}
+    {% if registryCreated == True %}
+        {# If a new project is just added then redirect the mainwindo to such project #}
+        <script>
+            window.top.location.href = "{{ request.route_url('dashboard',_query={'project':projectid}) }}";
+        </script>
+    {% endif %}
+{% endblock script %}

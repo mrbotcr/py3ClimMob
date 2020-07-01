@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    	 <meta charset="UTF-8">
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/animate.css" rel="stylesheet">
+        <link href="css/style.css" rel="stylesheet">
+    </head>
+    <body style="background-color: #fff; width: 748px">
+        <div class="row" style="width: 748px; margin: 0px; background-color: #000">
+            <div class="col-lg-12" style="padding: 0px">
+                <div class="ibox" style="margin-bottom: 0px">
+                    <div class="ibox-title " style="padding: revert;border-color: #ffffff">
+                        <div class="row">
+                            <div class="col-lg-8 ">
+                                <img src="img/bioversity.png" style="width: 70px">
+                                <h2 style="font-size: 25px; color: #000; margin: 0px;width: 490px; overflow: hidden;text-overflow: ellipsis; font-weight: bold;">{{ projectname }}</h2>
+                                <h2 style="font-size: 20px; color: #000; margin: 0px; font-weight: 600">{{ ProjectPi }}:</h2>
+                                <h2 style="font-size: 20px; color: #000; margin: 0px;width: 490px; overflow: hidden;text-overflow: ellipsis; font-weight: 600 ">{{ projectpi }}</h2>
+                            </div>
+                            <div class="col-lg-2" style="background-color: white; padding: 0px">
+                                <img src="{{ qrid }}" style="width: 100%">
+                            </div>
+                            <div class="col-lg-2 text-center" style="top: -32px">
+                                <h2 style="font-size: 150px; font-weight: bold; color: #000; max-height: 10px">{{ letter }}</h2>
+                            </div>
+                            <hr style="width: 100%; border-top-color: green; margin: 0px;border-width: thick;">
+                        </div>
+                    </div>
+                    <div class="ibox-content " style="border-color: #ffffff; padding: 0px">
+                        <table style="width: 100%">
+                            <tr>
+                                <td style="width: 20%;"><h2 style=" font-size: 20px; color: #000; margin: 0px; font-weight: 600">{{ packageDesc }}:</h2></td>
+                                <td style="width: 60%;"><h2 style="font-size: 20px; color: #000; margin: 0px; font-weight: 600">{{ package }}</h2></td>
+                                <td rowspan="2" style="width: 20%; text-align: center"><h2 style="font-size: 20px; color: #000; margin: 0px; font-weight: 600">{{ projectcreationdate }}</h2></td>
+                            </tr>
+                            <tr>
+                                <td style="width: 20%;"><h2 style="font-size: 20px; color: #000; margin: 0px; font-weight: 600">{{ emailDesc }}:</h2></td>
+                                <td style="width: 60%;"><h2 style="font-size: 20px; color: #000; margin: 0px; font-weight: 600">{{ projectpiemail }}</h2></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </body>
+</html>

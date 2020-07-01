@@ -1,0 +1,58 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob - Update section") }}</title>
+{% endblock title %}
+
+{% block pageheading %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>{{ _("Update section") }}</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
+                </li>
+                <li>
+                    <a href="{{ request.route_url('registry',projectid=projectid) }}">{{ _("Prepare participant registration") }}</a>
+                </li>
+                <li class="active">
+                    <strong>{{  _("Update section") }}: {{ data.section_name }}</strong>
+                </li>
+            </ol>
+            <a href="https://climmob.net/blog/wiki/2019/09/30/update-section/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
+        </div>
+        <div class="col-lg-2">
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block pagecontent %}
+    <div class="row">
+        <div class="col-lg-6 ">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{{  _("Update section") }}</h5>
+                    <div class="ibox-tools">
+                        <button type="button" onclick="location.href='{{ request.route_url('registry', projectid=projectid) }}';" class="btn btn-default btn-xs pull-right">{{ _("Cancel and go back") }}</button>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    {% snippet 'snippets/error.jinja2', error_summary=error_summary %}
+
+                    <div class="error-desc">
+                        <form class="form-horizontal" role="form" method="post" action="{{ request.path }}">
+                            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                            {% snippet 'snippets/project/registry/groupform.jinja2', data=data %}
+                            <button class="btn btn-warning pull-right" type="submit" name="btn_modify_group"> {{ _('Update section') }}</button>
+                        </form>
+                        <br>
+                        <br>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock pagecontent %}

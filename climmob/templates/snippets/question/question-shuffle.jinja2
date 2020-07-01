@@ -1,0 +1,102 @@
+
+
+<li class="success-element" id="task1">
+    <table style="width: 100%">
+        <tr>
+            {% snippet 'snippets/question/question-title-shuffle.jinja2', question=question %}
+        </tr>
+        <tr>
+            <td colspan="2"  class="text-center">
+                <div class="">
+                    {% if showtools %}
+                            {% if question.question_dtype == 5 or question.question_dtype == 6 %}
+                                <button style="margin-top: 3px"  class="btn btn-default " onclick="location.href='{{ request.route_url('questionvalues', qid=question.question_id) }}'" type="button" title="{{ _("View/edit options") }}"><i class="fa fa-list-ul"></i> {{ _("View/edit options") }}</button>
+                            {% endif %}
+                            {% if question.question_dtype == 9 %}
+                                <button style="margin-top: 3px" class="btn btn-default " onclick="location.href='{{ request.route_url('questioncharacteristics', qid=question.question_id) }}'" type="button" title="{{ _("Edit comparison phrases") }}"><i class="fa fa-commenting-o"></i> {{ _("Edit comparison phrases") }}</button>
+                            {% endif %}
+                            {% if question.question_dtype == 10 %}
+                                <button style="margin-top: 3px" class="btn btn-default " onclick="location.href='{{ request.route_url('questionperformance', qid=question.question_id) }}'" type="button" title="{{ _("Edit comparison with check phrases") }}"><i class="fa fa-commenting-o"></i> {{ _("Edit comparison with check phrases") }}</button>
+                            {% endif %}
+
+                            {% if question.assigned == 0%}
+                                <button style="margin-top: 3px"  class="btn btn-warning " onclick="location.href='{{ request.route_url('modifyquestion', qid=question.question_id) }}'" type="button" title="{{ _("Edit question") }}"><i class="fa fa-pencil"></i> {{ _("Edit") }}</button>
+
+                                <button  style="margin-top: 3px" class="btn btn-danger " onclick="showDelete('{{ request.route_url('deletequestion', qid=question.question_id) }}','{{ _("Do you really want to remove this question?") }}','{{ request.session.get_csrf_token() }}')" type="button" title="{{ _("Remove question") }}"><i class="fa fa-times"></i> {{ _("Remove") }}</button>
+
+                            {% endif %}
+                    {% else %}
+                        {% if showTitle %}
+                            {% if question.question_dtype == 5 or question.question_dtype == 6 %}
+                                <button style="margin-top: 3px" class="btn btn-default " onclick="location.href='{{ request.route_url('questionvalues', qid=question.question_id) }}'" type="button" title="{{ _("View options") }}"><i class="fa fa-list-ul"></i> {{ _("View options") }}</button>
+                            {% endif %}
+                            {% if question.question_dtype == 9 %}
+                                <button style="margin-top: 3px" class="btn btn-default " onclick="location.href='{{ request.route_url('questioncharacteristics', qid=question.question_id) }}'" type="button" title="{{ _("View comparison phrases") }}"><i class="fa fa-commenting-o"></i> {{ _("View comparison phrases") }}</button>
+                            {% endif %}
+                            {% if question.question_dtype == 10 %}
+                                <button style="margin-top: 3px" class="btn btn-default " onclick="location.href='{{ request.route_url('questionperformance', qid=question.question_id) }}'" type="button" title="{{ _("View comparison with check phrases") }}"><i class="fa fa-commenting-o"></i> {{ _("View comparison with check phrases") }}</button>
+                            {% endif %}
+                        {% else %}
+                            {% if showCheck %}
+                                <input name="CHK{{ question.question_id }}" type="checkbox">
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </td>
+        </tr>
+    </table>
+</li>
+
+
+
+
+
+
+
+{##}
+{#<div class="feed-item col-sm-6" data-groups='["{{ question.qstgroups_id}}"]' data-title="{{ question.question_desc }}">#}
+{#    <div class="chat-message " >#}
+{#        <div class="ss" style="display: inline-flex;border: 1px solid #000000;width: 100%">#}
+{##}
+{#            {% snippet 'snippets/question/question-title-shuffle.jinja2', question=question %}#}
+{#            <div class="message-avatar text-center" style="height:82px;background-color: #ffffff; border: white;padding: 3px;{% if showLogo == True %}background-image: url('{{ request.url_for_static('static/landing/bioversity.png') }}'); background-repeat:no-repeat; background-position:bottom;background-size: 45px{% endif %}">#}
+{#                {% if showtools %}#}
+{#                        {% if question.question_dtype == 5 or question.question_dtype == 6 %}#}
+{#                            <button  class="btn btn-default " onclick="location.href='{{ request.route_url('questionvalues', qid=question.question_id) }}'" type="button" title="{{ _("View/edit options") }}"><i class="fa fa-list-ul"></i></button>#}
+{#                        {% endif %}#}
+{#                        {% if question.question_dtype == 9 %}#}
+{#                            <button  class="btn btn-default " onclick="location.href='{{ request.route_url('questioncharacteristics', qid=question.question_id) }}'" type="button" title="{{ _("Edit comparison phrases") }}"><i class="fa fa-commenting-o"></i> </button>#}
+{#                        {% endif %}#}
+{#                        {% if question.question_dtype == 10 %}#}
+{#                            <button  class="btn btn-default " onclick="location.href='{{ request.route_url('questionperformance', qid=question.question_id) }}'" type="button" title="{{ _("Edit comparison with check phrases") }}"><i class="fa fa-commenting-o"></i> </button>#}
+{#                        {% endif %}#}
+{##}
+{#                        {% if question.assigned == 0%}#}
+{#                            <button   class="btn btn-warning " onclick="location.href='{{ request.route_url('modifyquestion', qid=question.question_id) }}'" type="button" title="{{ _("Edit question") }}"><i class="fa fa-pencil"></i> </button>#}
+{##}
+{#                            <button   class="btn btn-danger " onclick="showDelete('{{ request.route_url('deletequestion', qid=question.question_id) }}','{{ _("Do you really want to remove this question?") }}','{{ request.session.get_csrf_token() }}')" type="button" title="{{ _("Remove question") }}"><i class="fa fa-times"></i></button>#}
+{##}
+{#                        {% endif %}#}
+{#                {% else %}#}
+{#                    {% if showTitle %}#}
+{#                        {% if question.question_dtype == 5 or question.question_dtype == 6 %}#}
+{#                            <button  class="btn btn-default " onclick="location.href='{{ request.route_url('questionvalues', qid=question.question_id) }}'" type="button" title="{{ _("View options") }}"><i class="fa fa-list-ul"></i> </button>#}
+{#                        {% endif %}#}
+{#                        {% if question.question_dtype == 9 %}#}
+{#                            <button  class="btn btn-default " onclick="location.href='{{ request.route_url('questioncharacteristics', qid=question.question_id) }}'" type="button" title="{{ _("View comparison phrases") }}"><i class="fa fa-commenting-o"></i> </button>#}
+{#                        {% endif %}#}
+{#                        {% if question.question_dtype == 10 %}#}
+{#                            <button  class="btn btn-default " onclick="location.href='{{ request.route_url('questionperformance', qid=question.question_id) }}'" type="button" title="{{ _("View comparison with check phrases") }}"><i class="fa fa-commenting-o"></i> </button>#}
+{#                        {% endif %}#}
+{#                    {% else %}#}
+{#                        {% if showCheck %}#}
+{#                            <input name="CHK{{ question.question_id }}" type="checkbox">#}
+{#                        {% endif %}#}
+{#                    {% endif %}#}
+{#                {% endif %}#}
+{#            </div>#}
+{#        </div>#}
+{##}
+{#    </div>#}
+{#</div>#}

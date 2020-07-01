@@ -1,0 +1,39 @@
+{% set fatype = "fa-keyboard-o" %}
+{% set qtype = "Text input" %}
+{% set others = 0 %}
+{% set qlabel = "label-primary" %}
+{% if question.question_overall == 1 or question.question_overallperf == 1 %}
+    {% set overall = 1 %}
+{% else %}
+    {% set overall = 0 %}
+{% endif %}
+
+{% if question.question_dtype == 1 %} {% set fatype = "fa-keyboard-o" %} {% set qtype = _("Text") %} {% endif %}
+{% if question.question_dtype == 2 %} {% set fatype = "fa-sort-numeric-asc" %} {% set qtype = "Decimal" %} {% endif %}
+{% if question.question_dtype == 3 %} {% set fatype = "fa-sort-numeric-asc" %} {% set qtype = "Integer" %} {% endif %}
+{% if question.question_dtype == 4 %} {% set fatype = "fa-map-marker" %} {% set qtype = "Geopoint" %} {% endif %}
+{% if question.question_dtype == 5 %} {% set fatype = "fa-dot-circle-o" %} {% set qtype = "Select one" %} {% set others = 1 %} {% endif %}
+{% if question.question_dtype == 6 %} {% set fatype = "fa-check-square-o" %} {% set qtype = "Select Multiple" %} {% set others = 1 %} {% endif %}
+
+{% if question.question_dtype == 11 %} {% set fatype = "fa-pencil" %} {% set qtype = "Geotrace" %} {% endif %}
+{% if question.question_dtype == 12 %} {% set fatype = "fa-square-o" %} {% set qtype = "Geoshape" %} {% endif %}
+{% if question.question_dtype == 13 %} {% set fatype = "fa-calendar" %} {% set qtype = "Date" %} {% endif %}
+{% if question.question_dtype == 14 %} {% set fatype = "fa-clock-o" %} {% set qtype = "Time" %} {% endif %}
+{% if question.question_dtype == 15 %} {% set fatype = "fa-calendar-plus-o" %} {% set qtype = "DateTime" %} {% endif %}
+{% if question.question_dtype == 16 %} {% set fatype = "fa-camera-retro" %} {% set qtype = "Image" %} {% endif %}
+{% if question.question_dtype == 17 %} {% set fatype = "fa-headphones" %} {% set qtype = "Audio" %} {% endif %}
+{% if question.question_dtype == 18 %} {% set fatype = "fa-video-camera" %} {% set qtype = "Video" %} {% endif %}
+{% if question.question_dtype == 19 %} {% set fatype = "fa-barcode" %} {% set qtype = "Barcode/Qr" %} {% endif %}
+{% if question.question_dtype == 27 %} {% set fatype = "fa fa-map-signs" %} {% set qtype = "Location" %} {% endif %}
+
+{% if question.question_dtype == 7 %} {% set fatype = "fa-qrcode " %} {% set qtype = "Package" %} {% set qlabel = "label-package" %} {% endif %}
+{% if question.question_dtype == 8 %} {% set fatype = "fa-users" %} {% set qtype = "Observer" %} {% set qlabel = "label-observer" %} {% endif %}
+{% if question.question_dtype == 9 %} {% set fatype = "fa-th-list" %} {% set qtype = "Ranking of options" %} {% set qlabel = "label-characteristic" %} {% endif %}
+{% if question.question_dtype == 10 %} {% set fatype = "fa-list-alt" %} {% set qtype = "Comparison with check" %} {% set qlabel = "label-performance" %} {% endif %}
+
+{% block qstitemtitle %}
+    <h5 >
+        <span class="fa {{ fatype }}"></span> {{ question.question_desc }}  <span class="label {{ qlabel }}" style="display: inline-block; margin-top: 3px">{{ qtype }}</span>
+        {% if overall %}<span class="label label-overall" style="display: inline-block; margin-top: 3px">{{ _("Overall") }}</span>{% endif %}
+        {% if question.num_options == 0 %}<span class="label label-danger" >{{ _("Without options!") }}</span>{% endif %}</h5>
+{% endblock qstitemtitle %}

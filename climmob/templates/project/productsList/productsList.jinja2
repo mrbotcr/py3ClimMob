@@ -1,0 +1,79 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob | Products") }}</title>
+{% endblock title %}
+
+{% block topScripts %}
+    {% jsresource request,'coreresources','productsListaes' %}
+    {% jsresource request,'coreresources','productsList' %}
+    {% jsresource request,'coreresources','concurrent' %}
+{% endblock topScripts %}
+
+{% block pageheading %}
+    <input type="hidden" id="csrf_token" value="{{ request.session.get_csrf_token() }}">
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-sm-3">
+            <h2>{{ _("Downloads") }}</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
+                </li>
+                <li class="active">
+                    <strong>{{ _("Downloads") }}</strong>
+                </li>
+            </ol>
+            <a href="https://climmob.net/blog/wiki/2019/09/30/products-library/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
+        </div>
+
+        {% if hasActiveProject %}
+            <div class="col-sm-6 text-center">
+                <div class="ibox collapsed">
+                    <div class="ibox-title">
+
+                        <h2 class="text-center">{{ activeProject.project_name }}</h2>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        {{ activeProject.project_abstract }}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        <div class="col-sm-3">
+
+        </div>
+    </div>
+
+{% endblock pageheading%}
+
+{% block pagecontent %}
+
+    {% if hasActiveProject %}
+        <div class="row">
+            {% if Products %}
+                <div style="width: 100%; text-align: center">
+                    <h3><b>{{ _("Push button to see if pending documents are ready.") }}</b></h3>
+                    <a class="btn btn-primary " onclick=" location.reload(); "><i class="fa fa-refresh"></i> {{ _("Refresh") }}</a>
+                    <br><br>
+                </div>
+                <div class="col-lg-12" id="content_product">
+                    {% snippet 'snippets/project/productsList/productsList.jinja2', request= request, Products=Products, activeProject=activeProject%}
+                </div>
+            {% else %}
+                <div style="width: 100%; text-align: center">
+                    <h3><b>{{ _("You haven't files to download.") }}</b></h3>
+                </div>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="middle-box text-center loginscreen animated fadeInDown">
+            <h3><b>{{ _("To download files you need to have an active project.") }}</b></h3>
+        </div>
+    {% endif %}
+
+{% endblock pagecontent %}

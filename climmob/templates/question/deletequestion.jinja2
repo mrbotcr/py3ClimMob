@@ -1,0 +1,44 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>ClimMob | Delete Question</title>
+{% endblock title %}
+
+
+{% block bodyattributes %} style="background:#f8fafb" {% endblock bodyattributes %}
+
+{% block body %}
+    {% if redirect == False %}
+
+        {% snippet 'snippets/error.jinja2', error_summary=error_summary %}
+
+        {% block dltqstmessage %}
+            <div class="middle-box text-center">
+                <h2 class="font-bold text-danger">You are going to delete the question<br/>"{{ questionDesc }}"</h2>
+                <p>
+                <div class="error-desc">
+                    <h3>Are you sure you want to delete this question?</h3>
+            </div>
+                <form class="form-horizontal" role="form" method="post" action="{{ request.path }}">
+                    <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                    <button class="btn btn-danger" type="submit" name="btn_delete_question"> {{ _('Delete') }}</button>
+                </form>
+            </div>
+        {% endblock dltqstmessage %}
+    {% endif %}
+{% endblock %}
+
+{% if redirect == True %}
+    {% block toastr %}
+        {# Overwrite the toaster so it does not trigger the popup #}
+    {% endblock toastr %}
+{% endif %}
+
+{% block script %}
+    {% if redirect == True %}
+        {# If a new question is just added or edited then redirect the mainwindo to such project #}
+        <script>
+            window.top.location.href = "{{ request.route_url('qlibrary') }}";
+        </script>
+    {% endif %}
+{% endblock script %}

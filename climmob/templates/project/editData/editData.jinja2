@@ -1,0 +1,156 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block css %}
+    {% cssresource request,'coreresources','icheck' %}
+    {% cssresource request,'coreresources','select2' %}
+    {% cssresource request,'coreresources','jqgrid' %}
+    {% cssresource request,'coreresources','sweet' %}
+{% endblock css %}
+
+{% block topScripts %}
+    {% jsresource request,'coreresources','toastr' %}
+    {% jsresource request,'coreresources','qlibrary' %}
+    {% jsresource request,'coreresources','icheck' %}
+    {% jsresource request,'coreresources','editDatajq' %}
+    {% jsresource request,'coreresources','select2' %}
+
+    {% jsresource request,'coreresources','gridl' %}
+    {% jsresource request,'coreresources','jqgrid' %}
+    {% jsresource request,'coreresources','sweet' %}
+{% endblock topScripts %}
+
+{% block pageheading %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>{{ _("Edit data") }}</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
+                </li>
+                <li class="active">
+                    <strong>{{ _("Edit data") }}</strong>
+                </li>
+            </ol>
+            <a href="https://climmob.net/blog/wiki/2019/10/21/edit-data/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
+        </div>
+        <div class="col-lg-2">
+
+        </div>
+    </div>
+{% endblock pageheading %}
+
+{% block pagecontent %}
+
+    <!--edit by column-->
+    <div class="row animated fadeInRightBig">
+
+
+        <div class="ibox float-e-margins">
+
+            <div class="ibox-title">
+                <h5>{{ _("Edit registration survey data") }}</h5>
+            </div>
+
+            <div class="ibox-content">
+                <!---->
+                {% if not dataworking.data %}
+                    {% if newStructure|length!=0 %}
+                        <small>{{ _("Available fields for edit") }}</small>
+                        <form name="editData" role="form" method="post" action="{{ request.path }}">
+                            <input type="hidden" name="csrf_token"
+                                   value="{{ request.session.get_csrf_token() }}">
+
+                            <div id="reg_ch" class="checkboxes ">
+                                <ul class="todo-list m-t">
+
+                                    {% if formId == "ass"%}
+
+                                        {% for general in newStructure %}
+                                            <li>
+                                                <input type="checkbox" class="i-checks checkpadre" id="check_{{ general.id }}">
+                                                <span class="m-l-xs">{{ general["name"] }}</span>
+
+                                                <div style="display:none">
+                                                    {% for i in general["vars"] %}
+                                                        <input type="checkbox" value="{{ i[0] }}$%*{{ i[1] }}$%*{{ i[2] }}$%*{{ i[3] }}$%*{{ i[4] }}$%*{{ i[5] }}" name="q_reg" class="i-checks check_{{ general.id }}" id="q_reg"/>
+                                                        <span class="m-l-xs">{{ i[1] }}</span>
+                                                    {% endfor %}
+                                                </div>
+                                            </li>
+                                        {% endfor %}
+                                    {% else %}
+                                        {% for i in newStructure %}
+                                            <li>
+                                                <input type="checkbox" value="{{ i[0] }}$%*{{ i[1] }}$%*{{ i[2] }}$%*{{ i[3] }}$%*{{ i[4] }}$%*{{ i[5] }}" name="q_reg"
+                                                       class="i-checks" id="q_reg"/>
+                                                <span class="m-l-xs">{{ i[1] }}</span>
+
+                                            </li>
+                                        {% endfor %}
+                                    {% endif %}
+                                </ul>
+                            </div>
+                            <button class="btn btn-primary" type="submit" style="float: top;" name='btn_EditData' id='btn_EditData'>{{ _('Edit') }}</button>
+                            <button class="btn btn-default" type="submit" style="float: top;" name='btn_cancel' id='btn_cancel' onclick="{{ request.route_url('dashboard') }}">{{ _('Cancel') }}</button>
+                        </form>
+                    {% else %}
+                        <small>{{ _("Error. No field available for editing.") }}</small>
+                    {% endif %}
+
+
+                {% else %}
+                    <form id="jqEditTable" name="jqEditTable" role="form" method="post"
+                          action="{{ request.path }}">
+                        <input type="hidden" name="csrf_token"
+                               value="{{ request.session.get_csrf_token() }}">
+
+                        <div class="ibox-tools">
+                            <button class="btn btn-primary" type="submit" name="save_jq"
+                                    id="save_jq" disabled value="save"> {{ _("Save changes") }}
+                            </button>
+                            <button class="btn btn-white " type="submit" name="cancel_jq"
+                                    id="cancel_jq" value="cancel"> {{ _("Cancel editing") }}
+                            </button>
+                        </div>
+
+                        <div class="jqGrid_wrapper">
+                            <table id="jqGrid"></table>
+                            <div id="pager_list_2"></div>
+                        </div>
+
+                        <input type="hidden" id="json_data" name="json_data" value="">
+
+                    </form>
+
+                {% endif %}
+
+                <!---->
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+    {% block javascript %}
+
+        <script type="text/javascript">
+            {% if dataworking.data %}
+
+                drawtable('{{dataworking.fill |replace("'", "")|safe}}');
+            {% endif%}
+            {% if dataworking.msg %}
+                msj(2);
+            {% endif %}
+            {% if dataworking.msg_flag ==1%}
+                msj(1);
+            {% endif %}
+            {% if dataworking.msg_flag ==0%}
+                msj(0);
+            {% endif %}
+
+        </script>
+    {% endblock %}
+{% endblock %}
+

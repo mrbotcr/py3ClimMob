@@ -1,0 +1,29 @@
+<div class="text-center" >
+
+    {% if showtools %}
+        <a class="collapse-link">
+            <i class="fa fa-chevron-up text-info"></i>
+        </a>
+
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+            <i class="fa fa-wrench"></i>
+        </a>
+        {% if User == "" %}
+            <ul class="dropdown-menu dropdown-user">
+
+                <li><a onclick="location.href ='{{ request.route_url('modifyquestion',qid=question.question_id) }}'">{{ _("Update question") }}</a>
+                </li>
+                <li><a onclick="location.href ='{{ request.route_url('deletequestion',qid=question.question_id) }}'">{{ _("Delete question") }}</a>
+                </li>
+
+                {% block qstitemmenuextra %}
+                {% endblock qstitemmenuextra %}
+            </ul>
+        {% endif %}
+    {% endif %}
+    {% if showCheck %}
+        <input name="CHK{{ question.question_id }}" type="checkbox">
+    {% endif %}
+    {% block qstitemtoolextra %}
+    {% endblock qstitemtoolextra %}
+</div>

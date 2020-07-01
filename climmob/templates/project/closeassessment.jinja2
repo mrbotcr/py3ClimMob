@@ -1,0 +1,64 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob | Close data collection") }}</title>
+{% endblock title %}
+
+{% block pageheading %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>{{ _("Close data collection") }}</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
+                </li>
+                <li class="active">
+                    <strong>{{ _("Close data collection") }}</strong>
+                </li>
+            </ol>
+            <a href="https://climmob.net/blog/wiki/2019/10/01/close-data-collection/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
+        </div>
+        <div class="col-lg-2">
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block pagecontent %}
+    {% if redirect == False %}
+        {% block dltqstmessage %}
+            <div class="text-center">
+                <h2 class="font-bold text-danger">{{ _("You are going to close the data collection") }} "{{ assessmentData.ass_desc }}"</h2>
+                <p>
+                {% if progress.asstotal < progress.submissions %}
+                        <h2>{{ _("You still have") }} {{ progress.submissions - progress.asstotal }} {{ request.h.pluralize(_("participant"),progress.submissions - progress.asstotal) }} {{ _("to survey") }}</h2>
+                    {% endif %}
+                <div class="error-desc">
+
+                    <h3>{{ _("After you close this data collection no more participants will be able to submit data") }}</h3>
+                    <h3>{{ _("Are you sure that you want to close this data collection?") }}</h3>
+                </div>
+                <form class="form-horizontal" role="form" method="post" action="{{ request.path }}">
+                    <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                    <a class="btn btn-default" href="{{ request.route_url('dashboard') }}"> {{ _("Go back") }}</a><br><br>
+                    <button class="btn btn-danger" type="submit" name="closeAssessment"> {{ _('Close data collection') }}</button>
+                </form>
+            </div>
+        {% endblock dltqstmessage %}
+    {% endif %}
+{% endblock %}
+
+{% if redirect == True %}
+    {% block toastr %}
+        {# Overwrite the toaster so it does not trigger the popup #}
+    {% endblock toastr %}
+{% endif %}
+
+{% block script %}
+    {% if redirect == True %}
+        {# If a new question is just added or edited then redirect the mainwindo to such project #}
+        <script>
+            window.top.location.href = "{{ request.route_url('dashboard') }}";
+        </script>
+    {% endif %}
+{% endblock script %}

@@ -1,0 +1,119 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob - New question") }}</title>
+{% endblock title %}
+
+{% block css %}
+    {% cssresource request,'coreresources','datatables' %}
+    {% cssresource request,'coreresources','jsTree' %}
+{% endblock css %}
+
+{% block topScripts %}
+{#    {% jsresource request,'coreresources','newregistryquestion' %}#}
+    {% jsresource request,'coreresources','jstree' %}
+    {% jsresource request,'coreresources','delete' %}
+{% endblock topScripts %}
+
+{% block pageheading %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>{{ _("New question") }}</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
+                </li>
+                <li>
+                    <a href="{{ request.route_url('registry',projectid=projectid) }}">{{ _("Prepare participant registration") }}</a>
+                </li>
+                <li >
+                    <a>{{  _("Section") }} : {{ groupInfo.section_name }}</a>
+                </li>
+                <li class="active">
+                    <strong>{{ _("New question") }}</strong>
+                </li>
+            </ol>
+            <a href="https://climmob.net/blog/wiki/2019/09/30/prepare-participant-registration-new-question/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
+        </div>
+        <div class="col-lg-2">
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block pagecontent %}
+
+    <div class="row">
+        <div class="col-lg-12 ">
+            <div class="ibox ">
+                <div class="ibox-title text-center">
+                    <h5 >{{ _("New question") }}</h5>
+                    <div class="ibox-tools">
+                        <button type="button" onclick="location.href='{{ request.route_url('registry', projectid=projectid) }}';" class="btn btn-default btn-xs pull-right">{{ _("Cancel and go back") }}</button>
+                    </div>
+
+                </div>
+                <div class="ibox-content " >
+                    <div class="panel-body">
+                        <form method="post" action="{{ request.path }}">
+                            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                            <div id="jstree1">
+                                <ul>
+                                    {% for category in Categories %}
+                                        <li class="jstree-open" > <strong style="font-size: 16px; color: #000000;" {% if activeUser.login == category.user_name %}onclick="openCategories('{{ category.qstgroups_name.replace('"',"&quot;").replace("'","&#8242;") }}')" {% endif %}>{{ category.qstgroups_name }}</strong>
+                                            <ul>
+                                            {% for question in UserQuestion %}
+                                                {% if question.qstgroups_id == category.qstgroups_id %}
+                                                    {% snippet 'snippets/question/question-title-shuffle.jinja2', request=request,question=question, activeUser=activeUser, eventClick=False, allowSelect=True %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            </ul>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <button class="btn btn-primary pull-right" type="submit" name="btn_add_question_to_group"> {{ _('Save and close') }}</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .jstree-icon {
+            color: #000000;
+            font-size: 18px;
+        }
+        .jstree-anchor {
+            height:auto !important;
+            white-space:normal !important;
+        }
+
+        .jstree-open newcategory {
+            color: #1E0FBE;
+            font-size: 18px;
+        }
+
+    </style>
+
+    <script>
+        $(document).ready(function() {
+
+            $('#jstree1').jstree({
+                'core': {
+                    'check_callback': true
+                },
+                'plugins': ['types', 'dnd'],
+                'types': {
+                    'default': {
+                        'icon': 'fa fa-folder',
+                        'draggable'	: true,
+                    }
+                }
+
+            });
+        });
+    </script>
+{% endblock pagecontent %}
+

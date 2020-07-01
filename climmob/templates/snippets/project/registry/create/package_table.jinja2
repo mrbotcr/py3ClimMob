@@ -1,0 +1,70 @@
+{#<div class="table-responsive">#}
+{#    <table class="table table-striped table-bordered table-hover dataTables-example" width="100%">#}
+{#        <thead>#}
+{#        <tr>#}
+{#            <th>{{ _("id") }}</th>#}
+{#            <th>{{ _("Package code") }}</th>#}
+{#            {% for comb in ncombs %}#}
+{#                <th class="text-center">{{ _("Option") }} {{ comb }}</th>#}
+{#            {% endfor %}#}
+{#        </tr>#}
+{#        </thead>#}
+{#        <tbody>#}
+{#        {% for pkg in packages %}#}
+{#            <tr class="gradeX">#}
+{#                <td class="center">{{ loop.index }}</td>#}
+{#                <td class="center"> {{ _("Package") }} {{ loop.index }} </td>#}
+{#                {% for comb in pkg.combs %}#}
+{#                    <td class="center">#}
+{#                        {% for tech in comb.technologies %}#}
+{#                            <span class="badge badge-info">{{ tech.tech_name }} ({{ tech.alias_name }})</span>#}
+{#                        {% endfor %}#}
+{#                    </td>#}
+{#                {% endfor %}#}
+{#            </tr>#}
+{#        {% endfor %}#}
+{#        </tbody>#}
+{#    </table>#}
+{#</div>#}
+
+<div class="table-responsive">
+    <table class="table table-striped table-bordered table-hover dataTables-example" width="100%" style="border-bottom: 1px solid #1ab394;">
+        <thead>
+            <tr>
+    {#            <th rowspan="2" style="border: 1px solid #1ab394;">{{ _("id") }}</th>#}
+                <th rowspan="2" style="border-left: 1px solid #1ab394;border-top: 1px solid #1ab394;">{{ _("Package code") }}</th>
+                {% for comb in ncombs %}
+                    <th class="text-center" style="border: 1px solid #1ab394;" colspan="{{ tech|length }}">{{ _("Option") }} {{ comb }}</th>
+                {% endfor %}
+            </tr>
+            <tr>
+                {% for comb in ncombs %}
+                    {% for te in tech %}
+                        <th class="text-center" style="{% if loop.index == 1 %} border-left: 1px solid #1ab394;{% endif %} {% if loop.index == tech|length %}border-right: 1px solid #1ab394{% endif %}">
+                            {{ te.tech_name }}
+                        </th>
+                    {% endfor %}
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+
+        {% for pkg in packages %}
+            <tr class="gradeX">
+                <td class="center" style="border-left: 1px solid #1ab394; "> {{ _("Package") }} {{ loop.index }} </td>
+                {% for comb in pkg.combs %}
+                    {% for te in tech %}
+                        <td style="{% if loop.index == 1 %} border-left: 1px solid #1ab394;{% endif %} {% if loop.index == tech|length %}border-right: 1px solid #1ab394;{% endif %} ">
+                            {% for co in comb.technologies %}
+                                {% if co.tech_id == te.tech_id  %}
+                                    {{ co.alias_name }}
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                    {% endfor %}
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,4 @@
+apt-get install npm
+sudo npm install svg2png -g
+sudo apt-get install texlive-extra-utils
+sudo apt-get install qrencode

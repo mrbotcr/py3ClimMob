@@ -1,0 +1,1 @@
+V	270825181317Z		1000	unknown	/C=CR/ST=Cartago/O=Bioversity/OU=Bioversity Intermediate Certificate Authority/CN=Bioversity Intermediate CA/emailAddress=c.f.quiros@cgiar.org

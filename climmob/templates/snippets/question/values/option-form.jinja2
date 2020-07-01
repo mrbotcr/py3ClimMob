@@ -1,0 +1,33 @@
+<input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+{% if showid %}
+    <div class="form-group">
+        <label class="col-sm-4 control-label">{{ _("Unique code") }}</label>
+        <div class="col-sm-8">
+            <input type="text" class="form-control " value="{{ formdata.value_code }}" required="" name="value_code" placeholder=" ">
+        </div>
+    </div>
+{% endif %}
+<div class="form-group">
+    <label class="col-sm-4 control-label">{{ _("Label") }}</label>
+    <div class="col-sm-8">
+        <input type="text" class="form-control " value="{{ formdata.value_desc }}" required="" name="value_desc" placeholder=" ">
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-4 control-label">{{ _("Value is other") }}</label>
+    <div class="col-sm-8">
+        <input type="checkbox" id="ckb_other"
+               name="ckb_other" data-on-color="success"
+               data-off-color="danger" data-on-text="{{ _('Yes') }}"
+               data-off-text="{{ _('No') }}" {% if formdata.value_isother == 'on' %} checked="" {% endif %}>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-4 control-label">{{ _("Value is not applicable") }}</label>
+    <div class="col-sm-8">
+        <input type="checkbox" id="ckb_na"
+               name="ckb_na" data-on-color="success"
+               data-off-color="danger" data-on-text="{{ _('Yes') }}"
+               data-off-text="{{ _('No') }}" {% if formdata.value_isna == 'on' %} checked="" {% endif %}>
+    </div>
+</div>

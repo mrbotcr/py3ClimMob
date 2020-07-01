@@ -1,0 +1,900 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob | Questions library") }}</title>
+{% endblock title %}
+
+{% block css %}
+    {% cssresource request,'coreresources','metro' %}
+    {% cssresource request,'coreresources','sweet' %}
+    {% cssresource request,'coreresources','shuffle' %}
+    {% cssresource request,'coreresources','toastr' %}
+    {% cssresource request,'coreresources','jsTree' %}
+    {% cssresource request,'coreresources','switch' %}
+    {% cssresource request,'coreresources','select2' %}
+    {% cssresource request,'coreresources','datatimepicker' %}
+
+{% endblock css %}
+
+{% block topScripts %}
+    {% jsresource request,'coreresources','qlibrary' %}
+    {% jsresource request,'coreresources','sweet' %}
+    {% jsresource request,'coreresources','delete' %}
+    {% jsresource request,'coreresources','switch' %}
+    {% jsresource request,'coreresources','toastr' %}
+    {% jsresource request,'coreresources','jstree' %}
+    {% jsresource request,'coreresources','select2' %}
+    {% jsresource request,'coreresources','validate' %}
+    {% jsresource request,'coreresources','metro' %}
+    {% jsresource request,'coreresources','datatimepicker' %}
+{% endblock topScripts %}
+
+{% block pageheading %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>{{ _("Questions library") }}</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
+                </li>
+                <li class="active">
+                    <strong>{{ _("Questions library") }}</strong>
+                </li>
+            </ol>
+            <a href=" https://climmob.net/blog/wiki/2019/09/30/questions-library/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
+        </div>
+        <div class="col-lg-2">
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block pagecontent %}
+
+    <div class="row" id="allInformation">
+
+
+
+        <div class="col-md-4 ">
+            <div class="ibox">
+                <div class="ibox-title" >
+                    <h5>{{ _("Questions available in the library by category") }}</h5>
+                    <div class="ibox-tools">
+
+                    </div>
+                </div>
+                <div class="ibox-content " >
+                    <div id="questionsTree" style="display: none">
+                    {% snippet 'snippets/jstreeQuestions.jinja2', request=request, UserQuestion=UserQuestion, activeUser=activeUser, Categories=Categories, doActions=True, jstreeId="jstree1", eventClick=True, classByUser=True %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-md-5 iboxExtraForActions" id="ibox_category" style="display: none">
+            <div class="ibox">
+                <div class="ibox-title" >
+                    <h5>{{ _("Create category") }}</h5>
+                </div>
+                <div class="ibox-content " >
+                    <div class="row ">
+                        <label class="col-sm-4 control-label">{{ _("Category name:") }}</label>
+                        <div class="col-sm-8">
+{#                            <label class="control-label" style="height: 35px;margin-top: 6px">{{ _("Category name:") }}</label>#}
+                            <input  type="text" style="display: none" id="qstgroups_id" class="form-control " value=""  name="qstgroups_id" placeholder=" ">
+                            <input  type="text" id="qstgroups_name" class="form-control " value="" required="" name="qstgroups_name" placeholder=" ">
+                        </div>
+                        <div class="col-sm-12" style="text-align: right">
+                            <br>
+                            <div class="btn-group " >
+                                <button id="btnCancelCategory" onclick="" type="submit" class="btn btn-default ">{{ _("Close") }}</button>
+                                <button id="btnNewCategory" onclick="" type="submit" class="btn btn-primary btnsCategory">{{ _("Save category") }}</button>
+                                <button id="btnUpdateCategory" onclick="" type="submit" class="btn btn-warning btnsCategory">{{ _("Save category") }}</button>
+                                <button id="btnDeleteCategory" onclick="actionCategory('delete')" type="submit" class="btn btn-danger btnsCategory">{{ _("Delete category") }}</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-5 iboxExtraForActions" id="ibox_question" style="display: none">
+            <div class="ibox">
+                <div class="ibox-title" >
+                    <h5>{{ _("Create question") }}</h5>
+                </div>
+                <div class="ibox-content " >
+                    {% snippet 'snippets/error.jinja2', error_summary=error_summary %}
+
+                    <form class="form-horizontal" role="form" method="post" id="formQuestion" action="{{ request.url }}">
+
+                        {% snippet 'snippets/question/question-form.jinja2',formdata=formdata, request=request, Categories =Categories %}
+
+                        <div style="text-align: right">
+                            <div class="btn-group">
+                                <input id="btn_cancel_question"type="submit" class="btn btn-default " value="{{ _("Close") }}">
+                                <input id="btn_add_question"  type="submit" name="btn_add_question" class="btn btn-primary btnsQuestion" value="{{ _('Save and close') }}">
+                                <input id="btn_update_question"  type="submit" name="btn_update_question" class="btn btn-warning btnsQuestion" value="{{ _('Save and close') }}">
+                                <input id="btn_delete_question" name="btn_delete_question" class="btn btn-danger btnsQuestion" onclick="showDeleteQuestion()" value="{{ _('Delete question') }}">
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 iboxExtraForActions" id="ibox_preview" style="display: none">
+            <div class="ibox">
+                <div class="ibox-title" >
+                    <h5>{{ _("Preview") }}</h5>
+                </div>
+                <div class="ibox-content " >
+                    <div  class="text-center">
+                        <img style="width: 100%; max-width: 320px" src="{{ request.url_for_static('static/landing/odk.png') }}" alt="info"/>
+                        <div style="padding: 10px; overflow-y: scroll; height: 500px; max-width: 320px; background-color: #fafafa; display: inline-block; text-align: left ">
+                            <h3 style="font-family:sans-serif; color: #000000" id="preview_question"><strong style="color: red" class="preview_required">*</strong> <strong id="preview_text"></strong></h3>
+                            <br><br>
+                            <input class="previewElement preview_1" data-role="keypad" data-keys="q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,ñ,z,x,c,v,b,n,m"  data-open="false" data-position="bottom" style="font-family:sans-serif; font-size: 16px;width: 100%; border: none; border-bottom: 2px solid black;">
+
+                            <input class="previewElement preview_2" id="preview_2" data-role="keypad" data-open="false" data-position="bottom" data-on-change="$('#preview_2').val(arguments[0]+'.0')" style="font-family:sans-serif; font-size: 16px;width: 100%; border: none; border-bottom: 2px solid black;">
+
+                            <input class="previewElement preview_3" data-role="keypad" data-open="false" data-position="bottom" style="font-family:sans-serif; font-size: 16px;width: 100%; border: none; border-bottom: 2px solid black;">
+
+                            <button type="submit" class="previewElement preview_4 preview_11 preview_12 preview_27"  style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Get GPS point") }}</button>
+
+                            <div class="previewElement preview_5 preview_6 preview_8 preview_9 preview_10" >
+
+                            </div>
+
+                            <button type="submit" class="previewElement preview_7  preview_19"  style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Get Barcode") }}</button>
+
+                            <div class="previewElement preview_16" >
+
+                                <button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Take Picture") }}</button>
+                                <br><br>
+                                <button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Choose Image") }}</button>
+
+                            </div>
+
+                            <div class="previewElement preview_17" >
+                                <button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Record Sound") }}</button>
+                                <br><br>
+                                <button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Choose Sound") }}</button>
+                                <br><br>
+                                <button disabled type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Play Sound") }}</button>
+                            </div>
+
+                            <div class="previewElement preview_18" >
+                                <button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Record Video") }}</button>
+                                <br><br>
+                                <button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Choose Video") }}</button>
+                                <br><br>
+                                <button disabled type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Play Video") }}</button>
+                            </div>
+
+                            <div class="previewElement preview_13">
+                                <button id="btn_date13" type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Select date") }}</button>
+                                <label id="txt_date13" style="font-family:sans-serif; font-size: 16px;font-weight: initial; width: 100%; color:#000000;">{{ _("No date selected") }}</label>
+                            </div>
+
+                            <div class="previewElement preview_14">
+                                <button id="btn_time14" type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Select time") }}</button>
+                                <label id="txt_time14" style="font-family:sans-serif; font-size: 16px;font-weight: initial; width: 100%; color:#000000;">{{ _("No time selected") }}</label>
+
+                            </div>
+
+                            <div class="previewElement preview_15">
+                                <button id="btn_date15" type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Select date") }}</button>
+                                <label id="txt_date15" style="font-family:sans-serif; font-size: 16px;font-weight: initial; width: 100%; color:#000000;">{{ _("No date selected") }}</label>
+
+                                <button id="btn_time15" type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Select time") }}</button>
+                                <label id="txt_time15" style="font-family:sans-serif; font-size: 16px;font-weight: initial; width: 100%; color:#000000;">{{ _("No time selected") }}</label>
+
+                            </div>
+
+                            <img style="width: 100%; max-width: 320px" src="{{ request.url_for_static('static/landing/odk3.png') }}" alt="info"/>
+                        </div>
+                        <img style="width: 100%; max-width: 320px" src="{{ request.url_for_static('static/landing/odk2.png') }}" alt="info"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <style>
+        .jstree-icon {
+            color: #000000;
+            font-size: 18px;
+        }
+        .jstree-anchor {
+            height:auto !important;
+            white-space:normal !important;
+        }
+
+        .jstree-open newcategory {
+            color: #1E0FBE;
+            font-size: 18px;
+        }
+
+        .jstree-usercategory{
+            color: #1ab394;
+        }
+
+        .jstree-noeditable{
+            color: #ed5565;
+        }
+
+        .jstree-user{
+            color: #1ab394;
+        }
+
+    </style>
+
+    <script>
+
+        $(document).ready(function() {
+
+            function isNumeric(value)
+            {
+                return /^\d+$/.test(value);
+            }
+
+            $('#question_code').on('input',function()
+            {
+                var value = $(this).val();
+                if(isNumeric(value))
+                {
+                    $(this).val("");
+                }
+                else
+                {
+                    var value_without_space = value.replace(/[^a-z0-9]/gi,'')
+                    $(this).val(value_without_space);
+                }
+            });
+
+            $("#question_group").select2();
+            $("#question_dtype").select2();
+            var type = $('#question_dtype').val();
+
+            var objQRequired = $("#ckb_required_value");
+            var question_requiredvalue = 0;
+            if (objQRequired.is(':checked'))
+                question_requiredvalue = 1;
+
+            if(type==2 || type==3)
+                $('#div_unit').css('display', 'block');
+            else {
+                $('#div_unit').css('display', 'none');
+                $("#question_unit").val("");
+            }
+
+            if (question_requiredvalue == 1)
+                objQRequired.bootstrapSwitch('state',true);
+            else
+                objQRequired.bootstrapSwitch('state',false);
+
+
+
+            $('#question_dtype').change(function()
+            {
+                clean_extra_fields();
+
+                var value = $('#question_dtype').val();
+
+                if (value != 9 && value != 10) {
+                    $("#form_simple_question").css('display', 'initial')
+                }
+
+                if(value==2 || value==3)
+                    $('#div_unit').css('display', 'block');
+                else {
+                    $('#div_unit').css('display', 'none');
+                    $("#question_unit").val("");
+                }
+
+                if(value == 9 )
+                {
+                    $("#form_characteristics").css("display",'initial')
+                    $(".inputForQuestionChar").prop('disabled',false);
+                }
+
+                if(value == 10)
+                {
+                    $("#form_performance").css("display","initial")
+                    $(".inputForQuestionPerf").prop('disabled',false);
+                }
+
+                if(value == 5 || value == 6)
+                {
+                    $("#tableForOptions").append("" +
+                    "<tr>" +
+                    "<td class='text-center' style='padding: 10px'><input type='text' class='form-control inputForOption' id='inputOptions1' placeholder='Option' required oninvalid=\"this.setCustomValidity('{{ _("Write the option value.") }}')\" onchange=\"this.setCustomValidity('')\" /></td>" +
+                    "<td class='text-center'></td>" +
+                    "<td class='text-center'></td>" +
+                    "<td class='text-center'></td>" +
+                    "</tr>")
+                    $(".inputForOption").prop('disabled',false)
+                    $(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
+                    $("#btn_add_option").css('display', 'initial');
+                    $("#btn_add_option_other").css('display', 'initial');
+                    $("#btn_add_option_na").css('display', 'initial');
+                    $("#form_options").css('display', 'initial');
+                }
+
+            });
+
+            $("#btnCancelCategory").click(function () {
+                clean_extra_section();
+            })
+
+            $("#btn_cancel_question").click(function () {
+                clean_extra_section();
+            })
+
+            $('#jstree1').jstree({
+                'core': {
+                },
+                'plugins': ['types'],
+                'types' : {
+                    'default': {
+                        'icon': 'fa fa-folder'
+                    }
+                }
+
+            });
+
+            $('#btn_date13').datetimepicker({
+                weekStart: 1,
+                todayBtn:  1,
+                autoclose: 1,
+                todayHighlight: 1,
+                startView: 2,
+                minView: 2,
+                forceParse: 0
+            })
+            .on('changeDate', function(ev){
+                $('#btn_date13').datetimepicker('hide');
+                var dateSelected = new Date(ev.date);
+                $("#txt_date13").html(dateSelected.toDateString())
+            });
+
+            $('#btn_date15').datetimepicker({
+                weekStart: 1,
+                todayBtn:  1,
+                autoclose: 1,
+                todayHighlight: 1,
+                startView: 2,
+                minView: 2,
+                forceParse: 0
+            })
+            .on('changeDate', function(ev){
+                $('#btn_date15').datetimepicker('hide');
+                var dateSelected = new Date(ev.date);
+                $("#txt_date15").html(dateSelected.toDateString())
+            });
+
+            $('#btn_time14').datetimepicker({
+
+                weekStart: 1,
+                todayBtn:  1,
+                autoclose: 1,
+                todayHighlight: 1,
+                startView: 1,
+                minView: 0,
+                maxView: 1,
+                forceParse: 0
+            })
+            .on('changeDate', function(ev){
+                $('#btn_time14').datetimepicker('hide');
+                var dateSelected = new Date(ev.date);
+                $("#txt_time14").html(dateSelected.toLocaleTimeString())
+            });
+
+            $('#btn_time15').datetimepicker({
+                weekStart: 1,
+                todayBtn:  1,
+                autoclose: 1,
+                todayHighlight: 1,
+                startView: 1,
+                minView: 0,
+                maxView: 1,
+                forceParse: 0,
+
+            })
+            .on('changeDate', function(ev){
+                $('#btn_time15').datetimepicker('hide');
+                var dateSelected = new Date(ev.date);
+                $("#txt_time15").html(dateSelected.toLocaleTimeString())
+            });
+
+            $("#questionsTree").css('display','initial')
+
+        });
+
+        toastr.options = {
+            closeButton: true,
+            progressBar: true,
+            showMethod: 'slideDown',
+            timeOut: 4000
+        };
+
+        $("#formQuestion").bind("keypress", function(e) {
+            if (e.keyCode == 13) {
+                return false;
+            }
+        });
+
+        $("#formQuestion").submit(function (e) {
+            e.preventDefault();
+            if ( e.originalEvent.submitter.id != "btn_cancel_question" & e.originalEvent.submitter.id != "btn_delete_question")
+                actionQuestion(e.originalEvent.submitter.id);
+
+        });
+
+        function showDeleteQuestion() {
+            var urlAction = '{{ request.host_url }}/question/'+$('#question_id').val()+'/delete'
+            showDelete(urlAction,'{{ _("Do you really want to remove this question ?") }}','{{ request.session.get_csrf_token() }}')
+            $(this).parent().parent().remove();
+        }
+
+        function prepareOptionsValues()
+        {
+            options = []
+
+            $(".inputForOption").each(function() {
+                i = $(this).attr('id').replace('inputOptions','');
+
+                var other = 0
+                if($("#checkOtherOptions"+i).is(':checked'))
+                    other = 1
+
+                var na = 0
+                if($("#checkNaOptions"+i).is(':checked'))
+                    na = 1
+                options.push({
+                    "value_desc": $("#inputOptions"+i).val(),
+                    "value_isother": other,
+                    "value_isna": na,
+                    "value_order": i
+                })
+            });
+
+
+            return options
+        }
+
+        function actionQuestion(action) {
+            var question_requiredvalue = 0;
+            if ($("#ckb_required_value").is(':checked'))
+                question_requiredvalue = 1;
+
+            optionsValues = prepareOptionsValues()
+
+            $.ajax({
+                url: '{{ request.route_url('questionActions') }}',
+                datatype: "json",
+                type: "POST",
+                data: {
+                    "csrf_token": '{{ request.session.get_csrf_token() }}',
+                    "action": action,
+                    "question_id": $("#question_id").val(),
+                    "question_code": $("#question_code").val(),
+                    "question_name":$("#question_name").val(),
+                    "question_desc": $("#question_desc").val(),
+                    "question_unit": $("#question_unit").val(),
+                    "question_posstm": $("#question_posstm").val(),
+                    "question_negstm": $("#question_negstm").val(),
+                    "question_perfstmt": $("#question_perfstmt").val(),
+                    "question_group": $("#question_group").val(),
+                    "question_dtype": parseInt($("#question_dtype").val()),
+                    "question_requiredvalue": question_requiredvalue,
+                    "optionsValues":  JSON.stringify(optionsValues)
+                },
+                success: function (respuesta) {
+
+                    if(respuesta['result'] == "error")
+                    {
+                        toastr.error(respuesta['error']);
+                    }else{
+                        toastr.success(respuesta['success']);
+                        location.href = window.location.href;
+                    }
+                },
+                error: function (respuesta) {
+                    toastr.error("Error:"+ respuesta);
+                }
+            });
+        }
+
+        $("#btn_add_option").click(function () {
+            all = $(".inputForOption").length;
+            var rowCount = $(".inputForOption").eq(all-1).attr("id").replace('inputForOption','');
+
+            $("#tableForOptions").append("" +
+            "<tr>" +
+            "<td class='text-center' style='padding: 10px'><input type='text' class='form-control inputForOption' id='inputOptions"+(rowCount+1)+"' name='input_array_name[]' placeholder='Option' required oninvalid=\"this.setCustomValidity('{{ _("Write the option value.") }}')\" onchange=\"this.setCustomValidity('')\" /></td>" +
+            "<td class='text-center'></td>" +
+            "<td class='text-center'> <a class='btn_delete_option btn btn-danger btnsQuestion' style='margin: 5px'> <i class='fa fa-trash'></i></a></td>" +
+            "</tr>")
+
+            $(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
+
+            $(".btn_delete_option").click(function () {
+                $(this).parent().parent().remove();
+            });
+        })
+
+        $("#btn_add_option_other").click(function () {
+            all = $(".inputForOption").length;
+            var rowCount = $(".inputForOption").eq(all-1).attr("id").replace('inputForOption','');
+
+            $("#btn_add_option_other").css('display','none')
+            $("#tableForOptions").append("" +
+            "<tr>" +
+            "<td class='text-center' style='padding: 10px'><input type='text' class='form-control inputForOption' id='inputOptions"+(rowCount+1)+"' value='{{ _("Other") }}' placeholder='Option' required oninvalid=\"this.setCustomValidity('{{ _("Write the option value.") }}')\" onchange=\"this.setCustomValidity('')\" /></td>" +
+            "<td class='text-center'><label class='control-label'>{{ _("Value is other") }}</label><br><input type='checkbox' disabled class='inputForQuestionCheck' id='checkOtherOptions"+(rowCount+1)+"' data-on-color='success' data-off-color='danger' data-on-text='Yes' data-off-text='No' checked=''><br><br></td>" +
+            "<td class='text-center'> <a class='btn_delete_option_other btn btn-danger btnsQuestion' style='margin: 5px'> <i class='fa fa-trash'></i></a></td>" +
+            "</tr>")
+            $(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
+
+            $(".btn_delete_option_other").click(function () {
+                $(this).parent().parent().remove();
+                $("#btn_add_option_other").css('display','initial')
+            });
+        })
+
+        $("#btn_add_option_na").click(function () {
+            all = $(".inputForOption").length;
+            var rowCount = $(".inputForOption").eq(all-1).attr("id").replace('inputForOption','');
+
+            $("#btn_add_option_na").css('display','none')
+
+            $("#tableForOptions").append("" +
+            "<tr>" +
+            "<td class='text-center' style='padding: 10px'><input type='text' class='form-control inputForOption' id='inputOptions"+(rowCount+1)+"' value='{{ _("Not applicable") }}' placeholder='Option' required oninvalid=\"this.setCustomValidity('{{ _("Write the option value.") }}')\" onchange=\"this.setCustomValidity('')\" /></td>" +
+            "<td class='text-center'><label class='control-label'>{{ _("Value is not applicable") }}</label><br><input type='checkbox' disabled class='inputForQuestionCheck' id='checkNaOptions"+(rowCount+1)+"'  data-on-color='success' data-off-color='danger' data-on-text='Yes' data-off-text='No' checked=''><br><br></td>" +
+            "<td class='text-center'> <a class='btn_delete_option_na btn btn-danger btnsQuestion' style='margin: 5px'> <i class='fa fa-trash'></i></a></td>" +
+            "</tr>")
+
+            $(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
+
+            $(".btn_delete_option_na").click(function (event) {
+                $(this).parent().parent().remove();
+                $("#btn_add_option_na").css('display','initial');
+            });
+        })
+
+        $("#btnNewCategory").click(function () {
+            actionCategory('new')
+        })
+
+        $("#btnUpdateCategory").click(function () {
+            actionCategory('update')
+        })
+
+        function actionCategory(action) {
+            if ($("#qstgroups_name").val() != "") {
+                $.ajax({
+                    url: '{{ request.route_url('categories') }}',
+                    datatype: "json",
+                    type: "POST",
+                    data: {
+                        "csrf_token": '{{ request.session.get_csrf_token() }}',
+                        "action": action,
+                        "qstgroups_name": $("#qstgroups_name").val(),
+                        "qstgroups_id": $("#qstgroups_id").val()
+                    },
+                    success: function (respuesta) {
+
+                        if(respuesta['result'] == "error")
+                        {
+                            toastr.error(respuesta['error']);
+                        }else{
+                            toastr.success(respuesta['success']);
+                            location.href = window.location.href;
+                        }
+                    },
+                    error: function (respuesta) {
+                        toastr.error("Error:"+ respuesta);
+                    }
+                });
+            }
+            else {
+                toastr.error("{{ _("Write the name of the category") }}")
+                $("#qstgroups_name").val().focus()
+            }
+        }
+
+        function openCategories(count,id,value)
+        {
+            $("#jstree1").jstree("close_all");
+
+            clean_extra_section();
+            clean_buttoms_category();
+            $("#qstgroups_name").val(value)
+            $("#qstgroups_id").val(id)
+
+            if(value == "")
+            {
+                $("#btnNewCategory").css('display','initial')
+            }else{
+                $("#btnUpdateCategory").css('display','initial')
+                if(count==0)
+                    $("#btnDeleteCategory").css('display','initial')
+            }
+
+            $("#ibox_category").css('display','initial')
+
+            $("#qstgroups_name").focus()
+        }
+
+        function openQuestions(question_id,isnew,owner,question_name,question_code, question_desc, question_group, question_dtype, question_unit, question_requiredvalue, question_posstm, question_negstm, question_perfstmt, assigned, options)
+        {
+            showOther = true
+            showNa = true
+            clean_extra_fields();
+            clean_extra_section();
+            clean_buttoms_question();
+            $("#question_id").val(question_id)
+            $("#question_code").val(question_code)
+            $("#question_name").val(question_name)
+            $("#question_desc").val(question_desc)
+            $("#question_unit").val(question_unit)
+            $("#question_posstm").val(question_posstm)
+            $("#question_negstm").val(question_negstm)
+            $("#question_perfstmt").val(question_perfstmt)
+            $("#question_group").val(question_group)
+            $('#question_group').trigger("change.select2");
+            $("#question_dtype").val(question_dtype)
+            $('#question_dtype').trigger('change.select2');
+
+            $(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
+
+            if (question_requiredvalue == 1)
+                $("#ckb_required_value").bootstrapSwitch('state',true);
+            else
+                $("#ckb_required_value").bootstrapSwitch('state',false);
+
+            if (question_dtype != "9" && question_dtype != "10") {
+                    $("#form_simple_question").css('display', 'initial')
+                }
+
+            if(question_dtype == "9" )
+            {
+                $("#form_characteristics").css("display",'initial')
+                $(".inputForQuestionChar").prop('disabled',false);
+            }
+
+            if(question_dtype == "10")
+            {
+                $("#form_performance").css("display","initial")
+                $(".inputForQuestionPerf").prop('disabled',false);
+            }
+
+            if(question_dtype == '5' || question_dtype == '6')
+            {
+                $("#form_options").css('display','initial');
+                $("#tableForOptions").html("")
+
+                for (var i = 0; i < options.length; i+=1) {
+                    isother = false
+                    isna = false
+                    detail = "<tr>" +
+                    "<td class='text-center' style='padding: 10px'><input type='text' class='form-control inputForOption' id='inputOptions"+(i+1)+"' placeholder='Option' required oninvalid=\"this.setCustomValidity('{{ _("Write the option value.") }}')\" onchange=\"this.setCustomValidity('')\"  value='"+options[i].value_desc+"'/></td>" +
+                    "<td class='text-center'>"
+
+                    if(options[i].value_isother == 1)
+                    {
+                        detail += "<label class='control-label'>{{ _("Value is other") }}</label><br><input type='checkbox' class='inputForQuestionCheck' disabled id='checkOtherOptions"+(i+1)+"' data-on-color='success' data-off-color='danger' data-on-text='Yes' data-off-text='No' checked=''><br>"
+                        showOther = false
+                        isother = true
+                    }
+
+                    if(options[i].value_isna == 1)
+                    {
+                        detail += "<label class='control-label'>{{ _("Value is not applicable") }}</label><br><input type='checkbox' class='inputForQuestionCheck' disabled id='checkNaOptions"+(i+1)+"' data-on-color='success' data-off-color='danger' data-on-text='Yes' data-off-text='No' checked=''><br>"
+                        showNa = false
+                        isna = true
+                    }
+
+                    detail += "<br></td>"
+
+                    detail += "<td class='text-center'> "
+                    if(i !=0 )
+                        detail += "<a class='btn_delete_option btn btn-danger btnsQuestion' id='"+isother+"{--}"+isna+"' style='margin: 5px'> <i id='"+isother+"{--}"+isna+"' class='fa fa-trash'></i></a>"
+                        //detail += "<a class='btn_delete_option btn btn-danger btnsQuestion' id='idOption_"+options[i].value_code+"{--}"+options[i].question_id+"' style='margin: 5px'> <i id='idOption_"+options[i].value_code+"{--}"+options[i].question_id+"' class='fa fa-trash'></i></a>"
+
+                    detail+= "<br></td>" +
+                    "</tr>"
+
+                    $("#tableForOptions").append(detail)
+                }
+
+                $(".btn_delete_option").click(function (event) {
+                    //id= event.target.id.replace('idOption_','').split('{--}')
+                    id= event.target.id.split('{--}')
+                    if (id[0] == 'true')
+                        $("#btn_add_option_other").css('display','initial');
+
+                    if (id[1] == 'true')
+                        $("#btn_add_option_na").css('display','initial');
+                    //showDeleteOption('{{ request.host_url }}/question/'+id[1]+'/value/'+id[0]+'/delete','{{ _("Do you really want to remove this option?") }}','{{ request.session.get_csrf_token() }}','noRedirect')
+                    $(this).parent().parent().remove();
+                });
+
+            }
+
+            clean_buttoms_question();
+
+            if(owner == 'yes' && assigned == 0)
+            {
+                $(".inputForQuestion").attr('readonly', false);
+                $(".inputForOption").attr('readonly', false);
+                $(".inputForQuestionSelect").select2({disabled:false});
+                $(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
+
+                if (isnew == 'no')
+                {
+                    $("#question_code").attr('readonly',true)
+                    $("#btn_add_option").css('display','initial')
+                    $("#btn_update_question").css('display','initial')
+                    $("#btn_delete_question").css('display','initial')
+                    $(".btn_delete_option").css('display','initial')
+
+                    if(showNa)
+                    {
+                        $("#btn_add_option_na").css('display','initial')
+                    }
+
+                    if(showOther)
+                    {
+                        $("#btn_add_option_other").css('display','initial')
+                    }
+
+
+                }else{
+                    $("#btn_add_question").css('display','initial')
+                }
+
+            }else{
+                $(".inputForQuestion").attr('readonly', true);
+                $(".inputForOption").attr('readonly', true);
+                $(".inputForQuestionSelect").select2({disabled:'readonly'});
+                $(".inputForQuestionCheck").bootstrapSwitch('readonly', true);
+            }
+
+            $(".inputForQuestionSelect").select2({ width: '100%' });
+
+            $("#ibox_question").css('display','initial');
+
+            if(isnew == 'no') {
+                clean_all_preview_elements()
+                showPreview(question_dtype, question_desc, question_requiredvalue, question_posstm, question_negstm, question_perfstmt, options)
+            }
+
+            $("#question_code").focus()
+
+        }
+
+
+
+        function clean_extra_fields()
+        {
+            $(".formExtraForQuestion").css("display","none");
+            $(".inputForQuestionChar").prop('disabled',true);
+            $(".inputForQuestionPerf").prop('disabled',true);
+            $(".inputForOption").prop('disabled',true);
+            $("#question_unit").val("")
+            $("#question_posstm").val("")
+            $("#question_negstm").val("")
+            $("#question_perfstmt").val("")
+            $("#tableForOptions").html("")
+
+        }
+        function clean_extra_section()
+        {
+            $(".iboxExtraForActions").css("display","none")
+        }
+
+        function clean_buttoms_category()
+        {
+            $(".btnsCategory").css('display','none')
+        }
+
+        function clean_buttoms_question()
+        {
+            $(".btnsQuestion").css('display','none')
+        }
+
+        function showPreview(question_dtype, question_desc, question_required, question_posstm, question_negstm, question_perfstmt, options) {
+            $("#preview_question").css("display","initial");
+
+            if (question_dtype != 9 & question_dtype != 10) {
+                $("#preview_text").text(question_desc)
+            }else{
+                if(question_dtype ==9)
+                    $("#preview_text").text(question_posstm)
+                if (question_dtype ==10)
+                    $("#preview_question").css("display","none");
+            }
+            $(".preview_"+question_dtype).css('display','initial')
+
+            if(question_dtype == 5)
+            {
+                $(".preview_5").html("")
+                for (var i = 0; i < options.length; i+=1)
+                {
+                    $(".preview_5").append("<label class='radio-inline  control-label' for='radio' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='radio' value='"+options[i].value_code+"'> "+options[i].value_desc+"<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                }
+
+            }
+
+            if(question_dtype == 6)
+            {
+                $(".preview_6").html("")
+                for (var i = 0; i < options.length; i+=1)
+                {
+                    $(".preview_6").append("<label class='checkbox-inline  control-label' for='check' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='checkbox' name='check' value='"+options[i].value_code+"'> "+options[i].value_desc+"<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                }
+
+            }
+
+            if(question_dtype == 8)
+            {
+                $(".preview_8").html("")
+                $(".preview_8").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='observer' value='1'> Juan Mora Brenes<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                $(".preview_8").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='observer' value='2'> María Rojas Fonseca<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                $(".preview_8").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='observer' value='3'> Tom Castro Durán<hr style='margin: 10px 0px 10px 0px'></label><br>")
+            }
+
+            if(question_dtype == 9)
+            {
+                $(".preview_9").html("")
+                $(".preview_9").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='1'> Option A<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                $(".preview_9").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='2'> Option B<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                $(".preview_9").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='3'> Option C<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                $(".preview_9").append("<hr style='margin: 10px 0px 10px 0px'>")
+                $(".preview_9").append("<h3 style='font-family:sans-serif; color: #000000'><strong style='color: red' class='preview_required'>*</strong> <strong>"+ question_negstm +"</strong></h3>")
+                $(".preview_9").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm' value='1'> Option A<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                $(".preview_9").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm' value='2'> Option B<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                $(".preview_9").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm' value='3'> Option C<hr style='margin: 10px 0px 10px 0px'></label><br>")
+            }
+
+            if (question_dtype == 10)
+            {
+                var letters = ["A","B","C"]
+                $(".preview_10").html("")
+                for (x=0; x<=2; x++)
+                {
+                    $(".preview_10").append("<h3 style='font-family:sans-serif; color: #000000'><strong style='color: red' class='preview_required'>*</strong> <strong>"+ question_perfstmt.replace("{ {option}}".replace(" ",""),letters[x]) +"</strong></h3>")
+                    $(".preview_10").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='perfstmt"+x+" value='1'> Better<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                    $(".preview_10").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='perfstmt"+x+"' value='2'> Worst<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                    if (x != 2 )
+                        $(".preview_10").append("<hr style='margin: 10px 0px 10px 0px'>")
+                }
+            }
+
+            if (question_required == 1) {
+                $(".preview_required").text("*")
+            }else{
+                $(".preview_required").text("")
+            }
+
+            $("#ibox_preview").css('display','initial');
+        }
+
+        function clean_all_preview_elements()
+        {
+            $(".previewElement").css('display','none')
+        }
+
+
+    </script>
+
+{% endblock pagecontent %}

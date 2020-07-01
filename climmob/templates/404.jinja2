@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{ _("ClimMob | 404 Error") }}</title>
+
+        {% block css %}
+            {% cssresource request,'coreresources','style' %}
+        {% endblock css %}
+</head>
+    </head>
+
+    <body class="gray-bg">
+        <div class="middle-box text-center animated fadeInDown">
+            <h1>404</h1>
+            <h3 class="font-bold">{{ _("Page Not Found") }}</h3>
+
+            <div class="error-desc">
+                {{ _("Sorry, but the page you are looking for has not been found.") }}<br/>
+                    {{ _("You can go back to main page") }}: <br/><a href="{{ request.route_url('dashboard') }}" class="btn btn-primary m-t">{{ _("Home") }}</a>
+            </div>
+        </div>
+    </body>
+
+</html>

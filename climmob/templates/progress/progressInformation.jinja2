@@ -1,0 +1,258 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block meta %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:image" content="{{ request.url_for_static('static/landing/climmob.png') }}"/>
+{% endblock %}
+{% block title %}
+    <title>{{ _("ClimMob - Progress Information") }}</title>
+{% endblock title %}
+
+{% block css %}
+    {% cssresource request,'coreresources','c3' %}
+    {% cssresource request,'progress','style2' %}
+    {% cssresource request,'progress','animate2' %}
+{% endblock css %}
+
+{% block topScripts %}
+    {% jsresource request,'coreresources','c3' %}
+    {% jsresource request,'coreresources','d3' %}
+{% endblock topScripts %}
+
+{% block bodyattributes %} style="background:#ffffff" {% endblock bodyattributes %}
+
+{% block body %}
+    <div style="margin-right: 15px;margin-left: 15px">
+        <div class="text-center" style="margin-top: 20px">
+            <img src="{{ request.url_for_static('static/landing/climmob.png') }}" style="width: 100%; max-width: 400px">
+
+        </div>
+
+        <div class="text-center" style="padding: 20px">
+            <img class="language" name="en" src="{{ request.url_for_static('static/landing/en.png') }}" style="height: 15px; width: 22px">&nbsp;&nbsp;&nbsp;&nbsp;
+            <img class="language" name="es" src="{{ request.url_for_static('static/landing/es.png') }}" style="height: 15px; width: 22px">&nbsp;&nbsp;&nbsp;&nbsp;
+{#            <img class="language" name="fr" src="{{ request.url_for_static('static/landing/fr.png') }}" style="height: 15px; width: 22px">#}
+        </div>
+
+        <div class="row">
+        	<div class="col-lg-6">
+                <div class="panel panel-primary" style="height: 98%">
+                    <div class="panel-heading text-center">
+                        <h2>{{ _("Project information") }}</h2>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                    		<div class="col-lg-6">
+
+                                <dl class="row mb-0">
+                                    <div class="col-sm-6 text-sm-right"><dt>{{ _("Project Name") }}:</dt> </div>
+                                    <div class="col-sm-6 text-sm-left"> <dd class="mb-1">  {{ Project.project_name }}</dd></div>
+                                </dl>
+                                <dl class="row mb-0">
+                                    <div class="col-sm-6 text-sm-right"><dt>{{ _("Created by") }}:</dt> </div>
+                                    <div class="col-sm-6 text-sm-left"><dd class="mb-1">{{ User.user_fullname }}</dd> </div>
+                                </dl>
+
+                                <dl class="row mb-0">
+                                    <div class="col-sm-6 text-sm-right"><dt>{{ _("Trial coordinator") }}:</dt> </div>
+                                    <div class="col-sm-6 text-sm-left"> <dd class="mb-1"><p class="text-navy"> {{ Project.project_pi }}</p> </dd></div>
+                                </dl>
+
+                                <dl class="row mb-0">
+                                    <div class="col-sm-6 text-sm-right"><dt>{{ _("Contact") }}:</dt> </div>
+                                    <div class="col-sm-6 text-sm-left"> <dd class="mb-1">{{ Project.project_piemail }} </dd></div>
+                                </dl>
+
+                            </div>
+                            <div class="col-lg-6" id="cluster_info">
+
+                            	<dl class="row mb-0">
+                                    <div class="col-sm-6 text-sm-right">
+                                        <dt>{{ _("Created") }}:</dt>
+                                    </div>
+                                    <div class="col-sm-6 text-sm-left">
+                                        <dd class="mb-1"> {{ Project.project_creationdate }}</dd>
+                                    </div>
+                                </dl>
+
+                                <dl class="row mb-0">
+                                    <div class="col-sm-6 text-sm-right">
+                                        <dt>{{ _("Last updated") }}:</dt>
+                                    </div>
+                                    <div class="col-sm-6 text-sm-left">
+                                        <dd class="mb-1"> --- </dd>
+                                    </div>
+                                </dl>
+
+                                <dl class="row mb-0">
+                                    <div class="col-sm-6 text-sm-right"><dt>{{ _("Active") }}:</dt> </div>
+                                    <div class="col-sm-6 text-sm-left"><dd class="mb-1">{% if Project.project_active == 1 %}<span class="label label-primary">{{ _("Active") }}</span>{% else %}<span class="label label-danger">{{ _("Inactive") }}</span>{% endif %}</dd></div>
+                                </dl>
+                            </div>
+                        </div>
+                        <div class="row ">
+                            <div class="text-center" style="width: 100%">
+                                <dt>{{ _("Tags") }}</dt>
+                                {% for tag in Project.project_tags.split(",") %}
+                                    <span class="label label-primary" style="display: inline-block; margin-top: 3px">{{ tag }}</span>
+                                {% endfor %}
+                                <br>
+                                <img src="{{ request.url_for_static('static/landing/bioversity.png') }}" >
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="panel {% if Project.project_regstatus == 0 %}panel-default{% else %}{% if Project.project_regstatus == 1 %}panel-primary{% else %}panel-danger{% endif %}{% endif %}" style="height: 98%">
+                    <div class="panel-heading text-center">
+                        <h2>{{ _("Registration of participants") }}</h2>
+                    </div>
+                    <div class="panel-body">
+                        <div class="text-center">
+                            <div id="pie"></div>
+                            {% if Project.project_regstatus == 0 %}
+                                <span class="label ">{{ _("Not yet started") }}</span>
+                            {% else %}
+                                {% if Project.project_regstatus == 1 %}
+                                    <span class="label label-primary">{{ _("On going") }}</span>
+                                {% else %}
+                                    <span class="label label-danger">{{ _("Closed") }}</span>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            {% for assessment in Assessments %}
+                <div class="col-lg-6">
+                    <div class="panel {% if assessment.Status == 0 %}panel-default
+                                {% else %}
+                                    {% if assessment.Status == 1 %}
+                                        panel-primary
+                                    {% else %}
+                                        panel-danger
+                                    {% endif %}
+                                {% endif %}" style="height: 98%">
+                        <div class="panel-heading text-center">
+                            <h2>{{ _("Assessment") }}: {{ assessment.Name }}</h2>
+                        </div>
+                        <div class="panel-body">
+                            <div class="text-center">
+                                <div id="{{ assessment.Id }}"></div>
+                                {% if assessment.Status == 0 %}
+                                    <span class="label ">{{ _("Not yet started") }}</span>
+                                {% else %}
+                                    {% if assessment.Status == 1 %}
+                                        <span class="label label-primary">{{ _("On going") }}</span>
+                                    {% else %}
+                                        <span class="label label-danger">{{ _("Closed") }}</span>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            {% endfor %}
+
+
+
+        </div>
+    </div>
+{% endblock body %}
+
+{% block bodybottom %}
+
+{% endblock %}
+
+{% block toastr %}
+
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+        c3.generate({
+                bindto: '#pie',
+                size: {
+                    height: 200,
+                },
+                data:{
+                    columns: [
+                        ["{{ _("Packages delivered") }}: {{ Registry.Delivered }}", {{ Registry.Delivered }}],
+                        ["{{ _("Pending packages") }}: {{ Registry.Pending }}", {{ Registry.Pending }}]
+                    ],
+                    type : 'pie'
+                },
+                color: {
+                    pattern: ['#1ab394', '#BABABA']
+                }
+            });
+
+        {% for assessment in Assessments %}
+            c3.generate({
+                bindto: '#{{ assessment.Id }}',
+                size: {
+                    height: 200,
+                },
+                data:{
+                    columns: [
+                        ["{{ _("Information delivered") }}: {{ assessment.Delivered }}", {{ assessment.Delivered }}],
+                        ["{{ _("Pending information") }}: {{ assessment.Pending }}", {{ assessment.Pending }}]
+                    ],
+                    type : 'pie'
+                },
+                color: {
+                    pattern: ['#1ab394', '#BABABA']
+                }
+            });
+        {% endfor %}
+
+
+        /*CHANGE THE LANGUAGE*/
+        $(document).ready(function() {
+            var selectedLanguage = readCookie('_LOCALE_');
+            if (selectedLanguage != null)
+                $('#language').val(selectedLanguage);
+            $("#language").bind('change', function() {
+                //on change set cookie and...
+                setCookie('_LOCALE_', this.value, 365);
+                location.reload();
+            });
+        });
+
+        $(".language").click(function () {
+
+            setCookie('_LOCALE_', $(this).attr("name"), 365);
+            location.reload();
+        });
+
+        function setCookie(cookieName, cookieValue, nDays) {
+            var today = new Date();
+            var expire = new Date();
+
+            if (nDays==null || nDays==0)
+                nDays=1;
+
+            expire.setTime(today.getTime() + 3600000*24*nDays);
+            document.cookie = cookieName+"="+escape(cookieValue) + ";expires="+expire.toGMTString() + ";path=/";
+        }
+
+        function readCookie(name) {
+            var nameEQ = name + "=";
+            var ca = document.cookie.split(';');
+            for(var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+    </script>
+{% endblock %}
