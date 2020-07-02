@@ -12,9 +12,6 @@ def createResources(apppath, config):
         "coreresources", "fontawesome", "inspinia/font-awesome/css/font-awesome.css"
     )
     r.add_css_resource(
-        "coreresources", "chosen", "inspinia/css/plugins/chosen/bootstrap-chosen.css"
-    )
-    r.add_css_resource(
         "coreresources", "toastr", "inspinia/css/plugins/toastr/toastr.min.css"
     )
     r.add_css_resource("coreresources", "animate", "inspinia/css/animate.css")
@@ -154,9 +151,7 @@ def createResources(apppath, config):
     r.add_js_resource(
         "coreresources", "dashboard", "dashboard/dashboard.js", "bootstrap"
     )
-    r.add_js_resource(
-        "coreresources", "chosen", "inspinia/js/plugins/chosen/chosen.jquery.js", "bootstrap"
-    )
+
     # Register
     r.add_js_resource(
         "coreresources",
@@ -253,7 +248,6 @@ def createResources(apppath, config):
     )
     r.add_js_resource("coreresources", "enulibrary", "enumerator/library.js", "pace")
     r.add_js_resource("coreresources", "delete", "delete.js", "pace")
-    r.add_js_resource("coreresources", "bootstrapmaxlength", "bootstrap-maxlength.js", "pace")
     # Project combinations
     r.add_js_resource(
         "coreresources",

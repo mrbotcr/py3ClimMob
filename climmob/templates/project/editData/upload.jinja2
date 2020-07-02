@@ -1,10 +1,5 @@
 {% extends 'dashboard/dashboard.jinja2' %}
 
-{% block topScripts %}
-    {% jsresource request,'coreresources','productsListaes' %}
-    {% jsresource request,'coreresources','uploadDatajq' %}
-{% endblock topScripts %}
-
 {% block title %}
     <title>{{ _("ClimMob | Upload data") }}</title>
 {% endblock title %}

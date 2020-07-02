@@ -31,8 +31,8 @@
     <div class="col-sm-8">
         <select id="question_dtype" name="question_dtype" class="form-control">
             <option value="1" {% if formdata.question_dtype == 1 %}selected {% endif %}>{{ _('Text') }}</option>
-            <option value="9" {% if formdata.question_dtype == 9 %}selected {% endif %}>{{ _('Ranking of options') }}</option>
-            <option value="10" {% if formdata.question_dtype == 10 %}selected {% endif %}>{{ _('Comparison with check') }}</option>
+            <option value="9" {% if formdata.question_dtype == 9 %}selected {% endif %}>{{ _('Characteristic (Compare between tecnologies)') }}</option>
+            <option value="10" {% if formdata.question_dtype == 10 %}selected {% endif %}>{{ _('Performance (Compare agaist current)') }}</option>
             <option value="27" {% if formdata.question_dtype == 27 %}selected {% endif %}>{{ _('Location') }}</option>
 
             <option value="2" {% if formdata.question_dtype == 2 %}selected {% endif %}>{{ _('Decimal') }}</option>
@@ -48,7 +48,7 @@
             <option value="16" {% if formdata.question_dtype == 16 %}selected {% endif %}>{{ _('Image ') }}</option>
             <option value="17" {% if formdata.question_dtype == 17 %}selected {% endif %}>{{ _('Audio ') }}</option>
             <option value="18" {% if formdata.question_dtype == 18 %}selected {% endif %}>{{ _('Video ') }}</option>
-            <option value="19" {% if formdata.question_dtype == 19 %}selected {% endif %}>{{ _('Barcode/QR') }}</option>
+            <option value="19" {% if formdata.question_dtype == 19 %}selected {% endif %}>{{ _('Barcode/Qr') }}</option>
             {# <option value="7" {% if formdata.question_dtype == 7 %}selected {% endif %}>{{ _('Package') }}</option>
                <option value="8" {% if formdata.question_dtype == 8 %}selected {% endif %}>{{ _('Observer') }}</option>
             #}
@@ -81,40 +81,35 @@
 {#        </div>#}
 {#    </div>#}
 {#</div>#}
-
-
-
-{#<div class="form-group" id="div_submissions" {% if formdata.question_dtype == 9 or formdata.question_dtype == 10%}style="display:none" {% endif %}>#}
-{#    <label class="col-sm-4 control-label">{{  _('Add to registration of participants') }}</label>#}
-{#    <div class="col-sm-8">#}
-{#        <input type="checkbox" id="ckb_registrationrequired"#}
-{#               name="question_alwaysinreg" data-on-color="success"#}
-{#               data-off-color="danger" data-on-text="{{ _('YES') }}"#}
-{#               data-off-text="{{ _('NO') }}" {% if formdata.question_alwaysinreg == 'on' %} checked="" {% endif %}>#}
-{#        <span class="help-block m-b-none text-left">{{ _("Always include this question in the registration of participants") }}</span>#}
-{#    </div>#}
-{#</div>#}
-
-
-{#<div class="form-group">#}
-{#    <label class="col-sm-4 control-label">{{ _("Add to assessments") }}</label>#}
-{#    <div class="col-sm-8">#}
-{#        <input type="checkbox" id="ckb_assessmentrequired"#}
-{#               name="question_alwaysinasse" data-on-color="success"#}
-{#               data-off-color="danger" data-on-text="{{ _('YES') }}"#}
-{#               data-off-text="{{ _('NO') }}" {% if formdata.question_alwaysinasse == 'on' %} checked="" {% endif %}>#}
-{#        <span class="help-block m-b-none text-left">{{ _("Always include this question in each evaluation") }}</span>#}
-{#    </div>#}
-{#</div>#}
+<div class="form-group" id="div_submissions" {% if formdata.question_dtype == 9 or formdata.question_dtype == 10%}style="display:none" {% endif %}>
+    <label class="col-sm-4 control-label">{{  _('Add to registration of participants') }}</label>
+    <div class="col-sm-8">
+        <input type="checkbox" id="ckb_registrationrequired"
+               name="question_alwaysinreg" data-on-color="success"
+               data-off-color="danger" data-on-text="{{ _('YES') }}"
+               data-off-text="{{ _('NO') }}" {% if formdata.question_alwaysinreg == 'on' %} checked="" {% endif %}>
+        <span class="help-block m-b-none text-left">{{ _("Always include this question in the registration of participants") }}</span>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-4 control-label">{{ _("Add to assessments") }}</label>
+    <div class="col-sm-8">
+        <input type="checkbox" id="ckb_assessmentrequired"
+               name="question_alwaysinasse" data-on-color="success"
+               data-off-color="danger" data-on-text="{{ _('YES') }}"
+               data-off-text="{{ _('NO') }}" {% if formdata.question_alwaysinasse == 'on' %} checked="" {% endif %}>
+        <span class="help-block m-b-none text-left">{{ _("Always include this question in each evaluation") }}</span>
+    </div>
+</div>
 <div class="form-group">
     <label class="col-sm-4 control-label">{{ _("Answer required") }}</label>
     <div class="col-sm-8">
         <div class="switch">
             <input type="checkbox" id="ckb_required_value"
                    name="question_requiredvalue" data-on-color="success"
-                   data-off-color="danger" data-on-text="{{ _('Yes') }}"
-                   data-off-text="{{ _('No') }}" {% if formdata.question_requiredvalue == 'on' %} checked="" {% endif %}>
-            <span class="help-block m-b-none text-left">{{ _("Providing an answer to this question is obligatory during data collection.") }}</span>
+                   data-off-color="danger" data-on-text="{{ _('YES') }}"
+                   data-off-text="{{ _('NO') }}" {% if formdata.question_requiredvalue == 'on' %} checked="" {% endif %}>
+            <span class="help-block m-b-none text-left">{{ _("This question must be filled when collecting data") }}</span>
         </div>
     </div>
 </div>

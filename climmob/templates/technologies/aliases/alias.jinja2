@@ -1,7 +1,7 @@
 {% extends 'dashboard/dashboard.jinja2' %}
 
 {% block title %}
-    <title>{{ _("ClimMob | New technology options") }}</title>
+    <title>{{ _("ClimMob | New Treatment levels") }}</title>
 {% endblock title %}
 
 {% block css %}
@@ -19,19 +19,19 @@
 {% block pageheading %}
     <div class="row wrapper border-bottom white-bg page-heading">
         <div class="col-lg-10">
-            <h2>{{ _("Technology options") }}</h2>
+            <h2>{{ _("Treatment levels") }}</h2>
             <ol class="breadcrumb">
                 <li>
                     <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
                 </li>
                 <li >
-                    <a href="{{ request.route_url('usertechnologies') }}">{{ _("Technology options library") }}</a>
+                    <a href="{{ request.route_url('usertechnologies') }}">{{ _("Treatments library") }}</a>
                 </li>
                 <li >
-                    <a>{{ _("Technology") }}: {{ tech.tech_name }}</a>
+                    <a>{{ _("Treatment") }}: {{ tech.tech_name }}</a>
                 </li>
                 <li class="active">
-                    <strong>{{ _("Technology options") }}</strong>
+                    <strong>{{ _("Treatment levels") }}</strong>
                 </li>
             </ol>
             <a href="https://climmob.net/blog/wiki/2019/09/30/treatment-levels/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
@@ -47,9 +47,9 @@
         <div class="col-lg-8">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>{{ _("Technology options") }}</h5>
+                    <h5>{{ _("Treatment levels") }}</h5>
                     <div class="ibox-tools">
-                        <button onclick="location.href='{{ request.route_url('newuseralias', technologyid=formdata["tech_id"]) }}';" type="button" class="btn btn-primary btn-xs pull-right clm-grpactions" style="margin-right: 20px">{{ _("Add new option") }}</button>
+                        <button onclick="location.href='{{ request.route_url('newuseralias', technologyid=formdata["tech_id"]) }}';" type="button" class="btn btn-primary btn-xs pull-right clm-grpactions" style="margin-right: 20px">{{ _("Add new level") }}</button>
                     </div>
                 </div>
                 <div class="ibox-content animated fadeInRightBig" >
@@ -57,7 +57,7 @@
                         {% snippet 'snippets/technologies/aliases/technologiesAlias-table.jinja2', request=request, Alias =Alias, formdata=formdata, activeUser=activeUser%}
                     {% else %}
                         <div style="width: 100%; text-align: center">
-                            <h3><b>{{ _("There are no options to display") }}</b></h3>
+                            <h3><b>{{ _("There are no levels to display") }}</b></h3>
                         </div>
                     {% endif %}
                 </div>

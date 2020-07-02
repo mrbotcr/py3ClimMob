@@ -68,13 +68,11 @@
                                         <div class="dd-handle" style="min-height: 33px; height: auto ">
                                             <div class="dd-nodrag btn-group pull-right">
                                                 <div class="ibox-tools">
-                                                    {% if item.section_private != 1%}
-                                                        {% if item.grpCannotDelete == False %}
-                                                            <button onclick="showDelete('{{ request.route_url('deleteassessmentgroup', projectid=projectid, assessmentid=assessmentid, groupid=item.section_id) }}','{{ _("Do you really want to remove this section?") }}','{{ request.session.get_csrf_token() }}')" type="button" class="btn btn-danger btn-xs dropdown-toggle clm-grpactions" >{{ _("Remove section") }}</button>
-                                                        {% endif %}
-                                                        <button onclick="location.href='{{ request.route_url('modifyassessmentgroup', projectid=projectid,assessmentid=assessmentid,groupid=item.section_id) }}';" type="button" class="btn btn-warning btn-xs dropdown-toggle clm-grpactions" >{{ _("Update section") }}</button>
-                                                        <button onclick="location.href='{{ request.route_url('newassessmentquestion', projectid=projectid, assessmentid=assessmentid, groupid=item.section_id) }}';" type="button" class="btn btn-primary btn-xs dropdown-toggle clm-grpactions" >{{ _("Add question") }}</button>
-                                                    {% endif %}
+                                                {% if item.grpCannotDelete == False %}
+                                                    <button onclick="showDelete('{{ request.route_url('deleteassessmentgroup', projectid=projectid, assessmentid=assessmentid, groupid=item.section_id) }}','{{ _("Do you really want to remove this section ?") }}','{{ request.session.get_csrf_token() }}')" type="button" class="btn btn-danger btn-xs dropdown-toggle clm-grpactions" >{{ _("Remove section") }}</button>
+                                                {% endif %}
+                                                <button onclick="location.href='{{ request.route_url('modifyassessmentgroup', projectid=projectid,assessmentid=assessmentid,groupid=item.section_id) }}';" type="button" class="btn btn-warning btn-xs dropdown-toggle clm-grpactions" >{{ _("Update section") }}</button>
+                                                <button onclick="location.href='{{ request.route_url('newassessmentquestion', projectid=projectid, assessmentid=assessmentid, groupid=item.section_id) }}';" type="button" class="btn btn-primary btn-xs dropdown-toggle clm-grpactions" >{{ _("Add question") }}</button>
                                                 </div>
 {#                                                <button data-toggle="dropdown" class="btn btn-default btn-xs dropdown-toggle clm-grpactions">Actions <span class="caret"></span></button>#}
 {#                                                <ul class="dropdown-menu">#}

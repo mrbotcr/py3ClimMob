@@ -1,7 +1,7 @@
 {% extends 'dashboard/dashboard.jinja2' %}
 
 {% block title %}
-    <title>{{ _("ClimMob - Select technology options") }}</title>
+    <title>{{ _("ClimMob - Select treatment levels") }}</title>
 {% endblock title %}
 
 {% block css %}
@@ -18,16 +18,16 @@
 {% block pageheading %}
     <div class="row wrapper border-bottom white-bg page-heading">
         <div class="col-lg-10">
-            <h2>{{ _("Select technology options") }}</h2>
+            <h2>{{ _("Select treatments") }}</h2>
             <ol class="breadcrumb">
                 <li>
                     <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
                 </li>
                 <li>
-                    <a href="{{ request.route_url('prjtechnologies',projectid=projectid) }}">{{ _("Select technology options") }}</a>
+                    <a href="{{ request.route_url('prjtechnologies',projectid=projectid) }}">{{ _("Select treatments") }}</a>
                 </li>
                 <li class="active">
-                    <strong>{{ _("Select technology options") }}</strong>
+                    <strong>{{ _("Select treatment levels") }}</strong>
                 </li>
             </ol>
             <a href="https://climmob.net/blog/wiki/2019/09/30/select-treatment-levels/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
@@ -43,9 +43,9 @@
         <div class="col-lg-12 " style="height: 100%">
             <div class="ibox float-e-margins" style="height: 100%; margin-bottom: 0px">
                 <div class="ibox-title">
-                    <h5>{{ _("Select technology options") }}</h5>
+                    <h5>{{ _("Select treatment levels") }}</h5>
                     <div class="ibox-tools">
-                        <button class="btn btn-primary pull-right btn-xs clm-actions aliasExtra" name="addnewaliastechnology" type="submit" onclick="location.href='{{ request.route_url('addprjtechalias', projectid=projectid, tech_id=techid) }}';">{{ _("Define new option") }}</button>
+                        <button class="btn btn-primary pull-right btn-xs clm-actions aliasExtra" name="addnewaliastechnology" type="submit" onclick="location.href='{{ request.route_url('addprjtechalias', projectid=projectid, tech_id=techid) }}';">{{ _("Define new level") }}</button>
                         <button type="button" onclick="location.href='{{ request.route_url('prjtechnologies', projectid=projectid) }}';" class="btn btn-default btn-xs pull-right" style="margin-right: 10px">{{ _("Go back") }}</button>
 
                     </div>
@@ -136,7 +136,7 @@
                                                 </div>
 
                                         </th>
-                                        <th>{{ _("Technology option") }}</th>
+                                        <th>{{ _("Treatment level") }}</th>
 
                                     </tr>
                                 </thead>

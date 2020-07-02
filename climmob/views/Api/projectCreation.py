@@ -8,8 +8,6 @@ from ...processes import (
     getProjectData,
     modifyProject,
     changeTheStateOfCreateComb,
-    existsCountryByCode,
-    getCountryList
 )
 
 from pyramid.response import Response
@@ -17,21 +15,6 @@ import json
 import datetime
 import re
 
-class readListOfCountries_view(apiView):
-    def processView(self):
-
-        if self.request.method == "GET":
-
-            response = Response(
-                status=200,
-                body=json.dumps(
-                    getCountryList(self.request)
-                ),
-            )
-            return response
-        else:
-            response = Response(status=401, body=self._("Only accepts GET method."))
-            return response
 
 class createProject_view(apiView):
     def processView(self):
@@ -47,9 +30,8 @@ class createProject_view(apiView):
                 u"project_piemail",
                 u"project_numobs",
                 "project_numcom",
-                #u"project_lat",
-                #u"project_lon",
-                u"project_cnty",
+                u"project_lat",
+                u"project_lon",
                 u"project_localvariety",
                 "user_name",
                 "project_regstatus",
@@ -67,8 +49,6 @@ class createProject_view(apiView):
                         dataInParams = False
 
                 if dataInParams:
-                    dataworking["project_lat"] = ""
-                    dataworking["project_lon"] = ""
                     if re.search("^[A-Za-z0-9]*$", dataworking["project_cod"]):
                         if dataworking["project_cod"][0].isdigit() == False:
                             exitsproject = projectInDatabase(
@@ -103,15 +83,6 @@ class createProject_view(apiView):
                                             status=401,
                                             body=self._(
                                                 "The possible values in the parameter 'project_localvariety' are: ['0':'No','1':'Yes']"
-                                            ),
-                                        )
-                                        return response
-
-                                    if not existsCountryByCode(self.request,dataworking["project_cnty"]):
-                                        response = Response(
-                                            status=401,
-                                            body=self._(
-                                                "The country assigned to the project does not exist in the ClimMob list."
                                             ),
                                         )
                                         return response
@@ -158,7 +129,7 @@ class createProject_view(apiView):
                         response = Response(
                             status=401,
                             body=self._(
-                                "For the project code only letters and numbers are allowed. The project code must start with a letter."
+                                "For the project code only letters and numbers are allowed and the project code must start with a letter."
                             ),
                         )
                         return response
@@ -210,9 +181,8 @@ class updateProject_view(apiView):
                 u"project_piemail",
                 u"project_numobs",
                 u"project_numcom",
-                #u"project_lat",
-                #u"project_lon",
-                u"project_cnty",
+                u"project_lat",
+                u"project_lon",
                 u"project_localvariety",
                 "user_name",
                 "project_regstatus",
@@ -243,8 +213,6 @@ class updateProject_view(apiView):
                             dataInParams = False
 
                     if dataInParams:
-                        dataworking["project_lat"] = ""
-                        dataworking["project_lon"] = ""
                         exitsproject = projectInDatabase(
                             self.user.login, dataworking["project_cod"], self.request
                         )
@@ -289,15 +257,6 @@ class updateProject_view(apiView):
                                         ),
                                     )
                                     return response
-
-                            if not existsCountryByCode(self.request, dataworking["project_cnty"]):
-                                response = Response(
-                                    status=401,
-                                    body=self._(
-                                        "The country assigned to the project does not exist in the ClimMob list."
-                                    ),
-                                )
-                                return response
 
                             modified, message = modifyProject(
                                 self.user.login,

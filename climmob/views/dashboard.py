@@ -12,8 +12,6 @@ from ..processes import (
     getRegistryInformation,
     getMD5Project,
     AssessmentsInformation,
-    seeProgress,
-    counterChat
 )
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 
@@ -69,7 +67,6 @@ class dashboard_view(privateView):
                     "encrypted": getMD5Project(
                         self.user.login, activeProjectData["project_cod"], self.request
                     ),
-                    "fieldagents":seeProgress(self.user.login,activeProjectData["project_cod"],self.request)
                 }
         else:
             activeProjectData = getActiveProject(self.user.login, self.request)

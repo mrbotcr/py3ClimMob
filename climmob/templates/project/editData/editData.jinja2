@@ -8,7 +8,6 @@
 {% endblock css %}
 
 {% block topScripts %}
-    {% jsresource request,'coreresources','toastr' %}
     {% jsresource request,'coreresources','qlibrary' %}
     {% jsresource request,'coreresources','icheck' %}
     {% jsresource request,'coreresources','editDatajq' %}
@@ -94,7 +93,7 @@
                             <button class="btn btn-default" type="submit" style="float: top;" name='btn_cancel' id='btn_cancel' onclick="{{ request.route_url('dashboard') }}">{{ _('Cancel') }}</button>
                         </form>
                     {% else %}
-                        <small>{{ _("Error. No field available for editing.") }}</small>
+                        <small>{{ _("Error, No fields available for editing") }}</small>
                     {% endif %}
 
 

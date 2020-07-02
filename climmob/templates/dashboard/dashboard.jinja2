@@ -12,19 +12,14 @@
     {% endblock title %}
 
     {% block css %}
-        {% cssresource request,'coreresources','c3' %}
         {% cssresource request,'coreresources','style' %}
         {% cssresource request,'coreresources','sweet' %}
-
     {% endblock css %}
 
     {% block topScripts %}
         {% jsresource request,'coreresources','dashboard' %}
         {% jsresource request,'coreresources','sweet' %}
         {% jsresource request,'coreresources','delete' %}
-        {% jsresource request,'coreresources','d3' %}
-        {% jsresource request,'coreresources','c3' %}
-
     {% endblock topScripts %}
 
 </head>
@@ -79,7 +74,7 @@
                                 <a href="#"><i class="fa fa-book"></i> <span class="nav-label">{{ _("Library") }}</span><span class="fa arrow"></span></a>
                                 <ul class="nav nav-second-level collapse" style="border-left: initial;background: initial">
                                     <li><a href="{{ request.route_url('enumerators') }}"><i class="fa fa-group"></i> <span class="nav-label">{{ _("Field agents") }}</span></a></li>
-                                    <li><a href="{{ request.route_url('usertechnologies') }}"><i class="fa fa-flask"></i> <span class="nav-label">{{ _("Technology options") }}</span></a></li>
+                                    <li><a href="{{ request.route_url('usertechnologies') }}"><i class="fa fa-flask"></i> <span class="nav-label">{{ _("Treatments") }}</span></a></li>
                                     <li class="active" style="border-left: initial;background: initial">
                                         <a href="#"><i class="fa fa-comment"></i> <span class="nav-label">{{ _("Questions") }}</span><span class="fa arrow"></span></a>
                                         <ul class="nav nav-third-level collapse">
@@ -120,7 +115,51 @@
                         </div>
                         <ul class="nav navbar-top-links navbar-right">
                             {% block headitems %}
+                                <li>
 
+                                </li>
+                                {#<li class="dropdown">
+                                    <a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
+                                        <i class="fa fa-bell"></i>  <span class="label label-primary">8</span>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-alerts">
+                                        <li>
+                                            <a href="mailbox.html">
+                                                <div>
+                                                    <i class="fa fa-envelope fa-fw"></i> You have 16 messages
+                                                    <span class="pull-right text-muted small">4 minutes ago</span>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <li class="divider"></li>
+                                        <li>
+                                            <a href="profile.html">
+                                                <div>
+                                                    <i class="fa fa-twitter fa-fw"></i> 3 New Followers
+                                                    <span class="pull-right text-muted small">12 minutes ago</span>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <li class="divider"></li>
+                                        <li>
+                                            <a href="grid_options.html">
+                                                <div>
+                                                    <i class="fa fa-upload fa-fw"></i> Server Rebooted
+                                                    <span class="pull-right text-muted small">4 minutes ago</span>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <li class="divider"></li>
+                                        <li>
+                                            <div class="text-center link-block">
+                                                <a href="notifications.html">
+                                                    <strong>See All Alerts</strong>
+                                                    <i class="fa fa-angle-right"></i>
+                                                </a>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </li>#}
                                 <li>
                                     <a href="{{ request.route_url('logout') }}">
                                         <i class="fa fa-sign-out"></i> {{ _("Log out") }}
@@ -169,45 +208,39 @@
                             <div class="col-md-6">
                                 <div class="ibox float-e-margins">
                                     <div class="ibox-title">
-
+                                        <h5>{{ _("Project definition") }}</h5>
                                         <div class="ibox-tools">
-                                            <div class="row" style="padding: 5px">
-                                                <table style="width: 100%">
-                                                    <tbody>
-                                                        <tr>
-                                                            <td style="vertical-align: middle; width: 50%;text-align: left;">
-                                                                <h5>{{ _("Project definition") }}</h5>
-                                                            </td>
-                                                            <td style="vertical-align: middle; text-align: center">
-                                                                <div class="small" style="text-align: left">{{ pcompleted }}% {{ _("Completed") }}</div>
-                                                                <div class="progress progress-mini" style="width: 85%">
-                                                                    <div style="width: {{ pcompleted }}%;" class="progress-bar progress-bar-success"></div>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
+                                            <div class="row">
+                                                <div class="col-md-9">
+
+                                                </div>
+                                                <div class="col-md-3 pull-right">
+                                                    <div class="small" style="text-align: left">{{ pcompleted }}% {{ _("Completed") }}</div>
+                                                    <div class="progress progress-mini">
+                                                        <div style="width: {{ pcompleted }}%;" class="progress-bar progress-bar-success"></div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="ibox-content">
                                         <div class="row">
-                                            <div class="col-md-9">
-                                                <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('prjenumerators',projectid=activeProject.project_cod) }}"><i class="fa fa-user-circle-o"></i> {{ _("Assign field agents") }}</a>
+                                            <div class="col-md-10">
+                                                <a class="btn btn-primary btn-rounded btn-block" style="text-align: left" href="{{ request.route_url('prjenumerators',projectid=activeProject.project_cod) }}"><i class="fa fa-user-circle-o"></i> {{ _("Assign field agents") }}</a>
                                             </div>
-                                            <div class="col-md-3">
+                                            <div class="col-md-2">
                                                 <p style="margin-top: 8px; text-align: center"><span class="label {% if progress.enumerators %}label-success{% else %}label-danger{% endif %}">{% if progress.enumerators %}{{ _("Completed") }}{% else %}{{ _("Pending") }}{% endif %}</span></p>
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-md-9">
+                                            <div class="col-md-10">
                                                 {% if progress.regsubmissions == 0 %}
-                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('prjtechnologies',projectid=activeProject.project_cod) }}"><i class="fa fa-envira"></i> {{ _("Select technology options") }}</a>
+                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left" href="{{ request.route_url('prjtechnologies',projectid=activeProject.project_cod) }}"><i class="fa fa-envira"></i> {{ _("Select treatments") }}</a>
                                                 {% else %}
-                                                    <a class="btn btn-default btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;"><i class="fa fa-lock"></i> {{ _("Select technology options") }}</a>
+                                                    <a class="btn btn-default btn-rounded btn-block" style="text-align: left"><i class="fa fa-envira"></i> {{ _("Select treatments (locked)") }}</a>
                                                 {% endif %}
                                             </div>
-                                            <div class="col-md-3">
+                                            <div class="col-md-2">
                                                 <p style="margin-top: 8px; text-align: center">
                                                     {% if progress.technology and progress.techalias %}
                                                         <span class="label label-success">{{ _("Completed") }}</span>
@@ -222,14 +255,14 @@
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-md-9">
+                                            <div class="col-md-10">
                                                 {% if progress.regsubmissions == 0 %}
-                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('registry',projectid=activeProject.project_cod) }}"><i class="fa fa-address-card-o"></i> {{ _("Prepare registration form") }}</a>
+                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left" href="{{ request.route_url('registry',projectid=activeProject.project_cod) }}"><i class="fa fa-address-card-o"></i> {{ _("Prepare participant registration") }}</a>
                                                 {% else %}
-                                                    <a class="btn btn-default btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;"><i class="fa fa-lock"></i> {{ _("Prepare registration") }}</a>
+                                                    <a class="btn btn-default btn-rounded btn-block" style="text-align: left"><i class="fa fa-address-card-o"></i> {{ _("Prepare participant registration form (locked)") }}</a>
                                                 {% endif %}
                                             </div>
-                                            <div class="col-md-3">
+                                            <div class="col-md-2">
                                                 <p style="margin-top: 8px; text-align: center;">
                                                     {% if progress.registry %}
                                                         <span class="label label-success">{{ _("Completed") }}</span>
@@ -240,12 +273,12 @@
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-md-9">
+                                            <div class="col-md-10">
 
-                                                <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('assessment',projectid=activeProject.project_cod) }}" ><i class="fa fa-balance-scale"></i> {{ _("Prepare data collection") }}</a>
+                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left" href="{{ request.route_url('assessment',projectid=activeProject.project_cod) }}"><i class="fa fa-balance-scale"></i> {{ _("Prepare a data collection") }}</a>
 
                                             </div>
-                                            <div class="col-md-3">
+                                            <div class="col-md-2">
                                                 <p style="margin-top: 8px; text-align: center">
                                                     {% if progress.assessment %}
                                                         <span class="label label-success">{{ _("Completed") }}</span>
@@ -259,9 +292,9 @@
                                             <div class="col-md-12">
                                                 <br>
                                                 <div class="text-center">
-                                                    <h3>{{ _("Share this link to show trial progress") }}:</h3>
+                                                    <h3>{{ _("Share this link to people who wish to see the progress of your project") }}:</h3>
                                                     <br>
-                                                    <input readonly class=" form-control " style="margin-bottom: 5px; padding: 6px 12px; border-color: #1ab394; border-radius: 3px" type="text" id="aForCopy" value="{{ request.route_url("projectInformation", id = encrypted) }}" >
+                                                    <input readonly class=" btn-default " style="margin-bottom: 5px; padding: 6px 12px; border-color: #1ab394; border-radius: 3px" type="text" id="aForCopy" value="{{ request.route_url("projectInformation", id = encrypted) }}" size="40">
                                                     <button class="btn btn-default" onclick="copy()">{{ _("Copy to clipboard") }}</button>
                                                 </div>
                                                 <hr>
@@ -269,170 +302,95 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6">
-                                                <a class="btn btn-warning btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('modifyproject',projectid=activeProject.project_cod) }}"><i class="fa fa-wrench"></i> {{ _("Update project settings") }}</a>
+                                                <a class="btn btn-warning btn-rounded btn-block" href="{{ request.route_url('modifyproject',projectid=activeProject.project_cod) }}"><i class="fa fa-wrench"></i> {{ _("Update project settings") }}</a>
                                             </div>
                                             <div class="col-md-6">
-                                                <a class="btn btn-danger btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" onclick="showDelete('{{ request.route_url('deleteproject',projectid=activeProject.project_cod) }}','{{ _("Do you really want to remove this project?") }}','{{ request.session.get_csrf_token() }}','{{ request.route_url('dashboard') }}')"><i class="fa fa-trash"></i> {{ _("Delete project") }}</a>
+                                                <a class="btn btn-danger btn-rounded btn-block" onclick="showDelete('{{ request.route_url('deleteproject',projectid=activeProject.project_cod) }}','{{ _("Do you really want to remove this project ?") }}','{{ request.session.get_csrf_token() }}','{{ request.route_url('dashboard') }}')"><i class="fa fa-trash"></i> {{ _("Delete project") }}</a>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-
+                            </div>
+                            <div class="col-md-6">
                                 <div class="ibox float-e-margins">
                                     <div class="ibox-title">
-
+                                        <h5>{{ _("Participant registration") }}</h5>
                                         <div class="ibox-tools">
                                             <div class="row">
-                                                <div class="col-md-8">
-                                                    <h5>{{ _("Data Collections") }}</h5>
+                                                <div class="col-md-9">
+
                                                 </div>
-                                                <div class="col-md-4 pull-right">
-{#                                                    {% if progress.asssubmissions == 0 %}#}
-{#                                                        <div class="small">{{ _("Not yet started") }}</div>#}
-{#                                                    {% endif %}#}
-{#                                                    {% if showAnalysis == 1 %}#}
-{#                                                        {% if allassclosed == False %}#}
-{#                                                            <div class="small">{{ _("On going") }}</div>#}
-{#                                                            {% else %}#}
-{#                                                                <div class="small">{{ _("Closed") }}</div>#}
-{#                                                            {% endif %}#}
-{#                                                    {% endif %}#}
-{#                                                    {% if progress.asssubmissions == 2 %}#}
-{#                                                        <div class="small">{{ _("Closed") }}</div>#}
-{#                                                    {% endif %}#}
+                                                <div class="col-md-3 pull-right">
+                                                    {% set pbtype = "progress-bar-info" %}
+                                                    {% if progress.regsubmissions == 0 %}
+                                                        <div class="small" style="text-align: left">{{ _("Not yet started") }}</div>
+                                                    {% endif %}
+                                                    {% if progress.regsubmissions == 1 %}
+                                                        <div class="small" style="text-align: left">{{ _("On going") }}</div>
+                                                    {% endif %}
+                                                    {% if progress.regsubmissions == 2 %}
+                                                        <div class="small" style="text-align: left">{{ _("Closed") }}</div>
+                                                        {% if progress.regperc >= 100 %}
+                                                            {% set pbtype = "progress-bar-success" %}
+                                                        {% else %}
+                                                            {% set pbtype = "progress-bar-warning" %}
+                                                        {% endif %}
+                                                    {% endif %}
+                                                    <div class="progress progress-mini">
+                                                        <div style="width: {{ progress.regperc }}%;" class="progress-bar {{ pbtype }}"></div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="ibox-content">
                                         <div class="row">
-                                            {% if pcompleted == 100 and progress.regsubmissions == 2  %}
-                                                <div class="text-left" style="padding: 15px;">
-                                                    <p>{{ _("Please check the following types of questions are in the started assessments or include them in the next assessments:") }}</p>
-                                                    <span style="font-size: 16px;font-weight: 600;" title="{{ _("You have included ")}}{{ progress.analysisControl.Characteristics }}{{ _(" Ranking of options") }}"><i  class="fa {% if progress.analysisControl.Characteristics > 0 %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.Characteristics > 0 %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Ranking of options") }}</span><br>
-                                                    <span style="font-size: 16px;font-weight: 600;" title="{{ _("You have included ")}}{{ progress.analysisControl.Performance }}{{ _(" Comparison with check") }}"><i  class="fa {% if progress.analysisControl.Performance > 0 %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.Performance > 0 %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Comparison with check") }}</span><br>
-                                                    <span style="font-size: 16px;font-weight: 600;" title="{{ _("You have included ")}}{{ progress.analysisControl.Explanatory }}{{ _(" Explanatory variables") }}"><i  class="fa {% if progress.analysisControl.Explanatory > 0 %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.Explanatory > 0 %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Explanatory variables") }}</span><br>
-                                                    <span style="font-size: 16px;font-weight: 600;" {% if progress.analysisControl.overralCharacteristic !="" %}title="{{ _("You have included this question in the assessment") }}: '{{ progress.analysisControl.overralCharacteristic }}'" {% endif %}><i  class="fa {% if progress.analysisControl.overralCharacteristic !="" %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.overralCharacteristic != "" %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Overall ranking of options") }}</span><br>
-                                                    <span style="font-size: 16px;font-weight: 600;" {% if progress.analysisControl.overralPerformance !="" %}title="{{ _("You have included this question in the assessment") }}: '{{ progress.analysisControl.overralPerformance }}'" {% endif %}><i  class="fa {% if progress.analysisControl.overralPerformance !="" %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.overralPerformance != "" %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Overall comparison with check") }}</span>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <br>
-                                                    {% if progress.usableAssessments|length > 0 %}
-                                                        <button onclick="location.href = '{{ request.route_url('startassessments',projectid=activeProject.project_cod) }}'" class="btn btn-primary btn-rounded btn-block" ><i class="fa fa-play"></i> {{ _("Start an assessment") }}</button>
-                                                    {% endif %}
-                                                </div>
-                                            {% else %}
-                                                <div class="col-md-12">
-                                                    <div class="text-center"><p>{{ _("You can start the data collection once the registration of participants is closed and the project definition is completed") }}</p></div>
-                                                </div>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-                            <div class="col-md-6">
-                                <div class="ibox float-e-margins">
-                                    <div class="ibox-title">
-
-                                        <div class="ibox-tools">
-                                            <div class="row" style="padding: 5px">
-
-                                                <table style="width: 100%">
-                                                    <tbody>
-                                                        <tr>
-                                                            <td style="vertical-align: middle; width: 50%;text-align: left;">
-                                                                <h5 style=" margin: initial">{{ _("Participant registration") }}</h5>
-                                                            </td>
-                                                            <td style="vertical-align: middle; text-align: center">
-                                                                {% set pbtype = "progress-bar-info" %}
-                                                                {% if progress.regsubmissions == 0 %}
-                                                                    <div class="small" style="text-align: left">{{ _("Not yet started") }}</div>
-                                                                {% endif %}
-                                                                {% if progress.regsubmissions == 1 %}
-                                                                    <div class="small" style="text-align: left">{{ _("On going") }}</div>
-                                                                {% endif %}
-                                                                {% if progress.regsubmissions == 2 %}
-                                                                    <div class="small" style="text-align: left">{{ _("Closed") }}</div>
-                                                                    {% if progress.regperc >= 100 %}
-                                                                        {% set pbtype = "progress-bar-success" %}
-                                                                    {% else %}
-                                                                        {% set pbtype = "progress-bar-warning" %}
-                                                                    {% endif %}
-                                                                {% endif %}
-                                                                <div class="progress progress-mini">
-                                                                    <div style="width: {{ progress.regperc }}%;" class="progress-bar {{ pbtype }}"></div>
-                                                                </div>
-                                                            </td>
-                                                            <td style="vertical-align: middle;text-align: center; width: 10%">
-                                                                <a class="collapse-link">
-                                                                    <i class="fa fa-chevron-{% if progress.regsubmissions == 2 %}down{% else %}up{% endif %}"></i>
-                                                                </a>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="ibox-content" {% if progress.regsubmissions == 2 %}style="display: none"{% endif %}>
-
-                                        {% if progress.regsubmissions == 0 %}
-                                            <div class="row">
+                                            {% if progress.regsubmissions == 0 %}
                                                 {% if progress.enumerators == true and progress.technology == true and progress.techalias == true and progress.registry == true %}
                                                     <div class="col-md-12">
-                                                        <button class="btn btn-primary btn-rounded btn-block" onclick="location.href='{{ request.route_url('combinations',projectid=activeProject.project_cod) }}'"><i class="fa fa-play"></i> {{ _("Generate packages with technology options") }}<br/> {{ _("and open the registration of participants") }}</button>
+                                                        <button class="btn btn-primary btn-rounded btn-block" onclick="location.href='{{ request.route_url('combinations',projectid=activeProject.project_cod) }}'"><i class="fa fa-play"></i> {{ _("Generate treatment packages") }}<br/> {{ _("and open the registration of participants") }}</button>
                                                     </div>
                                                 {% else %}
                                                     <div class="col-md-12">
-                                                        <div class="text-center">{{ _("You can start the registration of participants once the project has field agents, technology options and a registration form") }}</div>
+                                                        <div class="text-center">{{ _("You can start the registration of participants once the project has field agents, treatments, levels and a registration form") }}</div>
                                                     </div>
                                                 {% endif %}
-                                            </div>
-                                        {% endif %}
-
+                                            {% else %}
+                                                <div class="col-md-12">
+                                                    <div class="text-center"><h3>{{ _("To submit data let your field assistants know that they need to setup ODK Collect to the following address") }}:<br/><span style="color: #1ab394">{{ request.application_url }}/{{ activeUser.login }}</span></h3></div>
+                                                    <div class="text-center"><img style="max-width: 150px" src="{{ request.route_url('projectqr',projectid=activeProject.project_cod) }}"></div>
+                                                </div>
+                                            {% endif %}
+                                        </div>
 
                                         {% if progress.regsubmissions == 1 or progress.regsubmissions == 2  %}
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <h3>{{ _("Statistics") }}</h3>
-                                                    <div id="pieRegistry" ></div>
                                                     <table class="table table-striped">
                                                         <tbody>
                                                         <tr>
-                                                            <td>{{ _("Total number of participants") }}: </td>
+                                                            <td>{{ _("Total Sample") }}: </td>
                                                             <td>{{ activeProject.project_numobs }}</td>
+                                                            <td></td>
                                                         </tr>
                                                         <tr >
-                                                            <td style="vertical-align: inherit">{{ _("Number of submissions") }}: </td>
+                                                            <td style="vertical-align: inherit">{{ _("Number submissions") }}: </td>
                                                             <td style="vertical-align: inherit">{{ progress.regtotal }} {% if progress.regtotal > 0 %}({{  ((progress.regtotal * 100)/activeProject.project_numobs)|round(1, 'floor') }}%){% endif %}</td>
-
-                                                        </tr>
-                                                        <tr>
-                                                            <td {% if progress.regerrors > 0 and progress.regsubmissions == 1%}style="color: #ed5565;" {% endif %}>{{ _("Submissions with conflicts") }}:</td>
-                                                            <td {% if progress.regerrors > 0 and progress.regsubmissions == 1%}style="color: #ed5565;" {% endif %}>{{ progress.regerrors }}</td>
+                                                            {% if progress.regtotal > 0 %}
+                                                                <td >
+                                                                    <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{ request.route_url('EditDataRegistry',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-table"></i> {{ _("View data") }}</a>
+                                                                    <br>
+                                                                    <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{ request.route_url('downloadDataRegistry',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data") }}</a>
+                                                                    <br>
+                                                                    <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('uploadDataRegistry',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-cloud-upload"></i> {{ _("Upload data") }}</a>
+                                                                </td>
+                                                            {% endif %}
                                                         </tr>
                                                         <tr>
                                                             <td >{{ _("Last submission") }}</td>
                                                             <td >{{ progress.lastreg }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td colspan="2">
-                                                                {% if progress.regtotal > 0 %}
-                                                                    <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('EditDataRegistry',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-table"></i> {{ _("View data") }}</a>
-
-                                                                    <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataRegistry',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data") }}</a>
-                                                                    {% if progress.regsubmissions == 1%}
-
-                                                                        <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{request.route_url('uploadDataRegistry',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-cloud-upload"></i> {{ _("Upload data") }}</a>
-                                                                    {% endif %}
-{#                                                                    <br>#}
-{#                                                                    <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" data-toggle="modal" data-target="#modalRegistry"><i class="fa fa-pie-chart"></i> {{ _("Field agent submissions") }}</a>#}
-                                                                {% endif %}
-                                                                {% if progress.regerrors > 0 and progress.regsubmissions == 1%}
-                                                                    <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;white-space: normal !important;word-wrap: break-word !important;" href="{{request.route_url('CleanErrorLogs',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-bug"></i> {{ _("Show submissions with conflicts") }}</a>
-                                                                {% endif %}
-                                                            </td>
+                                                            <td></td>
                                                         </tr>
                                                         </tbody>
                                                     </table>
@@ -443,23 +401,32 @@
                                             <div class="row">
                                                 {% if progress.regsubmissions == 1 %}
                                                     {% if progress.regtotal > 0 %}
-                                                        <div class="col-md-6">
-                                                            <button onclick="location.href ='{{ request.route_url('closeregistry',projectid=activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block" href="#"><i class="fa fa-stop"></i> {{ _("Finish registration") }}</button>
+                                                        <div class="col-md-4">
+                                                            <button onclick="location.href ='{{ request.route_url('closeregistry',projectid=activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block" href="#"><i class="fa fa-stop"></i> {{ _("Finish the registration") }}</button>
                                                         </div>
-                                                        <div class="col-md-6">
-                                                            <button onclick="location.href ='{{ request.route_url('cancelregistry',projectid=activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block" href="#"><i class="fa fa-undo"></i> {{ _("Cancel registration") }}</button>
+                                                        <div class="col-md-4">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <button onclick="location.href ='{{ request.route_url('cancelregistry',projectid=activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block" href="#"><i class="fa fa-undo"></i> {{ _("Cancel the registration") }}</button>
                                                         </div>
                                                     {% else %}
-                                                        <div class="col-md-12">
-                                                            <button onclick="location.href = '{{ request.route_url('cancelregistry',projectid=activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block" href="#"><i class="fa fa-undo"></i> {{ _("Cancel registration") }}</button>
+                                                        <div class="col-md-4">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <button onclick="location.href = '{{ request.route_url('cancelregistry',projectid=activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block" href="#"><i class="fa fa-undo"></i> {{ _("Cancel the registration") }}</button>
                                                         </div>
                                                     {% endif %}
                                                 {% endif %}
                                                 {% if progress.regsubmissions == 2 %}
-
-                                                    <div class="col-md-12">
+                                                    <div class="col-md-4">
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                    </div>
+                                                    <div class="col-md-4">
                                                         {% if progress.assessments|length == 0 %}
-                                                            <button onclick="location.href = '{{ request.route_url('cancelregistry',projectid=activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block" href="#"><i class="fa fa-undo"></i> {{ _("Cancel registration") }}</button>
+                                                            <button onclick="location.href = '{{ request.route_url('cancelregistry',projectid=activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block" href="#"><i class="fa fa-undo"></i> {{ _("Cancel the registration") }}</button>
                                                         {% endif %}
                                                     </div>
                                                 {% endif %}
@@ -467,129 +434,176 @@
                                         {% endif %}
                                     </div>
                                 </div>
+                                <div class="ibox float-e-margins">
+                                    <div class="ibox-title">
+                                        <h5>{{ _("Data collection") }}</h5>
+                                        <div class="ibox-tools">
+                                            <div class="row">
+                                                <div class="col-md-9">
 
-
-                                {% for assessment in progress.assessments %}
-                                    {% if assessment.ass_status == 1 or assessment.ass_status == 2 %}
-                                        <div class="ibox float-e-margins">
-                                            <div class="ibox-title">
-
-                                                <div class="ibox-tools">
-                                                    <div class="row" style="padding: 5px">
-                                                        <table style="width: 100%">
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td style="vertical-align: middle; width: 50%;text-align: left;">
-                                                                        <h5 style=" margin: initial">{{ _("Data collection") }}: {{ assessment.ass_desc }}</h5>
-                                                                    </td>
-                                                                    <td style="vertical-align: middle; text-align: center">
-                                                                        {% set pbtype = "progress-bar-info" %}
-                                                                        {% if progress.asssubmissions == 0 %}
-                                                                            <div class="small" style="text-align: left">{{ _("Not yet started") }}</div>
-                                                                        {% endif %}
-                                                                        {% if assessment.ass_status == 1 %}
-                                                                            <div class="small" style="text-align: left">{{ _("On going") }}</div>
-                                                                        {% endif %}
-                                                                        {% if assessment.ass_status == 2 %}
-                                                                            <div class="small" style="text-align: left">{{ _("Closed") }}</div>
-                                                                            {% if assessment.assperc >= 100 %}
-                                                                                {% set pbtype = "progress-bar-success" %}
-                                                                            {% else %}
-                                                                                {% set pbtype = "progress-bar-warning" %}
-                                                                            {% endif %}
-                                                                        {% endif %}
-                                                                        <div class="progress progress-mini">
-                                                                            <div style="width: {{ assessment.assperc }}%;" class="progress-bar {{ pbtype }}"></div>
-                                                                        </div>
-                                                                    </td>
-                                                                    <td style="vertical-align: middle;text-align: center; width: 10%">
-                                                                        <a class="collapse-link">
-                                                                            <i class="fa fa-chevron-{% if assessment.ass_status == 2 %}down{% else %}up{% endif %}"></i>
-                                                                        </a>
-                                                                    </td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="ibox-content" {% if assessment.ass_status == 2 %}style="display: none" {% endif %}>
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        <h3>{{ _("Statistics") }}</h3>
-                                                        <div id="pie{{ assessment.ass_cod }}"></div>
-                                                        <table class="table table-striped">
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td>{{ _("Total number of participants") }}: </td>
-                                                                    <td>{{ assessment.submissions }}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td style="vertical-align: inherit">{{ _("Number of submissions") }}: </td>
-                                                                    <td style="vertical-align: inherit">{{ assessment.asstotal }} {% if assessment.asstotal > 0 %}({{ assessment.assperc|round(1, 'floor') }}%){% endif %}</td>
-
-                                                                </tr>
-                                                                <tr>
-                                                                    <td {% if assessment.errors > 0 and assessment.ass_status == 1%}style="color: #ed5565;" {% endif %}>{{ _("Submissions with conflicts") }}:</td>
-                                                                    <td {% if assessment.errors > 0 and assessment.ass_status == 1%}style="color: #ed5565;" {% endif %}>{{ assessment.errors }}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>{{ _("Last submission") }}</td>
-                                                                    <td>{{ assessment.lastass }}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td colspan="2">
-                                                                        {% if assessment.asstotal > 0 %}
-                                                                            <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('EditDataAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}" href="#"><i class="fa fa-table"></i> {{ _("View data") }}</a>
-                                                                            <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-cloud-download"></i> {{ _("Download data") }}</a>
-                                                                            {% if assessment.ass_status == 1%}
-                                                                                <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{request.route_url('uploadDataAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-cloud-upload"></i> {{ _("Upload data") }}</a>
-                                                                            {% endif %}
-                                                                        {% endif %}
-                                                                        {% if assessment.errors > 0 and assessment.ass_status == 1%}
-                                                                            <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;white-space: normal !important;word-wrap: break-word !important;" href="{{request.route_url('CleanErrorLogsAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-bug"></i> {{ _("Show submissions with conflicts") }}</a>
-                                                                        {% endif %}
-                                                                    </td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    {% if assessment.asstotal > 0 %}
-                                                        <div class="col-md-6">
-                                                            {% if assessment.ass_status == 1 %}
-                                                                <a class="btn btn-danger btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" onclick="location.href = '{{ request.route_url('closeassessment',projectid=activeProject.project_cod,assessmentid=assessment.ass_cod) }}'"><i class="fa fa-stop"></i> {{ _("Finish") }} {{ assessment.ass_desc }}</a>
-                                                            {% endif %}
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            {% if assessment.ass_status == 1 %}
-                                                                <a class="btn btn-danger btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" onclick="location.href = '{{ request.route_url('cancelassessment',projectid=activeProject.project_cod,assessmentid=assessment.ass_cod) }}'"><i class="fa fa-stop"></i> {{ _("Cancel") }} {{ assessment.ass_desc }}</a>
-                                                            {% endif %}
-                                                        </div>
-                                                    {% else %}
-                                                        <div class="col-md-12">
-                                                            {% if assessment.ass_status == 1 %}
-                                                                <a class="btn btn-danger btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" onclick="location.href = '{{ request.route_url('cancelassessment',projectid=activeProject.project_cod,assessmentid=assessment.ass_cod) }}'"><i class="fa fa-stop"></i> {{ _("Cancel") }} {{ assessment.ass_desc }}</a>
-                                                            {% endif %}
-                                                        </div>
+                                                <div class="col-md-3 pull-right">
+                                                    {% if progress.asssubmissions == 0 %}
+                                                        <div class="small">{{ _("Not yet started") }}</div>
                                                     {% endif %}
-
+                                                    {% if showAnalysis == 1 %}
+                                                        {% if allassclosed == False %}
+                                                            <div class="small">{{ _("On going") }}</div>
+                                                            {% else %}
+                                                                <div class="small">{{ _("Closed") }}</div>
+                                                            {% endif %}
+                                                    {% endif %}
+                                                    {% if progress.asssubmissions == 2 %}
+                                                        <div class="small">{{ _("Closed") }}</div>
+                                                    {% endif %}
                                                 </div>
                                             </div>
                                         </div>
-                                    {% endif %}
-                                {% endfor %}
+                                    </div>
+                                    <div class="ibox-content">
+                                        <div class="row">
 
+                                            {% if pcompleted == 100 and progress.regsubmissions == 2  %}
+                                                <div class="col-md-12">
+                                                    <div class="text-center">
+                                                        <span style="font-size: 16px;font-weight: 600;" title="{{ _("You have included ")}}{{ progress.analysisControl.Characteristics }}{{ _(" characteristics") }}"><i  class="fa {% if progress.analysisControl.Characteristics > 0 %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.Characteristics > 0 %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Characteristics") }}</span>
+                                                        <span style="font-size: 16px;font-weight: 600;" title="{{ _("You have included ")}}{{ progress.analysisControl.Performance }}{{ _(" performance evaluations") }}"><i  class="fa {% if progress.analysisControl.Performance > 0 %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.Performance > 0 %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Performance evaluations") }}</span>
+                                                        <span style="font-size: 16px;font-weight: 600;" title="{{ _("You have included ")}}{{ progress.analysisControl.Explanatory }}{{ _(" explanatory variables") }}"><i  class="fa {% if progress.analysisControl.Explanatory > 0 %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.Explanatory > 0 %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Explanatory variables") }}</span>
+                                                        <br>
+                                                        <span style="font-size: 16px;font-weight: 600;" {% if progress.analysisControl.overralCharacteristic !="" %}title="{{ _("You have included this question in the assessment") }}: '{{ progress.analysisControl.overralCharacteristic }}'" {% endif %}><i  class="fa {% if progress.analysisControl.overralCharacteristic !="" %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.overralCharacteristic != "" %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Overall characteristic") }}</span>
+                                                        <span style="font-size: 16px;font-weight: 600;" {% if progress.analysisControl.overralPerformance !="" %}title="{{ _("You have included this question in the assessment") }}: '{{ progress.analysisControl.overralPerformance }}'" {% endif %}><i  class="fa {% if progress.analysisControl.overralPerformance !="" %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.overralPerformance != "" %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Overall performance") }}</span>
+                                                    </div>
+                                                    <br>
+                                                    {% if progress.usableAssessments|length > 0 %}
+                                                        <button onclick="location.href = '{{ request.route_url('startassessments',projectid=activeProject.project_cod) }}'" class="btn btn-primary btn-rounded btn-block" ><i class="fa fa-play"></i> {{ _("Start an assessment") }}</button>
+                                                    {% endif %}
+                                                </div>
+                                            {% else %}
+                                                <div class="col-md-12">
+                                                    <div class="text-center">{{ _("You can start the data collection once the registration of participants is closed and the project definition is completed") }}</div>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        {% if pcompleted == 100 and  progress.assessments|length > 0%}
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    {% if showAnalysis %}
+                                                        <h3>{{ _("Statistics") }}</h3>
+                                                        {% endif %}
+                                                    {% for assessment in progress.assessments %}
+                                                        {% if assessment.ass_status == 1 or assessment.ass_status == 2 %}
+                                                        <div class="ibox collapsed">
+                                                            <div class="ibox-title">
+                                                                <h5>{{ assessment.ass_desc }}</h5>
+                                                                <div class="ibox-tools">
+                                                                    <div class="row">
+                                                                        <div class="col-md-6">
 
+                                                                        </div>
+                                                                        <div class="col-md-1 pull-right">
+                                                                            <a class="collapse-link">
+                                                                                <i class="fa fa-chevron-up"></i>
+                                                                            </a>
+                                                                        </div>
+                                                                        <div class="col-md-5 pull-right">
+                                                                            {% set pbtype = "progress-bar-info" %}
+                                                                            {% if progress.asssubmissions == 0 %}
+                                                                                <div class="small" style="text-align: left">{{ _("Not yet started") }}</div>
+                                                                            {% endif %}
+                                                                            {% if assessment.ass_status == 1 %}
+                                                                                <div class="small" style="text-align: left">{{ _("On going") }}</div>
+                                                                            {% endif %}
+                                                                            {% if assessment.ass_status == 2 %}
+                                                                                <div class="small" style="text-align: left">{{ _("Closed") }}</div>
+                                                                                {% if assessment.assperc >= 100 %}
+                                                                                    {% set pbtype = "progress-bar-success" %}
+                                                                                {% else %}
+                                                                                    {% set pbtype = "progress-bar-warning" %}
+                                                                                {% endif %}
+                                                                            {% endif %}
+                                                                            <div class="progress progress-mini">
+                                                                                <div style="width: {{ assessment.assperc }}%;" class="progress-bar {{ pbtype }}"></div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="ibox-content">
+                                                                <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <table class="table table-striped">
+                                                                            <tbody>
+                                                                            <tr>
+                                                                                <td>{{ _("Total Sample") }}: </td>
+                                                                                <td>{{ assessment.submissions }}</td>
+                                                                                <td></td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td style="vertical-align: inherit">{{ _("Number submissions") }}: </td>
+                                                                                <td style="vertical-align: inherit">{{ assessment.asstotal }} {% if assessment.asstotal > 0 %}({{ assessment.assperc|round(1, 'floor') }}%){% endif %}</td>
+                                                                                {% if assessment.asstotal > 0 %}
+                                                                                    <td>
+                                                                                        <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{ request.route_url('EditDataAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}" href="#"><i class="fa fa-table"></i> {{ _("View data") }}</a>
+                                                                                        <br>
+                                                                                        <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{ request.route_url('downloadDataAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-cloud-download"></i> {{ _("Download data") }}</a>
+                                                                                        <br>
+                                                                                        <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('uploadDataAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-cloud-upload"></i> {{ _("Upload data") }}</a>
+                                                                                    </td>
 
+                                                                                {% endif %}
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td>{{ _("Last submission") }}</td>
+                                                                                <td>{{ assessment.lastass }}</td>
+                                                                                <td></td>
+                                                                            </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="row">
+                                                                    <div class="col-md-6">
+                                                                        {% if assessment.ass_status == 1 %}
+                                                                            <a class="btn btn-danger btn-rounded btn-block" onclick="location.href = '{{ request.route_url('cancelassessment',projectid=activeProject.project_cod,assessmentid=assessment.ass_cod) }}'"><i class="fa fa-stop"></i> {{ _("Cancel") }} {{ assessment.ass_desc }}</a>
+                                                                        {% endif %}
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        {% if assessment.asstotal > 0 %}
+                                                                            {% if assessment.ass_status == 1 %}
+                                                                                <a class="btn btn-danger btn-rounded btn-block" onclick="location.href = '{{ request.route_url('closeassessment',projectid=activeProject.project_cod,assessmentid=assessment.ass_cod) }}'"><i class="fa fa-stop"></i> {{ _("Finish") }} {{ assessment.ass_desc }}</a>
+                                                                            {% endif %}
+                                                                        {% endif %}
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+{#                                            {% if progress.asssubmissions == 1 %}#}
+{#                                                <div class="row">#}
+{#                                                    <div class="col-md-4">#}
+{#                                                    </div>#}
+{#                                                    <div class="col-md-4">#}
+{#                                                    </div>#}
+{#                                                    <div class="col-md-4">#}
+{#                                                        <a class="btn btn-danger btn-rounded btn-block" onclick="showCancelAssessments('{{ request.route_url('cancelassessment',projectid=activeProject.project_cod) }}');" ><i class="fa fa-undo"></i> Cancel the data collection</a>#}
+{#                                                    </div>#}
+{#                                                </div>#}
+{#                                            {% endif %}#}
+                                        {% endif %}
+                                    </div>
+                                </div>
                                 {% if total_ass_records > 0 %}
                                     <div class="ibox float-e-margins" >
                                         <div class="ibox-title">
                                             <h5>{{ _("Analysis") }}</h5>
                                         </div>
                                         <div class="ibox-content">
-                                            <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" onclick="location.href = '{{request.route_url('createAnalysis')}}' "><i class="fa fa-bar-chart-o"></i> {{ _("Select variables to analyze") }}</a>
+                                            <a class="btn btn-success btn-rounded btn-block " onclick="location.href = '{{request.route_url('createAnalysis')}}' "><i class="fa fa-bar-chart-o"></i> {{ _("Select variables to analyze") }}</a>
                                             <br>
                                         </div>
 
@@ -597,125 +611,9 @@
                                 {% endif %}
                             </div>
                         </div>
-
-
-                        {% block piesFieldAgents %}
-                            {% if progress.regtotal > 0 %}
-
-                                <script type="text/javascript">
-                                    c3.generate({
-                                            bindto: '#pieRegistry',
-                                            size: {
-                                                height: 200,
-                                            },
-                                            data:{
-                                                x: 'x',
-                                                columns: [
-                                                    ["x",
-                                                        {% for fieldAgent in fieldagents["registry"] %}
-                                                            "{{ fieldAgent["User"] }}",
-                                                        {% endfor %}
-                                                    ],
-                                                    ["{{ _("Number of submissions") }}",
-                                                        {% for fieldAgent in fieldagents["registry"] %}
-                                                            "{{ fieldAgent["Count"] }}",
-                                                        {% endfor %}
-                                                    ]
-                                                ],
-                                                type : 'bar',
-                                                color: function(inColor, data) {
-                                                    var colors = ['#1ab394', '#BABABA', '#f8ac59','#1c84c6','#1ab394', '#BABABA', '#f8ac59','#1c84c6','#1ab394', '#BABABA', '#f8ac59','#1c84c6','#1ab394', '#BABABA', '#f8ac59','#1c84c6','#1ab394', '#BABABA', '#f8ac59','#1c84c6','#1ab394', '#BABABA', '#f8ac59','#1c84c6','#1ab394', '#BABABA', '#f8ac59','#1c84c6','#1ab394', '#BABABA', '#f8ac59','#1c84c6'];
-
-                                                    if(data.index !== undefined) {
-                                                        return colors[data.index];
-                                                    }
-
-                                                    return inColor;
-                                                }
-                                            },
-                                            axis: {
-                                                rotated: true,
-                                                x: {
-                                                    type: 'category'
-                                                },
-                                                y: {
-                                                    tick: {
-                                                        values: [
-                                                            {% for fieldAgent in fieldagents["registry"] %}
-                                                            "{{ fieldAgent["Count"] }}",
-                                                        {% endfor %}
-                                                        ]
-                                                    }
-                                                }
-                                            },
-                                            legend: {
-                                                show: false
-                                            }
-                                        });
-
-                                </script>
-                            {% endif %}
-
-                            {% for fieldAgentAssess in fieldagents["Assessments"] %}
-                                {% if fieldAgentAssess["Values"] %}
-                                <script type="text/javascript">
-                                    c3.generate({
-                                            bindto: '#pie{{ fieldAgentAssess["Name"] }}',
-                                            size: {
-                                                height: 200,
-                                            },
-                                            data:{
-                                                x: 'x',
-                                                columns: [
-                                                    ["x",
-                                                        {% for fieldAgent in fieldAgentAssess["Values"] %}
-                                                            "{{ fieldAgent["User"] }}",
-                                                        {% endfor %}
-                                                    ],
-                                                    ["{{ _("Number of submissions") }}",
-                                                        {% for fieldAgent in fieldAgentAssess["Values"] %}
-                                                            "{{ fieldAgent["Count"] }}",
-                                                        {% endfor %}
-                                                    ]
-                                                ],
-                                                type : 'bar',
-                                                color: function(inColor, data) {
-                                                    var colors = ['#1ab394', '#BABABA', '#f8ac59','#1c84c6','#1ab394', '#BABABA', '#f8ac59','#1c84c6','#1ab394', '#BABABA', '#f8ac59','#1c84c6','#1ab394', '#BABABA', '#f8ac59','#1c84c6','#1ab394', '#BABABA', '#f8ac59','#1c84c6','#1ab394', '#BABABA', '#f8ac59','#1c84c6','#1ab394', '#BABABA', '#f8ac59','#1c84c6','#1ab394', '#BABABA', '#f8ac59','#1c84c6'];
-
-                                                    if(data.index !== undefined) {
-                                                        return colors[data.index];
-                                                    }
-
-                                                    return inColor;
-                                                }
-                                            },
-                                            axis: {
-                                                rotated: true,
-                                                x: {
-                                                    type: 'category'
-                                                },
-                                                y: {
-                                                    tick: {
-                                                        values: [
-                                                            {% for fieldAgent in fieldAgentAssess["Values"] %}
-                                                                "{{ fieldAgent["Count"] }}",
-                                                            {% endfor %}
-                                                        ]
-                                                    }
-                                                }
-                                            },
-                                            legend: {
-                                                show: false
-                                            }
-                                        });
-                                </script>
-                                {% endif %}
-                            {% endfor %}
-                        {% endblock %}
-
                     {% else %}
                         <div class="middle-box text-center loginscreen animated fadeInDown">
-                            <p>{{ _("Let's start!") }}</p>
+                            <p>{{ _("Lets start!") }}</p>
                             <a class="btn btn-primary" href="{{ request.route_url('newproject') }}">{{ _("Create a new project") }}</a>
                             <br>
                             <br>
@@ -730,126 +628,11 @@
                         0.6 (20170727)
                     </div>
                     <div>
-                        <strong>{{ _("Copyright") }}</strong> {{ _("2020, Alliance of Bioversity International and CIAT") }}
+                        <strong>{{ _("Copyright") }}</strong> {{ _("Bioversity International &copy; 2017") }}
                     </div>
                 {% endblock footer %}
             </div>
         </div>
-
-        {% block chat %}
-            <div class="small-chat-box fadeInRight animated" style="bottom:10px;left: 60px; right: initial;z-index: 10000">
-
-                <div class="heading" draggable="true">
-                    {{ _("Send us feedback") }}
-                </div>
-
-                <div class="content" id="chatDetailsMessage">
-
-                </div>
-
-                <div class="form-chat">
-                    <div class="input-group input-group-sm">
-                        <input type="text" class="form-control" id="msgFeedback" required oninvalid="this.setCustomValidity('{{ _("Write the feedback message.") }}')" onchange="this.setCustomValidity('')">
-                        <span class="input-group-btn">
-                            <button class="btn btn-primary" type="button" id="sendFeedback">{{ _("Send") }}</button>
-                        </span>
-                    </div>
-                </div>
-
-            </div>
-            <div id="small-chat" style="bottom:10px;left: 10px; right: initial;z-index: 10000">
-                {% if counterChat > 0 %}
-                    <span class="badge badge-danger " >{{ counterChat }}</span>
-                {% endif %}
-                <a class="open-small-chat" style="padding: initial; height: 43px;width: 43px;font-weight: bold">
-                    <i class="fa fa-comments"></i><br>{{ _("Chat") }}
-                </a>
-            </div>
-
-            <script>
-                $("#sendFeedback").click(function () {
-                    $("#sendFeedback").prop('disabled', true);
-                    if ($("#msgFeedback")[0].checkValidity()) {
-                        $.ajax({
-                            url: '{{ request.route_url('sendFeedbackToBot') }}',
-                            //datatype: "json",
-                            type: "POST",
-                            data: {
-                                "csrf_token": '{{ request.session.get_csrf_token() }}',
-                                "Apikey": "{{ activeUser.apikey }}",
-                                "Body": JSON.stringify(
-                                    {
-                                        "message": $("#msgFeedback").val()
-                                    }
-                                )
-                            },
-                            success: function (respuesta) {
-
-                                showMessage(respuesta)
-                                $("#msgFeedback").val("");
-                                $("#sendFeedback").prop('disabled', false);
-                            },
-                            error: function (respuesta) {
-                                toastr.error(respuesta.responseText);
-                                $("#sendFeedback").prop('disabled', false);
-                            }
-                        });
-                    }else {
-                        $("#msgFeedback")[0].reportValidity()
-                    }
-                });
-
-
-                $("#small-chat").click(function () {
-                    $.ajax({
-                            url: '{{ request.route_url('readFeedback') }}',
-                            type: "GET",
-                            data: {
-                                "Apikey": "{{ activeUser.apikey }}"
-                            },
-                            success: function (respuesta){
-                                showMessage(respuesta)
-                            },
-                            error: function (respuesta) {
-                                toastr.error(respuesta.responseText);
-                            }
-                        });
-                })
-
-                function showMessage(respuesta)
-                {
-                    information = JSON.parse(respuesta);
-                    all ="";
-                    if (information.read.length != 0 || information.unread.length != 0)
-                    {
-                        for (msg in information.read) {
-                            if (information.read[msg].chat_tofrom == 2) {
-                                all += "<div class='left'><div class='author-name'>{{ _('ClimMob Team') }} </div><div class='chat-message active'><p style='margin: 0 0 0px'>" + information.read[msg].chat_message + "</p><small class='chat-date'>" + information.read[msg].chat_date.split(" ")[1] + "</small></div></div>"
-                            } else {
-                                all += "<div class='right'><div class='author-name'>" + information.read[msg].user_name + "</div><div class='chat-message'><p style='margin: 0 0 0px'>" + information.read[msg].chat_message + "</p><small class='chat-date'>" + information.read[msg].chat_date.split(" ")[1] + "</small></div></div>"
-                            }
-
-                        }
-
-                        if (information.unread.length != 0) {
-                            all += "<div class='right' style='width:100%; text-align:center; background-color: #1c84c6;height: 12px;color: #fff;'><b>{{ _("Unread messages") }}</b></div>"
-                            for (msg in information.unread) {
-                                if (information.unread[msg].chat_tofrom == 2) {
-                                    all += "<div class='left'><div class='author-name'>{{ _('ClimMob Team') }} </div><div class='chat-message active'><p style='margin: 0 0 0px'>" + information.unread[msg].chat_message + "</p><small class='chat-date'>" + information.read[msg].chat_date.split(" ")[1] + "</small></div></div>"
-                                } else {
-                                    all += "<div class='right'><div class='author-name'>" + information.unread[msg].user_name + "</div><div class='chat-message'><p style='margin: 0 0 0px'>" + information.unread[msg].chat_message + "</p><small class='chat-date'>" + information.unread[msg].chat_date.split(" ")[1] + "</small></div></div>"
-                                }
-                            }
-                        }
-                    }else {
-                        all += "<div class='left'><div class='author-name'>{{ _('ClimMob Team') }} </div><div class='chat-message active'><p style='margin: 0 0 0px'>{{ _("Hi there! Any question or feedback?") }}</p></div></div>"
-                    }
-
-                    $("#chatDetailsMessage").html(all)
-                    //$("#chatDetailsMessage").animate({ scrollTop: $("#chatDetailsMessage")[0].scrollHeight}, 1000);
-                }
-            </script>
-        {% endblock %}
 
         {% if withsidebar %}
             <div id="right-sidebar" class="animated">
@@ -911,7 +694,7 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button id="modalmainbutton"type="button" class="btn btn-primary pull-left" onclick="$('#modaliframe').contents().find('.clm-act-button').trigger( 'click' );">{{ _("Something here") }}</button>
+                    <button id="modalmainbutton"type="button" class="btn btn-primary pull-left" onclick="$('#modaliframe').contents().find('.clm-act-button').trigger( 'click' );">{{ _("Somethind here") }}</button>
                     <button type="button" class="btn btn-white" onclick="closeModal()">Close</button>
                 </div>
             </div>

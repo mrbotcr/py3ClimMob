@@ -27,7 +27,6 @@ from ..processes import (
     there_is_final_assessment,
     is_assessment_final,
     get_usable_assessments,
-    clean_assessments_error_logs
 )
 
 from pyramid.response import FileResponse
@@ -82,13 +81,13 @@ class modifyAssessmentSection_view(privateView):
                         else:
                             error_summary = {
                                 "sectiondescription": self._(
-                                    "The description of the group cannot be empty."
+                                    "The description of the group can not be empty."
                                 )
                             }
                     else:
                         error_summary = {
                             "sectionname": self._(
-                                "The name of the group cannot be empty."
+                                "The name of the group can not be empty."
                             )
                         }
             else:
@@ -161,7 +160,7 @@ class newAssessmentSection_view(privateView):
                     tdata = self.getPostDict()
                     data["section_name"] = tdata["section_name"]
                     data["section_content"] = tdata["section_content"]
-                    data["section_private"] = None
+                    data["section_color"] = None
                     if data["section_name"] != "":
                         if data["section_content"] != "":
                             addgroup, message = addAssessmentGroup(data, self)
@@ -604,12 +603,7 @@ class startAssessments_view(privateView):
                         self.user.login, projectid, assessment_id, 1, self.request
                     )
                     # setAssessmentStatus(self.user.login,projectid,1,self.request)
-                    self.returnRawViewResult = True
-                    return HTTPFound(
-                        location=self.request.route_url(
-                            "dashboard"
-                        )
-                    )
+                    redirect = True
                 return {
                     "activeUser": self.user,
                     "projectid": projectid,
@@ -651,12 +645,7 @@ class closeAssessment_view(privateView):
                 setAssessmentIndividualStatus(
                     self.user.login, projectid, assessmentid, 2, self.request
                 )
-                self.returnRawViewResult = True
-                return HTTPFound(
-                    location=self.request.route_url(
-                        "dashboard"
-                    )
-                )
+                redirect = True
 
         return {
             "activeUser": self.user,
@@ -684,13 +673,7 @@ class CancelAssessmentView(privateView):
                 setAssessmentIndividualStatus(
                     self.user.login, projectid, assessmentid, 0, self.request
                 )
-                clean_assessments_error_logs(self.request, projectid, self.user.login, assessmentid)
-                self.returnRawViewResult = True
-                return HTTPFound(
-                    location=self.request.route_url(
-                        "dashboard"
-                    )
-                )
+                redirect = True
 
         return {
             "activeUser": self.user,

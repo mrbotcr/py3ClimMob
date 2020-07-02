@@ -125,7 +125,7 @@ class RecoverPasswordView(publicView):
                         "Cannot find an user with such email address"
                     )
             else:
-                error_summary["email"] = self._("You need to provide an email address")
+                error_summary["email"] = self._("You need submit an email")
 
         return {"error_summary": error_summary}
 
@@ -210,7 +210,7 @@ class register_view(publicView):
                                 )
                         else:
                             error_summary["createError"] = self._(
-                                "The account name cannot have any special characters."
+                                "The account name cannot have any characters."
                             )
                     else:
                         error_summary["createError"] = self._("User is None!")

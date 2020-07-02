@@ -5,11 +5,6 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{{ _("ClimMob | 404 Error") }}</title>
-
-        {% block css %}
-            {% cssresource request,'coreresources','style' %}
-        {% endblock css %}
-</head>
     </head>
 
     <body class="gray-bg">
@@ -18,7 +13,7 @@
             <h3 class="font-bold">{{ _("Page Not Found") }}</h3>
 
             <div class="error-desc">
-                {{ _("Sorry, but the page you are looking for has not been found.") }}<br/>
+                {{ _("Sorry, but the page you are looking for has note been found. Try checking the URL for error, then hit the refresh button on your browser or try found something else in our app.") }}<br/>
                     {{ _("You can go back to main page") }}: <br/><a href="{{ request.route_url('dashboard') }}" class="btn btn-primary m-t">{{ _("Home") }}</a>
             </div>
         </div>

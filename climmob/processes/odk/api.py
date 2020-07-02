@@ -387,8 +387,7 @@ def storeJSONInMySQL(type, userid, userEnum, projectid, assessmentid, JSONFile, 
     logFile = os.path.splitext(JSONFile)[0] + ".log"
     jsonPath = os.path.dirname(JSONFile)
     mapPath = os.path.join(jsonPath, *["maps"])
-    if not os.path.exists(mapPath):
-        os.makedirs(mapPath)
+    os.makedirs(mapPath)
 
     host = request.registry.settings["odktools.mysql.host"]
     port = request.registry.settings["odktools.mysql.port"]
@@ -433,7 +432,7 @@ def storeJSONInMySQL(type, userid, userEnum, projectid, assessmentid, JSONFile, 
             " ".join(args),
             request,
         )"""
-        print(userEnum)
+        
         if userEnum != None:
             addJsonLog(request,type,userid, userEnum,projectid,assessmentid,fileuid, JSONFile, logFile)
 

@@ -28,12 +28,12 @@
                             <button class="btn btn-default btn-circle" onclick="location.href='{{ request.route_url('questioncharacteristics', qid=question.question_id) }}'" type="button" title="{{ _("Edit comparison phrases") }}"><i class="fa fa-commenting-o"></i></button>
                         {% endif %}
                         {% if question.question_dtype == 10 %}
-                            <button class="btn btn-default btn-circle" onclick="location.href='{{ request.route_url('questionperformance', qid=question.question_id) }}'" type="button" title="{{ _("Edit comparison with check phrases") }}"><i class="fa fa-commenting-o"></i></button>
+                            <button class="btn btn-default btn-circle" onclick="location.href='{{ request.route_url('questionperformance', qid=question.question_id) }}'" type="button" title="{{ _("Edit performance statement") }}"><i class="fa fa-commenting-o"></i></button>
                         {% endif %}
 
                         {% if question.assigned == 0%}
                         <button class="btn btn-warning btn-circle" onclick="location.href='{{ request.route_url('modifyquestion', qid=question.question_id) }}'" type="button" title="{{ _("Edit question") }}"><i class="fa fa-pencil"></i></button>
-                        <button class="btn btn-danger btn-circle" onclick="showDelete('{{ request.route_url('deletequestion', qid=question.question_id) }}','{{ _("Do you really want to remove this question?") }}','{{ request.session.get_csrf_token() }}')" type="button" title="{{ _("Remove question") }}"><i class="fa fa-times"></i></button>
+                        <button class="btn btn-danger btn-circle" onclick="showDelete('{{ request.route_url('deletequestion', qid=question.question_id) }}','{{ _("Do you really want to remove this question ?") }}','{{ request.session.get_csrf_token() }}')" type="button" title="{{ _("Remove question") }}"><i class="fa fa-times"></i></button>
                         {% endif %}
                     {% else %}
                         {% if showTitle %}
@@ -44,7 +44,7 @@
                                 <button class="btn btn-default btn-circle" onclick="location.href='{{ request.route_url('questioncharacteristics', qid=question.question_id) }}'" type="button" title="{{ _("View comparison phrases") }}"><i class="fa fa-commenting-o"></i></button>
                             {% endif %}
                             {% if question.question_dtype == 10 %}
-                                <button class="btn btn-default btn-circle" onclick="location.href='{{ request.route_url('questionperformance', qid=question.question_id) }}'" type="button" title="{{ _("View comparison with check phrases") }}"><i class="fa fa-commenting-o"></i></button>
+                                <button class="btn btn-default btn-circle" onclick="location.href='{{ request.route_url('questionperformance', qid=question.question_id) }}'" type="button" title="{{ _("View performance statement") }}"><i class="fa fa-commenting-o"></i></button>
                             {% endif %}
                         {% else %}
                             {% snippet 'snippets/question/question-item-menu.jinja2', question=question, showCheck=True %}

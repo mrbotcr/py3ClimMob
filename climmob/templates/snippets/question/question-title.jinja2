@@ -28,8 +28,8 @@
 
 {% if question.question_dtype == 7 %} {% set fatype = "fa-qrcode " %} {% set qtype = "Package" %} {% set qlabel = "label-package" %} {% endif %}
 {% if question.question_dtype == 8 %} {% set fatype = "fa-users" %} {% set qtype = "Observer" %} {% set qlabel = "label-observer" %} {% endif %}
-{% if question.question_dtype == 9 %} {% set fatype = "fa-th-list" %} {% set qtype = "Ranking of options" %} {% set qlabel = "label-characteristic" %} {% endif %}
-{% if question.question_dtype == 10 %} {% set fatype = "fa-list-alt" %} {% set qtype = "Comparison with check" %} {% set qlabel = "label-performance" %} {% endif %}
+{% if question.question_dtype == 9 %} {% set fatype = "fa-th-list" %} {% set qtype = "Characteristic" %} {% set qlabel = "label-characteristic" %} {% endif %}
+{% if question.question_dtype == 10 %} {% set fatype = "fa-list-alt" %} {% set qtype = "Performance" %} {% set qlabel = "label-performance" %} {% endif %}
 
 {% block qstitemtitle %}
     <h5 ><span class="fa {{ fatype }}"></span> {{ question.question_desc }}  <span class="label {{ qlabel }}" style="display: inline-block; margin-top: 3px">{{ qtype }}</span> {% if overall %}<span class="label label-overall" style="display: inline-block; margin-top: 3px">{{ _("Overall") }}</span>{% endif %} {% if question.num_options == 0 %}<span class="label label-danger" >{{ _("Without options!") }}</span>{% endif %}</h5>

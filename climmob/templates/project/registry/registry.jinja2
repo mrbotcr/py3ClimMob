@@ -1,7 +1,7 @@
 {% extends 'dashboard/dashboard.jinja2' %}
 
 {% block title %}
-    <title>{{ _("ClimMob - Registration") }}</title>
+    <title>{{ _("ClimMob - Registry") }}</title>
 {% endblock title %}
 
 {% block css %}
@@ -65,7 +65,7 @@
                                             <div class="dd-nodrag btn-group pull-right">
                                                 <div class="ibox-tools">
                                                     {% if item.grpCannotDelete == False %}
-                                                        <button onclick="showDelete('{{ request.route_url('deleteregistrygroup', projectid=projectid, groupid=item.section_id) }}','{{ _("Do you really want to remove this section?") }}','{{ request.session.get_csrf_token() }}')" type="button" class="btn btn-danger btn-xs dropdown-toggle clm-grpactions" >{{ _("Remove section") }}</button>
+                                                        <button onclick="showDelete('{{ request.route_url('deleteregistrygroup', projectid=projectid, groupid=item.section_id) }}','{{ _("Do you really want to remove this section ?") }}','{{ request.session.get_csrf_token() }}')" type="button" class="btn btn-danger btn-xs dropdown-toggle clm-grpactions" >{{ _("Remove section") }}</button>
                                                     {% endif %}
                                                     <button onclick="location.href='{{ request.route_url('modifyregistrygroup', projectid=projectid, groupid=item.section_id) }}';" type="button" class="btn btn-warning btn-xs dropdown-toggle clm-grpactions" >{{ _("Update section") }}</button>
                                                     <button onclick="location.href='{{ request.route_url('newregistryquestion', projectid=projectid, groupid=item.section_id) }}';" type="button" class="btn btn-primary btn-xs dropdown-toggle clm-grpactions" >{{ _("Add question") }}</button>

@@ -9,13 +9,13 @@
         </div>
         {% set pbtype = "progress-bar-info" %}
         {% if project.progress.regsubmissions == 0 %}
-            <div class="small">{{ _("Registration: Not yet started") }}</div>
+            <div class="small">{{ _("Registry: Not yet started") }}</div>
         {% endif %}
         {% if project.progress.regsubmissions == 1 %}
-            <div class="small" title="{{ _("Out of a sample of") }} {{ project.project_numobs }} {{ _("observations") }}">{{ _("Registration: On going with") }} {{ project.progress.regtotal }} {{ request.h.pluralize(_("submission"),project.progress.regtotal) }}</div>
+            <div class="small" title="{{ _("Out of a sample of") }} {{ project.project_numobs }} {{ _("observations") }}">{{ _("Registry: On going with") }} {{ project.progress.regtotal }} {{ request.h.pluralize(_("submission"),project.progress.regtotal) }}</div>
         {% endif %}
         {% if project.progress.regsubmissions == 2 %}
-            <div class="small" title="{{ _("Out of a sample of") }} {{ project.project_numobs }} {{ _("observations") }}">{{ _("Registration: Closed with") }} {{ project.progress.regtotal }} {{ request.h.pluralize(_("submission"),project.progress.regtotal) }}</div>
+            <div class="small" title="{{ _("Out of a sample of") }} {{ project.project_numobs }} {{ _("observations") }}">{{ _("Registry: Closed with") }} {{ project.progress.regtotal }} {{ request.h.pluralize(_("submission"),project.progress.regtotal) }}</div>
             {% if project.progress.regperc >= 100 %}
                 {% set pbtype = "progress-bar-success" %}
             {% else %}

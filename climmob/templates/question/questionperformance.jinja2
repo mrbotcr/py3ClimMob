@@ -1,13 +1,13 @@
 {% extends 'dashboard/dashboard.jinja2' %}
 
 {% block title %}
-    <title>{{ _("ClimMob | Set comparison with check") }}</title>
+    <title>{{ _("ClimMob | Set performace statement") }}</title>
 {% endblock title %}
 
 {% block pageheading %}
     <div class="row wrapper border-bottom white-bg page-heading">
         <div class="col-lg-10">
-            <h2>{{ _("Define comparison with check") }}</h2>
+            <h2>{{ _("Define performace statement") }}</h2>
             <ol class="breadcrumb">
                 <li>
                     <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
@@ -19,7 +19,7 @@
                     <a>{{ _("Question") }}: {{ qdata.question_desc }}</a>
                 </li>
                 <li class="active">
-                    <strong>{{ _("Comparison with check") }}</strong>
+                    <strong>{{ _("Performace statement") }}</strong>
                 </li>
             </ol>
             <a href="https://climmob.net/blog/wiki/2019/09/30/question-performance/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
@@ -37,7 +37,7 @@
                 <div class="ibox float-e-margins" style="height: 100%; margin-bottom: 0px">
 
                     <div class="ibox-title">
-                        <h5>{{ _("Enter the comparison with check statement") }} "{{ qdata.question_desc }}"</h5>
+                        <h5>{{ _("Enter the performance statement for question") }} "{{ qdata.question_desc }}"</h5>
                         <div class="ibox-tools">
 
                         </div>
@@ -45,11 +45,11 @@
                     <div class="ibox-content" style="height: 89%">
                         <div class="panel panel-info">
                             <div class="panel-heading">
-                                <i class="fa fa-info-circle"></i>{{ _("How to describe a comparison with check") }}
+                                <i class="fa fa-info-circle"></i>{{ _("How to describe a performance question") }}
                             </div>
                             <div class="panel-body">
                                 <div style="max-height: 150px; overflow-y: scroll;">
-                                    <p style="margin-bottom: 0in; line-height: 100%">{{ _("Comparison with check is a type of question that is used to compare the technologies being tested in a project with the current one in use by the farmer or a commonly used technology. For example, if a project is evaluating three different varieties of bean then the performance questions would be:") }}</p>
+                                    <p style="margin-bottom: 0in; line-height: 100%">{{ _("Performance is a type of question that is used to compare the technologies being tested in a project with the current one in use by the farmer. For example, if a project is evaluating three different varieties of bean then the performance questions would be:") }}</p>
                                     <ul>
                                         <li/>
                                         <p style="margin-bottom: 0in; line-height: 100%">{{ _("In terms of taste, how does variety") }} <b>A</b> {{ _("compares with the variety you usually use?") }}</p>
@@ -74,7 +74,7 @@
                             {% snippet 'snippets/question/values/perf-form.jinja2', request=request,qdata=qdata, editable=editable %}
                             <div class="text-center">
                                 {% if editable %}
-                                    <button type="submit" name="btn_add_char" class="btn btn-warning"> {{ _('Save') }}</button>
+                                    <button type="submit" name="btn_add_char" class="btn btn-warning"> {{ _('Save performance statement') }}</button>
                                 {% endif %}
                             </div>
                         </form>

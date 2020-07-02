@@ -3,9 +3,7 @@ import pprint
 import transaction
 import xml.etree.ElementTree as ET
 from zope.sqlalchemy import mark_changed
-from ..processes import (
-    getProjectData
-)
+
 
 def get_FieldsByType(types, db, self, file, code):
     return [
@@ -99,7 +97,7 @@ def getNamesEditByColums(
     #    return []
 
 
-def fillDataTable(self, db, form, columns, file, code, where=""):
+def fillDataTable(self, db, form, columns, file, code):
     ret = {
         "colNames": [],
         "data": [],
@@ -131,11 +129,6 @@ def fillDataTable(self, db, form, columns, file, code, where=""):
         col = col.split("$%*")
         ret["colNames"].append(col[1])
         if col[0] == "surveyid" or col[0] == "qst162":
-            proData = getProjectData(self.user.login, db, self.request)
-            packages = {}
-            for y in range(1, proData["project_numobs"] + 1):
-               packages[y] = "Package #"+str(y)
-
             ret["colModel"].append(
                 {
                     "align": "center",
@@ -143,16 +136,10 @@ def fillDataTable(self, db, form, columns, file, code, where=""):
                     "label": col[1],
                     "name": col[0],
                     "index": col[0],
-                    "editable": True,
+                    "editable": False,
                     "width": 75,
                     "sortable": True,
                     "align": "center",
-                    "formatter": "select",
-                    "edittype": "select",
-                    "editoptions": {
-                        "multiple": False,
-                        "value": packages,
-                    }
                 }
             )
         else:
@@ -237,11 +224,10 @@ def fillDataTable(self, db, form, columns, file, code, where=""):
         # print "**********************77"
         sql = sql + col[0] + ","
 
-    orderBy = "qst163"
-    if form == "reg":
-        orderBy = "qst162"
-
-    sql = sql[:-1] + " from "+self.user.login + "_" + db+"."+form.upper() + code+"_geninfo "+ where +" order by "+orderBy+"+0;"
+    sql = sql[:-1] + " from %s.%s_geninfo order by surveyid;" % (
+        self.user.login + "_" + db,
+        form.upper() + code,
+    )
 
     # print sql
     # print "***************************************************************************"
@@ -293,7 +279,6 @@ def update_edited_data(self, db, form, data, file, code):
             # print query_update
             try:
                 transaction.begin()
-                print(query_update)
                 mySession.execute(query_update)
                 mark_changed(mySession)
                 transaction.commit()

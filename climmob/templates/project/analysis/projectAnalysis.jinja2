@@ -10,7 +10,6 @@
 {% endblock css %}
 
 {% block topScripts %}
-    {% jsresource request,'coreresources','toastr' %}
     {% jsresource request,'coreresources','icheck' %}
     {% jsresource request,'coreresources','switch' %}
     {% jsresource request,'coreresources','analysisData' %}
@@ -46,7 +45,7 @@
                 <div class="ibox-content">
                     {% if dataForAnalysis.Explanatory %}
                         <div class="form-group">
-                            <b>{{ _("Explanatory variables") }}</b>
+                            <b>{{ _("Explanatory") }}</b>
                             <div class="col-lg-offset-2 col-lg-10">
                                 {%for c in dataForAnalysis.Explanatory%}
                                     <label style="font-weight: inherit"> <input class="checkbox i-checks" type="checkbox" id="explanatory_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
@@ -60,7 +59,7 @@
 
                     {% if dataForAnalysis.Characteristics %}
                         <div class="form-group">
-                            <b>{{ _("Overall performance ranking") }}</b>
+                            <b>{{ _("Charactheristics") }}</b>
                             <div class="col-lg-offset-2 col-lg-10">
                                 {%for c in dataForAnalysis.Characteristics%}
                                     <label style="font-weight: inherit"> <input class="checkbox i-checks" type="checkbox" id="characteristic_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
@@ -72,7 +71,7 @@
 
                     {% if dataForAnalysis.Performance%}
                         <div class="form-group">
-                            <b>{{ _("Comparison with check") }}</b>
+                            <b>{{ _("Performance") }}</b>
                             <div class="col-lg-offset-2 col-lg-10">
                                 {%for c in dataForAnalysis.Performance%}
                                     <label style="font-weight: inherit"> <input class="checkbox i-checks" type="checkbox" id="performance_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
@@ -88,7 +87,7 @@
                         <div class="col-lg-offset-2 col-lg-10">
 
                             <div class="form-group">
-                                <input type="checkbox" id="ckb_Infosheets" name="ckb_Infosheets" data-on-color="success" data-off-color="danger" data-on-text="{{ _('Yes') }}" data-off-text="{{ _('No') }}" >
+                                <input type="checkbox" id="ckb_Infosheets" name="ckb_Infosheets" data-on-color="success" data-off-color="danger" data-on-text="{{ _('YES') }}" data-off-text="{{ _('NO') }}" >
                             </div>
                         </div>
 
@@ -102,7 +101,7 @@
                             <input type="text" id="txt_included_in_analysis" name="txt_included_in_analysis" style="width: 100%;display:none">
                             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                             <input type="text" id="txt_infosheets" name="txt_infosheets" value="true" style="width: 100%;display:none">
-                            <button type="submit" name="btn_createAnalysis" id="btn_createAnalysis" class="btn btn-primary clm-actions "> {{ _("Perform analysis") }}</button>
+                            <button type="submit" name="btn_createAnalysis" id="btn_createAnalysis" class="btn btn-primary clm-actions "> {{ _("Create analysis") }}</button>
                         </form>
                     </div>
                 </div>

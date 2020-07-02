@@ -1,117 +1,31 @@
+{% for product in Products %}
+    <div class="file-box" >
+        <div class="file" >
+            {% if product.state == "Success"%}
+                {% if product.product_id != "datadesk"%}
+                    <a href="{{ request.route_url('download', product_id=product.celery_taskid) }}" >
+                {% else %}
+                    <a id="{{product.celery_taskid}}$#%%#${{product.output_id}}" class="btn_datadesk">
+                {% endif %}
+            {% endif%}
+                    <span class="corner" ></span>
 
+                    <div class="icon">
+                        <i class="fa fa-file" style="color:{% if product.state == "Success" %}#1ab394{% else %} {% if product.state =="Pending..." %}#f8ac59{% else %}#ed5565{% endif %}{% endif %}"></i>
+                    </div>
+                    <div class="file-name">
 
-<table class="table table-striped table-bordered">
-    <tbody>
-        <tr>
-            <th class="text-center">{{ _('Description') }}</th>
-            <th class="text-center">{{ _('Date') }}</th>
-            <th class="text-center">{{ _('Format') }}</th>
-            <th class="text-center">{{ _('Action') }}</th>
-        </tr>
-        {% for product in Products %}
-            {% set color = '#676a6c' %}
-            {% if product.product_id == "qrpackage" or product.product_id == "packages" or product.product_id == "fieldagents"%}
-                {% set color = "#1ab394" %}
-            {% else %}
-                {% set color = "#1c84c6" %}
-            {% endif %}
-            <tr>
-                <td style="vertical-align: middle;">
-                    {% if product.product_id == "qrpackage" %}
-                        {{ _("List of packages with QR for the registration form.") }}
-                    {% else %}
-                        {% if product.product_id == "packages" %}
-                            {{ _("Random list to prepare packages.") }}
+                        {% if product.state != "Success"%}
+                            {{product.state}}
                         {% else %}
-                            {% if product.product_id == "fieldagents" %}
-                                {{ _("Field Agent List and QR to configure ODK Collect.") }}
-                            {% else %}
-                                {% if product.product_id == "colors" %}
-                                    {{ _("Color cards to explain ClimMob.") }}
-                                {% else %}
-                                    {% if product.product_id == "datacsv" %}
-                                        {{ _("Information collected in the project and used to create the report.") }}
-                                    {% else %}
-                                        {% if product.product_id == "reports" %}
-                                            {{ _("Report generated in the analysis of the information.") }}
-                                        {% else %}
-                                            {% if product.product_id == "datadesk" %}
-                                                {{ _("Data collected in ") }} {{ product.output_id }}.
-                                            {% else %}
-                                                {{ product.product_id }}
-                                            {% endif %}
-                                        {% endif %}
-                                    {% endif %}
-                                {% endif %}
-                            {% endif %}
+                            {{product.output_id}}
                         {% endif %}
-                    {% endif %}
-                </td>
-                <td class="text-center" style="vertical-align: middle;">
-                    {{ product.datetime_added }}
-                </td>
-                <td class="text-center" style="vertical-align: middle;">
-                    {% if product.output_mimetype == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" %}
-                        <i class="fa fa-file-excel-o" aria-hidden="true" style="font-size: 17px;color: {{ color }}"></i>
-                    {% else %}
-                        {% if product.output_mimetype == "application/pdf" %}
-                            <i class="fa fa-file-pdf-o" aria-hidden="true" style="font-size: 17px;color: {{ color }}"></i>
-                        {% else %}
-                            {% if product.output_mimetype == "application/zip" %}
-                                <i class="fa fa-file-zip-o" aria-hidden="true" style="font-size: 17px;color: {{ color }}"></i>
-                            {% else %}
-                                {% if product.output_mimetype == "application/json" %}
-                                    <i class="fa fa-file-text" aria-hidden="true" style="font-size: 17px;color: {{ color }}"></i>
-                                {% else %}
-                                    {% if product.output_mimetype == "text/csv" %}
-                                        <i class="fa fa-file-excel-o" placeholder="asasd" aria-hidden="true" style="font-size: 17px;color: {{ color }}"></i>
-                                    {% else %}
-                                        {% if product.output_mimetype == "application/vnd.openxmlformats-officedocument.wordprocessingml.document" %}
-                                            <i class="fa fa-file-word-o" aria-hidden="true" style="font-size: 17px;color: {{ color }}"></i>
-                                        {% else %}
-                                            {{ product.output_mimetype }}
-                                        {% endif %}
-                                    {% endif %}
-                                {% endif %}
-                            {% endif %}
-                        {% endif %}
-                    {% endif %}
-                </td>
-                <td class="text-center">
-                    {% if product.state == "Success"%}
-                        {% if product.exists == "correct" %}
-                            {% if product.product_id != "datadesk" %}
-                                <a href="{{ request.route_url('download', product_id=product.celery_taskid) }}" class="btn btn-primary" style="background-color:{{ color }}; border-color: {{ color }}"><i class="fa fa-download"></i> {{ _("Download") }}</a>
-                            {% else %}
-                                <a id="{{product.celery_taskid}}$#%%#${{product.output_id}}" class="btn btn-primary btn_datadesk" style="background-color:{{ color }}; border-color: {{ color }}"><i class="fa fa-download"></i> {{ _("Download") }}</a>
-                            {% endif %}
-                        {% else %}
-                            {% if  product.product_id == "reports"%}
-                                <a href="{{ request.route_url('createAnalysis') }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
-                            {% else %}
-                                {% if  product.product_id != "datadesk"%}
-                                    <a href="{{ request.route_url('generateProduct', productid=product.product_id, projectid=activeProject.project_cod) }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
-                                {% endif %}
-                            {% endif %}
-
-                            <p style="color:#ed5565"><i class="fa fa-info-circle"></i> {{ _("There was a problem creating the product.") }}</p>
-                        {% endif %}
-                    {% else %}
-                        {% if product.state =="Pending..." %}
-                            <a  onclick=" location.reload(); " class="btn btn-primary" style="background-color: #f8ac59; border-color: #f8ac59" ><i class="fa fa-refresh"></i> {{ "Pending" }}</a>
-                        {% else %}
-                            {% if  product.product_id == "reports"%}
-                                <a href="{{ request.route_url('createAnalysis') }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
-                            {% else %}
-                                {% if  product.product_id != "datadesk"%}
-                                    <a href="{{ request.route_url('generateProduct', productid=product.product_id, projectid=activeProject.project_cod) }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
-                                {% endif %}
-                            {% endif %}
-                            <p style="color:#ed5565"><i class="fa fa-info-circle"></i> {{ _("There was a problem creating the product.") }}</p>
-                        {% endif %}
-                    {% endif%}
-                </td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
+                        <br/>
+                        <small>{{ _("Added") }}: {{product.datetime_added}}</small>
+                    </div>
+            {% if product.state == "Success"%}
+                </a>
+            {% endif%}
+        </div>
+    </div>
+{% endfor%}

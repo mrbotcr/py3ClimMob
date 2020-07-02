@@ -55,7 +55,7 @@
                                 </dl>
 
                                 <dl class="row mb-0">
-                                    <div class="col-sm-6 text-sm-right"><dt>{{ _("Trial coordinator") }}:</dt> </div>
+                                    <div class="col-sm-6 text-sm-right"><dt>{{ _("Principal investigator") }}:</dt> </div>
                                     <div class="col-sm-6 text-sm-left"> <dd class="mb-1"><p class="text-navy"> {{ Project.project_pi }}</p> </dd></div>
                                 </dl>
 
@@ -78,7 +78,7 @@
 
                                 <dl class="row mb-0">
                                     <div class="col-sm-6 text-sm-right">
-                                        <dt>{{ _("Last updated") }}:</dt>
+                                        <dt>{{ _("Last Updated") }}:</dt>
                                     </div>
                                     <div class="col-sm-6 text-sm-left">
                                         <dd class="mb-1"> --- </dd>
@@ -98,7 +98,7 @@
                                     <span class="label label-primary" style="display: inline-block; margin-top: 3px">{{ tag }}</span>
                                 {% endfor %}
                                 <br>
-                                <img src="{{ request.url_for_static('static/landing/bioversity.png') }}" >
+                                <img src="{{ request.url_for_static('static/landing/bioversity.png') }}">
                             </div>
 
                         </div>
@@ -108,7 +108,14 @@
             </div>
 
             <div class="col-lg-6">
-                <div class="panel {% if Project.project_regstatus == 0 %}panel-default{% else %}{% if Project.project_regstatus == 1 %}panel-primary{% else %}panel-danger{% endif %}{% endif %}" style="height: 98%">
+                <div class="panel {% if Project.project_regstatus == 0 %}panel-default
+                            {% else %}
+                                {% if Project.project_regstatus == 1 %}
+                                    panel-primary
+                                {% else %}
+                                    panel-danger
+                                {% endif %}
+                            {% endif %}" style="height: 98%">
                     <div class="panel-heading text-center">
                         <h2>{{ _("Registration of participants") }}</h2>
                     </div>

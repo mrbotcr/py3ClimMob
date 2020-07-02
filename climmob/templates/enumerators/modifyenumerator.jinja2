@@ -1,7 +1,7 @@
 {% extends 'dashboard/dashboard.jinja2' %}
 
 {% block title %}
-    <title>{{ _("ClimMob | Update field agent") }}</title>
+    <title>{{ _("ClimMob | Update enumerator") }}</title>
 {% endblock title %}
 
 {% block css %}
@@ -35,52 +35,54 @@
 
 {% block pagecontent %}
     <div class="row">
-        <div class="col-lg-6 ">
+        <div class="col-sm-12 ">
             <div class="ibox float-e-margins " >
                 <div class="ibox-title">
                     <h5>{{ _("Personal information") }}</h5>
                 </div>
                 <div class="ibox-content">
-                    {% if error_summary %}
-                        {% for key, error in error_summary.items() %}
-                            <div class="alert alert-danger alert-dismissable">
-                                <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
-                                {{ error }}
-                            </div>
-                        {% endfor %}
-                    {% endif %}
+                    <form class="form-horizontal" role="form" method="post" action="{{ request.path }}">
+                        {% snippet 'snippets/error.jinja2', error_summary=error_summary %}
+                        <div class="row">
+                            <div class="col-sm-6 b-r" style="min-height: 230px">
 
-                    <div class="error-desc">
-                        <form class="form-horizontal" role="form" method="post" action="{{ request.path }}" >
-                            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
-                            {% snippet 'snippets/enumerators/enumerator-form.jinja2', dataworking=dataworking, modify=true %}
-                            <button type="submit" class="btn btn-warning pull-right" name="btn_modify_enumerator"> {{ _('Update field agent') }}</button>
-                            <br>
-                        </form>
-                    </div>
-{#                            <div class="col-sm-6" style="min-height: 230px">#}
-{##}
+                                <div class="error-desc">
+                                    <div class="error-desc">
+
+                                        <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                                        {% snippet 'snippets/enumerators/enumerator-form.jinja2', dataworking=dataworking, modify=true %}
+
+                                        <div class="text-center">
+                                            <button class="btn btn-warning" type="submit" name="btn_modify_enumerator" style="position: absolute;bottom: 0;left: 0;right: 0;margin: auto;"> {{ _('Update field agent') }}</button>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6" style="min-height: 230px">
+
 {#                                <div class="form-group ">#}
 {#                                    <label class="col-sm-4 control-label">{{ _('Old password') }} </label>#}
 {#                                    <div class="col-sm-8"><input type="password" class="form-control" value="" id="enum_password" name="enum_password" placeholder=" "></div>#}
 {#                                </div>#}
-{##}
-{#                                <div class="form-group">#}
-{#                                    <label class="col-sm-4 control-label">{{ _('New password') }} </label>#}
-{#                                    <div class="col-sm-8"><input type="password" class="form-control" value="" id="enum_password_new" name="enum_password_new" placeholder=" "></div>#}
-{#                                </div>#}
-{##}
-{#                                <div class="form-group">#}
-{#                                    <label class="col-sm-4 control-label">{{ _('Retype the new password') }} </label>#}
-{#                                    <div class="col-sm-8"><input type="password" class="form-control" value="" id="enum_password_new_re" name="enum_password_new_re" placeholder=" "></div>#}
-{#                                </div>#}
-{##}
-{#                                <div class="text-center">#}
-{#                                    <button class="btn btn-warning " type="submit" name="btn_change_password" style="position: absolute;bottom: 0;left: 0;right: 0;margin: auto;"> {{ _('Change password') }}</button>#}
-{##}
-{#                                </div>#}
-{#                            </div>#}
 
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label">{{ _('New password') }} </label>
+                                    <div class="col-sm-8"><input type="password" class="form-control" value="" id="enum_password_new" name="enum_password_new" placeholder=" "></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label">{{ _('Retype the new password') }} </label>
+                                    <div class="col-sm-8"><input type="password" class="form-control" value="" id="enum_password_new_re" name="enum_password_new_re" placeholder=" "></div>
+                                </div>
+
+                                <div class="text-center">
+                                    <button class="btn btn-warning " type="submit" name="btn_change_password" style="position: absolute;bottom: 0;left: 0;right: 0;margin: auto;"> {{ _('Change password') }}</button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

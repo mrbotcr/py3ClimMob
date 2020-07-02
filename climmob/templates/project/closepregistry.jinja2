@@ -1,19 +1,19 @@
 {% extends 'dashboard/dashboard.jinja2' %}
 
 {% block title %}
-    <title>{{ _("ClimMob | Finish registration") }}</title>
+    <title>{{ _("ClimMob | Finish the registration") }}</title>
 {% endblock title %}
 
 {% block pageheading %}
     <div class="row wrapper border-bottom white-bg page-heading">
         <div class="col-lg-10">
-            <h2>{{ _("Finish registration") }}</h2>
+            <h2>{{ _("Finish the registration") }}</h2>
             <ol class="breadcrumb">
                 <li>
                     <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
                 </li>
                 <li class="active">
-                    <strong>{{ _("Finish registration") }}</strong>
+                    <strong>{{ _("Finish the registration") }}</strong>
                 </li>
             </ol>
             <a href="https://climmob.net/blog/wiki/2019/10/01/finish-the-registration/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
@@ -28,7 +28,7 @@
     {% if redirect == False %}
         {% block dltqstmessage %}
             <div class=" text-center">
-                <h2 class="font-bold text-danger">{{ _('You are going to finish the registration of participants and start data collection') }}</h2>
+                <h2 class="font-bold text-danger">{{ _('You are going to finish the registration of participants to start the data collection') }}</h2>
                 <p>
                 {% if progress.regtotal < progress.project_numobs %}
                         <h2>{{ _("You still have") }} {{ progress.project_numobs - progress.regtotal }} {{ request.h.pluralize(_("participant"),progress.project_numobs - progress.regtotal) }} {{ _("to register") }}</h2>
@@ -40,7 +40,6 @@
                 </div>
                 <form class="form-horizontal" role="form" method="post" action="{{ request.path }}">
                     <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
-                    <a class="btn btn-default" href="{{ request.route_url('dashboard') }}"> {{ _("Go back") }}</a><br><br>
                     <button class="btn btn-danger" type="submit" name="closeRegistry"> {{ _('Finish the registration') }}</button>
                 </form>
             </div>

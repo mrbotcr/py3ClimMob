@@ -4,31 +4,13 @@ from ..plugins.utilities import (
     getProductDirectory,
     getProducts,
 )
-from .classes import privateView
 from ..products import product_found
 import climmob.plugins.utilities as u
+from ..processes import getActiveProject, getProductData
 from pyramid.response import FileResponse
 import os
 import json
 
-from pyramid.httpexceptions import HTTPFound
-
-from ..processes import (
-    getActiveProject,
-    getProductData,
-    getPackages,
-    getTech,
-    getProjectEnumerators,
-    numberOfCombinationsForTheProject,
-    searchTechnologiesInProject,
-    getJSONResult
-)
-
-from ..products.qrpackages.qrpackages import create_qr_packages
-from ..products.packages.packages import create_packages_excell
-from ..products.colors.colors import create_colors_cards
-from ..products.fieldagents.fieldagents import create_fieldagents_report
-from ..products.analysisdata.analysisdata import create_datacsv
 
 def getDataProduct(user, project, request):
 
@@ -49,7 +31,7 @@ def getDataProduct(user, project, request):
         + user
         + "' and edited.project_cod='"
         + project
-        + "' order by field(edited.product_id,'fieldagents','packages','qrpackage') desc, edited.datetime_added"
+        + "'"
     )
 
     """sql = "select edited.celery_taskid,edited.user_name,edited.project_cod,edited.product_id, edited.datetime_added, edited.output_id, edited.state " \
@@ -97,24 +79,6 @@ class productsView(climmobPrivateView):
             products = getDataProduct(
                 self.user.login, activeProjectData["project_cod"], self.request
             )
-
-            for product in products:
-
-                if product_found(product["product_id"]):
-                    contentType = product["output_mimetype"]
-                    filename = product["output_id"]
-                    path = getProductDirectory(
-                        self.request,
-                        self.user.login,
-                        activeProjectData["project_cod"],
-                        product["product_id"],
-                    )
-
-                    if os.path.exists(path + "/outputs/" + filename):
-                        product["exists"] = "correct"
-                    else:
-                        product["exists"] = "incorrect"
-
             if activeProjectData["project_active"] == 1:
                 hasActiveProject = True
                 # u.getJSResource("productsListaes").need()
@@ -129,63 +93,6 @@ class productsView(climmobPrivateView):
             "hasActiveProject": hasActiveProject,
             "Products": products,
         }
-
-class generateProductView(privateView):
-    def processView(self):
-        projectid = self.request.matchdict["projectid"]
-        productid = self.request.matchdict["productid"]
-
-        if productid == "qrpackage":
-
-            ncombs, packages = getPackages(self.user.login, projectid, self.request)
-            create_qr_packages(self.request, self.user.login, projectid, ncombs, packages)
-
-        if productid == "packages":
-            ncombs, packages = getPackages(self.user.login, projectid, self.request)
-            create_packages_excell(
-                self.request,
-                self.user.login,
-                projectid,
-                packages,
-                getTech(self.user.login, projectid, self.request),
-            )
-
-        if productid == "fieldagents":
-            locale = self.request.locale_name
-            create_fieldagents_report(
-                locale,
-                self.request,
-                self.user.login,
-                projectid,
-                getProjectEnumerators(self.user.login, projectid, self.request),
-            )
-
-        if productid == "colors":
-            ncombs, packages = getPackages(self.user.login, projectid, self.request)
-            numberOfCombinations = numberOfCombinationsForTheProject(
-                self.user.login, projectid, self.request
-            )
-
-            if numberOfCombinations == 3:
-                tech = searchTechnologiesInProject(self.user.login, projectid, self.request)
-                if len(tech) == 1:
-                    if tech[0]["tech_name"] == "Colores" or tech[0]["tech_name"] == "Colors":
-                        create_colors_cards(self.request, self.user.login, projectid, packages)
-
-        if productid == "datacsv":
-            locale = self.request.locale_name
-            info = getJSONResult(
-                self.user.login, projectid, self.request
-            )
-
-            create_datacsv(self.user.login, projectid, info, self.request)
-
-        self.returnRawViewResult = True
-        return HTTPFound(
-            location=self.request.route_url(
-                "productList"
-            )
-        )
 
 
 class downloadJsonView(climmobPrivateView):

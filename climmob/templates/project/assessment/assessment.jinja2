@@ -56,16 +56,16 @@
                             {% for assessment in assessments %}
                                 <tr>
                                     {% if assessment.totquestions > 0 %}
-                                        <td class="text-center"> {{ assessment.ass_desc }} <span class="label label-success">{{ assessment.totquestions }} {{ request.h.pluralize(_("question"),assessment.totquestions) }}</span> {% if assessment.ass_final == 1 %}<span class="label label-danger" title="You need to check this">{{ _("Overall performance ranking and comparison with check") }}</span>{% endif %}</td>
+                                        <td class="text-center"> {{ assessment.ass_desc }} <span class="label label-success">{{ assessment.totquestions }} {{ request.h.pluralize(_("question"),assessment.totquestions) }}</span> {% if assessment.ass_final == 1 %}<span class="label label-danger" title="You need to check this">{{ _("Overall characteristic and performance questions") }}</span>{% endif %}</td>
                                     {% else %}
-                                        <td class="text-center"> {{ assessment.ass_desc }} <span class="label label-danger">0 {{ _("questions") }}</span> {% if assessment.ass_final == 1 %}<span class="label label-danger" title="You need to check this">{{ _("Overall performance ranking and comparison with check") }}</span>{% endif %}</td>
+                                        <td class="text-center"> {{ assessment.ass_desc }} <span class="label label-danger">0 {{ _("questions") }}</span> {% if assessment.ass_final == 1 %}<span class="label label-danger" title="You need to check this">{{ _("Overall characteristic and performance questions") }}</span>{% endif %}</td>
                                     {% endif %}
                                     <td class="text-center"> {{ assessment.ass_days }}</td>
                                     <td class="text-center">
                                         {% if assessment.ass_status == 0 %}
                                             <a class="btn btn-default btn-circle" href="{{ request.route_url('assessmentdetail', projectid=projectid,assessmentid=assessment.ass_cod) }}" title="Set questions"><i class="fa fa-list-ul"></i></a>
                                             <a class="btn btn-warning btn-circle" href="{{ request.route_url('modifyassessment', projectid=projectid,assessmentid=assessment.ass_cod) }}" title="Edit data collection moment"><i class="fa fa-pencil"></i></a>
-                                            <button class="btn btn-danger btn-circle"  onclick="showDelete('{{ request.route_url('deleteassessment', projectid=projectid,assessmentid=assessment.ass_cod) }}','{{ _("Do you really want to remove this data collection moment?") }}','{{ request.session.get_csrf_token() }}')" title="Remove data collection"><i class="fa fa-times"></i></button>
+                                            <button class="btn btn-danger btn-circle"  onclick="showDelete('{{ request.route_url('deleteassessment', projectid=projectid,assessmentid=assessment.ass_cod) }}','{{ _("Do you really want to remove this data collection ?") }}','{{ request.session.get_csrf_token() }}')" title="Remove data collection"><i class="fa fa-times"></i></button>
                                         {% else %}
                                             {% if assessment.ass_status == 1 %}
                                                 {{ _('On going') }}

@@ -7,16 +7,16 @@
 {% block pageheading %}
     <div class="row wrapper border-bottom white-bg page-heading">
         <div class="col-lg-10">
-            <h2>{{ _("Select technology options") }}</h2>
+            <h2>{{ _("Select treatments") }}</h2>
             <ol class="breadcrumb">
                 <li>
                     <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
                 </li>
                 <li>
-                    <a href="{{ request.route_url('prjtechnologies',projectid=projectid) }}">{{ _("Select technology options") }}</a>
+                    <a href="{{ request.route_url('prjtechnologies',projectid=projectid) }}">{{ _("Select treatments") }}</a>
                 </li>
                 <li class="active">
-                    <a href="{{ request.route_url('prjtechaliases', projectid=projectid, tech_id=tech_id) }}">{{ _("Select technology options") }}</a>
+                    <a href="{{ request.route_url('prjtechaliases', projectid=projectid, tech_id=tech_id) }}">{{ _("Select treatment levels") }}</a>
                 </li>
                 <li>
                     <strong>{{ _("New level") }}</strong>

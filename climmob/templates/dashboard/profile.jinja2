@@ -40,7 +40,7 @@
                                 </h2>
                                 <h4>{{ activeUser.userData.user_email }}</h4>
                                 <small>
-                                    {% if activeUser.userData.user_about == "" %}{{ _("There is no information about yourself. Edit your profile.") }} {% else %} {{ activeUser.userData.user_about }} {% endif %}
+                                    {% if activeUser.userData.user_about == "" %}{{ _("There is no information about yourself. Edit your profile") }} {% else %} {{ activeUser.userData.user_about }} {% endif %}
                                 </small>
                                 <p><hr><a href="{{ request.route_url('editprofile') }}" class="btn btn-sm btn-primary"> {{ _("Edit profile") }}</a></p>
                             </div>

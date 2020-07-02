@@ -13,9 +13,6 @@
     {% block css %}
         {% cssresource request,'coreresources','style' %}
     {% endblock css %}
-
-    {% block topScripts %}
-    {% endblock topScripts %}
 </head>
 
 <body class="gray-bg">
@@ -63,8 +60,7 @@
                 </form>
             {% endblock logincontent %}
             {% block loginfooter %}
-                <br>
-                <strong>{{ _("Copyright") }}</strong> {{ _("2020, Alliance of Bioversity International and CIAT") }}
+                <p class="m-t"> <small>ClimMob &copy; 2017</small> </p>
             {% endblock loginfooter %}
         </div>
     </div>

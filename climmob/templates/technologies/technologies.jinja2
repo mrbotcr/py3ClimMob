@@ -1,7 +1,7 @@
 {% extends 'dashboard/dashboard.jinja2' %}
 
 {% block title %}
-    <title>{{ _("ClimMob | Technology options library") }}</title>
+    <title>{{ _("ClimMob | Treatments library") }}</title>
 {% endblock title %}
 
 {% block css %}
@@ -19,13 +19,13 @@
 {% block pageheading %}
     <div class="row wrapper border-bottom white-bg page-heading">
         <div class="col-lg-10">
-            <h2>{{ _("Technology options library") }}</h2>
+            <h2>{{ _("Treatments library") }}</h2>
             <ol class="breadcrumb">
                 <li>
                     <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
                 </li>
                 <li class="active">
-                    <strong>{{ _("Technology options library") }}</strong>
+                    <strong>{{ _("Treatments library") }}</strong>
                 </li>
             </ol>
             <a href="https://climmob.net/blog/wiki/2019/09/30/treatments-library/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
@@ -55,7 +55,7 @@
                     <div class="ibox-title">
                         <h5>{{ _("User library") }}</h5>
                         <div class="ibox-tools">
-                            <button onclick="location.href='{{ request.route_url('newusertechnology') }}'" type="button" class="btn btn-primary btn-xs pull-right">{{ _("Add technology") }}</button>
+                            <button onclick="location.href='{{ request.route_url('newusertechnology') }}'" type="button" class="btn btn-primary btn-xs pull-right">{{ _("Add treatment") }}</button>
                         </div>
                     </div>
                     <div class="ibox-content">
@@ -69,7 +69,7 @@
                     <div class="ibox-title">
                         <h5>{{ _("ClimMob library") }}</h5>
                         <div class="ibox-tools">
-                            <button onclick="location.href='{{ request.route_url('newusertechnology') }}'" type="button" class="btn btn-primary btn-xs pull-right">{{ _("Add technology") }}</button>
+                            <button onclick="location.href='{{ request.route_url('newusertechnology') }}'" type="button" class="btn btn-primary btn-xs pull-right">{{ _("Add treatment") }}</button>
                         </div>
                     </div>
                     <div class="ibox-content">

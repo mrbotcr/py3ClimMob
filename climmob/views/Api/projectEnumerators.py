@@ -53,7 +53,7 @@ class addProjectEnumerator_view(apiView):
                                 response = Response(
                                     status=200,
                                     body=self._(
-                                        "The field agent has been added to the project."
+                                        "The enumerator has been added to the project."
                                     ),
                                 )
                                 return response
@@ -61,7 +61,7 @@ class addProjectEnumerator_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "The field agent is inactive or is already assigned to the project."
+                                    "The enumerator is inactive or is already assigned to the project."
                                 ),
                             )
                             return response
@@ -202,7 +202,7 @@ class deleteProjectEnumerator_view(apiView):
                                 response = Response(
                                     status=200,
                                     body=self._(
-                                        "The field agent was removed from the project."
+                                        "The enumerator was removed from the project."
                                     ),
                                 )
                                 return response
@@ -213,7 +213,7 @@ class deleteProjectEnumerator_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "The field agent is inactive or is not assigned to the project."
+                                    "The enumerator is inactive or is not assigned to the project."
                                 ),
                             )
                             return response
@@ -228,7 +228,7 @@ class deleteProjectEnumerator_view(apiView):
                 else:
                     response = Response(
                         status=401,
-                        body=self._("There is no project with that code."),
+                        body=self._("There is not a project with that code."),
                     )
                     return response
             else:

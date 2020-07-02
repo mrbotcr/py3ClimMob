@@ -116,7 +116,7 @@ class createQuestion_view(apiView):
                         ]:
                             response = Response(
                                 status=401,
-                                body=self._("Check the ID of the question type."),
+                                body=self._("Check the id of the question type."),
                             )
                             return response
 
@@ -159,7 +159,7 @@ class createQuestion_view(apiView):
                                             response = Response(
                                                 status=200,
                                                 body=self._(
-                                                    "The question was successfully added. Configure the ranking of options now."
+                                                    "The question was successfully added. Configure the characteristic now."
                                                 ),
                                             )
                                             return response
@@ -340,7 +340,7 @@ class updateQuestion_view(apiView):
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "Check the ID of the question type."
+                                            "Check the id of the question type."
                                         ),
                                     )
                                     return response
@@ -364,7 +364,7 @@ class updateQuestion_view(apiView):
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "This question has already been assigned to a form. You cannot edit it."
+                                            "This question is already assigned to a form. You can not edit it."
                                         ),
                                     )
                                     return response
@@ -372,14 +372,14 @@ class updateQuestion_view(apiView):
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "The question is from the ClimMob library. You cannot edit it."
+                                            "The question is from the ClimMob library. You can not edit it."
                                         ),
                                     )
                                     return response
                         else:
                             response = Response(
                                 status=401,
-                                body=self._("You do not have a question with this ID."),
+                                body=self._("You do not have a question with this id."),
                             )
                             return response
                     else:
@@ -435,7 +435,7 @@ class deleteQuestion_viewApi(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "This question has already been assigned to a form. You cannot delete it."
+                                    "This question is already assigned to a form. You can not delete it."
                                 ),
                             )
                             return response
@@ -443,14 +443,14 @@ class deleteQuestion_viewApi(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "The question is from the ClimMob library. You cannot delete it."
+                                    "The question is from the ClimMob library. You can not delete it."
                                 ),
                             )
                             return response
                 else:
                     response = Response(
                         status=401,
-                        body=self._("You do not have a question with this ID."),
+                        body=self._("You do not have a question with this id."),
                     )
                     return response
             else:
@@ -494,14 +494,14 @@ class readQuestionValues_view(apiView):
                         response = Response(
                             status=401,
                             body=self._(
-                                "This is not a question of type Select one or Multiple selection."
+                                "This is not a question of select one or multiple selection."
                             ),
                         )
                         return response
                 else:
                     response = Response(
                         status=401,
-                        body=self._("You do not have a question with this ID."),
+                        body=self._("You do not have a question with this id."),
                     )
                     return response
             else:
@@ -595,7 +595,7 @@ class addQuestionValue_viewApi(apiView):
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "This is not a question of type Select one or Multiple selection."
+                                            "This is not a question of select one or multiple selection."
                                         ),
                                     )
                                     return response
@@ -604,7 +604,7 @@ class addQuestionValue_viewApi(apiView):
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "This question has already been assigned to a form. You cannot add it."
+                                            "This question is already assigned to a form. You can not add it."
                                         ),
                                     )
                                     return response
@@ -612,14 +612,14 @@ class addQuestionValue_viewApi(apiView):
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "The question is from the ClimMob library. You cannot add it."
+                                            "The question is from the ClimMob library. You can not add it."
                                         ),
                                     )
                                     return response
                         else:
                             response = Response(
                                 status=401,
-                                body=self._("You do not have a question with this ID."),
+                                body=self._("You do not have a question with this id."),
                             )
                             return response
                     else:
@@ -737,7 +737,7 @@ class updateQuestionValue_view(apiView):
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "This is not a question of type Select one or Multiple selection."
+                                            "This is not a question of select one or multiple selection."
                                         ),
                                     )
                                     return response
@@ -746,7 +746,7 @@ class updateQuestionValue_view(apiView):
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "This question has already been assigned to a form. You cannot edit it."
+                                            "This question is already assigned to a form. You can not edit it."
                                         ),
                                     )
                                     return response
@@ -754,14 +754,14 @@ class updateQuestionValue_view(apiView):
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "The question is from the ClimMob library. You cannot edit it."
+                                            "The question is from the ClimMob library. You can not edit it."
                                         ),
                                     )
                                     return response
                         else:
                             response = Response(
                                 status=401,
-                                body=self._("You do not have a question with this ID."),
+                                body=self._("You do not have a question with this id."),
                             )
                             return response
                     else:
@@ -818,7 +818,7 @@ class deleteQuestionValue_viewApi(apiView):
                                     response = Response(
                                         status=200,
                                         body=self._(
-                                            "The option was successfully deleted."
+                                            "The option was successfully delete."
                                         ),
                                     )
                                     return response
@@ -837,7 +837,7 @@ class deleteQuestionValue_viewApi(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "This is not a question of type Select one or Multiple selection."
+                                    "This is not a question of select one or multiple selection."
                                 ),
                             )
                             return response
@@ -846,7 +846,7 @@ class deleteQuestionValue_viewApi(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "This question has already been assigned to a form. You cannot delete it."
+                                    "This question is already assigned to a form. You can not delete it."
                                 ),
                             )
                             return response
@@ -854,14 +854,14 @@ class deleteQuestionValue_viewApi(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "The question is from the ClimMob library. You cannot delete it."
+                                    "The question is from the ClimMob library. You can not delete it."
                                 ),
                             )
                             return response
                 else:
                     response = Response(
                         status=401,
-                        body=self._("You do not have a question with this ID."),
+                        body=self._("You do not have a question with this id."),
                     )
                     return response
             else:
@@ -960,7 +960,7 @@ class updateQuestionCharacteristics_view(apiView):
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "This question has already been assigned to a form. You cannot edit it."
+                                            "This question is already assigned to a form. You can not edit it."
                                         ),
                                     )
                                     return response
@@ -968,14 +968,14 @@ class updateQuestionCharacteristics_view(apiView):
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "The question is from the ClimMob library. You cannot edit it."
+                                            "The question is from the ClimMob library. You can not edit it."
                                         ),
                                     )
                                     return response
                         else:
                             response = Response(
                                 status=401,
-                                body=self._("You do not have a question with this ID."),
+                                body=self._("You do not have a question with this id."),
                             )
                             return response
                     else:
@@ -1076,7 +1076,7 @@ class updateQuestionPerformance_view(apiView):
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "This question has already been assigned to a form. You cannot edit it."
+                                            "This question is already assigned to a form. You can not edit it."
                                         ),
                                     )
                                     return response
@@ -1084,14 +1084,14 @@ class updateQuestionPerformance_view(apiView):
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "The question is from the ClimMob library. You cannot edit it."
+                                            "The question is from the ClimMob library. You can not edit it."
                                         ),
                                     )
                                     return response
                         else:
                             response = Response(
                                 status=401,
-                                body=self._("You do not have a question with this ID."),
+                                body=self._("You do not have a question with this id."),
                             )
                             return response
                     else:

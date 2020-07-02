@@ -31,10 +31,10 @@ class projectEnumerators_view(privateView):
                 "enumerators": getProjectEnumerators(
                     self.user.login, projectid, self.request
                 ),
-                #"assessments": getAssessmenstByProject(
-                #    self.user.login, projectid, self.request
-                #),
-                #"workByUser": seeProgress(self.user.login, projectid, self.request),
+                "assessments": getAssessmenstByProject(
+                    self.user.login, projectid, self.request
+                ),
+                "workByUser": seeProgress(self.user.login, projectid, self.request),
             }
 
 

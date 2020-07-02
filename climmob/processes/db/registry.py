@@ -375,7 +375,7 @@ def getRegistryQuestions(user, project, request):
         addRegistryQuestionsToProject(user, project, request)
 
     sql = (
-        "SELECT regsection.section_id,regsection.section_name,regsection.section_content,regsection.section_order,regsection.section_private,"
+        "SELECT regsection.section_id,regsection.section_name,regsection.section_content,regsection.section_order,regsection.section_color,"
         "question.question_id,question.question_desc,question.question_notes,question.question_dtype,IFNULL(registry.question_order,0) as question_order,"
         "question.question_reqinreg FROM regsection LEFT JOIN registry ON registry.section_user = regsection.user_name AND registry.section_project = regsection.project_cod "
         " AND registry.section_id = regsection.section_id "

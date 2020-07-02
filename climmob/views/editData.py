@@ -108,8 +108,8 @@ class uploadDataView(privateView):
         code = ""
         # print proId
         # print formId
-        #u.getJSResource("productsListaes").need()
-        #u.getJSResource("uploadDatajq").need()
+        u.getJSResource("productsListaes").need()
+        u.getJSResource("uploadDatajq").need()
 
         if not projectExists(self.user.login, proId, self.request):
             raise HTTPNotFound()
@@ -160,14 +160,14 @@ class uploadDataView(privateView):
                         )
                         if output == 0:
                             error_summary = {
-                                "error": self._("The information you provided has errors.")
+                                "error": self._("You have information with errors.")
                             }
                         else:
                             correct = True
                             print("Termina la edicion de datos.")
                 else:
                     error_summary = {
-                        "error": self._("These data do not belong to this form.")
+                        "error": self._("This data does not belong to this form.")
                     }
 
                 return {

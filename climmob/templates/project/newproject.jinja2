@@ -7,14 +7,11 @@
 {% block css %}
     {% cssresource request,'coreresources','switch' %}
     {% cssresource request,'coreresources','tags' %}
-    {% cssresource request,'coreresources','chosen' %}
 {% endblock css %}
 
 {% block topScripts %}
     {% jsresource request,'coreresources','switch' %}
     {% jsresource request,'coreresources','addproject' %}
-    {% jsresource request,'coreresources','bootstrapmaxlength' %}
-    {% jsresource request,'coreresources','chosen' %}
 {% endblock topScripts %}
 
 {% block pageheading %}
@@ -50,7 +47,7 @@
         <form method="post" class="form-horizontal" action="{{ request.path }}">
             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
             {% block newprjform %}
-                {% snippet 'snippets/project/project_form.jinja2', dataworking=dataworking, edit=False, countries=countries %}
+                {% snippet 'snippets/project/project_form.jinja2', dataworking=dataworking, edit=False %}
 
                 <button type="submit" name="btn_addNewProject" id="btn_addNewProject" class="btn btn-primary pull-right">{{ _("Create project") }}</button>
 
@@ -72,7 +69,7 @@
 
 {% block script %}
     {% if newproject == False %}
-
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDQTpXj82d8UpCi97wzo_nKXL7nYrd4G70"></script>
     {% else %}
         {# If a new project is just added then redirect the mainwindo to such project #}
         <script>

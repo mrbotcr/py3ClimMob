@@ -75,7 +75,7 @@
                                     {% if editable %}
                                         <td class="center text-center">
                                             <button onclick="location.href='{{ request.route_url('editquestionvalue', qid=qid,valueid=option.value_code) }}';" class="btn btn-warning btn-circle" type="button" title="Edit option"><i class="fa fa-pencil"></i></button>
-                                            <button onclick="showDelete('{{ request.route_url('deletequestionvalue', qid=qid,valueid=option.value_code) }}','{{ _("Do you really want to remove this option?") }}','{{ request.session.get_csrf_token() }}')" class="btn btn-danger btn-circle" type="button" title="Delete option"><i class="fa fa-times"></i></button>
+                                            <button onclick="showDelete('{{ request.route_url('deletequestionvalue', qid=qid,valueid=option.value_code) }}','{{ _("Do you really want to remove this option ?") }}','{{ request.session.get_csrf_token() }}')" class="btn btn-danger btn-circle" type="button" title="Delete option"><i class="fa fa-times"></i></button>
                                         </td>
                                     {% endif %}
                                 </tr>

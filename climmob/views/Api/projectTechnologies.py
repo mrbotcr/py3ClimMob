@@ -61,7 +61,7 @@ class addProjectTechnology_view(apiView):
                                     response = Response(
                                         status=200,
                                         body=self._(
-                                            "The technology has already been assigned to the project."
+                                            "The technology has been added to the project."
                                         ),
                                     )
                                     return response
@@ -77,7 +77,7 @@ class addProjectTechnology_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "There is no technology with that identifier."
+                                    "There is not technology with that identifier."
                                 ),
                             )
                             return response
@@ -85,7 +85,7 @@ class addProjectTechnology_view(apiView):
                         response = Response(
                             status=401,
                             body=self._(
-                                "You cannot add more technologies. You started the registry."
+                                "You can not add more technologies. You started the registry."
                             ),
                         )
                         return response
@@ -217,7 +217,7 @@ class deleteProjectTechnology_view(apiView):
                                     response = Response(
                                         status=200,
                                         body=self._(
-                                            "The technology has been removed from the project."
+                                            "The technology was removed from the project."
                                         ),
                                     )
                                     return response
@@ -236,7 +236,7 @@ class deleteProjectTechnology_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "There is no technology with that identifier."
+                                    "There is not technology with that identifier."
                                 ),
                             )
                             return response
@@ -244,14 +244,14 @@ class deleteProjectTechnology_view(apiView):
                         response = Response(
                             status=401,
                             body=self._(
-                                "You cannot delete technologies. You have started registration."
+                                "You can not delete technologies. You started the registry."
                             ),
                         )
                         return response
                 else:
                     response = Response(
                         status=401,
-                        body=self._("There is no project with that code."),
+                        body=self._("There is not a project with that code."),
                     )
                     return response
             else:
@@ -301,7 +301,7 @@ class addProjectTechnologyAlias_view(apiView):
                                         response = Response(
                                             status=401,
                                             body=self._(
-                                                "The alias has not been assigned to the project."
+                                                "The alias is assigned to the project."
                                             ),
                                         )
                                         return response
@@ -309,7 +309,7 @@ class addProjectTechnologyAlias_view(apiView):
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "There is no alias with that identifier for this technology."
+                                            "There is not alias with that identifier for this technology."
                                         ),
                                     )
                                     return response
@@ -325,7 +325,7 @@ class addProjectTechnologyAlias_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "There is no technology with that identifier."
+                                    "There is not technology with that identifier."
                                 ),
                             )
                             return response
@@ -333,14 +333,14 @@ class addProjectTechnologyAlias_view(apiView):
                         response = Response(
                             status=401,
                             body=self._(
-                                "You can not add an alias for technologies. You have already started registration."
+                                "You can not add Alias to technologies. You started the registry."
                             ),
                         )
                         return response
                 else:
                     response = Response(
                         status=401,
-                        body=self._("There is no project with that code."),
+                        body=self._("There is not a project with that code."),
                     )
                     return response
             else:
@@ -384,7 +384,7 @@ class addProjectTechnologyAliasExtra_view(apiView):
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "This alias already exists for the technology."
+                                            "This alias already exists in the technology."
                                         ),
                                     )
                                     return response
@@ -400,7 +400,7 @@ class addProjectTechnologyAliasExtra_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "There is no technology with that identifier."
+                                    "There is not technology with that identifier."
                                 ),
                             )
                             return response
@@ -408,14 +408,14 @@ class addProjectTechnologyAliasExtra_view(apiView):
                         response = Response(
                             status=401,
                             body=self._(
-                                "You can not add an alias for technologies. You have already started registration."
+                                "You can not add Alias to technologies. You started the registry."
                             ),
                         )
                         return response
                 else:
                     response = Response(
                         status=401,
-                        body=self._("There is no project with that code."),
+                        body=self._("There is not a project with that code."),
                     )
                     return response
             else:
@@ -470,14 +470,14 @@ class readProjectTechnologiesAlias_view(apiView):
                         response = Response(
                             status=401,
                             body=self._(
-                                "There is no technology with that identifier."
+                                "There is not technology with that identifier."
                             ),
                         )
                         return response
                 else:
                     response = Response(
                         status=401,
-                        body=self._("There is no project with that code."),
+                        body=self._("There is not a project with that code."),
                     )
                     return response
             else:
@@ -532,14 +532,14 @@ class readProjectTechnologiesAliasExtra_view(apiView):
                         response = Response(
                             status=401,
                             body=self._(
-                                "There is no technology with that identifier."
+                                "There is not technology with that identifier."
                             ),
                         )
                         return response
                 else:
                     response = Response(
                         status=401,
-                        body=self._("There is no project with that code."),
+                        body=self._("There is not a project with that code."),
                     )
                     return response
             else:
@@ -594,14 +594,14 @@ class readPossibleProjectTechnologiesAlias_view(apiView):
                         response = Response(
                             status=401,
                             body=self._(
-                                "There is no technology with that identifier."
+                                "There is not technology with that identifier."
                             ),
                         )
                         return response
                 else:
                     response = Response(
                         status=401,
-                        body=self._("There is no project with that code."),
+                        body=self._("There is not a project with that code."),
                     )
                     return response
             else:
@@ -645,7 +645,7 @@ class deleteProjectTechnologyAlias_view(apiView):
                                         response = Response(
                                             status=200,
                                             body=self._(
-                                                "The alias has been deleted in the project."
+                                                "The alias has been delete to the project."
                                             ),
                                         )
                                         return response
@@ -653,7 +653,7 @@ class deleteProjectTechnologyAlias_view(apiView):
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "There is no alias with that identifier for this technology."
+                                            "There is not alias with that identifier for this technology."
                                         ),
                                     )
                                     return response
@@ -669,7 +669,7 @@ class deleteProjectTechnologyAlias_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "There is no technology with that identifier."
+                                    "There is not technology with that identifier."
                                 ),
                             )
                             return response
@@ -677,14 +677,14 @@ class deleteProjectTechnologyAlias_view(apiView):
                         response = Response(
                             status=401,
                             body=self._(
-                                "You can not delete an alias for technologies. You started registration."
+                                "You can not delete Alias to technologies. You started the registry."
                             ),
                         )
                         return response
                 else:
                     response = Response(
                         status=401,
-                        body=self._("There is no project with that code."),
+                        body=self._("There is not a project with that code."),
                     )
                     return response
             else:

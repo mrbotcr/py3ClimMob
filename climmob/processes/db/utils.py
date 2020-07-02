@@ -8,7 +8,6 @@ __all__ = [
     "getUserLog",
     "getUserStats",
     "getUserPassword",
-    "existsCountryByCode"
 ]
 
 
@@ -25,13 +24,6 @@ def getCountryList(request):
             countries.append({"code": result.cnty_cod, "name": "Unknown"})
     return countries
 
-def existsCountryByCode(request, code):
-    results = request.dbsession.query(Country).filter(Country.cnty_cod == str(code)).first()
-    print(results)
-    if results:
-        return True
-    else:
-        return False
 
 def getSectorList(request):
     sectors = []

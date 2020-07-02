@@ -124,12 +124,7 @@ def getEnumeratorData(user, id, request):
         .filter(Enumerator.enum_id == id)
         .first()
     )
-    result = mapFromSchema(res)
-    if result:
-        result["enum_password"] = decodeData(request, result["enum_password"]).decode(
-            "utf-8"
-        )
-    return result
+    return mapFromSchema(res)
 
 
 def addEnumerator(user, data, request):

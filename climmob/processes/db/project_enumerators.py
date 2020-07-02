@@ -12,7 +12,7 @@ __all__ = [
     "seeProgress",
     "getAssessmenstByProject",
 ]
-from .enumerator import getEnumeratorData
+
 
 def getProjectEnumerators(user, project, request):
     """
@@ -55,7 +55,7 @@ def seeProgress(user, project, request):
     all = {}
     try:
         sql = (
-            "SELECT _submitted_by as user_name, count(*) as count FROM "
+            "SELECT _submitted_by as user_name, count(_submitted_by) as count FROM "
             + user
             + "_"
             + project
@@ -66,30 +66,21 @@ def seeProgress(user, project, request):
         result = []
 
         for qst in counts:
-            _user = getEnumeratorData(user,qst[0],request)
-            if _user:
-                result.append({"User":_user["enum_name"],"Count":qst[1]})
-            else:
-                enco = False
-                for i, ex in enumerate(result, start=0):
-
-                    if ex["User"] == "Other":
-                        enco = True
-                        result[i]["Count"] = result[i]["Count"] + qst[1]
-                if enco == False:
-                    result.append({"User": "Other", "Count": qst[1]})
-
+            dct = dict(qst)
+            for key, value in dct.items():
+                if isinstance(value, str):
+                    dct[key] = value
+            result.append(dct)
         all["registry"] = result
     except:
         all["registry"] = {}
 
     try:
-        ass = []
         assessments = getAssessmenstByProject(user, project, request)
         for assessment in assessments:
 
             sql = (
-                "SELECT _submitted_by as user_name, count(*) as count FROM "
+                "SELECT _submitted_by as user_name, count(_submitted_by) as count FROM "
                 + user
                 + "_"
                 + project
@@ -101,23 +92,13 @@ def seeProgress(user, project, request):
             counts = request.dbsession.execute(sql).fetchall()
             result = []
             for qst in counts:
-                _user = getEnumeratorData(user, qst[0], request)
-                if _user:
-                    result.append({"User": _user["enum_name"], "Count": qst[1]})
-                else:
-                    enco = False
-                    for i,ex in enumerate(result, start=0):
+                dct = dict(qst)
+                for key, value in dct.iteritems():
+                    if isinstance(value, str):
+                        dct[key] = value
+                result.append(dct)
 
-                        if ex["User"] == "Other":
-                            enco =True
-                            result[i]["Count"] = result[i]["Count"] +qst[1]
-                    if enco == False:
-                        result.append({"User": "Other", "Count": qst[1]})
-
-            #all[assessment["ass_cod"]] = result
-            ass.append({"Name": assessment["ass_cod"],"Values":result})
-
-        all["Assessments"] = ass
+            all[assessment["ass_cod"]] = result
     except:
         print("Error en leer assessments")
 

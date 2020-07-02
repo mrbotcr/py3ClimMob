@@ -213,13 +213,12 @@ def createDatabase(xlsxFile, outputDir, schema, keyVar, preFix, dropSchema, requ
 
 
 class ODKExcelFile(object):
-    def __init__(self, xlsxFile, formID, formLabel,formInstance):
+    def __init__(self, xlsxFile, formID, formLabel):
         self.xlsxFile = xlsxFile
         self.root = etree.Element("root")
         self.log = logging.getLogger(__name__)
         self.formID = formID
         self.formLabel = formLabel
-        self.formInstance = formInstance
         self.surveyRow = 0
         self.choicesRow = 1
         try:
@@ -306,7 +305,6 @@ class ODKExcelFile(object):
                     self.sheet1.write(self.surveyRow, 2, element.get("label"))
                     self.sheet1.write(self.surveyRow, 3, element.get("hint"))
                     self.sheet1.write(self.surveyRow, 4, element.get("constraint"))
-                    self.sheet1.write(self.surveyRow, 14, element.get("calculation"))
                     self.sheet1.write(self.surveyRow, 6, element.get("required"))
                     if element.get("appearance") is not None:
                         self.sheet1.write(self.surveyRow, 8, element.get("appearance"))
@@ -334,7 +332,6 @@ class ODKExcelFile(object):
         inGroup=None,
         inRepeat=None,
         constraint="",
-        calculation = ""
     ):
         options = {
             1: "text",
@@ -364,7 +361,6 @@ class ODKExcelFile(object):
             25: "simserial",
             26: "phonenumber",
             27: "text",
-            28: "calculate"
         }
         ODKType = options[type]
 
@@ -376,8 +372,6 @@ class ODKExcelFile(object):
             question.set("hint", hint)
             question.set("type", ODKType)
             question.set("constraint", constraint)
-            question.set("calculation", calculation)
-
             if type == 8:
                 question.set("appearance", "autocomplete")
 
@@ -485,16 +479,15 @@ class ODKExcelFile(object):
 
         sheet3.write(1, 0, self.formID)
         sheet3.write(1, 1, self.formLabel)
-        sheet3.write(1, 2, self.formInstance)
 
         self.addNodeToFile(self.root)
         self.book.close()
 
 
 def generateODKFile(
-    user, project, xlsxFile, formID, formLabel,formInstance, groups, questions, numComb, request
+    user, project, xlsxFile, formID, formLabel, groups, questions, numComb, request
 ):
-    excelFile = ODKExcelFile(xlsxFile, formID, formLabel, formInstance)
+    excelFile = ODKExcelFile(xlsxFile, formID, formLabel)
 
     excelFile.addQuestion("clm_deviceimei", "Device IMEI", 23, "")
     excelFile.addQuestion("clm_start", request.translate("Start of survey"), 20, "")
@@ -553,9 +546,6 @@ def generateODKFile(
                         farmer["farmer_id"],
                         farmer["farmer_name"],
                     )
-                if question.question_code == "QST163":
-                    excelFile.addQuestion("cal_"+question.question_code,"",28,inGroup="grp_" + str(question.section_id),calculation="jr:choice-name(${"+question.question_code+"}, '${"+question.question_code+"}')")
-
             if question.question_dtype == 9:
                 if numComb == 2:
                     excelFile.addQuestion(
@@ -748,15 +738,13 @@ def generateRegistryPreview(user, projectid, request):
     questions = request.dbsession.execute(sql).fetchall()
 
     prjdata = getProjectData(user, projectid, request)
-    label = request.translate("Registration-") + prjdata["project_name"]
-    formInstance = "concat('"+projectid+"_Regis_',${farmername})"
+    label = request.translate("Registry-") + prjdata["project_name"]
     generateODKFile(
         user,
         projectid,
         xlsxFile,
         formID,
         label,
-        formInstance,
         groups,
         questions,
         prjdata["project_numcom"],
@@ -850,15 +838,13 @@ def generateRegistry(user, projectid, request):
     questions = request.dbsession.execute(sql).fetchall()
 
     prjdata = getProjectData(user, projectid, request)
-    label = request.translate("Registration-") + prjdata["project_name"]
-    formInstance = "concat('" + projectid + "_Regis_',${farmername})"
+    label = request.translate("Registry-") + prjdata["project_name"]
     generateODKFile(
         user,
         projectid,
         xlsxFile,
         formID,
         label,
-        formInstance,
         groups,
         questions,
         prjdata["project_numcom"],
@@ -965,14 +951,12 @@ def generateAssessmentPreview(user, projectid, assessment, request):
         + " - "
         + prjdata["project_name"]
     )
-    formInstance = "concat('" + projectid + "_Assess_',${cal_QST163})"
     generateODKFile(
         user,
         projectid,
         xlsxFile,
         formID,
         label,
-        formInstance,
         groups,
         questions,
         prjdata["project_numcom"],
@@ -1092,14 +1076,12 @@ def generateAssessmentFiles(user, projectid, assessment, request):
             + " - "
             + prjdata["project_name"]
         )
-        formInstance = "concat('" + projectid + "_Assess_',${cal_QST163})"
         generateODKFile(
             user,
             projectid,
             xlsxFile,
             formID,
             label,
-            formInstance,
             groups,
             questions,
             prjdata["project_numcom"],

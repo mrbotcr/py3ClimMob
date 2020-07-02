@@ -1,7 +1,6 @@
 from .classes import privateView
 from ..processes import getActiveProject, getQuestionsByType, getJSONResult
 from ..products.analysis.analysis import create_analysis
-from ..products.analysisdata.analysisdata import create_datacsv
 from pyramid.httpexceptions import HTTPFound
 import climmob.plugins.utilities as u
 import climmob.plugins as p
@@ -48,21 +47,17 @@ class analysisDataView(privateView):
                 infosheet = dataworking["txt_infosheets"].upper()
                 # print json.dumps(dict)
                 locale = self.request.locale_name
-                info = getJSONResult(
-                        self.user.login, activeProjectData["project_cod"], self.request
-                    )
                 create_analysis(
                     locale,
                     self.user.login,
                     activeProjectData["project_cod"],
                     dict,
-                    info,
+                    getJSONResult(
+                        self.user.login, activeProjectData["project_cod"], self.request
+                    ),
                     infosheet,
                     self.request,
                 )
-
-                create_datacsv(self.user.login,activeProjectData["project_cod"],info,self.request)
-
                 self.returnRawViewResult = True
                 return HTTPFound(location=self.request.route_url("productList"))
 

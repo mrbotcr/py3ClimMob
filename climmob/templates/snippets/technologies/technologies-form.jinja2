@@ -1,6 +1,6 @@
 <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
 
 <div class="form-group">
-    <label class="col-sm-4 control-label">{{ _('Technology option name') }}</label>
+    <label class="col-sm-4 control-label">{{ _('Treatment name') }}</label>
     <div class="col-sm-8"><input type="text" class="form-control" value="{{ formdata['tech_name'] }}" id="tech_name" name="tech_name" placeholder=""></div>
 </div>

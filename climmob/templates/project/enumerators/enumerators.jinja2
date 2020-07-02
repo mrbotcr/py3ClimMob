@@ -49,7 +49,7 @@
                             <tbody>
                             <tr>
                                 <th class="text-center" >{{ _('Name') }}</th>
-{#                                <th class="text-center" >{{ _('Number of submissions by form') }}</th>#}
+                                <th class="text-center" >{{ _('Number of submissions by form') }}</th>
                                 <th class="text-center" >{{ _('Actions') }}</th>
                             </tr>
 
@@ -60,42 +60,42 @@
                                         {% if enumerator.enum_active == 1 %}
                                             {{ enumerator.enum_name }}
                                         {% else %}
-                                            {{ enumerator.enum_name }} <span class="label label-danger">{{ _("Can not submit data") }}</span>
+                                            {{ enumerator.enum_name }} <span class="label label-danger">{{ _("Cannot submit data") }}</span>
                                         {% endif %}
                                     </td>
-{#                                    <td class="">#}
-{#                                        {% set havePersons = namespace(count=0) %}#}
-{##}
-{#                                        {% for user in workByUser.registry%}#}
-{#                                            {% if enumerator.enum_id == user.user_name %}#}
-{#                                                {{ _("Registry") }}: {{ user.count }}#}
-{#                                                {% set havePersons.count = user.count %}#}
-{#                                            {% endif %}#}
-{#                                        {% endfor %}#}
-{##}
-{#                                        {% if havePersons.count == 0 %}#}
-{#                                            {{ _("Registry") }}: 0#}
-{#                                        {% endif %}#}
-{#                                        <br>#}
-{#                                        {% for assessment in assessments %}#}
-{#                                            {% set havePersons = namespace(count=0) %}#}
-{##}
-{#                                            {% for user in workByUser[assessment.ass_cod]%}#}
-{#                                                {% if enumerator.enum_id == user.user_name %}#}
-{#                                                    {{ _("Assessment") }} {{ assessment.ass_desc }}: {{ user.count }}<br>#}
-{#                                                    {% set havePersons.count = user.count %}#}
-{#                                                {% endif %}#}
-{#                                            {% endfor %}#}
-{##}
-{#                                            {% if havePersons.count == 0 %}#}
-{#                                                {{ _("Assessment") }} {{ assessment.ass_desc }}: 0 <br>#}
-{#                                            {% endif %}#}
-{#                                        {% endfor %}#}
-{##}
-{#                                    </td>#}
+                                    <td class="">
+                                        {% set havePersons = namespace(count=0) %}
+
+                                        {% for user in workByUser.registry%}
+                                            {% if enumerator.enum_id == user.user_name %}
+                                                {{ _("Registry") }}: {{ user.count }}
+                                                {% set havePersons.count = user.count %}
+                                            {% endif %}
+                                        {% endfor %}
+
+                                        {% if havePersons.count == 0 %}
+                                            {{ _("Registry") }}: 0
+                                        {% endif %}
+                                        <br>
+                                        {% for assessment in assessments %}
+                                            {% set havePersons = namespace(count=0) %}
+
+                                            {% for user in workByUser[assessment.ass_cod]%}
+                                                {% if enumerator.enum_id == user.user_name %}
+                                                    {{ _("Assessment") }} {{ assessment.ass_desc }}: {{ user.count }}<br>
+                                                    {% set havePersons.count = user.count %}
+                                                {% endif %}
+                                            {% endfor %}
+
+                                            {% if havePersons.count == 0 %}
+                                                {{ _("Assessment") }} {{ assessment.ass_desc }}: 0 <br>
+                                            {% endif %}
+                                        {% endfor %}
+
+                                    </td>
 
                                     <td class="text-center" style="vertical-align: middle;">
-                                        <button onclick="showDelete('{{ request.route_url('removeprjenumerator', projectid=projectid,enumeratorid=enumerator.enum_id) }}','{{ _("Do you really want to remove this field agent?") }}','{{ request.session.get_csrf_token() }}')" type="button" class="btn btn-sm btn-danger">{{ _("Remove") }}</button>
+                                        <button onclick="showDelete('{{ request.route_url('removeprjenumerator', projectid=projectid,enumeratorid=enumerator.enum_id) }}','{{ _("Do you really want to remove this enumerator ?") }}','{{ request.session.get_csrf_token() }}')" type="button" class="btn btn-sm btn-danger">{{ _("Remove") }}</button>
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -103,7 +103,7 @@
                             </tbody>
                         </table>
                         <div style="width: 100%; text-align: center">
-                            <h3><b><a href="{{ request.route_url('productList') }}">{{ _("You can download a PDF document to configure ODK Collect on Android devices.") }}</a></b></h3>
+                            <h3><b><a href="{{ request.route_url('productList') }}">{{ _("You can download a .pdf document with the information and QR of the field agents for the ODK Collect configuration.") }}</a></b></h3>
                         </div>
                     {% else %}
                         <div style="width: 100%; text-align: center">

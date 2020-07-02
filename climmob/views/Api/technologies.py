@@ -146,7 +146,7 @@ class updateTechnology_view(apiView):
                                         response = Response(
                                             status=200,
                                             body=self._(
-                                                "The technology was modified successfully."
+                                                "The technology was modify successfully."
                                             ),
                                         )
                                         return response
@@ -154,7 +154,7 @@ class updateTechnology_view(apiView):
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "You cannot update this technology because it has been assigned to a project."
+                                            "You can not update this technology because it is assigned to a project."
                                         ),
                                     )
                                     return response
@@ -162,7 +162,7 @@ class updateTechnology_view(apiView):
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "You do not have a technology with this ID."
+                                        "You do not have a technology with this id."
                                     ),
                                 )
                                 return response
@@ -221,14 +221,14 @@ class deletetechnologyView_api(apiView):
                         response = Response(
                             status=401,
                             body=self._(
-                                "You cannot delete this technology because it has been assigned to a project."
+                                "You can not delete this technology because it is assigned to a project."
                             ),
                         )
                         return response
                 else:
                     response = Response(
                         status=401,
-                        body=self._("You do not have a technology with this ID."),
+                        body=self._("You do not have a technology with this id."),
                     )
                     return response
             else:

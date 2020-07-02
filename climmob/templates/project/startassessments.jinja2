@@ -1,19 +1,19 @@
 {% extends 'dashboard/dashboard.jinja2' %}
 
 {% block title %}
-    <title>{{ _("ClimMob | Start data collection") }}</title>
+    <title>{{ _("ClimMob | Start the data collection") }}</title>
 {% endblock title %}
 
 {% block pageheading %}
     <div class="row wrapper border-bottom white-bg page-heading">
         <div class="col-lg-10">
-            <h2>{{ _("Start data collection") }}</h2>
+            <h2>{{ _("Start the data collection") }}</h2>
             <ol class="breadcrumb">
                 <li>
                     <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
                 </li>
                 <li class="active">
-                    <strong>{{ _("Start data collection") }}</strong>
+                    <strong>{{ _("Start the data collection") }}</strong>
                 </li>
             </ol>
             <a href="https://climmob.net/blog/wiki/2019/10/01/start-the-data-collection/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
@@ -50,7 +50,7 @@
                                             </select>
                                     </div>
                                     <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
-                                    <button id="start_assessment_button" class="btn btn-primary pull-right" type="submit" name="startAssessment"> {{ _('Start data collection') }}</button>
+                                    <button id="start_assessment_button" class="btn btn-primary pull-right" type="submit" name="startAssessment"> {{ _('Start the data collection') }}</button>
                                 </form>
                                 <br>
                                 <br>

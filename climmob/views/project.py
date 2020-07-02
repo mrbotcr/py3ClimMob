@@ -9,9 +9,9 @@ from ..processes import (
     projectExists,
     deleteProject,
     changeTheStateOfCreateComb,
-    getCountryList
 )
-from pyramid.httpexceptions import HTTPNotFound, HTTPFound
+from pyramid.httpexceptions import HTTPNotFound
+
 import json
 import qrcode
 import zlib
@@ -40,10 +40,9 @@ class newProject_view(privateView):
         dataworking["project_numobs"] = 0
         dataworking["project_numcom"] = 3
         dataworking["project_regstatus"] = 0
-        #dataworking["project_lat"] = 9.90471351
-        #dataworking["project_lon"] = -83.685279
+        dataworking["project_lat"] = 9.90471351
+        dataworking["project_lon"] = -83.685279
         dataworking["project_localvariety"] = "on"
-        dataworking["project_cnty"] = None
 
         if self.request.method == "POST":
             if "btn_addNewProject" in self.request.POST:
@@ -52,12 +51,10 @@ class newProject_view(privateView):
                 dataworking = self.getPostDict()
                 dataworking["user_name"] = self.user.login
                 dataworking["project_regstatus"] = 0
-                dataworking["project_lat"] = ""
-                dataworking["project_lon"] = ""
-                #if "ckb_localvariety" in dataworking.keys():
-                dataworking["project_localvariety"] = 1
-                #else:
-                #    dataworking["project_localvariety"] = 0
+                if "ckb_localvariety" in dataworking.keys():
+                    dataworking["project_localvariety"] = 1
+                else:
+                    dataworking["project_localvariety"] = 0
 
                 if int(dataworking["project_numobs"]) > 0:
                     if dataworking["project_cod"] != "":
@@ -69,16 +66,9 @@ class newProject_view(privateView):
                             if not added:
                                 error_summary = {"dberror": message}
                             else:
-
+                                newproject = True
                                 self.request.session.flash(
                                     self._("The project was created successfully")
-                                )
-                                self.returnRawViewResult = True
-                                return HTTPFound(
-                                    location=self.request.route_url(
-                                        "dashboard",
-                                        _query={"project": dataworking["project_cod"]},
-                                    )
                                 )
                         else:
                             error_summary = {
@@ -107,7 +97,6 @@ class newProject_view(privateView):
             "indashboard": True,
             "dataworking": dataworking,
             "newproject": newproject,
-            "countries": getCountryList(self.request),
             "error_summary": error_summary,
         }
 
@@ -140,10 +129,10 @@ class modifyProject_view(privateView):
                     data["project_numobs"] = cdata["project_numobs"]
                     data["project_numcom"] = cdata["project_numcom"]
 
-                #if "ckb_localvariety" in data.keys():
-                data["project_localvariety"] = 1
-                #else:
-                #    data["project_localvariety"] = 0
+                if "ckb_localvariety" in data.keys():
+                    data["project_localvariety"] = 1
+                else:
+                    data["project_localvariety"] = 0
 
                 isNecessarygenerateCombinations = False
                 if int(data["project_numobs"]) != int(cdata["project_numobs"]):
@@ -161,14 +150,9 @@ class modifyProject_view(privateView):
                 if not modified:
                     error_summary = {"dberror": message}
                 else:
+                    newproject = True
                     self.request.session.flash(
                         self._("The project was modified successfully")
-                    )
-                    self.returnRawViewResult = True
-                    return HTTPFound(
-                        location=self.request.route_url(
-                            "dashboard"
-                        )
                     )
 
                 if int(data["project_localvariety"]) == 1:
@@ -181,7 +165,6 @@ class modifyProject_view(privateView):
             "indashboard": True,
             "data": data,
             "newproject": newproject,
-            "countries": getCountryList(self.request),
             "error_summary": error_summary,
         }
 

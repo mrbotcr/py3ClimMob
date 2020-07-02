@@ -50,14 +50,14 @@ class createEnumerator_view(apiView):
                                 response = Response(
                                     status=200,
                                     body=self._(
-                                        "The field agent was created successfully."
+                                        "The enumerator was created successfully."
                                     ),
                                 )
                                 return response
                         else:
                             response = Response(
                                 status=401,
-                                body=self._("This field agent name already exists."),
+                                body=self._("This enumerator name already exists."),
                             )
                             return response
                     else:
@@ -128,14 +128,14 @@ class updateEnumerator_view(apiView):
                             response = Response(
                                 status=200,
                                 body=self._(
-                                    "The field agent was modified successfully."
+                                    "The enumerator was modified successfully."
                                 ),
                             )
                             return response
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is no field agent with that identifier."),
+                            body=self._("There is no enumerator with that identifier."),
                         )
                         return response
                 else:
@@ -219,7 +219,7 @@ class updatePasswordEnumerator_view(apiView):
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is no field agent with that identifier."),
+                            body=self._("There is no enumerator with that identifier."),
                         )
                         return response
                 else:
@@ -249,7 +249,7 @@ class apiDeleteEnumerator_view(apiView):
                     self.user.login, dataworking["enum_id"], self.request
                 ):
                     response = Response(
-                        status=401, body=self._("This field agent does not exist.")
+                        status=401, body=self._("This enumerator does not exist.")
                     )
                     return response
 
@@ -262,7 +262,7 @@ class apiDeleteEnumerator_view(apiView):
                 else:
                     response = Response(
                         status=200,
-                        body=self._("The field agent was deleted successfully."),
+                        body=self._("The enumerator was deleted successfully"),
                     )
                     return response
             else:

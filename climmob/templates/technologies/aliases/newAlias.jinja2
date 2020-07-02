@@ -1,7 +1,7 @@
 {% extends 'dashboard/dashboard.jinja2' %}
 
 {% block title %}
-    <title>{{ _("ClimMob | New technology options") }}</title>
+    <title>{{ _("ClimMob | New treatment levels") }}</title>
 {% endblock title %}
 
 {% block pageheading %}
@@ -13,10 +13,10 @@
                     <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
                 </li>
                 <li >
-                    <a href="{{ request.route_url('usertechnologies') }}">{{ _("Technology options library") }}</a>
+                    <a href="{{ request.route_url('usertechnologies') }}">{{ _("Treatments library") }}</a>
                 </li>
                 <li >
-                    <a href="{{ request.route_url('useralias',technologyid=tech.tech_id) }}">{{ _("Technology") }}: {{ tech.tech_name }}</a>
+                    <a href="{{ request.route_url('useralias',technologyid=tech.tech_id) }}">{{ _("Treatment") }}: {{ tech.tech_name }}</a>
                 </li>
                 <li >
                     <strong>{{ _("New level") }}</strong>

@@ -7,14 +7,11 @@
 {% block css %}
     {% cssresource request,'coreresources','switch' %}
     {% cssresource request,'coreresources','tags' %}
-    {% cssresource request,'coreresources','chosen' %}
 {% endblock css %}
 
 {% block topScripts %}
     {% jsresource request,'coreresources','switch' %}
     {% jsresource request,'coreresources','addproject' %}
-    {% jsresource request,'coreresources','bootstrapmaxlength' %}
-    {% jsresource request,'coreresources','chosen' %}
 {% endblock topScripts %}
 
 {% block pageheading %}
@@ -51,7 +48,7 @@
         <form method="post" class="form-horizontal" action="{{ request.path }}">
             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
             {% block newprjform %}
-                {% snippet 'snippets/project/project_form.jinja2', dataworking=data, edit=True, countries=countries %}
+                {% snippet 'snippets/project/project_form.jinja2', dataworking=data, edit=True %}
 
                 <button type="submit" name="btn_addNewProject" id="btn_addNewProject" class="btn btn-warning pull-right">{{ _("Update project") }}</button>
 

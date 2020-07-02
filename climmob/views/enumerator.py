@@ -1,7 +1,7 @@
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 from .classes import privateView
 import re
-from climmob.config.encdecdata import encodeData, decodeData
+
 from ..processes import (
     searchEnumerator,
     enumeratorExists,
@@ -38,44 +38,39 @@ class addEnumerator_view(privateView):
             if postdata["enum_id"] != "":
                 if postdata["enum_name"] != "":
                     if postdata["enum_password"] != "":
-                        #if postdata["enum_password"] == postdata["enum_password_re"]:
-                        #    postdata.pop("enum_password_re")
-                        if not enumeratorExists(
-                            self.user.login, postdata["enum_id"], self.request
-                        ):
-                            added, message = addEnumerator(
-                                self.user.login, postdata, self.request
-                            )
-                            if not added:
-                                error_summary = {"dberror": message}
+                        if postdata["enum_password"] == postdata["enum_password_re"]:
+                            postdata.pop("enum_password_re")
+                            if not enumeratorExists(
+                                self.user.login, postdata["enum_id"], self.request
+                            ):
+                                added, message = addEnumerator(
+                                    self.user.login, postdata, self.request
+                                )
+                                if not added:
+                                    error_summary = {"dberror": message}
+                                else:
+                                    newEnumerator = True
+                                    self.request.session.flash(
+                                        self._(
+                                            "The enumerator was created successfully"
+                                        )
+                                    )
                             else:
-                                self.request.session.flash(
-                                    self._(
-                                        "The field agent was created successfully."
+                                error_summary = {
+                                    "exists": self._(
+                                        "This enumerator name already exists."
                                     )
-                                )
-                                self.returnRawViewResult = True
-                                return HTTPFound(
-                                    location=self.request.route_url(
-                                        "enumerators"
-                                    )
-                                )
+                                }
                         else:
                             error_summary = {
-                                "exists": self._(
-                                    "This field agent name already exists."
+                                "passworerror": self._(
+                                    "The password and its retype are not the same"
                                 )
                             }
-                        #else:
-                        #    error_summary = {
-                        #        "passworerror": self._(
-                        #            "The password and its retype are not the same"
-                        #        )
-                        #    }
                     else:
                         error_summary = {
                             "passwordempty": self._(
-                                "The password of the field agent cannot be empty."
+                                "The password of the enumerator cannot be empty."
                             )
                         }
                 else:
@@ -118,7 +113,6 @@ class modifyEnumerator_view(privateView):
 
         if self.request.method == "GET":
             dataworking = getEnumeratorData(self.user.login, enumeratorid, self.request)
-
             if not dataworking:
                 raise HTTPNotFound
             return {
@@ -131,58 +125,43 @@ class modifyEnumerator_view(privateView):
             if "btn_modify_enumerator" in self.request.POST:
                 postdata = self.getPostDict()
 
-                # # Remove the password from the data
-                #if "enum_password" in postdata.keys():
-                #    print("si")
-                #    postdata.pop("enum_password")
-                #
-                # # Remove the new password from the data
-                # if "enum_password_new" in postdata.keys():
-                #     postdata.pop("enum_password_new")
+                # Remove the password from the data
+                if "enum_password" in postdata.keys():
+                    postdata.pop("enum_password")
 
-                # # Remove the new password from the data
-                # if "enum_password_new_re" in postdata.keys():
-                #     postdata.pop("enum_password_new_re")
-                if postdata["enum_password"] != "":
-                    postdata["enum_password"] = encodeData(self.request, postdata["enum_password"])
-                    if "ckb_modify_status" in postdata.keys():
-                        if postdata["ckb_modify_status"] == "on":
-                            postdata["enum_active"] = 1
-                        else:
-                            postdata["enum_active"] = 0
-                        postdata.pop("ckb_modify_status")
+                # Remove the new password from the data
+                if "enum_password_new" in postdata.keys():
+                    postdata.pop("enum_password_new")
+
+                # Remove the new password from the data
+                if "enum_password_new_re" in postdata.keys():
+                    postdata.pop("enum_password_new_re")
+
+                if "ckb_modify_status" in postdata.keys():
+                    if postdata["ckb_modify_status"] == "on":
+                        postdata["enum_active"] = 1
                     else:
                         postdata["enum_active"] = 0
-                    if postdata["enum_name"] != "":
-                        mdf, message = modifyEnumerator(
-                            self.user.login, enumeratorid, postdata, self.request
-                        )
-                        if not mdf:
-                            error_summary = {"dberror": message}
-                            postdata["enum_password"] = decodeData(self.request, postdata["enum_password"]).decode(
-                                "utf-8"
-                            )
-
-                        else:
-                            self.request.session.flash(
-                                self._("The field agent was modified successfully.")
-                            )
-                            self.returnRawViewResult = True
-                            return HTTPFound(
-                                location=self.request.route_url(
-                                    "enumerators"
-                                )
-                            )
+                    postdata.pop("ckb_modify_status")
+                else:
+                    postdata["enum_active"] = 0
+                if postdata["enum_name"] != "":
+                    mdf, message = modifyEnumerator(
+                        self.user.login, enumeratorid, postdata, self.request
+                    )
+                    if not mdf:
+                        error_summary = {"dberror": message}
                     else:
-                        error_summary = {
-                            "nameempty": self._(
-                                "The name of the field agent cannot be empty."
-                            )
-                        }
+                        enumeratorModified = True
+                        self.request.session.flash(
+                            self._("The enumerator was modified successfully")
+                        )
                 else:
                     error_summary = {
-                                "IncorrectPassword": self._("The password cannot be empty")
-                            }
+                        "nameempty": self._(
+                            "The name of the enumerator cannot be empty."
+                        )
+                    }
 
                 return {
                     "activeUser": self.user,
@@ -191,48 +170,48 @@ class modifyEnumerator_view(privateView):
                     "enumeratorModified": enumeratorModified,
                 }
 
-            # if "btn_change_password" in self.request.POST:
-            #     postdata = self.getPostDict()
-            #     # if isEnumeratorPassword(self.user.login,enumeratorid,postdata["enum_password"],self.request):
-            #     if postdata["enum_password_new"] != "":
-            #         if (
-            #             postdata["enum_password_new"]
-            #             == postdata["enum_password_new_re"]
-            #         ):
-            #             mdf, message = modifyEnumeratorPassword(
-            #                 self.user.login,
-            #                 enumeratorid,
-            #                 postdata["enum_password_new"],
-            #                 self.request,
-            #             )
-            #             if mdf:
-            #                 enumeratorModified = True
-            #                 self.request.session.flash(
-            #                     self._("The password was modified successfully")
-            #                 )
-            #             else:
-            #                 error_summary = {"dberror": message}
-            #         else:
-            #             error_summary = {
-            #                 "IncorrectPassword": self._(
-            #                     "The new password and the retype are not the same"
-            #                 )
-            #             }
-            #     else:
-            #         error_summary = {
-            #             "IncorrectPassword": self._("The new password cannot be empty")
-            #         }
-            #     # else:
-            #     #    error_summary = {'IncorrectPassword': self._("The current password is incorrect.")}
-            #
-            #     return {
-            #         "activeUser": self.user,
-            #         "dataworking": getEnumeratorData(
-            #             self.user.login, enumeratorid, self.request
-            #         ),
-            #         "error_summary": error_summary,
-            #         "enumeratorModified": enumeratorModified,
-            #     }
+            if "btn_change_password" in self.request.POST:
+                postdata = self.getPostDict()
+                # if isEnumeratorPassword(self.user.login,enumeratorid,postdata["enum_password"],self.request):
+                if postdata["enum_password_new"] != "":
+                    if (
+                        postdata["enum_password_new"]
+                        == postdata["enum_password_new_re"]
+                    ):
+                        mdf, message = modifyEnumeratorPassword(
+                            self.user.login,
+                            enumeratorid,
+                            postdata["enum_password_new"],
+                            self.request,
+                        )
+                        if mdf:
+                            enumeratorModified = True
+                            self.request.session.flash(
+                                self._("The password was modified successfully")
+                            )
+                        else:
+                            error_summary = {"dberror": message}
+                    else:
+                        error_summary = {
+                            "IncorrectPassword": self._(
+                                "The new password and the retype are not the same"
+                            )
+                        }
+                else:
+                    error_summary = {
+                        "IncorrectPassword": self._("The new password cannot be empty")
+                    }
+                # else:
+                #    error_summary = {'IncorrectPassword': self._("The current password is incorrect.")}
+
+                return {
+                    "activeUser": self.user,
+                    "dataworking": getEnumeratorData(
+                        self.user.login, enumeratorid, self.request
+                    ),
+                    "error_summary": error_summary,
+                    "enumeratorModified": enumeratorModified,
+                }
 
 
 class deleteEnumerator_view(privateView):

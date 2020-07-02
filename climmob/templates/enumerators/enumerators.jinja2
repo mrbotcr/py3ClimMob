@@ -48,8 +48,8 @@
                         <table class="table table-striped table-bordered">
                             <tbody>
                             <tr>
-                                <th class="text-center">{{ _('Full name') }}</th>
-                                <th class="text-center">{{ _('Username') }}</th>
+                                <th class="text-center">{{ _('User name') }}</th>
+                                <th class="text-center">{{ _('Name') }}</th>
                                 <th class="text-center">{{ _('Password') }}</th>
                                 <th class="text-center">{{ _('Status') }}</th>
                                 <th class="text-center"></th>
@@ -57,8 +57,8 @@
 
                             {% for enumerator in searchEnumerator %}
                                 <tr>
-                                    <td> {{ enumerator.enum_name }}</td>
                                     <td> {{ enumerator.enum_id }}</td>
+                                    <td> {{ enumerator.enum_name }}</td>
                                     <td> {{ enumerator.enum_password }}</td>
                                     <td >
 
@@ -72,7 +72,7 @@
                                     <td class="text-center">
                                         <a class="btn btn-warning btn-circle" href="{{request.route_url('modifyenumerator',enumeratorid = enumerator.enum_id)}}"  title="Edit field agent"><i class="fa fa-pencil"></i></a>
 {#                                        <button class="btn btn-danger btn-circle" onclick="showDeleteEnumerator('{{request.route_url('deleteenumerator',enumeratorid = enumerator.enum_id)}}','Remove field agent','Remove');" type="button" title="Remove field agent"><i class="fa fa-times"></i></button>#}
-                                        <button class="btn btn-danger btn-circle" onclick="showDelete('{{ request.route_url('deleteenumerator',enumeratorid = enumerator.enum_id)}}','{{ _("Do you really want to remove this field agent?") }}','{{ request.session.get_csrf_token() }}')" type="button" title="Remove field agent"><i class="fa fa-times"></i></button>
+                                        <button class="btn btn-danger btn-circle" onclick="showDelete('{{ request.route_url('deleteenumerator',enumeratorid = enumerator.enum_id)}}','{{ _("Do you really want to remove this field agent ?") }}','{{ request.session.get_csrf_token() }}')" type="button" title="Remove field agent"><i class="fa fa-times"></i></button>
                                     </td>
                                 </tr>
                             {% endfor %}

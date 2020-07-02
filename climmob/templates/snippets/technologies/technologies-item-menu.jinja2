@@ -1,9 +1,9 @@
 
 {% if showtools %}
-    <button class="btn btn-default btn-circle" onclick="location.href = '{{ request.route_url('useralias',technologyid=technology.tech_id) }}'" type="button" title="{{ _("View/edit technology option") }}"><i class="fa fa-list-ul"></i></button>
+    <button class="btn btn-default btn-circle" onclick="location.href = '{{ request.route_url('useralias',technologyid=technology.tech_id) }}'" type="button" title="{{ _("View/edit level") }}"><i class="fa fa-list-ul"></i></button>
     {% if User == "" and access == 0%}
-        <button class="btn btn-warning btn-circle" onclick="location.href = '{{ request.route_url('modifyusertechnology',technologyid=technology.tech_id) }}'" type="button" title="{{ _("Edit technology") }}"><i class="fa fa-pencil"></i></button>
-        <button class="btn btn-danger btn-circle" onclick="showDelete('{{ request.route_url('deleteusertechnology',technologyid=technology.tech_id) }}','{{ _("Do you really want to remove this technology?") }}','{{ request.session.get_csrf_token() }}')" type="button" title="{{ _("Remove technology") }}"><i class="fa fa-times"></i></button>
+        <button class="btn btn-warning btn-circle" onclick="location.href = '{{ request.route_url('modifyusertechnology',technologyid=technology.tech_id) }}'" type="button" title="{{ _("Edit treatment") }}"><i class="fa fa-pencil"></i></button>
+        <button class="btn btn-danger btn-circle" onclick="showDelete('{{ request.route_url('deleteusertechnology',technologyid=technology.tech_id) }}','{{ _("Do you really want to remove this technology ?") }}','{{ request.session.get_csrf_token() }}')" type="button" title="{{ _("Remove treatment") }}"><i class="fa fa-times"></i></button>
 
         {% block qstitemmenuextra %}
         {% endblock qstitemmenuextra %}

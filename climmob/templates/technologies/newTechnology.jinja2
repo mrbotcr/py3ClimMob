@@ -1,22 +1,22 @@
 {% extends 'dashboard/dashboard.jinja2' %}
 
 {% block title %}
-    <title>{{ _("ClimMob | New option") }}</title>
+    <title>{{ _("ClimMob | New treatment") }}</title>
 {% endblock title %}
 
 {% block pageheading %}
     <div class="row wrapper border-bottom white-bg page-heading">
         <div class="col-lg-10">
-            <h2>{{ _("New technology") }}</h2>
+            <h2>{{ _("New treatment") }}</h2>
             <ol class="breadcrumb">
                 <li>
                     <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
                 </li>
                 <li >
-                    <a href="{{ request.route_url('usertechnologies') }}">{{ _("Technology options library") }}</a>
+                    <a href="{{ request.route_url('usertechnologies') }}">{{ _("Treatments library") }}</a>
                 </li>
                 <li class="active">
-                    <strong>{{ _("New technology") }}</strong>
+                    <strong>{{ _("New treatment") }}</strong>
                 </li>
             </ol>
             <a href="https://climmob.net/blog/wiki/2019/09/30/new-treatment/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
@@ -33,7 +33,7 @@
             <div class="col-lg-6 " style="height: 100%">
                 <div class="ibox float-e-margins" style="height: 100%; margin-bottom: 0px">
                     <div class="ibox-title">
-                        <h5>{{ _("Add new technology") }}</h5>
+                        <h5>{{ _("Add new treatment") }}</h5>
                         <div class="ibox-tools">
 
                         </div>
@@ -43,7 +43,7 @@
 
                         <form class="form-horizontal" role="form" method="post" action="{{ request.path }}">
                             {% snippet 'snippets/technologies/technologies-form.jinja2', formdata=formdata, request=request %}
-                            <button class="btn btn-primary pull-right" type="submit" name="btn_add_technology" > {{ _('Add technology') }}</button>
+                            <button class="btn btn-primary pull-right" type="submit" name="btn_add_technology" > {{ _('Add treatment') }}</button>
                         </form>
                         <br>
                         <br>

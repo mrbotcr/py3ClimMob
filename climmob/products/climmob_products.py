@@ -93,7 +93,7 @@ def register_products(config):
     addMetadataToProduct(qrProduct, "author", "Brandon Madriz")
     addMetadataToProduct(qrProduct, "version", "1.0")
     addMetadataToProduct(
-        qrProduct, "Licence", "Copyright 2020, Alliance of Bioversity International and CIAT"
+        qrProduct, "Licence", "Copyright (C) 2017 Bioversity International"
     )
     products.append(qrProduct)
 
@@ -102,7 +102,7 @@ def register_products(config):
     addMetadataToProduct(packagesProduct, "author", "Brandon Madriz")
     addMetadataToProduct(packagesProduct, "version", "1.0")
     addMetadataToProduct(
-        packagesProduct, "Licence", "Copyright 2020, Alliance of Bioversity International and CIAT"
+        packagesProduct, "Licence", "Copyright (C) 2017 Bioversity International"
     )
     products.append(packagesProduct)
 
@@ -111,7 +111,7 @@ def register_products(config):
     addMetadataToProduct(dataProduct, "author", "Brandon Madriz")
     addMetadataToProduct(dataProduct, "version", "1.0")
     addMetadataToProduct(
-        dataProduct, "Licence", "Copyright 2020, Alliance of Bioversity International and CIAT"
+        dataProduct, "Licence", "Copyright (C) 2017 Bioversity International"
     )
     products.append(dataProduct)
 
@@ -120,7 +120,7 @@ def register_products(config):
     addMetadataToProduct(cardsProduct, "author", "Brandon Madriz")
     addMetadataToProduct(cardsProduct, "version", "1.0")
     addMetadataToProduct(
-        cardsProduct, "Licence", "Copyright 2020, Alliance of Bioversity International and CIAT"
+        cardsProduct, "Licence", "Copyright (C) 2017 Bioversity International"
     )
     products.append(cardsProduct)
 
@@ -129,7 +129,7 @@ def register_products(config):
     addMetadataToProduct(colorsProduct, "author", "Brandon Madriz")
     addMetadataToProduct(colorsProduct, "version", "1.0")
     addMetadataToProduct(
-        colorsProduct, "Licence", "Copyright 2020, Alliance of Bioversity International and CIAT"
+        colorsProduct, "Licence", "Copyright (C) 2017 Bioversity International"
     )
     products.append(colorsProduct)
 
@@ -138,7 +138,7 @@ def register_products(config):
     addMetadataToProduct(analysysProduct, "author", "Brandon Madriz")
     addMetadataToProduct(analysysProduct, "version", "1.0")
     addMetadataToProduct(
-        analysysProduct, "Licence", "Copyright 2020, Alliance of Bioversity International and CIAT"
+        analysysProduct, "Licence", "Copyright (C) 2017 Bioversity International"
     )
     products.append(analysysProduct)
 
@@ -147,17 +147,8 @@ def register_products(config):
     addMetadataToProduct(fieldagents, "author", "Brandon Madriz")
     addMetadataToProduct(fieldagents, "version", "1.0")
     addMetadataToProduct(
-        fieldagents, "Licence", "Copyright 2020, Alliance of Bioversity International and CIAT"
+        fieldagents, "Licence", "Copyright (C) 2019 Bioversity International"
     )
     products.append(fieldagents)
-
-    # DATA CSV
-    datacsv = addProduct("datacsv", "Information collected in the project.")
-    addMetadataToProduct(datacsv, "author", "Brandon Madriz")
-    addMetadataToProduct(datacsv, "version", "1.0")
-    addMetadataToProduct(
-        datacsv, "Licence", "Copyright 2020, Alliance of Bioversity International and CIAT"
-    )
-    products.append(datacsv)
 
     return products

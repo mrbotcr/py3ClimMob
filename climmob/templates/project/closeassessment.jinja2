@@ -40,8 +40,7 @@
                 </div>
                 <form class="form-horizontal" role="form" method="post" action="{{ request.path }}">
                     <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
-                    <a class="btn btn-default" href="{{ request.route_url('dashboard') }}"> {{ _("Go back") }}</a><br><br>
-                    <button class="btn btn-danger" type="submit" name="closeAssessment"> {{ _('Close data collection') }}</button>
+                    <button class="btn btn-danger" type="submit" name="closeAssessment"> {{ _('Close the collection') }}</button>
                 </form>
             </div>
         {% endblock dltqstmessage %}

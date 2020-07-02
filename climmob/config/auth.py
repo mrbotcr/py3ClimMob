@@ -26,7 +26,7 @@ class User(object):
         self.groups = groups or []
         self.fullName = userData["user_fullname"]
         self.organization = userData["user_organization"]
-        self.apikey = userData["user_apikey"]
+
         self.country = userData["user_cnty"]
         self.sector = str(userData["user_sector"])
         self.gravatarURL = gravatar_url

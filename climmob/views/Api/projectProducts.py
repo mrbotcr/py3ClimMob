@@ -51,7 +51,7 @@ class readProducts_view(apiView):
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is not project with that code."),
+                            body=self._("There is not a project with that code."),
                         )
                         return response
                 else:
@@ -124,7 +124,7 @@ class downloadApi_view(apiView):
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "There is no product with that celery_taskid."
+                                        "There is not a product with that celery_taskid."
                                     ),
                                 )
                                 return response
@@ -132,14 +132,14 @@ class downloadApi_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "There is no product with that celery_taskid."
+                                    "There is not a product with that celery_taskid."
                                 ),
                             )
                             return response
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is no project with that code."),
+                            body=self._("There is not a project with that code."),
                         )
                         return response
                 else:

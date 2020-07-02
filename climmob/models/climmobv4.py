@@ -132,7 +132,7 @@ class Asssection(Base):
     section_name = Column(String(120))
     section_content = Column(Text)
     section_order = Column(Integer)
-    section_private = Column(Integer, nullable=True)
+    section_color = Column(String(20))
 
     assessment = relationship(u"Assessment")
 
@@ -141,7 +141,6 @@ class Country(Base):
     __tablename__ = "country"
 
     cnty_cod = Column(String(3), primary_key=True)
-    cnty_iso = Column(String(3), nullable=True)
     cnty_name = Column(String(120))
 
 
@@ -665,11 +664,9 @@ class Project(Base):
     project_lon = Column(String(120), nullable=False)
     project_creationdate = Column(DateTime, nullable=False)
     project_localvariety = Column(Integer, server_default=text("'0'"))
-    project_cnty = Column(ForeignKey(u"country.cnty_cod"), nullable=True, index=True)
     extra = Column(Text)
 
     user = relationship(u"User")
-    country = relationship(u"Country")
 
 
 class Qstoption(Base):
@@ -832,7 +829,7 @@ class Regsection(Base):
     section_name = Column(String(45))
     section_content = Column(Text)
     section_order = Column(Integer)
-    section_private = Column(Integer, nullable=True)
+    section_color = Column(String(20))
 
     project = relationship(u"Project")
 
@@ -950,18 +947,3 @@ class AssessmentJsonLog(Base):
 
     assessment = relationship(u"Assessment")
     enumerator = relationship(u"Enumerator")
-
-class Chat(Base):
-    __tablename__ = "chat"
-    __table_args__ = (
-        ForeignKeyConstraint(["user_name"], [u"user.user_name"], ondelete=u"CASCADE"),
-    )
-    user_name = Column(String(80), primary_key=True, nullable=False)
-    chat_id = Column(Integer, primary_key=True, nullable=False)
-    chat_message = Column(String(500))
-    chat_send = Column(Integer)
-    chat_read = Column(Integer)
-    chat_tofrom = Column(Integer)
-    chat_date = Column(DateTime)
-
-    project = relationship(u"User")

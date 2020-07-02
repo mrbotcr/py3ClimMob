@@ -10,7 +10,7 @@
 {% if item.question_dtype == 6 %} {% set fatype = "fa-check-square-o" %} {% set qtype = "Select Multiple" %} {% set others = 1 %} {% endif %}
 {% if item.question_dtype == 7 %} {% set fatype = "fa-barcode" %} {% set qtype = "Package" %} {% endif %}
 {% if item.question_dtype == 8 %} {% set fatype = "fa-users" %} {% set qtype = "Observer" %} {% endif %}
-{% if item.question_dtype == 9 %} {% set fatype = "fa-th-list" %} {% set qtype = "Ranking of options" %} {% endif %}
-{% if item.question_dtype == 10 %} {% set fatype = "fa-list-alt" %} {% set qtype = "Comparison with check" %} {% endif %}
+{% if item.question_dtype == 9 %} {% set fatype = "fa-th-list" %} {% set qtype = "Characteristic" %} {% endif %}
+{% if item.question_dtype == 10 %} {% set fatype = "fa-list-alt" %} {% set qtype = "Performance" %} {% endif %}
 
 <i class="fa {{ fatype }}"></i> <b>{{ item.question_desc }}</b> - Type: {{ qtype }}

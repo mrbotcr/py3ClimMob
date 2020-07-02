@@ -54,25 +54,16 @@
 {% block pagecontent %}
 
     {% if hasActiveProject %}
-        <div class="row">
-            {% if Products %}
-                <div style="width: 100%; text-align: center">
-                    <h3><b>{{ _("Push button to see if pending documents are ready.") }}</b></h3>
-                    <a class="btn btn-primary " onclick=" location.reload(); "><i class="fa fa-refresh"></i> {{ _("Refresh") }}</a>
-                    <br><br>
-                </div>
+        <div class="wrapper wrapper-content" >
+            <div class="row">
                 <div class="col-lg-12" id="content_product">
-                    {% snippet 'snippets/project/productsList/productsList.jinja2', request= request, Products=Products, activeProject=activeProject%}
+                    {% snippet 'snippets/project/productsList/productsList.jinja2', request= request, Products=Products%}
                 </div>
-            {% else %}
-                <div style="width: 100%; text-align: center">
-                    <h3><b>{{ _("You haven't files to download.") }}</b></h3>
-                </div>
-            {% endif %}
+            </div>
         </div>
     {% else %}
         <div class="middle-box text-center loginscreen animated fadeInDown">
-            <h3><b>{{ _("To download files you need to have an active project.") }}</b></h3>
+            <h2><b>{{ _("To download files you need to have an active project.") }}</b></h2>
         </div>
     {% endif %}
 

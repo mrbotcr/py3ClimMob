@@ -1,13 +1,13 @@
 {% extends 'dashboard/dashboard.jinja2' %}
 
 {% block title %}
-    <title>{{ _("ClimMob | Update technology option") }}</title>
+    <title>{{ _("ClimMob | Update treatment level") }}</title>
 {% endblock title %}
 
 {% block pageheading %}
     <div class="row wrapper border-bottom white-bg page-heading">
         <div class="col-lg-10">
-            <h2>{{ _("Update option") }}</h2>
+            <h2>{{ _("Update level") }}</h2>
             <ol class="breadcrumb">
                 <li>
                     <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
@@ -16,10 +16,10 @@
                     <a href="{{ request.route_url('usertechnologies') }}">{{ _("Treatments library") }}</a>
                 </li>
                 <li >
-                    <a href="{{ request.route_url('useralias',technologyid=tech.tech_id) }}">{{ _("Technology") }}: {{ tech.tech_name }}</a>
+                    <a href="{{ request.route_url('useralias',technologyid=tech.tech_id) }}">{{ _("Treatment") }}: {{ tech.tech_name }}</a>
                 </li>
                 <li >
-                    <strong>{{ _("Update option") }}</strong>
+                    <strong>{{ _("Update level") }}</strong>
                 </li>
             </ol>
             <a href="https://climmob.net/blog/wiki/2019/09/30/update-level/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
@@ -35,7 +35,7 @@
         <div class="col-lg-6 ">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>{{ _("Update option") }}</h5>
+                    <h5>{{ _("Update level") }}</h5>
                     <div class="ibox-tools">
                         <button type="button" onclick="location.href='{{ request.route_url('useralias', technologyid=formdata.tech_id) }}';" class="btn btn-default btn-xs pull-right">{{ _("Go back") }}</button>
                     </div>

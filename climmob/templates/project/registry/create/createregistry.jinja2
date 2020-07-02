@@ -21,7 +21,6 @@
 
 
 {% block topScripts %}
-    {% jsresource request,'coreresources','toastr' %}
     {% if stage != 3 %}
         {% jsresource request,'coreresources','prjcombinations' %}
     {% endif %}
@@ -32,7 +31,7 @@
 {% block pageheading %}
     <div class="row wrapper border-bottom white-bg page-heading">
         <div class="col-lg-10">
-            <h2>{{ _("Generate packages with technology options and open the registration of participants") }}</h2>
+            <h2>{{ _("Generate treatment packages and open the registration of participants") }}</h2>
             <ol class="breadcrumb">
                 <li>
                     <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>

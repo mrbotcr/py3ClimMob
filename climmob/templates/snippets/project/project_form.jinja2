@@ -10,35 +10,35 @@
 
                 <div class="form-group">
                     <label class="col-sm-4 control-label">{{ _("Project code") }}</label>
-                    <div class="col-sm-8"><input class="form-control" id="newproject_code" required oninvalid="this.setCustomValidity('{{ _("Write the project name.") }}')" onchange="this.setCustomValidity('')" {% if edit %} disabled {% endif %} name="project_cod" value="{{ dataworking.project_cod }}" maxlength="10"></div>
+                    <div class="col-sm-8"><input class="form-control" id="newproject_code" required="" {% if edit %} disabled {% endif %} name="project_cod" value="{{ dataworking.project_cod }}"></div>
                 </div>
                 <div class="hr-line-dashed"></div>
 
                 <div class="form-group">
                     <label class="col-sm-4 control-label">{{ _("Project Name") }}</label>
-                    <div class="col-sm-8"><input class="form-control" id="newproject_name" required oninvalid="this.setCustomValidity('{{ _("Write the project name.") }}')" onchange="this.setCustomValidity('')" name="project_name" value="{{ dataworking.project_name }}" maxlength="30"></div>
+                    <div class="col-sm-8"><input class="form-control" id="newproject_name" required="" name="project_name" value="{{ dataworking.project_name }}"></div>
                 </div>
                 <div class="hr-line-dashed"></div>
 
                 <div class="form-group">
                     <label class="col-sm-4 control-label">{{ _("Description") }}</label>
-                    <div class="col-sm-8"><textarea class="form-control" name="project_abstract" required oninvalid="this.setCustomValidity('{{ _("Write the description.") }}')" onchange="this.setCustomValidity('')" id="newproject_description">{{ dataworking.project_abstract }}</textarea></div>
+                    <div class="col-sm-8"><textarea class="form-control" name="project_abstract" required="" id="newproject_description">{{ dataworking.project_abstract }}</textarea></div>
                 </div>
                 <div class="hr-line-dashed"></div>
 
 
-{#                <div class="form-group">#}
-{#                    <label class="col-sm-4 control-label">{{ _("Include comparison with check?") }}</label>#}
-{#                    <!--div class="col-sm-8"><textarea class="form-control" name="project_abstract" required="" id="newproject_description">{{ dataworking.project_abstract }}</textarea></div-->#}
-{#                    <div class="col-sm-8">#}
-{#                        <input type="checkbox" id="ckb_localvariety"#}
-{#                               name="ckb_localvariety" data-on-color="success"#}
-{#                               data-off-color="danger" data-on-text="{{ _('YES') }}"#}
-{#                               data-off-text="{{ _('NO') }}" {% if dataworking.project_localvariety == 'on' %} checked="" {% endif %}>#}
-{#                        <span class="help-block m-b-none text-left">{{ _("Always include this question in each data collection moment") }}</span>#}
-{#                    </div>#}
-{#                </div>#}
-{#                <div class="hr-line-dashed"></div>#}
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">{{ _("Include comparison with the local variety ?") }}</label>
+                    <!--div class="col-sm-8"><textarea class="form-control" name="project_abstract" required="" id="newproject_description">{{ dataworking.project_abstract }}</textarea></div-->
+                    <div class="col-sm-8">
+                        <input type="checkbox" id="ckb_localvariety"
+                               name="ckb_localvariety" data-on-color="success"
+                               data-off-color="danger" data-on-text="{{ _('YES') }}"
+                               data-off-text="{{ _('NO') }}" {% if dataworking.project_localvariety == 'on' %} checked="" {% endif %}>
+                        <span class="help-block m-b-none text-left">{{ _("Always include this question in the assessment forms") }}</span>
+                    </div>
+                </div>
+                <div class="hr-line-dashed"></div>
 
                 <div class="form-group">
                     <label class="col-sm-4 control-label">{{ _("Tags") }}</label>
@@ -50,14 +50,14 @@
                 <div class="hr-line-dashed"></div>
 
                 <div class="form-group">
-                    <label class="col-sm-4 control-label">{{ _("Trial coordinator") }}</label>
-                    <div class="col-sm-8"><input class="form-control" id="newproject_principal_investigator" required oninvalid="this.setCustomValidity('{{ _("Write the principal investigator.") }}')" onchange="this.setCustomValidity('')" name="project_pi" value="{{ dataworking.project_pi }}"></div>
+                    <label class="col-sm-4 control-label">{{ _("Principal investigator") }}</label>
+                    <div class="col-sm-8"><input class="form-control" id="newproject_principal_investigator" required="" name="project_pi" value="{{ dataworking.project_pi }}"></div>
                 </div>
                 <div class="hr-line-dashed"></div>
 
                 <div class="form-group">
                     <label class="col-sm-4 control-label">{{ _("Email address") }}</label>
-                    <div class="col-sm-8"><input type="email" class="form-control" id="newproject_mail_address" required oninvalid="this.setCustomValidity('{{ _("Write the email address.") }}')" onchange="this.setCustomValidity('')" name="project_piemail" value="{{ dataworking.project_piemail }}"></div>
+                    <div class="col-sm-8"><input type="email" class="form-control" id="newproject_mail_address" required="" name="project_piemail" value="{{ dataworking.project_piemail }}"></div>
                 </div>
             </div>
         </div>
@@ -73,12 +73,12 @@
 
                 <div class="form-group">
                     <label class="col-sm-4 control-label">{{ _("Number of observers participating in the project") }}</label>
-                    <div class="col-sm-8"><input type="number" min="10" class="form-control" id="newproject_numobs" required="" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} name="project_numobs" value="{{ dataworking.project_numobs }}"></div>
+                    <div class="col-sm-8"><input type="number" class="form-control" id="newproject_numobs" required="" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} name="project_numobs" value="{{ dataworking.project_numobs }}"></div>
                 </div>
                 <div class="hr-line-dashed"></div>
 
                 <div class="form-group">
-                    <label class="col-sm-4 control-label">{{ _("Number of items that each participant compares") }}</label>
+                    <label class="col-sm-4 control-label">{{ _("Number of items each observer compares") }}</label>
                     <div class="col-sm-8"><input type="number" class="form-control" id="newproject_numcom" required="" readonly {% if dataworking.project_regstatus != 0 %} disabled {% endif %} name="project_numcom" value="{{ dataworking.project_numcom }}"></div>
                 </div>
             </div>
@@ -93,34 +93,21 @@
             </div>
             <div class="ibox-content">
 
-{#                <div class="form-group">#}
-{#                    <label class="col-sm-2 control-label">{{ _("Latitude") }}</label>#}
-{#                    <div class="col-sm-10"><input class="form-control" id="newproject_lat" required="" name="project_lat" value="{{ dataworking.project_lat }}" readonly></div>#}
-{#                </div>#}
-{#                <div class="hr-line-dashed"></div>#}
-{##}
-{#                <div class="form-group">#}
-{#                    <label class="col-sm-2 control-label">{{ _("Longitude") }}</label>#}
-{#                    <div class="col-sm-10"><input class="form-control" id="newproject_lon" required="" name="project_lon" value="{{ dataworking.project_lon }}" readonly></div>#}
-{#                </div>#}
-{#                <div class="hr-line-dashed"></div>#}
-{#                <div class="form-group">#}
-{#                    <label class="col-sm-2 control-label">{{ _("Map") }}</label>#}
-{#                    <div class="col-sm-10">#}
-{#                        <div id="gmap_marker" class="gmaps" style="width: 100%;height: 400px"></div>#}
-{#                    </div>#}
-{#                </div>#}
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">{{ _("Latitude") }}</label>
+                    <div class="col-sm-10"><input class="form-control" id="newproject_lat" required="" name="project_lat" value="{{ dataworking.project_lat }}" readonly></div>
+                </div>
+                <div class="hr-line-dashed"></div>
 
                 <div class="form-group">
-                    <label class="col-sm-4 control-label">{{ _("Country") }}</label>
-                    <div class="col-sm-8">
-
-                        <select id="project_cnty" name="project_cnty" class="form-control chosen-select" tabindex="2" required oninvalid="this.setCustomValidity('{{ _("Select one country.") }}')" onchange="this.setCustomValidity('')">
-                            <option value="">{{ _("Select one country") }}</option>
-                            {% for country in countries %}
-                                <option value="{{ country.code }}" {% if country.code == dataworking.project_cnty %}selected{% endif %} >{{ country.name }}</option>
-                            {% endfor %}
-                        </select>
+                    <label class="col-sm-2 control-label">{{ _("Longitude") }}</label>
+                    <div class="col-sm-10"><input class="form-control" id="newproject_lon" required="" name="project_lon" value="{{ dataworking.project_lon }}" readonly></div>
+                </div>
+                <div class="hr-line-dashed"></div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">{{ _("Map") }}</label>
+                    <div class="col-sm-10">
+                        <div id="gmap_marker" class="gmaps" style="width: 100%;height: 400px"></div>
                     </div>
                 </div>
 
@@ -130,35 +117,7 @@
 
 </div>
 
-<script>
-    $('input#newproject_code').maxlength(
-        {
-            alwaysShow: true,
-            threshold: 0,
-            warningClass: "label label-primary",
-            limitReachedClass: "label label-danger",
-            separator: ' {{ _("of") }} ',
-            preText: '{{ _("You have") }} ',
-            postText: ' {{ _("chars remaining") }}.',
-            placement: "bottom"
-        }
-    )
 
-    $('input#newproject_name').maxlength(
-        {
-            alwaysShow: true,
-            threshold: 0,
-            warningClass: "label label-primary",
-            limitReachedClass: "label label-danger",
-            separator: ' {{ _("of") }} ',
-            preText: '{{ _("You have") }} ',
-            postText: ' {{ _("chars remaining") }}.',
-            placement: "bottom"
-        }
-    )
-
-    $('.chosen-select').chosen({width: "100%"});
-</script>
 {#<div class="tabs-container" style="background: #2f4050">#}
 {#    <ul class="nav nav-tabs">#}
 {#        {% block newprjtabs %}#}

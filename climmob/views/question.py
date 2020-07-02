@@ -71,7 +71,7 @@ class modifyQuestion_view(privateView):
         if not formdata or not editable:
             raise HTTPNotFound()
 
-        """if formdata["question_alwaysinreg"] == 1:
+        if formdata["question_alwaysinreg"] == 1:
             formdata["question_alwaysinreg"] = "on"
         else:
             formdata["question_alwaysinreg"] = "off"
@@ -80,7 +80,7 @@ class modifyQuestion_view(privateView):
             formdata["question_alwaysinasse"] = "on"
         else:
             formdata["question_alwaysinasse"] = "off"
-        """
+
         if formdata["question_requiredvalue"] == 1:
             formdata["question_requiredvalue"] = "on"
         else:
@@ -97,15 +97,11 @@ class modifyQuestion_view(privateView):
             formdata["user_name"] = self.user.login
             formdata["question_id"] = qid
 
-            try:
-                category = formdata["question_group"].split("[*$%&]")
-                formdata["qstgroups_id"] = category[0]
-                formdata["qstgroups_user"] = category[1]
-            except:
-                formdata["qstgroups_id"] = None
-                formdata["qstgroups_user"] = None
+            category = formdata["question_group"].split("[*$%&]")
+            formdata["qstgroups_id"] = category[0]
+            formdata["qstgroups_user"] = category[1]
 
-            """if "question_alwaysinreg" in formdata.keys():
+            if "question_alwaysinreg" in formdata.keys():
                 formdata["question_alwaysinreg"] = 1
             else:
                 formdata["question_alwaysinreg"] = 0
@@ -114,7 +110,6 @@ class modifyQuestion_view(privateView):
                 formdata["question_alwaysinasse"] = 1
             else:
                 formdata["question_alwaysinasse"] = 0
-            """
 
             if "question_requiredvalue" in formdata.keys():
                 formdata["question_requiredvalue"] = 1
@@ -129,7 +124,6 @@ class modifyQuestion_view(privateView):
             if formdata["question_desc"] != "" and formdata["question_dtype"] != "":
                 updated, idorerror = updateQuestion(formdata, self.request)
                 if not updated:
-                    """
                     if formdata["question_alwaysinreg"] == 1:
                         formdata["question_alwaysinreg"] = "on"
                     else:
@@ -139,7 +133,6 @@ class modifyQuestion_view(privateView):
                         formdata["question_alwaysinasse"] = "on"
                     else:
                         formdata["question_alwaysinasse"] = "off"
-                    """
 
                     if formdata["question_requiredvalue"] == 1:
                         formdata["question_requiredvalue"] = "on"
@@ -156,14 +149,8 @@ class modifyQuestion_view(privateView):
                     self.request.session.flash(
                         self._("The question was successfully modified")
                     )
-                    self.returnRawViewResult = True
-                    return HTTPFound(
-                        location=self.request.route_url(
-                            "qlibrary", user_name=self.user.login
-                        )
-                    )
+                    redirect = True
             else:
-                """
                 if formdata["question_alwaysinreg"] == 1:
                     formdata["question_alwaysinreg"] = "on"
                 else:
@@ -173,7 +160,7 @@ class modifyQuestion_view(privateView):
                     formdata["question_alwaysinasse"] = "on"
                 else:
                     formdata["question_alwaysinasse"] = "off"
-                """
+
                 if formdata["question_requiredvalue"] == 1:
                     formdata["question_requiredvalue"] = "on"
                 else:
@@ -513,8 +500,8 @@ class newQuestion_view(privateView):
         formdata["question_desc"] = ""
         formdata["question_unit"] = ""
         formdata["question_dtype"] = "1"
-        #formdata["question_alwaysinreg"] = ""
-        #formdata["question_alwaysinasse"] = ""
+        formdata["question_alwaysinreg"] = ""
+        formdata["question_alwaysinasse"] = ""
         formdata["question_requiredvalue"] = ""
         # formdata['question_visible'] = 'on'
 
@@ -532,23 +519,19 @@ class newQuestion_view(privateView):
                 "[^A-Za-z0-9\-]+", "", formdata["question_code"]
             )
 
-            try:
-                category = formdata["question_group"].split("[*$%&]")
-                formdata["qstgroups_id"] = category[0]
-                formdata["qstgroups_user"] = category[1]
-            except:
-                formdata["qstgroups_id"] = None
-                formdata["qstgroups_user"] = None
+            category = formdata["question_group"].split("[*$%&]")
+            formdata["qstgroups_id"] = category[0]
+            formdata["qstgroups_user"] = category[1]
 
-            # if "question_alwaysinreg" in formdata.keys():
-            #     formdata["question_alwaysinreg"] = 1
-            # else:
-            #     formdata["question_alwaysinreg"] = 0
-            #
-            # if "question_alwaysinasse" in formdata.keys():
-            #     formdata["question_alwaysinasse"] = 1
-            # else:
-            #     formdata["question_alwaysinasse"] = 0
+            if "question_alwaysinreg" in formdata.keys():
+                formdata["question_alwaysinreg"] = 1
+            else:
+                formdata["question_alwaysinreg"] = 0
+
+            if "question_alwaysinasse" in formdata.keys():
+                formdata["question_alwaysinasse"] = 1
+            else:
+                formdata["question_alwaysinasse"] = 0
 
             if "question_requiredvalue" in formdata.keys():
                 formdata["question_requiredvalue"] = 1
@@ -574,15 +557,15 @@ class newQuestion_view(privateView):
                     add, idorerror = addQuestion(formdata, self.request)
                     if not add:
 
-                        # if formdata["question_alwaysinreg"] == 1:
-                        #     formdata["question_alwaysinreg"] = "on"
-                        # else:
-                        #     formdata["question_alwaysinreg"] = "off"
-                        #
-                        # if formdata["question_alwaysinasse"] == 1:
-                        #     formdata["question_alwaysinasse"] = "on"
-                        # else:
-                        #     formdata["question_alwaysinasse"] = "off"
+                        if formdata["question_alwaysinreg"] == 1:
+                            formdata["question_alwaysinreg"] = "on"
+                        else:
+                            formdata["question_alwaysinreg"] = "off"
+
+                        if formdata["question_alwaysinasse"] == 1:
+                            formdata["question_alwaysinasse"] = "on"
+                        else:
+                            formdata["question_alwaysinasse"] = "off"
 
                         if formdata["question_requiredvalue"] == 1:
                             formdata["question_requiredvalue"] = "on"
@@ -608,7 +591,7 @@ class newQuestion_view(privateView):
                             ):
                                 self.request.session.flash(
                                     self._(
-                                        "The question was successfully added. Configure the ranking of options now"
+                                        "The question was successfully added. Add new values now"
                                     )
                                 )
                                 self.returnRawViewResult = True
@@ -621,7 +604,7 @@ class newQuestion_view(privateView):
                                 if formdata["question_dtype"] == 9:
                                     self.request.session.flash(
                                         self._(
-                                            "The question was successfully added. Configure the comparison with check now"
+                                            "The question was successfully added. Configure the characteristic now"
                                         )
                                     )
                                     self.returnRawViewResult = True
@@ -650,14 +633,9 @@ class newQuestion_view(privateView):
                             self.request.session.flash(
                                 self._("The question was successfully added")
                             )
-                            self.returnRawViewResult = True
-                            return HTTPFound(
-                                location=self.request.route_url(
-                                    "qlibrary", user_name=self.user.login
-                                )
-                            )
+                            redirect = True
                 else:
-                    """if formdata["question_alwaysinreg"] == 1:
+                    if formdata["question_alwaysinreg"] == 1:
                         formdata["question_alwaysinreg"] = "on"
                     else:
                         formdata["question_alwaysinreg"] = "off"
@@ -666,7 +644,6 @@ class newQuestion_view(privateView):
                         formdata["question_alwaysinasse"] = "on"
                     else:
                         formdata["question_alwaysinasse"] = "off"
-                    """
 
                     if formdata["question_requiredvalue"] == 1:
                         formdata["question_requiredvalue"] = "on"
@@ -683,7 +660,6 @@ class newQuestion_view(privateView):
                     }
 
             else:
-                """
                 if formdata["question_alwaysinreg"] == 1:
                     formdata["question_alwaysinreg"] = "on"
                 else:
@@ -693,7 +669,7 @@ class newQuestion_view(privateView):
                     formdata["question_alwaysinasse"] = "on"
                 else:
                     formdata["question_alwaysinasse"] = "off"
-                """
+
                 if formdata["question_requiredvalue"] == 1:
                     formdata["question_requiredvalue"] = "on"
                 else:

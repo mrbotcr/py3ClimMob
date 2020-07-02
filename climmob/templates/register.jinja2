@@ -6,7 +6,6 @@
 {% endblock css %}
 
 {% block topScripts %}
-
     {% jsresource request,'coreresources','register' %}
     {% jsresource request,'coreresources','icheck' %}
 {% endblock topScripts %}
@@ -16,7 +15,7 @@
 {% endblock logintitle %}
 
 {% block loginwelcome %}
-    <h3>{{ _("Register as user") }}</h3>
+    <h3>{{ _("Register to ClimMob") }}</h3>
 {% endblock loginwelcome %}
 
 {% block logincontent %}
@@ -62,7 +61,6 @@
             <div class="form-group">
                 <label>{{ _("User Name") }}</label>
                 <input type="text" class="form-control" id="user_name" name="user_name" placeholder="{{ _("User Name") }}" required="" value="{{ data.user_name }}">
-                <p style="color: red">{{ _("You can only use letters and numbers. Special characters are not allowed.") }}</p>
             </div>
             <div class="form-group">
                 <label>{{ _("Password") }}</label>
@@ -78,7 +76,7 @@
             </div>
             <button type="submit" name="submit" id="submit" class="btn btn-primary block full-width m-b">{{ _("Register") }}</button>
 
-            <p class="text-muted text-center"><small>{{ _("Do you already have an account?") }}</small></p>
+            <p class="text-muted text-center"><small>{{ _("Already have an account ?") }}</small></p>
             <a class="btn btn-sm btn-white btn-block" href="{{ request.route_url('login') }}">{{ _("Login") }}</a>
         </form>
     </div>
@@ -92,7 +90,7 @@
                     <small class="font-bold">{{ _("You will use ClimMob under the following terms") }}</small>
                 </div>
                 <div class="modal-body">
-                    <p>{{ _("Terms of service") }}</p>
+                    <p>{{ _("Here goes the terms of service") }}</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-white" data-dismiss="modal">{{ _("Close") }}</button>

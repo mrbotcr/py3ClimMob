@@ -33,12 +33,11 @@
                 <div class="error-desc">
 
                     <h3>{{ _("After you cancel this data collection all data will be lost") }}</h3>
-                    <h3>{{ _("Are you sure that you want to cancel the ongoing data collection?") }}</h3>
+                    <h3>{{ _("Are you sure that you want to cancel this data collection?") }}</h3>
                 </div>
                 <form class="form-horizontal" role="form" method="post" action="{{ request.path }}">
                     <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
-                    <a class="btn btn-default" href="{{ request.route_url('dashboard') }}"> {{ _("Go back") }}</a><br><br>
-                    <button class="btn btn-danger" type="submit" name="closeAssessment"> {{ _('Cancel data collection') }}</button>
+                    <button class="btn btn-danger" type="submit" name="closeAssessment"> {{ _('Cancel the collection') }}</button>
                 </form>
             </div>
         {% endblock dltqstmessage %}
