@@ -279,10 +279,6 @@ def createResources(apppath, config):
     )
 
     # Enumerators
-    r.add_js_resource(
-        "coreresources", "enumerators", "enumerator/enumerator.js", "pace"
-    )
-    r.add_js_resource("coreresources", "enulibrary", "enumerator/library.js", "pace")
     r.add_js_resource("coreresources", "delete", "delete.js", "pace")
     r.add_js_resource("coreresources", "bootstrapmaxlength", "bootstrap-maxlength.js", "pace")
     # Project combinations
@@ -375,4 +371,7 @@ def createResources(apppath, config):
     )
     r.add_js_resource(
         "coreresources", "datatimepicker", "inspinia/js/plugins/datapicker/bootstrap-datetimepicker.min.js", "jquery"
+    )
+    r.add_js_resource(
+        "coreresources", "parsley", "inspinia/js/plugins/parsley/parsley.js", "jquery"
     )

@@ -1,0 +1,24 @@
+
+
+
+
+
+{% for technology in UserTechs %}
+    <div class="stream" style="padding: 4px 0" id="tech{{ technology.tech_id}}" {% if not checkbox %}onclick='showVarietiesInTechnology({{ technology| tojson }})'{% else%}{%if not isAlias%}{% if checked%}onclick='showVarieties({{technology.tech_id}})'{%endif%}{%endif%}{% endif %}>
+        <div class="stream-badge">
+            {% if checkbox %}
+                <i style="border: initial; padding: initial">
+                    <input type="checkbox"  {% if checked %}checked {%endif%} class="{% if isAlias%}i-checksAlias{% if extra%}Extra{%endif%}{% else %}i-checks{% endif %}" id="element_{%if isAlias%}{{technology.alias_id}}{%else%}{{ technology.tech_id }}{%endif%}_{% if checked %}exists{% else %}new{% endif %}">
+                </i>
+            {% else %}
+                <i class="fa fa-pagelines" style="color:{{ color }}"></i>
+            {% endif %}
+        </div>
+        <div class="stream-panel" style="margin-top: 4px">
+            <div class="stream-info">
+               <p style="font-size: 14px; margin: initial">{% if isAlias %}<b>{{ technology.alias_name }}</b>{% if extra %} ({{ _("only for this project") }}){%endif%}{% else%}<b>{{ technology.tech_name }}</b> {{ _("with") }} {{ technology.quantity }} {{ _("options") }}</p>{% endif %}
+            </div>
+        </div>
+    </div>
+{% endfor %}
+

@@ -1,6 +1,7 @@
 from climmob.models.climmobv4 import Technology, Techalia, Prjtech
 from ...models.schema import mapToSchema, mapFromSchema
 from sqlalchemy import func
+from .techaliases import getTechsAlias
 
 __all__ = [
     "getUserTechs",
@@ -14,6 +15,7 @@ __all__ = [
     "technologyExist",
     "isTechnologyAssigned",
     "getTechnologyByName",
+    "getUserTechById"
 ]
 
 
@@ -28,15 +30,12 @@ def getUserTechs(user, request):
             .label("quantity"),
         )
         .filter_by(user_name=user)
+        .order_by(Technology.tech_name)
         .all()
     )
 
     for technology in result:
-        res2 = mapFromSchema(
-            request.dbsession.query(Techalia)
-            .filter(Techalia.tech_id == technology[0].tech_id)
-            .all()
-        )
+
         res3 = (
             request.dbsession.query(func.count(Prjtech.tech_id).label("found"))
             .filter(Prjtech.tech_id == technology[0].tech_id)
@@ -49,12 +48,36 @@ def getUserTechs(user, request):
                 "tech_name": technology[0].tech_name,
                 "user_name": technology[0].user_name,
                 "quantity": technology.quantity,
-                "tech_alias": res2,
+                "tech_alias": getTechsAlias(technology[0].tech_id, request),
                 "found": res3.found,
             }
         )
     return res
 
+def getUserTechById(tech_id,request):
+
+    res = []
+    result = mapFromSchema(
+        request.dbsession.query(
+            Technology,
+            request.dbsession.query(func.count(Techalia.tech_id))
+            .filter(Technology.tech_id == Techalia.tech_id)
+
+            .label("quantity"),
+        ).filter(Technology.tech_id == tech_id)
+        .one()
+    )
+
+    res3 = (
+        request.dbsession.query(func.count(Prjtech.tech_id).label("found"))
+        .filter(Prjtech.tech_id == tech_id)
+        .one()
+    )
+
+    result["tech_alias"] = getTechsAlias(tech_id, request)
+    result["found"] = res3.found
+
+    return result
 
 def findTechInLibrary(data, request):
     result = (

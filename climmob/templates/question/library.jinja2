@@ -75,7 +75,10 @@
         <div class="col-md-5 iboxExtraForActions" id="ibox_category" style="display: none">
             <div class="ibox">
                 <div class="ibox-title" >
-                    <h5>{{ _("Create category") }}</h5>
+                    <h5>{{ _("Category details") }}</h5>
+                    <div class="ibox-tools">
+                        <button id="btnCancelCategory"  class="btn btn-xs btn-default pull-right " ><i class="fa fa-close" style="color: black"></i> </button>
+                    </div>
                 </div>
                 <div class="ibox-content " >
                     <div class="row ">
@@ -87,11 +90,11 @@
                         </div>
                         <div class="col-sm-12" style="text-align: right">
                             <br>
-                            <div class="btn-group " >
-                                <button id="btnCancelCategory" onclick="" type="submit" class="btn btn-default ">{{ _("Close") }}</button>
-                                <button id="btnNewCategory" onclick="" type="submit" class="btn btn-primary btnsCategory">{{ _("Save category") }}</button>
-                                <button id="btnUpdateCategory" onclick="" type="submit" class="btn btn-warning btnsCategory">{{ _("Save category") }}</button>
-                                <button id="btnDeleteCategory" onclick="actionCategory('delete')" type="submit" class="btn btn-danger btnsCategory">{{ _("Delete category") }}</button>
+                            <div>
+                                <button id="btnNewCategory" onclick="" type="submit" class="btn btn-primary pull-right btnsCategory">{{ _("Save and close") }}</button>
+                                <button id="btnUpdateCategory" onclick="" type="submit" class="btn btn-primary pull-right btnsCategory">{{ _("Save and close") }}</button>
+                                <button id="btnDeleteCategory" onclick="actionCategory('delete')" type="submit" class="btn btn-danger pull-left btnsCategory">{{ _("Delete category") }}</button>
+                                <br><br>
                             </div>
                         </div>
                     </div>
@@ -103,7 +106,10 @@
         <div class="col-md-5 iboxExtraForActions" id="ibox_question" style="display: none">
             <div class="ibox">
                 <div class="ibox-title" >
-                    <h5>{{ _("Create question") }}</h5>
+                    <h5>{{ _("Question details") }}</h5>
+                    <div class="ibox-tools">
+                        <button id="btn_cancel_question"  class="btn btn-xs btn-default pull-right " ><i class="fa fa-close" style="color: black"></i></button>
+                    </div>
                 </div>
                 <div class="ibox-content " >
                     {% snippet 'snippets/error.jinja2', error_summary=error_summary %}
@@ -112,13 +118,11 @@
 
                         {% snippet 'snippets/question/question-form.jinja2',formdata=formdata, request=request, Categories =Categories %}
 
-                        <div style="text-align: right">
-                            <div class="btn-group">
-                                <input id="btn_cancel_question"type="submit" class="btn btn-default " value="{{ _("Close") }}">
-                                <input id="btn_add_question"  type="submit" name="btn_add_question" class="btn btn-primary btnsQuestion" value="{{ _('Save and close') }}">
-                                <input id="btn_update_question"  type="submit" name="btn_update_question" class="btn btn-warning btnsQuestion" value="{{ _('Save and close') }}">
-                                <input id="btn_delete_question" name="btn_delete_question" class="btn btn-danger btnsQuestion" onclick="showDeleteQuestion()" value="{{ _('Delete question') }}">
-                            </div>
+                        <div>
+                            <input id="btn_add_question"  type="submit" name="btn_add_question" class="btn btn-primary pull-right btnsQuestion" value="{{ _('Save and close') }}">
+                            <input id="btn_update_question"  type="submit" name="btn_update_question" class="btn btn-primary pull-right btnsQuestion" value="{{ _('Save and close') }}">
+                            <input id="btn_delete_question" name="btn_delete_question" class="btn btn-danger pull-left btnsQuestion" onclick="showDeleteQuestion()" value="{{ _('Delete question') }}">
+                            <br><br>
                         </div>
 
                     </form>
@@ -314,16 +318,16 @@
                 {
                     $("#tableForOptions").append("" +
                     "<tr>" +
-                    "<td class='text-center' style='padding: 10px'><input type='text' class='form-control inputForOption' id='inputOptions1' placeholder='Option' required oninvalid=\"this.setCustomValidity('{{ _("Write the option value.") }}')\" onchange=\"this.setCustomValidity('')\" /></td>" +
-                    "<td class='text-center'></td>" +
+                    "<td class='text-center' style='padding: 10px; width:60%'><input type='text' class='form-control inputForOption' id='inputOptions1' placeholder='Option' required oninvalid=\"this.setCustomValidity('{{ _("Write the option value.") }}')\" onchange=\"this.setCustomValidity('')\" /></td>" +
+                    "<td class='text-center' style='width:30%'></td>" +
                     "<td class='text-center'></td>" +
                     "<td class='text-center'></td>" +
                     "</tr>")
                     $(".inputForOption").prop('disabled',false)
                     $(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
                     $("#btn_add_option").css('display', 'initial');
-                    $("#btn_add_option_other").css('display', 'initial');
-                    $("#btn_add_option_na").css('display', 'initial');
+                    $("#btn_add_option_other").prop('disabled', false);
+                    $("#btn_add_option_na").prop('disabled', false);
                     $("#form_options").css('display', 'initial');
                 }
 
@@ -534,18 +538,19 @@
             all = $(".inputForOption").length;
             var rowCount = $(".inputForOption").eq(all-1).attr("id").replace('inputForOption','');
 
-            $("#btn_add_option_other").css('display','none')
+            $("#btn_add_option_other").prop('disabled', true);
             $("#tableForOptions").append("" +
             "<tr>" +
             "<td class='text-center' style='padding: 10px'><input type='text' class='form-control inputForOption' id='inputOptions"+(rowCount+1)+"' value='{{ _("Other") }}' placeholder='Option' required oninvalid=\"this.setCustomValidity('{{ _("Write the option value.") }}')\" onchange=\"this.setCustomValidity('')\" /></td>" +
-            "<td class='text-center'><label class='control-label'>{{ _("Value is other") }}</label><br><input type='checkbox' disabled class='inputForQuestionCheck' id='checkOtherOptions"+(rowCount+1)+"' data-on-color='success' data-off-color='danger' data-on-text='Yes' data-off-text='No' checked=''><br><br></td>" +
+            "<td class='text-center'><div class='bg-success p-xs b-r-sm'> {{ _("Other") }}</div><div style='display:none'><label class='control-label'>{{ _("Value is other") }}</label><br><input type='checkbox' disabled  class='inputForQuestionCheck' id='checkOtherOptions"+(rowCount+1)+"' data-on-color='success' data-off-color='danger' data-on-text='Yes' data-off-text='No' checked=''><br><br></div></td>" +
             "<td class='text-center'> <a class='btn_delete_option_other btn btn-danger btnsQuestion' style='margin: 5px'> <i class='fa fa-trash'></i></a></td>" +
             "</tr>")
             $(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
+            $("#checkOtherOptions"+(rowCount+1)).hide()
 
             $(".btn_delete_option_other").click(function () {
                 $(this).parent().parent().remove();
-                $("#btn_add_option_other").css('display','initial')
+                $("#btn_add_option_other").prop('disabled', false);
             });
         })
 
@@ -553,12 +558,12 @@
             all = $(".inputForOption").length;
             var rowCount = $(".inputForOption").eq(all-1).attr("id").replace('inputForOption','');
 
-            $("#btn_add_option_na").css('display','none')
+            $("#btn_add_option_na").prop('disabled', true);
 
             $("#tableForOptions").append("" +
             "<tr>" +
             "<td class='text-center' style='padding: 10px'><input type='text' class='form-control inputForOption' id='inputOptions"+(rowCount+1)+"' value='{{ _("Not applicable") }}' placeholder='Option' required oninvalid=\"this.setCustomValidity('{{ _("Write the option value.") }}')\" onchange=\"this.setCustomValidity('')\" /></td>" +
-            "<td class='text-center'><label class='control-label'>{{ _("Value is not applicable") }}</label><br><input type='checkbox' disabled class='inputForQuestionCheck' id='checkNaOptions"+(rowCount+1)+"'  data-on-color='success' data-off-color='danger' data-on-text='Yes' data-off-text='No' checked=''><br><br></td>" +
+            "<td class='text-center'><div class='bg-info p-xs b-r-sm'> {{ _("Not applicable") }}</div><div style='display:none'><label class='control-label'>{{ _("Value is not applicable") }}</label><br><input type='checkbox' disabled class='inputForQuestionCheck' id='checkNaOptions"+(rowCount+1)+"'  data-on-color='success' data-off-color='danger' data-on-text='Yes' data-off-text='No' checked=''><br><br></div></td>" +
             "<td class='text-center'> <a class='btn_delete_option_na btn btn-danger btnsQuestion' style='margin: 5px'> <i class='fa fa-trash'></i></a></td>" +
             "</tr>")
 
@@ -566,7 +571,7 @@
 
             $(".btn_delete_option_na").click(function (event) {
                 $(this).parent().parent().remove();
-                $("#btn_add_option_na").css('display','initial');
+                $("#btn_add_option_na").prop('disabled', false);
             });
         })
 
@@ -686,24 +691,24 @@
                     isother = false
                     isna = false
                     detail = "<tr>" +
-                    "<td class='text-center' style='padding: 10px'><input type='text' class='form-control inputForOption' id='inputOptions"+(i+1)+"' placeholder='Option' required oninvalid=\"this.setCustomValidity('{{ _("Write the option value.") }}')\" onchange=\"this.setCustomValidity('')\"  value='"+options[i].value_desc+"'/></td>" +
-                    "<td class='text-center'>"
+                    "<td class='text-center' style='padding: 10px; width:60%'><input type='text' class='form-control inputForOption' id='inputOptions"+(i+1)+"' placeholder='Option' required oninvalid=\"this.setCustomValidity('{{ _("Write the option value.") }}')\" onchange=\"this.setCustomValidity('')\"  value='"+options[i].value_desc+"'/></td>" +
+                    "<td class='text-center' style='width:30%'>"
 
                     if(options[i].value_isother == 1)
                     {
-                        detail += "<label class='control-label'>{{ _("Value is other") }}</label><br><input type='checkbox' class='inputForQuestionCheck' disabled id='checkOtherOptions"+(i+1)+"' data-on-color='success' data-off-color='danger' data-on-text='Yes' data-off-text='No' checked=''><br>"
+                        detail += "<div class='bg-success p-xs b-r-sm'> {{ _("Other") }}</div><div style='display:none'><label class='control-label'>{{ _("Value is other") }}</label><br><input type='checkbox' class='inputForQuestionCheck' disabled id='checkOtherOptions"+(i+1)+"' data-on-color='success' data-off-color='danger' data-on-text='Yes' data-off-text='No' checked=''><br></div>"
                         showOther = false
                         isother = true
                     }
 
                     if(options[i].value_isna == 1)
                     {
-                        detail += "<label class='control-label'>{{ _("Value is not applicable") }}</label><br><input type='checkbox' class='inputForQuestionCheck' disabled id='checkNaOptions"+(i+1)+"' data-on-color='success' data-off-color='danger' data-on-text='Yes' data-off-text='No' checked=''><br>"
+                        detail += "<div class='bg-info p-xs b-r-sm'> {{ _("Not applicable") }}</div><div style='display:none'><label class='control-label'>{{ _("Value is not applicable") }}</label><br><input type='checkbox' class='inputForQuestionCheck' disabled id='checkNaOptions"+(i+1)+"' data-on-color='success' data-off-color='danger' data-on-text='Yes' data-off-text='No' checked=''><br></div>"
                         showNa = false
                         isna = true
                     }
 
-                    detail += "<br></td>"
+                    detail += "</td>"
 
                     detail += "<td class='text-center'> "
                     if(i !=0 )
@@ -720,10 +725,10 @@
                     //id= event.target.id.replace('idOption_','').split('{--}')
                     id= event.target.id.split('{--}')
                     if (id[0] == 'true')
-                        $("#btn_add_option_other").css('display','initial');
+                        $("#btn_add_option_other").prop('disabled', false);
 
                     if (id[1] == 'true')
-                        $("#btn_add_option_na").css('display','initial');
+                        $("#btn_add_option_na").prop('disabled', false);
                     //showDeleteOption('{{ request.host_url }}/question/'+id[1]+'/value/'+id[0]+'/delete','{{ _("Do you really want to remove this option?") }}','{{ request.session.get_csrf_token() }}','noRedirect')
                     $(this).parent().parent().remove();
                 });
@@ -749,14 +754,17 @@
 
                     if(showNa)
                     {
-                        $("#btn_add_option_na").css('display','initial')
+                        $("#btn_add_option_na").prop('disabled', false);
+                    }else{
+                        $("#btn_add_option_na").prop('disabled', true);
                     }
 
                     if(showOther)
                     {
-                        $("#btn_add_option_other").css('display','initial')
+                        $("#btn_add_option_other").prop('disabled', false);
+                    }else{
+                        $("#btn_add_option_other").prop('disabled', true);
                     }
-
 
                 }else{
                     $("#btn_add_question").css('display','initial')
@@ -779,10 +787,7 @@
             }
 
             $("#question_code").focus()
-
         }
-
-
 
         function clean_extra_fields()
         {
@@ -797,6 +802,7 @@
             $("#tableForOptions").html("")
 
         }
+
         function clean_extra_section()
         {
             $(".iboxExtraForActions").css("display","none")
@@ -893,7 +899,6 @@
         {
             $(".previewElement").css('display','none')
         }
-
 
     </script>
 

@@ -35,6 +35,7 @@ def searchTechnologies(user, projectid, request):
         request.dbsession.query(Technology)
         .filter(or_(Technology.user_name == user, Technology.user_name == "bioversity"))
         .filter(Technology.tech_id.notin_(subquery))
+        .order_by(Technology.tech_name)
         .all()
     )
     for technology in result:
@@ -64,6 +65,7 @@ def searchTechnologiesInProject(user, project_id, request):
         .filter(Prjtech.tech_id == Technology.tech_id)
         .filter(Prjtech.user_name == user)
         .filter(Prjtech.project_cod == project_id)
+        .order_by(Technology.tech_name)
         .all()
     )
 

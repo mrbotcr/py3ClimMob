@@ -4,14 +4,18 @@
     <title>{{ _("ClimMob | Field agents") }}</title>
 {% endblock title %}
 
+
 {% block css %}
     {% cssresource request,'coreresources','sweet' %}
+    {% cssresource request,'coreresources','switch' %}
 {% endblock css %}
 
 {% block topScripts %}
+    {% jsresource request,'coreresources','switch' %}
     {% jsresource request,'coreresources','sweet' %}
     {% jsresource request,'coreresources','delete' %}
 {% endblock topScripts %}
+
 
 {% block pageheading %}
     <div class="row wrapper border-bottom white-bg page-heading">
@@ -36,11 +40,45 @@
 
 {% block pagecontent %}
     <div class="row">
-        <div class="col-lg-12 ">
+
+        <div class="col-lg-6 ">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
+                    <h5>{{ _("Field agent details") }}</h5>
                     <div class="ibox-tools">
-                        <a href="{{ request.route_url('addenumerator') }}"  class="btn btn-xs btn-primary pull-right clm-grpactions" style="margin-right: 20px">{{ _("Add new field agent") }}</a>
+                        <button id="btn_cancel_enumerator"  class="btn btn-xs btn-default pull-right " ><i class="fa fa-close" style="color: black"></i> </button>
+                    </div>
+                </div>
+                <div class="ibox-content" >
+                    {% if error_summary %}
+                        {% for key, error in error_summary.items() %}
+                            <div class="alert alert-danger alert-dismissable">
+                                <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <div class="error-desc">
+                        <form class="form-horizontal" role="form" method="post" action="{{ request.path }}" >
+                            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                            {% snippet 'snippets/enumerators/enumerator-form.jinja2', dataworking=dataworking, modify=modify %}
+                            <button type="submit" class="btn btn-primary pull-right btnsEnumerator" id="btn_add_enumerator" name="btn_add_enumerator"> {{ _('Add and close') }}</button>
+                            <button type="submit" class="btn btn-primary pull-right btnsEnumerator" id="btn_modify_enumerator" name="btn_modify_enumerator" style="display: none"> {{ _('Save and close') }}</button>
+                        </form>
+                    </div>
+                    <br>
+                    <br>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 ">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{{ _("Registered field agents") }}</h5>
+                    <div class="ibox-tools">
+{#                        <a href="{{ request.route_url('addenumerator') }}"  class="btn btn-xs btn-primary pull-right clm-grpactions" style="margin-right: 20px">{{ _("Add new field agent") }}</a>#}
                     </div>
                 </div>
                 <div class="ibox-content" >
@@ -57,10 +95,10 @@
 
                             {% for enumerator in searchEnumerator %}
                                 <tr>
-                                    <td> {{ enumerator.enum_name }}</td>
-                                    <td> {{ enumerator.enum_id }}</td>
-                                    <td> {{ enumerator.enum_password }}</td>
-                                    <td >
+                                    <td style="vertical-align: middle;"> {{ enumerator.enum_name }}</td>
+                                    <td style="vertical-align: middle;"> {{ enumerator.enum_id }}</td>
+                                    <td style="vertical-align: middle;"> {{ enumerator.enum_password }}</td>
+                                    <td style="vertical-align: middle;">
 
                                         {% if enumerator.enum_active == 1 %}
                                             <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="#"><i class="fa fa-thumbs-o-up"></i> {{ _('Can submit data') }}</a>
@@ -69,8 +107,8 @@
                                         {% endif %}
 
                                     </td>
-                                    <td class="text-center">
-                                        <a class="btn btn-warning btn-circle" href="{{request.route_url('modifyenumerator',enumeratorid = enumerator.enum_id)}}"  title="Edit field agent"><i class="fa fa-pencil"></i></a>
+                                    <td class="text-center" style="vertical-align: middle;">
+                                        <button class="btn btn-warning btn-circle" onclick='seeEnumerator({{ enumerator.enum_name| tojson }},{{ enumerator.enum_id| tojson }},{{ enumerator.enum_password| tojson }},{{ enumerator.enum_active }})'  title="Edit field agent"><i class="fa fa-pencil"></i></button>
 {#                                        <button class="btn btn-danger btn-circle" onclick="showDeleteEnumerator('{{request.route_url('deleteenumerator',enumeratorid = enumerator.enum_id)}}','Remove field agent','Remove');" type="button" title="Remove field agent"><i class="fa fa-times"></i></button>#}
                                         <button class="btn btn-danger btn-circle" onclick="showDelete('{{ request.route_url('deleteenumerator',enumeratorid = enumerator.enum_id)}}','{{ _("Do you really want to remove this field agent?") }}','{{ request.session.get_csrf_token() }}')" type="button" title="Remove field agent"><i class="fa fa-times"></i></button>
                                     </td>
@@ -82,13 +120,57 @@
                     {% else %}
                         <div style="width: 100%; text-align: center">
                             <h3><b>{{ _("No field agents to display") }}</b></h3>
-                            <a href="{{ request.route_url('addenumerator') }}"  class="btn btn-primary clm-grpactions" style="margin-right: 20px">{{ _("Add new field agent") }}</a>
+{#                            <a href="{{ request.route_url('addenumerator') }}"  class="btn btn-primary clm-grpactions" style="margin-right: 20px">{{ _("Add new field agent") }}</a>#}
                         </div>
                     {% endif %}
                 </div>
             </div>
         </div>
+
+
     </div>
 
+    <script>
+
+    $(document).ready(function () {
+
+    });
+
+    $("#btn_cancel_enumerator").click(function () {
+        cleanButtons()
+        cleanInputs()
+        $("#btn_add_enumerator").css('display','initial')
+        $("#div_submit_data").css("display",'none')
+    })
+
+    function seeEnumerator(name, id, password, check) {
+        cleanButtons()
+        cleanInputs()
+
+        if (check == 1)
+            $("[name='ckb_modify_status']").bootstrapSwitch('state',true);
+        else
+            $("[name='ckb_modify_status']").bootstrapSwitch('state',false);
+
+        $("#enum_name").val(name)
+        $("#enum_id").val(id)
+        $("#enum_password").val(password)
+        $("#enum_id").attr('readonly', true);
+
+        $("#btn_modify_enumerator").css('display','initial')
+        $("#div_submit_data").css("display",'initial')
+    }
+
+    function cleanButtons()
+    {
+        $(".btnsEnumerator").css("display",'none')
+    }
+
+    function cleanInputs()
+    {
+        $(".inputsEnumerators").val("")
+        $("#enum_id").attr('readonly', false);
+    }
+    </script>
 {% endblock pagecontent %}
 

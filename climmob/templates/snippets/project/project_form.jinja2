@@ -3,14 +3,14 @@
     <div class="col-md-6">
         <div class="ibox float-e-margins">
             <div class="ibox-title">
-                <h5>{{ _("1 -General information") }}</h5>
+                <h5>{{ _("1. General information") }}</h5>
 
             </div>
             <div class="ibox-content">
 
                 <div class="form-group">
                     <label class="col-sm-4 control-label">{{ _("Project code") }}</label>
-                    <div class="col-sm-8"><input class="form-control" id="newproject_code" required oninvalid="this.setCustomValidity('{{ _("Write the project name.") }}')" onchange="this.setCustomValidity('')" {% if edit %} disabled {% endif %} name="project_cod" value="{{ dataworking.project_cod }}" maxlength="10"></div>
+                    <div class="col-sm-8"><input class="form-control" id="newproject_code" required oninvalid="this.setCustomValidity('{{ _("Write the project code.") }}')" onchange="this.setCustomValidity('')" {% if edit %} disabled {% endif %} name="project_cod" value="{{ dataworking.project_cod }}" maxlength="10"></div>
                 </div>
                 <div class="hr-line-dashed"></div>
 
@@ -43,7 +43,7 @@
                 <div class="form-group">
                     <label class="col-sm-4 control-label">{{ _("Tags") }}</label>
                     <div class="col-sm-8">
-                        <input class="tagsinput form-control" name="project_tags" required="" id="newproject_tag" type="text" value="{{ dataworking.project_tags }}"/>
+                        <input class="tagsinput form-control" name="project_tags" id="newproject_tag" type="text" data-role="tagsinput" value="{{ dataworking.project_tags }}"  oninvalid="this.setCustomValidity('{{ _("Write the tags.") }}')" onchange="this.setCustomValidity('')">
                         <span class="help-block m-b-none">{{ _("Press comma after every word to add the tag") }}.</span>
                     </div>
                 </div>
@@ -66,7 +66,7 @@
     <div class="col-md-6">
         <div class="ibox float-e-margins">
             <div class="ibox-title">
-                <h5>{{ _("2- Size") }}</h5>
+                <h5>{{ _("2. Size") }}</h5>
 
             </div>
             <div class="ibox-content">
@@ -88,28 +88,10 @@
     <div class="col-md-6">
         <div class="ibox float-e-margins">
             <div class="ibox-title">
-                <h5>{{ _("3- Geographic information") }}</h5>
+                <h5>{{ _("3. Geographic information") }}</h5>
 
             </div>
             <div class="ibox-content">
-
-{#                <div class="form-group">#}
-{#                    <label class="col-sm-2 control-label">{{ _("Latitude") }}</label>#}
-{#                    <div class="col-sm-10"><input class="form-control" id="newproject_lat" required="" name="project_lat" value="{{ dataworking.project_lat }}" readonly></div>#}
-{#                </div>#}
-{#                <div class="hr-line-dashed"></div>#}
-{##}
-{#                <div class="form-group">#}
-{#                    <label class="col-sm-2 control-label">{{ _("Longitude") }}</label>#}
-{#                    <div class="col-sm-10"><input class="form-control" id="newproject_lon" required="" name="project_lon" value="{{ dataworking.project_lon }}" readonly></div>#}
-{#                </div>#}
-{#                <div class="hr-line-dashed"></div>#}
-{#                <div class="form-group">#}
-{#                    <label class="col-sm-2 control-label">{{ _("Map") }}</label>#}
-{#                    <div class="col-sm-10">#}
-{#                        <div id="gmap_marker" class="gmaps" style="width: 100%;height: 400px"></div>#}
-{#                    </div>#}
-{#                </div>#}
 
                 <div class="form-group">
                     <label class="col-sm-4 control-label">{{ _("Country") }}</label>
@@ -123,6 +105,18 @@
                         </select>
                     </div>
                 </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>{{ _("4. Type of project") }}</h5>
+
+            </div>
+            <div class="ibox-content">
 
             </div>
         </div>
@@ -159,126 +153,3 @@
 
     $('.chosen-select').chosen({width: "100%"});
 </script>
-{#<div class="tabs-container" style="background: #2f4050">#}
-{#    <ul class="nav nav-tabs">#}
-{#        {% block newprjtabs %}#}
-{#            <li class="active"><a data-toggle="tab" href="#tab-1" aria-expanded="true"> General information</a></li>#}
-{#            <li><a data-toggle="tab" href="#tab-2" aria-expanded="false">Sample size</a></li>#}
-{#            <li><a data-toggle="tab" href="#tab-3" aria-expanded="false">Geographic information</a></li>#}
-{#        {% endblock newprjtabs %}#}
-{#    </ul>#}
-{#    <div class="tab-content">#}
-{#        {% block newprjcontents %}#}
-{#            <div id="tab-1" class="tab-pane active">#}
-{##}
-{#                <div class="panel-body">#}
-{#                    {% block newprjgeninfo %}#}
-{##}
-{#                        <div class="form-group">#}
-{#                            <label class="col-sm-2 control-label">Project code</label>#}
-{#                            <div class="col-sm-10"><input class="form-control" id="newproject_code" required="" {% if edit %} disabled {% endif %} name="project_cod" value="{{ dataworking.project_cod }}"></div>#}
-{#                        </div>#}
-{#                        <div class="hr-line-dashed"></div>#}
-{##}
-{#                        <div class="form-group">#}
-{#                            <label class="col-sm-2 control-label">Project Name</label>#}
-{#                            <div class="col-sm-10"><input class="form-control" id="newproject_name" required="" name="project_name" value="{{ dataworking.project_name }}"></div>#}
-{#                        </div>#}
-{#                        <div class="hr-line-dashed"></div>#}
-{##}
-{#                        <div class="form-group">#}
-{#                            <label class="col-sm-2 control-label">Description</label>#}
-{#                            <div class="col-sm-10"><textarea class="form-control" name="project_abstract" required="" id="newproject_description">{{ dataworking.project_abstract }}</textarea></div>#}
-{#                        </div>#}
-{#                        <div class="hr-line-dashed"></div>#}
-{##}
-{##}
-{#                        <div class="form-group">#}
-{#                            <label class="col-sm-2 control-label">Include comparison with the local variety?</label>#}
-{#                            <!--div class="col-sm-10"><textarea class="form-control" name="project_abstract" required="" id="newproject_description">{{ dataworking.project_abstract }}</textarea></div-->#}
-{#                            <div class="col-sm-10">#}
-{#                                <input type="checkbox" id="ckb_localvariety"#}
-{#                                       name="ckb_localvariety" data-on-color="success"#}
-{#                                       data-off-color="danger" data-on-text="{{ _('YES') }}"#}
-{#                                       data-off-text="{{ _('NO') }}" {% if dataworking.project_localvariety == 'on' %} checked="" {% endif %}>#}
-{#                                <span class="help-block m-b-none text-left">Always include this question in the assessment forms</span>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                        <div class="hr-line-dashed"></div>#}
-{##}
-{#                        <div class="form-group">#}
-{#                            <label class="col-sm-2 control-label">Tags</label>#}
-{#                            <div class="col-sm-10">#}
-{#                                <input class="tagsinput form-control" name="project_tags" required="" id="newproject_tag" type="text" value="{{ dataworking.project_tags }}"/>#}
-{#                                <span class="help-block m-b-none">Press comma after every word to add the tag.</span>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                        <div class="hr-line-dashed"></div>#}
-{##}
-{#                        <div class="form-group">#}
-{#                            <label class="col-sm-2 control-label">Principal investigator</label>#}
-{#                            <div class="col-sm-10"><input class="form-control" id="newproject_principal_investigator" required="" name="project_pi" value="{{ dataworking.project_pi }}"></div>#}
-{#                        </div>#}
-{#                        <div class="hr-line-dashed"></div>#}
-{##}
-{#                        <div class="form-group">#}
-{#                            <label class="col-sm-2 control-label">Email address</label>#}
-{#                            <div class="col-sm-10"><input type="email" class="form-control" id="newproject_mail_address" required="" name="project_piemail" value="{{ dataworking.project_piemail }}"></div>#}
-{#                        </div>#}
-{#                        <div class="hr-line-dashed"></div>#}
-{#                        {% block newprjgenextra %}#}
-{##}
-{#                        {% endblock newprjgenextra %}#}
-{#                    {% endblock newprjgeninfo %}#}
-{#                </div>#}
-{#            </div>#}
-{#            <div id="tab-2" class="tab-pane">#}
-{#                <div class="panel-body">#}
-{#                    {% block newprjsample %}#}
-{##}
-{#                        <div class="form-group">#}
-{#                            <label class="col-sm-2 control-label">Number of observers participating in the project</label>#}
-{#                            <div class="col-sm-10"><input type="number" class="form-control" id="newproject_numobs" required="" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} name="project_numobs" value="{{ dataworking.project_numobs }}"></div>#}
-{#                        </div>#}
-{#                        <div class="hr-line-dashed"></div>#}
-{##}
-{#                        <div class="form-group">#}
-{#                            <label class="col-sm-2 control-label">Number of items each observer compares</label>#}
-{#                            <div class="col-sm-10"><input type="number" class="form-control" id="newproject_numcom" required="" readonly {% if dataworking.project_regstatus != 0 %} disabled {% endif %} name="project_numcom" value="{{ dataworking.project_numcom }}"></div>#}
-{#                        </div>#}
-{#                        <div class="hr-line-dashed"></div>#}
-{#                        {% block newprjsamplextra %}#}
-{##}
-{#                        {% endblock newprjsamplextra %}#}
-{#                    {% endblock newprjsample %}#}
-{#                </div>#}
-{#            </div>#}
-{#            <div id="tab-3" class="tab-pane">#}
-{#                <div class="panel-body">#}
-{#                    {% block newprjgeo %}#}
-{#                        <div class="form-group">#}
-{#                            <label class="col-sm-2 control-label">Latitude</label>#}
-{#                            <div class="col-sm-10"><input class="form-control" id="newproject_lat" required="" name="project_lat" value="{{ dataworking.project_lat }}" readonly></div>#}
-{#                        </div>#}
-{#                        <div class="hr-line-dashed"></div>#}
-{##}
-{#                        <div class="form-group">#}
-{#                            <label class="col-sm-2 control-label">Longitude</label>#}
-{#                            <div class="col-sm-10"><input class="form-control" id="newproject_lon" required="" name="project_lon" value="{{ dataworking.project_lon }}" readonly></div>#}
-{#                        </div>#}
-{#                        <div class="hr-line-dashed"></div>#}
-{#                        <div class="form-group">#}
-{#                            <label class="col-sm-2 control-label">Map</label>#}
-{#                            <div class="col-sm-10">#}
-{#                                <div id="gmap_marker" class="gmaps" style="width: 100%;height: 400px"></div>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                        {% block newprjgeoextra %}#}
-{##}
-{#                        {% endblock newprjgeoextra %}#}
-{#                    {% endblock newprjgeo %}#}
-{#                </div>#}
-{#            </div>#}
-{#        {% endblock newprjcontents %}#}
-{#    </div>#}
-{#</div>#}

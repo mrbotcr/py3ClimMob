@@ -19,7 +19,7 @@ function showDelete (url,text, csrf, where = '') {
                     type: "POST",
                     data: {"csrf_token": csrf},
                     success: function(respuesta) {
-                        if (where != 'noRedirect') {
+                        if (where != 'noRedirect' & where != 'noRedirectAndAction') {
                             if (where == '') {
                                 location.href = window.location.href;
                             } else {
@@ -27,6 +27,11 @@ function showDelete (url,text, csrf, where = '') {
                             }
                         }else{
                             swal.close()
+
+                            if(where == "noRedirectAndAction")
+                            {
+                                myCustomAction()
+                            }
                         }
                     },
                     error: function(respuesta) {

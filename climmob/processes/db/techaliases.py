@@ -24,6 +24,7 @@ def getTechsAlias(idtech, request):
             .label("quantity"),
         )
         .filter(Techalia.tech_id == idtech)
+        .order_by(Techalia.alias_name)
         .all()
     )
 

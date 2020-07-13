@@ -47,12 +47,14 @@ def getDataProduct(user, project, request):
         "SELECT *,'Fail.' as state  FROM products p where p.celery_taskid not in (select taskid from finishedtasks) and datediff(sysdate(),datetime_added)>=2 "
         ") "
         "as edited "
-        "where edited.datetime_added = (select max(f.datetime_added) from products f where f.output_id = edited.output_id) and edited.user_name='"
+        "where edited.datetime_added = (SELECT max(datetime_added) FROM products where project_cod = '"+project+"' and user_name='"+user+"' and product_id= edited.product_id) and edited.user_name='"
         + user
         + "' and edited.project_cod='"
         + project
         + "' order by field(edited.product_id,'fieldagents','packages','qrpackage') desc, edited.datetime_added"
     )
+
+    #print(sql)
 
     """sql = "select edited.celery_taskid,edited.user_name,edited.project_cod,edited.product_id, edited.datetime_added, edited.output_id, edited.state " \
           "from " \

@@ -7,7 +7,7 @@
         <label class="col-sm-4 control-label">{{ _("Variable code") }}</label>
         <div class="col-sm-8">
             <input style="display: none"  type="text" id="question_id" class="form-control" name="question_id" >
-            <input style="max-width: 170px" maxlength="16" type="text" id="question_code" class="form-control inputForQuestion" required="" name="question_code" oninvalid="this.setCustomValidity('{{ _("Write the variable code.") }}')" onchange="this.setCustomValidity('')">
+            <input style="max-width: 170px" maxlength="16" type="text" id="question_code" class="form-control inputForQuestion" name="question_code" required="" oninvalid="this.setCustomValidity('{{ _("Write the variable code.") }}')" onchange="this.setCustomValidity('')">
             <span class="help-block m-b-none text-left">{{ _("Column label for the database (without spaces or special characters), for example 'grainyield'") }}</span>
         </div>
     </div>
@@ -15,7 +15,7 @@
     <div class="form-group">
         <label class="col-sm-4 control-label">{{ _("Variable name") }}</label>
         <div class="col-sm-8">
-            <input style="max-width: 270px" maxlength="30" type="text" id="question_name" class="form-control inputForQuestion" required="" name="question_name" oninvalid="this.setCustomValidity('{{ _("Write the variable name.") }}')" onchange="this.setCustomValidity('')">
+            <input style="max-width: 270px" maxlength="30" type="text" id="question_name" class="form-control inputForQuestion" name="question_name" required="" oninvalid="this.setCustomValidity('{{ _("Write the variable name.") }}')" onchange="this.setCustomValidity('')">
             <span class="help-block m-b-none text-left">{{ _("Short name for the variable, for example 'Grain Yield'") }}</span>
         </div>
     </div>
@@ -115,7 +115,7 @@
 <div id="form_performance" class="formExtraForQuestion">
     <div class="panel panel-info">
         <div class="panel-heading">
-            <i class="fa fa-info-circle"></i>{{ _("How to describe a comparison with check") }}
+            <i class="fa fa-info-circle"></i> {{ _("How to describe a comparison with check") }}
         </div>
         <div class="panel-body">
             <div>
@@ -144,27 +144,33 @@
 </div>
 
 <div id="form_options" class="formExtraForQuestion " >
-    <table style="width: 100%; border-collapse: collapse;border-color: #23c6c8;border-bottom: 1px solid transparent;border-top-left-radius: 3px;border-top-right-radius: 3px;" class="">
-        <thead class="panel panel-info">
-            <tr class="panel-heading">
-                <th class='text-center panel-heading' colspan="4">{{ _("Options for select") }}</th>
-            </tr>
-            <tr class="">
-                <th class='text-center'>{{ _("Label") }}</th>
-                <th class='text-center'>{{ _("Other specification") }}</th>
-                <th class='text-center'>{{ _("Delete option") }}</th>
-            </tr>
-        </thead>
-        <tbody id="tableForOptions" class="panel panel-info">
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <i class="fa fa-info-circle"></i> {{ _("Options for select") }}
+        </div>
+        <div class="panel-body">
+            <table style="width: 100%; " class="">
 
-        </tbody>
-    </table>
-    <br>
-    <div class="text-center">
-        <div class="btn-group">
-            <a id="btn_add_option"  name="btn_add_option" class="btn btn-primary text-center btnsQuestion"> {{ _('Add new option') }}</a>
-            <a id="btn_add_option_other"  name="btn_add_option_other" class="btn btn-success text-center btnsQuestion"> {{ _("Add option 'Other'") }}</a>
-            <a id="btn_add_option_na"  name="btn_add_option_na" class="btn btn-info text-center btnsQuestion"> {{ _("Add option 'Not applicable'") }}</a>
+                <tbody id="tableForOptions" >
+
+                </tbody>
+                <tr >
+                    <td style="padding: 10px"><button type="button" style="width: 100%" id="btn_add_option"  name="btn_add_option" class="btn btn-primary text-center "><i class="fa fa-plus"></i> {{ _('Option') }}</button></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr >
+                    <td style="padding: 10px"><button type="button" style="width: 100%" id="btn_add_option_other"  name="btn_add_option_other" class="btn btn-success text-center " disabled='disabled'><i class="fa fa-plus"></i> {{ _("Other") }}</button></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr >
+                    <td style="padding: 10px"><button type="button" style="width: 100%" id="btn_add_option_na"  name="btn_add_option_na" class="btn btn-info text-center " disabled='disabled'><i class="fa fa-plus"></i> {{ _("Not applicable") }}</button></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+            <br>
         </div>
     </div>
 

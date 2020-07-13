@@ -76,7 +76,7 @@ $(document).ready(function () {
 
     // Open close small chat
     $('.open-small-chat').on('click', function () {
-        $(this).children().toggleClass('fa-comments').toggleClass('fa-remove');
+        $('.open-small-chat').children().toggleClass('fa-comments').toggleClass('fa-remove');
         $('.small-chat-box').toggleClass('active');
     });
 

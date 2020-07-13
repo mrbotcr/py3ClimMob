@@ -14,13 +14,6 @@ from ..processes import (
 
 class alias_view(privateView):
     def processView(self):
-        # self.needJS('alias')
-        # self.needJS('datatables')
-        # self.needCSS('datatables')
-
-        # self.needCSS("sweet")
-        # self.needJS("sweet")
-        # self.needJS("delete")
 
         formdata = {}
         formdata["tech_id"] = self.request.matchdict["technologyid"]
@@ -39,13 +32,16 @@ class newalias_view(privateView):
         formdata = {}
         error_summary = {}
         formdata["tech_id"] = self.request.matchdict["technologyid"]
-
+        redirect = False
         if self.request.method == "POST":
             if "btn_add_alias" in self.request.POST:
 
                 formdata = self.getPostDict()
                 formdata["tech_id"] = self.request.matchdict["technologyid"]
                 formdata["alias_id"] = None
+                if "alias_name_insert" in formdata.keys():
+                    formdata["alias_name"] = formdata["alias_name_insert"]
+
                 if formdata["alias_name"] != "":
                     badalias = ""
                     textarea = formdata["alias_name"].replace("\r", "")
@@ -70,12 +66,13 @@ class newalias_view(privateView):
                                     badalias += alias + "\n"
 
                     if badalias == "":
-                        self.returnRawViewResult = True
-                        return HTTPFound(
-                            location=self.request.route_url(
-                                "useralias", technologyid=formdata["tech_id"]
-                            )
-                        )
+                        redirect=True
+                        # self.returnRawViewResult = True
+                        # return HTTPFound(
+                        #     location=self.request.route_url(
+                        #         "useralias", technologyid=formdata["tech_id"]
+                        #     )
+                        # )
                     else:
                         formdata["alias_name"] = badalias
                         error_summary = {
@@ -94,6 +91,7 @@ class newalias_view(privateView):
             "formdata": self.decodeDict(formdata),
             "error_summary": error_summary,
             "tech": data,
+            "redirect": redirect
         }
 
 
@@ -135,6 +133,7 @@ class modifyalias_view(privateView):
         formdata["alias_id"] = self.request.matchdict["aliasid"]
         data = getAlias(formdata, self.request)
         formdata["alias_name"] = data["alias_name"]
+        redirect = False
 
         if self.request.method == "POST":
             if "btn_modify_alias" in self.request.POST:
@@ -152,12 +151,13 @@ class modifyalias_view(privateView):
                         if not update:
                             error_summary = {"dberror": message}
                         else:
-                            self.returnRawViewResult = True
-                            return HTTPFound(
-                                location=self.request.route_url(
-                                    "useralias", technologyid=formdata["tech_id"]
-                                )
-                            )
+                            redirect = True
+                            # self.returnRawViewResult = True
+                            # return HTTPFound(
+                            #     location=self.request.route_url(
+                            #         "useralias", technologyid=formdata["tech_id"]
+                            #     )
+                            # )
                     else:
                         error_summary = {
                             "exists": self._(
@@ -175,4 +175,5 @@ class modifyalias_view(privateView):
             "formdata": self.decodeDict(formdata),
             "error_summary": error_summary,
             "tech": data2,
+            "redirect": redirect
         }

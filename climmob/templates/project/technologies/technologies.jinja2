@@ -6,12 +6,10 @@
 
 {% block css %}
     {% cssresource request,'coreresources','icheck' %}
-    {% cssresource request,'coreresources','datatables' %}
 {% endblock css %}
 
 {% block topScripts %}
     {% jsresource request,'coreresources','icheck' %}
-    {% jsresource request,'coreresources','datatables' %}
     {% jsresource request,'coreresources','prjtechnologies' %}
 {% endblock topScripts %}
 
@@ -37,112 +35,21 @@
 
 
 {% block pagecontent %}
-    <div class="row" style="height: 100%">
-        <div class="col-lg-12 " style="height: 100%">
-            <div class="ibox float-e-margins" style="height: 100%; margin-bottom: 0px">
+    <div class="row">
+
+        <div class="col-lg-4 " >
+            <div class="ibox float-e-margins" >
                 <div class="ibox-title">
                     <h5>{{ _("Add technology options") }}</h5>
                     <div class="ibox-tools">
 
                     </div>
                 </div>
-                <div class="ibox-content animated fadeInRightBig" style="height: 89%">
+                <div class="ibox-content animated fadeInRightBig" >
 
-                    {% if error_summary %}
-                        {% for key, error in error_summary.items() %}
-                            <div class="alert alert-block alert-danger fade in" id="loginErrorMessage">
-                                <button id="{{ key }}" data-dismiss="alert" class="close close-sm"
-                                        type="button">
-                                    <i class="fa fa-times"></i>
-                                </button>
-                                <strong>{{ _("Error!") }}</strong> {{ error }}.
-                            </div>
-                        {% endfor %}
-                    {% endif %}
+                    {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, UserTechs=TechnologiesInProject, checkbox=True, checked=True %}
 
-                    <!--div class="row">
-                        <div class="input-group col-xs-6 ">
-                            <input type="text" placeholder="Search" class="input-sm form-control" id="SearchInTable">
-                            <span class="input-group-btn"><button type="button" class="btn btn-sm btn-primary"> Go!</button> </span>
-                        </div>
-                    </div>
-                    <div class="row" style="height: 83%; max-height: 83%;overflow-y:auto">
-                        <div class="table-responsive">
-                            <table class="table table-striped" id="tabletechnologies">
-                                <tbody>
-                                    {% for val in TechnologiesInProject %}
-                                        <tr>
-                                            <td style="width: 15%">
-                                                <input type="checkbox"  checked class="i-checks" id="element_{{ val.tech_id }}_exists">
-                                            </td>
-                                            <td style="width: 60%">
-                                                <b>{{ val.tech_name }}</b> {{ _('with') }} {{ val.quantity }} {{ _('Aliases') }}
-                                            </td>
-                                            <td>
-                                                <button type="button" class="dd-nodrag btn btn-primary btn-xs addAlias" onclick="location.href='{{ request.route_url('prjtechaliases', projectid=projectid, tech_id=val.tech_id) }}';" >{% if val.quantity == 0 %}Add{% else %}Modify{% endif %} Alias</button>
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-
-                                    {% for val in TechnologiesUser %}
-                                        <tr>
-                                            <td style="width: 15%">
-                                                <input type="checkbox" class="i-checks" id="element_{{ val.tech_id }}_new">
-                                            </td>
-                                            <td style="width: 60%">
-                                                <b>{{ val.tech_name }}</b>
-                                            </td>
-                                            <td></td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-
-                    </div-->
-                    <div class="row" style="height: 83%; max-height: 83%;overflow-y:auto">
-
-                        <div class="table-responsive">
-                            <table class="table table-striped table-bordered table-hover dataTables-example" >
-                                <thead>
-                                    <tr>
-                                        <th></th>
-                                        <th>{{ _("Factors") }}</th>
-                                        <th>{{ _("Select technology options") }}</th>
-
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for val in TechnologiesInProject %}
-                                        <tr>
-                                            <td class="text-center" style="width: 15%">
-                                                <input type="checkbox"  checked class="i-checks" id="element_{{ val.tech_id }}_exists">
-                                            </td>
-                                            <td style="width: 60%">
-                                                <b>{{ val.tech_name }}</b> {{ _('with') }} {{ val.quantity }} {{ _('options') }}
-                                            </td>
-                                            <td class="center text-right">
-                                                <button class="btn btn-default btn-circle" onclick="location.href='{{ request.route_url('prjtechaliases', projectid=projectid, tech_id=val.tech_id) }}';" type="button" title="View/edit levels"><i class="fa fa-list-ul"></i></button>
-                                                <!--button type="button" class="dd-nodrag btn btn-primary btn-xs addAlias" onclick="location.href='{{ request.route_url('prjtechaliases', projectid=projectid, tech_id=val.tech_id) }}';" >{% if val.quantity == 0 %}Add{% else %}Modify{% endif %} Alias</button-->
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-
-                                    {% for val in TechnologiesUser %}
-                                        <tr>
-                                            <td class="text-center" style="width: 15%">
-                                                <input type="checkbox" class="i-checks" id="element_{{ val.tech_id }}_new">
-                                            </td>
-                                            <td style="width: 60%">
-                                                <b>{{ val.tech_name }}</b>
-                                            </td>
-                                            <td></td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, UserTechs=TechnologiesUser, checkbox=True, checked=False %}
 
                     <form class="form-horizontal" role="form" method="post" action="{{ request.path }}">
                         <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
@@ -150,14 +57,109 @@
                         <input type="text" id="txt_technologies_excluded" name="txt_technologies_excluded" style="width: 100%; display:none">
                         <div class="row" style="padding-top: 10px; height: 50px">
                             <div class="col-md-12">
-                                <button class="btn btn-primary clm-actions" name="btn_save_technologies" type="submit" id="btn_save_technologies"><i class="fa fa-check"></i>&nbsp;{{ _("Save changes") }}</button>
-                                <button class="btn btn-default pull-right clm-actions" name="cancelorder" type="submit">{{ _("Undo changes") }}</button>
+                                <button class="btn btn-primary pull-right clm-actions" name="btn_save_technologies" type="submit" id="btn_save_technologies"><i class="fa fa-check"></i>&nbsp;{{ _("Save changes") }}</button>
+
                             </div>
                         </div>
                     </form>
 
+                    <form class="form-horizontal" role="form" method="post" action="{{ request.path }}" style="display:none">
+                        <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                        <input type="text" class="tech_id" name="tech_id" style="width: 100%;display:none">
+                        <div class="row" style="padding-top: 10px; height: 50px">
+                            <div class="col-md-12">
+                                <button class="btn btn-primary pull-right clm-actions" style="display:none" name="btn_show_technology_alias" type="submit" id="btn_show_technology_alias"><i class="fa fa-check"></i>&nbsp;{{ _("Show technologies") }}</button>
+
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
+
+        {% if alias %}
+            <div class="col-lg-4 " id="alias_in_project">
+                <div class="ibox float-e-margins" >
+                    <div class="ibox-title">
+                        <h5>{{ _("Add levels") }}</h5>
+                        <div class="ibox-tools">
+                            <button   class="btn btn-xs btn-default pull-right btn_cancel_technology_options" ><i class="fa fa-close btn_cancel_technology_options" style="color: black"></i> </button>
+                        </div>
+                    </div>
+                    <div class="ibox-content animated fadeInRightBig" >
+
+                        {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, UserTechs=alias.AliasTechnologyInProject, checkbox=True, checked=True, isAlias=True %}
+
+                        {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, UserTechs=alias.AliasExtraTechnologyInProject, extra=True, checkbox=True, checked=True, isAlias=True %}
+
+                        {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, UserTechs=alias.AliasTechnology, checkbox=True, checked=False, isAlias=True %}
+
+                        <form class="form-horizontal" role="form" method="post" action="{{ request.path }}">
+                            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                            <input type="text" class="tech_id" name="tech_id" style="width: 100%;display:none" value="{{ tech_id }}">
+                            <input type="text" id="txt_technologies_alias_included" name="txt_technologies_included" style="width: 100%;display:none">
+                            <input type="text" id="txt_technologies_alias_excluded" name="txt_technologies_excluded" style="width: 100%; display:none">
+                            <div class="row" style="padding-top: 10px; height: 50px">
+                                <div class="col-md-12">
+                                    <button class="btn btn-primary pull-right clm-actions" name="btn_save_technologies_alias" type="submit" id="btn_save_technologies_alias"><i class="fa fa-check"></i> {{ _("Save changes") }}</button>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 " id="create_new_alias" >
+                <div class="ibox float-e-margins" >
+                    <div class="ibox-title">
+                        <h5>{{ _("New level details") }}</h5>
+                        <div class="ibox-tools">
+                            <button   class="btn btn-xs btn-default pull-right btn_cancel_technology_options" ><i class="fa fa-close btn_cancel_technology_options" style="color: black"></i> </button>
+                        </div>
+                    </div>
+                    <div class="ibox-content animated fadeInRightBig" >
+
+                        {% snippet 'snippets/error.jinja2', error_summary=error_summary %}
+                        <h5 style="font-size: 14px">{{ _("Create an new level just for this project") }}</h5>
+                        <br>
+                        <div class="error-desc">
+                            <form class="form-horizontal" method="post" action="{{ request.path }}">
+                                <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label">{{ _('Name:') }}</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="tech_id" name="tech_id" style="width: 100%;display:none" value="{{ tech_id }}">
+                                        <input type="text" class="form-control" value="{{ dataworking.alias_name }}" id="txt_add_alias" name="txt_add_alias" placeholder=" ">
+                                    </div>
+                                </div>
+                                <button type="submit" name="btn_add_alias" class="btn btn-primary pull-right">{{ _("Add new level") }}</button>
+                                <br><br>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        {% endif %}
+
     </div>
+
+    <script>
+        function showVarieties(idtech)
+        {
+            $(".tech_id").val(idtech)
+            $("#btn_show_technology_alias").click()
+        }
+
+
+        $(".btn_cancel_technology_options").click(function(){
+            $("#alias_in_project").css("display",'none')
+            $("#create_new_alias").css("display",'none')
+            $(".tech_id").val("")
+            $("#txt_add_alias").val("")
+        });
+
+
+    </script>
 {% endblock pagecontent %}

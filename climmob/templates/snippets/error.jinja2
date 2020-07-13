@@ -1,7 +1,7 @@
 {% if error_summary %}
     {% for key, error in error_summary.items() %}
         <div class="alert alert-danger alert-dismissable">
-            <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+            <button aria-hidden="true" data-dismiss="alert" class="close closeError" type="button">×</button>
             {{ error }}
         </div>
     {% endfor %}

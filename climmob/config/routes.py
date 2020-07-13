@@ -76,8 +76,8 @@ from ..views.project_technologies import (
 )
 from ..views.enumerator import (
     enumerators_view,
-    addEnumerator_view,
-    modifyEnumerator_view,
+    #addEnumerator_view,
+    #modifyEnumerator_view,
     deleteEnumerator_view,
 )
 from ..views.project_combinations import projectCombinations_view
@@ -457,7 +457,7 @@ def loadRoutes(config):
             "enumerators/enumerators.jinja2",
         )
     )
-    routes.append(
+    """routes.append(
         addRoute(
             "addenumerator",
             "/enumerators/add",
@@ -472,7 +472,7 @@ def loadRoutes(config):
             modifyEnumerator_view,
             "enumerators/modifyenumerator.jinja2",
         )
-    )
+    )"""
     routes.append(
         addRoute(
             "deleteenumerator",

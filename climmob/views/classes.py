@@ -337,7 +337,6 @@ class apiView(object):
     def __call__(self):
 
         try:
-
             apiKey = self.request.params["Apikey"]
             self.apiKey = apiKey
             self.user = getUserByApiKey(apiKey, self.request)

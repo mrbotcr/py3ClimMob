@@ -23,13 +23,12 @@ from ..processes import (
 class projectTecnologies_view(privateView):
     def processView(self):
 
-        # self.needJS("prjtechnologies")
-        # self.needJS("datatables")
-        # self.needJS("icheck")
-        # self.needCSS("icheck")
-        # self.needCSS('datatables')
-
         projectid = self.request.matchdict["projectid"]
+        alias = {}
+        tech_id= ""
+        dataworking ={}
+        error_summary = {}
+        dataworking["alias_name"] = ""
 
         if not projectExists(self.user.login, projectid, self.request):
             raise HTTPNotFound()
@@ -58,10 +57,35 @@ class projectTecnologies_view(privateView):
                                 deleteTechnologyProject(
                                     self.user.login, projectid, attr[1], self.request
                                 )
+                if "btn_show_technology_alias" in self.request.POST:
+                    postdata = self.getPostDict()
+                    tech_id = postdata["tech_id"]
+                    self.request.matchdict["tech_id"] = postdata["tech_id"]
+                    alias = prjTechAliases_view.processView(self)
+
+                if "btn_save_technologies_alias" in self.request.POST:
+                    postdata = self.getPostDict()
+                    tech_id = postdata["tech_id"]
+                    self.request.matchdict["tech_id"] = postdata["tech_id"]
+                    alias = prjTechAliases_view.processView(self)
+
+                if "btn_add_alias" in self.request.POST:
+                    postdata = self.getPostDict()
+                    tech_id = postdata["tech_id"]
+                    self.request.matchdict["tech_id"] = postdata["tech_id"]
+                    result = prjTechAliasAdd_view.processView(self)
+                    dataworking= result["dataworking"]
+                    error_summary = result["error_summary"]
+                    if result["redirect"]:
+                        dataworking["alias_name"] =""
+                    alias = prjTechAliases_view.processView(self)
+
+
 
             return {
                 "activeUser": self.user,
                 "projectid": projectid,
+                "tech_id": tech_id,
                 "TechnologiesUser": searchTechnologies(
                     self.user.login, projectid, self.request
                 ),
@@ -71,17 +95,14 @@ class projectTecnologies_view(privateView):
                 "project_numcom": numberOfCombinationsForTheProject(
                     self.user.login, projectid, self.request
                 ),
+                "alias": alias,
+                "dataworking":dataworking,
+                "error_summary":error_summary
             }
 
 
 class prjTechAliases_view(privateView):
     def processView(self):
-
-        # self.needJS("prjtechaliases")
-        # self.needJS("datatables")
-        # self.needJS("icheck")
-        # self.needCSS("icheck")
-        # self.needCSS('datatables')
 
         error_summary = {}
         dataworking = {}
@@ -117,10 +138,6 @@ class prjTechAliases_view(privateView):
                         part = postdata["txt_technologies_excluded"][:-1].split(",")
                         for element in part:
                             attr = element.split("_")
-                            # print "*************************88"
-                            # print attr
-                            # print "*************************88"
-                            # if attr[2] == 'extra':
                             delete, message = deleteAliasTechnology(
                                 self.user.login,
                                 projectid,
@@ -202,6 +219,7 @@ class prjTechAliasAdd_view(privateView):
         dataworking = {}
         projectid = self.request.matchdict["projectid"]
         technologyid = self.request.matchdict["tech_id"]
+        redirect =False
 
         if not projectTechnologyExists(
             self.user.login, projectid, technologyid, self.request
@@ -230,14 +248,15 @@ class prjTechAliasAdd_view(privateView):
                                 error_summary = {"dberror": message}
                             else:
                                 # show success message
-                                self.returnRawViewResult = True
-                                return HTTPFound(
-                                    location=self.request.route_url(
-                                        "prjtechaliases",
-                                        projectid=projectid,
-                                        tech_id=technologyid,
-                                    )
-                                )
+                                # self.returnRawViewResult = True
+                                # return HTTPFound(
+                                #     location=self.request.route_url(
+                                #         "prjtechaliases",
+                                #         projectid=projectid,
+                                #         tech_id=technologyid,
+                                #     )
+                                # )
+                                redirect=True
                         else:
                             # error
                             error_summary = {
@@ -253,7 +272,9 @@ class prjTechAliasAdd_view(privateView):
         return {
             "activeUser": self.user,
             "error_summary": error_summary,
-            "data": self.decodeDict(dataworking),
+            "dataworking": self.decodeDict(dataworking),
             "projectid": projectid,
             "tech_id": technologyid,
+            "redirect": redirect
+
         }

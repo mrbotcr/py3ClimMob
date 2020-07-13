@@ -1,0 +1,18 @@
+
+
+
+
+
+{% for alias in Alias %}
+    <div class="stream" style="padding: 4px 0" >
+        <div class="stream-badge">
+            <i class="fa fa-pagelines" style="color:{{ color }}"></i>
+        </div>
+        <div class="stream-panel" style="margin-top: 4px">
+            <div class="stream-info">
+               <p style="font-size: 14px; margin: initial">{{ alias.alias_name }}</p>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+

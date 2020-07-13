@@ -8,22 +8,72 @@ from ..processes import (
     getTechnology,
     updateTechnology,
     deleteTechnology,
+    getUserTechById
 )
+
+from .techaliases import newalias_view, modifyalias_view
 
 
 class technologies_view(privateView):
     def processView(self):
         dataworking = {}
         error_summary = {}
+        error_summary_options = {}
+        action = ""
+        techSee ={}
+        #alias = {}
+
+        if self.request.method == "POST":
+            if "btn_add_technology" in self.request.POST:
+                dict_return = newtechnology_view.processView(self)
+                dataworking = dict_return["formdata"]
+                error_summary =dict_return["error_summary"]
+                if not dict_return["redirect"]:
+                    action = "addTechnology"
+
+            if "btn_modify_technology" in self.request.POST:
+                dataworking= self.getPostDict()
+                self.request.matchdict["technologyid"] = dataworking["tech_id"]
+                dict_return = modifytechnology_view.processView(self)
+                dataworking = dict_return["formdata"]
+                error_summary =dict_return["error_summary"]
+                techSee = getUserTechById(dataworking["tech_id"], self.request)
+                if not dict_return["redirect"]:
+                    action = "modifyTechnology"
+
+            if "btn_add_alias" in self.request.POST:
+                dataworking = self.getPostDict()
+                self.request.matchdict["technologyid"] = dataworking["tech_id"]
+                dict_return = newalias_view.processView(self)
+                dataworking["alias_name_insert"] = dict_return["formdata"]["alias_name"]
+                error_summary_options = dict_return["error_summary"]
+                techSee = getUserTechById(dataworking["tech_id"],self.request)
+
+            if "btn_modify_alias" in self.request.POST:
+
+                dataworking = self.getPostDict()
+                self.request.matchdict["technologyid"] = dataworking["tech_id"]
+                self.request.matchdict["aliasid"] = dataworking["alias_id"]
+                dict_return = modifyalias_view.processView(self)
+                error_summary_options = dict_return["error_summary"]
+                techSee = getUserTechById(dataworking["tech_id"], self.request)
+
+            if "btn_add_technology" not in self.request.POST and "btn_modify_technology" not in self.request.POST and "btn_add_alias" not in self.request.POST and "btn_modify_alias" not in self.request.POST:
+                dataworking = self.getPostDict()
+                techSee = getUserTechById(dataworking["tech_id"], self.request)
+
 
         return {
             "activeUser": self.user,
             "dataworking": dataworking,
             "error_summary": error_summary,
+            "error_summary_options": error_summary_options,
             "UserTechs": getUserTechs(self.user.login, self.request),
             "ClimMobTechs": getUserTechs("bioversity", self.request),
+            "action": action,
+            "techSee": techSee
+            #"alias": alias
         }
-
 
 class newtechnology_view(privateView):
     def processView(self):
@@ -33,8 +83,8 @@ class newtechnology_view(privateView):
         formdata["tech_name"] = ""
         if self.request.method == "POST":
             if "btn_add_technology" in self.request.POST:
-
                 formdata = self.getPostDict()
+                del formdata["tech_id"]
                 formdata["user_name"] = self.user.login
                 if formdata["tech_name"] != "":
 
