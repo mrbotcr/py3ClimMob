@@ -16,20 +16,24 @@ from ..processes import (
     counterChat
 )
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
+from .assessment import startAssessments_view
 
 
 class dashboard_view(privateView):
     def processView(self):
 
         if "project" in self.request.params.keys():
+
             activeProject = self.request.params["project"]
             if not projectExists(self.user.login, activeProject, self.request):
                 raise HTTPNotFound()
             else:
+
                 session = self.request.session
                 session["activeProject"] = activeProject
                 setActiveProject(self.user.login, activeProject, self.request)
                 activeProjectData = getActiveProject(self.user.login, self.request)
+
                 progress, pcompleted = getProjectProgress(
                     self.user.login, activeProject, self.request
                 )
@@ -65,7 +69,10 @@ class dashboard_view(privateView):
                     "encrypted": getMD5Project(
                         self.user.login, activeProjectData["project_cod"], self.request
                     ),
-                    "fieldagents":seeProgress(self.user.login,activeProjectData["project_cod"],self.request)
+                    "fieldagents":seeProgress(self.user.login,activeProjectData["project_cod"],self.request),
+                    "usable_assessments": get_usable_assessments(
+                        self.request, self.user.login, activeProjectData["project_cod"]
+                    )
                 }
         else:
             activeProjectData = getActiveProject(self.user.login, self.request)

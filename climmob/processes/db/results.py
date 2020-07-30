@@ -360,6 +360,16 @@ def getImportantFields(user, project, request):
         }
     )
 
+    sql = ("SELECT '' as ass_cod,question_code,question_overall,question_overallperf "
+           "FROM question,registry "
+           "WHERE question.question_id = registry.question_id "
+           "AND registry.user_name = '" + user + "' "
+           "AND registry.project_cod = '" + project + "' "
+           "AND (question_overall = 1 or question_overallperf = 1)"
+    )
+    data = request.dbsession.execute(sql).fetchall()
+    result = getImportantFieldSameFunction(data, prjData, result,"REG")
+
     sql = (
         "SELECT assdetail.ass_cod,question_code,question_overall,question_overallperf "
         "FROM question,assdetail "
@@ -368,17 +378,24 @@ def getImportantFields(user, project, request):
         "AND assdetail.project_cod = '" + project + "' "
         "AND (question_overall = 1 or question_overallperf = 1)"
     )
+
     data = request.dbsession.execute(sql).fetchall()
+
+    result = getImportantFieldSameFunction(data, prjData, result, "ASS")
+
+    return result
+
+def getImportantFieldSameFunction(data, prjData, result, form):
+
     for question in data:
+
         if question.question_overall == 1:
             if prjData.project_numcom == 2:
+
                 result.append(
                     {
                         "type": "OverallChar",
-                        "field": "ASS"
-                        + question.ass_cod
-                        + "_char_"
-                        + question.question_code,
+                        "field": form+ question.ass_cod+ "_char_"+ question.question_code,
                         "desc": "Over all characteristic positive",
                     }
                 )
@@ -386,7 +403,7 @@ def getImportantFields(user, project, request):
                 result.append(
                     {
                         "type": "OverallCharPos",
-                        "field": "ASS"
+                        "field": form
                         + question.ass_cod
                         + "_char_"
                         + question.question_code
@@ -397,7 +414,7 @@ def getImportantFields(user, project, request):
                 result.append(
                     {
                         "type": "OverallCharNeg",
-                        "field": "ASS"
+                        "field": form
                         + question.ass_cod
                         + "_char_"
                         + question.question_code
@@ -410,7 +427,7 @@ def getImportantFields(user, project, request):
                     result.append(
                         {
                             "type": "OverallCharPosition" + str(comp + 1),
-                            "field": "ASS"
+                            "field": form
                             + question.ass_cod
                             + "_char)"
                             + question.question_code
@@ -425,7 +442,7 @@ def getImportantFields(user, project, request):
                 result.append(
                     {
                         "type": "OverallPerf" + str(comp + 1),
-                        "field": "ASS"
+                        "field": form
                         + question.ass_cod
                         + "_perf_"
                         + question.question_code
@@ -437,7 +454,6 @@ def getImportantFields(user, project, request):
                     }
                 )
     return result
-
 
 def getSpecialFields(registry, assessments):
     result = []
@@ -488,6 +504,7 @@ def getJSONResult(user, project, request):
         .first()
     )
     if res is not None:
+        #print(res.project_registration_and_analysis)
         if res.project_regstatus == 1 or res.project_regstatus == 2:
             mappedData = mapFromSchema(res)
             for key, value in mappedData.items():
@@ -512,6 +529,7 @@ def getJSONResult(user, project, request):
                     "lkptables": getLookups(registryXML, user, project, request),
                     "fields": getFields(registryXML, "REG_geninfo"),
                 }
+
 
             assessments = (
                 request.dbsession.query(Assessment)
@@ -542,6 +560,9 @@ def getJSONResult(user, project, request):
                                 ),
                             }
                         )
+            #EDITED BY BRANDON#
+            if res.project_registration_and_analysis == 1:
+                haveAssessments= True
             # Get the package information but only for registered farmers
             data["packages"] = getPackageData(user, project, request)
             if haveAssessments:

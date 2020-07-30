@@ -19,9 +19,11 @@ def getQuestionsByType(user, project, request):
     data = []
 
     dic = {}
+    _assessments = []
     dic["Characteristics"] = []
     dic["Performance"] = []
     dic["Explanatory"] = []
+    numComb = numberOfCombinationsForTheProject(user, project, request)
 
     sections = mapFromSchema(
         request.dbsession.query(Regsection)
@@ -46,11 +48,10 @@ def getQuestionsByType(user, project, request):
                 .first()
             )
 
-            if questionData["question_dtype"] == 5:
-                questInfo["name"] = questionData["question_desc"]
-                questInfo["id"] = questionData["question_id"]
-                questInfo["vars"] = "REG_" + questionData["question_code"].lower()
-                dic["Explanatory"].append(questInfo)
+            dictName, dictQues = addQuestionToDictionary(questionData, numComb)
+
+            if dictName != "":
+                dic[dictName].append(dictQues)
 
     # ASSESSMENTS
     assessments = mapFromSchema(
@@ -58,9 +59,11 @@ def getQuestionsByType(user, project, request):
         .filter(Assessment.user_name == user)
         .filter(Assessment.project_cod == project)
         .filter(or_(Assessment.ass_status == 1, Assessment.ass_status == 2))
+        .order_by(Assessment.ass_days)
         .all()
     )
     for assessment in assessments:
+        _assessments.append(assessment)
         sections = mapFromSchema(
             request.dbsession.query(Asssection)
             .filter(Asssection.user_name == user)
@@ -69,7 +72,7 @@ def getQuestionsByType(user, project, request):
             .order_by(Asssection.section_order)
             .all()
         )
-        numComb = numberOfCombinationsForTheProject(user, project, request)
+
 
         for section in sections:
 
@@ -83,88 +86,105 @@ def getQuestionsByType(user, project, request):
                 .all()
             )
             for question in questions:
-                questInfo = {}
+
                 questionData = mapFromSchema(
                     request.dbsession.query(Question)
                     .filter(Question.question_id == question["question_id"])
                     .first()
                 )
 
-                if (
-                    questionData["question_dtype"] == 9
-                    or questionData["question_dtype"] == 10
-                ):
+                dictName, dictQues = addQuestionToDictionary(questionData, numComb, assessment)
 
-                    questInfo["name"] = questionData["question_desc"]
-                    questInfo["id"] = questionData["question_id"]
-                    questInfo["vars"] = []
-                    if questionData["question_dtype"] == 9:
+                if dictName !="":
+                    dic[dictName].append(dictQues)
 
-                        if numComb == 2:
-                            varsData = {}
-                            varsData["name"] = (
-                                "ASS"
-                                + assessment["ass_cod"]
-                                + "_char_"
-                                + questionData["question_code"].lower()
-                            )
-                            questInfo["vars"].append(varsData)
 
-                        if numComb == 3:
-                            varsData = {}
-                            # The possitive
-                            varsData["name"] = (
-                                "ASS"
-                                + assessment["ass_cod"]
-                                + "_char_"
-                                + questionData["question_code"].lower()
-                                + "_pos"
-                            )
-                            questInfo["vars"].append(varsData)
+    return dic, _assessments
 
-                            varsData = {}
-                            # The negative
-                            varsData["name"] = (
-                                "ASS"
-                                + assessment["ass_cod"]
-                                + "_char_"
-                                + questionData["question_code"].lower()
-                                + "_neg"
-                            )
-                            questInfo["vars"].append(varsData)
+def addQuestionToDictionary(questionData, numComb, assessment=None):
+    questInfo = {}
 
-                        if numComb >= 4:
-                            for opt in range(0, numComb):
-                                varsData = {}
-                                varsData["name"] = (
-                                    "ASS"
-                                    + assessment["ass_cod"]
-                                    + "_char_"
-                                    + questionData["question_code"].lower()
-                                    + "_stmt_"
-                                    + str(opt + 1)
-                                )
-                                questInfo["vars"].append(varsData)
+    if assessment:
+        code = "ASS" + assessment["ass_cod"]
+    else:
+        code = "REG"
 
-                        dic["Characteristics"].append(questInfo)
+    if questionData["question_dtype"] == 5:
+        questInfo["name"] = questionData["question_desc"]
+        questInfo["id"] = questionData["question_id"]
+        questInfo["vars"] = code + questionData["question_code"].lower()
+        questInfo["code"] = assessment
 
-                    if questionData["question_dtype"] == 10:
-                        for opt in range(0, numComb):
-                            varsData = {}
-                            varsData["name"] = (
-                                "ASS"
-                                + assessment["ass_cod"]
-                                + "_perf_"
-                                + questionData["question_code"].lower()
-                                + "_"
-                                + str(opt + 1)
-                            )
-                            questInfo["vars"].append(varsData)
+        return "Explanatory", questInfo
 
-                        dic["Performance"].append(questInfo)
+    if ( questionData["question_dtype"] == 9 or questionData["question_dtype"] == 10 ):
 
-    return dic
+        questInfo["name"] = questionData["question_desc"]
+        questInfo["id"] = questionData["question_id"]
+        questInfo["vars"] = []
+        questInfo["code"] = assessment
 
+        if questionData["question_dtype"] == 9:
+
+            if numComb == 2:
+                varsData = {}
+                varsData["name"] = (
+                        code
+                        + "_char_"
+                        + questionData["question_code"].lower()
+                )
+                questInfo["vars"].append(varsData)
+
+            if numComb == 3:
+                varsData = {}
+                # The possitive
+                varsData["name"] = (
+                        code
+                        + "_char_"
+                        + questionData["question_code"].lower()
+                        + "_pos"
+                )
+                questInfo["vars"].append(varsData)
+
+                varsData = {}
+                # The negative
+                varsData["name"] = (
+                        code
+                        + "_char_"
+                        + questionData["question_code"].lower()
+                        + "_neg"
+                )
+                questInfo["vars"].append(varsData)
+
+            if numComb >= 4:
+                for opt in range(0, numComb):
+                    varsData = {}
+                    varsData["name"] = (
+                            code
+                            + "_char_"
+                            + questionData["question_code"].lower()
+                            + "_stmt_"
+                            + str(opt + 1)
+                    )
+                    questInfo["vars"].append(varsData)
+
+            return "Characteristics", questInfo
+
+        if questionData["question_dtype"] == 10:
+            for opt in range(0, numComb):
+                varsData = {}
+                varsData["name"] = (
+                        code
+                        + "_perf_"
+                        + questionData["question_code"].lower()
+                        + "_"
+                        + str(opt + 1)
+                )
+                questInfo["vars"].append(varsData)
+
+            return "Performance", questInfo
+
+    return "",""
 
 def getQuestionsStructure(user, project, ass_cod, request):
     data = []

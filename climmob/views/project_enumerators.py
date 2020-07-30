@@ -17,24 +17,22 @@ from climmob.products import stopTasksByProcess
 class projectEnumerators_view(privateView):
     def processView(self):
 
-        # self.needCSS("sweet")
-        # self.needJS("sweet")
-        # self.needJS("delete")
         projectid = self.request.matchdict["projectid"]
 
         if not projectExists(self.user.login, projectid, self.request):
             raise HTTPNotFound()
         else:
+            if self.request.method == "POST":
+                addProjectEnumerators_view.processView(self)
             return {
                 "activeUser": self.user,
                 "projectid": projectid,
-                "enumerators": getProjectEnumerators(
+                "enumeratorsInProject": getProjectEnumerators(
                     self.user.login, projectid, self.request
                 ),
-                #"assessments": getAssessmenstByProject(
-                #    self.user.login, projectid, self.request
-                #),
-                #"workByUser": seeProgress(self.user.login, projectid, self.request),
+                "enumerators": getUsableEnumerators(
+                    self.user.login, projectid, self.request
+                )
             }
 
 
@@ -62,12 +60,13 @@ class addProjectEnumerators_view(privateView):
                     projectid,
                     getProjectEnumerators(self.user.login, projectid, self.request),
                 )
-                self.returnRawViewResult = True
+                """self.returnRawViewResult = True
                 return HTTPFound(
                     location=self.request.route_url(
                         "prjenumerators", projectid=projectid
                     )
-                )
+                )"""
+                return ""
             else:
                 return {
                     "activeUser": self.user,

@@ -11,12 +11,6 @@ import json
 class analysisDataView(privateView):
     def processView(self):
         error_summary = {}
-        # self.needJS("icheck")
-        # self.needCSS("icheck")
-        # self.needCSS('switch')
-        # self.needJS("switch")
-        # self.needJS("analysisData")
-
         hasActiveProject = False
         activeProjectData = getActiveProject(self.user.login, self.request)
 
@@ -66,10 +60,13 @@ class analysisDataView(privateView):
                 self.returnRawViewResult = True
                 return HTTPFound(location=self.request.route_url("productList"))
 
+        dataForAnalysis, assessmentsList = getQuestionsByType(
+                self.user.login, activeProjectData["project_cod"], self.request
+            )
+
         return {
             "activeUser": self.user,
-            "dataForAnalysis": getQuestionsByType(
-                self.user.login, activeProjectData["project_cod"], self.request
-            ),
+            "dataForAnalysis": dataForAnalysis,
+            "assessmentsList": assessmentsList,
             "correct": False,
         }

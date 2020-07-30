@@ -24,13 +24,13 @@ $(document).ready(function(){
         }
     });
 
-    var ckb_localvariety = $("#ckb_localvariety");
-    var localvariety = 0;
-    if (ckb_localvariety.is(':checked'))
-        localvariety = 1;
+    var project_registration_and_analysis = $("#project_registration_and_analysis");
+    var checked = 0;
+    if (project_registration_and_analysis.is(':checked'))
+        checked = 1;
 
-    if(localvariety == 1)
-        ckb_localvariety.bootstrapSwitch('state',true);
+    if(checked == 1)
+        project_registration_and_analysis.bootstrapSwitch('state',true);
     else
-        ckb_localvariety.bootstrapSwitch('state',false);
+        project_registration_and_analysis.bootstrapSwitch('state',false);
 });

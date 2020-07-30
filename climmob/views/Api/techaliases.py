@@ -52,7 +52,7 @@ class createAlias_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "This alias already exists in the technology."
+                                    "This technology option already exists in the technology."
                                 ),
                             )
                             return response
@@ -153,7 +153,7 @@ class updateAlias_view(apiView):
                                         response = Response(
                                             status=200,
                                             body=self._(
-                                                "The alias was updated successfully."
+                                                "The technology option was updated successfully."
                                             ),
                                         )
                                         return response
@@ -161,7 +161,7 @@ class updateAlias_view(apiView):
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "You can not update this alias because it has been assigned to a project."
+                                            "You can not update this technology option because it has been assigned to a project."
                                         ),
                                     )
                                     return response
@@ -169,14 +169,14 @@ class updateAlias_view(apiView):
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "This alias already exists for the technology."
+                                        "This technology option already exists for the technology."
                                     ),
                                 )
                                 return response
                         else:
                             response = Response(
                                 status=401,
-                                body=self._("You do not have a alias with this ID."),
+                                body=self._("You do not have a technology option with this ID."),
                             )
                             return response
                     else:
@@ -237,7 +237,7 @@ class deleteAliasView_api(apiView):
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "You cannot delete this alias because it has been assigned to a project."
+                                        "You cannot delete this technology option because it has been assigned to a project."
                                     ),
                                 )
                                 return response

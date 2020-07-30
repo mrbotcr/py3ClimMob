@@ -44,44 +44,82 @@
                     <h5>{{ _("Select your variables to analyze") }}</h5>
                 </div>
                 <div class="ibox-content">
-                    {% if dataForAnalysis.Explanatory %}
-                        <div class="form-group">
-                            <b>{{ _("Explanatory variables") }}</b>
-                            <div class="col-lg-offset-2 col-lg-10">
-                                {%for c in dataForAnalysis.Explanatory%}
-                                    <label style="font-weight: inherit"> <input class="checkbox i-checks" type="checkbox" id="explanatory_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
-                                {%endfor%}
-                                <hr>
-                            </div>
+                    {% set percentage = 0  %}
+                    <table class="table table-bordered">
+                        <tr>
+                            <th class="text-center" style="width: {{percentage}}% ">{{ _("Data collection moments") }}</th>
+                            <th class="text-center" style="width: {{percentage}}% ">{{ _("Explanatory") }}</th>
+                            <th class="text-center" style="width: {{percentage}}% ">{{ _("Ranking of options") }}</th>
+                            <th class="text-center" style="width: {{percentage}}% ">{{ _("Comparison with check") }}</th>
+                        </tr>
+                        <tr>
+                            <th style="vertical-align:middle"> {{ _("Registration") }}</th>
+                            <td>
+                                {% if dataForAnalysis.Explanatory %}
+                                    {%for c in dataForAnalysis.Explanatory%}
+                                        {% if c.code == None %}
+                                            <label style="font-weight: inherit"> <input class="checkbox i-checks" type="checkbox" id="explanatory_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
+                                        {% endif%}
+                                    {%endfor%}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if dataForAnalysis.Characteristics %}
+                                    {%for c in dataForAnalysis.Characteristics%}
+                                        {% if c.code == None %}
+                                            <label style="font-weight: inherit"> <input class="checkbox i-checks" type="checkbox" id="characteristic_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
+                                        {% endif%}
+                                    {%endfor%}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if dataForAnalysis.Performance%}
+                                    {%for c in dataForAnalysis.Performance%}
+                                        {% if c.code == None %}
+                                            <label style="font-weight: inherit"> <input class="checkbox i-checks" type="checkbox" id="performance_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
+                                        {% endif%}
+                                    {%endfor%}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% for assess in assessmentsList%}
+                            <tr>
+                                <th style="vertical-align:middle">{{ assess.ass_desc}}</th>
+                                <td>
+                                    {% if dataForAnalysis.Explanatory %}
+                                        {%for c in dataForAnalysis.Explanatory%}
+                                            {% if c.code.ass_cod == assess.ass_cod %}
+                                                <label style="font-weight: inherit"> <input class="checkbox i-checks" type="checkbox" id="explanatory_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
+                                            {% endif%}
+                                        {%endfor%}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if dataForAnalysis.Characteristics %}
+                                        {%for c in dataForAnalysis.Characteristics%}
+                                            {% if c.code.ass_cod == assess.ass_cod %}
+                                                <label style="font-weight: inherit"> <input class="checkbox i-checks" type="checkbox" id="characteristic_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
+                                            {% endif%}
+                                        {%endfor%}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if dataForAnalysis.Performance%}
+                                        {%for c in dataForAnalysis.Performance%}
+                                            {% if c.code.ass_cod == assess.ass_cod %}
+                                                <label style="font-weight: inherit"> <input class="checkbox i-checks" type="checkbox" id="performance_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
+                                            {% endif%}
+                                        {%endfor%}
+                                    {% endif %}
+                                </td>
 
-                        <hr>
-                        </div>
-                    {% endif %}
+                            </tr>
+                        {% endfor %}
 
-                    {% if dataForAnalysis.Characteristics %}
-                        <div class="form-group">
-                            <b>{{ _("Overall performance ranking") }}</b>
-                            <div class="col-lg-offset-2 col-lg-10">
-                                {%for c in dataForAnalysis.Characteristics%}
-                                    <label style="font-weight: inherit"> <input class="checkbox i-checks" type="checkbox" id="characteristic_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
-                                {%endfor%}
-                                <hr>
-                            </div>
-                        </div>
-                    {% endif %}
 
-                    {% if dataForAnalysis.Performance%}
-                        <div class="form-group">
-                            <b>{{ _("Comparison with check") }}</b>
-                            <div class="col-lg-offset-2 col-lg-10">
-                                {%for c in dataForAnalysis.Performance%}
-                                    <label style="font-weight: inherit"> <input class="checkbox i-checks" type="checkbox" id="performance_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
-                                {%endfor%}
-                                <hr>
-                            </div>
+                    </table>
 
-                        </div>
-                    {% endif %}
+
                     <br>
                     <div class="form-group">
                         <b>{{ _("Infosheets") }}</b>

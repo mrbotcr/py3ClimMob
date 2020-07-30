@@ -5,8 +5,9 @@ from itertools import zip_longest as izip, chain, repeat
 import pprint
 from .registry import setRegistryStatus
 import os
+from .project_combinations import getCombinationsUsableInProject
 
-__all__ = ["create_packages_with_r", "getPackages", "projectHasPackages"]
+__all__ = ["create_packages_with_r", "getPackages", "projectHasPackages", "createExtraPackages"]
 
 
 def grouper(n, iterable, padvalue=None):
@@ -205,13 +206,6 @@ def create_packages_with_r(user, project, request):
         for comb in combData:
             combinations.append(comb.comb_code)
         if combinations:
-            #r_file = open(rfile, "w")
-            #r_file.write(str(prjData.project_numcom) + "\n")
-            #r_file.write(str(prjData.project_numobs) + "\n")
-            #r_file.write(str(len(combinations)) + "\n")
-            #for comb in combinations:
-            #    r_file.write(str(comb) + "\n")
-            #r_file.close()
 
             args = []
             args.append("Rscript")
@@ -274,6 +268,81 @@ def create_packages_with_r(user, project, request):
                 print(msg)
                 return False
 
+def createExtraPackages(user, project, request, numCom, numObsExtra, numObsNow):
+    print(numCom)
+    print(numObsExtra)
+    print(numObsNow)
+    path = os.path.join(
+        request.registry.settings["user.repository"], *[user, project, "r"]
+    )
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    rout = os.path.join(
+        request.registry.settings["user.repository"],
+        *[user, project, "r", "comb_2.txt"]
+    )
+
+    combData = getCombinationsUsableInProject(user, project, request)
+
+    combinations = []
+    for comb in combData:
+        combinations.append(comb.comb_code)
+    if combinations:
+        args = []
+        args.append("Rscript")
+        args.append(request.registry.settings["r.random.script"])
+        args.append(str(numCom))
+        args.append(str(numObsExtra))
+        args.append(str(len(combinations)))
+        args.append("inames=c(" + ', '.join(map(str, combinations)) + ")")
+        args.append(rout)
+
+        try:
+            check_call(args)
+            with open(rout) as fp:
+                lines = fp.readlines()
+                pkgid = numObsNow + 1
+                for line in lines:
+                    newPackage = Package(
+                        user_name=user,
+                        project_cod=project,
+                        package_id=pkgid,
+                        package_code="Package #" + str(pkgid),
+                    )
+                    request.dbsession.add(newPackage)
+
+                    a_package = line.replace('"', "")
+                    combs = a_package.split("\t")
+                    combid = 1
+                    for comb in combs:
+                        newPkgcomb = Pkgcomb(
+                            user_name=user,
+                            project_cod=project,
+                            package_id=pkgid,
+                            comb_user=user,
+                            comb_project=project,
+                            comb_code=int(comb),
+                            comb_order=combid,
+                        )
+                        request.dbsession.add(newPkgcomb)
+                        combid = combid + 1
+                    pkgid = pkgid + 1
+
+                request.dbsession.query(Project).filter(
+                    Project.user_name == user
+                ).filter(Project.project_cod == project).update(
+                    {"project_numobs": int(numObsExtra) + int(numObsNow)}
+                )
+
+            return True, ""
+
+        except CalledProcessError as e:
+            msg = "Error running R randomization file \n"
+            msg = msg + "Commang: " + " ".join(args) + "\n"
+            msg = msg + "Error: \n"
+            msg = msg + str(e)
+            return False, msg
 
 def createPackages(user, project, request):
     prjData = (

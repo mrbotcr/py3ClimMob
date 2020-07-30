@@ -77,7 +77,7 @@ class newalias_view(privateView):
                         formdata["alias_name"] = badalias
                         error_summary = {
                             "exists": self._(
-                                "This alias already exists in the technology"
+                                "This technology option already exists in the technology"
                             )
                         }
                 else:
@@ -161,7 +161,7 @@ class modifyalias_view(privateView):
                     else:
                         error_summary = {
                             "exists": self._(
-                                "This alias already exists in the technology"
+                                "This technology option already exists in the technology"
                             )
                         }
                 else:

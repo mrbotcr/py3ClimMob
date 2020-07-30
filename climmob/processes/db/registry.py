@@ -124,13 +124,15 @@ def isRegistryClose(user, project, request):
         return False
 
 
-def availableRegistryQuestions(user, project, request):
+def availableRegistryQuestions(user, project, request, registration_and_analysis):
     # sql = "SELECT * FROM question WHERE (user_name = '" + user + "' OR user_name = 'bioversity') AND " \
     #      "question.question_reqinasses = 0 AND question.question_alwaysinasse = 0 AND question_id NOT IN (SELECT distinct question_id FROM registry WHERE user_name = '" + user + "' AND project_cod = '" + project  + "')"
-
+    if registration_and_analysis == 1:
+        startWith = "SELECT * FROM (select * from question where (question_dtype!=5 and question_dtype!=6) UNION "
+    else:
+        startWith = "SELECT * FROM (select * from question where (question_dtype!=5 and question_dtype!=6 and question_dtype!= 9 and question_dtype != 10) UNION "
     sql = (
-        #"SELECT * FROM (select * from question where (question_dtype!=5 and question_dtype!=6 and question_dtype!= 9 and question_dtype != 10) UNION "
-        "SELECT * FROM (select * from question where (question_dtype!=5 and question_dtype!=6) UNION "
+        startWith+
         "SELECT * FROM question WHERE (question_dtype=5 or question_dtype=6) AND question_id in (SELECT DISTINCT(question_id) FROM qstoption)) AS question "
         "WHERE (user_name = '" + user + "' OR user_name = 'bioversity') AND "
         "question_reqinasses = 0 AND "

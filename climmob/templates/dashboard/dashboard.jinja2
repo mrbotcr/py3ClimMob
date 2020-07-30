@@ -89,6 +89,11 @@
                             <li id="nav_downloads">
                                 <a href="{{ request.route_url('productList') }}"><i class="fa fa-cloud-download"></i> <span class="nav-label">{{ _("Downloads") }}</span></a>
                             </li>
+                            {% if activeUser.login == "bioversity" %}
+                                <li>
+                                    <a href="{{ request.route_url('projectHelp') }}"><i class="fa fa-cog"></i> <span class="nav-label">{{ _("Project help") }}</span></a>
+                                </li>
+                            {% endif %}
                         {% endblock mainavitems %}
                     </ul>
                 </div>
@@ -234,22 +239,24 @@
                                                 </p>
                                             </div>
                                         </div>
-                                        <div class="row">
-                                            <div class="col-md-9">
+                                        {% if activeProject.project_registration_and_analysis != 1 %}
+                                            <div class="row">
+                                                <div class="col-md-9">
 
-                                                <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('assessment',projectid=activeProject.project_cod) }}" ><i class="fa fa-balance-scale"></i> {{ _("Prepare data collection") }}</a>
+                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('assessment',projectid=activeProject.project_cod) }}" ><i class="fa fa-balance-scale"></i> {{ _("Prepare data collection") }}</a>
 
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <p style="margin-top: 8px; text-align: center">
+                                                        {% if progress.assessment %}
+                                                            <span class="label label-success">{{ _("Completed") }}</span>
+                                                        {% else %}
+                                                            <span class="label label-danger">{{ _("Pending") }}</span>
+                                                        {% endif %}
+                                                    </p>
+                                                </div>
                                             </div>
-                                            <div class="col-md-3">
-                                                <p style="margin-top: 8px; text-align: center">
-                                                    {% if progress.assessment %}
-                                                        <span class="label label-success">{{ _("Completed") }}</span>
-                                                    {% else %}
-                                                        <span class="label label-danger">{{ _("Pending") }}</span>
-                                                    {% endif %}
-                                                </p>
-                                            </div>
-                                        </div>
+                                        {% endif %}
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <br>
@@ -273,28 +280,14 @@
                                     </div>
                                 </div>
 
+                                {% if activeProject.project_registration_and_analysis != 1 %}
                                 <div class="ibox float-e-margins">
                                     <div class="ibox-title">
 
                                         <div class="ibox-tools">
                                             <div class="row">
                                                 <div class="col-md-8">
-                                                    <h5>{{ _("Data Collections") }}</h5>
-                                                </div>
-                                                <div class="col-md-4 pull-right">
-{#                                                    {% if progress.asssubmissions == 0 %}#}
-{#                                                        <div class="small">{{ _("Not yet started") }}</div>#}
-{#                                                    {% endif %}#}
-{#                                                    {% if showAnalysis == 1 %}#}
-{#                                                        {% if allassclosed == False %}#}
-{#                                                            <div class="small">{{ _("On going") }}</div>#}
-{#                                                            {% else %}#}
-{#                                                                <div class="small">{{ _("Closed") }}</div>#}
-{#                                                            {% endif %}#}
-{#                                                    {% endif %}#}
-{#                                                    {% if progress.asssubmissions == 2 %}#}
-{#                                                        <div class="small">{{ _("Closed") }}</div>#}
-{#                                                    {% endif %}#}
+                                                    <h5>{{ _("Data Collection moments") }}</h5>
                                                 </div>
                                             </div>
                                         </div>
@@ -313,7 +306,20 @@
                                                 <div class="col-md-12">
                                                     <br>
                                                     {% if progress.usableAssessments|length > 0 %}
-                                                        <button onclick="location.href = '{{ request.route_url('startassessments',projectid=activeProject.project_cod) }}'" class="btn btn-primary btn-rounded btn-block" ><i class="fa fa-play"></i> {{ _("Start an assessment") }}</button>
+                                                        {% snippet 'snippets/error.jinja2', error_summary=error_summary %}
+                                                        <form id="start_assessment"  role="form" method="post" action="{{ request.route_url("startassessments",projectid=activeProject.project_cod) }}">
+                                                            <div class="form-group">
+                                                                <label>{{ _("Select the assessment for start the data collection") }}</label>
+                                                                <select id="assessment_id" name="assessment_id" class="form-control">
+                                                                        {% for assessment in usable_assessments %}
+                                                                            <option value="{{ assessment.ass_cod }}">{{ assessment.ass_desc }}</option>>
+                                                                        {% endfor %}
+                                                                    </select>
+                                                            </div>
+                                                            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                                                            <button id="start_assessment_button" class="btn btn-primary btn-rounded btn-block" type="submit" name="start_assessment_button"> <i class="fa fa-play"></i> {{ _("Start an assessment") }}</button>
+                                                        </form>
+                                                        {# <button onclick="location.href = '{{ request.route_url('startassessments',projectid=activeProject.project_cod) }}'" class="btn btn-primary btn-rounded btn-block" ><i class="fa fa-play"></i> {{ _("Start an assessment") }}</button> #}
                                                     {% endif %}
                                                 </div>
                                             {% else %}
@@ -324,6 +330,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                {% endif %}
 
                             </div>
                             <div class="col-md-6">
@@ -578,18 +585,19 @@
 
 
 
-                                {% if total_ass_records > 0 %}
+                                {% if total_ass_records > 0 or (activeProject.project_registration_and_analysis == 1 and progress.regtotal >=10)%}
                                     <div class="ibox float-e-margins" >
                                         <div class="ibox-title">
                                             <h5>{{ _("Analysis") }}</h5>
                                         </div>
                                         <div class="ibox-content">
-                                            <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" onclick="location.href = '{{request.route_url('createAnalysis')}}' "><i class="fa fa-bar-chart-o"></i> {{ _("Select variables to analyze") }}</a>
+                                            <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" onclick="location.href = '{{request.route_url('createAnalysis')}}' "><i class="fa fa-bar-chart-o"></i> {{ _("Start analysis") }}</a>
                                             <br>
                                         </div>
 
                                     </div>
                                 {% endif %}
+
                             </div>
                         </div>
 

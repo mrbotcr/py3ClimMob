@@ -17,7 +17,8 @@ from ..processes import (
     getProjectProgress,
     clean_registry_error_logs,
     getCategoriesParents,
-    getAssessmentQuestions
+    getAssessmentQuestions,
+    getActiveProject
 )
 from jinja2 import Environment, FileSystemLoader
 from climmob.products import stopTasksByProcess
@@ -376,13 +377,15 @@ class registry_view(privateView):
 
         data, finalCloseQst = getDataFormPreview(self, projectid)
 
+        activeProjectData = getActiveProject(self.user.login, self.request)
+
         return {
             "activeUser": self.user,
             "data": data,
             "finalCloseQst": finalCloseQst,
             "projectid": projectid,
             "UserQuestion": availableRegistryQuestions(
-                self.user.login, projectid, self.request
+                self.user.login, projectid, self.request, activeProjectData["project_registration_and_analysis"]
             ),
             "Categories": getCategoriesParents(self.user.login,self.request)
         }

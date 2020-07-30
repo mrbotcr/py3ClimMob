@@ -666,6 +666,7 @@ class Project(Base):
     project_creationdate = Column(DateTime, nullable=False)
     project_localvariety = Column(Integer, server_default=text("'0'"))
     project_cnty = Column(ForeignKey(u"country.cnty_cod"), nullable=True, index=True)
+    project_registration_and_analysis = Column(Integer, server_default=text("'0'"))
     extra = Column(Text)
 
     user = relationship(u"User")

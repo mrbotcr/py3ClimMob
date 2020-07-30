@@ -312,10 +312,7 @@ def getAnalysisControl(request, user, project):
 
 
 def getProjectAssessments(user, project, request):
-    # print "****************************88"
-    # print user
-    # print project
-    # print "****************************88"
+
     sql = (
         "SELECT assessment.ass_cod,assessment.ass_desc,assessment.ass_days,assessment.ass_status,assessment.ass_final,COUNT(assdetail.question_id) as totquestions "
         "FROM assessment LEFT JOIN assdetail "

@@ -11,12 +11,19 @@
                     <input type="checkbox"  {% if checked %}checked {%endif%} class="{% if isAlias%}i-checksAlias{% if extra%}Extra{%endif%}{% else %}i-checks{% endif %}" id="element_{%if isAlias%}{{technology.alias_id}}{%else%}{{ technology.tech_id }}{%endif%}_{% if checked %}exists{% else %}new{% endif %}">
                 </i>
             {% else %}
-                <i class="fa fa-pagelines" style="color:{{ color }}"></i>
+                {# <i class="fa fa-pagelines" style="color:{{ color }}"></i> #}
+                <i style="border-color:{{ color }}; padding: initial; ">
+                    {% if color =="#000000" %}
+                        <input type="radio" name="technologies" class="i-checkTech i-checks-Black" value="radio{{ technology.tech_id }}" id="radio{{ technology.tech_id }}" class="">
+                    {% else %}
+                        <input type="radio" name="technologies" class="i-checkTech i-checks-Green" value="radio{{ technology.tech_id }}" id="radio{{ technology.tech_id }}" class="">
+                    {% endif %}
+                </i>
             {% endif %}
         </div>
         <div class="stream-panel" style="margin-top: 4px">
             <div class="stream-info">
-               <p style="font-size: 14px; margin: initial">{% if isAlias %}<b>{{ technology.alias_name }}</b>{% if extra %} ({{ _("only for this project") }}){%endif%}{% else%}<b>{{ technology.tech_name }}</b> {{ _("with") }} {{ technology.quantity }} {{ _("options") }}</p>{% endif %}
+               <p class="classForEyes" style="font-size: 14px; margin: initial">{% if isAlias %}<b>{{ technology.alias_name }}</b>{% if extra %} ({{ _("only for this project") }}){%endif%}{% else%}<b>{{ technology.tech_name }}</b> {{ _("with") }} {{ technology.quantity }} {{ _("options") }} </p>{% endif %}
             </div>
         </div>
     </div>

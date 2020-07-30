@@ -39,20 +39,21 @@ class newProject_view(privateView):
         dataworking["project_regstatus"] = 0
         dataworking["project_localvariety"] = "on"
         dataworking["project_cnty"] = None
+        dataworking["project_registration_and_analysis"] = 0
 
         if self.request.method == "POST":
             if "btn_addNewProject" in self.request.POST:
-                # get the field value
 
                 dataworking = self.getPostDict()
                 dataworking["user_name"] = self.user.login
                 dataworking["project_regstatus"] = 0
                 dataworking["project_lat"] = ""
                 dataworking["project_lon"] = ""
-                #if "ckb_localvariety" in dataworking.keys():
+
+                dataworking["project_registration_and_analysis"] = int(dataworking["project_registration_and_analysis"] )
+
                 dataworking["project_localvariety"] = 1
-                #else:
-                #    dataworking["project_localvariety"] = 0
+
 
                 if int(dataworking["project_numobs"]) > 0:
                     if dataworking["project_cod"] != "":
@@ -112,10 +113,7 @@ class modifyProject_view(privateView):
         projectid = self.request.matchdict["projectid"]
         if not projectExists(self.user.login, projectid, self.request):
             raise HTTPNotFound()
-        # self.needCSS('switch')
-        # self.needJS('switch')
-        # self.needJS('addproject')
-        # self.needCSS('tags')
+
         newproject = False
         error_summary = {}
         data = getProjectData(self.user.login, projectid, self.request)
@@ -135,10 +133,9 @@ class modifyProject_view(privateView):
                     data["project_numobs"] = cdata["project_numobs"]
                     data["project_numcom"] = cdata["project_numcom"]
 
-                #if "ckb_localvariety" in data.keys():
+                data["project_registration_and_analysis"] = int(data["project_registration_and_analysis"] )
+
                 data["project_localvariety"] = 1
-                #else:
-                #    data["project_localvariety"] = 0
 
                 isNecessarygenerateCombinations = False
                 if int(data["project_numobs"]) != int(cdata["project_numobs"]):

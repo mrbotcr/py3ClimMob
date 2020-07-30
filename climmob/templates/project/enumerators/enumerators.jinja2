@@ -5,10 +5,12 @@
 {% endblock title %}
 
 {% block css %}
+    {% cssresource request,'coreresources','icheck' %}
     {% cssresource request,'coreresources','sweet' %}
 {% endblock css %}
 
 {% block topScripts %}
+    {% jsresource request,'coreresources','icheck' %}
     {% jsresource request,'coreresources','sweet' %}
     {% jsresource request,'coreresources','delete' %}
 {% endblock topScripts %}
@@ -35,70 +37,91 @@
 
 {% block pagecontent %}
     <div class="row" style="height: 100%">
-        <div class="col-lg-12 " style="height: 100%">
+
+        <div class="col-lg-6 " style="height: 100%">
             <div class="ibox float-e-margins" style="height: 100%; margin-bottom: 0px">
                 <div class="ibox-title">
-                    <h5>{{ _("Field agents") }}</h5>
+                    <h5>{{ _("Assign field agents") }}</h5>
                     <div class="ibox-tools">
-                        <a href="{{ request.route_url('addprjenumerators', projectid=projectid) }}"  class="btn btn-primary btn-xs pull-right">{{ _("Assign field agent") }}</a>
                     </div>
                 </div>
-                <div class="ibox-content" style="height: 89%">
+                <div class="ibox-content animated fadeInRightBig" style="height: 89%">
                     {% if enumerators %}
+                        <form class="form-horizontal" role="form" method="post" action="{{ request.path }}">
+                            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                            <table class="table table-striped table-bordered">
+                                <tbody>
+                                <tr>
+                                    <th class="text-center">{{ _('Select to add') }}</th>
+                                    <th class="text-center">{{ _('Field agent') }}</th>
+                                </tr>
+
+                                {% for enumerator in enumerators %}
+                                    <tr>
+                                        <td class="text-center">
+                                            <input class="i-checks" type="checkbox" name="add{{ enumerator.enum_id }}"/>
+                                        </td>
+                                        <td>
+                                            {{ enumerator.enum_name }}
+                                        </td>
+
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <div class="text-center">
+                                <button class="btn btn-primary" type="submit" name="btn_modify_group"> {{ _('Add field agents') }}</button>
+                            </div>
+                        </form>
+                    {% else %}
+                        <div style="width: 100%; text-align: center">
+                            {% if enumeratorsInProject %}
+                                <h3><b>{{ _("All registered field agents have been assigned.")  }}</b></h3>
+                                <h3><b>{{ _("To register more field agents, go to:")  }}</b></h3>
+                                <a class="btn btn-primary" href="{{ request.route_url('enumerators') }}" > {{ _('Field agents') }}</a>
+                            {% else%}
+                                <h3><b>{{ _("No field agents found. Register your field agents first. Go to Library (left panel) > Field agents.")  }}</b></h3>
+                            {% endif %}
+
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 " style="height: 100%">
+            <div class="ibox float-e-margins" style="height: 100%; margin-bottom: 0px">
+                <div class="ibox-title">
+                    <h5>{{ _("Field agents assigned to the project") }}</h5>
+                    <div class="ibox-tools">
+
+                    </div>
+                </div>
+                <div class="ibox-content animated fadeInRightBig" style="height: 89%">
+                    {% if enumeratorsInProject %}
                         <table class="table table-striped table-bordered">
                             <tbody>
-                            <tr>
-                                <th class="text-center" >{{ _('Name') }}</th>
-{#                                <th class="text-center" >{{ _('Number of submissions by form') }}</th>#}
-                                <th class="text-center" >{{ _('Actions') }}</th>
-                            </tr>
-
-                            {% for enumerator in enumerators %}
-
                                 <tr>
-                                    <td style="vertical-align: middle;">
-                                        {% if enumerator.enum_active == 1 %}
-                                            {{ enumerator.enum_name }}
-                                        {% else %}
-                                            {{ enumerator.enum_name }} <span class="label label-danger">{{ _("Can not submit data") }}</span>
-                                        {% endif %}
-                                    </td>
-{#                                    <td class="">#}
-{#                                        {% set havePersons = namespace(count=0) %}#}
-{##}
-{#                                        {% for user in workByUser.registry%}#}
-{#                                            {% if enumerator.enum_id == user.user_name %}#}
-{#                                                {{ _("Registry") }}: {{ user.count }}#}
-{#                                                {% set havePersons.count = user.count %}#}
-{#                                            {% endif %}#}
-{#                                        {% endfor %}#}
-{##}
-{#                                        {% if havePersons.count == 0 %}#}
-{#                                            {{ _("Registry") }}: 0#}
-{#                                        {% endif %}#}
-{#                                        <br>#}
-{#                                        {% for assessment in assessments %}#}
-{#                                            {% set havePersons = namespace(count=0) %}#}
-{##}
-{#                                            {% for user in workByUser[assessment.ass_cod]%}#}
-{#                                                {% if enumerator.enum_id == user.user_name %}#}
-{#                                                    {{ _("Assessment") }} {{ assessment.ass_desc }}: {{ user.count }}<br>#}
-{#                                                    {% set havePersons.count = user.count %}#}
-{#                                                {% endif %}#}
-{#                                            {% endfor %}#}
-{##}
-{#                                            {% if havePersons.count == 0 %}#}
-{#                                                {{ _("Assessment") }} {{ assessment.ass_desc }}: 0 <br>#}
-{#                                            {% endif %}#}
-{#                                        {% endfor %}#}
-{##}
-{#                                    </td>#}
-
-                                    <td class="text-center" style="vertical-align: middle;">
-                                        <button onclick="showDelete('{{ request.route_url('removeprjenumerator', projectid=projectid,enumeratorid=enumerator.enum_id) }}','{{ _("Do you really want to remove this field agent?") }}','{{ request.session.get_csrf_token() }}')" type="button" class="btn btn-sm btn-danger">{{ _("Remove") }}</button>
-                                    </td>
+                                    <th class="text-center" >{{ _('Name') }}</th>
+                                    <th class="text-center" ></th>
                                 </tr>
-                            {% endfor %}
+
+                                {% for enumerator in enumeratorsInProject %}
+
+                                    <tr>
+                                        <td style="vertical-align: middle;">
+                                            {% if enumerator.enum_active == 1 %}
+                                                {{ enumerator.enum_name }}
+                                            {% else %}
+                                                {{ enumerator.enum_name }} <span class="label label-danger">{{ _("Can not submit data") }}</span>
+                                            {% endif %}
+                                        </td>
+
+                                        <td class="text-center" style="vertical-align: middle;">
+                                            <button onclick="showDelete('{{ request.route_url('removeprjenumerator', projectid=projectid,enumeratorid=enumerator.enum_id) }}','{{ _("Do you really want to remove this field agent?") }}','{{ request.session.get_csrf_token() }}')" type="button" class="btn btn-sm btn-danger" title="{{_("Remove field agent")}}"><i class="fa fa-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
 
                             </tbody>
                         </table>
@@ -107,12 +130,20 @@
                         </div>
                     {% else %}
                         <div style="width: 100%; text-align: center">
-                            <h3><b>{{ _("No data to display.") }}</b></h3>
-                            <a href="{{ request.route_url('addprjenumerators', projectid=projectid) }}"  class="btn btn-primary">{{ _("Assign field agent") }}</a>
+                            <h3><b>{{ _("No field agents assigned to this project.") }}</b></h3>
                         </div>
                     {% endif %}
                 </div>
             </div>
         </div>
+
     </div>
+    <script>
+        $(document).ready(function() {
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+        })
+    </script>
 {% endblock pagecontent%}

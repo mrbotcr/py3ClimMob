@@ -379,9 +379,6 @@ class assessmentPreview_view(privateView):
 
 class assessmenthead_view(privateView):
     def processView(self):
-        # self.needCSS("sweet")
-        # self.needJS("sweet")
-        # self.needJS("delete")
 
         projectid = self.request.matchdict["projectid"]
         if not projectExists(self.user.login, projectid, self.request):

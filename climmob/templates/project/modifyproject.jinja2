@@ -8,6 +8,7 @@
     {% cssresource request,'coreresources','switch' %}
     {% cssresource request,'coreresources','tags' %}
     {% cssresource request,'coreresources','chosen' %}
+    {% cssresource request,'coreresources','icheck' %}
 {% endblock css %}
 
 {% block topScripts %}
@@ -15,6 +16,7 @@
     {% jsresource request,'coreresources','addproject' %}
     {% jsresource request,'coreresources','bootstrapmaxlength' %}
     {% jsresource request,'coreresources','chosen' %}
+    {% jsresource request,'coreresources','icheck' %}
 {% endblock topScripts %}
 
 {% block pageheading %}
@@ -61,23 +63,15 @@
             <br>
             <br>
         </form>
+
+        <script>
+            $(document).ready(function () {
+
+                $('.i-checks').iCheck({
+                    radioClass: 'iradio_square-green',
+                });
+            })
+        </script>
     {% endif %}
 {% endblock pagecontent %}
 
-
-{% if newproject == True %}
-    {% block toastr %}
-        {# Overwrite the toaster so it does not trigger the popup #}
-    {% endblock toastr %}
-{% endif %}
-
-{% block script %}
-    {% if newproject == False %}
-        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDQTpXj82d8UpCi97wzo_nKXL7nYrd4G70"></script>
-    {% else %}
-        {# If a new project is just added then redirect the mainwindo to such project #}
-        <script>
-            window.top.location.href = "{{ request.route_url('dashboard',_query={'project':data.project_cod}) }}";
-        </script>
-    {% endif %}
-{% endblock script %}

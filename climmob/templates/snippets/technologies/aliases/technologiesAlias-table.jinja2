@@ -16,7 +16,7 @@
                     {% if formdata.user_name == activeUser.login %}
                         {% if alias.quantity <= 0 %}
                             <button class="btn btn-warning btn-circle" onclick="location.href='{{ request.route_url('modifyuseralias',technologyid=formdata['tech_id'], aliasid= alias.alias_id) }}'" type="button" title="{{ _("Edit option") }}"><i class="fa fa-pencil"></i></button>
-                            <button class="btn btn-danger btn-circle" onclick="showDelete('{{ request.route_url('deleteuseralias',technologyid=formdata['tech_id'], aliasid= alias.alias_id) }}','{{ _("Do you really want to remove this alias?") }}','{{ request.session.get_csrf_token() }}')" type="button" title="{{ _("Remove option") }}"><i class="fa fa-times"></i></button>
+                            <button class="btn btn-danger btn-circle" onclick="showDelete('{{ request.route_url('deleteuseralias',technologyid=formdata['tech_id'], aliasid= alias.alias_id) }}','{{ _("Do you really want to remove this technology option?") }}','{{ request.session.get_csrf_token() }}')" type="button" title="{{ _("Remove option") }}"><i class="fa fa-times"></i></button>
 
                         {% endif %}
                     {% endif %}

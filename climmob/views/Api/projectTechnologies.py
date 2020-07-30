@@ -384,7 +384,7 @@ class addProjectTechnologyAliasExtra_view(apiView):
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "This alias already exists for the technology."
+                                            "This technology option already exists for the technology."
                                         ),
                                     )
                                     return response

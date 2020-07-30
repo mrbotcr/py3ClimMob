@@ -65,8 +65,7 @@ class projectCombinations_view(privateView):
                 techs, ncombs, combs, = getCombinations(
                     self.user.login, projectid, self.request
                 )
-                # self.needCSS('datatables')
-                # self.needJS('prjcombinations')
+
                 pos = 1
                 elements = []
                 combArray = []

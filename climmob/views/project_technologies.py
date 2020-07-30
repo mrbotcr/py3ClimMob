@@ -261,7 +261,7 @@ class prjTechAliasAdd_view(privateView):
                             # error
                             error_summary = {
                                 "exists": self._(
-                                    "This alias already exists in the technology"
+                                    "This technology option already exists in the technology"
                                 )
                             }
                     else:

@@ -220,7 +220,7 @@ from ..views.Api.projectAssessmentStart import (
     readAssessmentStructure_view,
     pushJsonToAssessment_view,
 )
-
+from ..views.projectHelp.projectHelp import projectHelp_view
 from ..views.Api.project_analysis import readDataOfProjectView_api
 
 from ..views.project_analysis import analysisDataView
@@ -295,6 +295,14 @@ def loadRoutes(config):
             "path": "/projects",
             "view": dashboard_view,
             "renderer": "dashboard/dashboard.jinja2",
+        }
+    )
+    routes.append(
+        {
+            "name": "projectHelp",
+            "path": "/projectHelp",
+            "view": projectHelp_view,
+            "renderer": "projectHelp/projectHelp.jinja2",
         }
     )
     routes.append(

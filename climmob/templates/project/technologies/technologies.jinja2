@@ -16,13 +16,13 @@
 {% block pageheading %}
     <div class="row wrapper border-bottom white-bg page-heading">
         <div class="col-lg-10">
-            <h2>{{ _("Select technology options") }}</h2>
+            <h2>{{ _("Select technologies") }}</h2>
             <ol class="breadcrumb">
                 <li>
                     <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
                 </li>
                 <li class="active">
-                    <strong>{{ _("Select technology options") }}</strong>
+                    <strong>{{ _("Select technologies") }}</strong>
                 </li>
             </ol>
             <a href="https://climmob.net/blog/wiki/2019/09/30/select-treatments/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
@@ -40,7 +40,7 @@
         <div class="col-lg-4 " >
             <div class="ibox float-e-margins" >
                 <div class="ibox-title">
-                    <h5>{{ _("Add technology options") }}</h5>
+                    <h5>{{ _("Add technology") }}</h5>
                     <div class="ibox-tools">
 
                     </div>
@@ -81,7 +81,7 @@
             <div class="col-lg-4 " id="alias_in_project">
                 <div class="ibox float-e-margins" >
                     <div class="ibox-title">
-                        <h5>{{ _("Add levels") }}</h5>
+                        <h5>{{ _("Technology options") }}</h5>
                         <div class="ibox-tools">
                             <button   class="btn btn-xs btn-default pull-right btn_cancel_technology_options" ><i class="fa fa-close btn_cancel_technology_options" style="color: black"></i> </button>
                         </div>
@@ -93,6 +93,17 @@
                         {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, UserTechs=alias.AliasExtraTechnologyInProject, extra=True, checkbox=True, checked=True, isAlias=True %}
 
                         {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, UserTechs=alias.AliasTechnology, checkbox=True, checked=False, isAlias=True %}
+
+                        <div class="stream" style="padding: 4px 0" onclick="showCreateTechnology()">
+                            <div class="stream-badge">
+                                <i class="fa fa-plus" style="color:#000000"></i>
+                            </div>
+                            <div class="stream-panel" style="margin-top: 4px">
+                                <div class="stream-info">
+                                    <strong class="label label-primary" style="font-size: 12px; background-color: #3c763d">{{ _("Create new technology option") }}</strong>
+                                </div>
+                            </div>
+                        </div>
 
                         <form class="form-horizontal" role="form" method="post" action="{{ request.path }}">
                             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
@@ -110,10 +121,10 @@
                 </div>
             </div>
 
-            <div class="col-lg-4 " id="create_new_alias" >
+            <div class="col-lg-4 " id="create_new_alias" {% if not error_summary%}style="display:none" {% endif %}>
                 <div class="ibox float-e-margins" >
                     <div class="ibox-title">
-                        <h5>{{ _("New level details") }}</h5>
+                        <h5>{{ _("New technology option details") }}</h5>
                         <div class="ibox-tools">
                             <button   class="btn btn-xs btn-default pull-right btn_cancel_technology_options" ><i class="fa fa-close btn_cancel_technology_options" style="color: black"></i> </button>
                         </div>
@@ -121,7 +132,7 @@
                     <div class="ibox-content animated fadeInRightBig" >
 
                         {% snippet 'snippets/error.jinja2', error_summary=error_summary %}
-                        <h5 style="font-size: 14px">{{ _("Create an new level just for this project") }}</h5>
+                        <p style="font-size: 14px">{{ _("Create an new level just for this project") }}</p>
                         <br>
                         <div class="error-desc">
                             <form class="form-horizontal" method="post" action="{{ request.path }}">
@@ -130,10 +141,10 @@
                                     <label class="col-sm-4 control-label">{{ _('Name:') }}</label>
                                     <div class="col-sm-8">
                                         <input type="text" class="tech_id" name="tech_id" style="width: 100%;display:none" value="{{ tech_id }}">
-                                        <input type="text" class="form-control" value="{{ dataworking.alias_name }}" id="txt_add_alias" name="txt_add_alias" placeholder=" ">
+                                        <input type="text" class="form-control" value="{{ dataworking.alias_name }}" id="txt_add_alias" name="txt_add_alias" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("Write the level name.") }}')" onchange="this.setCustomValidity('')">
                                     </div>
                                 </div>
-                                <button type="submit" name="btn_add_alias" class="btn btn-primary pull-right">{{ _("Add new level") }}</button>
+                                <button type="submit" name="btn_add_alias" class="btn btn-primary pull-right">{{ _("Add new technology option") }}</button>
                                 <br><br>
                             </form>
                         </div>
@@ -146,10 +157,24 @@
     </div>
 
     <script>
+
+        $( ".classForEyes" ).hover(
+          function() {
+            $( this ).append( $( '<i style="color:#000000;" class="fa fa-eye"></i>' ) );
+          }, function() {
+            $( this ).find( "i" ).last().remove();
+          }
+        );
+
         function showVarieties(idtech)
         {
             $(".tech_id").val(idtech)
             $("#btn_show_technology_alias").click()
+        }
+
+        function showCreateTechnology()
+        {
+            $("#create_new_alias").css("display","initial");
         }
 
 
