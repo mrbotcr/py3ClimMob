@@ -169,4 +169,13 @@ def register_products(config):
     )
     products.append(documentform)
 
+    # GENERAL REPORT
+    generalreport = addProduct("generalreport", "Create a document docx with the information in the project step by step.")
+    addMetadataToProduct(generalreport, "author", "Brandon Madriz")
+    addMetadataToProduct(generalreport, "version", "1.0")
+    addMetadataToProduct(
+        generalreport, "Licence", "Copyright 2020, Alliance of Bioversity International and CIAT"
+    )
+    products.append(generalreport)
+
     return products

@@ -21,8 +21,11 @@ from ..processes import (
     getProjectEnumerators,
     numberOfCombinationsForTheProject,
     searchTechnologiesInProject,
-    getJSONResult
+    getJSONResult,
+    getProjectData,
+    getProjectAssessments
 )
+from .projectHelp.projectHelp import getImportantInformation
 from .registry import getDataFormPreview
 
 from ..products.qrpackages.qrpackages import create_qr_packages
@@ -31,6 +34,7 @@ from ..products.colors.colors import create_colors_cards
 from ..products.fieldagents.fieldagents import create_fieldagents_report
 from ..products.analysisdata.analysisdata import create_datacsv
 from ..products.forms.form import create_document_form
+from ..products.generalReport.generalReport import create_general_report
 
 def getDataProduct(user, project, request):
 
@@ -84,9 +88,6 @@ def getDataProduct(user, project, request):
     result = []
     for qst in questions:
         dct = dict(qst)
-        # for key, value in dct.items():
-        #    if isinstance(value, str):
-        #        dct[key] = value.decode("utf8")
         result.append(dct)
 
     return result
@@ -121,9 +122,6 @@ class productsView(climmobPrivateView):
 
             if activeProjectData["project_active"] == 1:
                 hasActiveProject = True
-                # u.getJSResource("productsListaes").need()
-                # u.getJSResource("productsList").need()
-                # u.getJSResource("concurrent").need()
         else:
             products = []
 
@@ -189,6 +187,24 @@ class generateProductView(privateView):
             ncombs, packages = getPackages(self.user.login, projectid, self.request)
             data, finalCloseQst = getDataFormPreview(self, projectid)
             create_document_form(self.request, "en", self.user.login, projectid, "Registration", "", data, packages)
+
+        if productid == "generalreport":
+            dataworking = {}
+            dataworking["project_username"] = self.user.login
+            dataworking["project_cod"] = projectid
+            dataworking["project_details"] = getProjectData(self.user.login, projectid, self.request)
+            dataworking = getImportantInformation(dataworking, self.request)
+            dataworking["project_fieldagents"] = getProjectEnumerators(self.user.login, projectid, self.request)
+            dataRegistry, finalCloseQst = getDataFormPreview(self, projectid)
+            dataworking["project_registry"] = dataRegistry
+            dataAssessments = getProjectAssessments(
+                    self.user.login, projectid, self.request
+                )
+            for assessment in dataAssessments:
+                dataAssessmentsQuestions, finalCloseQst = getDataFormPreview(self, projectid, assessment["ass_cod"])
+                assessment["Questions"] = dataAssessmentsQuestions
+            dataworking["project_assessment"] = dataAssessments
+            create_general_report(self.request, self.request.locale_name, self.user.login,projectid, dataworking)
 
         self.returnRawViewResult = True
         return HTTPFound(
@@ -259,12 +275,6 @@ class downloadView(climmobPrivateView):
             self.returnRawViewResult = True
             return response
 
-            # response = FileResponse(path+'/outputs/'+filename,request=self.request,content_type=contentType)
-            # headers = response.headers
-            # headers['Content-Type'] = contentType
-            # headers['Accept-Ranges'] = 'bite'
-            # headers['Content-Disposition'] = 'attachment;filename=' + os.path.basename(path+'/outputs/'+filename)
-            return response
         else:
             self.returnRawViewResult = True
             return False

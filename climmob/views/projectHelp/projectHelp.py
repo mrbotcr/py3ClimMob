@@ -1,6 +1,6 @@
 from ..classes import privateView
 from ...models import Prjcombination
-from ...processes import getProjectData, getCombinationsUsableInProject,getCombinations, createExtraPackages, getPackages
+from ...processes import getProjectData, searchTechnologiesInProject, getCombinations, createExtraPackages, getPackages, AliasSearchTechnologyInProject
 from ...config.auth import getCountryName
 from ...products.qrpackages.qrpackages import create_qr_packages
 
@@ -43,9 +43,12 @@ def getImportantInformation(dataworking, request):
 
     dataworking["project_details"]["country"] = getCountryName(dataworking["project_details"]["project_cnty"],request)
     techs, ncombs, combs, = getCombinations(dataworking["project_username"], dataworking["project_cod"], request)
-    dataworking["project_details"]["techs"] = techs
+    techInfo = searchTechnologiesInProject(dataworking["project_username"], dataworking["project_cod"], request)
+    for tech in techInfo:
+        tech["alias"] = AliasSearchTechnologyInProject(tech["tech_id"],dataworking["project_username"], dataworking["project_cod"], request)
+    dataworking["project_details"]["techs"] = techInfo
     dataworking["project_details"]["ncombs"] = ncombs
-    if dataworking["project_details"]["project_regstatus"] == 1:
+    if dataworking["project_details"]["project_regstatus"] > 0:
         pos = 1
         elements = []
         combArray = []

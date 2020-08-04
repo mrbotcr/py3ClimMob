@@ -101,7 +101,7 @@
                                         <td style="padding-left: 10px">{{ dataworking["project_details"]["project_name"] }}</td>
                                     </tr>
                                     <tr>
-                                        <th>{{ _("Trial cordinator") }}:</th>
+                                        <th>{{ _("Trial coordinator") }}:</th>
                                         <td style="padding-left: 10px">{{ dataworking["project_details"]["project_pi"] }}</td>
                                     </tr>
                                     <tr>
@@ -117,13 +117,13 @@
                                         <td style="padding-left: 10px">{{ dataworking["project_details"]["techs"]|length }}</td>
                                     </tr>
                                 </table>
-                                <br><br>
+                                <br>
                                 <i class="fa fa-cubes text-navy " style="font-size: 15px"> {{ _("Project combinations") }}</i>
                                 <br><br>
                                 <table class="table table-striped table-bordered table-hover dataTables-example" >
                                     <thead>
                                     <tr>
-                                        <th>{{ _("Combination of levels") }}</th>
+                                        <th>{{ _("Combination number") }}</th>
                                         {% for tech in dataworking["project_details"]["techs"] %}
                                             <th>{{  tech.tech_name }}</th>
                                         {% endfor %}
@@ -142,7 +142,7 @@
                                     {% endfor %}
                                     </tbody>
                                 </table>
-                                <br><br>
+                                <br>
                                 <i class="fa fa-wrench text-navy " style="font-size: 15px"> {{ _("Project adjustments") }}</i>
                                 <br><br>
                                 <div class="form-group">

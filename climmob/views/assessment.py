@@ -395,9 +395,6 @@ class assessmenthead_view(privateView):
 
 class newassessmenthead_view(privateView):
     def processView(self):
-        # self.needCSS('switch')
-        # self.needJS('switch')
-        # self.needJS('assessment_form')
         projectid = self.request.matchdict["projectid"]
         if not projectExists(self.user.login, projectid, self.request):
             raise HTTPNotFound()

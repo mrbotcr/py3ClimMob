@@ -67,8 +67,10 @@
             {% else %}
                 <div style="width: 100%; text-align: center">
                     <h3><b>{{ _("You haven't files to download.") }}</b></h3>
+                    <a href="{{ request.route_url('generateProduct', productid="generalreport", projectid=activeProject.project_cod) }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create/Update project summary") }}</a>
                 </div>
             {% endif %}
+
         </div>
     {% else %}
         <div class="middle-box text-center loginscreen animated fadeInDown">

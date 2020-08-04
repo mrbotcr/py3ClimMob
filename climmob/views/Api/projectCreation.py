@@ -46,20 +46,16 @@ class createProject_view(apiView):
                 u"project_pi",
                 u"project_piemail",
                 u"project_numobs",
-                "project_numcom",
-                #u"project_lat",
-                #u"project_lon",
                 u"project_cnty",
-                u"project_localvariety",
-                "user_name",
-                "project_regstatus",
+                u"project_registration_and_analysis"
             ]
             dataworking = json.loads(self.body)
-            dataworking["user_name"] = self.user.login
-            dataworking["project_regstatus"] = 0
-            dataworking["project_numcom"] = 3
 
             if sorted(obligatory) == sorted(dataworking.keys()):
+                dataworking["user_name"] = self.user.login
+                dataworking["project_localvariety"] = 1
+                dataworking["project_regstatus"] = 0
+                dataworking["project_numcom"] = 3
 
                 dataInParams = True
                 for key in dataworking.keys():
@@ -95,6 +91,18 @@ class createProject_view(apiView):
                                     dataworking["project_numobs"] > 0
                                     and dataworking["project_numcom"] > 0
                                 ):
+                                    if str(dataworking["project_registration_and_analysis"]) not in [
+                                        "0",
+                                        "1",
+                                    ]:
+                                        response = Response(
+                                            status=401,
+                                            body=self._(
+                                                "The possible values in the parameter 'project_registration_and_analysis' are: ['0':' Registration is done first, followed by one or more data collection moments (with different forms)','1':'Requires registering participants and immediately asking questions to analyze the information']"
+                                            ),
+                                        )
+                                        return response
+
                                     if str(dataworking["project_localvariety"]) not in [
                                         "0",
                                         "1",
@@ -209,13 +217,8 @@ class updateProject_view(apiView):
                 u"project_pi",
                 u"project_piemail",
                 u"project_numobs",
-                u"project_numcom",
-                #u"project_lat",
-                #u"project_lon",
                 u"project_cnty",
-                u"project_localvariety",
-                "user_name",
-                "project_regstatus",
+                u"project_registration_and_analysis"
             ]
             obligatory = [u"project_cod"]
 
@@ -276,6 +279,18 @@ class updateProject_view(apiView):
                                         dataworking["project_cod"],
                                         self.request,
                                     )
+
+                            if str(dataworking["project_registration_and_analysis"]) not in [
+                                "0",
+                                "1",
+                            ]:
+                                response = Response(
+                                    status=401,
+                                    body=self._(
+                                        "The possible values in the parameter 'project_registration_and_analysis' are: ['0':' Registration is done first, followed by one or more data collection moments (with different forms)','1':'Requires registering participants and immediately asking questions to analyze the information']"
+                                    ),
+                                )
+                                return response
 
                             if "project_localvariety" in dataworking.keys():
                                 if str(dataworking["project_localvariety"]) not in [

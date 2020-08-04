@@ -41,7 +41,11 @@
                                                 {% if product.product_id == "documentform" %}
                                                     {{ _("Registration form designed to print") }}.
                                                 {% else %}
-                                                    {{ product.product_id }}
+                                                    {% if product.product_id == "generalreport" %}
+                                                        {{ _("Project summary") }}.
+                                                    {% else %}
+                                                        {{ product.product_id }}
+                                                    {% endif %}
                                                 {% endif %}
                                             {% endif %}
                                         {% endif %}
@@ -117,5 +121,10 @@
                 </td>
             </tr>
         {% endfor %}
+        <tr>
+            <td class="text-center" colspan="4">
+                <a href="{{ request.route_url('generateProduct', productid="generalreport", projectid=activeProject.project_cod) }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create/Update project summary") }}</a>
+            </td>
+        </tr>
     </tbody>
 </table>
