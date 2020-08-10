@@ -32,7 +32,10 @@ def searchTechnologies(user, projectid, request):
         .filter(Prjtech.user_name == user)
     )
     result = (
-        request.dbsession.query(Technology)
+        request.dbsession.query(Technology,
+            request.dbsession.query(func.count(Techalia.tech_id))
+            .filter(Techalia.tech_id == Technology.tech_id)
+            .label("quantityAlias"))
         .filter(or_(Technology.user_name == user, Technology.user_name == "bioversity"))
         .filter(Technology.tech_id.notin_(subquery))
         .order_by(Technology.tech_name)
@@ -41,9 +44,11 @@ def searchTechnologies(user, projectid, request):
     for technology in result:
         res.append(
             {
-                "tech_id": technology.tech_id,
-                "tech_name": technology.tech_name,
-                "user_name": technology.user_name,
+                "tech_id": technology[0].tech_id,
+                "tech_name": technology[0].tech_name,
+                "user_name": technology[0].user_name,
+                "quantity": 0,
+                "quantityAlias": technology.quantityAlias,
             }
         )
 
@@ -61,6 +66,9 @@ def searchTechnologiesInProject(user, project_id, request):
             .filter(Prjalia.project_cod == project_id)
             .filter(Prjalia.user_name == user)
             .label("quantity"),
+            request.dbsession.query(func.count(Techalia.tech_id))
+            .filter(Techalia.tech_id == Prjtech.tech_id)
+            .label("quantityAlias")
         )
         .filter(Prjtech.tech_id == Technology.tech_id)
         .filter(Prjtech.user_name == user)
@@ -78,6 +86,7 @@ def searchTechnologiesInProject(user, project_id, request):
                 "project_cod": technology[1].project_cod,
                 "tech_id": technology[1].tech_id,
                 "quantity": technology.quantity,
+                "quantityAlias": technology.quantityAlias,
             }
         )
 

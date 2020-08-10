@@ -8,9 +8,11 @@
     {% cssresource request,'coreresources','icheck' %}
     {% cssresource request,'coreresources','datatables' %}
     {% cssresource request,'coreresources','sweet' %}
+    {% cssresource request,'coreresources','footable' %}
 {% endblock css %}
 
 {% block topScripts %}
+    {% jsresource request,'coreresources','footable' %}
     {% jsresource request,'coreresources','icheck' %}
     {% jsresource request,'coreresources','technologies' %}
     {% jsresource request,'coreresources','datatables' %}
@@ -48,11 +50,22 @@
                     <h5>{{ _("Technologies available") }}</h5>
                 </div>
                 <div class="ibox-content">
+                    <input type="text" class="form-control form-control-sm m-b-xs" id="filter" placeholder="{{ _("Search technology") }}">
                     <div class="activity-stream">
-                        {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, color="#000000",UserTechs=ClimMobTechs %}
-                        {% if activeUser.login != "bioversity" %}
-                            {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, color="#1ab394",UserTechs=UserTechs %}
-                        {% endif %}
+                        <table class="footable table table-stripped" data-page-size="50000" data-filter=#filter>
+                            <thead>
+                                <tr>
+                                    <th style="text-align: center">{{ _("Technology")}}</th>
+                                    <th style="text-align: center" data-type="numeric">{{  _("Number of options") }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, color="#000000",UserTechs=ClimMobTechs %}
+                                {% if activeUser.login != "bioversity" %}
+                                    {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, color="#1ab394",UserTechs=UserTechs %}
+                                {% endif %}
+                            </tbody>
+                        </table>
 
                         <div class="stream" style="padding: 4px 0" onclick="showCreateTechnology()">
                             <div class="stream-badge">
@@ -159,6 +172,8 @@
 
         $(document).ready(function () {
 
+            $('.footable').footable();
+
             $('.i-checks-Black').iCheck({
                 radioClass: 'iradio_square-black',
             });
@@ -256,7 +271,7 @@
                 if(tech.tech_alias[i].quantity == 0 & tech.user_name == "{{ activeUser.login }}"){
                     allHTML +="<div class='stream' style='padding:4px 0' onclick='showAlias("+arrayForAlias+")' id='option"+tech.tech_alias[i].alias_id+"'>"
                     allHTML +="<div class='stream-badge'>"
-                    allHTML +="<i class='fa fa-thumb-tack' style='color:#1ab394'></i>"
+                    /*allHTML +="<i class='fa fa-thumb-tack' style='color:#1ab394'></i>"*/
                     /*allHTML +="<i class='fa fa-thumb-tack' style='color:#1ab394'></i>"*/
                     allHTML +="<i style='border-color:#1ab394; padding: initial;'><input type='radio' class='i-checkOption i-checks-Green1' name='technologyoptions' id='radioOption"+tech.tech_alias[i].alias_id+"'></i>"
                 }else{

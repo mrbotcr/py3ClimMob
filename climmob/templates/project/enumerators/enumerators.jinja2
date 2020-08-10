@@ -76,9 +76,7 @@
                     {% else %}
                         <div style="width: 100%; text-align: center">
                             {% if enumeratorsInProject %}
-                                <h3><b>{{ _("All registered field agents have been assigned.")  }}</b></h3>
-                                <h3><b>{{ _("To register more field agents, go to:")  }}</b></h3>
-                                <a class="btn btn-primary" href="{{ request.route_url('enumerators') }}" > {{ _('Field agents') }}</a>
+                                <h3><b><a href="{{ request.route_url('enumerators') }}" style="color: black">{{ _("Go to") }} <u style="color: #337ab7">{{ _("field agents")}}</u> {{ _("to register more of them.")  }}</a></b></h3>
                             {% else%}
                                 <h3><b>{{ _("No field agents found. Register your field agents first. Go to Library (left panel) > Field agents.")  }}</b></h3>
                             {% endif %}
@@ -126,7 +124,7 @@
                             </tbody>
                         </table>
                         <div style="width: 100%; text-align: center">
-                            <h3><b><a href="{{ request.route_url('productList') }}">{{ _("You can download a PDF document to configure ODK Collect on Android devices.") }}</a></b></h3>
+                            <h3><b><a href="{{ request.route_url('productList') }}" style="color: #000000">{{ _("You can download a") }} <u style="color: #337ab7">{{ _("PDF document") }}</u> {{_("to configure ODK Collect on Android devices.") }}</a></b></h3>
                         </div>
                     {% else %}
                         <div style="width: 100%; text-align: center">

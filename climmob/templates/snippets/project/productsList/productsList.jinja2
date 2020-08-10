@@ -8,6 +8,7 @@
             <th class="text-center">{{ _('Format') }}</th>
             <th class="text-center">{{ _('Action') }}</th>
         </tr>
+        {% set changes = {'projectSummary': true} %}
         {% for product in Products %}
             {% set color = '#676a6c' %}
             {% if product.product_id == "qrpackage" or product.product_id == "packages" or product.product_id == "fieldagents"%}
@@ -18,31 +19,32 @@
             <tr>
                 <td style="vertical-align: middle;">
                     {% if product.product_id == "qrpackage" %}
-                        {{ _("List of packages with QR for the registration form.") }}
+                        {{ _("List of packages with QR for the registration form") }}
                     {% else %}
                         {% if product.product_id == "packages" %}
-                            {{ _("Random list to prepare packages.") }}
+                            {{ _("List with randomized trial packages") }}
                         {% else %}
                             {% if product.product_id == "fieldagents" %}
-                                {{ _("Field Agent List and QR to configure ODK Collect.") }}
+                                {{ _("List with field agents and their QR codes to configure ODK Collect") }}
                             {% else %}
                                 {% if product.product_id == "colors" %}
-                                    {{ _("Color cards to explain ClimMob.") }}
+                                    {{ _("Color cards to explain ClimMob") }}
                                 {% else %}
                                     {% if product.product_id == "datacsv" %}
-                                        {{ _("Information collected in the project and used to create the report.") }}
+                                        {{ _("Information collected in the project and used to create the report") }}
                                     {% else %}
                                         {% if product.product_id == "reports" %}
-                                            {{ _("Report generated in the analysis of the information.") }}
+                                            {{ _("Report generated in the analysis of the information") }}
                                         {% else %}
                                             {% if product.product_id == "datadesk" %}
-                                                {{ _("Data collected in ") }} {{ product.output_id }}.
+                                                {{ _("Data collected in ") }} {{ product.output_id }}
                                             {% else %}
                                                 {% if product.product_id == "documentform" %}
-                                                    {{ _("Registration form designed to print") }}.
+                                                    {{ _("Printer-friendly registration form") }}
                                                 {% else %}
                                                     {% if product.product_id == "generalreport" %}
-                                                        {{ _("Project summary") }}.
+                                                        {% if changes.update({'projectSummary': false }) %}{% endif %}
+                                                        {{ _("Project summary") }}
                                                     {% else %}
                                                         {{ product.product_id }}
                                                     {% endif %}
@@ -90,6 +92,9 @@
                         {% if product.exists == "correct" %}
                             {% if product.product_id != "datadesk" %}
                                 <a href="{{ request.route_url('download', product_id=product.celery_taskid) }}" class="btn btn-primary" style="background-color:{{ color }}; border-color: {{ color }}"><i class="fa fa-download"></i> {{ _("Download") }}</a>
+                                {% if product.product_id == "generalreport" %}
+                                    <a href="{{ request.route_url('generateProduct', productid="generalreport", projectid=activeProject.project_cod) }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Update") }}</a>
+                                {% endif %}
                             {% else %}
                                 <a id="{{product.celery_taskid}}$#%%#${{product.output_id}}" class="btn btn-primary btn_datadesk" style="background-color:{{ color }}; border-color: {{ color }}"><i class="fa fa-download"></i> {{ _("Download") }}</a>
                             {% endif %}
@@ -121,10 +126,15 @@
                 </td>
             </tr>
         {% endfor %}
-        <tr>
-            <td class="text-center" colspan="4">
-                <a href="{{ request.route_url('generateProduct', productid="generalreport", projectid=activeProject.project_cod) }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create/Update project summary") }}</a>
-            </td>
-        </tr>
+        {% if changes.projectSummary %}
+            <tr>
+                <td>{{ _("Project summary") }}</td>
+                <td></td>
+                <td></td>
+                <td class="text-center">
+                    <a href="{{ request.route_url('generateProduct', productid="generalreport", projectid=activeProject.project_cod) }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
+                </td>
+            </tr>
+        {% endif %}
     </tbody>
 </table>

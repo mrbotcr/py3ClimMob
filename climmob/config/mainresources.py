@@ -136,6 +136,12 @@ def createResources(apppath, config):
         "inspinia/css/plugins/datapicker/bootstrap-datetimepicker.min.css",
         "jqueryui",
     )
+    r.add_css_resource(
+        "coreresources",
+        "footable",
+        "inspinia/css/plugins/footable/footable.core.css",
+        "jqueryui",
+    )
     # Progress
     r.add_css_resource("coreresources", "c3", "inspinia/css/plugins/c3/c3.min.css")
     r.add_library("progress", os.path.join(apppath, "templates/progress"), config)
@@ -374,4 +380,7 @@ def createResources(apppath, config):
     )
     r.add_js_resource(
         "coreresources", "parsley", "inspinia/js/plugins/parsley/parsley.js", "jquery"
+    )
+    r.add_js_resource(
+        "coreresources", "footable", "inspinia/js/plugins/footable/footable.all.min.js", "jquery"
     )

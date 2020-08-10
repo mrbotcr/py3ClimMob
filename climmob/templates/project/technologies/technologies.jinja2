@@ -6,9 +6,11 @@
 
 {% block css %}
     {% cssresource request,'coreresources','icheck' %}
+    {% cssresource request,'coreresources','footable' %}
 {% endblock css %}
 
 {% block topScripts %}
+    {% jsresource request,'coreresources','footable' %}
     {% jsresource request,'coreresources','icheck' %}
     {% jsresource request,'coreresources','prjtechnologies' %}
 {% endblock topScripts %}
@@ -45,12 +47,22 @@
 
                     </div>
                 </div>
-                <div class="ibox-content animated fadeInRightBig" >
+                <div class="ibox-content" >
+                    <input type="text" class="form-control form-control-sm m-b-xs" id="filter" placeholder="{{ _("Search technology") }}">
+                    <table class="footable table table-stripped" data-page-size="50000" data-filter=#filter>
+                        <thead>
+                            <tr>
+                                <th style="text-align: center">{{ _("Technology")}}</th>
+                                <th style="text-align: center" data-type="numeric">{{  _("Number of options in the library") }}</th>
+                                <th style="text-align: center" data-type="numeric"> {{ _("Number of options Included in the project") }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, UserTechs=TechnologiesInProject, checkbox=True, checked=True %}
 
-                    {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, UserTechs=TechnologiesInProject, checkbox=True, checked=True %}
-
-                    {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, UserTechs=TechnologiesUser, checkbox=True, checked=False %}
-
+                            {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, UserTechs=TechnologiesUser, checkbox=True, checked=False %}
+                        </tbody>
+                    </table>
                     <form class="form-horizontal" role="form" method="post" action="{{ request.path }}">
                         <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                         <input type="text" id="txt_technologies_included" name="txt_technologies_included" style="width: 100%;display:none">
@@ -87,13 +99,15 @@
                         </div>
                     </div>
                     <div class="ibox-content animated fadeInRightBig" >
+                        <table class="footable table table-stripped" data-page-size="50000" data-filter=#filter>
+                            <tbody>
+                                {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, UserTechs=alias.AliasTechnologyInProject, checkbox=True, checked=True, isAlias=True %}
 
-                        {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, UserTechs=alias.AliasTechnologyInProject, checkbox=True, checked=True, isAlias=True %}
+                                {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, UserTechs=alias.AliasExtraTechnologyInProject, extra=True, checkbox=True, checked=True, isAlias=True %}
 
-                        {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, UserTechs=alias.AliasExtraTechnologyInProject, extra=True, checkbox=True, checked=True, isAlias=True %}
-
-                        {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, UserTechs=alias.AliasTechnology, checkbox=True, checked=False, isAlias=True %}
-
+                                {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, UserTechs=alias.AliasTechnology, checkbox=True, checked=False, isAlias=True %}
+                            </tbody>
+                        </table>
                         <div class="stream" style="padding: 4px 0" onclick="showCreateTechnology()">
                             <div class="stream-badge">
                                 <i class="fa fa-plus" style="color:#000000"></i>
@@ -157,6 +171,10 @@
     </div>
 
     <script>
+        $(document).ready(function () {
+
+            $('.footable').footable();
+        });
 
         $( ".classForEyes" ).hover(
           function() {
