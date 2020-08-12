@@ -299,19 +299,21 @@
                     $('#div_unit').css('display', 'block');
                 else {
                     $('#div_unit').css('display', 'none');
-                    $("#question_unit").val("");
+                    $("#question_unit").val("-");
                 }
 
                 if(value == 9 )
                 {
                     $("#form_characteristics").css("display",'initial')
                     $(".inputForQuestionChar").prop('disabled',false);
+                    $("#question_desc").val("-")
                 }
 
                 if(value == 10)
                 {
                     $("#form_performance").css("display","initial")
                     $(".inputForQuestionPerf").prop('disabled',false);
+                    $("#question_desc").val("-")
                 }
 
                 if(value == 5 || value == 6)
@@ -474,6 +476,9 @@
         }
 
         function actionQuestion(action) {
+            $("#btn_add_question").prop('disabled', true);
+            $("#btn_update_question").prop('disabled', true);
+
             var question_requiredvalue = 0;
             if ($("#ckb_required_value").is(':checked'))
                 question_requiredvalue = 1;
@@ -505,13 +510,17 @@
                     if(respuesta['result'] == "error")
                     {
                         toastr.error(respuesta['error']);
+                        $("#btn_add_question").prop('disabled', false);
+                        $("#btn_update_question").prop('disabled', false);
                     }else{
-                        toastr.success(respuesta['success']);
+                        //toastr.success(respuesta['success']);
                         location.href = window.location.href;
                     }
                 },
                 error: function (respuesta) {
                     toastr.error("Error:"+ respuesta);
+                    $("#btn_add_question").prop('disabled', false);
+                    $("#btn_update_question").prop('disabled', false);
                 }
             });
         }
@@ -601,7 +610,7 @@
                         {
                             toastr.error(respuesta['error']);
                         }else{
-                            toastr.success(respuesta['success']);
+                            //toastr.success(respuesta['success']);
                             location.href = window.location.href;
                         }
                     },
@@ -674,12 +683,14 @@
             {
                 $("#form_characteristics").css("display",'initial')
                 $(".inputForQuestionChar").prop('disabled',false);
+                $("#question_desc").val("-")
             }
 
             if(question_dtype == "10")
             {
                 $("#form_performance").css("display","initial")
                 $(".inputForQuestionPerf").prop('disabled',false);
+                $("#question_desc").val("-")
             }
 
             if(question_dtype == '5' || question_dtype == '6')
@@ -800,7 +811,7 @@
             $("#question_negstm").val("")
             $("#question_perfstmt").val("")
             $("#tableForOptions").html("")
-
+            $("#question_desc").val("")
         }
 
         function clean_extra_section()

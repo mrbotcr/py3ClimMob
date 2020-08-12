@@ -81,6 +81,7 @@
                         <div class="row" style="padding-top: 10px; height: 50px">
                             <div class="col-md-12">
                                 <button class="btn btn-primary pull-right clm-actions" style="display:none" name="btn_show_technology_alias" type="submit" id="btn_show_technology_alias"><i class="fa fa-check"></i>&nbsp;{{ _("Show technologies") }}</button>
+                                <button class="btn btn-primary pull-right clm-actions" style="display:none" name="btn_show_technology_alias_in_library" type="submit" id="btn_show_technology_alias_in_library"><i class="fa fa-check"></i>&nbsp;{{ _("Show technologies") }}</button>
 
                             </div>
                         </div>
@@ -93,7 +94,7 @@
             <div class="col-lg-4 " id="alias_in_project">
                 <div class="ibox float-e-margins" >
                     <div class="ibox-title">
-                        <h5>{{ _("Technology options") }}</h5>
+                        <div id="title_for_options"><h5>{{ _("Technology options for") }}: {{ techSee.tech_name }}</h5></div>
                         <div class="ibox-tools">
                             <button   class="btn btn-xs btn-default pull-right btn_cancel_technology_options" ><i class="fa fa-close btn_cancel_technology_options" style="color: black"></i> </button>
                         </div>
@@ -172,22 +173,26 @@
 
     <script>
         $(document).ready(function () {
-
             $('.footable').footable();
         });
 
         $( ".classForEyes" ).hover(
           function() {
-            $( this ).append( $( '<i style="color:#000000;" class="fa fa-eye"></i>' ) );
+            $( this ).append( $('<i style="color:#000000;" class="fa fa-eye">  </i>') );
           }, function() {
             $( this ).find( "i" ).last().remove();
           }
         );
 
-        function showVarieties(idtech)
+        function showVarieties(techid)
         {
-            $(".tech_id").val(idtech)
+            $(".tech_id").val(techid)
             $("#btn_show_technology_alias").click()
+        }
+
+        function showLibraryVarieties(techid) {
+            $(".tech_id").val(techid)
+            $("#btn_show_technology_alias_in_library").click()
         }
 
         function showCreateTechnology()

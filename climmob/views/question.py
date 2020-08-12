@@ -65,16 +65,6 @@ class modifyQuestion_view(privateView):
         if not formdata or not editable:
             raise HTTPNotFound()
 
-        """if formdata["question_alwaysinreg"] == 1:
-            formdata["question_alwaysinreg"] = "on"
-        else:
-            formdata["question_alwaysinreg"] = "off"
-
-        if formdata["question_alwaysinasse"] == 1:
-            formdata["question_alwaysinasse"] = "on"
-        else:
-            formdata["question_alwaysinasse"] = "off"
-        """
         if formdata["question_requiredvalue"] == 1:
             formdata["question_requiredvalue"] = "on"
         else:
@@ -94,17 +84,6 @@ class modifyQuestion_view(privateView):
             except:
                 formdata["qstgroups_id"] = None
                 formdata["qstgroups_user"] = None
-
-            """if "question_alwaysinreg" in formdata.keys():
-                formdata["question_alwaysinreg"] = 1
-            else:
-                formdata["question_alwaysinreg"] = 0
-
-            if "question_alwaysinasse" in formdata.keys():
-                formdata["question_alwaysinasse"] = 1
-            else:
-                formdata["question_alwaysinasse"] = 0
-            """
 
             if "question_requiredvalue" in formdata.keys():
                 formdata["question_requiredvalue"] = 1
@@ -132,17 +111,6 @@ class modifyQuestion_view(privateView):
                         )
                     )
             else:
-                """
-                if formdata["question_alwaysinreg"] == 1:
-                    formdata["question_alwaysinreg"] = "on"
-                else:
-                    formdata["question_alwaysinreg"] = "off"
-
-                if formdata["question_alwaysinasse"] == 1:
-                    formdata["question_alwaysinasse"] = "on"
-                else:
-                    formdata["question_alwaysinasse"] = "off"
-                """
                 if formdata["question_requiredvalue"] == 1:
                     formdata["question_requiredvalue"] = "on"
                 else:

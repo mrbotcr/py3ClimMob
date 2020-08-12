@@ -265,7 +265,7 @@
                     success: function (respuesta) {
                         $("#htmlForPreview").html("")
                         $("#htmlForPreview").html(respuesta)
-                        toastr.success("{{ _("Update completed.") }}");
+                        //toastr.success("{{ _("Update completed.") }}");
                     },
                     error: function (respuesta) {
                         console.log(respuesta)
@@ -401,7 +401,7 @@
                     {
                         toastr.error(respuesta['error']);
                     }else{
-                        toastr.success(respuesta['success']);
+                        //toastr.success(respuesta['success']);
                         location.href = window.location.href;
                     }
                 },

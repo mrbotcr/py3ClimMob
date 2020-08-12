@@ -117,9 +117,9 @@ class newtechnology_view(privateView):
                     error_summary = {
                         "nameempty": self._("You need to set values for the name")
                     }
-
-        if redirect:
-            self.request.session.flash(self._("The technology was added successfully"))
+        #Descomentar si se quiere ver el mensaje cuando se crea
+        #if redirect:
+        #    self.request.session.flash(self._("The technology was added successfully"))
 
         return {
             "activeUser": self.user,
@@ -182,11 +182,11 @@ class modifytechnology_view(privateView):
                     error_summary = {
                         "nameempty": self._("You need to set values for the name")
                     }
-
-        if redirect:
-            self.request.session.flash(
-                self._("The technology was modified successfully")
-            )
+        #Descomentar si se quiere ver el menaje
+        #if redirect:
+        #    self.request.session.flash(
+        #        self._("The technology was modified successfully")
+        #    )
 
         return {
             "activeUser": self.user,

@@ -17,6 +17,9 @@ from ..processes import (
     numberOfCombinationsForTheProject,
     numberOfAliasesInTechnology,
     getAliasExtra,
+    isTechnologyAssigned,
+    numberOfAliasesInTechnology,
+    getTechnology
 )
 
 
@@ -29,6 +32,7 @@ class projectTecnologies_view(privateView):
         dataworking ={}
         error_summary = {}
         dataworking["alias_name"] = ""
+        techSee = {}
 
         if not projectExists(self.user.login, projectid, self.request):
             raise HTTPNotFound()
@@ -62,16 +66,47 @@ class projectTecnologies_view(privateView):
                     tech_id = postdata["tech_id"]
                     self.request.matchdict["tech_id"] = postdata["tech_id"]
                     alias = prjTechAliases_view.processView(self)
+                    techSee = getTechnology(postdata, self.request)
+
+                if "btn_show_technology_alias_in_library" in self.request.POST:
+                    postdata = self.getPostDict()
+                    tech_id = postdata["tech_id"]
+                    alias = {"AliasTechnology": AliasSearchTechnology(
+                        tech_id, self.user.login, projectid, self.request
+                    )}
+                    techSee = getTechnology(postdata, self.request)
 
                 if "btn_save_technologies_alias" in self.request.POST:
                     postdata = self.getPostDict()
                     tech_id = postdata["tech_id"]
+                    dataworking["project_cod"] = projectid
+                    dataworking["tech_id"] = tech_id
+                    dataworking["user_name"] = self.user.login
+                    if not isTechnologyAssigned(dataworking, self.request):
+                        added, message = addTechnologyProject(
+                            self.user.login,
+                            dataworking["project_cod"],
+                            dataworking["tech_id"],
+                            self.request,
+                        )
                     self.request.matchdict["tech_id"] = postdata["tech_id"]
                     alias = prjTechAliases_view.processView(self)
+                    techSee = getTechnology(postdata, self.request)
 
                 if "btn_add_alias" in self.request.POST:
                     postdata = self.getPostDict()
                     tech_id = postdata["tech_id"]
+                    dataworking["project_cod"] = projectid
+                    dataworking["tech_id"] = tech_id
+                    dataworking["user_name"] = self.user.login
+                    if not isTechnologyAssigned(dataworking, self.request):
+                        added, message = addTechnologyProject(
+                            self.user.login,
+                            dataworking["project_cod"],
+                            dataworking["tech_id"],
+                            self.request,
+                        )
+
                     self.request.matchdict["tech_id"] = postdata["tech_id"]
                     result = prjTechAliasAdd_view.processView(self)
                     dataworking= result["dataworking"]
@@ -79,6 +114,7 @@ class projectTecnologies_view(privateView):
                     if result["redirect"]:
                         dataworking["alias_name"] =""
                     alias = prjTechAliases_view.processView(self)
+                    techSee = getTechnology(postdata, self.request)
 
 
 
@@ -97,7 +133,8 @@ class projectTecnologies_view(privateView):
                 ),
                 "alias": alias,
                 "dataworking":dataworking,
-                "error_summary":error_summary
+                "error_summary":error_summary,
+                "techSee": techSee
             }
 
 
@@ -124,6 +161,7 @@ class prjTechAliases_view(privateView):
                         for element in part:
                             attr = element.split("_")
                             if attr[2] == "new":
+
                                 dataworking["user_name"] = self.user.login
                                 dataworking["project_cod"] = projectid
                                 dataworking["tech_id"] = technologyid
@@ -134,6 +172,7 @@ class prjTechAliases_view(privateView):
                                 )
                                 if not add:
                                     error_summary = {"dberror": message}
+
                     if postdata["txt_technologies_excluded"] != "":
                         part = postdata["txt_technologies_excluded"][:-1].split(",")
                         for element in part:
@@ -147,6 +186,11 @@ class prjTechAliases_view(privateView):
                             )
                             if not delete:
                                 error_summary = {"dberror": message}
+
+                    if numberOfAliasesInTechnology(self.user.login, projectid, technologyid, self.request) == 0:
+                        deleteTechnologyProject(
+                            self.user.login, projectid,technologyid, self.request
+                        )
 
             return {
                 "activeUser": self.user,
@@ -247,15 +291,6 @@ class prjTechAliasAdd_view(privateView):
                                 # capture the error
                                 error_summary = {"dberror": message}
                             else:
-                                # show success message
-                                # self.returnRawViewResult = True
-                                # return HTTPFound(
-                                #     location=self.request.route_url(
-                                #         "prjtechaliases",
-                                #         projectid=projectid,
-                                #         tech_id=technologyid,
-                                #     )
-                                # )
                                 redirect=True
                         else:
                             # error
