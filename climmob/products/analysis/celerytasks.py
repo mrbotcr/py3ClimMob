@@ -52,8 +52,8 @@ def createReports(locale, path, user, projectid, data, info, infosheet):
         es.install()
         _ = es.gettext
 
-    #pathScript = "/home/ubuntu/new_r_code/ClimMob-analysis"
-    pathScript = "/home/bmadriz/temp/ClimMobAnalysis"
+    pathScript = "/home/ubuntu/new_r_code/ClimMob-analysis"
+    #pathScript = "/home/bmadriz/temp/ClimMobAnalysis"
 
     os.system(
         "Rscript "
@@ -72,43 +72,12 @@ def createReports(locale, path, user, projectid, data, info, infosheet):
         + " "+pathScript
     )
 
-    report = pathouttemp + "/" + projectid + "_report.docx"
-    #reportInfo = pathouttemp + "/" + projectid + "_infosheets.docx"
-    #reportData = pathouttemp + "/Report_data.csv"
-    #file_paths = []
+    report = pathouttemp + "/climmob_main_report.docx"
+
     if os.path.exists(report):
         os.system("mv "+report+" "+pathout+"/Report_"+projectid+".docx")
     else:
         print("No existe el archivo")
-
-    # if os.path.exists(report):
-    #     file_paths.append(report)
-    #
-    # if os.path.exists(reportInfo):
-    #     file_paths.append(reportInfo)
-    #
-    # if os.path.exists(reportData):
-    #     file_paths.append(reportData)
-    #
-    # with ZipFile(pathout + "/reports_" + projectid + ".zip", "w") as zipReport:
-    #     # writing each file one by one
-    #     for file in file_paths:
-    #         zipReport.write(file, basename(file))
-
-    # createTheDocuments(
-    #     locale,
-    #     path,
-    #     pathout,
-    #     pathInputFiles,
-    #     pathouttemp,
-    #     "Report",
-    #     pathouttemp + "/result.json",
-    #     infosheet,
-    #     projectid,
-    # )
-
-    #sh.rmtree(pathouttemp)
-    #sh.rmtree(pathInputFiles)
 
     return ""
 
@@ -124,8 +93,7 @@ def createTheDocuments(
     infosheet,
     projectid,
 ):
-    # output_dir = "/home/acoto/Dropbox/Bioversity/climmob/repLAtex/repLAtex/report/temp/"  # temp files path
-    # output_fname = "REPORTE"  # final files name
+
     pathTempFoReport = os.path.join(path, "report")
     os.makedirs(pathTempFoReport)
 
