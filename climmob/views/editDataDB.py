@@ -3,9 +3,8 @@ import pprint
 import transaction
 import xml.etree.ElementTree as ET
 from zope.sqlalchemy import mark_changed
-from ..processes import (
-    getProjectData
-)
+from ..processes import getProjectData
+
 
 def get_FieldsByType(types, db, self, file, code):
     return [
@@ -134,7 +133,7 @@ def fillDataTable(self, db, form, columns, file, code, where=""):
             proData = getProjectData(self.user.login, db, self.request)
             packages = {}
             for y in range(1, proData["project_numobs"] + 1):
-               packages[y] = "Package #"+str(y)
+                packages[y] = "Package #" + str(y)
 
             ret["colModel"].append(
                 {
@@ -149,10 +148,7 @@ def fillDataTable(self, db, form, columns, file, code, where=""):
                     "align": "center",
                     "formatter": "select",
                     "edittype": "select",
-                    "editoptions": {
-                        "multiple": False,
-                        "value": packages,
-                    }
+                    "editoptions": {"multiple": False, "value": packages,},
                 }
             )
         else:
@@ -241,7 +237,21 @@ def fillDataTable(self, db, form, columns, file, code, where=""):
     if form == "reg":
         orderBy = "qst162"
 
-    sql = sql[:-1] + " from "+self.user.login + "_" + db+"."+form.upper() + code+"_geninfo "+ where +" order by "+orderBy+"+0;"
+    sql = (
+        sql[:-1]
+        + " from "
+        + self.user.login
+        + "_"
+        + db
+        + "."
+        + form.upper()
+        + code
+        + "_geninfo "
+        + where
+        + " order by "
+        + orderBy
+        + "+0;"
+    )
 
     # print sql
     # print "***************************************************************************"

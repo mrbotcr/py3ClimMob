@@ -48,7 +48,7 @@ from .climmobv4 import (
     RegistryJsonLog,
     AssessmentJsonLog,
     storageErrors,
-    Chat
+    Chat,
 )
 
 #

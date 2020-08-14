@@ -52,8 +52,8 @@ def createPackages(path, projectid, packages, techs):
     SecondRow = [""]
     allRows = []
 
-    with open(pathfinal, 'w') as csvfile:
-        filewriter = csv.writer(csvfile, delimiter=',')
+    with open(pathfinal, "w") as csvfile:
+        filewriter = csv.writer(csvfile, delimiter=",")
 
         for x in range(0, num_observations):
             if len(techs) == 1:

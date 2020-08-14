@@ -12,7 +12,7 @@ from ...processes import (
     isAssessmentOpen,
     assessmentExists,
     projectExists,
-    packageExist
+    packageExist,
 )
 from ..db.json import addJsonLog
 from pyramid.response import Response
@@ -360,7 +360,9 @@ def storeError(
         return False, str(e)
 
 
-def storeJSONInMySQL(type, userid, userEnum, projectid, assessmentid, JSONFile, request):
+def storeJSONInMySQL(
+    type, userid, userEnum, projectid, assessmentid, JSONFile, request
+):
     schema = userid + "_" + projectid
     if type == "REG":
         manifestFile = os.path.join(
@@ -379,10 +381,10 @@ def storeJSONInMySQL(type, userid, userEnum, projectid, assessmentid, JSONFile, 
         )
         jsFile = ""
 
-    #print(JSONFile)
+    # print(JSONFile)
     importedFile = os.path.splitext(JSONFile)[0] + ".imp"
-    #print(importedFile)
-    importedFile = '/'.join(JSONFile.split('/')[:-2])+"/myimportedFile.imp"
+    # print(importedFile)
+    importedFile = "/".join(JSONFile.split("/")[:-2]) + "/myimportedFile.imp"
 
     logFile = os.path.splitext(JSONFile)[0] + ".log"
     jsonPath = os.path.dirname(JSONFile)
@@ -435,8 +437,17 @@ def storeJSONInMySQL(type, userid, userEnum, projectid, assessmentid, JSONFile, 
         )"""
         print(userEnum)
         if userEnum != None:
-            addJsonLog(request,type,userid, userEnum,projectid,assessmentid,fileuid, JSONFile, logFile)
-
+            addJsonLog(
+                request,
+                type,
+                userid,
+                userEnum,
+                projectid,
+                assessmentid,
+                fileuid,
+                JSONFile,
+                logFile,
+            )
 
     return True
 
@@ -489,7 +500,13 @@ def convertXMLToJSON(
                 outfile.write(jsonString)
             # Now we store the data in MySQL
             storeJSONInMySQL(
-                submissionType, userid, userEnum,projectID, assessmentID, JSONFile, request
+                submissionType,
+                userid,
+                userEnum,
+                projectID,
+                assessmentID,
+                JSONFile,
+                request,
             )
         except CalledProcessError as e:
             print("1")

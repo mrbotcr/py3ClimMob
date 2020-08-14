@@ -20,7 +20,12 @@ class readProducts_view(apiView):
             try:
                 dataworking = json.loads(self.request.params["Body"])
             except:
-                response = Response(status=401,body=self._("Error in the JSON, It does not have the 'body' parameter."))
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "Error in the JSON, It does not have the 'body' parameter."
+                    ),
+                )
                 return response
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -75,7 +80,12 @@ class downloadApi_view(apiView):
             try:
                 dataworking = json.loads(self.request.params["Body"])
             except:
-                response = Response(status=401,body=self._("Error in the JSON, It does not have the 'body' parameter."))
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "Error in the JSON, It does not have the 'body' parameter."
+                    ),
+                )
                 return response
 
             if sorted(obligatory) == sorted(dataworking.keys()):

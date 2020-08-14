@@ -38,7 +38,12 @@ class readProjectAssessments_view(apiView):
             try:
                 dataworking = json.loads(self.request.params["Body"])
             except:
-                response = Response(status=401, body=self._("Error in the JSON, It does not have the 'body' parameter."))
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "Error in the JSON, It does not have the 'body' parameter."
+                    ),
+                )
                 return response
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -90,9 +95,9 @@ class addNewAssessment_view(apiView):
                         self.user.login, dataworking["project_cod"], self.request
                     )
                     if exitsproject:
-                        #if projectAsessmentStatus(
+                        # if projectAsessmentStatus(
                         #    self.user.login, dataworking["project_cod"], dataworking["ass_cod"], self.request
-                        #):
+                        # ):
                         if dataworking["ass_days"].isdigit():
                             added, msg = addProjectAssessment(
                                 dataworking, self.request, "API"
@@ -101,19 +106,15 @@ class addNewAssessment_view(apiView):
                                 response = Response(status=401, body=msg)
                                 return response
                             else:
-                                response = Response(
-                                    status=200, body=json.dumps(msg)
-                                )
+                                response = Response(status=200, body=json.dumps(msg))
                                 return response
                         else:
                             response = Response(
                                 status=401,
-                                body=self._(
-                                    "The parameter ass_days must be a number."
-                                ),
+                                body=self._("The parameter ass_days must be a number."),
                             )
                             return response
-                        #else:
+                        # else:
                         #    response = Response(
                         #        status=401,
                         #        body=self._(
@@ -159,9 +160,9 @@ class updateProjectAssessment_view(apiView):
                         self.user.login, dataworking["project_cod"], self.request
                     )
                     if exitsproject:
-                        #if projectAsessmentStatus(
+                        # if projectAsessmentStatus(
                         #    self.user.login, dataworking["project_cod"], dataworking["ass_cod"], self.request
-                        #):
+                        # ):
                         if dataworking["ass_days"].isdigit():
                             if assessmentExists(
                                 self.user.login,
@@ -194,12 +195,10 @@ class updateProjectAssessment_view(apiView):
                         else:
                             response = Response(
                                 status=401,
-                                body=self._(
-                                    "The parameter ass_days must be a number."
-                                ),
+                                body=self._("The parameter ass_days must be a number."),
                             )
                             return response
-                        #else:
+                        # else:
                         #    response = Response(
                         #        status=401,
                         #        body=self._(
@@ -252,7 +251,10 @@ class deleteProjectAssessment_view(apiView):
                             self.request,
                         ):
                             if projectAsessmentStatus(
-                                    self.user.login, dataworking["project_cod"], dataworking["ass_cod"], self.request
+                                self.user.login,
+                                dataworking["project_cod"],
+                                dataworking["ass_cod"],
+                                self.request,
                             ):
                                 delete, msg = deleteProjectAssessment(
                                     self.user.login,
@@ -266,7 +268,9 @@ class deleteProjectAssessment_view(apiView):
                                 else:
                                     response = Response(
                                         status=200,
-                                        body=self._("Data collection moment deleted succesfully."),
+                                        body=self._(
+                                            "Data collection moment deleted succesfully."
+                                        ),
                                     )
                                     return response
                             else:
@@ -312,8 +316,12 @@ class readProjectAssessmentStructure_view(apiView):
             try:
                 dataworking = json.loads(self.request.params["Body"])
             except:
-                response = Response(status=401,
-                                    body=self._("Error in the JSON, It does not have the 'body' parameter."))
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "Error in the JSON, It does not have the 'body' parameter."
+                    ),
+                )
                 return response
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -438,7 +446,10 @@ class createAssessmentGroup_view(apiView):
                             self.request,
                         ):
                             if projectAsessmentStatus(
-                                    self.user.login, dataworking["project_cod"], dataworking["ass_cod"], self.request
+                                self.user.login,
+                                dataworking["project_cod"],
+                                dataworking["ass_cod"],
+                                self.request,
                             ):
                                 haveTheBasicStructureAssessment(
                                     self.user.login,
@@ -536,7 +547,10 @@ class updateAssessmentGroup_view(apiView):
                             self.request,
                         ):
                             if projectAsessmentStatus(
-                                    self.user.login, dataworking["project_cod"], dataworking["ass_cod"], self.request
+                                self.user.login,
+                                dataworking["project_cod"],
+                                dataworking["ass_cod"],
+                                self.request,
                             ):
                                 exitsGroup = exitsAssessmentGroup(dataworking, self)
                                 if exitsGroup:
@@ -634,7 +648,10 @@ class deleteAssessmentGroup_view(apiView):
                             self.request,
                         ):
                             if projectAsessmentStatus(
-                                    self.user.login, dataworking["project_cod"], dataworking["ass_cod"], self.request
+                                self.user.login,
+                                dataworking["project_cod"],
+                                dataworking["ass_cod"],
+                                self.request,
                             ):
                                 exitsGroup = exitsAssessmentGroup(dataworking, self)
                                 if exitsGroup:
@@ -723,8 +740,12 @@ class readPossibleQuestionForAssessmentGroup_view(apiView):
             try:
                 dataworking = json.loads(self.request.params["Body"])
             except:
-                response = Response(status=401,
-                                    body=self._("Error in the JSON, It does not have the 'body' parameter."))
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "Error in the JSON, It does not have the 'body' parameter."
+                    ),
+                )
                 return response
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -742,13 +763,16 @@ class readPossibleQuestionForAssessmentGroup_view(apiView):
                     )
                     if exitsproject:
                         if assessmentExists(
+                            self.user.login,
+                            dataworking["project_cod"],
+                            dataworking["ass_cod"],
+                            self.request,
+                        ):
+                            if projectAsessmentStatus(
                                 self.user.login,
                                 dataworking["project_cod"],
                                 dataworking["ass_cod"],
                                 self.request,
-                        ):
-                            if projectAsessmentStatus(
-                                    self.user.login, dataworking["project_cod"], dataworking["ass_cod"], self.request
                             ):
 
                                 response = Response(
@@ -824,13 +848,16 @@ class addQuestionToGroupAssessment_view(apiView):
                     )
                     if exitsproject:
                         if assessmentExists(
+                            self.user.login,
+                            dataworking["project_cod"],
+                            dataworking["ass_cod"],
+                            self.request,
+                        ):
+                            if projectAsessmentStatus(
                                 self.user.login,
                                 dataworking["project_cod"],
                                 dataworking["ass_cod"],
                                 self.request,
-                        ):
-                            if projectAsessmentStatus(
-                                    self.user.login, dataworking["project_cod"], dataworking["ass_cod"], self.request
                             ):
                                 exitsGroup = exitsAssessmentGroup(dataworking, self)
                                 if exitsGroup:
@@ -949,13 +976,16 @@ class deleteQuestionFromGroupAssessment_view(apiView):
                     )
                     if exitsproject:
                         if assessmentExists(
+                            self.user.login,
+                            dataworking["project_cod"],
+                            dataworking["ass_cod"],
+                            self.request,
+                        ):
+                            if projectAsessmentStatus(
                                 self.user.login,
                                 dataworking["project_cod"],
                                 dataworking["ass_cod"],
                                 self.request,
-                        ):
-                            if projectAsessmentStatus(
-                                    self.user.login, dataworking["project_cod"], dataworking["ass_cod"], self.request
                             ):
                                 exitsGroup = exitsAssessmentGroup(dataworking, self)
                                 if exitsGroup:
@@ -1077,13 +1107,16 @@ class orderAssessmentQuestions_view(apiView):
                     )
                     if exitsproject:
                         if assessmentExists(
+                            self.user.login,
+                            dataworking["project_cod"],
+                            dataworking["ass_cod"],
+                            self.request,
+                        ):
+                            if projectAsessmentStatus(
                                 self.user.login,
                                 dataworking["project_cod"],
                                 dataworking["ass_cod"],
                                 self.request,
-                        ):
-                            if projectAsessmentStatus(
-                                    self.user.login, dataworking["project_cod"], dataworking["ass_cod"], self.request
                             ):
                                 try:
                                     originalData = json.loads(dataworking["order"])

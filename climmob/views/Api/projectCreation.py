@@ -9,7 +9,7 @@ from ...processes import (
     modifyProject,
     changeTheStateOfCreateComb,
     existsCountryByCode,
-    getCountryList
+    getCountryList,
 )
 
 from pyramid.response import Response
@@ -17,21 +17,20 @@ import json
 import datetime
 import re
 
+
 class readListOfCountries_view(apiView):
     def processView(self):
 
         if self.request.method == "GET":
 
             response = Response(
-                status=200,
-                body=json.dumps(
-                    getCountryList(self.request)
-                ),
+                status=200, body=json.dumps(getCountryList(self.request)),
             )
             return response
         else:
             response = Response(status=401, body=self._("Only accepts GET method."))
             return response
+
 
 class createProject_view(apiView):
     def processView(self):
@@ -47,7 +46,7 @@ class createProject_view(apiView):
                 u"project_piemail",
                 u"project_numobs",
                 u"project_cnty",
-                u"project_registration_and_analysis"
+                u"project_registration_and_analysis",
             ]
             dataworking = json.loads(self.body)
 
@@ -91,10 +90,9 @@ class createProject_view(apiView):
                                     dataworking["project_numobs"] > 0
                                     and dataworking["project_numcom"] > 0
                                 ):
-                                    if str(dataworking["project_registration_and_analysis"]) not in [
-                                        "0",
-                                        "1",
-                                    ]:
+                                    if str(
+                                        dataworking["project_registration_and_analysis"]
+                                    ) not in ["0", "1",]:
                                         response = Response(
                                             status=401,
                                             body=self._(
@@ -115,7 +113,9 @@ class createProject_view(apiView):
                                         )
                                         return response
 
-                                    if not existsCountryByCode(self.request,dataworking["project_cnty"]):
+                                    if not existsCountryByCode(
+                                        self.request, dataworking["project_cnty"]
+                                    ):
                                         response = Response(
                                             status=401,
                                             body=self._(
@@ -218,7 +218,7 @@ class updateProject_view(apiView):
                 u"project_piemail",
                 u"project_numobs",
                 u"project_cnty",
-                u"project_registration_and_analysis"
+                u"project_registration_and_analysis",
             ]
             obligatory = [u"project_cod"]
 
@@ -280,10 +280,9 @@ class updateProject_view(apiView):
                                         self.request,
                                     )
 
-                            if str(dataworking["project_registration_and_analysis"]) not in [
-                                "0",
-                                "1",
-                            ]:
+                            if str(
+                                dataworking["project_registration_and_analysis"]
+                            ) not in ["0", "1",]:
                                 response = Response(
                                     status=401,
                                     body=self._(
@@ -305,7 +304,9 @@ class updateProject_view(apiView):
                                     )
                                     return response
 
-                            if not existsCountryByCode(self.request, dataworking["project_cnty"]):
+                            if not existsCountryByCode(
+                                self.request, dataworking["project_cnty"]
+                            ):
                                 response = Response(
                                     status=401,
                                     body=self._(

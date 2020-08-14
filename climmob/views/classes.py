@@ -11,9 +11,16 @@ from hashlib import md5
 import uuid
 import logging
 import datetime
+
 log = logging.getLogger(__name__)
 
-from ..processes import getUserProjects, getActiveProject, counterChat, getLastActivityLogByUser, addToLog
+from ..processes import (
+    getUserProjects,
+    getActiveProject,
+    counterChat,
+    getLastActivityLogByUser,
+    addToLog,
+)
 
 # ODKView is a Digest Authorization view. It automates all the Digest work
 class odkView(object):
@@ -234,7 +241,7 @@ class privateView(object):
             "userProjects": [],
             "counterChat": 0,
             "showHelp": False,
-            "showRememberAfterCreateProject": False
+            "showRememberAfterCreateProject": False,
         }
 
         self.viewResult = {}
@@ -263,11 +270,23 @@ class privateView(object):
         if lastActivity:
             if lastActivity["log_message"] == "Created a new project":
                 self.classResult["showRememberAfterCreateProject"] = True
-                addToLog(self.user.login, "PRF", "Dashboard", lastActivity["log_datetime"] + datetime.timedelta(0, 3),self.request)
+                addToLog(
+                    self.user.login,
+                    "PRF",
+                    "Dashboard",
+                    lastActivity["log_datetime"] + datetime.timedelta(0, 3),
+                    self.request,
+                )
 
             if lastActivity["log_message"] == "Welcome to ClimMob":
                 self.classResult["showHelp"] = True
-                addToLog(self.user.login, "PRF", "Dashboard", lastActivity["log_datetime"] + datetime.timedelta(0, 3),self.request)
+                addToLog(
+                    self.user.login,
+                    "PRF",
+                    "Dashboard",
+                    lastActivity["log_datetime"] + datetime.timedelta(0, 3),
+                    self.request,
+                )
 
         if (
             self.request.method == "POST"
@@ -355,7 +374,10 @@ class apiView(object):
                     self.body = self.request.params["Body"]
                 except:
                     response = Response(
-                        status=401, body=self.request.translate("Error in the JSON, It does not have the 'body' parameter.")
+                        status=401,
+                        body=self.request.translate(
+                            "Error in the JSON, It does not have the 'body' parameter."
+                        ),
                     )
                     return response
 

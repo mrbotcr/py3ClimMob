@@ -25,8 +25,8 @@ class projectTecnologies_view(privateView):
 
         projectid = self.request.matchdict["projectid"]
         alias = {}
-        tech_id= ""
-        dataworking ={}
+        tech_id = ""
+        dataworking = {}
         error_summary = {}
         dataworking["alias_name"] = ""
 
@@ -74,13 +74,11 @@ class projectTecnologies_view(privateView):
                     tech_id = postdata["tech_id"]
                     self.request.matchdict["tech_id"] = postdata["tech_id"]
                     result = prjTechAliasAdd_view.processView(self)
-                    dataworking= result["dataworking"]
+                    dataworking = result["dataworking"]
                     error_summary = result["error_summary"]
                     if result["redirect"]:
-                        dataworking["alias_name"] =""
+                        dataworking["alias_name"] = ""
                     alias = prjTechAliases_view.processView(self)
-
-
 
             return {
                 "activeUser": self.user,
@@ -96,8 +94,8 @@ class projectTecnologies_view(privateView):
                     self.user.login, projectid, self.request
                 ),
                 "alias": alias,
-                "dataworking":dataworking,
-                "error_summary":error_summary
+                "dataworking": dataworking,
+                "error_summary": error_summary,
             }
 
 
@@ -219,7 +217,7 @@ class prjTechAliasAdd_view(privateView):
         dataworking = {}
         projectid = self.request.matchdict["projectid"]
         technologyid = self.request.matchdict["tech_id"]
-        redirect =False
+        redirect = False
 
         if not projectTechnologyExists(
             self.user.login, projectid, technologyid, self.request
@@ -256,7 +254,7 @@ class prjTechAliasAdd_view(privateView):
                                 #         tech_id=technologyid,
                                 #     )
                                 # )
-                                redirect=True
+                                redirect = True
                         else:
                             # error
                             error_summary = {
@@ -275,6 +273,5 @@ class prjTechAliasAdd_view(privateView):
             "dataworking": self.decodeDict(dataworking),
             "projectid": projectid,
             "tech_id": technologyid,
-            "redirect": redirect
-
+            "redirect": redirect,
         }

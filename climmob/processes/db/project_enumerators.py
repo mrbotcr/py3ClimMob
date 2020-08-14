@@ -14,6 +14,7 @@ __all__ = [
 ]
 from .enumerator import getEnumeratorData
 
+
 def getProjectEnumerators(user, project, request):
     """
     sql = "SELECT prjenumerator.enum_id,enumerator.enum_name,enumerator.enum_active " \
@@ -66,9 +67,9 @@ def seeProgress(user, project, request):
         result = []
 
         for qst in counts:
-            _user = getEnumeratorData(user,qst[0],request)
+            _user = getEnumeratorData(user, qst[0], request)
             if _user:
-                result.append({"User":_user["enum_name"],"Count":qst[1]})
+                result.append({"User": _user["enum_name"], "Count": qst[1]})
             else:
                 enco = False
                 for i, ex in enumerate(result, start=0):
@@ -106,15 +107,15 @@ def seeProgress(user, project, request):
                     result.append({"User": _user["enum_name"], "Count": qst[1]})
                 else:
                     enco = False
-                    for i,ex in enumerate(result, start=0):
+                    for i, ex in enumerate(result, start=0):
 
                         if ex["User"] == "Other":
-                            enco =True
-                            result[i]["Count"] = result[i]["Count"] +qst[1]
+                            enco = True
+                            result[i]["Count"] = result[i]["Count"] + qst[1]
                     if enco == False:
                         result.append({"User": "Other", "Count": qst[1]})
 
-            ass.append({"Name": assessment["ass_cod"],"Values":result})
+            ass.append({"Name": assessment["ass_cod"], "Values": result})
 
         all["Assessments"] = ass
     except:

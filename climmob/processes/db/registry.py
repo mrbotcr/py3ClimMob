@@ -6,6 +6,7 @@ from .assessment import setAssessmentStatus
 from ..db.question import getQuestionOptions
 import os, shutil
 import json
+
 __all__ = [
     "availableRegistryQuestions",
     "getRegistryQuestions",
@@ -132,8 +133,8 @@ def availableRegistryQuestions(user, project, request, registration_and_analysis
     else:
         startWith = "SELECT * FROM (select * from question where (question_dtype!=5 and question_dtype!=6 and question_dtype!= 9 and question_dtype != 10) UNION "
     sql = (
-        startWith+
-        "SELECT * FROM question WHERE (question_dtype=5 or question_dtype=6) AND question_id in (SELECT DISTINCT(question_id) FROM qstoption)) AS question "
+        startWith
+        + "SELECT * FROM question WHERE (question_dtype=5 or question_dtype=6) AND question_id in (SELECT DISTINCT(question_id) FROM qstoption)) AS question "
         "WHERE (user_name = '" + user + "' OR user_name = 'bioversity') AND "
         "question_reqinasses = 0 AND "
         "question_alwaysinasse = 0 AND "

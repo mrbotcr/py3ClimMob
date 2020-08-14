@@ -18,7 +18,7 @@ from ..processes import (
     clean_registry_error_logs,
     getCategoriesParents,
     getAssessmentQuestions,
-    getActiveProject
+    getActiveProject,
 )
 from jinja2 import Environment, FileSystemLoader
 from climmob.products import stopTasksByProcess
@@ -179,6 +179,8 @@ class newRegistrySection_view(privateView):
                 "data": self.decodeDict(data),
                 "error_summary": error_summary,
             }
+
+
 def actionsInSections(self, postdata):
 
     if postdata["action"] == "insert":
@@ -187,12 +189,15 @@ def actionsInSections(self, postdata):
             if message == "repeated":
                 return {
                     "result": "error",
-                    "error": self._("There is already a group with this name.")
+                    "error": self._("There is already a group with this name."),
                 }
             else:
                 return {"result": "error", "error": message}
         else:
-            return {"result": "success","success": self._("The section was successfully added") }
+            return {
+                "result": "success",
+                "success": self._("The section was successfully added"),
+            }
     else:
         if postdata["action"] == "update":
             mdf, message = modifyRegistryGroup(postdata, self)
@@ -200,12 +205,15 @@ def actionsInSections(self, postdata):
                 if message == "repeated":
                     return {
                         "result": "error",
-                        "error": self._("There is already a group with this name.")
+                        "error": self._("There is already a group with this name."),
                     }
                 else:
                     return {"result": "error", "error": message}
             else:
-                return {"result":"success","success": self._("The section was successfully updated") }
+                return {
+                    "result": "success",
+                    "success": self._("The section was successfully updated"),
+                }
 
 
 class registrySectionActions_view(privateView):
@@ -229,6 +237,7 @@ class registrySectionActions_view(privateView):
 
                 return actionsInSections(self, postdata)
         return {}
+
 
 class newRegistryQuestion_view(privateView):
     def processView(self):
@@ -336,11 +345,7 @@ class cancelRegistry_view(privateView):
                 stopTasksByProcess(self.request, self.user.login, projectid)
 
                 self.returnRawViewResult = True
-                return HTTPFound(
-                    location=self.request.route_url(
-                        "dashboard"
-                    )
-                )
+                return HTTPFound(location=self.request.route_url("dashboard"))
 
         return {"activeUser": self.user, "redirect": redirect}
 
@@ -358,11 +363,7 @@ class closeRegistry_view(privateView):
             if "closeRegistry" in self.request.params.keys():
                 setRegistryStatus(self.user.login, projectid, 2, self.request)
                 self.returnRawViewResult = True
-                return HTTPFound(
-                    location=self.request.route_url(
-                        "dashboard"
-                    )
-                )
+                return HTTPFound(location=self.request.route_url("dashboard"))
 
         return {"activeUser": self.user, "redirect": redirect, "progress": progress}
 
@@ -385,11 +386,14 @@ class registry_view(privateView):
             "finalCloseQst": finalCloseQst,
             "projectid": projectid,
             "UserQuestion": availableRegistryQuestions(
-                self.user.login, projectid, self.request, activeProjectData["project_registration_and_analysis"]
+                self.user.login,
+                projectid,
+                self.request,
+                activeProjectData["project_registration_and_analysis"],
             ),
-            "Categories": getCategoriesParents(self.user.login,self.request)
+            "Categories": getCategoriesParents(self.user.login, self.request),
         }
-            # return {'finalCloseQst':finalCloseQst,'found':False,'activeUser':self.user,'Project':projectid, 'error_summary':error_summary,'saveordergroup':saveordergroup,'saveorderquestions':saveorderquestions, 'UserGroups':UserGroups(self.user.login,projectid,self), 'Prj_UserQuestion':Prj_UserQuestion(self.user.login, projectid,self), 'accordion_open':accordion_open, 'data':data, 'archive':projectid.replace(" ", "_")+"_"+self._("registry")+".xml"}
+        # return {'finalCloseQst':finalCloseQst,'found':False,'activeUser':self.user,'Project':projectid, 'error_summary':error_summary,'saveordergroup':saveordergroup,'saveorderquestions':saveorderquestions, 'UserGroups':UserGroups(self.user.login,projectid,self), 'Prj_UserQuestion':Prj_UserQuestion(self.user.login, projectid,self), 'accordion_open':accordion_open, 'data':data, 'archive':projectid.replace(" ", "_")+"_"+self._("registry")+".xml"}
 
 
 class registryFormCreation_view(privateView):
@@ -401,7 +405,7 @@ class registryFormCreation_view(privateView):
             raise HTTPNotFound()
         else:
             if self.request.method == "POST":
-                #if "saveorder" in self.request.POST:
+                # if "saveorder" in self.request.POST:
                 newOrder = json.loads(self.request.POST.get("neworder", "{}"))
                 questionWithoutGroup = False
                 for item in newOrder:
@@ -418,22 +422,28 @@ class registryFormCreation_view(privateView):
                     )
 
                 PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-                env = Environment(autoescape=False,loader=FileSystemLoader(os.path.join(PATH,"templates","snippets","project")),trim_blocks=False)
+                env = Environment(
+                    autoescape=False,
+                    loader=FileSystemLoader(
+                        os.path.join(PATH, "templates", "snippets", "project")
+                    ),
+                    trim_blocks=False,
+                )
                 template = env.get_template("previewForm.jinja2")
 
                 data, finalCloseQst = getDataFormPreview(self, projectid)
 
                 info = {
-                    "img1": self.request.url_for_static('static/landing/odk.png'),
-                    "img2": self.request.url_for_static('static/landing/odk2.png'),
-                    "img3": self.request.url_for_static('static/landing/odk3.png'),
+                    "img1": self.request.url_for_static("static/landing/odk.png"),
+                    "img2": self.request.url_for_static("static/landing/odk2.png"),
+                    "img3": self.request.url_for_static("static/landing/odk3.png"),
                     "data": data,
                     "_": self._,
-                    "showPhone": True
+                    "showPhone": True,
                 }
                 render_temp = template.render(info)
 
-                self.returnRawViewResult =True
+                self.returnRawViewResult = True
                 return render_temp
         self.returnRawViewResult = True
         return ""

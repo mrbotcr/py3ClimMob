@@ -7,8 +7,11 @@ from docxtpl import DocxTemplate, InlineImage
 from docx.shared import Mm
 from ..qrpackages.celerytasks import create_qr
 
+
 @celeryApp.task(base=celeryTask, soft_time_limit=7200, time_limit=7200)
-def createDocumentForm(locale, user, path, projectid, formGroupsAndQuestions, form, code, packages):
+def createDocumentForm(
+    locale, user, path, projectid, formGroupsAndQuestions, form, code, packages
+):
     if os.path.exists(path):
         sh.rmtree(path)
 
@@ -32,7 +35,6 @@ def createDocumentForm(locale, user, path, projectid, formGroupsAndQuestions, fo
         es.install()
         _ = es.gettext
 
-
     os.makedirs(path)
     pathqr = os.path.join(path, "qr")
     os.makedirs(pathqr)
@@ -41,11 +43,11 @@ def createDocumentForm(locale, user, path, projectid, formGroupsAndQuestions, fo
     os.makedirs(pathoutput)
 
     PATH2 = os.path.dirname(os.path.abspath(__file__))
-    doc = DocxTemplate(PATH2+"/template/word_template.docx")
+    doc = DocxTemplate(PATH2 + "/template/word_template.docx")
     imgsOfQRs = []
     for package in packages:
 
-        qr = create_qr(package,projectid,pathqr)
+        qr = create_qr(package, projectid, pathqr)
         imgsOfQRs.append(InlineImage(doc, qr, width=Mm(50)))
 
     data = {
@@ -55,12 +57,14 @@ def createDocumentForm(locale, user, path, projectid, formGroupsAndQuestions, fo
         "data": formGroupsAndQuestions,
         "imgsOfQRs": imgsOfQRs,
         "number_of_packages": len(packages),
-        "logo": InlineImage(doc,os.path.join(PATH2, "template/prueba.png"), width=Mm(100)),
-        "_": _
+        "logo": InlineImage(
+            doc, os.path.join(PATH2, "template/prueba.png"), width=Mm(100)
+        ),
+        "_": _,
     }
 
     doc.render(data)
-    doc.save(pathoutput+"/"+nameOutput+"_"+projectid+".docx")
+    doc.save(pathoutput + "/" + nameOutput + "_" + projectid + ".docx")
 
     sh.rmtree(pathqr)
 

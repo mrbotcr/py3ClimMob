@@ -165,11 +165,7 @@ class projectCombinations_view(privateView):
                 startTheRegistry(self, projectid)
 
                 self.returnRawViewResult = True
-                return HTTPFound(
-                    location=self.request.route_url(
-                        "dashboard"
-                    )
-                )
+                return HTTPFound(location=self.request.route_url("dashboard"))
 
 
 def startTheRegistry(self, projectid):
@@ -185,9 +181,18 @@ def startTheRegistry(self, projectid):
     time.sleep(1)
 
     data, finalCloseQst = getDataFormPreview(self, projectid)
-    create_document_form(self.request,locale,self.user.login,projectid,"Registration","",data,packages)
+    create_document_form(
+        self.request,
+        locale,
+        self.user.login,
+        projectid,
+        "Registration",
+        "",
+        data,
+        packages,
+    )
     time.sleep(1)
-    #create_cards(self.request, self.user.login, projectid, packages)
+    # create_cards(self.request, self.user.login, projectid, packages)
 
     create_packages_excell(
         self.request,

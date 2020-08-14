@@ -41,7 +41,12 @@ class readProjectCombinations_view(apiView):
             try:
                 dataworking = json.loads(self.request.params["Body"])
             except:
-                response = Response(status=401,body=self._("Error in the JSON, It does not have the 'body' parameter."))
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "Error in the JSON, It does not have the 'body' parameter."
+                    ),
+                )
                 return response
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -300,7 +305,12 @@ class createPackages_view(apiView):
             try:
                 dataworking = json.loads(self.request.params["Body"])
             except:
-                response = Response(status=401,body=self._("Error in the JSON, It does not have the 'body' parameter."))
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "Error in the JSON, It does not have the 'body' parameter."
+                    ),
+                )
                 return response
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -434,7 +444,8 @@ class createProjectRegistry_view(apiView):
                                         )
 
                                         response = Response(
-                                            status=200, body=self._("Registration started.")
+                                            status=200,
+                                            body=self._("Registration started."),
                                         )
                                         return response
 
@@ -632,7 +643,12 @@ class readRegistryStructure_view(apiView):
             try:
                 dataworking = json.loads(self.request.params["Body"])
             except:
-                response = Response(status=401,body=self._("Error in the JSON, It does not have the 'body' parameter."))
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "Error in the JSON, It does not have the 'body' parameter."
+                    ),
+                )
                 return response
 
             if sorted(obligatory) == sorted(dataworking.keys()):

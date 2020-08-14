@@ -7,7 +7,12 @@ from .registry import setRegistryStatus
 import os
 from .project_combinations import getCombinationsUsableInProject
 
-__all__ = ["create_packages_with_r", "getPackages", "projectHasPackages", "createExtraPackages"]
+__all__ = [
+    "create_packages_with_r",
+    "getPackages",
+    "projectHasPackages",
+    "createExtraPackages",
+]
 
 
 def grouper(n, iterable, padvalue=None):
@@ -213,10 +218,10 @@ def create_packages_with_r(user, project, request):
             args.append(str(prjData.project_numcom))
             args.append(str(prjData.project_numobs))
             args.append(str(len(combinations)))
-            args.append("inames=c("+', '.join(map(str, combinations))+")")
+            args.append("inames=c(" + ", ".join(map(str, combinations)) + ")")
             args.append(rout)
 
-            #print(' '.join(map(str, args)))
+            # print(' '.join(map(str, args)))
             try:
                 check_call(args)
                 request.dbsession.query(Package).filter(
@@ -268,6 +273,7 @@ def create_packages_with_r(user, project, request):
                 print(msg)
                 return False
 
+
 def createExtraPackages(user, project, request, numCom, numObsExtra, numObsNow):
     print(numCom)
     print(numObsExtra)
@@ -295,7 +301,7 @@ def createExtraPackages(user, project, request, numCom, numObsExtra, numObsNow):
         args.append(str(numCom))
         args.append(str(numObsExtra))
         args.append(str(len(combinations)))
-        args.append("inames=c(" + ', '.join(map(str, combinations)) + ")")
+        args.append("inames=c(" + ", ".join(map(str, combinations)) + ")")
         args.append(rout)
 
         try:
@@ -343,6 +349,7 @@ def createExtraPackages(user, project, request, numCom, numObsExtra, numObsNow):
             msg = msg + "Error: \n"
             msg = msg + str(e)
             return False, msg
+
 
 def createPackages(user, project, request):
     prjData = (

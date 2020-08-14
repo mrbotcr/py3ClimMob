@@ -36,8 +36,12 @@ class readProjectRegistry_view(apiView):
             try:
                 dataworking = json.loads(self.request.params["Body"])
             except:
-                response = Response(status=401,
-                                    body=self._("Error in the JSON, It does not have the 'body' parameter."))
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "Error in the JSON, It does not have the 'body' parameter."
+                    ),
+                )
                 return response
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -107,8 +111,12 @@ class readPossibleQuestionsForRegistryGroup_view(apiView):
             try:
                 dataworking = json.loads(self.request.params["Body"])
             except:
-                response = Response(status=401,
-                                    body=self._("Error in the JSON, It does not have the 'body' parameter."))
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "Error in the JSON, It does not have the 'body' parameter."
+                    ),
+                )
                 return response
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -698,9 +706,7 @@ class orderRegistryQuestions_view(apiView):
                             else:
                                 response = Response(
                                     status=401,
-                                    body=self._(
-                                        "No group and questions to order."
-                                    ),
+                                    body=self._("No group and questions to order."),
                                 )
                                 return response
                         else:

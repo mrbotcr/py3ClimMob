@@ -32,10 +32,12 @@ def searchTechnologies(user, projectid, request):
         .filter(Prjtech.user_name == user)
     )
     result = (
-        request.dbsession.query(Technology,
+        request.dbsession.query(
+            Technology,
             request.dbsession.query(func.count(Techalia.tech_id))
             .filter(Techalia.tech_id == Technology.tech_id)
-            .label("quantityAlias"))
+            .label("quantityAlias"),
+        )
         .filter(or_(Technology.user_name == user, Technology.user_name == "bioversity"))
         .filter(Technology.tech_id.notin_(subquery))
         .order_by(Technology.tech_name)
@@ -68,7 +70,7 @@ def searchTechnologiesInProject(user, project_id, request):
             .label("quantity"),
             request.dbsession.query(func.count(Techalia.tech_id))
             .filter(Techalia.tech_id == Prjtech.tech_id)
-            .label("quantityAlias")
+            .label("quantityAlias"),
         )
         .filter(Prjtech.tech_id == Technology.tech_id)
         .filter(Prjtech.user_name == user)

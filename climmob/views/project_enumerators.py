@@ -32,7 +32,7 @@ class projectEnumerators_view(privateView):
                 ),
                 "enumerators": getUsableEnumerators(
                     self.user.login, projectid, self.request
-                )
+                ),
             }
 
 

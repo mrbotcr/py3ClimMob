@@ -26,7 +26,7 @@ from ..processes import (
     there_is_final_assessment,
     is_assessment_final,
     get_usable_assessments,
-    clean_assessments_error_logs
+    clean_assessments_error_logs,
 )
 from jinja2 import Environment, FileSystemLoader
 from .registry import getDataFormPreview
@@ -208,6 +208,7 @@ class newAssessmentSection_view(privateView):
                 ),
             }
 
+
 def actionsInSections(self, postdata):
 
     if postdata["action"] == "insert":
@@ -216,12 +217,15 @@ def actionsInSections(self, postdata):
             if message == "repeated":
                 return {
                     "result": "error",
-                    "error": self._("There is already a group with this name.")
+                    "error": self._("There is already a group with this name."),
                 }
             else:
                 return {"result": "error", "error": message}
         else:
-            return {"result": "success","success": self._("The section was successfully added") }
+            return {
+                "result": "success",
+                "success": self._("The section was successfully added"),
+            }
     else:
         if postdata["action"] == "update":
             mdf, message = modifyAssessmentGroup(postdata, self)
@@ -229,12 +233,16 @@ def actionsInSections(self, postdata):
                 if message == "repeated":
                     return {
                         "result": "error",
-                        "error": self._("There is already a group with this name.")
+                        "error": self._("There is already a group with this name."),
                     }
                 else:
                     return {"result": "error", "error": message}
             else:
-                return {"result":"success","success": self._("The section was successfully updated") }
+                return {
+                    "result": "success",
+                    "success": self._("The section was successfully updated"),
+                }
+
 
 class assessmentSectionActions_view(privateView):
     def processView(self):
@@ -259,6 +267,7 @@ class assessmentSectionActions_view(privateView):
 
                 return actionsInSections(self, postdata)
         return {}
+
 
 class newAssessmentQuestion_view(privateView):
     def processView(self):
@@ -549,8 +558,9 @@ class assessment_view(privateView):
                 "UserQuestion": availableAssessmentQuestions(
                     self.user.login, projectid, assessmentid, self.request
                 ),
-                "Categories": getCategoriesParents(self.user.login, self.request)
+                "Categories": getCategoriesParents(self.user.login, self.request),
             }
+
 
 class assessmentFormCreation_view(privateView):
     def processView(self):
@@ -582,19 +592,23 @@ class assessmentFormCreation_view(privateView):
                     )
 
                 PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-                env = Environment(autoescape=False,
-                                  loader=FileSystemLoader(os.path.join(PATH, "templates", "snippets", "project")),
-                                  trim_blocks=False)
+                env = Environment(
+                    autoescape=False,
+                    loader=FileSystemLoader(
+                        os.path.join(PATH, "templates", "snippets", "project")
+                    ),
+                    trim_blocks=False,
+                )
                 template = env.get_template("previewForm.jinja2")
 
-                data, finalCloseQst = getDataFormPreview(self, projectid,assessmentid)
+                data, finalCloseQst = getDataFormPreview(self, projectid, assessmentid)
                 info = {
-                    "img1": self.request.url_for_static('static/landing/odk.png'),
-                    "img2": self.request.url_for_static('static/landing/odk2.png'),
-                    "img3": self.request.url_for_static('static/landing/odk3.png'),
+                    "img1": self.request.url_for_static("static/landing/odk.png"),
+                    "img2": self.request.url_for_static("static/landing/odk2.png"),
+                    "img3": self.request.url_for_static("static/landing/odk3.png"),
                     "data": data,
                     "_": self._,
-                    "showPhone": True
+                    "showPhone": True,
                 }
                 render_temp = template.render(info)
 
@@ -602,6 +616,7 @@ class assessmentFormCreation_view(privateView):
                 return render_temp
         self.returnRawViewResult = True
         return ""
+
 
 class startAssessments_view(privateView):
     def processView(self):
@@ -638,11 +653,7 @@ class startAssessments_view(privateView):
                     )
                     # setAssessmentStatus(self.user.login,projectid,1,self.request)
                     self.returnRawViewResult = True
-                    return HTTPFound(
-                        location=self.request.route_url(
-                            "dashboard"
-                        )
-                    )
+                    return HTTPFound(location=self.request.route_url("dashboard"))
                 return {
                     "activeUser": self.user,
                     "projectid": projectid,
@@ -685,11 +696,7 @@ class closeAssessment_view(privateView):
                     self.user.login, projectid, assessmentid, 2, self.request
                 )
                 self.returnRawViewResult = True
-                return HTTPFound(
-                    location=self.request.route_url(
-                        "dashboard"
-                    )
-                )
+                return HTTPFound(location=self.request.route_url("dashboard"))
 
         return {
             "activeUser": self.user,
@@ -717,13 +724,11 @@ class CancelAssessmentView(privateView):
                 setAssessmentIndividualStatus(
                     self.user.login, projectid, assessmentid, 0, self.request
                 )
-                clean_assessments_error_logs(self.request, projectid, self.user.login, assessmentid)
-                self.returnRawViewResult = True
-                return HTTPFound(
-                    location=self.request.route_url(
-                        "dashboard"
-                    )
+                clean_assessments_error_logs(
+                    self.request, projectid, self.user.login, assessmentid
                 )
+                self.returnRawViewResult = True
+                return HTTPFound(location=self.request.route_url("dashboard"))
 
         return {
             "activeUser": self.user,

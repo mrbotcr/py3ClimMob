@@ -47,7 +47,10 @@ class createProjectAssessment_view(apiView):
                         )
                         if progress["regsubmissions"] == 2:
                             if projectAsessmentStatus(
-                                self.user.login, dataworking["project_cod"], dataworking["ass_cod"], self.request
+                                self.user.login,
+                                dataworking["project_cod"],
+                                dataworking["ass_cod"],
+                                self.request,
                             ):
                                 if progress["assessment"] == True:
                                     checkPass, errors = checkAssessments(
@@ -61,7 +64,7 @@ class createProjectAssessment_view(apiView):
                                             self.user.login,
                                             dataworking["project_cod"],
                                             dataworking["ass_cod"],
-                                            self.request
+                                            self.request,
                                         )
                                         # setAssessmentStatus(self.user.login, dataworking['project_cod'], 1, self.request)
                                         setAssessmentIndividualStatus(
@@ -69,7 +72,7 @@ class createProjectAssessment_view(apiView):
                                             dataworking["project_cod"],
                                             dataworking["ass_cod"],
                                             1,
-                                            self.request
+                                            self.request,
                                         )
 
                                         response = Response(
@@ -211,7 +214,10 @@ class closeAssessmentApi_view(apiView):
                     )
                     if exitsproject:
                         if not projectAsessmentStatus(
-                            self.user.login, dataworking["project_cod"], dataworking["ass_cod"], self.request
+                            self.user.login,
+                            dataworking["project_cod"],
+                            dataworking["ass_cod"],
+                            self.request,
                         ):
                             if assessmentExists(
                                 self.user.login,
@@ -274,8 +280,12 @@ class readAssessmentStructure_view(apiView):
             try:
                 dataworking = json.loads(self.request.params["Body"])
             except:
-                response = Response(status=401,
-                                    body=self._("Error in the JSON, It does not have the 'body' parameter."))
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "Error in the JSON, It does not have the 'body' parameter."
+                    ),
+                )
                 return response
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -293,7 +303,10 @@ class readAssessmentStructure_view(apiView):
                     )
                     if exitsproject:
                         if not projectAsessmentStatus(
-                            self.user.login, dataworking["project_cod"], dataworking["ass_cod"], self.request
+                            self.user.login,
+                            dataworking["project_cod"],
+                            dataworking["ass_cod"],
+                            self.request,
                         ):
                             if assessmentExists(
                                 self.user.login,
@@ -373,7 +386,10 @@ class pushJsonToAssessment_view(apiView):
                             self.request,
                         ):
                             if not projectAsessmentStatus(
-                                    self.user.login, dataworking["project_cod"], dataworking["ass_cod"], self.request
+                                self.user.login,
+                                dataworking["project_cod"],
+                                dataworking["ass_cod"],
+                                self.request,
                             ):
                                 if isAssessmentOpen(
                                     self.user.login,
@@ -723,15 +739,15 @@ class pushJsonToAssessment_view(apiView):
                             else:
                                 response = Response(
                                     status=401,
-                                    body=self._(
-                                        "Data collection has not started."
-                                    ),
+                                    body=self._("Data collection has not started."),
                                 )
                                 return response
                         else:
                             response = Response(
                                 status=401,
-                                body=self._("There is no data collection with that code."),
+                                body=self._(
+                                    "There is no data collection with that code."
+                                ),
                             )
                             return response
                     else:

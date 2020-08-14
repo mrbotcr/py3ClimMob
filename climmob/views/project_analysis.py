@@ -43,8 +43,8 @@ class analysisDataView(privateView):
                 # print json.dumps(dict)
                 locale = self.request.locale_name
                 info = getJSONResult(
-                        self.user.login, activeProjectData["project_cod"], self.request
-                    )
+                    self.user.login, activeProjectData["project_cod"], self.request
+                )
                 create_analysis(
                     locale,
                     self.user.login,
@@ -55,14 +55,19 @@ class analysisDataView(privateView):
                     self.request,
                 )
 
-                create_datacsv(self.user.login,activeProjectData["project_cod"],info,self.request)
+                create_datacsv(
+                    self.user.login,
+                    activeProjectData["project_cod"],
+                    info,
+                    self.request,
+                )
 
                 self.returnRawViewResult = True
                 return HTTPFound(location=self.request.route_url("productList"))
 
         dataForAnalysis, assessmentsList = getQuestionsByType(
-                self.user.login, activeProjectData["project_cod"], self.request
-            )
+            self.user.login, activeProjectData["project_cod"], self.request
+        )
 
         return {
             "activeUser": self.user,
