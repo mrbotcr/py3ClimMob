@@ -179,7 +179,8 @@ setup(
     entry_points={
         "paste.app_factory": ["main = climmob:main",],
         "console_scripts": [
-            "initialize_climmob_db = climmob.scripts.initializedb:main",
+            "configure_mysql = climmob.scripts.configuremysql:main",
+            "configure_alembic = climmob.scripts.configurealembic:main",
         ],
     },
 )

@@ -45,8 +45,6 @@ import base64
 # the block size for the cipher object; must be 16, 24, or 32 for AES
 BLOCK_SIZE = 32
 
-EncKey = "u%|Xf>2Z+5k1e&XU"
-
 # the character used for padding--with a block cipher such as AES, the value
 # you encrypt must be a multiple of BLOCK_SIZE in length.  This character is
 # used to ensure that your value is always a multiple of BLOCK_SIZE
@@ -73,13 +71,13 @@ def decode_aes(c, e):
 
 
 def encodeData(request, data):
-    secret = EncKey.encode()
+    secret = request.registry.settings["aes.key"].encode()
     cipher = AES.new(secret, 1)
     return encode_aes(cipher, data)
 
 
 def decodeData(request, data):
-    secret = EncKey.encode()
+    secret = request.registry.settings["aes.key"].encode()
     cipher = AES.new(secret, 1)
     return decode_aes(cipher, data)
 
