@@ -73,13 +73,13 @@ def decode_aes(c, e):
 
 
 def encodeData(request, data):
-    secret = EncKey
+    secret = EncKey.encode()
     cipher = AES.new(secret, 1)
     return encode_aes(cipher, data)
 
 
 def decodeData(request, data):
-    secret = EncKey
+    secret = EncKey.encode()
     cipher = AES.new(secret, 1)
     return decode_aes(cipher, data)
 
