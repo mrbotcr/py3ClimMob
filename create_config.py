@@ -32,20 +32,13 @@ def main():
         help="IP of the proxy server calling climmob",
     )
     parser.add_argument(
-        "--pid_file",
-        required=True,
-        help="File that will store the climmob process ID",
+        "--pid_file", required=True, help="File that will store the climmob process ID",
     )
     parser.add_argument(
-        "--error_log_file",
-        required=True,
-        help="File that will store the climmob logs",
+        "--error_log_file", required=True, help="File that will store the climmob logs",
     )
     parser.add_argument(
-        "-d",
-        "--daemon",
-        action="store_true",
-        help="Start as climmob in detached mode",
+        "-d", "--daemon", action="store_true", help="Start as climmob in detached mode",
     )
     parser.add_argument(
         "-c",
@@ -72,9 +65,7 @@ def main():
     parser.add_argument(
         "--mysql_user_password", required=True, help="MySQL user name password"
     )
-    parser.add_argument(
-        "--climmob_host", required=True, help="Host name for climmob"
-    )
+    parser.add_argument("--climmob_host", required=True, help="Host name for climmob")
     parser.add_argument("--climmob_port", required=True, help="Port for climmob")
     args = parser.parse_args()
     climmob_path = "."
