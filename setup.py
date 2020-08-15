@@ -105,6 +105,7 @@ requires = [
     "pyxform",
     "qrcode",
     "qrtools",
+    "redis",
     "regex",
     "repoze.lru",
     "requests",

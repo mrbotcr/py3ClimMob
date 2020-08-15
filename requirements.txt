@@ -94,6 +94,7 @@ PyUtilib==6.0.0
 pyxform==1.1.0
 qrcode==6.1
 qrtools==0.0.2
+redis==3.5.3
 regex==2020.7.14
 repoze.lru==0.7
 requests==2.24.0
