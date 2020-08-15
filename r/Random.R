@@ -1,3 +1,8 @@
+if (!require("ClimMobTools"))
+{
+        install.packages("ClimMobTools",repos="http://cran.rstudio.com/")
+}
+
 library("ClimMobTools")
 
 args <- commandArgs(trailingOnly = TRUE)
