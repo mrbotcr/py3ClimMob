@@ -91,7 +91,7 @@ python-editor==1.0.4
 python-slugify==4.0.1
 pytz==2020.1
 PyUtilib==6.0.0
--e git+https://github.com/qlands/pyxform.git@022f1bc79ae49df885cff093dc074bae199cacea#egg=pyxform
+pyxform==1.1.0
 qrcode==6.1
 qrtools==0.0.2
 regex==2020.7.14
