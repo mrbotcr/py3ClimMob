@@ -16,28 +16,28 @@ def usage(argv):
 def main(argv=sys.argv):
     if len(argv) != 2:
         usage(argv)
-    formshare_path = "."
-    formshare_ini_file = os.path.abspath(argv[1])
-    if not os.path.exists(formshare_ini_file):
-        print("Ini file {} does not exists".format(formshare_ini_file))
+    climmob_path = "."
+    climmob_ini_file = os.path.abspath(argv[1])
+    if not os.path.exists(climmob_ini_file):
+        print("Ini file {} does not exists".format(climmob_ini_file))
         sys.exit(1)
-    formshare_celery_app = os.path.join(
-        formshare_path, *["formshare", "config", "celery_app.py"]
+    climmob_celery_app = os.path.join(
+        climmob_path, *["climmob", "config", "celery_app.py"]
     )
 
     template_environment = Environment(
         autoescape=False,
-        loader=FileSystemLoader(os.path.join(formshare_path, "templates")),
+        loader=FileSystemLoader(os.path.join(climmob_path, "templates")),
         trim_blocks=False,
     )
 
-    context = {"FORMSHARE_INI_FILE": formshare_ini_file}
+    context = {"CLIMMOB_INI_FILE": climmob_ini_file}
 
     rendered_template = template_environment.get_template(
         "celery_app_template.jinja2"
     ).render(context)
 
-    with open(formshare_celery_app, "w") as f:
+    with open(climmob_celery_app, "w") as f:
         f.write(rendered_template)
 
 

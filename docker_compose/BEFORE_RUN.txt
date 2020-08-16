@@ -17,8 +17,8 @@ mkdir /opt/climmob/mysql
 
 3) Edit the docker-compose.yml to change:
 -The mysql security credentials:
-line 8: MYSQL_ROOT_PASSWORD: my_secure_password
-line 77: MYSQL_USER_PASSWORD: my_secure_password
+line 7: MYSQL_ROOT_PASSWORD: my_secure_password
+line 19: MYSQL_USER_PASSWORD: my_secure_password
 
 4) Run docker compose
 cd climmob/docker_compose
