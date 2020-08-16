@@ -1,0 +1,41 @@
+version: '3'
+services:
+  cmmysql_20200815:
+    image: mysql:5.7.27
+    container_name: fs_mysql_20200813
+    environment:
+      MYSQL_ROOT_PASSWORD: my_secure_password
+    volumes:
+      - /opt/climmob/mysql:/var/lib/mysql
+    networks:
+      cmnet:
+        ipv4_address: 172.28.1.1
+  climmob_20200815:
+    image: alliancecostarica/climmob:20200815
+    container_name: climmob_20200815
+    environment:
+      MYSQL_HOST_NAME: 172.28.1.1
+      MYSQL_USER_NAME: root
+      MYSQL_USER_PASSWORD: my_secure_password
+      climmob_HOST: 172.28.1.2
+      climmob_PORT: 5900
+      FORWARDED_ALLOW_IP: 172.28.1.2
+      WAIT_HOSTS_TIMEOUT: 120
+      WAIT_HOSTS: 172.28.1.1:3306
+    volumes:
+      - /opt/climmob/repository:/opt/climmob_repository
+      - /opt/climmob/log:/opt/climmob_log
+      - /opt/climmob/celery:/opt/climmob_celery
+      - /opt/climmob/config:/opt/climmob_config
+      - /opt/climmob/plugins:/opt/climmob_plugins
+    ports:
+      - 5900:5900
+    networks:
+      cmnet:
+        ipv4_address: 172.28.1.4
+networks:
+  cmnet:
+     ipam:
+        driver: default
+        config:
+          - subnet: 172.28.0.0/16

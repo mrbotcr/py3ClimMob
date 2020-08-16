@@ -1,0 +1,29 @@
+Before you run docker-compose you need to
+
+Memory used:  2GB of RAM
+
+1) Install docker-compose
+sudo apt-get install -y docker-compose
+
+2) Run the following commands to store the climmob data outside the docker containers
+sudo mkdir /opt/climmob
+whoami=$(whoami)
+sudo chown $whoami /opt/climmob
+mkdir /opt/climmob/celery
+mkdir /opt/climmob/log
+mkdir /opt/climmob/repository
+mkdir /opt/climmob/config
+mkdir /opt/climmob/mysql
+
+3) Edit the docker-compose.yml to change:
+-The mysql security credentials:
+line 8: MYSQL_ROOT_PASSWORD: my_secure_password
+line 77: MYSQL_USER_PASSWORD: my_secure_password
+
+4) Run docker compose
+cd climmob/docker_compose
+sudo docker-compose up
+
+Docker will pull the necessary images and run climmob. After all images are pulled and
+all services run, you will be able to access climmob at http://localhost:5900/.
+From there you can poxy pass it using Apache.
