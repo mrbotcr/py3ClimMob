@@ -110,4 +110,5 @@ ENV LC_ALL en_US.UTF-8
 
 COPY ./docker_files/packages.r /opt
 WORKDIR /opt
+RUN Rscript ./new_r_code/R/check_packages.R
 RUN Rscript ./packages.r
