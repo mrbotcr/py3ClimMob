@@ -53,29 +53,37 @@ def createReports(locale, path, user, projectid, data, info, infosheet):
         _ = es.gettext
 
     pathScript = "/home/ubuntu/new_r_code/ClimMob-analysis"
-    #pathScript = "/home/bmadriz/temp/ClimMobAnalysis"
+    # pathScript = "/home/bmadriz/temp/ClimMobAnalysis"
 
     os.system(
         "Rscript "
-        + pathScript +"/ClimMob.R"
+        + pathScript
+        + "/ClimMob.R"
         + " "
-        + pathInputFiles + "/data.json"
+        + pathInputFiles
+        + "/data.json"
         + " "
-        + pathInputFiles+ "/info.json"
+        + pathInputFiles
+        + "/info.json"
         + " "
         + pathouttemp
         + " TRUE "
-        + " "+locale+" "
+        + " "
+        + locale
+        + " "
         + " docx "
-        + " " + _("participant")
-        + " " + _("item")
-        + " "+pathScript
+        + " "
+        + _("participant")
+        + " "
+        + _("item")
+        + " "
+        + pathScript
     )
 
     report = pathouttemp + "/climmob_main_report.docx"
 
     if os.path.exists(report):
-        os.system("mv "+report+" "+pathout+"/Report_"+projectid+".docx")
+        os.system("mv " + report + " " + pathout + "/Report_" + projectid + ".docx")
     else:
         print("No existe el archivo")
 

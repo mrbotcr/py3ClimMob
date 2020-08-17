@@ -23,7 +23,7 @@ from ..processes import (
     searchTechnologiesInProject,
     getJSONResult,
     getProjectData,
-    getProjectAssessments
+    getProjectAssessments,
 )
 from .projectHelp.projectHelp import getImportantInformation
 from .registry import getDataFormPreview
@@ -35,6 +35,7 @@ from ..products.fieldagents.fieldagents import create_fieldagents_report
 from ..products.analysisdata.analysisdata import create_datacsv
 from ..products.forms.form import create_document_form
 from ..products.generalReport.generalReport import create_general_report
+
 
 def getDataProduct(user, project, request):
 
@@ -51,14 +52,18 @@ def getDataProduct(user, project, request):
         "SELECT *,'Fail.' as state  FROM products p where p.celery_taskid not in (select taskid from finishedtasks) and datediff(sysdate(),datetime_added)>=2 "
         ") "
         "as edited "
-        "where edited.datetime_added = (SELECT max(datetime_added) FROM products where project_cod = '"+project+"' and user_name='"+user+"' and product_id= edited.product_id) and edited.user_name='"
+        "where edited.datetime_added = (SELECT max(datetime_added) FROM products where project_cod = '"
+        + project
+        + "' and user_name='"
+        + user
+        + "' and product_id= edited.product_id) and edited.user_name='"
         + user
         + "' and edited.project_cod='"
         + project
         + "' order by field(edited.product_id,'fieldagents','packages','qrpackage') desc, edited.datetime_added"
     )
 
-    #print(sql)
+    # print(sql)
 
     """sql = "select edited.celery_taskid,edited.user_name,edited.project_cod,edited.product_id, edited.datetime_added, edited.output_id, edited.state " \
           "from " \
@@ -132,6 +137,7 @@ class productsView(climmobPrivateView):
             "Products": products,
         }
 
+
 class generateProductView(privateView):
     def processView(self):
         projectid = self.request.matchdict["projectid"]
@@ -140,7 +146,9 @@ class generateProductView(privateView):
         if productid == "qrpackage":
 
             ncombs, packages = getPackages(self.user.login, projectid, self.request)
-            create_qr_packages(self.request, self.user.login, projectid, ncombs, packages)
+            create_qr_packages(
+                self.request, self.user.login, projectid, ncombs, packages
+            )
 
         if productid == "packages":
             ncombs, packages = getPackages(self.user.login, projectid, self.request)
@@ -169,49 +177,71 @@ class generateProductView(privateView):
             )
 
             if numberOfCombinations == 3:
-                tech = searchTechnologiesInProject(self.user.login, projectid, self.request)
+                tech = searchTechnologiesInProject(
+                    self.user.login, projectid, self.request
+                )
                 if len(tech) == 1:
-                    if tech[0]["tech_name"] == "Colores" or tech[0]["tech_name"] == "Colors":
-                        create_colors_cards(self.request, self.user.login, projectid, packages)
+                    if (
+                        tech[0]["tech_name"] == "Colores"
+                        or tech[0]["tech_name"] == "Colors"
+                    ):
+                        create_colors_cards(
+                            self.request, self.user.login, projectid, packages
+                        )
 
         if productid == "datacsv":
             locale = self.request.locale_name
-            info = getJSONResult(
-                self.user.login, projectid, self.request
-            )
+            info = getJSONResult(self.user.login, projectid, self.request)
 
             create_datacsv(self.user.login, projectid, info, self.request)
 
         if productid == "documentform":
-            #POR AHORA ESTARÍA SOLO FUNCIONANDO CON EL FORMULARIO DE REGISTRO DEBE DE SER EDITADO
+            # POR AHORA ESTARÍA SOLO FUNCIONANDO CON EL FORMULARIO DE REGISTRO DEBE DE SER EDITADO
             ncombs, packages = getPackages(self.user.login, projectid, self.request)
             data, finalCloseQst = getDataFormPreview(self, projectid)
-            create_document_form(self.request, "en", self.user.login, projectid, "Registration", "", data, packages)
+            create_document_form(
+                self.request,
+                "en",
+                self.user.login,
+                projectid,
+                "Registration",
+                "",
+                data,
+                packages,
+            )
 
         if productid == "generalreport":
             dataworking = {}
             dataworking["project_username"] = self.user.login
             dataworking["project_cod"] = projectid
-            dataworking["project_details"] = getProjectData(self.user.login, projectid, self.request)
+            dataworking["project_details"] = getProjectData(
+                self.user.login, projectid, self.request
+            )
             dataworking = getImportantInformation(dataworking, self.request)
-            dataworking["project_fieldagents"] = getProjectEnumerators(self.user.login, projectid, self.request)
+            dataworking["project_fieldagents"] = getProjectEnumerators(
+                self.user.login, projectid, self.request
+            )
             dataRegistry, finalCloseQst = getDataFormPreview(self, projectid)
             dataworking["project_registry"] = dataRegistry
             dataAssessments = getProjectAssessments(
-                    self.user.login, projectid, self.request
-                )
+                self.user.login, projectid, self.request
+            )
             for assessment in dataAssessments:
-                dataAssessmentsQuestions, finalCloseQst = getDataFormPreview(self, projectid, assessment["ass_cod"])
+                dataAssessmentsQuestions, finalCloseQst = getDataFormPreview(
+                    self, projectid, assessment["ass_cod"]
+                )
                 assessment["Questions"] = dataAssessmentsQuestions
             dataworking["project_assessment"] = dataAssessments
-            create_general_report(self.request, self.request.locale_name, self.user.login,projectid, dataworking)
+            create_general_report(
+                self.request,
+                self.request.locale_name,
+                self.user.login,
+                projectid,
+                dataworking,
+            )
 
         self.returnRawViewResult = True
-        return HTTPFound(
-            location=self.request.route_url(
-                "productList"
-            )
-        )
+        return HTTPFound(location=self.request.route_url("productList"))
 
 
 class downloadJsonView(climmobPrivateView):

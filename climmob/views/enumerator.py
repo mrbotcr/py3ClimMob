@@ -18,13 +18,15 @@ class enumerators_view(privateView):
     def processView(self):
         dataworking = {}
         error_summary = {}
-        modify =False
+        modify = False
 
         if self.request.method == "POST":
             dataworking = self.getPostDict()
             if "btn_add_enumerator" in self.request.POST:
-                modify =False
-                dataworking["enum_id"] = re.sub("[^A-Za-z0-9\-]+", "", dataworking["enum_id"])
+                modify = False
+                dataworking["enum_id"] = re.sub(
+                    "[^A-Za-z0-9\-]+", "", dataworking["enum_id"]
+                )
                 if not enumeratorExists(
                     self.user.login, dataworking["enum_id"], self.request
                 ):
@@ -34,23 +36,21 @@ class enumerators_view(privateView):
                     if not added:
                         error_summary = {"dberror": message}
                     else:
-                        dataworking ={}
+                        dataworking = {}
                         self.request.session.flash(
-                            self._(
-                                "The field agent was created successfully."
-                            )
+                            self._("The field agent was created successfully.")
                         )
                 else:
                     error_summary = {
-                        "exists": self._(
-                            "This field agent username already exists."
-                        )
+                        "exists": self._("This field agent username already exists.")
                     }
 
             if "btn_modify_enumerator" in self.request.POST:
                 modify = True
                 enumeratorid = dataworking["enum_id"]
-                dataworking["enum_password"] = encodeData(self.request, dataworking["enum_password"])
+                dataworking["enum_password"] = encodeData(
+                    self.request, dataworking["enum_password"]
+                )
                 if "ckb_modify_status" in dataworking.keys():
                     if dataworking["ckb_modify_status"] == "on":
                         dataworking["enum_active"] = 1
@@ -66,9 +66,9 @@ class enumerators_view(privateView):
 
                 if not mdf:
                     error_summary = {"dberror": message}
-                    dataworking["enum_password"] = decodeData(self.request, dataworking["enum_password"]).decode(
-                        "utf-8"
-                    )
+                    dataworking["enum_password"] = decodeData(
+                        self.request, dataworking["enum_password"]
+                    ).decode("utf-8")
 
                 else:
                     dataworking = {}
@@ -81,7 +81,7 @@ class enumerators_view(privateView):
             "searchEnumerator": searchEnumerator(self.user.login, self.request),
             "dataworking": dataworking,
             "error_summary": error_summary,
-            "modify" :modify
+            "modify": modify,
         }
 
 
@@ -194,6 +194,7 @@ class modifyEnumerator_view(privateView):
                     "enumeratorModified": enumeratorModified,
                 }
 """
+
 
 class deleteEnumerator_view(privateView):
     def processView(self):

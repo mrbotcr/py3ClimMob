@@ -26,12 +26,12 @@ def create_index_html(svg, packageid, letterA, letterB, letterC, qr):
 
     context = {
         "climmob": os.path.join(PATH, "images/icon.png"),
-        #"bioversity": os.path.join(PATH, "images/bioversity.png"),
+        # "bioversity": os.path.join(PATH, "images/bioversity.png"),
         "packageid": packageid,
         "letterA": letterA,
         "letterB": letterB,
         "letterC": letterC,
-        "bioversity": qr
+        "bioversity": qr,
     }
 
     with open(svg, "w") as f:
@@ -59,7 +59,7 @@ def createColors(path, projectid, packages):
     os.makedirs(os.path.join(path, "png"))
     os.makedirs(os.path.join(path, "pdf"))
 
-    pathqr  = os.path.join(path, "qr")
+    pathqr = os.path.join(path, "qr")
     pathsvg = os.path.join(path, "svg")
     pathpng = os.path.join(path, "png")
     pathpdf = os.path.join(path, "pdf")
@@ -73,7 +73,7 @@ def createColors(path, projectid, packages):
     veces = 0
     for package in packages:
 
-        qr = create_qr(package, projectid, pathqr,all=False)
+        qr = create_qr(package, projectid, pathqr, all=False)
 
         _tec = 0
         _one = ""
@@ -108,7 +108,12 @@ def createColors(path, projectid, packages):
         # SVG
         svg = pathsvg + "/" + str(package["package_id"]) + ".svg"
         create_index_html(
-            svg, str(package["package_id"]), colors[_one], colors[_two], colors[_three], qr
+            svg,
+            str(package["package_id"]),
+            colors[_one],
+            colors[_two],
+            colors[_three],
+            qr,
         )
         # PDF
         # Changed by Carlos

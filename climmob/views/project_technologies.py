@@ -19,7 +19,7 @@ from ..processes import (
     getAliasExtra,
     isTechnologyAssigned,
     numberOfAliasesInTechnology,
-    getTechnology
+    getTechnology,
 )
 
 
@@ -28,8 +28,8 @@ class projectTecnologies_view(privateView):
 
         projectid = self.request.matchdict["projectid"]
         alias = {}
-        tech_id= ""
-        dataworking ={}
+        tech_id = ""
+        dataworking = {}
         error_summary = {}
         dataworking["alias_name"] = ""
         techSee = {}
@@ -71,9 +71,11 @@ class projectTecnologies_view(privateView):
                 if "btn_show_technology_alias_in_library" in self.request.POST:
                     postdata = self.getPostDict()
                     tech_id = postdata["tech_id"]
-                    alias = {"AliasTechnology": AliasSearchTechnology(
-                        tech_id, self.user.login, projectid, self.request
-                    )}
+                    alias = {
+                        "AliasTechnology": AliasSearchTechnology(
+                            tech_id, self.user.login, projectid, self.request
+                        )
+                    }
                     techSee = getTechnology(postdata, self.request)
 
                 if "btn_save_technologies_alias" in self.request.POST:
@@ -109,14 +111,12 @@ class projectTecnologies_view(privateView):
 
                     self.request.matchdict["tech_id"] = postdata["tech_id"]
                     result = prjTechAliasAdd_view.processView(self)
-                    dataworking= result["dataworking"]
+                    dataworking = result["dataworking"]
                     error_summary = result["error_summary"]
                     if result["redirect"]:
-                        dataworking["alias_name"] =""
+                        dataworking["alias_name"] = ""
                     alias = prjTechAliases_view.processView(self)
                     techSee = getTechnology(postdata, self.request)
-
-
 
             return {
                 "activeUser": self.user,
@@ -132,9 +132,9 @@ class projectTecnologies_view(privateView):
                     self.user.login, projectid, self.request
                 ),
                 "alias": alias,
-                "dataworking":dataworking,
-                "error_summary":error_summary,
-                "techSee": techSee
+                "dataworking": dataworking,
+                "error_summary": error_summary,
+                "techSee": techSee,
             }
 
 
@@ -187,9 +187,14 @@ class prjTechAliases_view(privateView):
                             if not delete:
                                 error_summary = {"dberror": message}
 
-                    if numberOfAliasesInTechnology(self.user.login, projectid, technologyid, self.request) == 0:
+                    if (
+                        numberOfAliasesInTechnology(
+                            self.user.login, projectid, technologyid, self.request
+                        )
+                        == 0
+                    ):
                         deleteTechnologyProject(
-                            self.user.login, projectid,technologyid, self.request
+                            self.user.login, projectid, technologyid, self.request
                         )
 
             return {
@@ -263,7 +268,7 @@ class prjTechAliasAdd_view(privateView):
         dataworking = {}
         projectid = self.request.matchdict["projectid"]
         technologyid = self.request.matchdict["tech_id"]
-        redirect =False
+        redirect = False
 
         if not projectTechnologyExists(
             self.user.login, projectid, technologyid, self.request
@@ -291,7 +296,7 @@ class prjTechAliasAdd_view(privateView):
                                 # capture the error
                                 error_summary = {"dberror": message}
                             else:
-                                redirect=True
+                                redirect = True
                         else:
                             # error
                             error_summary = {
@@ -310,6 +315,5 @@ class prjTechAliasAdd_view(privateView):
             "dataworking": self.decodeDict(dataworking),
             "projectid": projectid,
             "tech_id": technologyid,
-            "redirect": redirect
-
+            "redirect": redirect,
         }

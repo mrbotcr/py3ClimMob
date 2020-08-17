@@ -194,7 +194,10 @@ def createResources(apppath, config):
         "coreresources", "dashboard", "dashboard/dashboard.js", "bootstrap"
     )
     r.add_js_resource(
-        "coreresources", "chosen", "inspinia/js/plugins/chosen/chosen.jquery.js", "bootstrap"
+        "coreresources",
+        "chosen",
+        "inspinia/js/plugins/chosen/chosen.jquery.js",
+        "bootstrap",
     )
     # Register
     r.add_js_resource(
@@ -286,7 +289,9 @@ def createResources(apppath, config):
 
     # Enumerators
     r.add_js_resource("coreresources", "delete", "delete.js", "pace")
-    r.add_js_resource("coreresources", "bootstrapmaxlength", "bootstrap-maxlength.js", "pace")
+    r.add_js_resource(
+        "coreresources", "bootstrapmaxlength", "bootstrap-maxlength.js", "pace"
+    )
     # Project combinations
     r.add_js_resource(
         "coreresources",
@@ -361,26 +366,41 @@ def createResources(apppath, config):
         "coreresources", "d3", "inspinia/js/plugins//d3/d3.min.js", "jquery"
     )
     r.add_js_resource(
-        "coreresources", "tour", "inspinia/js/plugins/bootstrapTour/bootstrap-tour.min.js", "jquery"
+        "coreresources",
+        "tour",
+        "inspinia/js/plugins/bootstrapTour/bootstrap-tour.min.js",
+        "jquery",
     )
     r.add_js_resource(
         "coreresources", "jstree", "inspinia/js/plugins/jsTree/jstree.min.js", "jquery"
     )
     r.add_js_resource(
-        "coreresources", "validate", "inspinia/js/plugins/validate/jquery.validate.min.js", "jquery"
+        "coreresources",
+        "validate",
+        "inspinia/js/plugins/validate/jquery.validate.min.js",
+        "jquery",
     )
     r.add_js_resource(
         "coreresources", "metro", "inspinia/js/plugins/metro/metro.min.js", "jquery"
     )
     r.add_js_resource(
-        "coreresources", "datapicker", "inspinia/js/plugins/datapicker/bootstrap-datepicker.js", "jquery"
+        "coreresources",
+        "datapicker",
+        "inspinia/js/plugins/datapicker/bootstrap-datepicker.js",
+        "jquery",
     )
     r.add_js_resource(
-        "coreresources", "datatimepicker", "inspinia/js/plugins/datapicker/bootstrap-datetimepicker.min.js", "jquery"
+        "coreresources",
+        "datatimepicker",
+        "inspinia/js/plugins/datapicker/bootstrap-datetimepicker.min.js",
+        "jquery",
     )
     r.add_js_resource(
         "coreresources", "parsley", "inspinia/js/plugins/parsley/parsley.js", "jquery"
     )
     r.add_js_resource(
-        "coreresources", "footable", "inspinia/js/plugins/footable/footable.all.min.js", "jquery"
+        "coreresources",
+        "footable",
+        "inspinia/js/plugins/footable/footable.all.min.js",
+        "jquery",
     )

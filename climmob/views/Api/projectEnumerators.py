@@ -22,7 +22,12 @@ class addProjectEnumerator_view(apiView):
             try:
                 dataworking = json.loads(self.request.params["Body"])
             except:
-                response = Response(status=401,body=self._("Error in the JSON, It does not have the 'body' parameter."))
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "Error in the JSON, It does not have the 'body' parameter."
+                    ),
+                )
                 return response
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -94,7 +99,12 @@ class readProjectEnumerators_view(apiView):
             try:
                 dataworking = json.loads(self.request.params["Body"])
             except:
-                response = Response(status=401,body=self._("Error in the JSON, It does not have the 'body' parameter."))
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "Error in the JSON, It does not have the 'body' parameter."
+                    ),
+                )
                 return response
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -134,7 +144,12 @@ class readPossibleProjectEnumerators_view(apiView):
             try:
                 dataworking = json.loads(self.request.params["Body"])
             except:
-                response = Response(status=401,body=self._("Error in the JSON, It does not have the 'body' parameter."))
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "Error in the JSON, It does not have the 'body' parameter."
+                    ),
+                )
                 return response
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -174,7 +189,12 @@ class deleteProjectEnumerator_view(apiView):
             try:
                 dataworking = json.loads(self.request.params["Body"])
             except:
-                response = Response(status=401,body=self._("Error in the JSON, It does not have the 'body' parameter."))
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "Error in the JSON, It does not have the 'body' parameter."
+                    ),
+                )
                 return response
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -227,8 +247,7 @@ class deleteProjectEnumerator_view(apiView):
                         return response
                 else:
                     response = Response(
-                        status=401,
-                        body=self._("There is no project with that code."),
+                        status=401, body=self._("There is no project with that code."),
                     )
                     return response
             else:

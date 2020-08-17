@@ -1,7 +1,7 @@
 from .classes import privateView
 from climmob.processes import projectExists
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
-from ..processes import(
+from ..processes import (
     get_registry_logs,
     get_registry_log_by_log,
     get_assessment_logs,
@@ -9,16 +9,17 @@ from ..processes import(
     getProjectData,
     update_registry_status_log,
     update_assessment_status_log,
-    isAssessmentOpen
+    isAssessmentOpen,
 )
 import os
-from .editDataDB import getNamesEditByColums,fillDataTable
+from .editDataDB import getNamesEditByColums, fillDataTable
 from climmob.processes import getQuestionsStructure
 import json
 import xml.etree.ElementTree as ET
 from ..processes.odk.api import storeJSONInMySQL
 import transaction
 from zope.sqlalchemy import mark_changed
+
 
 class cleanErrorLogs_view(privateView):
     def processView(self):
@@ -28,10 +29,10 @@ class cleanErrorLogs_view(privateView):
         try:
             codeId = self.request.matchdict["codeid"]
 
-            if not isAssessmentOpen(self.user.login,proId,codeId,self.request):
+            if not isAssessmentOpen(self.user.login, proId, codeId, self.request):
                 raise HTTPNotFound()
         except:
-            codeId= ""
+            codeId = ""
             if int(proData["project_regstatus"]) == 2:
                 raise HTTPNotFound()
 
@@ -44,20 +45,23 @@ class cleanErrorLogs_view(privateView):
             raise HTTPNotFound()
         else:
 
-
-            #GET
+            # GET
             if logId != "":
 
                 if codeId == "":
-                    exits, log = get_registry_log_by_log(self.request,self.user.login,proId,logId)
+                    exits, log = get_registry_log_by_log(
+                        self.request, self.user.login, proId, logId
+                    )
 
                 else:
-                    exits, log = get_assessment_log_by_log(self.request, self.user.login, proId, codeId,logId)
+                    exits, log = get_assessment_log_by_log(
+                        self.request, self.user.login, proId, codeId, logId
+                    )
 
                 if exits:
                     if os.path.exists(log):
 
-                        with open(log,'r') as json_file:
+                        with open(log, "r") as json_file:
                             new_json = json.load(json_file)
 
                             # POST
@@ -65,107 +69,208 @@ class cleanErrorLogs_view(privateView):
                                 dataworking = self.getPostDict()
                                 if "submit" in dataworking.keys():
                                     if formId == "registry":
-                                        key = get_key_form_manifest(formId, self, proId, "qst162", new_json)
-                                        new_json[key] = dataworking["newqst"].split("-")[1]
+                                        key = get_key_form_manifest(
+                                            formId, self, proId, "qst162", new_json
+                                        )
+                                        new_json[key] = dataworking["newqst"].split(
+                                            "-"
+                                        )[1]
 
                                         if "txt_oldvalue" not in dataworking.keys():
                                             dataworking["txt_oldvalue"] = -999
 
-                                        with open(log, 'w') as json_file:
+                                        with open(log, "w") as json_file:
                                             json.dump(new_json, json_file)
 
+                                        if str(dataworking["txt_oldvalue"]) == str(
+                                            dataworking["newqst"].split("-")[1]
+                                        ):
 
-                                        if str(dataworking["txt_oldvalue"]) == str(dataworking["newqst"].split("-")[1]):
-
-                                            query = "Delete from " + self.user.login + "_" + proId + ".REG_geninfo where qst162='"+dataworking["newqst"].split("-")[1]+"'"
+                                            query = (
+                                                "Delete from "
+                                                + self.user.login
+                                                + "_"
+                                                + proId
+                                                + ".REG_geninfo where qst162='"
+                                                + dataworking["newqst"].split("-")[1]
+                                                + "'"
+                                            )
                                             mySession = self.request.dbsession
                                             transaction.begin()
                                             mySession.execute(query)
                                             mark_changed(mySession)
                                             transaction.commit()
 
-                                        storeJSONInMySQL("REG", self.user.login, new_json["_submitted_by"], proId,codeId, log, self.request)
+                                        storeJSONInMySQL(
+                                            "REG",
+                                            self.user.login,
+                                            new_json["_submitted_by"],
+                                            proId,
+                                            codeId,
+                                            log,
+                                            self.request,
+                                        )
 
-                                        update_registry_status_log(self.request,self.user.login, proId, logId,2)
+                                        update_registry_status_log(
+                                            self.request,
+                                            self.user.login,
+                                            proId,
+                                            logId,
+                                            2,
+                                        )
 
                                         self.returnRawViewResult = True
                                         return HTTPFound(
                                             location=self.request.route_url(
-                                                "CleanErrorLogs", projectid=proId, formid= formId
+                                                "CleanErrorLogs",
+                                                projectid=proId,
+                                                formid=formId,
                                             )
                                         )
                                     else:
-                                        key = get_key_form_manifest(formId, self, proId, "qst163", new_json)
+                                        key = get_key_form_manifest(
+                                            formId, self, proId, "qst163", new_json
+                                        )
                                         new_json[key] = dataworking["newqst2"]
 
                                         if "txt_oldvalue" not in dataworking.keys():
                                             dataworking["txt_oldvalue"] = -999
 
-                                        with open(log, 'w') as json_file:
+                                        with open(log, "w") as json_file:
                                             json.dump(new_json, json_file)
 
-                                        if str(dataworking["txt_oldvalue"]) == str(dataworking["newqst2"]):
-                                            query = "Delete from " + self.user.login + "_" + proId + ".ASS" + codeId + "_geninfo where qst163='" + dataworking["newqst2"] + "'"
+                                        if str(dataworking["txt_oldvalue"]) == str(
+                                            dataworking["newqst2"]
+                                        ):
+                                            query = (
+                                                "Delete from "
+                                                + self.user.login
+                                                + "_"
+                                                + proId
+                                                + ".ASS"
+                                                + codeId
+                                                + "_geninfo where qst163='"
+                                                + dataworking["newqst2"]
+                                                + "'"
+                                            )
                                             mySession = self.request.dbsession
                                             transaction.begin()
                                             mySession.execute(query)
                                             mark_changed(mySession)
                                             transaction.commit()
 
-                                        storeJSONInMySQL("ASS", self.user.login, new_json["_submitted_by"], proId,codeId, log, self.request)
+                                        storeJSONInMySQL(
+                                            "ASS",
+                                            self.user.login,
+                                            new_json["_submitted_by"],
+                                            proId,
+                                            codeId,
+                                            log,
+                                            self.request,
+                                        )
 
-                                        update_assessment_status_log(self.request, self.user.login, proId, codeId, logId, 2)
+                                        update_assessment_status_log(
+                                            self.request,
+                                            self.user.login,
+                                            proId,
+                                            codeId,
+                                            logId,
+                                            2,
+                                        )
 
                                         self.returnRawViewResult = True
                                         return HTTPFound(
                                             location=self.request.route_url(
-                                                "CleanErrorLogsAssessment", projectid=proId, formid=formId, codeid=codeId
+                                                "CleanErrorLogsAssessment",
+                                                projectid=proId,
+                                                formid=formId,
+                                                codeid=codeId,
                                             )
                                         )
 
                                 if "discard" in dataworking.keys():
                                     if formId == "registry":
-                                        update_registry_status_log(self.request, self.user.login, proId, logId, 3)
+                                        update_registry_status_log(
+                                            self.request,
+                                            self.user.login,
+                                            proId,
+                                            logId,
+                                            3,
+                                        )
 
                                         self.returnRawViewResult = True
                                         return HTTPFound(
                                             location=self.request.route_url(
-                                                "CleanErrorLogs", projectid=proId, formid=formId
+                                                "CleanErrorLogs",
+                                                projectid=proId,
+                                                formid=formId,
                                             )
                                         )
                                     else:
-                                        update_assessment_status_log(self.request, self.user.login, proId, codeId,
-                                                                     logId, 3)
+                                        update_assessment_status_log(
+                                            self.request,
+                                            self.user.login,
+                                            proId,
+                                            codeId,
+                                            logId,
+                                            3,
+                                        )
 
                                         self.returnRawViewResult = True
                                         return HTTPFound(
                                             location=self.request.route_url(
-                                                "CleanErrorLogsAssessment", projectid=proId, formid=formId,
-                                                codeid=codeId
+                                                "CleanErrorLogsAssessment",
+                                                projectid=proId,
+                                                formid=formId,
+                                                codeid=codeId,
                                             )
                                         )
 
                             else:
                                 new_json = convertJsonLog(formId, self, proId, new_json)
 
-
-
                 if formId == "registry":
-                    query = "select qst162 from " + self.user.login + "_" + proId + ".REG_geninfo;"
+                    query = (
+                        "select qst162 from "
+                        + self.user.login
+                        + "_"
+                        + proId
+                        + ".REG_geninfo;"
+                    )
                     mySession = self.request.dbsession
                     result = mySession.execute(query)
                     array = [int(new_json["qst162"])]
-                    #array = []
-                    for y in range(1,proData["project_numobs"]+1):
+                    # array = []
+                    for y in range(1, proData["project_numobs"] + 1):
                         array.append(y)
 
                     for x in result:
                         array.remove(int(x[0]))
 
-                    structure, data = getStructureAndData(formId, self, proId, codeId,str(new_json["qst162"]))
-                    return {"Logs": get_registry_logs(self.request,self.user.login,proId),"proId":proId,"codeid":codeId,"formId":formId,"logId":logId, "Structure": structure, "Data":json.loads(data), "New": new_json, "PosibleValues": array}
+                    structure, data = getStructureAndData(
+                        formId, self, proId, codeId, str(new_json["qst162"])
+                    )
+                    return {
+                        "Logs": get_registry_logs(self.request, self.user.login, proId),
+                        "proId": proId,
+                        "codeid": codeId,
+                        "formId": formId,
+                        "logId": logId,
+                        "Structure": structure,
+                        "Data": json.loads(data),
+                        "New": new_json,
+                        "PosibleValues": array,
+                    }
                 else:
-                    queryR = "select qst163 from " + self.user.login + "_" + proId + ".ASS" + codeId + "_geninfo;"
+                    queryR = (
+                        "select qst163 from "
+                        + self.user.login
+                        + "_"
+                        + proId
+                        + ".ASS"
+                        + codeId
+                        + "_geninfo;"
+                    )
                     mySession = self.request.dbsession
                     resultR = mySession.execute(queryR)
 
@@ -176,41 +281,72 @@ class cleanErrorLogs_view(privateView):
 
                     _filters = ""
                     if array:
-                        _filters = "where qst163_cod not in("+",".join(map(str, array))+");"
+                        _filters = (
+                            "where qst163_cod not in("
+                            + ",".join(map(str, array))
+                            + ");"
+                        )
 
-                    query = "select qst163_cod, qst163_des from " + self.user.login + "_" + proId + ".ASS"+codeId+"_lkpqst163 "+_filters
+                    query = (
+                        "select qst163_cod, qst163_des from "
+                        + self.user.login
+                        + "_"
+                        + proId
+                        + ".ASS"
+                        + codeId
+                        + "_lkpqst163 "
+                        + _filters
+                    )
                     mySession = self.request.dbsession
                     result = mySession.execute(query)
                     array = []
 
                     for x in result:
-                        array.append([x[0],x[1]])
+                        array.append([x[0], x[1]])
 
-                    structure, data = getStructureAndData(formId, self, proId, codeId, str(new_json["qst163"]))
-                    return {"Logs": get_assessment_logs(self.request, self.user.login, proId,codeId),"proId":proId, "codeid": codeId,"formId": formId, "logId": logId, "Structure": structure, "Data": json.loads(data),"New": new_json, "PosibleValues": array}
+                    structure, data = getStructureAndData(
+                        formId, self, proId, codeId, str(new_json["qst163"])
+                    )
+                    return {
+                        "Logs": get_assessment_logs(
+                            self.request, self.user.login, proId, codeId
+                        ),
+                        "proId": proId,
+                        "codeid": codeId,
+                        "formId": formId,
+                        "logId": logId,
+                        "Structure": structure,
+                        "Data": json.loads(data),
+                        "New": new_json,
+                        "PosibleValues": array,
+                    }
             else:
                 if formId == "registry":
                     _info = get_registry_logs(self.request, self.user.login, proId)
                     if not _info:
                         self.returnRawViewResult = True
-                        return HTTPFound(
-                            location=self.request.route_url(
-                                "dashboard"
-                            )
-                        )
-                    return {"Logs": _info,"proId":proId,"codeid":codeId,"formId":formId,"logId":logId}
+                        return HTTPFound(location=self.request.route_url("dashboard"))
+                    return {
+                        "Logs": _info,
+                        "proId": proId,
+                        "codeid": codeId,
+                        "formId": formId,
+                        "logId": logId,
+                    }
                 else:
-                    _info = get_assessment_logs(self.request, self.user.login, proId,codeId)
+                    _info = get_assessment_logs(
+                        self.request, self.user.login, proId, codeId
+                    )
                     if not _info:
                         self.returnRawViewResult = True
-                        return HTTPFound(
-                            location=self.request.route_url(
-                                "dashboard"
-                            )
-                        )
-                    return {"Logs": _info,"proId":proId, "codeid": codeId,"formId": formId, "logId": logId}
-
-
+                        return HTTPFound(location=self.request.route_url("dashboard"))
+                    return {
+                        "Logs": _info,
+                        "proId": proId,
+                        "codeid": codeId,
+                        "formId": formId,
+                        "logId": logId,
+                    }
 
 
 def getStructureAndData(formId, self, proId, code, filter):
@@ -225,8 +361,7 @@ def getStructureAndData(formId, self, proId, code, filter):
     # Add by Brandon
 
     path = os.path.join(
-        self.request.registry.settings["user.repository"],
-        *[self.user.login, proId]
+        self.request.registry.settings["user.repository"], *[self.user.login, proId]
     )
     if code == "":
         paths = ["db", formId, "create.xml"]
@@ -240,10 +375,7 @@ def getStructureAndData(formId, self, proId, code, filter):
     newStructure = []
     if formId == "ass":
         # print "*********************************"
-        dataOriginal = getQuestionsStructure(
-            self.user.login, proId, code, self.request
-        )
-
+        dataOriginal = getQuestionsStructure(self.user.login, proId, code, self.request)
 
         for originalData in dataOriginal:
             questInfo = {}
@@ -263,28 +395,46 @@ def getStructureAndData(formId, self, proId, code, filter):
             for col in quest["vars"]:
 
                 selected_contacts.append(
-                    col[0] + "$%*" + col[1] + "$%*" + col[2] + "$%*" + col[3] + "$%*" + col[4] + "$%*")
+                    col[0]
+                    + "$%*"
+                    + col[1]
+                    + "$%*"
+                    + col[2]
+                    + "$%*"
+                    + col[3]
+                    + "$%*"
+                    + col[4]
+                    + "$%*"
+                )
             aux_newStructure.append(quest["vars"])
 
         newStructure = aux_newStructure
-        where = "where qst163 = "+filter
+        where = "where qst163 = " + filter
     else:
         newStructure = dataXML
         newStructure.append(["qst162", "Package code", "string", "", ""])
-        where = "where qst162 = "+filter
+        where = "where qst162 = " + filter
 
         for col in newStructure:
-            selected_contacts.append(col[0]+"$%*"+col[1]+"$%*"+col[2]+"$%*"+col[3]+"$%*"+col[4]+"$%*")
+            selected_contacts.append(
+                col[0]
+                + "$%*"
+                + col[1]
+                + "$%*"
+                + col[2]
+                + "$%*"
+                + col[3]
+                + "$%*"
+                + col[4]
+                + "$%*"
+            )
 
-
-    fill = fillDataTable(
-        self, proId, formId, selected_contacts, path, code, where
-    )
+    fill = fillDataTable(self, proId, formId, selected_contacts, path, code, where)
 
     return newStructure, fill
 
 
-def convertJsonLog(formId, self,proId, newjson):
+def convertJsonLog(formId, self, proId, newjson):
     if formId == "registry":
         formId = "reg"
         code = ""
@@ -296,8 +446,7 @@ def convertJsonLog(formId, self,proId, newjson):
             raise HTTPNotFound()
 
     path = os.path.join(
-        self.request.registry.settings["user.repository"],
-        *[self.user.login, proId]
+        self.request.registry.settings["user.repository"], *[self.user.login, proId]
     )
     if code == "":
         paths = ["db", formId, "manifest.xml"]
@@ -315,11 +464,14 @@ def convertJsonLog(formId, self,proId, newjson):
             if x.attrib["mysqlcode"] != "qst162":
                 convertjson[x.attrib["mysqlcode"]] = newjson[x.attrib["xmlcode"]]
             else:
-                convertjson[x.attrib["mysqlcode"]] = newjson[x.attrib["xmlcode"]].split("-")[1]
+                convertjson[x.attrib["mysqlcode"]] = newjson[x.attrib["xmlcode"]].split(
+                    "-"
+                )[1]
 
     return convertjson
 
-def get_key_form_manifest(formId, self,proId, search,newjson):
+
+def get_key_form_manifest(formId, self, proId, search, newjson):
     if formId == "registry":
         formId = "reg"
         code = ""
@@ -331,8 +483,7 @@ def get_key_form_manifest(formId, self,proId, search,newjson):
             raise HTTPNotFound()
 
     path = os.path.join(
-        self.request.registry.settings["user.repository"],
-        *[self.user.login, proId]
+        self.request.registry.settings["user.repository"], *[self.user.login, proId]
     )
     if code == "":
         paths = ["db", formId, "manifest.xml"]

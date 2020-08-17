@@ -360,15 +360,16 @@ def getImportantFields(user, project, request):
         }
     )
 
-    sql = ("SELECT '' as ass_cod,question_code,question_overall,question_overallperf "
-           "FROM question,registry "
-           "WHERE question.question_id = registry.question_id "
-           "AND registry.user_name = '" + user + "' "
-           "AND registry.project_cod = '" + project + "' "
-           "AND (question_overall = 1 or question_overallperf = 1)"
+    sql = (
+        "SELECT '' as ass_cod,question_code,question_overall,question_overallperf "
+        "FROM question,registry "
+        "WHERE question.question_id = registry.question_id "
+        "AND registry.user_name = '" + user + "' "
+        "AND registry.project_cod = '" + project + "' "
+        "AND (question_overall = 1 or question_overallperf = 1)"
     )
     data = request.dbsession.execute(sql).fetchall()
-    result = getImportantFieldSameFunction(data, prjData, result,"REG")
+    result = getImportantFieldSameFunction(data, prjData, result, "REG")
 
     sql = (
         "SELECT assdetail.ass_cod,question_code,question_overall,question_overallperf "
@@ -385,6 +386,7 @@ def getImportantFields(user, project, request):
 
     return result
 
+
 def getImportantFieldSameFunction(data, prjData, result, form):
 
     for question in data:
@@ -395,7 +397,10 @@ def getImportantFieldSameFunction(data, prjData, result, form):
                 result.append(
                     {
                         "type": "OverallChar",
-                        "field": form+ question.ass_cod+ "_char_"+ question.question_code,
+                        "field": form
+                        + question.ass_cod
+                        + "_char_"
+                        + question.question_code,
                         "desc": "Over all characteristic positive",
                     }
                 )
@@ -455,6 +460,7 @@ def getImportantFieldSameFunction(data, prjData, result, form):
                 )
     return result
 
+
 def getSpecialFields(registry, assessments):
     result = []
     for field in registry["fields"]:
@@ -504,7 +510,7 @@ def getJSONResult(user, project, request):
         .first()
     )
     if res is not None:
-        #print(res.project_registration_and_analysis)
+        # print(res.project_registration_and_analysis)
         if res.project_regstatus == 1 or res.project_regstatus == 2:
             mappedData = mapFromSchema(res)
             for key, value in mappedData.items():
@@ -529,7 +535,6 @@ def getJSONResult(user, project, request):
                     "lkptables": getLookups(registryXML, user, project, request),
                     "fields": getFields(registryXML, "REG_geninfo"),
                 }
-
 
             assessments = (
                 request.dbsession.query(Assessment)
@@ -560,9 +565,9 @@ def getJSONResult(user, project, request):
                                 ),
                             }
                         )
-            #EDITED BY BRANDON#
+            # EDITED BY BRANDON#
             if res.project_registration_and_analysis == 1:
-                haveAssessments= True
+                haveAssessments = True
             # Get the package information but only for registered farmers
             data["packages"] = getPackageData(user, project, request)
             if haveAssessments:

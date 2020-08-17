@@ -14,7 +14,7 @@ from ...models import (
     Products,
     Prjalia,
     RegistryJsonLog,
-    AssessmentJsonLog
+    AssessmentJsonLog,
 )
 from ..db.question import getQuestionOptions
 import datetime, os, glob
@@ -54,7 +54,9 @@ def addQuestionsToAssessment(user, project, assessment, request):
     data["ass_cod"] = assessment
     data["section_id"] = 1
     data["section_name"] = request.translate("Farmer selection")
-    data["section_content"] = request.translate("List of farmers included in the registration form")
+    data["section_content"] = request.translate(
+        "List of farmers included in the registration form"
+    )
     data["section_order"] = 1
     data["section_private"] = 1
     newAsssection = Asssection(**data)
@@ -88,7 +90,7 @@ def addQuestionsToAssessment(user, project, assessment, request):
             .filter(Question.user_name == "bioversity")
             .filter(Question.question_reqinasses == 1)
             .filter(Question.question_visible == 1)
-            .filter(Question.question_code !="QST163")
+            .filter(Question.question_code != "QST163")
             .all()
         )
         order = 1
@@ -610,7 +612,7 @@ def getProjectProgress(user, project, request):
         except:
             submissions = 0
 
-        errorsCount =(
+        errorsCount = (
             request.dbsession.query(RegistryJsonLog)
             .filter(RegistryJsonLog.user_name == user)
             .filter(RegistryJsonLog.project_cod == project)
@@ -667,11 +669,11 @@ def getProjectProgress(user, project, request):
 
             errorsCount = (
                 request.dbsession.query(AssessmentJsonLog)
-                    .filter(AssessmentJsonLog.user_name == user)
-                    .filter(AssessmentJsonLog.project_cod == project)
-                    .filter(AssessmentJsonLog.ass_cod == assessment.ass_cod)
-                    .filter(AssessmentJsonLog.status == 1)
-                    .count()
+                .filter(AssessmentJsonLog.user_name == user)
+                .filter(AssessmentJsonLog.project_cod == project)
+                .filter(AssessmentJsonLog.ass_cod == assessment.ass_cod)
+                .filter(AssessmentJsonLog.status == 1)
+                .count()
             )
 
             assessmentArray.append(
@@ -704,7 +706,7 @@ def getProjectProgress(user, project, request):
                     "asstotal": 0,
                     "assperc": 0,
                     "submissions": submissions,
-                    "errors" :0,
+                    "errors": 0,
                     "lastass": request.translate("Without submissions"),
                 }
             )

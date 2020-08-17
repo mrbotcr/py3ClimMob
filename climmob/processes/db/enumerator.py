@@ -31,11 +31,13 @@ def searchEnumerator(user, request):
         result.append(enum)
     return result
 
+
 def countEnumerators(user, request):
     result = (
         request.dbsession.query(Enumerator).filter(Enumerator.user_name == user).count()
     )
     return result
+
 
 def enumeratorExists(user, id, request):
     result = (
@@ -179,7 +181,7 @@ def deleteEnumerator(user, enumerator, request):
         ).delete()
         return True, ""
     except Exception as e:
-        #print(str(e))
+        # print(str(e))
         return False, e
 
 

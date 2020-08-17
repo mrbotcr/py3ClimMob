@@ -92,7 +92,11 @@ def exitsAssessmentGroup(data, self):
 def projectAsessmentStatus(user, project, ass_cod, request):
     result = (
         request.dbsession.query(Assessment)
-        .filter(Assessment.user_name == user, Assessment.project_cod == project, Assessment.ass_cod == ass_cod)
+        .filter(
+            Assessment.user_name == user,
+            Assessment.project_cod == project,
+            Assessment.ass_cod == ass_cod,
+        )
         .first()
     )
     if result:

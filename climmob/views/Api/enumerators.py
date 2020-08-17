@@ -135,7 +135,9 @@ class updateEnumerator_view(apiView):
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is no field agent with that identifier."),
+                            body=self._(
+                                "There is no field agent with that identifier."
+                            ),
                         )
                         return response
                 else:
@@ -219,7 +221,9 @@ class updatePasswordEnumerator_view(apiView):
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is no field agent with that identifier."),
+                            body=self._(
+                                "There is no field agent with that identifier."
+                            ),
                         )
                         return response
                 else:

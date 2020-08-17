@@ -66,7 +66,7 @@ class newalias_view(privateView):
                                     badalias += alias + "\n"
 
                     if badalias == "":
-                        redirect=True
+                        redirect = True
                         # self.returnRawViewResult = True
                         # return HTTPFound(
                         #     location=self.request.route_url(
@@ -91,7 +91,7 @@ class newalias_view(privateView):
             "formdata": self.decodeDict(formdata),
             "error_summary": error_summary,
             "tech": data,
-            "redirect": redirect
+            "redirect": redirect,
         }
 
 
@@ -175,5 +175,5 @@ class modifyalias_view(privateView):
             "formdata": self.decodeDict(formdata),
             "error_summary": error_summary,
             "tech": data2,
-            "redirect": redirect
+            "redirect": redirect,
         }

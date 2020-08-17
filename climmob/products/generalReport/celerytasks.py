@@ -7,8 +7,8 @@ from docxtpl import DocxTemplate, InlineImage
 from docx.shared import Mm
 from datetime import datetime
 
-@celeryApp.task(base=celeryTask, soft_time_limit=7200, time_limit=7200)
 
+@celeryApp.task(base=celeryTask, soft_time_limit=7200, time_limit=7200)
 def createGeneralReport(locale, user, path, project, projectDetails):
     if os.path.exists(path):
         sh.rmtree(path)
@@ -38,14 +38,17 @@ def createGeneralReport(locale, user, path, project, projectDetails):
     data = {
         "date": datetime.today().strftime("%d-%m-%Y"),
         "dataworking": projectDetails,
-        "logo": InlineImage(doc, os.path.join(PATH2, "template/prueba.png"), width=Mm(100)),
-        "_": _
+        "logo": InlineImage(
+            doc, os.path.join(PATH2, "template/prueba.png"), width=Mm(100)
+        ),
+        "_": _,
     }
 
     doc.render(data)
     doc.save(pathoutput + "/" + user + "_" + project + "_general_report.docx")
 
     return ""
+
 
 """def createDocumentForm(locale, user, path, projectid, formGroupsAndQuestions, form, code, packages):
     if os.path.exists(path):

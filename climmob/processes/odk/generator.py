@@ -213,7 +213,7 @@ def createDatabase(xlsxFile, outputDir, schema, keyVar, preFix, dropSchema, requ
 
 
 class ODKExcelFile(object):
-    def __init__(self, xlsxFile, formID, formLabel,formInstance):
+    def __init__(self, xlsxFile, formID, formLabel, formInstance):
         self.xlsxFile = xlsxFile
         self.root = etree.Element("root")
         self.log = logging.getLogger(__name__)
@@ -334,7 +334,7 @@ class ODKExcelFile(object):
         inGroup=None,
         inRepeat=None,
         constraint="",
-        calculation = ""
+        calculation="",
     ):
         options = {
             1: "text",
@@ -364,7 +364,7 @@ class ODKExcelFile(object):
             25: "simserial",
             26: "phonenumber",
             27: "text",
-            28: "calculate"
+            28: "calculate",
         }
         ODKType = options[type]
 
@@ -492,7 +492,16 @@ class ODKExcelFile(object):
 
 
 def generateODKFile(
-    user, project, xlsxFile, formID, formLabel,formInstance, groups, questions, numComb, request
+    user,
+    project,
+    xlsxFile,
+    formID,
+    formLabel,
+    formInstance,
+    groups,
+    questions,
+    numComb,
+    request,
 ):
     excelFile = ODKExcelFile(xlsxFile, formID, formLabel, formInstance)
 
@@ -554,7 +563,17 @@ def generateODKFile(
                         farmer["farmer_name"],
                     )
                 if question.question_code == "QST163":
-                    excelFile.addQuestion("cal_"+question.question_code,"",28,inGroup="grp_" + str(question.section_id),calculation="jr:choice-name(${"+question.question_code+"}, '${"+question.question_code+"}')")
+                    excelFile.addQuestion(
+                        "cal_" + question.question_code,
+                        "",
+                        28,
+                        inGroup="grp_" + str(question.section_id),
+                        calculation="jr:choice-name(${"
+                        + question.question_code
+                        + "}, '${"
+                        + question.question_code
+                        + "}')",
+                    )
 
             if question.question_dtype == 9:
                 if numComb == 2:
@@ -749,7 +768,7 @@ def generateRegistryPreview(user, projectid, request):
 
     prjdata = getProjectData(user, projectid, request)
     label = request.translate("Registration-") + prjdata["project_name"]
-    formInstance = "concat('"+projectid+"_Regis_',${farmername})"
+    formInstance = "concat('" + projectid + "_Regis_',${farmername})"
     generateODKFile(
         user,
         projectid,

@@ -93,7 +93,9 @@ def register_products(config):
     addMetadataToProduct(qrProduct, "author", "Brandon Madriz")
     addMetadataToProduct(qrProduct, "version", "1.0")
     addMetadataToProduct(
-        qrProduct, "Licence", "Copyright 2020, Alliance of Bioversity International and CIAT"
+        qrProduct,
+        "Licence",
+        "Copyright 2020, Alliance of Bioversity International and CIAT",
     )
     products.append(qrProduct)
 
@@ -102,7 +104,9 @@ def register_products(config):
     addMetadataToProduct(packagesProduct, "author", "Brandon Madriz")
     addMetadataToProduct(packagesProduct, "version", "1.0")
     addMetadataToProduct(
-        packagesProduct, "Licence", "Copyright 2020, Alliance of Bioversity International and CIAT"
+        packagesProduct,
+        "Licence",
+        "Copyright 2020, Alliance of Bioversity International and CIAT",
     )
     products.append(packagesProduct)
 
@@ -111,7 +115,9 @@ def register_products(config):
     addMetadataToProduct(dataProduct, "author", "Brandon Madriz")
     addMetadataToProduct(dataProduct, "version", "1.0")
     addMetadataToProduct(
-        dataProduct, "Licence", "Copyright 2020, Alliance of Bioversity International and CIAT"
+        dataProduct,
+        "Licence",
+        "Copyright 2020, Alliance of Bioversity International and CIAT",
     )
     products.append(dataProduct)
 
@@ -120,7 +126,9 @@ def register_products(config):
     addMetadataToProduct(cardsProduct, "author", "Brandon Madriz")
     addMetadataToProduct(cardsProduct, "version", "1.0")
     addMetadataToProduct(
-        cardsProduct, "Licence", "Copyright 2020, Alliance of Bioversity International and CIAT"
+        cardsProduct,
+        "Licence",
+        "Copyright 2020, Alliance of Bioversity International and CIAT",
     )
     products.append(cardsProduct)
 
@@ -129,7 +137,9 @@ def register_products(config):
     addMetadataToProduct(colorsProduct, "author", "Brandon Madriz")
     addMetadataToProduct(colorsProduct, "version", "1.0")
     addMetadataToProduct(
-        colorsProduct, "Licence", "Copyright 2020, Alliance of Bioversity International and CIAT"
+        colorsProduct,
+        "Licence",
+        "Copyright 2020, Alliance of Bioversity International and CIAT",
     )
     products.append(colorsProduct)
 
@@ -138,7 +148,9 @@ def register_products(config):
     addMetadataToProduct(analysysProduct, "author", "Brandon Madriz")
     addMetadataToProduct(analysysProduct, "version", "1.0")
     addMetadataToProduct(
-        analysysProduct, "Licence", "Copyright 2020, Alliance of Bioversity International and CIAT"
+        analysysProduct,
+        "Licence",
+        "Copyright 2020, Alliance of Bioversity International and CIAT",
     )
     products.append(analysysProduct)
 
@@ -147,7 +159,9 @@ def register_products(config):
     addMetadataToProduct(fieldagents, "author", "Brandon Madriz")
     addMetadataToProduct(fieldagents, "version", "1.0")
     addMetadataToProduct(
-        fieldagents, "Licence", "Copyright 2020, Alliance of Bioversity International and CIAT"
+        fieldagents,
+        "Licence",
+        "Copyright 2020, Alliance of Bioversity International and CIAT",
     )
     products.append(fieldagents)
 
@@ -156,25 +170,36 @@ def register_products(config):
     addMetadataToProduct(datacsv, "author", "Brandon Madriz")
     addMetadataToProduct(datacsv, "version", "1.0")
     addMetadataToProduct(
-        datacsv, "Licence", "Copyright 2020, Alliance of Bioversity International and CIAT"
+        datacsv,
+        "Licence",
+        "Copyright 2020, Alliance of Bioversity International and CIAT",
     )
     products.append(datacsv)
 
     # FORM
-    documentform = addProduct("documentform", "Create a document pdf to collect information.")
+    documentform = addProduct(
+        "documentform", "Create a document pdf to collect information."
+    )
     addMetadataToProduct(documentform, "author", "Brandon Madriz")
     addMetadataToProduct(documentform, "version", "1.0")
     addMetadataToProduct(
-        documentform, "Licence", "Copyright 2020, Alliance of Bioversity International and CIAT"
+        documentform,
+        "Licence",
+        "Copyright 2020, Alliance of Bioversity International and CIAT",
     )
     products.append(documentform)
 
     # GENERAL REPORT
-    generalreport = addProduct("generalreport", "Create a document docx with the information in the project step by step.")
+    generalreport = addProduct(
+        "generalreport",
+        "Create a document docx with the information in the project step by step.",
+    )
     addMetadataToProduct(generalreport, "author", "Brandon Madriz")
     addMetadataToProduct(generalreport, "version", "1.0")
     addMetadataToProduct(
-        generalreport, "Licence", "Copyright 2020, Alliance of Bioversity International and CIAT"
+        generalreport,
+        "Licence",
+        "Copyright 2020, Alliance of Bioversity International and CIAT",
     )
     products.append(generalreport)
 

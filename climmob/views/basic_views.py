@@ -21,6 +21,7 @@ from time import time
 import smtplib
 import datetime
 
+
 class home_view(publicView):
     def processView(self):
 

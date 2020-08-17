@@ -103,6 +103,7 @@ def deleteOption(id_question, value, request):
     except Exception as e:
         return False, str(e)
 
+
 def deleteAllOptionsForQuestion(id_question, request):
     try:
         request.dbsession.query(Qstoption).filter(
@@ -150,11 +151,12 @@ def UserQuestion(user, request):
         result.append(data)
     return result
 
+
 def UserQuestionMoreBioversity(user, request):
 
     mappedData = mapFromSchema(
         request.dbsession.query(Question)
-        .filter(or_(Question.user_name == user, Question.user_name == 'bioversity'))
+        .filter(or_(Question.user_name == user, Question.user_name == "bioversity"))
         .filter(Question.question_visible == 1)
         .order_by(Question.user_name, Question.question_dtype)
         .all()
@@ -179,6 +181,7 @@ def UserQuestionMoreBioversity(user, request):
 
         result.append(data)
     return result
+
 
 def QuestionsOptions(user, request):
     res = []

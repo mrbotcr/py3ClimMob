@@ -82,7 +82,7 @@ def createQR(path, projectid, packages):
     veces = 0
     for package in packages:
 
-        qr = create_qr(package,projectid,pathqr)
+        qr = create_qr(package, projectid, pathqr)
 
         # myCode = QR(data=data, pixel_size=60)
         # myCode.encode()
@@ -184,22 +184,23 @@ def createQR(path, projectid, packages):
 
     return ""
 
+
 def create_qr(package, projectid, pathqr, all=True):
     packageData = ""
 
     finalData = (
-            str(package["user_fullname"])
-            + "|"
-            + str(package["package_id"])
-            + "|"
-            + str(package["project_pi"])
-            + "|"
-            + str(package["project_piemail"])
-            + "|"
-            + str(package["project_numobs"])
-            + "|"
-            + str(package["project_numcom"])
-            + "|"
+        str(package["user_fullname"])
+        + "|"
+        + str(package["package_id"])
+        + "|"
+        + str(package["project_pi"])
+        + "|"
+        + str(package["project_piemail"])
+        + "|"
+        + str(package["project_numobs"])
+        + "|"
+        + str(package["project_numcom"])
+        + "|"
     )
 
     for combination in package["combs"]:
@@ -219,15 +220,20 @@ def create_qr(package, projectid, pathqr, all=True):
         if packageData == "":
             packageData += chr(64 + combination["comb_order"]) + "[p]" + options
         else:
-            packageData += (
-                    "~" + chr(64 + combination["comb_order"]) + "[p]" + options
-            )
+            packageData += "~" + chr(64 + combination["comb_order"]) + "[p]" + options
 
     finalData += technologies + "|" + packageData
 
     # QR
     compressed = bz2.compress(finalData.encode())
-    data = str(package["user_name"])+ "-"+ str(package["package_id"])+ "-"+ projectid+ "~"
+    data = (
+        str(package["user_name"])
+        + "-"
+        + str(package["package_id"])
+        + "-"
+        + projectid
+        + "~"
+    )
     if all:
         data += str(base64.b64encode(compressed))
 

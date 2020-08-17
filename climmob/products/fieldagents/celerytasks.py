@@ -16,7 +16,7 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 
 @celeryApp.task(base=celeryTask, soft_time_limit=7200, time_limit=7200)
 def createFieldAgentsReport(locale, url, user, path, projectid, fieldagents):
-    #print("entraaaaaa tarea")
+    # print("entraaaaaa tarea")
     parts = __file__.split("/products/")
     this_file_path = parts[0] + "/locale"
     try:
@@ -85,9 +85,13 @@ def createFieldAgentsReport(locale, url, user, path, projectid, fieldagents):
         "Password": _("Password"),
         "QR": _("QR"),
         "fieldagents": fieldagents,
-        "URLInstruction1": _("To manually configure the ODK Collect server, use the following URL"),
+        "URLInstruction1": _(
+            "To manually configure the ODK Collect server, use the following URL"
+        ),
         "URL": url,
-        "Instruction2": _("Use the respective username and password shown in the following table")
+        "Instruction2": _(
+            "Use the respective username and password shown in the following table"
+        ),
     }
 
     env = Environment(

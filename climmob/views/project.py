@@ -10,7 +10,7 @@ from ..processes import (
     deleteProject,
     changeTheStateOfCreateComb,
     getCountryList,
-    addToLog
+    addToLog,
 )
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 import json
@@ -21,6 +21,7 @@ from pyramid.response import FileResponse
 import uuid
 import os
 import datetime
+
 
 class newProject_view(privateView):
     def processView(self):
@@ -50,10 +51,11 @@ class newProject_view(privateView):
                 dataworking["project_lat"] = ""
                 dataworking["project_lon"] = ""
 
-                dataworking["project_registration_and_analysis"] = int(dataworking["project_registration_and_analysis"] )
+                dataworking["project_registration_and_analysis"] = int(
+                    dataworking["project_registration_and_analysis"]
+                )
 
                 dataworking["project_localvariety"] = 1
-
 
                 if int(dataworking["project_numobs"]) > 0:
                     if dataworking["project_cod"] != "":
@@ -65,7 +67,13 @@ class newProject_view(privateView):
                             if not added:
                                 error_summary = {"dberror": message}
                             else:
-                                addToLog(self.user.login,"PRF","Created a new project",datetime.datetime.now(),self.request)
+                                addToLog(
+                                    self.user.login,
+                                    "PRF",
+                                    "Created a new project",
+                                    datetime.datetime.now(),
+                                    self.request,
+                                )
                                 self.request.session.flash(
                                     self._("The project was created successfully")
                                 )
@@ -133,7 +141,9 @@ class modifyProject_view(privateView):
                     data["project_numobs"] = cdata["project_numobs"]
                     data["project_numcom"] = cdata["project_numcom"]
 
-                data["project_registration_and_analysis"] = int(data["project_registration_and_analysis"] )
+                data["project_registration_and_analysis"] = int(
+                    data["project_registration_and_analysis"]
+                )
 
                 data["project_localvariety"] = 1
 
@@ -157,11 +167,7 @@ class modifyProject_view(privateView):
                         self._("The project was modified successfully")
                     )
                     self.returnRawViewResult = True
-                    return HTTPFound(
-                        location=self.request.route_url(
-                            "dashboard"
-                        )
-                    )
+                    return HTTPFound(location=self.request.route_url("dashboard"))
 
                 if int(data["project_localvariety"]) == 1:
                     data["project_localvariety"] = "on"

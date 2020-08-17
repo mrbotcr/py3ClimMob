@@ -11,18 +11,20 @@ __all__ = [
     "projectCreateCombinations",
     "projectCreatePackages",
     "getTech",
-    "getCombinationsUsableInProject"
+    "getCombinationsUsableInProject",
 ]
+
 
 def getCombinationsUsableInProject(user, project, request):
     data = (
-            request.dbsession.query(Prjcombination)
-            .filter(Prjcombination.user_name == user)
-            .filter(Prjcombination.project_cod == project)
-            .filter(Prjcombination.comb_usable == 1)
-            .all()
-        )
+        request.dbsession.query(Prjcombination)
+        .filter(Prjcombination.user_name == user)
+        .filter(Prjcombination.project_cod == project)
+        .filter(Prjcombination.comb_usable == 1)
+        .all()
+    )
     return data
+
 
 def projectHasCombinations(user, project, request):
     data = (

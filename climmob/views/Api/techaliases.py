@@ -176,7 +176,9 @@ class updateAlias_view(apiView):
                         else:
                             response = Response(
                                 status=401,
-                                body=self._("You do not have a technology option with this ID."),
+                                body=self._(
+                                    "You do not have a technology option with this ID."
+                                ),
                             )
                             return response
                     else:

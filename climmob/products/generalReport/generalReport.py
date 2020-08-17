@@ -22,7 +22,7 @@ def create_general_report(request, locale, user, project, projectDetails):
         user,
         project,
         "generalreport",
-        user+"_"+project+"_general_report.docx",
+        user + "_" + project + "_general_report.docx",
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         "create_general_report",
         task.id,

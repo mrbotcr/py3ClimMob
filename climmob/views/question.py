@@ -22,11 +22,12 @@ from ..processes import (
     getCategories,
     updateCategory,
     deleteCategory,
-    getCategoriesParents
+    getCategoriesParents,
 )
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 import re
 import json
+
 
 class deleteQuestion_view(privateView):
     def processView(self):
@@ -69,7 +70,6 @@ class modifyQuestion_view(privateView):
             formdata["question_requiredvalue"] = "on"
         else:
             formdata["question_requiredvalue"] = "off"
-
 
         if self.request.method == "POST":
             formdata = self.getPostDict()
@@ -430,7 +430,6 @@ class newQuestion_view(privateView):
         return {}
 
 
-
 def actionsInquestion(self, formdata):
 
     if "question_id" in formdata.keys():
@@ -447,9 +446,7 @@ def actionsInquestion(self, formdata):
 
     formdata["question_dtype"] = int(formdata["question_dtype"])
     formdata["user_name"] = self.user.login
-    formdata["question_code"] = re.sub(
-        "[^A-Za-z0-9\-]+", "", formdata["question_code"]
-    )
+    formdata["question_code"] = re.sub("[^A-Za-z0-9\-]+", "", formdata["question_code"])
 
     try:
         category = formdata["question_group"].split("[*$%&]")
@@ -467,7 +464,9 @@ def actionsInquestion(self, formdata):
         if perstmt.find("{{option}}") < 0:
             return {
                 "result": "error",
-                "error": self._("The performance statement must have the wildcard {{option}}")
+                "error": self._(
+                    "The performance statement must have the wildcard {{option}}"
+                ),
             }
 
     if (
@@ -475,19 +474,17 @@ def actionsInquestion(self, formdata):
         and formdata["question_desc"] != ""
         and formdata["question_dtype"] != ""
     ):
-        if not questionExists(
-            self.user.login, formdata["question_code"], self.request
-        ):
+        if not questionExists(self.user.login, formdata["question_code"], self.request):
             if formdata["action"] == "insert":
                 add, idorerror = addQuestion(formdata, self.request)
                 if not add:
-                    return {
-                        "result": "error",
-                        "error": idorerror
-                    }
+                    return {"result": "error", "error": idorerror}
                 else:
 
-                    if int(formdata["question_dtype"]) == 5 or int(formdata["question_dtype"]) == 6:
+                    if (
+                        int(formdata["question_dtype"]) == 5
+                        or int(formdata["question_dtype"]) == 6
+                    ):
                         optionValues = json.loads(formdata["optionsValues"])
                         cont = 1
                         for option in optionValues:
@@ -496,26 +493,23 @@ def actionsInquestion(self, formdata):
                             cont = cont + 1
                             addded, resp = addOptionToQuestion(option, self.request)
                             if not addded:
-                                return {
-                                    "result": "error",
-                                    "error": resp
-                                }
+                                return {"result": "error", "error": resp}
 
                     return {
-                            "result": "success",
-                            "success": self._("The question was successfully added")
-                        }
+                        "result": "success",
+                        "success": self._("The question was successfully added"),
+                    }
         else:
             if formdata["action"] == "update":
                 updated, idorerror = updateQuestion(formdata, self.request)
                 if not updated:
-                    return {
-                        "result": "error",
-                        "error": idorerror
-                    }
+                    return {"result": "error", "error": idorerror}
                 else:
 
-                    if int(formdata["question_dtype"]) == 5 or int(formdata["question_dtype"]) == 6:
+                    if (
+                        int(formdata["question_dtype"]) == 5
+                        or int(formdata["question_dtype"]) == 6
+                    ):
                         optionValues = json.loads(formdata["optionsValues"])
                         cont = 1
                         for option in optionValues:
@@ -524,25 +518,18 @@ def actionsInquestion(self, formdata):
                             cont = cont + 1
                             addded, resp = addOptionToQuestion(option, self.request)
                             if not addded:
-                                return {
-                                    "result": "error",
-                                    "error": resp
-                                }
+                                return {"result": "error", "error": resp}
                     return {
                         "result": "success",
-                        "success": self._("The question was successfully modified")
+                        "success": self._("The question was successfully modified"),
                     }
             else:
                 return {
                     "result": "error",
-                    "error": self._("There is another question with the same code.")
+                    "error": self._("There is another question with the same code."),
                 }
     else:
-        return {
-            "result": "error",
-            "error": self._("Incomplete information.")
-        }
-
+        return {"result": "error", "error": self._("Incomplete information.")}
 
 
 class questionsActions_view(privateView):
@@ -563,6 +550,7 @@ class questionsActions_view(privateView):
 
         return {}
 
+
 class qlibrary_view(privateView):
     def processView(self):
 
@@ -571,10 +559,10 @@ class qlibrary_view(privateView):
         regularDict = {
             "UserQuestion": UserQuestionMoreBioversity(user_name, self.request),
             "showing": user_name,
-            #"QuestionsOptions": QuestionsOptions(self.user.login, self.request),
-            #"ClimMobQuestionsOptions": QuestionsOptions("bioversity", self.request),
-            "Categories": getCategoriesParents(self.user.login,self.request),
-            #"editable": True,
+            # "QuestionsOptions": QuestionsOptions(self.user.login, self.request),
+            # "ClimMobQuestionsOptions": QuestionsOptions("bioversity", self.request),
+            "Categories": getCategoriesParents(self.user.login, self.request),
+            # "editable": True,
             "allCategories": getCategories(user_name, self.request),
         }
 

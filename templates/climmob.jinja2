@@ -1,0 +1,126 @@
+###
+# app configuration
+# http://docs.pylonsproject.org/projects/pyramid/en/latest/narr/environment.html
+###
+
+[app:climmob]
+use = egg:climmob
+
+pyramid.reload_templates = true
+pyramid.debug_authorization = false
+pyramid.debug_notfound = false
+pyramid.debug_routematch = false
+pyramid.default_locale_name = en
+pyramid.includes =
+    pyramid_debugtoolbar
+
+fanstatic.bottom = true
+fanstatic.debug = true
+fanstatic.publisher_signature = fanstatic
+fanstatic.use_application_uri = true
+
+sqlalchemy.url = mysql+mysqlconnector://{{ mysql_user_name }}:{{ mysql_user_password }}@{{ mysql_host }}/climmobv4?charset=utf8
+repository.url = mysql+mysqlconnector://{{ mysql_user_name }}:{{ mysql_user_password }}@{{ mysql_host }}/climmobv4?charset=utf8
+schema.prefix = free
+
+celery.broker = redis://localhost:6379/5
+celery.backend = redis://localhost:6379/5
+celery.taskname = clmtask
+
+
+#climmob.plugins = examplePlugin
+
+#This is used by the authoization framework module to encrypt comunications
+auth.secret = {{ auth_secret }}
+#Opaque is a permanet key passes thorugh a Digest Authorization
+auth.opaque = {{ auth_opaque }}
+aes.key = {{ aes_key }}
+auth.realm = odkuser@climmob.net
+
+#ODK Settings
+user.repository = {{ repository_path }}
+odktools.path = {{ odktools_path }}
+
+odktools.mysql.host = {{ mysql_host }}
+odktools.mysql.port = {{ mysql_port }}
+odktools.mysql.user = {{ mysql_user_name }}
+odktools.mysql.password = {{ mysql_user_password }}
+
+mysql.cnf = %(here)s/mysql.cnf
+r.scripts = %(here)s/r
+r.random.script = %(here)s/r/Random.R
+
+# email.server = smtp.gmail.com
+# email.user = bioversityclimmob@gmail.com
+# email.password = bioversity2015
+# email.from = bioversityclimmob@gmail.com
+
+# By default, the toolbar only appears for clients from IP addresses
+# '127.0.0.1' and '::1'.
+# debugtoolbar.hosts = 127.0.0.1 ::1
+
+###
+# wsgi server configuration
+###
+
+[composite:main]
+use = egg:rutter#urlmap
+/ = climmob
+
+[server:main]
+use = egg:gunicorn
+host = {{ climmob_host }}
+port = {{ climmob_port }}
+workers = 1
+worker_class = gevent
+capture_output = {{ capture_output }}
+proxy_protocol = True
+daemon = {{ daemon }}
+pidfile = {{ pid_file }}
+errorlog = {{ error_log_file }}
+forwarded_allow_ips = {{ forwarded_allow_ip }}
+
+###
+# logging configuration
+# http://docs.pylonsproject.org/projects/pyramid/en/latest/narr/logging.html
+###
+
+[loggers]
+keys = root, climmob, sqlalchemy, composite
+
+[handlers]
+keys = console
+
+[formatters]
+keys = generic
+
+[logger_root]
+level = WARN
+handlers = console
+
+[logger_climmob]
+level = WARN
+handlers =
+qualname = climmob
+
+[logger_composite]
+level = WARN
+handlers =
+qualname = composite
+
+[logger_sqlalchemy]
+level = WARN
+handlers =
+qualname = sqlalchemy.engine
+# "level = INFO" logs SQL queries.
+# "level = DEBUG" logs SQL queries and results.
+# "level = WARN" logs neither.  (Recommended for production systems.)
+
+[handler_console]
+class = StreamHandler
+args = (sys.stderr,)
+level = NOTSET
+formatter = generic
+
+[formatter_generic]
+format = %(asctime)s %(levelname)-5.5s [%(name)s:%(lineno)s][%(threadName)s] %(message)s

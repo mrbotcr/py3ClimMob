@@ -8,7 +8,7 @@ __all__ = [
     "getCategories",
     "updateCategory",
     "deleteCategory",
-    "getCategoriesParents"
+    "getCategoriesParents",
 ]
 
 
@@ -54,18 +54,20 @@ def getCategories(user, request):
 
     return data
 
+
 def getCategoriesParents(user, request):
     sql = (
-            "select qstgroups.user_name,qstgroups.qstgroups_id, qstgroups_name,(select count(question.question_id)from question where question.qstgroups_id = qstgroups.qstgroups_id "
-            "and question.qstgroups_user = qstgroups.user_name) as count "
-            "from qstgroups where (qstgroups.user_name = '"
-            + user
-            + "' or qstgroups.user_name = 'bioversity') and qstgroups_id not in (select distinct(group_id) from qstsubgroups where parent_username='bioversity')"
+        "select qstgroups.user_name,qstgroups.qstgroups_id, qstgroups_name,(select count(question.question_id)from question where question.qstgroups_id = qstgroups.qstgroups_id "
+        "and question.qstgroups_user = qstgroups.user_name) as count "
+        "from qstgroups where (qstgroups.user_name = '"
+        + user
+        + "' or qstgroups.user_name = 'bioversity') and qstgroups_id not in (select distinct(group_id) from qstsubgroups where parent_username='bioversity')"
     )
 
     data = request.dbsession.execute(sql).fetchall()
 
     return data
+
 
 def updateCategory(user, data, request):
     mappedData = mapToSchema(Question_group, data)

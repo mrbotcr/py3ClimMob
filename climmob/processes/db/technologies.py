@@ -15,7 +15,7 @@ __all__ = [
     "technologyExist",
     "isTechnologyAssigned",
     "getTechnologyByName",
-    "getUserTechById"
+    "getUserTechById",
 ]
 
 
@@ -54,7 +54,8 @@ def getUserTechs(user, request):
         )
     return res
 
-def getUserTechById(tech_id,request):
+
+def getUserTechById(tech_id, request):
 
     res = []
     result = mapFromSchema(
@@ -62,9 +63,9 @@ def getUserTechById(tech_id,request):
             Technology,
             request.dbsession.query(func.count(Techalia.tech_id))
             .filter(Technology.tech_id == Techalia.tech_id)
-
             .label("quantity"),
-        ).filter(Technology.tech_id == tech_id)
+        )
+        .filter(Technology.tech_id == tech_id)
         .one()
     )
 
@@ -78,6 +79,7 @@ def getUserTechById(tech_id,request):
     result["found"] = res3.found
 
     return result
+
 
 def findTechInLibrary(data, request):
     result = (

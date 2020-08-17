@@ -73,7 +73,6 @@ def getQuestionsByType(user, project, request):
             .all()
         )
 
-
         for section in sections:
 
             questions = mapFromSchema(
@@ -93,13 +92,15 @@ def getQuestionsByType(user, project, request):
                     .first()
                 )
 
-                dictName, dictQues = addQuestionToDictionary(questionData, numComb, assessment)
+                dictName, dictQues = addQuestionToDictionary(
+                    questionData, numComb, assessment
+                )
 
-                if dictName !="":
+                if dictName != "":
                     dic[dictName].append(dictQues)
 
-
     return dic, _assessments
+
 
 def addQuestionToDictionary(questionData, numComb, assessment=None):
     questInfo = {}
@@ -117,7 +118,7 @@ def addQuestionToDictionary(questionData, numComb, assessment=None):
 
         return "Explanatory", questInfo
 
-    if ( questionData["question_dtype"] == 9 or questionData["question_dtype"] == 10 ):
+    if questionData["question_dtype"] == 9 or questionData["question_dtype"] == 10:
 
         questInfo["name"] = questionData["question_desc"]
         questInfo["id"] = questionData["question_id"]
@@ -129,9 +130,7 @@ def addQuestionToDictionary(questionData, numComb, assessment=None):
             if numComb == 2:
                 varsData = {}
                 varsData["name"] = (
-                        code
-                        + "_char_"
-                        + questionData["question_code"].lower()
+                    code + "_char_" + questionData["question_code"].lower()
                 )
                 questInfo["vars"].append(varsData)
 
@@ -139,20 +138,14 @@ def addQuestionToDictionary(questionData, numComb, assessment=None):
                 varsData = {}
                 # The possitive
                 varsData["name"] = (
-                        code
-                        + "_char_"
-                        + questionData["question_code"].lower()
-                        + "_pos"
+                    code + "_char_" + questionData["question_code"].lower() + "_pos"
                 )
                 questInfo["vars"].append(varsData)
 
                 varsData = {}
                 # The negative
                 varsData["name"] = (
-                        code
-                        + "_char_"
-                        + questionData["question_code"].lower()
-                        + "_neg"
+                    code + "_char_" + questionData["question_code"].lower() + "_neg"
                 )
                 questInfo["vars"].append(varsData)
 
@@ -160,11 +153,11 @@ def addQuestionToDictionary(questionData, numComb, assessment=None):
                 for opt in range(0, numComb):
                     varsData = {}
                     varsData["name"] = (
-                            code
-                            + "_char_"
-                            + questionData["question_code"].lower()
-                            + "_stmt_"
-                            + str(opt + 1)
+                        code
+                        + "_char_"
+                        + questionData["question_code"].lower()
+                        + "_stmt_"
+                        + str(opt + 1)
                     )
                     questInfo["vars"].append(varsData)
 
@@ -174,17 +167,18 @@ def addQuestionToDictionary(questionData, numComb, assessment=None):
             for opt in range(0, numComb):
                 varsData = {}
                 varsData["name"] = (
-                        code
-                        + "_perf_"
-                        + questionData["question_code"].lower()
-                        + "_"
-                        + str(opt + 1)
+                    code
+                    + "_perf_"
+                    + questionData["question_code"].lower()
+                    + "_"
+                    + str(opt + 1)
                 )
                 questInfo["vars"].append(varsData)
 
             return "Performance", questInfo
 
-    return "",""
+    return "", ""
+
 
 def getQuestionsStructure(user, project, ass_cod, request):
     data = []

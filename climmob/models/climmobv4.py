@@ -703,20 +703,28 @@ class Question_group(Base):
 
     user = relationship(u"User")
 
+
 class Question_subgroup(Base):
     __tablename__ = "qstsubgroups"
     __table_args__ = (
-        ForeignKeyConstraint(["group_username","group_id",], [u"qstgroups.user_name",u"qstgroups.qstgroups_id"], ondelete=u"CASCADE"),
-        ForeignKeyConstraint(["parent_username", "parent_id", ], [u"qstgroups.user_name", u"qstgroups.qstgroups_id"],ondelete=u"CASCADE"),
-        {"mysql_engine": "InnoDB", "mysql_charset": "utf8"}
+        ForeignKeyConstraint(
+            ["group_username", "group_id",],
+            [u"qstgroups.user_name", u"qstgroups.qstgroups_id"],
+            ondelete=u"CASCADE",
+        ),
+        ForeignKeyConstraint(
+            ["parent_username", "parent_id",],
+            [u"qstgroups.user_name", u"qstgroups.qstgroups_id"],
+            ondelete=u"CASCADE",
+        ),
+        {"mysql_engine": "InnoDB", "mysql_charset": "utf8"},
     )
 
     group_username = Column(String(80), primary_key=True, nullable=False)
     group_id = Column(String(80), primary_key=True, nullable=False)
 
-    parent_username = Column(String(80),primary_key=True, nullable=True)
+    parent_username = Column(String(80), primary_key=True, nullable=True)
     parent_id = Column(String(80), primary_key=True, nullable=True)
-
 
 
 class Question(Base):
@@ -886,15 +894,13 @@ class User(Base):
 class RegistryJsonLog(Base):
     __tablename__ = "registry_jsonlog"
     __table_args__ = (
-
         ForeignKeyConstraint(
             ["user_name", "project_cod"],
             [u"project.user_name", u"project.project_cod"],
         ),
         ForeignKeyConstraint(
-        ["enum_user", "enum_id"],
-        [u"enumerator.user_name", u"enumerator.enum_id"],
-    )
+            ["enum_user", "enum_id"], [u"enumerator.user_name", u"enumerator.enum_id"],
+        ),
     )
 
     user_name = Column(String(80), primary_key=True, nullable=False)
@@ -918,12 +924,12 @@ class AssessmentJsonLog(Base):
         ForeignKeyConstraint(
             ["user_name", "project_cod", "ass_cod"],
             [u"assessment.user_name", u"assessment.project_cod", u"assessment.ass_cod"],
-            #ondelete=u"CASCADE",
+            # ondelete=u"CASCADE",
         ),
         ForeignKeyConstraint(
             ["enum_user", "enum_id"],
             [u"enumerator.user_name", u"enumerator.enum_id"],
-            #ondelete=u"CASCADE",
+            # ondelete=u"CASCADE",
         ),
         {"mysql_engine": "InnoDB", "mysql_charset": "utf8"},
     )
@@ -941,6 +947,7 @@ class AssessmentJsonLog(Base):
 
     assessment = relationship(u"Assessment")
     enumerator = relationship(u"Enumerator")
+
 
 class Chat(Base):
     __tablename__ = "chat"

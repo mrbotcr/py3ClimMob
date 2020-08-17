@@ -5,6 +5,7 @@ import shutil as sh
 import json
 from .exportToCsv import createCSV
 
+
 @celeryApp.task(base=climmobCeleryTask)
 def create_CSV(path, info, projectid):
 
@@ -25,7 +26,10 @@ def create_CSV(path, info, projectid):
 
     if os.path.exists(pathInputFiles + "/info.json"):
         try:
-            createCSV(pathout + "/Information_of_the project_"+projectid+".csv", pathInputFiles + "/info.json")
+            createCSV(
+                pathout + "/Information_of_the project_" + projectid + ".csv",
+                pathInputFiles + "/info.json",
+            )
         except Exception as e:
             print("We can't create the CSV." + str(e))
 

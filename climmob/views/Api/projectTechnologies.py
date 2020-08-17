@@ -32,8 +32,12 @@ class addProjectTechnology_view(apiView):
             try:
                 dataworking = json.loads(self.request.params["Body"])
             except:
-                response = Response(status=401,
-                                    body=self._("Error in the JSON, It does not have the 'body' parameter."))
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "Error in the JSON, It does not have the 'body' parameter."
+                    ),
+                )
                 return response
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -110,8 +114,12 @@ class readProjectTechnologies_view(apiView):
             try:
                 dataworking = json.loads(self.request.params["Body"])
             except:
-                response = Response(status=401,
-                                    body=self._("Error in the JSON, It does not have the 'body' parameter."))
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "Error in the JSON, It does not have the 'body' parameter."
+                    ),
+                )
                 return response
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -151,8 +159,12 @@ class readPossibleProjectTechnologies_view(apiView):
             try:
                 dataworking = json.loads(self.request.params["Body"])
             except:
-                response = Response(status=401,
-                                    body=self._("Error in the JSON, It does not have the 'body' parameter."))
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "Error in the JSON, It does not have the 'body' parameter."
+                    ),
+                )
                 return response
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -192,8 +204,12 @@ class deleteProjectTechnology_view(apiView):
             try:
                 dataworking = json.loads(self.request.params["Body"])
             except:
-                response = Response(status=401,
-                                    body=self._("Error in the JSON, It does not have the 'body' parameter."))
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "Error in the JSON, It does not have the 'body' parameter."
+                    ),
+                )
                 return response
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -250,8 +266,7 @@ class deleteProjectTechnology_view(apiView):
                         return response
                 else:
                     response = Response(
-                        status=401,
-                        body=self._("There is no project with that code."),
+                        status=401, body=self._("There is no project with that code."),
                     )
                     return response
             else:
@@ -339,8 +354,7 @@ class addProjectTechnologyAlias_view(apiView):
                         return response
                 else:
                     response = Response(
-                        status=401,
-                        body=self._("There is no project with that code."),
+                        status=401, body=self._("There is no project with that code."),
                     )
                     return response
             else:
@@ -414,8 +428,7 @@ class addProjectTechnologyAliasExtra_view(apiView):
                         return response
                 else:
                     response = Response(
-                        status=401,
-                        body=self._("There is no project with that code."),
+                        status=401, body=self._("There is no project with that code."),
                     )
                     return response
             else:
@@ -434,8 +447,12 @@ class readProjectTechnologiesAlias_view(apiView):
             try:
                 dataworking = json.loads(self.request.params["Body"])
             except:
-                response = Response(status=401,
-                                    body=self._("Error in the JSON, It does not have the 'body' parameter."))
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "Error in the JSON, It does not have the 'body' parameter."
+                    ),
+                )
                 return response
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -469,15 +486,12 @@ class readProjectTechnologiesAlias_view(apiView):
                     else:
                         response = Response(
                             status=401,
-                            body=self._(
-                                "There is no technology with that identifier."
-                            ),
+                            body=self._("There is no technology with that identifier."),
                         )
                         return response
                 else:
                     response = Response(
-                        status=401,
-                        body=self._("There is no project with that code."),
+                        status=401, body=self._("There is no project with that code."),
                     )
                     return response
             else:
@@ -496,8 +510,12 @@ class readProjectTechnologiesAliasExtra_view(apiView):
             try:
                 dataworking = json.loads(self.request.params["Body"])
             except:
-                response = Response(status=401,
-                                    body=self._("Error in the JSON, It does not have the 'body' parameter."))
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "Error in the JSON, It does not have the 'body' parameter."
+                    ),
+                )
                 return response
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -531,15 +549,12 @@ class readProjectTechnologiesAliasExtra_view(apiView):
                     else:
                         response = Response(
                             status=401,
-                            body=self._(
-                                "There is no technology with that identifier."
-                            ),
+                            body=self._("There is no technology with that identifier."),
                         )
                         return response
                 else:
                     response = Response(
-                        status=401,
-                        body=self._("There is no project with that code."),
+                        status=401, body=self._("There is no project with that code."),
                     )
                     return response
             else:
@@ -558,8 +573,12 @@ class readPossibleProjectTechnologiesAlias_view(apiView):
             try:
                 dataworking = json.loads(self.request.params["Body"])
             except:
-                response = Response(status=401,
-                                    body=self._("Error in the JSON, It does not have the 'body' parameter."))
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "Error in the JSON, It does not have the 'body' parameter."
+                    ),
+                )
                 return response
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -593,15 +612,12 @@ class readPossibleProjectTechnologiesAlias_view(apiView):
                     else:
                         response = Response(
                             status=401,
-                            body=self._(
-                                "There is no technology with that identifier."
-                            ),
+                            body=self._("There is no technology with that identifier."),
                         )
                         return response
                 else:
                     response = Response(
-                        status=401,
-                        body=self._("There is no project with that code."),
+                        status=401, body=self._("There is no project with that code."),
                     )
                     return response
             else:
@@ -683,8 +699,7 @@ class deleteProjectTechnologyAlias_view(apiView):
                         return response
                 else:
                     response = Response(
-                        status=401,
-                        body=self._("There is no project with that code."),
+                        status=401, body=self._("There is no project with that code."),
                     )
                     return response
             else:

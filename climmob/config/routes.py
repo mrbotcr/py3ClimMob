@@ -33,7 +33,7 @@ from ..views.question import (
     deleteQuestionValue_view,
     questionCharacteristics_view,
     questionPerformance_view,
-    questionsActions_view
+    questionsActions_view,
 )
 
 from ..views.registry import (
@@ -47,7 +47,7 @@ from ..views.registry import (
     cancelRegistry_view,
     closeRegistry_view,
     registryFormCreation_view,
-    registrySectionActions_view
+    registrySectionActions_view,
 )
 
 from ..views.assessment import (
@@ -66,7 +66,7 @@ from ..views.assessment import (
     closeAssessment_view,
     CancelAssessmentView,
     assessmentFormCreation_view,
-    assessmentSectionActions_view
+    assessmentSectionActions_view,
 )
 from ..views.project_technologies import (
     projectTecnologies_view,
@@ -76,8 +76,8 @@ from ..views.project_technologies import (
 )
 from ..views.enumerator import (
     enumerators_view,
-    #addEnumerator_view,
-    #modifyEnumerator_view,
+    # addEnumerator_view,
+    # modifyEnumerator_view,
     deleteEnumerator_view,
 )
 from ..views.project_combinations import projectCombinations_view
@@ -114,7 +114,13 @@ from ..views.techaliases import (
 from ..views.cleanErrorLogs import cleanErrorLogs_view
 from ..views.test import test_view
 
-from ..views.productsList import productsView,generateProductView, downloadView, downloadJsonView, dataView
+from ..views.productsList import (
+    productsView,
+    generateProductView,
+    downloadView,
+    downloadJsonView,
+    dataView,
+)
 
 from ..views.editData import editDataView, downloadDataView, uploadDataView
 
@@ -125,7 +131,7 @@ from ..views.Api.projectCreation import (
     readProjects_view,
     updateProject_view,
     deleteProject_view_api,
-    readListOfCountries_view
+    readListOfCountries_view,
 )
 from ..views.Api.enumerators import (
     createEnumerator_view,
@@ -864,7 +870,7 @@ def loadRoutes(config):
             "generateProduct",
             "/generateProduct/{projectid}/{productid}",
             generateProductView,
-            None
+            None,
         )
     )
 
@@ -933,7 +939,7 @@ def loadRoutes(config):
         )
     )
 
-    #Errors reviews
+    # Errors reviews
     routes.append(
         addRoute(
             "CleanErrorLogs",
@@ -1037,7 +1043,12 @@ def loadRoutes(config):
 
     # Create Project
     routes.append(
-        addRoute("readListOfCountries", "/api/readListOfCountries", readListOfCountries_view, None)
+        addRoute(
+            "readListOfCountries",
+            "/api/readListOfCountries",
+            readListOfCountries_view,
+            None,
+        )
     )
     routes.append(
         addRoute("addproject_api", "/api/createProject", createProject_view, None)
@@ -1597,11 +1608,13 @@ def loadRoutes(config):
 
     # Chat
     routes.append(
-        addRoute("sendFeedbackToBot", "/bot/sendFeedbackToBot", sendFeedbackToBot_view, None)
+        addRoute(
+            "sendFeedbackToBot", "/bot/sendFeedbackToBot", sendFeedbackToBot_view, None
+        )
     )
 
     routes.append(
-        addRoute("readFeedback","/bot/readFeedback",readFeedback_view, None)
+        addRoute("readFeedback", "/bot/readFeedback", readFeedback_view, None)
     )
 
     # Testing routes. Remove them for production
