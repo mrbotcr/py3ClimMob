@@ -31,7 +31,7 @@ CREATE TABLE `activitylog` (
   PRIMARY KEY (`log_id`),
   KEY `ix_activitylog_log_user` (`log_user`),
   CONSTRAINT `fk_activitylog_user1` FOREIGN KEY (`log_user`) REFERENCES `user` (`user_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=286 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=288 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -62,7 +62,7 @@ CREATE TABLE `alembic_version` (
 
 LOCK TABLES `alembic_version` WRITE;
 /*!40000 ALTER TABLE `alembic_version` DISABLE KEYS */;
-INSERT INTO `alembic_version` VALUES ('3f2fa668dbac');
+INSERT INTO `alembic_version` VALUES ('ac44678ec11e');
 /*!40000 ALTER TABLE `alembic_version` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -208,7 +208,7 @@ CREATE TABLE `asssection` (
   `section_name` varchar(120) DEFAULT NULL,
   `section_content` text,
   `section_order` int DEFAULT NULL,
-  `section_color` varchar(20) DEFAULT NULL,
+  `section_private` int DEFAULT NULL,
   PRIMARY KEY (`user_name`,`project_cod`,`ass_cod`,`section_id`),
   CONSTRAINT `fk_asssection_user_name_assessment` FOREIGN KEY (`user_name`, `project_cod`, `ass_cod`) REFERENCES `assessment` (`user_name`, `project_cod`, `ass_cod`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -224,6 +224,35 @@ LOCK TABLES `asssection` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `chat`
+--
+
+DROP TABLE IF EXISTS `chat`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `chat` (
+  `user_name` varchar(80) NOT NULL,
+  `chat_id` int NOT NULL,
+  `chat_message` varchar(500) DEFAULT NULL,
+  `chat_send` int DEFAULT NULL,
+  `chat_read` int DEFAULT NULL,
+  `chat_tofrom` int DEFAULT NULL,
+  `chat_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`user_name`,`chat_id`),
+  CONSTRAINT `fk_chat_user_name_user` FOREIGN KEY (`user_name`) REFERENCES `user` (`user_name`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `chat`
+--
+
+LOCK TABLES `chat` WRITE;
+/*!40000 ALTER TABLE `chat` DISABLE KEYS */;
+/*!40000 ALTER TABLE `chat` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `country`
 --
 
@@ -233,6 +262,7 @@ DROP TABLE IF EXISTS `country`;
 CREATE TABLE `country` (
   `cnty_cod` varchar(3) NOT NULL,
   `cnty_name` varchar(120) DEFAULT NULL,
+  `cnty_iso` varchar(3) DEFAULT NULL,
   PRIMARY KEY (`cnty_cod`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -243,7 +273,7 @@ CREATE TABLE `country` (
 
 LOCK TABLES `country` WRITE;
 /*!40000 ALTER TABLE `country` DISABLE KEYS */;
-INSERT INTO `country` VALUES ('AD','Andorra'),('AE','United Arab Emirates'),('AF','Afghanistan2'),('AG','Antigua and Barbuda'),('AI','Anguilla'),('AL','Albania'),('AM','Armenia'),('AO','Angola'),('AQ','Antarctica'),('AR','Argentina'),('AS','American Samoa'),('AT','Austria'),('AU','Australia'),('AW','Aruba'),('AX','Åland Islands'),('AZ','Azerbaijan'),('BA','Bosnia and Herzegovina'),('BB','Barbados'),('BD','Bangladesh'),('BE','Belgium'),('BF','Burkina Faso'),('BG','Bulgaria'),('BH','Bahrain'),('BI','Burundi'),('BJ','Benin'),('BL','Saint Barthélemy'),('BM','Bermuda'),('BN','Brunei Darussalam'),('BO','Bolivia'),('BQ','Caribbean Netherlands '),('BR','Brazil'),('BS','Bahamas'),('BT','Bhutan'),('BV','Bouvet Island'),('BW','Botswana'),('BY','Belarus'),('BZ','Belize'),('CA','Canada'),('CC','Cocos (Keeling) Islands'),('CD','Congo, Democratic Republic of'),('CF','Central African Republic'),('CG','Congo'),('CH','Switzerland'),('CI','Côte d\'Ivoire'),('CK','Cook Islands'),('CL','Chile'),('CM','Cameroon'),('CN','China'),('CO','Colombia'),('CR','Costa Rica'),('CU','Cuba'),('CV','Cape Verde'),('CW','Curaçao'),('CX','Christmas Island'),('CY','Cyprus'),('CZ','Czech Republic'),('DE','Germany'),('DJ','Djibouti'),('DK','Denmark'),('DM','Dominica'),('DO','Dominican Republic'),('DZ','Algeria'),('EC','Ecuador'),('EE','Estonia'),('EG','Egypt'),('EH','Western Sahara'),('ER','Eritrea'),('ES','Spain'),('ET','Ethiopia'),('FI','Finland'),('FJ','Fiji'),('FK','Falkland Islands'),('FM','Micronesia, Federated States of'),('FO','Faroe Islands'),('FR','France'),('GA','Gabon'),('GB','United Kingdom'),('GD','Grenada'),('GE','Georgia'),('GF','French Guiana'),('GG','Guernsey'),('GH','Ghana'),('GI','Gibraltar'),('GL','Greenland'),('GM','Gambia'),('GN','Guinea'),('GP','Guadeloupe'),('GQ','Equatorial Guinea'),('GR','Greece'),('GS','South Georgia and the South Sandwich Islands'),('GT','Guatemala'),('GU','Guam'),('GW','Guinea-Bissau'),('GY','Guyana'),('HK','Hong Kong'),('HM','Heard and McDonald Islands'),('HN','Honduras'),('HR','Croatia'),('HT','Haiti'),('HU','Hungary'),('ID','Indonesia'),('IE','Ireland'),('IL','Israel'),('IM','Isle of Man'),('IN','India'),('IO','British Indian Ocean Territory'),('IQ','Iraq'),('IR','Iran'),('IS','Iceland'),('IT','Italy'),('JE','Jersey'),('JM','Jamaica'),('JO','Jordan'),('JP','Japan'),('KE','Kenya'),('KG','Kyrgyzstan'),('KH','Cambodia'),('KI','Kiribati'),('KM','Comoros'),('KN','Saint Kitts and Nevis'),('KP','North Korea'),('KR','South Korea'),('KW','Kuwait'),('KY','Cayman Islands'),('KZ','Kazakhstan'),('LA','Lao People\'s Democratic Republic'),('LB','Lebanon'),('LC','Saint Lucia'),('LI','Liechtenstein'),('LK','Sri Lanka'),('LR','Liberia'),('LS','Lesotho'),('LT','Lithuania'),('LU','Luxembourg'),('LV','Latvia'),('LY','Libya'),('MA','Morocco'),('MC','Monaco'),('MD','Moldova'),('ME','Montenegro'),('MF','Saint-Martin (France)'),('MG','Madagascar'),('MH','Marshall Islands'),('MK','Macedonia'),('ML','Mali'),('MM','Myanmar'),('MN','Mongolia'),('MO','Macau'),('MP','Northern Mariana Islands'),('MQ','Martinique'),('MR','Mauritania'),('MS','Montserrat'),('MT','Malta'),('MU','Mauritius'),('MV','Maldives'),('MW','Malawi'),('MX','Mexico'),('MY','Malaysia'),('MZ','Mozambique'),('NA','Namibia'),('NC','New Caledonia'),('NE','Niger'),('NF','Norfolk Island'),('NG','Nigeria'),('NI','Nicaragua'),('NL','The Netherlands'),('NO','Norway'),('NP','Nepal'),('NR','Nauru'),('NU','Niue'),('NZ','New Zealand'),('OM','Oman'),('PA','Panama'),('PE','Peru'),('PF','French Polynesia'),('PG','Papua New Guinea'),('PH','Philippines'),('PK','Pakistan'),('PL','Poland'),('PM','St. Pierre and Miquelon'),('PN','Pitcairn'),('PR','Puerto Rico'),('PS','Palestine, State of'),('PT','Portugal'),('PW','Palau'),('PY','Paraguay'),('QA','Qatar'),('RE','Réunion'),('RO','Romania'),('RS','Serbia'),('RU','Russian Federation'),('RW','Rwanda'),('SA','Saudi Arabia'),('SB','Solomon Islands'),('SC','Seychelles'),('SD','Sudan'),('SE','Sweden'),('SG','Singapore'),('SH','Saint Helena'),('SI','Slovenia'),('SJ','Svalbard and Jan Mayen Islands'),('SK','Slovakia'),('SL','Sierra Leone'),('SM','San Marino'),('SN','Senegal'),('SO','Somalia'),('SR','Suriname'),('SS','South Sudan'),('ST','Sao Tome and Principe'),('SV','El Salvador'),('SX','Sint Maarten (Dutch part)'),('SY','Syria'),('SZ','Swaziland'),('TC','Turks and Caicos Islands'),('TD','Chad'),('TF','French Southern Territories'),('TG','Togo'),('TH','Thailand'),('TJ','Tajikistan'),('TK','Tokelau'),('TL','Timor-Leste'),('TM','Turkmenistan'),('TN','Tunisia'),('TO','Tonga'),('TR','Turkey'),('TT','Trinidad and Tobago'),('TV','Tuvalu'),('TW','Taiwan'),('TZ','Tanzania'),('UA','Ukraine'),('UG','Uganda'),('UM','United States Minor Outlying Islands'),('US','United States'),('UY','Uruguay'),('UZ','Uzbekistan'),('VA','Vatican'),('VC','Saint Vincent and the Grenadines'),('VE','Venezuela'),('VG','Virgin Islands (British)'),('VI','Virgin Islands (U.S.)'),('VN','Vietnam'),('VU','Vanuatu'),('WF','Wallis and Futuna Islands'),('WS','Samoa'),('YE','Yemen'),('YT','Mayotte'),('ZA','South Africa'),('ZM','Zambia'),('ZW','Zimbabwe');
+INSERT INTO `country` VALUES ('AD','Andorra',NULL),('AE','United Arab Emirates',NULL),('AF','Afghanistan2',NULL),('AG','Antigua and Barbuda',NULL),('AI','Anguilla',NULL),('AL','Albania',NULL),('AM','Armenia',NULL),('AO','Angola',NULL),('AQ','Antarctica',NULL),('AR','Argentina',NULL),('AS','American Samoa',NULL),('AT','Austria',NULL),('AU','Australia',NULL),('AW','Aruba',NULL),('AX','Åland Islands',NULL),('AZ','Azerbaijan',NULL),('BA','Bosnia and Herzegovina',NULL),('BB','Barbados',NULL),('BD','Bangladesh',NULL),('BE','Belgium',NULL),('BF','Burkina Faso',NULL),('BG','Bulgaria',NULL),('BH','Bahrain',NULL),('BI','Burundi',NULL),('BJ','Benin',NULL),('BL','Saint Barthélemy',NULL),('BM','Bermuda',NULL),('BN','Brunei Darussalam',NULL),('BO','Bolivia',NULL),('BQ','Caribbean Netherlands ',NULL),('BR','Brazil',NULL),('BS','Bahamas',NULL),('BT','Bhutan',NULL),('BV','Bouvet Island',NULL),('BW','Botswana',NULL),('BY','Belarus',NULL),('BZ','Belize',NULL),('CA','Canada',NULL),('CC','Cocos (Keeling) Islands',NULL),('CD','Congo, Democratic Republic of',NULL),('CF','Central African Republic',NULL),('CG','Congo',NULL),('CH','Switzerland',NULL),('CI','Côte d\'Ivoire',NULL),('CK','Cook Islands',NULL),('CL','Chile',NULL),('CM','Cameroon',NULL),('CN','China',NULL),('CO','Colombia',NULL),('CR','Costa Rica',NULL),('CU','Cuba',NULL),('CV','Cape Verde',NULL),('CW','Curaçao',NULL),('CX','Christmas Island',NULL),('CY','Cyprus',NULL),('CZ','Czech Republic',NULL),('DE','Germany',NULL),('DJ','Djibouti',NULL),('DK','Denmark',NULL),('DM','Dominica',NULL),('DO','Dominican Republic',NULL),('DZ','Algeria',NULL),('EC','Ecuador',NULL),('EE','Estonia',NULL),('EG','Egypt',NULL),('EH','Western Sahara',NULL),('ER','Eritrea',NULL),('ES','Spain',NULL),('ET','Ethiopia',NULL),('FI','Finland',NULL),('FJ','Fiji',NULL),('FK','Falkland Islands',NULL),('FM','Micronesia, Federated States of',NULL),('FO','Faroe Islands',NULL),('FR','France',NULL),('GA','Gabon',NULL),('GB','United Kingdom',NULL),('GD','Grenada',NULL),('GE','Georgia',NULL),('GF','French Guiana',NULL),('GG','Guernsey',NULL),('GH','Ghana',NULL),('GI','Gibraltar',NULL),('GL','Greenland',NULL),('GM','Gambia',NULL),('GN','Guinea',NULL),('GP','Guadeloupe',NULL),('GQ','Equatorial Guinea',NULL),('GR','Greece',NULL),('GS','South Georgia and the South Sandwich Islands',NULL),('GT','Guatemala',NULL),('GU','Guam',NULL),('GW','Guinea-Bissau',NULL),('GY','Guyana',NULL),('HK','Hong Kong',NULL),('HM','Heard and McDonald Islands',NULL),('HN','Honduras',NULL),('HR','Croatia',NULL),('HT','Haiti',NULL),('HU','Hungary',NULL),('ID','Indonesia',NULL),('IE','Ireland',NULL),('IL','Israel',NULL),('IM','Isle of Man',NULL),('IN','India',NULL),('IO','British Indian Ocean Territory',NULL),('IQ','Iraq',NULL),('IR','Iran',NULL),('IS','Iceland',NULL),('IT','Italy',NULL),('JE','Jersey',NULL),('JM','Jamaica',NULL),('JO','Jordan',NULL),('JP','Japan',NULL),('KE','Kenya',NULL),('KG','Kyrgyzstan',NULL),('KH','Cambodia',NULL),('KI','Kiribati',NULL),('KM','Comoros',NULL),('KN','Saint Kitts and Nevis',NULL),('KP','North Korea',NULL),('KR','South Korea',NULL),('KW','Kuwait',NULL),('KY','Cayman Islands',NULL),('KZ','Kazakhstan',NULL),('LA','Lao People\'s Democratic Republic',NULL),('LB','Lebanon',NULL),('LC','Saint Lucia',NULL),('LI','Liechtenstein',NULL),('LK','Sri Lanka',NULL),('LR','Liberia',NULL),('LS','Lesotho',NULL),('LT','Lithuania',NULL),('LU','Luxembourg',NULL),('LV','Latvia',NULL),('LY','Libya',NULL),('MA','Morocco',NULL),('MC','Monaco',NULL),('MD','Moldova',NULL),('ME','Montenegro',NULL),('MF','Saint-Martin (France)',NULL),('MG','Madagascar',NULL),('MH','Marshall Islands',NULL),('MK','Macedonia',NULL),('ML','Mali',NULL),('MM','Myanmar',NULL),('MN','Mongolia',NULL),('MO','Macau',NULL),('MP','Northern Mariana Islands',NULL),('MQ','Martinique',NULL),('MR','Mauritania',NULL),('MS','Montserrat',NULL),('MT','Malta',NULL),('MU','Mauritius',NULL),('MV','Maldives',NULL),('MW','Malawi',NULL),('MX','Mexico',NULL),('MY','Malaysia',NULL),('MZ','Mozambique',NULL),('NA','Namibia',NULL),('NC','New Caledonia',NULL),('NE','Niger',NULL),('NF','Norfolk Island',NULL),('NG','Nigeria',NULL),('NI','Nicaragua',NULL),('NL','The Netherlands',NULL),('NO','Norway',NULL),('NP','Nepal',NULL),('NR','Nauru',NULL),('NU','Niue',NULL),('NZ','New Zealand',NULL),('OM','Oman',NULL),('PA','Panama',NULL),('PE','Peru',NULL),('PF','French Polynesia',NULL),('PG','Papua New Guinea',NULL),('PH','Philippines',NULL),('PK','Pakistan',NULL),('PL','Poland',NULL),('PM','St. Pierre and Miquelon',NULL),('PN','Pitcairn',NULL),('PR','Puerto Rico',NULL),('PS','Palestine, State of',NULL),('PT','Portugal',NULL),('PW','Palau',NULL),('PY','Paraguay',NULL),('QA','Qatar',NULL),('RE','Réunion',NULL),('RO','Romania',NULL),('RS','Serbia',NULL),('RU','Russian Federation',NULL),('RW','Rwanda',NULL),('SA','Saudi Arabia',NULL),('SB','Solomon Islands',NULL),('SC','Seychelles',NULL),('SD','Sudan',NULL),('SE','Sweden',NULL),('SG','Singapore',NULL),('SH','Saint Helena',NULL),('SI','Slovenia',NULL),('SJ','Svalbard and Jan Mayen Islands',NULL),('SK','Slovakia',NULL),('SL','Sierra Leone',NULL),('SM','San Marino',NULL),('SN','Senegal',NULL),('SO','Somalia',NULL),('SR','Suriname',NULL),('SS','South Sudan',NULL),('ST','Sao Tome and Principe',NULL),('SV','El Salvador',NULL),('SX','Sint Maarten (Dutch part)',NULL),('SY','Syria',NULL),('SZ','Swaziland',NULL),('TC','Turks and Caicos Islands',NULL),('TD','Chad',NULL),('TF','French Southern Territories',NULL),('TG','Togo',NULL),('TH','Thailand',NULL),('TJ','Tajikistan',NULL),('TK','Tokelau',NULL),('TL','Timor-Leste',NULL),('TM','Turkmenistan',NULL),('TN','Tunisia',NULL),('TO','Tonga',NULL),('TR','Turkey',NULL),('TT','Trinidad and Tobago',NULL),('TV','Tuvalu',NULL),('TW','Taiwan',NULL),('TZ','Tanzania',NULL),('UA','Ukraine',NULL),('UG','Uganda',NULL),('UM','United States Minor Outlying Islands',NULL),('US','United States',NULL),('UY','Uruguay',NULL),('UZ','Uzbekistan',NULL),('VA','Vatican',NULL),('VC','Saint Vincent and the Grenadines',NULL),('VE','Venezuela',NULL),('VG','Virgin Islands (British)',NULL),('VI','Virgin Islands (U.S.)',NULL),('VN','Vietnam',NULL),('VU','Vanuatu',NULL),('WF','Wallis and Futuna Islands',NULL),('WS','Samoa',NULL),('YE','Yemen',NULL),('YT','Mayotte',NULL),('ZA','South Africa',NULL),('ZM','Zambia',NULL),('ZW','Zimbabwe',NULL);
 /*!40000 ALTER TABLE `country` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -873,8 +903,12 @@ CREATE TABLE `project` (
   `project_createcomb` int DEFAULT '0',
   `project_createpkgs` int DEFAULT '0',
   `project_localvariety` int DEFAULT '0',
+  `project_cnty` varchar(3) DEFAULT NULL,
+  `project_registration_and_analysis` int DEFAULT '0',
   PRIMARY KEY (`user_name`,`project_cod`),
   KEY `ix_project_user_name` (`user_name`),
+  KEY `ix_project_project_cnty` (`project_cnty`),
+  CONSTRAINT `fk_project_project_cnty_country` FOREIGN KEY (`project_cnty`) REFERENCES `country` (`cnty_cod`),
   CONSTRAINT `fk_project_user1` FOREIGN KEY (`user_name`) REFERENCES `user` (`user_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -910,6 +944,7 @@ CREATE TABLE `qstgroups` (
 
 LOCK TABLES `qstgroups` WRITE;
 /*!40000 ALTER TABLE `qstgroups` DISABLE KEYS */;
+INSERT INTO `qstgroups` VALUES ('bioversity','4581ab3c093d','Uncategorized');
 /*!40000 ALTER TABLE `qstgroups` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -940,6 +975,34 @@ LOCK TABLES `qstoption` WRITE;
 /*!40000 ALTER TABLE `qstoption` DISABLE KEYS */;
 INSERT INTO `qstoption` VALUES (180,'-777','Other',1,0,13),(180,'-888','Not applicable',0,1,14),(180,'1','Male',0,0,6),(180,'2','Female',0,0,7),(180,'3','Joint',0,0,8),(180,'4','Youth',0,0,9),(237,'1','Male',0,0,33),(237,'2','Female',0,0,34);
 /*!40000 ALTER TABLE `qstoption` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `qstsubgroups`
+--
+
+DROP TABLE IF EXISTS `qstsubgroups`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `qstsubgroups` (
+  `group_username` varchar(80) NOT NULL,
+  `group_id` varchar(80) NOT NULL,
+  `parent_username` varchar(80) NOT NULL,
+  `parent_id` varchar(80) NOT NULL,
+  PRIMARY KEY (`group_username`,`group_id`,`parent_username`,`parent_id`),
+  KEY `fk_qstsubgroups_parent_username_qstgroups` (`parent_username`,`parent_id`),
+  CONSTRAINT `fk_qstsubgroups_group_username_qstgroups` FOREIGN KEY (`group_username`, `group_id`) REFERENCES `qstgroups` (`user_name`, `qstgroups_id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_qstsubgroups_parent_username_qstgroups` FOREIGN KEY (`parent_username`, `parent_id`) REFERENCES `qstgroups` (`user_name`, `qstgroups_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `qstsubgroups`
+--
+
+LOCK TABLES `qstsubgroups` WRITE;
+/*!40000 ALTER TABLE `qstsubgroups` DISABLE KEYS */;
+/*!40000 ALTER TABLE `qstsubgroups` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -981,6 +1044,7 @@ CREATE TABLE `question` (
   `qstgroups_id` varchar(80) DEFAULT NULL,
   `qstgroups_user` varchar(80) DEFAULT NULL,
   `question_visible` int DEFAULT '1',
+  `question_name` varchar(120) DEFAULT NULL,
   PRIMARY KEY (`question_id`),
   KEY `ix_question_user_name` (`user_name`),
   KEY `fk_question_qstgroups_user_qstgroups` (`qstgroups_user`,`qstgroups_id`),
@@ -995,7 +1059,7 @@ CREATE TABLE `question` (
 
 LOCK TABLES `question` WRITE;
 /*!40000 ALTER TABLE `question` DISABLE KEYS */;
-INSERT INTO `question` VALUES (162,'Package code','Dar un paquete al agricultor','',7,NULL,1,0,0,'bioversity',NULL,NULL,NULL,NULL,1,NULL,0,'QST162',1,0,NULL,0,0,0,0,0,0,0,NULL,NULL,1),(163,'Select the farmer','Para seleccionar a un agricultor antes registrado.','Seleccione un agricultor',8,NULL,0,1,0,'bioversity',NULL,NULL,NULL,NULL,1,NULL,1,'QST163',0,0,NULL,0,0,0,0,0,0,0,NULL,NULL,1),(180,'Who controls the income','Who controls the income','',6,NULL,0,0,0,'bioversity',NULL,NULL,NULL,NULL,1,NULL,0,'whocontrolstheincome',0,0,NULL,0,0,0,0,0,0,0,NULL,NULL,1),(199,'Farmer name','The name of the farmer','',1,NULL,1,0,0,'bioversity',NULL,NULL,NULL,NULL,1,NULL,0,'farmername',0,0,NULL,0,1,1,0,0,0,0,NULL,NULL,1),(204,'Overall Characteristic','This is the overall Characteristic','',9,NULL,0,0,0,'bioversity','Overall, which option performed better?','Overall, which option performed worst?','Overall, which option performed better?','Overall, which option is at position {{pos}}?',1,NULL,0,'overallperf',0,1,NULL,0,0,0,0,0,0,0,NULL,NULL,1),(205,'Overall performace','Overall performance against local','',10,NULL,0,0,0,'bioversity',NULL,NULL,NULL,NULL,1,NULL,0,'overallchar',0,0,'Overall, whichone is best {{option}} or what you usually use?',0,0,0,1,0,0,0,NULL,NULL,1),(206,'Farm Geolocation','The location of the farm. This question should appear in the first assessment','',4,NULL,0,0,0,'bioversity',NULL,NULL,NULL,NULL,1,NULL,0,'farmgoelocation',0,0,NULL,0,0,0,0,0,0,0,NULL,NULL,1),(233,'Name of the Father or Name of the Husband/Wife','know the name: Name of the Father or Name of the Husband/Wife','',27,NULL,0,0,0,'bioversity',NULL,NULL,NULL,NULL,0,NULL,0,'familiyofthefarmer',0,0,NULL,0,1,0,0,0,1,0,NULL,NULL,0),(234,'What is the village of the farmer?','Village\r\n','',27,NULL,0,0,0,'bioversity',NULL,NULL,NULL,NULL,0,NULL,0,'Village',0,0,NULL,0,1,0,0,0,0,1,NULL,NULL,0),(235,'What is the district of the farmer?','District','',27,NULL,0,0,0,'bioversity',NULL,NULL,NULL,NULL,0,NULL,0,'district',0,0,NULL,0,1,0,0,1,0,0,NULL,NULL,0),(236,'What is the farmer\'s Telephone?','telephone','',1,NULL,0,0,0,'bioversity',NULL,NULL,NULL,NULL,0,NULL,0,'telephone',0,0,NULL,0,0,0,0,0,0,0,NULL,NULL,0),(237,'What is the gender ?','gender','',5,NULL,0,0,0,'bioversity',NULL,NULL,NULL,NULL,0,NULL,0,'gender',0,0,NULL,0,0,0,0,0,0,0,NULL,NULL,0),(238,'How old are you?','age','',3,NULL,0,0,0,'bioversity',NULL,NULL,NULL,NULL,0,NULL,0,'age',0,0,NULL,0,0,0,0,0,0,0,NULL,NULL,0),(239,'About energy','About energy','',9,NULL,0,0,0,'bioversity','Which color is most associated with energy?','which color is least associated with energy?','Which color represents more energy?','In terms of energy which color is at position {{pos}}',0,NULL,0,'energy',0,0,NULL,0,0,0,0,0,0,0,NULL,NULL,0),(240,'About love','Love','',9,NULL,0,0,0,'bioversity','Which color is most associated with love?','Which color is least associated with love?','Which color represents more love?','In terms of love which color is at position {{pos}}',0,NULL,0,'love',0,0,NULL,0,0,0,0,0,0,0,NULL,NULL,0),(241,'About death','About death','',9,NULL,0,0,0,'bioversity','Which color is most associated with death?','Which color is least associated with death?','Which color represents more death?','In terms of death which color is at position {{pos}}',0,NULL,0,'death',0,0,NULL,0,0,0,0,0,0,0,NULL,NULL,0),(242,'About intelligence','About Intelligence','',9,NULL,0,0,0,'bioversity','Which color is most associated with intelligence?','Which color is least associated with intelligence?','Which color represents more intelligence?','in terms of intelligence which color is at position {{pos}}',0,NULL,0,'intelligence',0,0,NULL,0,0,0,0,0,0,0,NULL,NULL,0);
+INSERT INTO `question` VALUES (162,'Package code','Dar un paquete al agricultor','',7,NULL,1,0,0,'bioversity',NULL,NULL,NULL,NULL,1,NULL,0,'QST162',1,0,NULL,0,0,0,0,0,0,0,'4581ab3c093d','bioversity',1,'Package code'),(163,'Select the farmer','Para seleccionar a un agricultor antes registrado.','Seleccione un agricultor',8,NULL,0,1,0,'bioversity',NULL,NULL,NULL,NULL,1,NULL,1,'QST163',0,0,NULL,0,0,0,0,0,0,0,'4581ab3c093d','bioversity',1,'Select the farmer'),(180,'Who controls the income','Who controls the income','',6,NULL,0,0,0,'bioversity',NULL,NULL,NULL,NULL,1,NULL,0,'whocontrolstheincome',0,0,NULL,0,0,0,0,0,0,0,'4581ab3c093d','bioversity',1,'Who controls the income'),(199,'Farmer name','The name of the farmer','',1,NULL,1,0,0,'bioversity',NULL,NULL,NULL,NULL,1,NULL,0,'farmername',0,0,NULL,0,1,1,0,0,0,0,'4581ab3c093d','bioversity',1,'Farmer name'),(204,'Overall Characteristic','This is the overall Characteristic','',9,NULL,0,0,0,'bioversity','Overall, which option performed better?','Overall, which option performed worst?','Overall, which option performed better?','Overall, which option is at position {{pos}}?',1,NULL,0,'overallperf',0,1,NULL,0,0,0,0,0,0,0,'4581ab3c093d','bioversity',1,'Overall Characteristic'),(205,'Overall performace','Overall performance against local','',10,NULL,0,0,0,'bioversity',NULL,NULL,NULL,NULL,1,NULL,0,'overallchar',0,0,'Overall, whichone is best {{option}} or what you usually use?',0,0,0,1,0,0,0,'4581ab3c093d','bioversity',1,'Overall performace'),(206,'Farm Geolocation','The location of the farm. This question should appear in the first assessment','',4,NULL,0,0,0,'bioversity',NULL,NULL,NULL,NULL,1,NULL,0,'farmgoelocation',0,0,NULL,0,0,0,0,0,0,0,'4581ab3c093d','bioversity',1,'Farm Geolocation'),(233,'Name of the Father or Name of the Husband/Wife','know the name: Name of the Father or Name of the Husband/Wife','',27,NULL,0,0,0,'bioversity',NULL,NULL,NULL,NULL,0,NULL,0,'familiyofthefarmer',0,0,NULL,0,1,0,0,0,1,0,'4581ab3c093d','bioversity',0,'Name of the Father or Name of the Husband/Wife'),(234,'What is the village of the farmer?','Village\r\n','',27,NULL,0,0,0,'bioversity',NULL,NULL,NULL,NULL,0,NULL,0,'Village',0,0,NULL,0,1,0,0,0,0,1,'4581ab3c093d','bioversity',0,'What is the village of the farmer?'),(235,'What is the district of the farmer?','District','',27,NULL,0,0,0,'bioversity',NULL,NULL,NULL,NULL,0,NULL,0,'district',0,0,NULL,0,1,0,0,1,0,0,'4581ab3c093d','bioversity',0,'What is the district of the farmer?'),(236,'What is the farmer\'s Telephone?','telephone','',1,NULL,0,0,0,'bioversity',NULL,NULL,NULL,NULL,0,NULL,0,'telephone',0,0,NULL,0,0,0,0,0,0,0,'4581ab3c093d','bioversity',0,'What is the farmer\'s Telephone?'),(237,'What is the gender ?','gender','',5,NULL,0,0,0,'bioversity',NULL,NULL,NULL,NULL,0,NULL,0,'gender',0,0,NULL,0,0,0,0,0,0,0,'4581ab3c093d','bioversity',0,'What is the gender ?'),(238,'How old are you?','age','',3,NULL,0,0,0,'bioversity',NULL,NULL,NULL,NULL,0,NULL,0,'age',0,0,NULL,0,0,0,0,0,0,0,'4581ab3c093d','bioversity',0,'How old are you?'),(239,'About energy','About energy','',9,NULL,0,0,0,'bioversity','Which color is most associated with energy?','which color is least associated with energy?','Which color represents more energy?','In terms of energy which color is at position {{pos}}',0,NULL,0,'energy',0,0,NULL,0,0,0,0,0,0,0,'4581ab3c093d','bioversity',0,'About energy'),(240,'About love','Love','',9,NULL,0,0,0,'bioversity','Which color is most associated with love?','Which color is least associated with love?','Which color represents more love?','In terms of love which color is at position {{pos}}',0,NULL,0,'love',0,0,NULL,0,0,0,0,0,0,0,'4581ab3c093d','bioversity',0,'About love'),(241,'About death','About death','',9,NULL,0,0,0,'bioversity','Which color is most associated with death?','Which color is least associated with death?','Which color represents more death?','In terms of death which color is at position {{pos}}',0,NULL,0,'death',0,0,NULL,0,0,0,0,0,0,0,'4581ab3c093d','bioversity',0,'About death'),(242,'About intelligence','About Intelligence','',9,NULL,0,0,0,'bioversity','Which color is most associated with intelligence?','Which color is least associated with intelligence?','Which color represents more intelligence?','in terms of intelligence which color is at position {{pos}}',0,NULL,0,'intelligence',0,0,NULL,0,0,0,0,0,0,0,'4581ab3c093d','bioversity',0,'About intelligence');
 /*!40000 ALTER TABLE `question` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1079,7 +1143,7 @@ CREATE TABLE `regsection` (
   `section_name` varchar(45) DEFAULT NULL,
   `section_content` text,
   `section_order` int DEFAULT NULL,
-  `section_color` varchar(20) DEFAULT NULL,
+  `section_private` int DEFAULT NULL,
   PRIMARY KEY (`user_name`,`project_cod`,`section_id`),
   CONSTRAINT `fk_regsection_project1` FOREIGN KEY (`user_name`, `project_cod`) REFERENCES `project` (`user_name`, `project_cod`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -1274,4 +1338,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-08-15 17:20:10
+-- Dump completed on 2020-08-17 20:56:03
