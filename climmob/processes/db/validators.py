@@ -22,7 +22,7 @@ def userExists(user, request):
 def emailExists(email, request):
     res = False
     result = request.dbsession.query(User).filter_by(user_email=email).first()
-    print(result)
+    #print(result)
     if not result is None:
         res = True
     return res

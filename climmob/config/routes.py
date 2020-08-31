@@ -868,7 +868,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "generateProduct",
-            "/generateProduct/{projectid}/{productid}",
+            "/generateProduct/{projectid}/{productid}/{processname}",
             generateProductView,
             None,
         )

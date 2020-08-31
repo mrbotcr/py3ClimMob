@@ -122,12 +122,12 @@
                         <div class="row" id="footer">
                             <div class="col-md-12">
                                     {% if stage == 1 %}
-                                        <button type="button" style="margin-left: 10px" onclick="this.disabled=true; this.innerText='Creating packages. Please wait…'; location.href='{{ request.route_url("combinations", projectid=projectid, _query={"stage":2})}}'"  class="btn btn-primary pull-right">{{ _("Next step") }}</button>
-                                        <button type="button" class="btn btn-default disabled pull-right">{{ _("Previous step") }}</button>
+                                        <button type="button" style="margin-left: 10px" onclick="this.disabled=true; this.innerText='Creating packages. Please wait…'; location.href='{{ request.route_url("combinations", projectid=projectid, _query={"stage":2})}}'"  class="btn btn-primary pull-right">{{ _("Continue") }}</button>
+{#                                        <button type="button" class="btn btn-default disabled pull-right">{{ _("Previous step") }}</button>#}
                                     {% endif %}
                                     {% if stage == 2 %}
-                                        <button type="button" style="margin-left: 10px" onclick="this.disabled=true; this.innerText='Opening the registration of participants. Please wait…'; location.href='{{ request.route_url("combinations", projectid=projectid, _query={"stage":3})}}'" class="btn btn-success pull-right">{{ _("Save packages") }}</button>
-                                        <button type="button" onclick="location.href='{{ request.route_url("combinations", projectid=projectid, _query={"stage":1})}}'" class="btn  btn-primary pull-right">{{ _("Previous step") }}</button>
+                                        <button type="button" style="margin-left: 10px" onclick="this.disabled=true; this.innerText='Opening the registration of participants. Please wait…'; location.href='{{ request.route_url("combinations", projectid=projectid, _query={"stage":3})}}'" class="btn btn-success pull-right">{{ _("Confirm") }}</button>
+                                        <button type="button" onclick="location.href='{{ request.route_url("combinations", projectid=projectid, _query={"stage":1})}}'" class="btn  btn-primary pull-right">{{ _("Modify") }}</button>
                                     {% endif %}
                             </div>
                         </div>

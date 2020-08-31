@@ -203,4 +203,27 @@ def register_products(config):
     )
     products.append(generalreport)
 
+    # STICKERS
+    stickersProduct = addProduct("stickers", "Stickers for packages")
+    addMetadataToProduct(stickersProduct, "author", "Brandon Madriz")
+    addMetadataToProduct(stickersProduct, "version", "1.0")
+    addMetadataToProduct(
+        stickersProduct,
+        "Licence",
+        "Copyright 2020, Alliance of Bioversity International and CIAT",
+    )
+    products.append(stickersProduct)
+
+    # DATA COLLECTION PROGRESS
+
+    datacollectionprogressProduct = addProduct("datacollectionprogress", "Shows the information of the observers from whom the information has been collected")
+    addMetadataToProduct(datacollectionprogressProduct, "author", "Brandon Madriz")
+    addMetadataToProduct(datacollectionprogressProduct, "version", "1.0")
+    addMetadataToProduct(
+        datacollectionprogressProduct,
+        "Licence",
+        "Copyright 2020, Alliance of Bioversity International and CIAT",
+    )
+    products.append(datacollectionprogressProduct)
+
     return products

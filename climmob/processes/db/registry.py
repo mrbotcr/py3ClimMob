@@ -366,7 +366,7 @@ def generateStructureForInterface(user, project, request):
     return data
 
 
-def getRegistryQuestions(user, project, request):
+def getRegistryQuestions(user, project, request, createAutoRegistry=True):
 
     hasSections = (
         request.dbsession.query(Regsection)
@@ -375,7 +375,10 @@ def getRegistryQuestions(user, project, request):
         .first()
     )
     if hasSections is None:
-        addRegistryQuestionsToProject(user, project, request)
+        if createAutoRegistry:
+            addRegistryQuestionsToProject(user, project, request)
+        else:
+            return []
 
     sql = (
         "SELECT regsection.section_id,regsection.section_name,regsection.section_content,regsection.section_order,regsection.section_private,"

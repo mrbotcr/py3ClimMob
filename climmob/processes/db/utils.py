@@ -30,7 +30,6 @@ def existsCountryByCode(request, code):
     results = (
         request.dbsession.query(Country).filter(Country.cnty_cod == str(code)).first()
     )
-    print(results)
     if results:
         return True
     else:

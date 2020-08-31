@@ -26,7 +26,7 @@ class analysisDataView(privateView):
                         attr = element.split("_")
                         use.append(int(attr[1]))
 
-                data = getQuestionsByType(
+                data, _assessment = getQuestionsByType(
                     self.user.login, activeProjectData["project_cod"], self.request
                 )
                 dict = {}

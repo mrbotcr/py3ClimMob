@@ -24,6 +24,8 @@ from ..processes import (
     getJSONResult,
     getProjectData,
     getProjectAssessments,
+    getInformationFromProject,
+    getProjectAssessmentInfo
 )
 from .projectHelp.projectHelp import getImportantInformation
 from .registry import getDataFormPreview
@@ -35,12 +37,14 @@ from ..products.fieldagents.fieldagents import create_fieldagents_report
 from ..products.analysisdata.analysisdata import create_datacsv
 from ..products.forms.form import create_document_form
 from ..products.generalReport.generalReport import create_general_report
+from ..products.stickers.stickers import create_stickers_document
+from ..products.datacollectionprogress.dataCollectionProgress import create_data_collection_progress
 
 
 def getDataProduct(user, project, request):
 
     sql = (
-        "select edited.celery_taskid,edited.user_name,edited.project_cod,edited.product_id, edited.datetime_added, edited.output_id,edited.state, edited.output_mimetype "
+        "select edited.celery_taskid,edited.user_name,edited.project_cod,edited.product_id, edited.datetime_added, edited.output_id,edited.state, edited.output_mimetype, edited.output_mimetype, edited.process_name "
         "from "
         "("
         "SELECT *,'Success' as state  FROM products p where p.celery_taskid in (select taskid from finishedtasks where taskerror = 0) "
@@ -56,7 +60,7 @@ def getDataProduct(user, project, request):
         + project
         + "' and user_name='"
         + user
-        + "' and product_id= edited.product_id) and edited.user_name='"
+        + "' and product_id= edited.product_id and process_name= edited.process_name) and edited.user_name='"
         + user
         + "' and edited.project_cod='"
         + project
@@ -125,6 +129,9 @@ class productsView(climmobPrivateView):
                     else:
                         product["exists"] = "incorrect"
 
+                    if product["product_id"] == "documentform":
+                        product["extraInformation"] = getProjectAssessmentInfo(self.user.login, activeProjectData["project_cod"], product["process_name"].split('_')[3],self.request)
+
             if activeProjectData["project_active"] == 1:
                 hasActiveProject = True
         else:
@@ -142,6 +149,7 @@ class generateProductView(privateView):
     def processView(self):
         projectid = self.request.matchdict["projectid"]
         productid = self.request.matchdict["productid"]
+        processname = self.request.matchdict["processname"]
 
         if productid == "qrpackage":
 
@@ -196,19 +204,32 @@ class generateProductView(privateView):
             create_datacsv(self.user.login, projectid, info, self.request)
 
         if productid == "documentform":
-            # POR AHORA ESTARÍA SOLO FUNCIONANDO CON EL FORMULARIO DE REGISTRO DEBE DE SER EDITADO
             ncombs, packages = getPackages(self.user.login, projectid, self.request)
-            data, finalCloseQst = getDataFormPreview(self, projectid)
-            create_document_form(
-                self.request,
-                "en",
-                self.user.login,
-                projectid,
-                "Registration",
-                "",
-                data,
-                packages,
-            )
+            if processname == "create_from_Registration_":
+                data, finalCloseQst = getDataFormPreview(self, projectid)
+                create_document_form(
+                    self.request,
+                    "en",
+                    self.user.login,
+                    projectid,
+                    "Registration",
+                    "",
+                    data,
+                    packages,
+                )
+            else:
+                assessment_id = processname.split("_")[3]
+                data, finalCloseQst = getDataFormPreview(self, projectid, assessment_id)
+                create_document_form(
+                    self.request,
+                    "en",
+                    self.user.login,
+                    projectid,
+                    "Assessment",
+                    assessment_id,
+                    data,
+                    packages,
+                )
 
         if productid == "generalreport":
             dataworking = {}
@@ -221,7 +242,7 @@ class generateProductView(privateView):
             dataworking["project_fieldagents"] = getProjectEnumerators(
                 self.user.login, projectid, self.request
             )
-            dataRegistry, finalCloseQst = getDataFormPreview(self, projectid)
+            dataRegistry, finalCloseQst = getDataFormPreview(self, projectid, createAutoRegistry=False)
             dataworking["project_registry"] = dataRegistry
             dataAssessments = getProjectAssessments(
                 self.user.login, projectid, self.request
@@ -239,6 +260,22 @@ class generateProductView(privateView):
                 projectid,
                 dataworking,
             )
+
+        if productid == "stickers":
+            locale = self.request.locale_name
+            ncombs, packages = getPackages(self.user.login, projectid, self.request)
+
+            create_stickers_document(
+                locale,
+                self.request,
+                self.user.login,
+                projectid,
+                packages
+            )
+
+        if productid == "datacollectionprogress":
+
+            create_data_collection_progress(self.request, self.request.locale_name, self.user.login,projectid,getInformationFromProject(self.request, self.user.login,projectid))
 
         self.returnRawViewResult = True
         return HTTPFound(location=self.request.route_url("productList"))

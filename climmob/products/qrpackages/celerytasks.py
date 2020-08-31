@@ -179,7 +179,7 @@ def createQR(path, projectid, packages):
     #    os.remove(png)
 
     # os.system("rm -R "+pathpdf)
-    print(path)
+    #print(path)
     sh.rmtree(path)
 
     return ""

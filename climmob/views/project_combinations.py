@@ -20,6 +20,7 @@ from ..products.forms.form import create_document_form
 from ..products.packages.packages import create_packages_excell
 from ..products.colors.colors import create_colors_cards
 from ..products.fieldagents.fieldagents import create_fieldagents_report
+from ..products.stickers.stickers import create_stickers_document
 from .registry import getDataFormPreview
 import time
 
@@ -43,7 +44,6 @@ class projectCombinations_view(privateView):
             if stage < 1 or stage > 3:
                 raise HTTPNotFound()
 
-            # self.needCSS('jquerysteps')
             if stage == 1:
                 scrollPos = 0
                 if self.request.method == "POST":
@@ -115,13 +115,15 @@ class projectCombinations_view(privateView):
                     "registryCreated": False,
                 }
             if stage == 2:
-                if not projectHasCombinations(self.user.login, projectid, self.request):
-                    self.returnRawViewResult = True
-                    return HTTPFound(
-                        location=self.request.route_url(
-                            "combinations", _query={"stage": 1}, projectid=projectid
-                        )
-                    )
+                # EDITED BY BRANDON
+                #if not projectHasCombinations(self.user.login, projectid, self.request):
+                #self.returnRawViewResult = True
+                #return HTTPFound(
+                #    location=self.request.route_url(
+                #        "combinations", _query={"stage": 1}, projectid=projectid
+                #    )
+                #)
+                createCombinations(self.user.login, projectid, self.request)
 
                 create_packages_with_r(self.user.login, projectid, self.request)
                 ncombs, packages = getPackages(self.user.login, projectid, self.request)
@@ -193,7 +195,9 @@ def startTheRegistry(self, projectid):
     )
     time.sleep(1)
     # create_cards(self.request, self.user.login, projectid, packages)
+    create_stickers_document(self.request.locale_name,self.request,self.user.login,projectid,packages)
 
+    time.sleep(1)
     create_packages_excell(
         self.request,
         self.user.login,

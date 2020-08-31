@@ -9,6 +9,7 @@
     {% cssresource request,'coreresources','datatables' %}
     {% cssresource request,'coreresources','sweet' %}
     {% cssresource request,'coreresources','footable' %}
+    {% cssresource request,'coreresources','tour' %}
 {% endblock css %}
 
 {% block topScripts %}
@@ -18,11 +19,11 @@
     {% jsresource request,'coreresources','datatables' %}
     {% jsresource request,'coreresources','sweet' %}
     {% jsresource request,'coreresources','delete' %}
-
+    {% jsresource request,'coreresources','tour' %}
 {% endblock topScripts %}
 
 {% block pageheading %}
-    <div class="row wrapper border-bottom white-bg page-heading">
+    <div class="row wrapper border-bottom white-bg page-heading" id="div_for_help">
         <div class="col-lg-10">
             <h2>{{ _("Technologies library") }}</h2>
             <ol class="breadcrumb">
@@ -48,6 +49,9 @@
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
                     <h5>{{ _("Technologies available") }}</h5>
+                    <div class="ibox-tools">
+                        <a onclick="showHelp()" class="btn btn-xs btn-primary pull-right" style="margin-right: 20px">{{ _("Show help") }}</a>
+                    </div>
                 </div>
                 <div class="ibox-content">
                     <input type="text" class="form-control form-control-sm m-b-xs" id="filter" placeholder="{{ _("Search technology") }}">
@@ -423,7 +427,26 @@
             }
         });
 
+        function showHelp()
+        {
+            var tour = new Tour({
+                steps: [
+                        {
+                            element: "#div_for_help",
+                            title: "{{ _("Creating technologies in the library") }}",
+                            content: "1. {{ _("Click on the button: 'Create new technology'.") }}<br>2. {{ _("Click on the technology row.") }}<img src='{{ request.url_for_static('static/gif/create_technologies.gif') }}' />",
+                            placement: "bottom"
+                        }
+                       ],
+                template: "<div class='popover tour' style='border-color: #23c6c8; max-width: none; width:868px'><div class='arrow' ></div><h3 class='popover-title btn-info'></h3><div class='popover-content'></div><div class='popover-navigation'> <button class='btn btn-sm btn-secondary' data-role='end'>{{ _("Close") }}</button> </div>",
+                backdrop: true,
+                backdropContainer: 'body'
+            });
 
+            // Initialize the tour
+            tour.init();
+            tour.restart();
+        }
 
     </script>
 

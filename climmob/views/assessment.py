@@ -27,7 +27,9 @@ from ..processes import (
     is_assessment_final,
     get_usable_assessments,
     clean_assessments_error_logs,
+    getPackages
 )
+from ..products.forms.form import create_document_form
 from jinja2 import Environment, FileSystemLoader
 from .registry import getDataFormPreview
 from pyramid.response import FileResponse
@@ -652,6 +654,20 @@ class startAssessments_view(privateView):
                         self.user.login, projectid, assessment_id, 1, self.request
                     )
                     # setAssessmentStatus(self.user.login,projectid,1,self.request)
+                    # WORKING HERE FOR CREATE THE ASSESSMENT DOCUMENT
+                    ncombs, packages = getPackages(self.user.login, projectid, self.request)
+                    data, finalCloseQst = getDataFormPreview(self, projectid, assessment_id)
+                    create_document_form(
+                        self.request,
+                        "en",
+                        self.user.login,
+                        projectid,
+                        "Assessment",
+                        assessment_id,
+                        data,
+                        packages,
+                    )
+
                     self.returnRawViewResult = True
                     return HTTPFound(location=self.request.route_url("dashboard"))
                 return {

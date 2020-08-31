@@ -6,9 +6,14 @@
             <th class="text-center">{{ _('Description') }}</th>
             <th class="text-center">{{ _('Date') }}</th>
             <th class="text-center">{{ _('Format') }}</th>
-            <th class="text-center">{{ _('Action') }}</th>
+            <th class="text-center" colspan="2">{{ _('Action') }}</th>
         </tr>
-        {% set changes = {'projectSummary': true} %}
+        {% set changes = {'projectSummary': true, 'DataCollectionProgress': false} %}
+
+        {% if activeProject.project_regstatus > 0 %}
+            {% if changes.update({'DataCollectionProgress': true }) %} {% endif %}
+        {% endif %}
+
         {% for product in Products %}
             {% set color = '#676a6c' %}
             {% if product.product_id == "qrpackage" or product.product_id == "packages" or product.product_id == "fieldagents"%}
@@ -40,13 +45,26 @@
                                                 {{ _("Data collected in ") }} {{ product.output_id }}
                                             {% else %}
                                                 {% if product.product_id == "documentform" %}
-                                                    {{ _("Printer-friendly registration form") }}
+                                                    {% if product.process_name == "create_from_Registration_" %}
+                                                        {{ _("Printer-friendly registration form") }}
+                                                    {% else %}
+                                                        {{ _("Printer-friendly assessment form") }}: {{ product.extraInformation.ass_desc }}
+                                                    {% endif %}
                                                 {% else %}
                                                     {% if product.product_id == "generalreport" %}
                                                         {% if changes.update({'projectSummary': false }) %}{% endif %}
                                                         {{ _("Project summary") }}
                                                     {% else %}
-                                                        {{ product.product_id }}
+                                                        {% if product.product_id == "datacollectionprogress" %}
+                                                            {% if changes.update({'DataCollectionProgress': false }) %} {% endif %}
+                                                            {{ _("Progress report on data collection") }}
+                                                        {% else %}
+                                                            {% if product.product_id == "stickers" %}
+                                                                {{ _("Stickers for each variety pack") }}
+                                                            {% else %}
+                                                                {{ product.product_id }}
+                                                            {% endif %}
+                                                        {% endif %}
                                                     {% endif %}
                                                 {% endif %}
                                             {% endif %}
@@ -87,14 +105,11 @@
                         {% endif %}
                     {% endif %}
                 </td>
-                <td class="text-center">
+                <td class="text-center" style="width: 140px">
                     {% if product.state == "Success"%}
                         {% if product.exists == "correct" %}
                             {% if product.product_id != "datadesk" %}
                                 <a href="{{ request.route_url('download', product_id=product.celery_taskid) }}" class="btn btn-primary" style="background-color:{{ color }}; border-color: {{ color }}"><i class="fa fa-download"></i> {{ _("Download") }}</a>
-                                {% if product.product_id == "generalreport" %}
-                                    <a href="{{ request.route_url('generateProduct', productid="generalreport", projectid=activeProject.project_cod) }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Update") }}</a>
-                                {% endif %}
                             {% else %}
                                 <a id="{{product.celery_taskid}}$#%%#${{product.output_id}}" class="btn btn-primary btn_datadesk" style="background-color:{{ color }}; border-color: {{ color }}"><i class="fa fa-download"></i> {{ _("Download") }}</a>
                             {% endif %}
@@ -103,7 +118,7 @@
                                 <a href="{{ request.route_url('createAnalysis') }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
                             {% else %}
                                 {% if  product.product_id != "datadesk"%}
-                                    <a href="{{ request.route_url('generateProduct', productid=product.product_id, projectid=activeProject.project_cod) }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
+                                    <a href="{{ request.route_url('generateProduct', productid=product.product_id, projectid=activeProject.project_cod, processname=product.process_name) }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
                                 {% endif %}
                             {% endif %}
 
@@ -117,12 +132,25 @@
                                 <a href="{{ request.route_url('createAnalysis') }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
                             {% else %}
                                 {% if  product.product_id != "datadesk"%}
-                                    <a href="{{ request.route_url('generateProduct', productid=product.product_id, projectid=activeProject.project_cod) }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
+                                    <a href="{{ request.route_url('generateProduct', productid=product.product_id, projectid=activeProject.project_cod, processname=product.process_name) }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
                                 {% endif %}
                             {% endif %}
                             <p style="color:#ed5565"><i class="fa fa-info-circle"></i> {{ _("There was a problem creating the product.") }}</p>
                         {% endif %}
                     {% endif%}
+                </td>
+                <td class="text-center" style="width: 110px">
+                    {% if product.state == "Success"%}
+                        {% if product.exists == "correct" %}
+                            {% if product.product_id == "generalreport" %}
+                                <a href="{{ request.route_url('generateProduct', productid="generalreport", projectid=activeProject.project_cod, processname="generalreport") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Update") }}</a>
+                            {% endif %}
+
+                            {% if product.product_id == "datacollectionprogress" %}
+                                <a href="{{ request.route_url('generateProduct', productid="datacollectionprogress", projectid=activeProject.project_cod, processname="datacollectionprogress") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Update") }}</a>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
                 </td>
             </tr>
         {% endfor %}
@@ -132,9 +160,23 @@
                 <td></td>
                 <td></td>
                 <td class="text-center">
-                    <a href="{{ request.route_url('generateProduct', productid="generalreport", projectid=activeProject.project_cod) }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
+                    <a href="{{ request.route_url('generateProduct', productid="generalreport", projectid=activeProject.project_cod, processname="generalreport") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
                 </td>
+                <td></td>
             </tr>
         {% endif %}
+        {% if changes.DataCollectionProgress %}
+            <tr>
+                <td>{{ _("Progress report on data collection") }}</td>
+                <td></td>
+                <td></td>
+                <td class="text-center">
+                    <a href="{{ request.route_url('generateProduct', productid="datacollectionprogress", projectid=activeProject.project_cod, processname="datacollectionprogress") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
+                </td>
+                <td></td>
+            </tr>
+        {% endif %}
+
+{#    <a href="{{ request.route_url('generateProduct', productid="datacollectionprogress", projectid=activeProject.project_cod, processname="datacollectionprogress") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Aquiiiii") }}</a>#}
     </tbody>
 </table>

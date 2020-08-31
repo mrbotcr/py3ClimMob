@@ -11,6 +11,7 @@ import uuid, os
 from subprocess import Popen, PIPE
 import logging, shutil
 from jinja2 import Environment
+from ..db.question import getQuestionOptions
 
 __all__ = [
     "availableAssessmentQuestions",
@@ -331,9 +332,6 @@ def getProjectAssessments(user, project, request):
     result = []
     for qst in assessments:
         dct = dict(qst)
-        # for key, value in dct.iteritems():
-        #    if isinstance(value, str):
-        #        dct[key] = value.decode("utf8")
         result.append(dct)
     return result
 
@@ -618,9 +616,9 @@ def getAssessmentQuestions(user, project, assessment, request):
     result = []
     for qst in questions:
         dct = dict(qst)
-        # for key, value in dct.iteritems():
-        #    if isinstance(value, str):
-        #        dct[key] = value.decode("utf8")
+        if dct["question_dtype"] == 5 or dct["question_dtype"] == 6:
+            options = getQuestionOptions(dct["question_id"], request)
+            dct["question_options"] = options
         result.append(dct)
 
     return result

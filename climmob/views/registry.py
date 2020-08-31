@@ -449,10 +449,10 @@ class registryFormCreation_view(privateView):
         return ""
 
 
-def getDataFormPreview(self, projectid, assessmentid=None):
+def getDataFormPreview(self, projectid, assessmentid=None, createAutoRegistry=True):
 
     if not assessmentid:
-        data = getRegistryQuestions(self.user.login, projectid, self.request)
+        data = getRegistryQuestions(self.user.login, projectid, self.request,createAutoRegistry)
     else:
         data = getAssessmentQuestions(
             self.user.login, projectid, assessmentid, self.request
@@ -461,6 +461,7 @@ def getDataFormPreview(self, projectid, assessmentid=None):
     # This because the scope constraint makes it difficult to control
     sectionID = -99
     grpIndex = -1
+    finalCloseQst = 0
     for a in range(0, len(data)):
         if data[a]["section_id"] != sectionID:
             grpIndex = a
@@ -494,6 +495,7 @@ def getDataFormPreview(self, projectid, assessmentid=None):
         else:
             data[a]["hasQuestions"] = False
 
-    finalCloseQst = data[len(data) - 1]["hasQuestions"]
+    if data:
+        finalCloseQst = data[len(data) - 1]["hasQuestions"]
 
     return data, finalCloseQst

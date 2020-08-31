@@ -383,7 +383,7 @@
                                             <div class="row">
                                                 {% if progress.enumerators == true and progress.technology == true and progress.techalias == true and progress.registry == true %}
                                                     <div class="col-md-12">
-                                                        <button class="btn btn-primary btn-rounded btn-block" onclick="location.href='{{ request.route_url('combinations',projectid=activeProject.project_cod) }}'"><i class="fa fa-play"></i> {{ _("Generate packages with technology options") }}<br/> {{ _("and open the registration of participants") }}</button>
+                                                        <button class="btn btn-primary btn-rounded btn-block" onclick="location.href='{{ request.route_url('combinations',projectid=activeProject.project_cod,  _query={"stage": 2}) }}'"><i class="fa fa-play"></i> {{ _("Generate packages with technology options") }}<br/> {{ _("and open the registration of participants") }}</button>
                                                     </div>
                                                 {% else %}
                                                     <div class="col-md-12">
@@ -958,7 +958,7 @@
                     {
                         element: "#nav_libraries",
                         title: "{{ _("Libraries") }}",
-                        content: "{{ _("Text about libraries") }}.",
+                        content: "{{ _("Libraries allow you to save information that can be assigned to different projects.") }}.",
                         placement: "right"
                     },
                     {
@@ -982,7 +982,7 @@
                     {
                         element:"#nav_downloads",
                         title: "{{ _("Downloads") }}",
-                        content: "{{ _("Text about downloads") }}.",
+                        content: "{{ _("ClimMob generates different output documents per project, in this menu option you could download the information") }}.",
                         placement: "right"
                     }
                    ],

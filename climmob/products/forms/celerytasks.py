@@ -10,14 +10,14 @@ from ..qrpackages.celerytasks import create_qr
 
 @celeryApp.task(base=celeryTask, soft_time_limit=7200, time_limit=7200)
 def createDocumentForm(
-    locale, user, path, projectid, formGroupsAndQuestions, form, code, packages
+    locale, user, path, projectid, formGroupsAndQuestions, form, code, packages,
 ):
-    if os.path.exists(path):
-        sh.rmtree(path)
 
-    nameOutput = form + "_form"
-    if code != "":
-        nameOutput += "_" + code
+    #NO SE BORRA EL PATH PORQUE PUEDE TENER VARIOS ARCHIVOS
+    #if os.path.exists(path):
+    #    sh.rmtree(path)
+    if not os.path.exists(path):
+        os.makedirs(path)
 
     PATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     this_file_path = PATH + "/locale"
@@ -35,12 +35,16 @@ def createDocumentForm(
         es.install()
         _ = es.gettext
 
-    os.makedirs(path)
+    nameOutput = form + "_form"
+    if code != "":
+        nameOutput += "_" + code
+
     pathqr = os.path.join(path, "qr")
     os.makedirs(pathqr)
 
     pathoutput = os.path.join(path, "outputs")
-    os.makedirs(pathoutput)
+    if not os.path.exists(pathoutput):
+        os.makedirs(pathoutput)
 
     PATH2 = os.path.dirname(os.path.abspath(__file__))
     doc = DocxTemplate(PATH2 + "/template/word_template.docx")
