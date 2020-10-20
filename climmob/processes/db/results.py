@@ -501,7 +501,7 @@ def getSpecialFields(registry, assessments):
     return result
 
 
-def getJSONResult(user, project, request):
+def getJSONResult(user, project, request, includeRegistry=True, includeAssessment=True,assessmentCode=""):
     data = {}
     res = (
         request.dbsession.query(Project)
@@ -526,45 +526,50 @@ def getJSONResult(user, project, request):
                     mappedData[key] = str(value)
             data["project"] = mappedData
 
-            registryXML = os.path.join(
-                request.registry.settings["user.repository"],
-                *[user, project, "db", "reg", "create.xml"]
-            )
-            if os.path.exists(registryXML):
-                data["registry"] = {
-                    "lkptables": getLookups(registryXML, user, project, request),
-                    "fields": getFields(registryXML, "REG_geninfo"),
-                }
+            if includeRegistry:
+                registryXML = os.path.join(
+                    request.registry.settings["user.repository"],
+                    *[user, project, "db", "reg", "create.xml"]
+                )
+                if os.path.exists(registryXML):
+                    data["registry"] = {
+                        "lkptables": getLookups(registryXML, user, project, request),
+                        "fields": getFields(registryXML, "REG_geninfo"),
+                    }
 
-            assessments = (
-                request.dbsession.query(Assessment)
-                .filter(Assessment.user_name == user)
-                .filter(Assessment.project_cod == project)
-                .all()
-            )
             data["assessments"] = []
             haveAssessments = False
-            for assessment in assessments:
-                if assessment.ass_status == 1 or assessment.ass_status == 2:
-                    haveAssessments = True
-                    assessmentXML = os.path.join(
-                        request.registry.settings["user.repository"],
-                        *[user, project, "db", "ass", assessment.ass_cod, "create.xml"]
-                    )
-                    if os.path.exists(registryXML):
-                        data["assessments"].append(
-                            {
-                                "code": assessment.ass_cod,
-                                "desc": assessment.ass_desc,
-                                "lkptables": getLookups(
-                                    assessmentXML, user, project, request
-                                ),
-                                "fields": getFields(
-                                    assessmentXML,
-                                    "ASS" + assessment.ass_cod + "_geninfo",
-                                ),
-                            }
-                        )
+
+            if includeAssessment:
+                assessments = (
+                    request.dbsession.query(Assessment)
+                    .filter(Assessment.user_name == user)
+                    .filter(Assessment.project_cod == project)
+                    .all()
+                )
+
+                for assessment in assessments:
+                    if assessmentCode == "" or assessmentCode == assessment.ass_cod:
+                        if assessment.ass_status == 1 or assessment.ass_status == 2:
+                            haveAssessments = True
+                            assessmentXML = os.path.join(
+                                request.registry.settings["user.repository"],
+                                *[user, project, "db", "ass", assessment.ass_cod, "create.xml"]
+                            )
+                            if os.path.exists(registryXML):
+                                data["assessments"].append(
+                                    {
+                                        "code": assessment.ass_cod,
+                                        "desc": assessment.ass_desc,
+                                        "lkptables": getLookups(
+                                            assessmentXML, user, project, request
+                                        ),
+                                        "fields": getFields(
+                                            assessmentXML,
+                                            "ASS" + assessment.ass_cod + "_geninfo",
+                                        ),
+                                    }
+                                )
             # EDITED BY BRANDON#
             if res.project_registration_and_analysis == 1:
                 haveAssessments = True
@@ -581,7 +586,9 @@ def getJSONResult(user, project, request):
 
             else:
                 data["specialfields"] = []
-                data["data"] = []
+                data["data"] = getData(
+                    user, project, data["registry"], data["assessments"], request
+                )
                 data["importantfields"] = []
 
         else:

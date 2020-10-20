@@ -111,7 +111,7 @@ def addQuestionToDictionary(questionData, numComb, assessment=None):
         code = "REG"
 
     if questionData["question_dtype"] == 5:
-        questInfo["name"] = questionData["question_desc"]
+        questInfo["name"] = questionData["question_name"]
         questInfo["id"] = questionData["question_id"]
         questInfo["vars"] = code + questionData["question_code"].lower()
         questInfo["code"] = assessment
@@ -120,7 +120,7 @@ def addQuestionToDictionary(questionData, numComb, assessment=None):
 
     if questionData["question_dtype"] == 9 or questionData["question_dtype"] == 10:
 
-        questInfo["name"] = questionData["question_desc"]
+        questInfo["name"] = questionData["question_name"]
         questInfo["id"] = questionData["question_id"]
         questInfo["vars"] = []
         questInfo["code"] = assessment
@@ -219,7 +219,7 @@ def getQuestionsStructure(user, project, ass_cod, request):
                 or questionData["question_dtype"] == 10
             ):
 
-                questInfo["name"] = questionData["question_desc"]
+                questInfo["name"] = questionData["question_name"]
                 questInfo["id"] = questionData["question_id"]
                 questInfo["vars"] = []
                 if questionData["question_dtype"] == 9:
@@ -291,7 +291,7 @@ def getQuestionsStructure(user, project, ass_cod, request):
 
                     dic.append(questInfo)
             else:
-                questInfo["name"] = questionData["question_desc"]
+                questInfo["name"] = questionData["question_name"]
                 questInfo["id"] = questionData["question_id"]
                 questInfo["vars"] = [
                     {"name": questionData["question_code"], "validation": ""}

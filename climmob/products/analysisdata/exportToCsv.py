@@ -36,6 +36,7 @@ def createCSV(outputPath, inputFile):
                 fieldsDataRow = []
                 # DATOS DEL REGISTRO
                 for field in data["registry"]["fields"]:
+                    print(field)
                     fieldsDataRow.append(
                         str(row["REG_" + field["name"]]).replace(",", "")
                     )

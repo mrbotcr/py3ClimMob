@@ -3,10 +3,11 @@ from .classes import privateView
 from .editDataDB import getNamesEditByColums, fillDataTable, update_edited_data
 
 # Edit by Brandon
-from climmob.processes import projectExists
+from climmob.processes import projectExists, getJSONResult
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 import os
 from ..products.datadesk.datadesk import create_data_desk
+from ..products.analysisdata.analysisdata import create_datacsv
 from climmob.processes import getQuestionsStructure
 
 ##########
@@ -17,83 +18,28 @@ class downloadDataView(privateView):
     def processView(self):
         proId = self.request.matchdict["projectid"]
         formId = self.request.matchdict["formid"]
-        code = ""
-        # print proId
-        # print formId
+        includeRegistry = True
+        includeAssessment = True
+        code =""
+
         if not projectExists(self.user.login, proId, self.request):
             raise HTTPNotFound()
         else:
 
             if formId == "registry":
-                formId = "reg"
+                formId = "Registration"
+                includeAssessment = False
             else:
                 if formId == "assessment":
-                    formId = "ass"
+                    formId = "Assessment"
+                    includeAssessment = True
                     code = self.request.matchdict["codeid"]
                 else:
                     raise HTTPNotFound()
 
-            # Add by Brandon
-            path = os.path.join(
-                self.request.registry.settings["user.repository"],
-                *[self.user.login, proId]
-            )
-            if code == "":
-                paths = ["db", formId, "create.xml"]
-            else:
-                paths = ["db", formId, code, "create.xml"]
-            path = os.path.join(path, *paths)
-            # print path
+        info = getJSONResult(self.user.login, proId, self.request, includeRegistry, includeAssessment, code)
 
-        dataXML = getNamesEditByColums(proId, path, code)
-        if formId == "ass":
-            # print "*********************************"
-            dataOriginal = getQuestionsStructure(
-                self.user.login, proId, code, self.request
-            )
-            for originalData in dataOriginal:
-                for vars in originalData["vars"]:
-                    for xmldata in dataXML:
-                        if vars["name"].lower() == xmldata[0]:
-                            # print vars["name"]
-                            index = dataXML.index(xmldata)
-                            dataXML[index].append(vars["validation"].lower())
-                            # print dataXML[index]
-                            # xmldata.append(vars["validation"].lower())
-
-        columns = dataXML
-        selected_contacts = []
-        for column in columns:
-            try:
-                selected_contacts.append(
-                    column[0]
-                    + "$%*"
-                    + column[1]
-                    + "$%*"
-                    + column[2]
-                    + "$%*"
-                    + column[3]
-                    + "$%*"
-                    + column[4]
-                    + "$%*"
-                    + column[5]
-                )
-            except:
-                selected_contacts.append(
-                    column[0]
-                    + "$%*"
-                    + column[1]
-                    + "$%*"
-                    + column[2]
-                    + "$%*"
-                    + column[3]
-                    + "$%*"
-                    + column[4]
-                    + "$%*"
-                )
-        data = fillDataTable(self, proId, formId, selected_contacts, path, code)
-
-        create_data_desk(self.request, self.user.login, proId, data, formId + code)
+        create_datacsv(self.user.login,proId, info ,self.request, formId, code)
 
         url = self.request.route_url("productList")
         self.returnRawViewResult = True

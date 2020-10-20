@@ -59,7 +59,7 @@ class analysisDataView(privateView):
                     self.user.login,
                     activeProjectData["project_cod"],
                     info,
-                    self.request,
+                    self.request,"Report",""
                 )
 
                 self.returnRawViewResult = True

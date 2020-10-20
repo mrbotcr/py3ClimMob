@@ -7,15 +7,22 @@ from .exportToCsv import createCSV
 
 
 @celeryApp.task(base=climmobCeleryTask)
-def create_CSV(path, info, projectid):
+def create_CSV(path, info, projectid, form, code):
 
-    if os.path.exists(path):
-        sh.rmtree(path)
+    #if os.path.exists(path):
+    #    sh.rmtree(path)
 
-    os.makedirs(path)
+    nameOutput = form + "_data"
+    if code != "":
+        nameOutput += "_" + code
 
     pathout = os.path.join(path, "outputs")
-    os.makedirs(pathout)
+    if not os.path.exists(path):
+        os.makedirs(path)
+        os.makedirs(pathout)
+
+    if os.path.exists(pathout + "/"+nameOutput+"_" + projectid + ".csv"):
+        os.remove(pathout + "/"+nameOutput+"_" + projectid + ".csv")
 
     pathInputFiles = os.path.join(path, "inputFile")
     os.makedirs(pathInputFiles)
@@ -27,7 +34,7 @@ def create_CSV(path, info, projectid):
     if os.path.exists(pathInputFiles + "/info.json"):
         try:
             createCSV(
-                pathout + "/Information_of_the project_" + projectid + ".csv",
+                pathout + "/"+nameOutput+"_" + projectid + ".csv",
                 pathInputFiles + "/info.json",
             )
         except Exception as e:
