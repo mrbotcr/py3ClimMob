@@ -6,41 +6,54 @@
 
 {% block css %}
     {% cssresource request,'coreresources','sweet' %}
+    {% cssresource request,'coreresources','switch' %}
 {% endblock css %}
 
 {% block topScripts %}
     {% jsresource request,'coreresources','sweet' %}
     {% jsresource request,'coreresources','delete' %}
+    {% jsresource request,'coreresources','switch' %}
+    {% jsresource request,'coreresources','assessment_form' %}
 {% endblock topScripts %}
 
 {% block pageheading %}
-    <div class="row wrapper border-bottom white-bg page-heading">
-        <div class="col-lg-10">
-            <h2>{{ _("Prepare data collection") }}</h2>
-            <ol class="breadcrumb">
-                <li>
-                    <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
-                </li>
-                <li class="active">
-                    <strong>{{  _("Prepare data collection") }}</strong>
-                </li>
-            </ol>
-            <a href="https://climmob.net/blog/wiki/2019/09/30/prepare-data-collection/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
-        </div>
-        <div class="col-lg-2">
-
-        </div>
-    </div>
+     {% snippet 'snippets/menuheading.jinja2', request=request, _title= _("Prepare data collection"), _linkWiki="https://climmob.net/blog/wiki/prepare-data-collection/" %}
 {% endblock %}
 
 {% block pagecontent %}
     <div class="row">
-        <div class="col-lg-12 ">
+        <div class="col-lg-6 ">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{{ _("Data collection moment details") }}</h5>
+                    <div class="ibox-tools">
+                        <button id="btn_cancel_assessment"  class="btn btn-xs btn-default pull-right " ><i class="fa fa-close" style="color: black"></i> </button>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    {% snippet 'snippets/error.jinja2', error_summary=error_summary %}
+
+
+                    <div class="error-desc">
+                        <form class="form-horizontal" role="form" method="post" action="{{ request.path }}">
+                            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                            {% snippet 'snippets/project/assessment/assessmentform.jinja2', data=data, final_visible=new_available  %}
+                            <button class="btn btn-primary pull-right btnsAssesment" type="submit" name="btn_add_ass" id="btn_add_ass"> {{ _('Add and close') }}</button>
+                            <button class="btn btn-primary pull-right btnsAssesment" type="submit" name="btn_modify_ass" id="btn_modify_ass" style="display: none"> {{ _('Save and close') }}</button>
+                        </form>
+                        <br>
+                        <br>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
                     <h5>{{ _("Active data collection moments") }} </h5>
                     <div class="ibox-tools">
-                        <a href="{{ request.route_url('newassessment', projectid=projectid) }}"  class="btn btn-primary btn-xs pull-right clm-grpactions" style="margin-right: 20px">{{ _("Add new data collection moment") }}</a>
+{#                        <a href="{{ request.route_url('newassessment', projectid=projectid) }}"  class="btn btn-primary btn-xs pull-right clm-grpactions" style="margin-right: 20px">{{ _("Add new data collection moment") }}</a>#}
                     </div>
                 </div>
                 <div class="ibox-content animated fadeInRightBig" >
@@ -64,7 +77,7 @@
                                     <td class="text-center">
                                         {% if assessment.ass_status == 0 %}
                                             <a class="btn btn-default btn-circle" href="{{ request.route_url('assessmentdetail', projectid=projectid,assessmentid=assessment.ass_cod) }}" title="Set questions"><i class="fa fa-list-ul"></i></a>
-                                            <a class="btn btn-warning btn-circle" href="{{ request.route_url('modifyassessment', projectid=projectid,assessmentid=assessment.ass_cod) }}" title="Edit data collection moment"><i class="fa fa-pencil"></i></a>
+                                            <a class="btn btn-warning btn-circle" onclick='seeAssessment({{ assessment.ass_cod|tojson }},{{ assessment.ass_desc|tojson }},{{ assessment.ass_days }}, {{ assessment.ass_final }})' title="Edit data collection moment"><i class="fa fa-pencil"></i></a>
                                             <button class="btn btn-danger btn-circle"  onclick="showDelete('{{ request.route_url('deleteassessment', projectid=projectid,assessmentid=assessment.ass_cod) }}','{{ _("Do you really want to remove this data collection moment?") }}','{{ request.session.get_csrf_token() }}')" title="Remove data collection"><i class="fa fa-times"></i></button>
                                         {% else %}
                                             {% if assessment.ass_status == 1 %}
@@ -88,5 +101,56 @@
                 </div>
             </div>
         </div>
+
     </div>
+
+    <script>
+        $(document).ready(function () {
+            {% if not new_available %}
+                $("#check_for_final").css("display","none")
+            {% else %}
+                $("#ckb_final").bootstrapSwitch('state', false);
+            {% endif %}
+        });
+
+        function seeAssessment(code, desc, days, final) {
+            cleanButtons();
+            cleanInputs();
+            $("#ass_cod").val(code);
+            $("#ass_desc").val(desc);
+            $("#ass_days").val(days);
+            if(final == 1)
+            {
+                $("#ckb_final").bootstrapSwitch('state', true);
+                $("#check_for_final").css("display","block")
+            }
+            $("#btn_modify_ass").css("display","block")
+        }
+
+        $("#btn_cancel_assessment").click(function () {
+            cleanButtons()
+            cleanInputs()
+            $("#btn_add_ass").css('display','initial')
+        })
+
+        function cleanButtons() {
+            $(".btnsAssesment").css("display","none")
+        }
+
+        function cleanInputs() {
+            $("#ass_desc").val("")
+            $("#ass_days").val("")
+            $("#ckb_final").bootstrapSwitch('state',false);
+
+            {% if not new_available %}
+                $("#check_for_final").css("display","none")
+            {% else %}
+                $("#check_for_final").css("display","block")
+            {% endif %}
+        }
+
+
+    </script>
+
 {% endblock pagecontent%}
+

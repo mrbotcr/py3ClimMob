@@ -392,18 +392,65 @@ class assessmenthead_view(privateView):
     def processView(self):
 
         projectid = self.request.matchdict["projectid"]
+        data = {}
+        error_summary = {}
+
         if not projectExists(self.user.login, projectid, self.request):
             raise HTTPNotFound()
         else:
+
+            if self.request.method == "POST":
+                data = self.getPostDict()
+                if "btn_add_ass" in self.request.POST:
+                    data["project_cod"] = projectid
+                    data["user_name"] = self.user.login
+                    if data.get("ass_final", "off") == "on":
+                        data["ass_final"] = 1
+                    else:
+                        data["ass_final"] = 0
+                    added, msg = addProjectAssessment(data, self.request)
+                    if data["ass_final"] == 1:
+                        data["ass_final"] = "on"
+                    else:
+                        data["ass_final"] = "off"
+                    if not added:
+                        error_summary["addAssessment"] = msg
+                    else:
+                        data={}
+                else:
+                    if "btn_modify_ass" in self.request.POST:
+                        data["project_cod"] = projectid
+                        data["user_name"] = self.user.login
+                        if data.get("ass_final", "off") == "on":
+                            data["ass_final"] = 1
+                        else:
+                            data["ass_final"] = 0
+                        error, msg = modifyProjectAssessment(data, self.request)
+                        if data["ass_final"] == 1:
+                            data["ass_final"] = "on"
+                        else:
+                            data["ass_final"] = "off"
+                        if not error:
+                            error_summary["modifyAssessment"] = msg
+                        else:
+                            data={}
+
+            new_available = not there_is_final_assessment(
+                self.request, self.user.login, projectid
+            )
+
             return {
+                "new_available": new_available,
                 "activeUser": self.user,
                 "projectid": projectid,
                 "assessments": getProjectAssessments(
                     self.user.login, projectid, self.request
                 ),
+                "data": data,
+                "error_summary": error_summary
             }
 
-
+"""
 class newassessmenthead_view(privateView):
     def processView(self):
         projectid = self.request.matchdict["projectid"]
@@ -444,8 +491,9 @@ class newassessmenthead_view(privateView):
                 "data": data,
                 "error_summary": error_summary,
             }
+"""
 
-
+"""
 class modifyassessmenthead_view(privateView):
     def processView(self):
         # self.needCSS('switch')
@@ -501,7 +549,7 @@ class modifyassessmenthead_view(privateView):
                 "data": data,
                 "error_summary": error_summary,
             }
-
+"""
 
 class deleteassessmenthead_view(privateView):
     def processView(self):

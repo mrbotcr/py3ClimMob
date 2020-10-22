@@ -20,23 +20,7 @@
 {% endblock topScripts %}
 
 {% block pageheading %}
-    <div class="row wrapper border-bottom white-bg page-heading">
-        <div class="col-lg-10">
-            <h2>{{ _("Update project") }}</h2>
-            <ol class="breadcrumb">
-                <li>
-                    <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
-                </li>
-                <li class="active">
-                    <strong>{{ _("Update project") }}</strong>
-                </li>
-            </ol>
-            <a href="https://climmob.net/blog/wiki/2019/09/30/update-project/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
-        </div>
-        <div class="col-lg-2">
-
-        </div>
-    </div>
+    {% snippet 'snippets/menuheading.jinja2', request=request, _title= _("Update project"), _linkWiki="https://climmob.net/blog/wiki/update-project/" %}
 {% endblock %}
 
 {% block pagecontent %}
@@ -50,7 +34,7 @@
             {% endfor %}
         {% endif %}
 
-        <form method="post" class="form-horizontal" action="{{ request.path }}">
+        <form id="formModify" method="post" class="form-horizontal" action="{{ request.path }}">
             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
             {% block newprjform %}
                 {% snippet 'snippets/project/project_form.jinja2', dataworking=data, edit=True, countries=countries %}
@@ -71,6 +55,11 @@
                     radioClass: 'iradio_square-green',
                 });
             })
+
+        $("#formModify").submit(function (e) {
+            $(".radiosRA").prop('disabled', false);
+        });
+
         </script>
     {% endif %}
 {% endblock pagecontent %}

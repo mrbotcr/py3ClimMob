@@ -19,23 +19,7 @@
 {% endblock topScripts %}
 
 {% block pageheading %}
-    <div class="row wrapper border-bottom white-bg page-heading" id="div_for_help">
-        <div class="col-lg-10">
-            <h2>{{ _("Prepare participant registration") }}</h2>
-            <ol class="breadcrumb">
-                <li>
-                    <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
-                </li>
-                <li class="active">
-                    <strong>{{  _("Prepare participant registration") }}</strong>
-                </li>
-            </ol>
-            <a href="https://climmob.net/blog/wiki/2019/09/30/prepare-participant-registration/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
-        </div>
-        <div class="col-lg-2">
-
-        </div>
-    </div>
+    {% snippet 'snippets/menuheading.jinja2', request=request, _title= _("Prepare participant registration"), _linkWiki="https://climmob.net/blog/wiki/prepare-grower-registration/" %}
 {% endblock %}
 
 {% block pagecontent %}

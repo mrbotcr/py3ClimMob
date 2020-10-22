@@ -58,8 +58,8 @@ from ..views.assessment import (
     deleteAssessmentSection_view,
     modifyAssessmentSection_view,
     assessmenthead_view,
-    newassessmenthead_view,
-    modifyassessmenthead_view,
+    #newassessmenthead_view,
+    #modifyassessmenthead_view,
     deleteassessmenthead_view,
     assessmentEnketo_view,
     startAssessments_view,
@@ -689,14 +689,14 @@ def loadRoutes(config):
             "project/assessment/assessment.jinja2",
         )
     )
-    routes.append(
+    """routes.append(
         addRoute(
             "newassessment",
             "/project/{projectid}/assessments/new",
             newassessmenthead_view,
             "project/assessment/newassessment.jinja2",
         )
-    )
+    )"""
     routes.append(
         addRoute(
             "startassessments",
@@ -706,14 +706,14 @@ def loadRoutes(config):
         )
     )
     # routes.append(addRoute('cancelassessments', '/project/{projectid}/assessment/{assessmentid}/cancel', cancelAssessment_view,'project/cancelassessment.jinja2'))
-    routes.append(
+    """routes.append(
         addRoute(
             "modifyassessment",
             "/project/{projectid}/assessment/{assessmentid}/edit",
             modifyassessmenthead_view,
             "project/assessment/modifyassessment.jinja2",
         )
-    )
+    )"""
     routes.append(
         addRoute(
             "deleteassessment",

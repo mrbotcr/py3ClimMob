@@ -106,9 +106,9 @@
             <div class="ibox-content">
 
                 <div class="form-group  text-center">
-                    <div class="i-checks" ><label style="font-weight: initial; font-size: 14px"> <input type="radio" name="project_registration_and_analysis" value="0" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} {% if dataworking["project_registration_and_analysis"] ==0 %}checked{% endif %}> <i></i> {{ _("Registration is done first, followed by one or more data collection moments (with different forms)") }} </label></div>
+                    <div class="i-checks" ><label style="font-weight: initial; font-size: 14px"> <input class="radiosRA" type="radio" name="project_registration_and_analysis" value="0" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} {% if dataworking["project_registration_and_analysis"] ==0 %}checked{% endif %}> <i></i> {{ _("Registration is done first, followed by one or more data collection moments (with different forms)") }} </label></div>
                     <br>
-                    <div class="i-checks"><label style="font-weight: initial; font-size: 14px"> <input type="radio" name="project_registration_and_analysis" value="1" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} {% if dataworking["project_registration_and_analysis"] ==1 %}checked{% endif %}> <i></i> {{ _("Requires registering participants and immediately asking questions to analyze the information") }} </label></div>
+                    <div class="i-checks"><label style="font-weight: initial; font-size: 14px"> <input class="radiosRA" type="radio" name="project_registration_and_analysis" value="1" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} {% if dataworking["project_registration_and_analysis"] ==1 %}checked{% endif %}> <i></i> {{ _("Requires registering participants and immediately asking questions to analyze the information") }} </label></div>
 
 {#                    <input type="checkbox"  id="project_registration_and_analysis" name="project_registration_and_analysis" data-on-color="success" data-off-color="danger" data-on-text="{{ _('Yes') }}" data-off-text="{{ _('No') }}" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} {% if dataworking["project_registration_and_analysis"] ==1 %}checked{% endif %}>#}
                 </div>

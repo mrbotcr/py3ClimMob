@@ -1,0 +1,37 @@
+
+<div class="row" style="background-color: white">
+    <div class="col-lg-12">
+        <div class="ibox-content" style="padding: 5px 20px 0px 20px;">
+            <table width="100%">
+                <tr>
+                    <td width="95%">
+                        <h2 >{{ _title }}</h2>
+                    </td>
+                    <td rowspan="2" class="text-center">
+                        <a href="{{ _linkWiki }}" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: middle">
+                        <ol class="breadcrumb">
+                            <li>
+                                <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
+                            </li>
+                            {% for opt in extra %}
+                                <li>
+                                    <a href="{{ opt[1] }}">{{ opt[0] }}</a>
+                                </li>
+                            {% endfor %}
+                            <li class="active">
+                                {% if otherTitle %}
+                                    {% set _title = otherTitle %}
+                                {% endif %}
+                                <strong>{{ _title }}</strong>
+                            </li>
+                        </ol>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

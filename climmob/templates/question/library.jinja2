@@ -30,23 +30,8 @@
 {% endblock topScripts %}
 
 {% block pageheading %}
-    <div class="row wrapper border-bottom white-bg page-heading">
-        <div class="col-lg-10">
-            <h2>{{ _("Questions library") }}</h2>
-            <ol class="breadcrumb">
-                <li>
-                    <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
-                </li>
-                <li class="active">
-                    <strong>{{ _("Questions library") }}</strong>
-                </li>
-            </ol>
-            <a href=" https://climmob.net/blog/wiki/2019/09/30/questions-library/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
-        </div>
-        <div class="col-lg-2">
+    {% snippet 'snippets/menuheading.jinja2', request=request, _title= _("Questions library"), _linkWiki="https://climmob.net/blog/wiki/questions-library/" %}
 
-        </div>
-    </div>
 {% endblock %}
 
 {% block pagecontent %}
