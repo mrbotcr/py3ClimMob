@@ -11,6 +11,7 @@ from hashlib import md5
 import uuid
 import logging
 import datetime
+import json
 
 log = logging.getLogger(__name__)
 
@@ -370,6 +371,18 @@ class apiView(object):
                 return response
 
             if self.request.method == "POST":
+                #EDITED BY BRANDON MADRIZ
+                try:
+                    self.body = self.request.params["Body"]
+                except:
+                    body = {}
+                    for va in self.request.params:
+                        if va != "Apikey":
+                            body[va] = self.request.params[va]
+
+                    self.body = json.dumps(body)
+
+                """
                 try:
                     self.body = self.request.params["Body"]
                 except:
@@ -380,7 +393,7 @@ class apiView(object):
                         ),
                     )
                     return response
-
+                """
         except:
             response = Response(
                 status=401, body=self.request.translate("Apikey non-existent")
