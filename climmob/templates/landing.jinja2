@@ -655,6 +655,7 @@
                     <div class="row">
                         <div class="col-lg-8 col-lg-offset-2 text-center m-t-lg m-b-lg">
                             <strong>{{ _("Copyright") }}</strong> {{ _("2020, Alliance of Bioversity International and CIAT") }}
+                            {{ _('Version') }}: {{ request.h.get_version() }}
                         </div>
                     </div>
                 {% endblock contact_footer %}

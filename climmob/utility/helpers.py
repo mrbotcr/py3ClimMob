@@ -213,6 +213,14 @@ def get_icon_from_mime_type(mime_type):
 
     return icon
 
+@core_helper
+def get_version():
+    """
+    This returns the version of ClimMob
+    :return: The version of ClimMob
+    """
+    return "4.0.1 (20201103)"
+
 
 def load_plugin_helpers():
     """

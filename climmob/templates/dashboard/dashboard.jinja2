@@ -732,7 +732,7 @@
             <div class="footer">
                 {% block footer %}
                     <div class="pull-right">
-                        0.6 (20170727)
+                        {{ request.h.get_version() }}
                     </div>
                     <div>
                         <strong>{{ _("Copyright") }}</strong> {{ _("2020, Alliance of Bioversity International and CIAT") }}
