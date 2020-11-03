@@ -1,6 +1,6 @@
 version: '3'
 services:
-  cmmysql_20200815:
+  cmmysql_20201103:
     image: mysql:5.7.27
     container_name: fs_mysql_20200813
     environment:
@@ -10,9 +10,9 @@ services:
     networks:
       cmnet:
         ipv4_address: 172.28.1.1
-  climmob_20200815:
-    image: alliancecostarica/climmob:20200815
-    container_name: climmob_20200815
+  climmob_20201103:
+    image: alliancecostarica/climmob:20201103
+    container_name: climmob_20201103
     environment:
       MYSQL_HOST_NAME: 172.28.1.1
       MYSQL_USER_NAME: root
