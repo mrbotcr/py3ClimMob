@@ -27,8 +27,6 @@ __all__ = [
     "addFieldToUserSchema",
     "addFieldToProjectSchema",
     "addFieldToQuestionSchema",
-    "createUserDirecty",
-    "createProjectDirecty",
     "addProduct",
     "addMetadataToProduct",
     "addOutputToProduct",
