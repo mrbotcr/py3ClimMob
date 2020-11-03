@@ -49,10 +49,10 @@ def main(argv=sys.argv):
         loader=FileSystemLoader(os.path.join(climmob_path, "templates")),
         trim_blocks=False,
     )
-    host = get_ini_value(os.path.abspath(argv[1]), "mysql.host", "localhost")
-    port = get_ini_value(os.path.abspath(argv[1]), "mysql.port", "3306")
-    user = get_ini_value(os.path.abspath(argv[1]), "mysql.user", "empty!")
-    password = get_ini_value(os.path.abspath(argv[1]), "mysql.password", "empty!")
+    host = get_ini_value(os.path.abspath(argv[1]), "odktools.mysql.host", "localhost")
+    port = get_ini_value(os.path.abspath(argv[1]), "odktools.mysql.port", "3306")
+    user = get_ini_value(os.path.abspath(argv[1]), "odktools.mysql.user", "empty!")
+    password = get_ini_value(os.path.abspath(argv[1]), "odktools.mysql.password", "empty!")
     context = {"host": host, "port": port, "user": user, "password": password}
 
     rendered_template = template_environment.get_template("mysql.jinja2").render(
