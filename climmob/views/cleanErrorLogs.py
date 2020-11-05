@@ -19,6 +19,7 @@ import xml.etree.ElementTree as ET
 from ..processes.odk.api import storeJSONInMySQL
 import transaction
 from zope.sqlalchemy import mark_changed
+from climmob.models.repository import sql_execute
 
 
 class cleanErrorLogs_view(privateView):
@@ -95,11 +96,12 @@ class cleanErrorLogs_view(privateView):
                                                 + dataworking["newqst"].split("-")[1]
                                                 + "'"
                                             )
-                                            mySession = self.request.dbsession
-                                            transaction.begin()
-                                            mySession.execute(query)
-                                            mark_changed(mySession)
-                                            transaction.commit()
+                                            # mySession = self.request.dbsession
+                                            # transaction.begin()
+                                            # mySession.execute(query)
+                                            # mark_changed(mySession)
+                                            # transaction.commit()
+                                            sql_execute(query)
 
                                         storeJSONInMySQL(
                                             "REG",
@@ -153,11 +155,12 @@ class cleanErrorLogs_view(privateView):
                                                 + dataworking["newqst2"]
                                                 + "'"
                                             )
-                                            mySession = self.request.dbsession
-                                            transaction.begin()
-                                            mySession.execute(query)
-                                            mark_changed(mySession)
-                                            transaction.commit()
+                                            # mySession = self.request.dbsession
+                                            # transaction.begin()
+                                            # mySession.execute(query)
+                                            # mark_changed(mySession)
+                                            # transaction.commit()
+                                            sql_execute(query)
 
                                         storeJSONInMySQL(
                                             "ASS",
@@ -237,8 +240,9 @@ class cleanErrorLogs_view(privateView):
                         + proId
                         + ".REG_geninfo;"
                     )
-                    mySession = self.request.dbsession
-                    result = mySession.execute(query)
+                    # mySession = self.request.dbsession
+                    # result = mySession.execute(query)
+                    result = sql_execute(query)
                     array = [int(new_json["qst162"])]
                     # array = []
                     for y in range(1, proData["project_numobs"] + 1):
@@ -271,8 +275,9 @@ class cleanErrorLogs_view(privateView):
                         + codeId
                         + "_geninfo;"
                     )
-                    mySession = self.request.dbsession
-                    resultR = mySession.execute(queryR)
+                    # mySession = self.request.dbsession
+                    # resultR = mySession.execute(queryR)
+                    resultR = sql_execute(queryR)
 
                     array = []
                     for x in resultR:

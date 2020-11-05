@@ -4,6 +4,7 @@ import transaction
 import xml.etree.ElementTree as ET
 from zope.sqlalchemy import mark_changed
 from ..processes import getProjectData
+from climmob.models.repository import sql_execute
 
 
 def get_FieldsByType(types, db, self, file, code):
@@ -255,8 +256,9 @@ def fillDataTable(self, db, form, columns, file, code, where=""):
 
     # print sql
     # print "***************************************************************************"
-    mySession = self.request.dbsession
-    result = mySession.execute(sql)
+    # mySession = self.request.dbsession
+    # result = mySession.execute(sql)
+    result = sql_execute(sql)
     for res in result:
         rowx = {}
         rowx["flag_update"] = False
@@ -302,11 +304,12 @@ def update_edited_data(self, db, form, data, file, code):
 
             # print query_update
             try:
-                transaction.begin()
+                # transaction.begin()
                 print(query_update)
-                mySession.execute(query_update)
-                mark_changed(mySession)
-                transaction.commit()
+                # mySession.execute(query_update)
+                # mark_changed(mySession)
+                # transaction.commit()
+                sql_execute(query_update)
             except:
                 return 0
     return 1

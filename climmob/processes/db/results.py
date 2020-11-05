@@ -2,7 +2,7 @@ import os
 from lxml import etree
 from ...models import Assessment, Question, Project, mapFromSchema
 import datetime, decimal
-import json
+from climmob.models.repository import sql_fetch_all
 
 __all__ = ["getJSONResult"]
 
@@ -85,7 +85,8 @@ def getLookups(XMLFile, user, project, request):
                     + "."
                     + atable["name"]
                 )
-                lkpvalues = request.repsession.execute(sql).fetchall()
+                # lkpvalues = request.repsession.execute(sql).fetchall()
+                lkpvalues = sql_fetch_all(sql)
                 for value in lkpvalues:
                     avalue = {}
                     for field in atable["fields"]:
@@ -115,7 +116,8 @@ def getPackageData(user, project, request):
         "GROUP BY project.project_cod"
     )
 
-    pkgdetails = request.dbsession.execute(sql).fetchone()
+    # pkgdetails = request.dbsession.execute(sql).fetchone()
+    pkgdetails = sql_fetch_all(sql)
     ncombs = pkgdetails.project_numcom
 
     sql = (
@@ -203,7 +205,8 @@ def getPackageData(user, project, request):
         "ORDER BY pkgcomb.package_id,pkgcomb.comb_order)) AS T ORDER BY T.package_id,T.comb_order,T.tech_name"
     )
 
-    pkgdetails = request.dbsession.execute(sql).fetchall()
+    # pkgdetails = request.dbsession.execute(sql).fetchall()
+    pkgdetails = sql_fetch_all(sql)
     packages = []
     pkgcode = -999
     for pkg in pkgdetails:
@@ -311,7 +314,8 @@ def getData(user, project, registry, assessments, request):
         )
     sql = sql + " ORDER BY " + user + "_" + project + ".REG_geninfo." + registryKey
 
-    data = request.dbsession.execute(sql).fetchall()
+    # data = request.dbsession.execute(sql).fetchall()
+    data = sql_fetch_all(sql)
 
     result = []
     for item in data:
@@ -368,7 +372,8 @@ def getImportantFields(user, project, request):
         "AND registry.project_cod = '" + project + "' "
         "AND (question_overall = 1 or question_overallperf = 1)"
     )
-    data = request.dbsession.execute(sql).fetchall()
+    # data = request.dbsession.execute(sql).fetchall()
+    data = sql_fetch_all(sql)
     result = getImportantFieldSameFunction(data, prjData, result, "REG")
 
     sql = (
@@ -380,7 +385,8 @@ def getImportantFields(user, project, request):
         "AND (question_overall = 1 or question_overallperf = 1)"
     )
 
-    data = request.dbsession.execute(sql).fetchall()
+    # data = request.dbsession.execute(sql).fetchall()
+    data = sql_fetch_all(sql)
 
     result = getImportantFieldSameFunction(data, prjData, result, "ASS")
 

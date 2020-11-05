@@ -22,6 +22,7 @@ from sqlalchemy import func
 from .project_technologies import numberOfCombinationsForTheProject
 from .enumerator import countEnumerators
 from ago import human
+from climmob.models.repository import sql_fetch_all, sql_fetch_one
 
 __all__ = [
     "addProject",
@@ -451,7 +452,8 @@ def getRegisteredFarmers(user, project, request):
         print(sql)
         print("*****************44")
         try:
-            farmers = request.repsession.execute(sql).fetchall()
+            # farmers = request.repsession.execute(sql).fetchall()
+            farmers = sql_fetch_all(sql)
             for farmer in farmers:
                 res.append(
                     {"farmer_id": farmer.farmer_id, "farmer_name": farmer.farmer_name}
@@ -607,7 +609,8 @@ def getProjectProgress(user, project, request):
         result["project_numobs"] = totSubmissions
         sql = "SELECT COUNT(*) as total FROM " + user + "_" + project + ".REG_geninfo"
         try:
-            res = request.repsession.execute(sql).fetchone()
+            # res = request.repsession.execute(sql).fetchone()
+            res = sql_fetch_one(sql)
             submissions = res["total"]
         except:
             submissions = 0
@@ -648,7 +651,8 @@ def getProjectProgress(user, project, request):
             + "_geninfo"
         )
         try:
-            res = request.repsession.execute(sql).fetchone()
+            # res = request.repsession.execute(sql).fetchone()
+            res = sql_fetch_one(sql)
             totSubmissions = res["total"]
         except:
             totSubmissions = 0
@@ -658,7 +662,8 @@ def getProjectProgress(user, project, request):
                 "SELECT COUNT(*) as total FROM " + user + "_" + project + ".REG_geninfo"
             )
             try:
-                res = request.repsession.execute(sql).fetchone()
+                # res = request.repsession.execute(sql).fetchone()
+                res = sql_fetch_one(sql)
                 submissions = res["total"]
             except:
                 submissions = 0
@@ -693,7 +698,8 @@ def getProjectProgress(user, project, request):
                 "SELECT COUNT(*) as total FROM " + user + "_" + project + ".REG_geninfo"
             )
             try:
-                res = request.repsession.execute(sql).fetchone()
+                # res = request.repsession.execute(sql).fetchone()
+                res = sql_fetch_one(sql)
                 submissions = res["total"]
             except:
                 submissions = 0

@@ -671,6 +671,7 @@ class assessmentFormCreation_view(privateView):
 class startAssessments_view(privateView):
     def processView(self):
         projectid = self.request.matchdict["projectid"]
+        print("projectExists")
         if not projectExists(self.user.login, projectid, self.request):
             raise HTTPNotFound()
         else:
@@ -691,20 +692,26 @@ class startAssessments_view(privateView):
                 data = self.getPostDict()
                 assessment_id = data["assessment_id"]
                 redirect = False
+                print("checkAssessments")
                 checkPass, errors = checkAssessments(
                     self.user.login, projectid, assessment_id, self.request
                 )
                 if checkPass:
+                    print("generateAssessmentFiles")
                     generateAssessmentFiles(
                         self.user.login, projectid, assessment_id, self.request
                     )
+                    print("setAssessmentIndividualStatus")
                     setAssessmentIndividualStatus(
                         self.user.login, projectid, assessment_id, 1, self.request
                     )
                     # setAssessmentStatus(self.user.login,projectid,1,self.request)
                     # WORKING HERE FOR CREATE THE ASSESSMENT DOCUMENT
+                    print("getPackages")
                     ncombs, packages = getPackages(self.user.login, projectid, self.request)
+                    print("getDataFormPreview")
                     data, finalCloseQst = getDataFormPreview(self, projectid, assessment_id)
+                    print("create_document_form")
                     create_document_form(
                         self.request,
                         "en",
@@ -715,7 +722,7 @@ class startAssessments_view(privateView):
                         data,
                         packages,
                     )
-
+                    print("Returning")
                     self.returnRawViewResult = True
                     return HTTPFound(location=self.request.route_url("dashboard"))
                 return {

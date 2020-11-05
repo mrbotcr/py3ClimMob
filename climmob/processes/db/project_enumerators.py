@@ -3,6 +3,7 @@ from climmob.models.schema import mapFromSchema
 from ...models import Enumerator, PrjEnumerator
 from sqlalchemy import or_
 from climmob.config.encdecdata import decodeData
+from climmob.models.repository import sql_fetch_all
 
 __all__ = [
     "getProjectEnumerators",
@@ -63,7 +64,8 @@ def seeProgress(user, project, request):
             + ".REG_geninfo group by _submitted_by"
         )
 
-        counts = request.dbsession.execute(sql).fetchall()
+        # counts = request.dbsession.execute(sql).fetchall()
+        counts = sql_fetch_all(sql)
         result = []
 
         for qst in counts:
@@ -99,7 +101,8 @@ def seeProgress(user, project, request):
                 + "_geninfo group by _submitted_by"
             )
 
-            counts = request.dbsession.execute(sql).fetchall()
+            # counts = request.dbsession.execute(sql).fetchall()
+            counts = sql_fetch_all(sql)
             result = []
             for qst in counts:
                 _user = getEnumeratorData(user, qst[0], request)

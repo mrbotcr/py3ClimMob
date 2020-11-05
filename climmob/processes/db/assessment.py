@@ -12,6 +12,7 @@ from subprocess import Popen, PIPE
 import logging, shutil
 from jinja2 import Environment
 from ..db.question import getQuestionOptions
+from climmob.models.repository import sql_fetch_one
 
 __all__ = [
     "availableAssessmentQuestions",
@@ -861,7 +862,8 @@ def getAssesmentProgress(user, project, assessment, request):
                 "SELECT COUNT(*) as total FROM " + user + "_" + project + ".REG_geninfo"
             )
             try:
-                res = request.repsession.execute(sql).fetchone()
+                #res = request.repsession.execute(sql).fetchone()
+                res = sql_fetch_one(sql)
                 submissions = res["total"]
             except:
                 submissions = 0
@@ -881,7 +883,8 @@ def getAssesmentProgress(user, project, assessment, request):
                 "SELECT COUNT(*) as total FROM " + user + "_" + project + ".REG_geninfo"
             )
             try:
-                res = request.repsession.execute(sql).fetchone()
+                # res = request.repsession.execute(sql).fetchone()
+                res = sql_fetch_one(sql)
                 submissions = res["total"]
             except:
                 submissions = 0

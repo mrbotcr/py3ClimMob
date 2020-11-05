@@ -1,5 +1,6 @@
 from ..db.project import getProjectData
 from ...models import Assessment
+from climmob.models.repository import sql_execute
 
 __all__ = [
     "getInformationFromProject",
@@ -17,7 +18,8 @@ def getInformationFromProject(request, user ,projectid):
             + " order by qst162 +0"
     )
     mySession = request.dbsession
-    result = mySession.execute(sql)
+    # result = mySession.execute(sql)
+    result = sql_execute(sql)
 
     assessments = (
         request.dbsession.query(Assessment)
@@ -49,7 +51,8 @@ def getInformationFromProject(request, user ,projectid):
                 + ".ASS"+assessment.ass_cod+"_geninfo "
         )
         mySession = request.dbsession
-        result = mySession.execute(sql)
+        # result = mySession.execute(sql)
+        result = sql_execute(sql)
 
         for res in result:
             assessmentDetails["data"].append(res[0])

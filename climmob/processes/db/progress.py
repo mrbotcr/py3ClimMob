@@ -1,6 +1,7 @@
 from sqlalchemy import func
 from climmob.models.schema import mapFromSchema, mapToSchema
 from ...models import Project, Assessment
+from climmob.models.repository import sql_fetch_one
 from .project import (
     addQuestionsToAssessment,
     numberOfCombinationsForTheProject,
@@ -46,7 +47,8 @@ def getRegistryInformation(request, info):
         + ".REG_geninfo"
     )
     try:
-        res = request.repsession.execute(sql).fetchone()
+        # res = request.repsession.execute(sql).fetchone()
+        res = sql_fetch_one(sql)
         submissions = res["total"]
 
     except:
@@ -80,7 +82,8 @@ def AssessmentsInformation(request, info, registered):
             + "_geninfo"
         )
         try:
-            res = request.repsession.execute(sql).fetchone()
+            # res = request.repsession.execute(sql).fetchone()
+            res = sql_fetch_one(sql)
             submissions = res["total"]
         except:
             submissions = 0
