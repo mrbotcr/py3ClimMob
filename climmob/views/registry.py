@@ -452,7 +452,9 @@ class registryFormCreation_view(privateView):
 def getDataFormPreview(self, projectid, assessmentid=None, createAutoRegistry=True):
 
     if not assessmentid:
-        data = getRegistryQuestions(self.user.login, projectid, self.request,createAutoRegistry)
+        data = getRegistryQuestions(
+            self.user.login, projectid, self.request, createAutoRegistry
+        )
     else:
         data = getAssessmentQuestions(
             self.user.login, projectid, assessmentid, self.request

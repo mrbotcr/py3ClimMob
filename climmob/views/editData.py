@@ -20,7 +20,7 @@ class downloadDataView(privateView):
         formId = self.request.matchdict["formid"]
         includeRegistry = True
         includeAssessment = True
-        code =""
+        code = ""
 
         if not projectExists(self.user.login, proId, self.request):
             raise HTTPNotFound()
@@ -37,9 +37,16 @@ class downloadDataView(privateView):
                 else:
                     raise HTTPNotFound()
 
-        info = getJSONResult(self.user.login, proId, self.request, includeRegistry, includeAssessment, code)
+        info = getJSONResult(
+            self.user.login,
+            proId,
+            self.request,
+            includeRegistry,
+            includeAssessment,
+            code,
+        )
 
-        create_datacsv(self.user.login,proId, info ,self.request, formId, code)
+        create_datacsv(self.user.login, proId, info, self.request, formId, code)
 
         url = self.request.route_url("productList")
         self.returnRawViewResult = True

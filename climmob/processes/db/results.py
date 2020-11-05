@@ -507,7 +507,14 @@ def getSpecialFields(registry, assessments):
     return result
 
 
-def getJSONResult(user, project, request, includeRegistry=True, includeAssessment=True,assessmentCode=""):
+def getJSONResult(
+    user,
+    project,
+    request,
+    includeRegistry=True,
+    includeAssessment=True,
+    assessmentCode="",
+):
     data = {}
     res = (
         request.dbsession.query(Project)
@@ -560,7 +567,14 @@ def getJSONResult(user, project, request, includeRegistry=True, includeAssessmen
                             haveAssessments = True
                             assessmentXML = os.path.join(
                                 request.registry.settings["user.repository"],
-                                *[user, project, "db", "ass", assessment.ass_cod, "create.xml"]
+                                *[
+                                    user,
+                                    project,
+                                    "db",
+                                    "ass",
+                                    assessment.ass_cod,
+                                    "create.xml",
+                                ]
                             )
                             if os.path.exists(registryXML):
                                 data["assessments"].append(

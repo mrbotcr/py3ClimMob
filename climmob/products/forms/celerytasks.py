@@ -13,8 +13,8 @@ def createDocumentForm(
     locale, user, path, projectid, formGroupsAndQuestions, form, code, packages,
 ):
 
-    #NO SE BORRA EL PATH PORQUE PUEDE TENER VARIOS ARCHIVOS
-    #if os.path.exists(path):
+    # NO SE BORRA EL PATH PORQUE PUEDE TENER VARIOS ARCHIVOS
+    # if os.path.exists(path):
     #    sh.rmtree(path)
     if not os.path.exists(path):
         os.makedirs(path)

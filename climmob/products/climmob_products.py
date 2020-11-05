@@ -216,7 +216,10 @@ def register_products(config):
 
     # DATA COLLECTION PROGRESS
 
-    datacollectionprogressProduct = addProduct("datacollectionprogress", "Shows the information of the observers from whom the information has been collected")
+    datacollectionprogressProduct = addProduct(
+        "datacollectionprogress",
+        "Shows the information of the observers from whom the information has been collected",
+    )
     addMetadataToProduct(datacollectionprogressProduct, "author", "Brandon Madriz")
     addMetadataToProduct(datacollectionprogressProduct, "version", "1.0")
     addMetadataToProduct(

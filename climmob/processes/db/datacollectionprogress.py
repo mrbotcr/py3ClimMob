@@ -6,16 +6,17 @@ __all__ = [
     "getInformationFromProject",
 ]
 
-def getInformationFromProject(request, user ,projectid):
+
+def getInformationFromProject(request, user, projectid):
 
     sql = (
-            "select farmername, clm_start, qst162"
-            + " from "
-            + user
-            + "_"
-            + projectid
-            + ".REG_geninfo "
-            + " order by qst162 +0"
+        "select farmername, clm_start, qst162"
+        + " from "
+        + user
+        + "_"
+        + projectid
+        + ".REG_geninfo "
+        + " order by qst162 +0"
     )
     mySession = request.dbsession
     # result = mySession.execute(sql)
@@ -43,12 +44,14 @@ def getInformationFromProject(request, user ,projectid):
         assessmentDetails["name"] = assessment.ass_desc
         assessmentDetails["data"] = []
         sql = (
-                "select qst163"
-                + " from "
-                + user
-                + "_"
-                + projectid
-                + ".ASS"+assessment.ass_cod+"_geninfo "
+            "select qst163"
+            + " from "
+            + user
+            + "_"
+            + projectid
+            + ".ASS"
+            + assessment.ass_cod
+            + "_geninfo "
         )
         # mySession = request.dbsession
         # result = mySession.execute(sql)
@@ -59,6 +62,8 @@ def getInformationFromProject(request, user ,projectid):
 
         assessmentsInformation.append(assessmentDetails)
 
-
-
-    return { "projectInfo": getProjectData(user,projectid,request), "packagesRegistryInfo": packagesInformation, "assessmentsDetails": assessmentsInformation }
+    return {
+        "projectInfo": getProjectData(user, projectid, request),
+        "packagesRegistryInfo": packagesInformation,
+        "assessmentsDetails": assessmentsInformation,
+    }

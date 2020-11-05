@@ -25,7 +25,7 @@ from ..processes import (
     getProjectData,
     getProjectAssessments,
     getInformationFromProject,
-    getProjectAssessmentInfo
+    getProjectAssessmentInfo,
 )
 from .projectHelp.projectHelp import getImportantInformation
 from .registry import getDataFormPreview
@@ -38,7 +38,9 @@ from ..products.analysisdata.analysisdata import create_datacsv
 from ..products.forms.form import create_document_form
 from ..products.generalReport.generalReport import create_general_report
 from ..products.stickers.stickers import create_stickers_document
-from ..products.datacollectionprogress.dataCollectionProgress import create_data_collection_progress
+from ..products.datacollectionprogress.dataCollectionProgress import (
+    create_data_collection_progress,
+)
 
 
 def getDataProduct(user, project, request):
@@ -129,8 +131,16 @@ class productsView(climmobPrivateView):
                     else:
                         product["exists"] = "incorrect"
 
-                    if product["product_id"] == "documentform" or product["product_id"] == "datacsv":
-                        product["extraInformation"] = getProjectAssessmentInfo(self.user.login, activeProjectData["project_cod"], product["process_name"].split('_')[3],self.request)
+                    if (
+                        product["product_id"] == "documentform"
+                        or product["product_id"] == "datacsv"
+                    ):
+                        product["extraInformation"] = getProjectAssessmentInfo(
+                            self.user.login,
+                            activeProjectData["project_cod"],
+                            product["process_name"].split("_")[3],
+                            self.request,
+                        )
 
             if activeProjectData["project_active"] == 1:
                 hasActiveProject = True
@@ -242,7 +252,9 @@ class generateProductView(privateView):
             dataworking["project_fieldagents"] = getProjectEnumerators(
                 self.user.login, projectid, self.request
             )
-            dataRegistry, finalCloseQst = getDataFormPreview(self, projectid, createAutoRegistry=False)
+            dataRegistry, finalCloseQst = getDataFormPreview(
+                self, projectid, createAutoRegistry=False
+            )
             dataworking["project_registry"] = dataRegistry
             dataAssessments = getProjectAssessments(
                 self.user.login, projectid, self.request
@@ -266,16 +278,18 @@ class generateProductView(privateView):
             ncombs, packages = getPackages(self.user.login, projectid, self.request)
 
             create_stickers_document(
-                locale,
-                self.request,
-                self.user.login,
-                projectid,
-                packages
+                locale, self.request, self.user.login, projectid, packages
             )
 
         if productid == "datacollectionprogress":
 
-            create_data_collection_progress(self.request, self.request.locale_name, self.user.login,projectid,getInformationFromProject(self.request, self.user.login,projectid))
+            create_data_collection_progress(
+                self.request,
+                self.request.locale_name,
+                self.user.login,
+                projectid,
+                getInformationFromProject(self.request, self.user.login, projectid),
+            )
 
         self.returnRawViewResult = True
         return HTTPFound(location=self.request.route_url("productList"))

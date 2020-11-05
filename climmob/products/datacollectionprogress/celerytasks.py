@@ -35,7 +35,7 @@ def createDataCollectionProgress(locale, user, path, project, informationAboutPr
     PATH2 = os.path.dirname(os.path.abspath(__file__))
     doc = DocxTemplate(PATH2 + "/template/templateReport.docx")
 
-    #print(informationAboutProject)
+    # print(informationAboutProject)
     data = {
         "date": datetime.today().strftime("%d-%m-%Y"),
         "dataworking": informationAboutProject,
@@ -49,5 +49,3 @@ def createDataCollectionProgress(locale, user, path, project, informationAboutPr
     doc.save(pathoutput + "/datacollectionprogress_" + project + ".docx")
 
     return ""
-
-

@@ -863,7 +863,7 @@ def getAssesmentProgress(user, project, assessment, request):
                 "SELECT COUNT(*) as total FROM " + user + "_" + project + ".REG_geninfo"
             )
             try:
-                #res = request.repsession.execute(sql).fetchone()
+                # res = request.repsession.execute(sql).fetchone()
                 res = sql_fetch_one(sql)
                 submissions = res["total"]
             except:

@@ -52,7 +52,7 @@ def createReports(locale, path, user, projectid, data, info, infosheet):
         es.install()
         _ = es.gettext
 
-    #pathScript = "/home/ubuntu/new_r_code/ClimMob-analysis"
+    # pathScript = "/home/ubuntu/new_r_code/ClimMob-analysis"
     pathScript = "/home/bmadriz/temp/ClimMob-analysis"
 
     os.system(

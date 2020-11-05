@@ -13,6 +13,7 @@ from ..qrpackages.celerytasks import create_qr
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 
+
 @celeryApp.task(base=celeryTask, soft_time_limit=7200, time_limit=7200)
 def createStickerDocument(locale, user, path, projectid, packages):
     parts = __file__.split("/products/")
@@ -49,8 +50,8 @@ def createStickerDocument(locale, user, path, projectid, packages):
         "cp -r '" + os.path.join(PATH, "template", "img") + "' '" + pathouttemp + "'"
     )
 
-    os.makedirs(os.path.join(pathouttemp+"/img/", "qr"))
-    pathqr = os.path.join(pathouttemp+"/img/", "qr")
+    os.makedirs(os.path.join(pathouttemp + "/img/", "qr"))
+    pathqr = os.path.join(pathouttemp + "/img/", "qr")
 
     for package in packages:
 
@@ -59,7 +60,7 @@ def createStickerDocument(locale, user, path, projectid, packages):
     data = {
         "tittle": _("Stickers for packages"),
         "projectid": projectid,
-        "packages": packages
+        "packages": packages,
     }
 
     env = Environment(

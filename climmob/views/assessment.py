@@ -27,7 +27,7 @@ from ..processes import (
     is_assessment_final,
     get_usable_assessments,
     clean_assessments_error_logs,
-    getPackages
+    getPackages,
 )
 from ..products.forms.form import create_document_form
 from jinja2 import Environment, FileSystemLoader
@@ -416,7 +416,7 @@ class assessmenthead_view(privateView):
                     if not added:
                         error_summary["addAssessment"] = msg
                     else:
-                        data={}
+                        data = {}
                 else:
                     if "btn_modify_ass" in self.request.POST:
                         data["project_cod"] = projectid
@@ -433,7 +433,7 @@ class assessmenthead_view(privateView):
                         if not error:
                             error_summary["modifyAssessment"] = msg
                         else:
-                            data={}
+                            data = {}
 
             new_available = not there_is_final_assessment(
                 self.request, self.user.login, projectid
@@ -447,8 +447,9 @@ class assessmenthead_view(privateView):
                     self.user.login, projectid, self.request
                 ),
                 "data": data,
-                "error_summary": error_summary
+                "error_summary": error_summary,
             }
+
 
 """
 class newassessmenthead_view(privateView):
@@ -550,6 +551,7 @@ class modifyassessmenthead_view(privateView):
                 "error_summary": error_summary,
             }
 """
+
 
 class deleteassessmenthead_view(privateView):
     def processView(self):
@@ -708,9 +710,13 @@ class startAssessments_view(privateView):
                     # setAssessmentStatus(self.user.login,projectid,1,self.request)
                     # WORKING HERE FOR CREATE THE ASSESSMENT DOCUMENT
                     print("getPackages")
-                    ncombs, packages = getPackages(self.user.login, projectid, self.request)
+                    ncombs, packages = getPackages(
+                        self.user.login, projectid, self.request
+                    )
                     print("getDataFormPreview")
-                    data, finalCloseQst = getDataFormPreview(self, projectid, assessment_id)
+                    data, finalCloseQst = getDataFormPreview(
+                        self, projectid, assessment_id
+                    )
                     print("create_document_form")
                     create_document_form(
                         self.request,

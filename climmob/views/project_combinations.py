@@ -116,13 +116,13 @@ class projectCombinations_view(privateView):
                 }
             if stage == 2:
                 # EDITED BY BRANDON
-                #if not projectHasCombinations(self.user.login, projectid, self.request):
-                #self.returnRawViewResult = True
-                #return HTTPFound(
+                # if not projectHasCombinations(self.user.login, projectid, self.request):
+                # self.returnRawViewResult = True
+                # return HTTPFound(
                 #    location=self.request.route_url(
                 #        "combinations", _query={"stage": 1}, projectid=projectid
                 #    )
-                #)
+                # )
                 createCombinations(self.user.login, projectid, self.request)
 
                 create_packages_with_r(self.user.login, projectid, self.request)
@@ -195,7 +195,9 @@ def startTheRegistry(self, projectid):
     )
     time.sleep(1)
     # create_cards(self.request, self.user.login, projectid, packages)
-    create_stickers_document(self.request.locale_name,self.request,self.user.login,projectid,packages)
+    create_stickers_document(
+        self.request.locale_name, self.request, self.user.login, projectid, packages
+    )
 
     time.sleep(1)
     create_packages_excell(

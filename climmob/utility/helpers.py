@@ -213,6 +213,7 @@ def get_icon_from_mime_type(mime_type):
 
     return icon
 
+
 @core_helper
 def get_version():
     """

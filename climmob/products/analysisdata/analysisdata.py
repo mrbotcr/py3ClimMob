@@ -16,7 +16,7 @@ def create_datacsv(user, project, info, request, form, code):
     # This will go to the products table that then you can monitor and use
     # in the nice product interface
     # u.registerProductInstance(user, project, 'cards', 'cards.pdf', task.id, request)
-    nameOutput = form+"_data"
+    nameOutput = form + "_data"
     if code != "":
         nameOutput += "_" + code
 

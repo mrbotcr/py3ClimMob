@@ -275,9 +275,9 @@ def create_packages_with_r(user, project, request):
 
 
 def createExtraPackages(user, project, request, numCom, numObsExtra, numObsNow):
-    #print(numCom)
-    #print(numObsExtra)
-    #print(numObsNow)
+    # print(numCom)
+    # print(numObsExtra)
+    # print(numObsNow)
     path = os.path.join(
         request.registry.settings["user.repository"], *[user, project, "r"]
     )
