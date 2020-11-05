@@ -2,7 +2,7 @@ import os
 from lxml import etree
 from ...models import Assessment, Question, Project, mapFromSchema
 import datetime, decimal
-from climmob.models.repository import sql_fetch_all
+from climmob.models.repository import sql_fetch_all, sql_fetch_one
 
 __all__ = ["getJSONResult"]
 
@@ -117,7 +117,7 @@ def getPackageData(user, project, request):
     )
 
     # pkgdetails = request.dbsession.execute(sql).fetchone()
-    pkgdetails = sql_fetch_all(sql)
+    pkgdetails = sql_fetch_one(sql)
     ncombs = pkgdetails.project_numcom
 
     sql = (

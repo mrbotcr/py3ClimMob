@@ -275,7 +275,7 @@ def fillDataTable(self, db, form, columns, file, code, where=""):
 
 
 def update_edited_data(self, db, form, data, file, code):
-    mySession = self.request.dbsession
+    # mySession = self.request.dbsession
     data = json.loads(data[0])
 
     for row in data:

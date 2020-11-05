@@ -50,7 +50,7 @@ def getInformationFromProject(request, user ,projectid):
                 + projectid
                 + ".ASS"+assessment.ass_cod+"_geninfo "
         )
-        mySession = request.dbsession
+        # mySession = request.dbsession
         # result = mySession.execute(sql)
         result = sql_execute(sql)
 
