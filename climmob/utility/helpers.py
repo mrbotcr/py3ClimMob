@@ -220,7 +220,7 @@ def get_version():
     This returns the version of ClimMob
     :return: The version of ClimMob
     """
-    return "3.0.0 (20201103)"
+    return "3.0.0 (20201105)"
 
 
 def load_plugin_helpers():
