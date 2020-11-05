@@ -852,7 +852,8 @@ def getAssesmentProgress(user, project, assessment, request):
             + "_geninfo"
         )
         try:
-            res = request.repsession.execute(sql).fetchone()
+            # res = request.repsession.execute(sql).fetchone()
+            res = sql_fetch_one(sql)
             totSubmissions = res["total"]
         except:
             totSubmissions = 0
