@@ -672,7 +672,7 @@
                         <h4 class="modal-title">{{ _('Cookies') }}</h4>
                     </div>
                     <div class="modal-body">
-                        {{ _('This website stores cookies on your computer. These cookies are used to remember you or to know that you have been authenticated. To find out more about the cookies we use, see our') }} <a href="#">{{ _('Privacy Policy') }}</a>.<br/><br/>
+                        {{ _('This website stores cookies on your computer. These cookies are used to remember you or to know that you have been authenticated. To find out more about the cookies we use, see our') }} <a href="{{ request.route_url('privacy') }}">{{ _('Privacy Policy') }}</a>.<br/><br/>
                         {{ _('If you decline, two encrypted cookies will be stored: 1) a cookie to remember your answer and 2) a cookie for us to know that you are authenticated once you login.') }}
                     </div>
                     <div class="modal-footer">
