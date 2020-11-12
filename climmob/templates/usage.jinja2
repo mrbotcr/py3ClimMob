@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block meta %}
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+    {% endblock meta %}
+
+    {% block title %}
+        <title>{{ _("Privacy policy") }}</title>
+    {% endblock title %}
+
+
+
+    {% block css %}
+        {% cssresource request,'coreresources','style' %}
+        {% cssresource request,'coreresources','landing' %}
+    {% endblock css %}
+
+    {% block topScripts %}
+        {% jsresource request,'coreresources','landing' %}
+    {% endblock topScripts %}
+
+
+</head>
+{% block body %}
+    <body id="page-top" class="landing-page no-skin-config">
+    <section id="features" {% block features_class %}class="container services"{% endblock features_class %}>
+        <div class="row">
+            <div class="col-md-12">
+                <h1>ClimMob Acceptable Use Policies</h1>
+                <p style="color: #676a6c">Last Updated: November 12, 2020 </p>
+                <h3>Acceptable Use Policies</h3>
+                <p style="color: #676a6c">Capitalized terms used but not defined in these Acceptable Use Policies have the meanings assigned to them in our <a href='{{ request.route_url('terms') }}'>Terms of Service</a>, and <a href='{{ request.route_url('privacy') }}'>Privacy Statement</a>.</p>
+                <h4>1. Compliance with Laws and Regulations</h4>
+                <p style="color: #676a6c">You are responsible for using the <b>Service</b> in compliance with all applicable laws, regulations, and all of our Acceptable Use Policies. These policies may be updated from time to time and are provided below, as well as in our <a href='{{ request.route_url('terms') }}'>Terms of Service</a>.</p>
+                <h4>2. Content Restrictions</h4>
+                <p style="color: #676a6c">Under no circumstances will <b>Users</b> upload, post, host, or transmit any <b>Content</b> that:</p>
+                <ul>
+                    <li>is unlawful or promotes unlawful activities;</li>
+                    <li>is or contains sexually obscene content;</li>
+                    <li>is libelous, defamatory, or fraudulent;</li>
+                    <li>is discriminatory or abusive toward any individual or group;</li>
+                    <li>gratuitously depicts or glorifies violence, including violent images;</li>
+                    <li>contains or installs any active malware or exploits, or uses our platform for exploit delivery (such as part of a command and control system); or</li>
+                    <li>infringes on any proprietary right of any party, including patent, trademark, trade secret, copyright, right of publicity, or other rights.</li>
+
+                </ul>
+                <h4>3. Conduct Restrictions</h4>
+                <p style="color: #676a6c">While using the <b>Service</b>, under no circumstances will you:</p>
+                <ul>
+                    <li>harass, abuse, threaten, or incite violence towards any individual or group, including our employees, officers, and agents, or other users;</li>
+                    <li>use our servers for any form of excessive automated bulk activity (for example, spamming), or relay any other form of unsolicited advertising or solicitation through our servers, such as get-rich-quick schemes;</li>
+                    <li>attempt to disrupt or tamper with our servers in ways that could harm our Service, to place an undue burden on our servers through automated means, or to access the Service in ways that exceed your authorization.</li>
+                    <li>impersonate any person or entity, including any of our employees or representatives, including through false association with the Alliance Bioversity-CIAT, or by fraudulently misrepresenting your identity or site&#39;s purpose; or</li>
+                    <li>violate the privacy of any third party, such as by posting another person&#39;s personal information without consent.</li>
+
+                </ul>
+                <h4>4. Services Usage Limits</h4>
+                <p style="color: #676a6c">You will not reproduce, duplicate, copy, sell, resell or exploit any portion of the <b>Service</b>, use of the <b>Service</b>, or access to the <b>Service</b> without our express written permission.</p>
+                <h4>5. Scraping and API Usage Restrictions</h4>
+                <p style="color: #676a6c">Scraping refers to extracting data from our <b>Service</b> via an automated process, such as a bot or webcrawler. You may scrape the website for the following reasons:</p>
+                <ul>
+                    <li>Researchers may scrape public, non-personal information from the <b>Service</b> for research purposes, only if any publications resulting from that research are open access.</li>
+                    <li>Archivists may scrape the <b>Service</b> for public data for archival purposes.</li>
+
+                </ul>
+                <p style="color: #676a6c">You may not scrape the <b>Service</b> for spamming purposes, including to sell User Personal Information (as defined in the <a href='{{ request.route_url('privacy') }}'>ClimMob Privacy Statement</a>), such as to recruiters, headhunters, and job boards.</p>
+                <p style="color: #676a6c">All use of data gathered through scraping must comply with the <a href='{{ request.route_url('privacy') }}'>ClimMob Privacy Statement</a>.</p>
+                <h4>6. Privacy</h4>
+                <p style="color: #676a6c">Misuse of User Personal Information is prohibited.</p>
+                <p style="color: #676a6c">Any person, entity, or service collecting data from the <b>Service</b> must comply with the <a href='{{ request.route_url('privacy') }}'>ClimMob Privacy Statement</a>, particularly in regards to the collection of User Personal Information. If you collect any User Personal Information from the Service, you agree that you will only use that User Personal Information for the purpose for which that User has authorized it. You agree that you will reasonably secure any User Personal Information you have gathered from the Service, and you will respond promptly to complaints, removal requests, and &quot;do not contact&quot; requests from us or other users.</p>
+                <h4>7. Excessive Bandwidth and Storage Use</h4>
+                <p style="color: #676a6c">If we determine your bandwidth and/or storage usage to be significantly excessive in relation to other users, we reserve the right to suspend your Account or throttle your file hosting until you can reduce your bandwidth consumption.</p>
+                <h4>8. User Protection</h4>
+    <p style="color: #676a6c">You must not engage in activity that significantly harms other users. We will resolve disputes in favor of protecting users as a whole. </p>
+            </div>
+        </div>
+    </section>
+
+    </body>
+{% endblock body %}
+</html>

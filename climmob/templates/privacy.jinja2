@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block meta %}
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+    {% endblock meta %}
+
+    {% block title %}
+        <title>{{ _("Privacy policy") }}</title>
+    {% endblock title %}
+
+
+
+    {% block css %}
+        {% cssresource request,'coreresources','style' %}
+        {% cssresource request,'coreresources','landing' %}
+    {% endblock css %}
+
+    {% block topScripts %}
+        {% jsresource request,'coreresources','landing' %}
+    {% endblock topScripts %}
+
+
+</head>
+{% block body %}
+    <body id="page-top" class="landing-page no-skin-config">
+    <section id="features" {% block features_class %}class="container services"{% endblock features_class %}>
+        <div class="row">
+            <div class="col-md-12">
+                <h1>ClimMob Privacy Policy</h1>
+                <p style="color: #676a6c">We take your privacy seriously. Through ClimMob The Alliance Bioversity-CIAT collect and manage user data according to the following details:</p>
+                <h2>1. Data Collected</h2>
+                <p style="color: #676a6c">We collect anonymous data from every visitor of the ClimMob service to monitor traffic and check on problems. This includes information on web requests including IP addresses of site visitors, browser type and time of visit. When registering an account, we ask you to provide certain personal information such as your name and email to create your user profile. Unless it is required by law, we will not share your personal information with third companies or individuals.</p>
+                <p style="color: #676a6c">You can view, change and remove the data you have associated with your profile. If you wish to delete your account you can do it using the delete button on your profile page.</p>
+                <p style="color: #676a6c">You must be 18 years of age or older to subscribe to the ClimMob service. In certain jurisdictions, the age of majority may be older than 18, in which case, you must satisfy that age to become a member.</p>
+                <p style="color: #676a6c">ClimMob uses cookies to control your authenticated session and whether or not you accept our cookies. We don't store any other information through cookies.</p>
+                <h2>2. User Data / User-Generated Content</h2>
+                <p style="color: #676a6c">We only use your personal information to provide you with better services or to let you know information about ClimMob.</p>
+                <p style="color: #676a6c">We take the privacy, confidentiality, and security of any data you submit or upload to ClimMob very seriously. The User-Generated Content or user data is and will be yours. You retain ownership of the data. We will never share or access your data, unless granted permission by you, to provide you with technical assistance. By giving you these complete rights on your data it also means that you are the sole responsible for such data. In no circumstances The Alliance Bioversity-CIAT is responsible for data that you collect, store and share through ClimMob.</p>
+                <p style="color: #676a6c">The Alliance Bioversity-CIAT may disclose and otherwise use your personal and other information where we reasonably believe such disclosure is needed to (a) satisfy any applicable law, regulation, legal process, or governmental request, (b) enforce applicable <a href="{{ request.route_url('terms') }}">terms of use</a>, including investigation of potential violations thereof, (c) detect, prevent, or otherwise address illegal or suspected illegal activities (including payment and data fraud), security or technical issues, or (d) protect against harm to the rights, property or safety of The Alliance Bioversity-CIAT, its users or the public, as required or permitted by law.</p>
+                <h2>3. Protecting Your Data</h2>
+                <p style="color: #676a6c">We use reasonable administrative, logical, physical and managerial measures to safeguard your personal information and data against loss, theft and unauthorized access, use and modification. These measures are designed to provide a level of security appropriate to the risks of storing your data in ClimMob.</p>
+                <p style="color: #676a6c">To further protect your data, we encourage you never to share your login information and to change your passwords regularly.</p>
+                <p style="color: #676a6c">If you have any questions regarding our security and backup procedures, please contact us at <a href='mailto:BioversityClimMob@gmail.com' target='_blank' class='url'>BioversityClimMob@gmail.com</a></p>
+                <h2>4. Changes to the Privacy Policy</h2>
+                <p style="color: #676a6c">We will update this Privacy Statement from time to time in response to changing legal, regulatory or operational requirements. We will provide notice of any such changes (including when they will take effect). Your continued use of the ClimMob service after any such updates take effect will constitute acknowledgment and (as applicable) acceptance of those changes. If you do not wish to acknowledge or accept any updates to this Privacy Statement, you may cancel your use of the ClimMob service. To see when this Privacy Statement was last updated, please see the &quot;Last Updated&quot; section below.</p>
+                <p style="color: #676a6c">Should you have any questions or concerns about our Privacy Policy please contact us at <a href='mailto:BioversityClimMob@gmail.com'>BioversityClimMob@gmail.com</a></p>
+                <p style="color: #676a6c">Last Updated: November 12, 2020 </p>
+
+            </div>
+        </div>
+    </section>
+
+    </body>
+{% endblock body %}
+</html>

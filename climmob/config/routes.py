@@ -11,6 +11,9 @@ from ..views.basic_views import (
     register_view,
     logout_view,
     RecoverPasswordView,
+    StoreCookieView,
+    TermsView,
+    PrivacyView
 )
 from ..views.dashboard import dashboard_view, projectInformation_view
 from ..views.profile import profile_view, editProfile_view
@@ -265,6 +268,18 @@ def loadRoutes(config):
     routes = []
     routes.append(
         {"name": "home", "path": "/", "view": home_view, "renderer": "landing.jinja2"}
+    )
+    routes.append(
+        {"name": "store_cookie", "path": "/cookie", "view": StoreCookieView, "renderer": None}
+    )
+    routes.append(
+        {"name": "terms", "path": "/terms", "view": TermsView, "renderer": "terms.jinja2"}
+    )
+    routes.append(
+        {"name": "privacy", "path": "/privacy", "view": PrivacyView, "renderer": "privacy.jinja2"}
+    )
+    routes.append(
+        {"name": "usage", "path": "/usage", "view": PrivacyView, "renderer": "usage.jinja2"}
     )
     routes.append(
         {

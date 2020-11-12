@@ -24,17 +24,45 @@ import datetime
 
 class home_view(publicView):
     def processView(self):
-
+        session = self.request.session
+        if 'climmob_cookie_question' in session:
+            ask_for_cookies = False
+        else:
+            ask_for_cookies = True
         return {
             "numUsers": getUserCount(self.request),
             "numProjs": getProjectCount(self.request),
+            "ask_for_cookies": ask_for_cookies,
         }
 
+
+class TermsView(publicView):
+    def processView(self):
+        return {}
+
+
+class PrivacyView(publicView):
+    def processView(self):
+        return {}
 
 class notfound_view(publicView):
     def processView(self):
         self.request.response.status = 404
         return {}
+
+
+class StoreCookieView(publicView):
+    def processView(self):
+        if self.request.method == "GET":
+            raise HTTPNotFound()
+        else:
+            session = self.request.session
+            if "decline" in self.request.POST:
+                session['climmob_cookie_question'] = "decline"
+            else:
+                session['climmob_cookie_question'] = "accept"
+            next = self.request.params.get("next") or self.request.route_url("home")
+            return HTTPFound(location=next)
 
 
 class login_view(publicView):
