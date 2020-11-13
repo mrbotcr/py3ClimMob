@@ -367,7 +367,7 @@
 
         function showDeleteSection()
         {
-            var urlAction = '{{ request.host_url }}/project/{{projectid}}/registry/'+$("#txt_section_id").val()+'/delete'
+            var urlAction = '{{ request.application_url }}/project/{{projectid}}/registry/'+$("#txt_section_id").val()+'/delete'
             showDelete(urlAction,'{{ _("Do you really want to remove this section?") }}','{{ request.session.get_csrf_token() }}')
         }
 

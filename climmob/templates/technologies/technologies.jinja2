@@ -356,13 +356,13 @@
         }
 
         function deleteTechnology() {
-            var urlAction= "{{ request.host_url }}/technology/"+$("#tech_id").val()+"/delete"
+            var urlAction= "{{ request.application_url }}/technology/"+$("#tech_id").val()+"/delete"
             showDelete(urlAction,'{{ _("Do you really want to remove this technology?") }}','{{ request.session.get_csrf_token() }}')
         }
 
         function deleteTechnologyOption()
         {
-            var urlAction= "{{ request.host_url }}/technology/"+$("#tech_id").val()+"/alias/"+$("#alias_id").val()+"/delete"
+            var urlAction= "{{ request.application_url }}/technology/"+$("#tech_id").val()+"/alias/"+$("#alias_id").val()+"/delete"
             showDelete(urlAction,'{{ _("Do you really want to remove this technology option?") }}','{{ request.session.get_csrf_token() }}','noRedirectAndAction')
 
         }
