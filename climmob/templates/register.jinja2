@@ -74,7 +74,7 @@
             </div>
 
             <div class="form-group">
-                <div class="checkbox i-checks"><label> <input id="user_policy" name="user_policy" type="checkbox"><i></i></label> <a target="_blank" href="http://climmob.net/Version_2/documentos/terminos y condiciones.pdf"><span style="color: #1ab492;">{{ _("Agree to the terms of use") }}.</span></a></div>
+                <div class="checkbox i-checks"><label> <input id="user_policy" name="user_policy" type="checkbox"><i></i></label> {{ _('You agree with our') }} <a target="_blank" href="{{ request.route_url('terms') }}">{{ _('Terms of service') }}</a> {{ _('and our') }} <a target="_blank" href="{{ request.route_url('privacy') }}">{{ _('Privacy policy') }}</a></div>
             </div>
             <button type="submit" name="submit" id="submit" class="btn btn-primary block full-width m-b">{{ _("Register") }}</button>
 
