@@ -52,7 +52,7 @@
         <form method="post" class="form-horizontal" action="{{ request.path }}">
             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
             {% block newprjform %}
-                {% snippet 'snippets/project/project_form.jinja2', dataworking=dataworking, edit=False, countries=countries %}
+                {% snippet 'snippets/project/project_form.jinja2', dataworking=dataworking, edit=False, countries=countries, crops=crops %}
 
                 <button type="submit" name="btn_addNewProject" id="btn_addNewProject" class="btn btn-primary pull-right">{{ _("Create project") }}</button>
 

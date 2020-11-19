@@ -9,7 +9,10 @@ from ...processes import (
     modifyProject,
     changeTheStateOfCreateComb,
     existsCountryByCode,
+    existsCropByCode,
     getCountryList,
+    getListOfCrops,
+    getListOfCropsByLanguaje,
 )
 
 from pyramid.response import Response
@@ -32,6 +35,54 @@ class readListOfCountries_view(apiView):
             return response
 
 
+class readListOfCrops_view(apiView):
+    def processView(self):
+
+        if self.request.method == "GET":
+
+            response = Response(
+                status=200, body=json.dumps(getListOfCrops(self.request)),
+            )
+            return response
+        else:
+            response = Response(status=401, body=self._("Only accepts GET method."))
+            return response
+
+
+class readListOfAliasForCrops_view(apiView):
+    def processView(self):
+
+        if self.request.method == "GET":
+            obligatory = [u"lang_code"]
+            try:
+                dataworking = json.loads(self.body)
+            except:
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "Error in the JSON, It does not have the 'body' parameter."
+                    ),
+                )
+                return response
+
+            if sorted(obligatory) == sorted(dataworking.keys()):
+
+                response = Response(
+                    status=200,
+                    body=json.dumps(
+                        getListOfCropsByLanguaje(self.request, dataworking["lang_code"])
+                    ),
+                )
+                return response
+
+            else:
+                response = Response(status=401, body=self._("Error in the JSON."))
+                return response
+        else:
+            response = Response(status=401, body=self._("Only accepts GET method."))
+            return response
+
+
 class createProject_view(apiView):
     def processView(self):
 
@@ -46,6 +97,9 @@ class createProject_view(apiView):
                 u"project_piemail",
                 u"project_numobs",
                 u"project_cnty",
+                u"project_crop_cod",
+                u"project_alias_cod",
+                u"project_lang_code",
                 u"project_registration_and_analysis",
             ]
             dataworking = json.loads(self.body)
@@ -120,6 +174,20 @@ class createProject_view(apiView):
                                             status=401,
                                             body=self._(
                                                 "The country assigned to the project does not exist in the ClimMob list."
+                                            ),
+                                        )
+                                        return response
+
+                                    if not existsCropByCode(
+                                        self.request,
+                                        dataworking["project_crop_cod"],
+                                        dataworking["project_alias_cod"],
+                                        dataworking["project_lang_code"],
+                                    ):
+                                        response = Response(
+                                            status=401,
+                                            body=self._(
+                                                "The crop assigned to the project does not exist in the ClimMob list."
                                             ),
                                         )
                                         return response
@@ -218,7 +286,12 @@ class updateProject_view(apiView):
                 u"project_piemail",
                 u"project_numobs",
                 u"project_cnty",
+                u"project_crop_cod",
+                u"project_alias_cod",
+                u"project_lang_code",
                 u"project_registration_and_analysis",
+                u"user_name",
+                u"project_numcom",
             ]
             obligatory = [u"project_cod"]
 
@@ -229,8 +302,10 @@ class updateProject_view(apiView):
             permitedKeys = True
             for key in dataworking.keys():
                 if key not in possibles:
+                    print(key)
                     permitedKeys = False
 
+            print(permitedKeys)
             obligatoryKeys = True
 
             for key in obligatory:
@@ -280,16 +355,20 @@ class updateProject_view(apiView):
                                         self.request,
                                     )
 
-                            if str(
-                                dataworking["project_registration_and_analysis"]
-                            ) not in ["0", "1",]:
-                                response = Response(
-                                    status=401,
-                                    body=self._(
-                                        "The possible values in the parameter 'project_registration_and_analysis' are: ['0':' Registration is done first, followed by one or more data collection moments (with different forms)','1':'Requires registering participants and immediately asking questions to analyze the information']"
-                                    ),
-                                )
-                                return response
+                            if (
+                                "project_registration_and_analysis"
+                                in dataworking.keys()
+                            ):
+                                if str(
+                                    dataworking["project_registration_and_analysis"]
+                                ) not in ["0", "1",]:
+                                    response = Response(
+                                        status=401,
+                                        body=self._(
+                                            "The possible values in the parameter 'project_registration_and_analysis' are: ['0':' Registration is done first, followed by one or more data collection moments (with different forms)','1':'Requires registering participants and immediately asking questions to analyze the information']"
+                                        ),
+                                    )
+                                    return response
 
                             if "project_localvariety" in dataworking.keys():
                                 if str(dataworking["project_localvariety"]) not in [
@@ -304,16 +383,50 @@ class updateProject_view(apiView):
                                     )
                                     return response
 
-                            if not existsCountryByCode(
-                                self.request, dataworking["project_cnty"]
-                            ):
-                                response = Response(
-                                    status=401,
-                                    body=self._(
-                                        "The country assigned to the project does not exist in the ClimMob list."
-                                    ),
-                                )
-                                return response
+                            if "project_cnty" in dataworking.keys():
+                                if not existsCountryByCode(
+                                    self.request, dataworking["project_cnty"]
+                                ):
+                                    response = Response(
+                                        status=401,
+                                        body=self._(
+                                            "The country assigned to the project does not exist in the ClimMob list."
+                                        ),
+                                    )
+                                    return response
+
+                            if "project_crop_cod" in dataworking.keys():
+                                if "project_alias_cod" in dataworking.keys():
+                                    if "project_lang_code" in dataworking.keys():
+                                        if not existsCropByCode(
+                                            self.request,
+                                            dataworking["project_crop_cod"],
+                                            dataworking["project_alias_cod"],
+                                            dataworking["project_lang_code"],
+                                        ):
+                                            response = Response(
+                                                status=401,
+                                                body=self._(
+                                                    "The crop assigned to the project does not exist in the ClimMob list."
+                                                ),
+                                            )
+                                            return response
+                                    else:
+                                        response = Response(
+                                            status=401,
+                                            body=self._(
+                                                "You have to additionally send the parameters: project_lang_code"
+                                            ),
+                                        )
+                                        return response
+                                else:
+                                    response = Response(
+                                        status=401,
+                                        body=self._(
+                                            "You have to additionally send the parameters: project_alias_cod and project_lang_code"
+                                        ),
+                                    )
+                                    return response
 
                             modified, message = modifyProject(
                                 self.user.login,

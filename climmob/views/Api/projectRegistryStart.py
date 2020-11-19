@@ -39,7 +39,7 @@ class readProjectCombinations_view(apiView):
         if self.request.method == "GET":
             obligatory = [u"project_cod"]
             try:
-                dataworking = json.loads(self.request.params["Body"])
+                dataworking = json.loads(self.body)
             except:
                 response = Response(
                     status=401,
@@ -303,7 +303,7 @@ class createPackages_view(apiView):
         if self.request.method == "GET":
             obligatory = [u"project_cod"]
             try:
-                dataworking = json.loads(self.request.params["Body"])
+                dataworking = json.loads(self.body)
             except:
                 response = Response(
                     status=401,
@@ -641,7 +641,7 @@ class readRegistryStructure_view(apiView):
         if self.request.method == "GET":
             obligatory = [u"project_cod"]
             try:
-                dataworking = json.loads(self.request.params["Body"])
+                dataworking = json.loads(self.body)
             except:
                 response = Response(
                     status=401,

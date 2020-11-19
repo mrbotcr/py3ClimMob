@@ -28,6 +28,20 @@
                 <div class="hr-line-dashed"></div>
 
                 <div class="form-group">
+                    <label class="col-sm-4 control-label">{{ _("Crop") }}</label>
+                    <div class="col-sm-8">
+                        <select id="project_crop" name="project_crop" class="form-control chosen-select" tabindex="2" required oninvalid="this.setCustomValidity('{{ _("Select one crop.") }}')" onchange="this.setCustomValidity('')">
+                            <option value="">{{ _("Select one crop") }}</option>
+                            {% for crop in crops %}
+                                <option value="{{ crop.crop_cod }}-{{ crop.lang_code }}-{{ crop.alias_cod }}" {% if crop.crop_cod == dataworking.project_crop_cod and crop.lang_code == dataworking.project_lang_code and crop.alias_cod == dataworking.project_alias_cod  %}selected{% endif %} >{{ crop.alias_name }} ({{ crop.crop_scientific_name }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="hr-line-dashed"></div>
+
+                <div class="form-group">
                     <label class="col-sm-4 control-label">{{ _("Tags") }}</label>
                     <div class="col-sm-8">
                         <input class="tagsinput form-control" name="project_tags" id="newproject_tag" type="text" data-role="tagsinput" value="{{ dataworking.project_tags }}"  oninvalid="this.setCustomValidity('{{ _("Write the tags.") }}')" onchange="this.setCustomValidity('')">

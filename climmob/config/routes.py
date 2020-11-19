@@ -132,6 +132,8 @@ from ..views.Api.projectCreation import (
     updateProject_view,
     deleteProject_view_api,
     readListOfCountries_view,
+    readListOfCrops_view,
+    readListOfAliasForCrops_view,
 )
 from ..views.Api.enumerators import (
     createEnumerator_view,
@@ -1047,6 +1049,17 @@ def loadRoutes(config):
             "readListOfCountries",
             "/api/readListOfCountries",
             readListOfCountries_view,
+            None,
+        )
+    )
+    routes.append(
+        addRoute("readListOfCrops", "/api/readListOfCrops", readListOfCrops_view, None,)
+    )
+    routes.append(
+        addRoute(
+            "readListOfAliasForCrops",
+            "/api/readListOfAliasForCrops",
+            readListOfAliasForCrops_view,
             None,
         )
     )

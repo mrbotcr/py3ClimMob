@@ -429,7 +429,7 @@
         });
 
         function showDeleteQuestion() {
-            var urlAction = '{{ request.host_url }}/question/'+$('#question_id').val()+'/delete'
+            var urlAction = '{{ request.application_url }}/question/'+$('#question_id').val()+'/delete'
             showDelete(urlAction,'{{ _("Do you really want to remove this question ?") }}','{{ request.session.get_csrf_token() }}')
             $(this).parent().parent().remove();
         }
@@ -725,7 +725,7 @@
 
                     if (id[1] == 'true')
                         $("#btn_add_option_na").prop('disabled', false);
-                    //showDeleteOption('{{ request.host_url }}/question/'+id[1]+'/value/'+id[0]+'/delete','{{ _("Do you really want to remove this option?") }}','{{ request.session.get_csrf_token() }}','noRedirect')
+                    //showDeleteOption('{{ request.application_url }}/question/'+id[1]+'/value/'+id[0]+'/delete','{{ _("Do you really want to remove this option?") }}','{{ request.session.get_csrf_token() }}','noRedirect')
                     $(this).parent().parent().remove();
                 });
 

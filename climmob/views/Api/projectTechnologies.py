@@ -30,7 +30,7 @@ class addProjectTechnology_view(apiView):
         if self.request.method == "POST":
             obligatory = [u"project_cod", u"tech_id"]
             try:
-                dataworking = json.loads(self.request.params["Body"])
+                dataworking = json.loads(self.body)
             except:
                 response = Response(
                     status=401,
@@ -112,7 +112,7 @@ class readProjectTechnologies_view(apiView):
         if self.request.method == "GET":
             obligatory = [u"project_cod"]
             try:
-                dataworking = json.loads(self.request.params["Body"])
+                dataworking = json.loads(self.body)
             except:
                 response = Response(
                     status=401,
@@ -157,7 +157,7 @@ class readPossibleProjectTechnologies_view(apiView):
         if self.request.method == "GET":
             obligatory = [u"project_cod"]
             try:
-                dataworking = json.loads(self.request.params["Body"])
+                dataworking = json.loads(self.body)
             except:
                 response = Response(
                     status=401,
@@ -202,7 +202,7 @@ class deleteProjectTechnology_view(apiView):
         if self.request.method == "POST":
             obligatory = [u"project_cod", u"tech_id"]
             try:
-                dataworking = json.loads(self.request.params["Body"])
+                dataworking = json.loads(self.body)
             except:
                 response = Response(
                     status=401,
@@ -445,7 +445,7 @@ class readProjectTechnologiesAlias_view(apiView):
         if self.request.method == "GET":
             obligatory = [u"project_cod", u"tech_id"]
             try:
-                dataworking = json.loads(self.request.params["Body"])
+                dataworking = json.loads(self.body)
             except:
                 response = Response(
                     status=401,
@@ -508,7 +508,7 @@ class readProjectTechnologiesAliasExtra_view(apiView):
         if self.request.method == "GET":
             obligatory = [u"project_cod", u"tech_id"]
             try:
-                dataworking = json.loads(self.request.params["Body"])
+                dataworking = json.loads(self.body)
             except:
                 response = Response(
                     status=401,
@@ -571,7 +571,7 @@ class readPossibleProjectTechnologiesAlias_view(apiView):
         if self.request.method == "GET":
             obligatory = [u"project_cod", u"tech_id"]
             try:
-                dataworking = json.loads(self.request.params["Body"])
+                dataworking = json.loads(self.body)
             except:
                 response = Response(
                     status=401,

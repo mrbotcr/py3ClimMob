@@ -9,6 +9,7 @@
     {% cssresource request,'coreresources','tags' %}
     {% cssresource request,'coreresources','chosen' %}
     {% cssresource request,'coreresources','icheck' %}
+    {% cssresource request,'coreresources','sweet' %}
 {% endblock css %}
 
 {% block topScripts %}
@@ -17,10 +18,12 @@
     {% jsresource request,'coreresources','bootstrapmaxlength' %}
     {% jsresource request,'coreresources','chosen' %}
     {% jsresource request,'coreresources','icheck' %}
+    {% jsresource request,'coreresources','sweet' %}
+    {% jsresource request,'coreresources','delete' %}
 {% endblock topScripts %}
 
 {% block pageheading %}
-    {% snippet 'snippets/menuheading.jinja2', request=request, _title= _("Update project"), _linkWiki="https://climmob.net/blog/wiki/update-project/" %}
+    {% snippet 'snippets/menuheading.jinja2', request=request, _title= _("Project profile"), _linkWiki="https://climmob.net/blog/wiki/update-project/" %}
 {% endblock %}
 
 {% block pagecontent %}
@@ -37,9 +40,17 @@
         <form id="formModify" method="post" class="form-horizontal" action="{{ request.path }}">
             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
             {% block newprjform %}
-                {% snippet 'snippets/project/project_form.jinja2', dataworking=data, edit=True, countries=countries %}
 
-                <button type="submit" name="btn_addNewProject" id="btn_addNewProject" class="btn btn-warning pull-right">{{ _("Update project") }}</button>
+                {% snippet 'snippets/project/project_form.jinja2', dataworking=data, edit=True, countries=countries, crops=crops %}
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <a class="btn btn-danger pull-left" style="overflow: hidden;text-overflow: ellipsis;" onclick="showDelete('{{ request.route_url('deleteproject',projectid=data.project_cod) }}','{{ _("Do you really want to remove this project?") }}','{{ request.session.get_csrf_token() }}','{{ request.route_url('dashboard') }}')">{{ _("Delete project") }}</a>
+                    </div>
+                    <div class="col-md-6">
+                        <button type="submit" name="btn_addNewProject" id="btn_addNewProject" class="btn btn-warning pull-right">{{ _("Update project") }}</button>
+                    </div>
+                </div>
 
             {% endblock newprjform %}
 
@@ -56,9 +67,9 @@
                 });
             })
 
-        $("#formModify").submit(function (e) {
-            $(".radiosRA").prop('disabled', false);
-        });
+            $("#formModify").submit(function (e) {
+                $(".radiosRA").prop('disabled', false);
+            });
 
         </script>
     {% endif %}

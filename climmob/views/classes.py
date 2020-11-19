@@ -370,30 +370,30 @@ class apiView(object):
                 )
                 return response
 
-            if self.request.method == "POST":
-                # EDITED BY BRANDON MADRIZ
-                try:
-                    self.body = self.request.params["Body"]
-                except:
-                    body = {}
-                    for va in self.request.params:
-                        if va != "Apikey":
-                            body[va] = self.request.params[va]
+            # EDITED BY BRANDON MADRIZ
+            # if self.request.method == "POST":
+            try:
+                self.body = self.request.params["Body"]
+            except:
+                body = {}
+                for va in self.request.params:
+                    if va != "Apikey":
+                        body[va] = self.request.params[va]
 
-                    self.body = json.dumps(body)
+                self.body = json.dumps(body)
 
-                """
-                try:
-                    self.body = self.request.params["Body"]
-                except:
-                    response = Response(
-                        status=401,
-                        body=self.request.translate(
-                            "Error in the JSON, It does not have the 'body' parameter."
-                        ),
-                    )
-                    return response
-                """
+            """
+            try:
+                self.body = self.request.params["Body"]
+            except:
+                response = Response(
+                    status=401,
+                    body=self.request.translate(
+                        "Error in the JSON, It does not have the 'body' parameter."
+                    ),
+                )
+                return response
+            """
         except:
             response = Response(
                 status=401, body=self.request.translate("Apikey non-existent")

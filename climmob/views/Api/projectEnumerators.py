@@ -20,7 +20,7 @@ class addProjectEnumerator_view(apiView):
         if self.request.method == "POST":
             obligatory = [u"project_cod", u"enum_id"]
             try:
-                dataworking = json.loads(self.request.params["Body"])
+                dataworking = json.loads(self.body)
             except:
                 response = Response(
                     status=401,
@@ -97,7 +97,7 @@ class readProjectEnumerators_view(apiView):
         if self.request.method == "GET":
             obligatory = [u"project_cod"]
             try:
-                dataworking = json.loads(self.request.params["Body"])
+                dataworking = json.loads(self.body)
             except:
                 response = Response(
                     status=401,
@@ -142,7 +142,7 @@ class readPossibleProjectEnumerators_view(apiView):
         if self.request.method == "GET":
             obligatory = [u"project_cod"]
             try:
-                dataworking = json.loads(self.request.params["Body"])
+                dataworking = json.loads(self.body)
             except:
                 response = Response(
                     status=401,
@@ -187,7 +187,7 @@ class deleteProjectEnumerator_view(apiView):
         if self.request.method == "POST":
             obligatory = [u"project_cod", u"enum_id"]
             try:
-                dataworking = json.loads(self.request.params["Body"])
+                dataworking = json.loads(self.body)
             except:
                 response = Response(
                     status=401,
