@@ -705,6 +705,7 @@ def generateODKFile(
                 "WHERE qstoption.question_id = question.question_id "
                 "AND (question.question_dtype = 5 or question.question_dtype = 6) "
                 "AND question.question_code = '" + question.question_code + "' "
+                "AND question.question_id= "+str(question.question_id)+" "
                 "ORDER BY qstoption.value_order"
             )
 
@@ -859,7 +860,7 @@ def generateRegistry(user, projectid, request):
     sql = (
         "SELECT question.question_code,question.question_desc,question.question_unit,question.question_dtype,question.question_twoitems,"
         "registry.section_id,question.question_posstm,question.question_negstm,question.question_moreitems,question.question_perfstmt,"
-        "question.question_requiredvalue,registry.question_order FROM question,registry "
+        "question.question_requiredvalue,registry.question_order,question.question_id FROM question,registry "
         "WHERE question.question_id = registry.question_id "
         "AND registry.user_name = '" + user + "' "
         "AND registry.project_cod = '"
