@@ -159,14 +159,6 @@
             $('.footable').footable();
         });
 
-        $( ".classForEyes" ).hover(
-          function() {
-            $( this ).append( $('<i style="color:#000000;" class="fa fa-eye">  </i>') );
-          }, function() {
-            $( this ).find( "i" ).last().remove();
-          }
-        );
-
         function showVarieties(techid)
         {
             $(".tech_id").val(techid)
