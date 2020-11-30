@@ -52,7 +52,8 @@
 
                 <div class="stream-panel" style="margin-top: 4px">
                     <div class="stream-info">
-                       <p {% if not isAlias %} class="classForEyes" {% endif %} style="font-size: 14px; margin: initial">{% if isAlias %}<b>{{ technology.alias_name }}</b>{% if extra %} ({{ _("only for this project") }}){%endif%}{% else%}<b>{{ technology.tech_name }}</b></p>{% endif %}
+{#                       <p {% if not isAlias %} class="classForEyes" {% endif %} style="font-size: 14px; margin: initial">{% if isAlias %}<b>{{ technology.alias_name }}</b>{% if extra %} ({{ _("only for this project") }}){%endif%}{% else%}<b>{{ technology.tech_name }}</b></p>{% endif %}#}
+                       <p style="font-size: 14px; margin: initial">{% if isAlias %}<b>{{ technology.alias_name }}</b>{% if extra %} ({{ _("only for this project") }}){%endif%}{% else%}<b>{{ technology.tech_name }}</b></p>{% endif %}
                     </div>
                 </div>
 
