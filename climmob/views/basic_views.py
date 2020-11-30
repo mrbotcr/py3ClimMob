@@ -25,7 +25,7 @@ import datetime
 class home_view(publicView):
     def processView(self):
         session = self.request.session
-        if 'climmob_cookie_question' in session:
+        if "climmob_cookie_question" in session:
             ask_for_cookies = False
         else:
             ask_for_cookies = True
@@ -45,6 +45,7 @@ class PrivacyView(publicView):
     def processView(self):
         return {}
 
+
 class notfound_view(publicView):
     def processView(self):
         self.request.response.status = 404
@@ -58,9 +59,9 @@ class StoreCookieView(publicView):
         else:
             session = self.request.session
             if "decline" in self.request.POST:
-                session['climmob_cookie_question'] = "decline"
+                session["climmob_cookie_question"] = "decline"
             else:
-                session['climmob_cookie_question'] = "accept"
+                session["climmob_cookie_question"] = "accept"
             next = self.request.params.get("next") or self.request.route_url("home")
             return HTTPFound(location=next)
 

@@ -13,7 +13,7 @@ from ..views.basic_views import (
     RecoverPasswordView,
     StoreCookieView,
     TermsView,
-    PrivacyView
+    PrivacyView,
 )
 from ..views.dashboard import dashboard_view, projectInformation_view
 from ..views.profile import profile_view, editProfile_view
@@ -270,16 +270,36 @@ def loadRoutes(config):
         {"name": "home", "path": "/", "view": home_view, "renderer": "landing.jinja2"}
     )
     routes.append(
-        {"name": "store_cookie", "path": "/cookie", "view": StoreCookieView, "renderer": None}
+        {
+            "name": "store_cookie",
+            "path": "/cookie",
+            "view": StoreCookieView,
+            "renderer": None,
+        }
     )
     routes.append(
-        {"name": "terms", "path": "/terms", "view": TermsView, "renderer": "terms.jinja2"}
+        {
+            "name": "terms",
+            "path": "/terms",
+            "view": TermsView,
+            "renderer": "terms.jinja2",
+        }
     )
     routes.append(
-        {"name": "privacy", "path": "/privacy", "view": PrivacyView, "renderer": "privacy.jinja2"}
+        {
+            "name": "privacy",
+            "path": "/privacy",
+            "view": PrivacyView,
+            "renderer": "privacy.jinja2",
+        }
     )
     routes.append(
-        {"name": "usage", "path": "/usage", "view": PrivacyView, "renderer": "usage.jinja2"}
+        {
+            "name": "usage",
+            "path": "/usage",
+            "view": PrivacyView,
+            "renderer": "usage.jinja2",
+        }
     )
     routes.append(
         {
