@@ -45,6 +45,7 @@ class analysisDataView(privateView):
                 info = getJSONResult(
                     self.user.login, activeProjectData["project_cod"], self.request
                 )
+
                 create_analysis(
                     locale,
                     self.user.login,
@@ -53,6 +54,7 @@ class analysisDataView(privateView):
                     info,
                     infosheet,
                     self.request,
+                    self.request.registry.settings["r.analysis.script"]
                 )
 
                 create_datacsv(
