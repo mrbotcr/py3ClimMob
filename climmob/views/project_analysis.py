@@ -54,7 +54,7 @@ class analysisDataView(privateView):
                     info,
                     infosheet,
                     self.request,
-                    self.request.registry.settings["r.analysis.script"]
+                    self.request.registry.settings["r.analysis.script"],
                 )
 
                 create_datacsv(

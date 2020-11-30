@@ -705,7 +705,7 @@ def generateODKFile(
                 "WHERE qstoption.question_id = question.question_id "
                 "AND (question.question_dtype = 5 or question.question_dtype = 6) "
                 "AND question.question_code = '" + question.question_code + "' "
-                "AND question.question_id= "+str(question.question_id)+" "
+                "AND question.question_id= " + str(question.question_id) + " "
                 "ORDER BY qstoption.value_order"
             )
 
