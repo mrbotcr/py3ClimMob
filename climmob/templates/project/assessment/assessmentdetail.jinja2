@@ -146,7 +146,35 @@
                 'core': {
                     'check_callback': function(operation, node, node_parent, node_position, more) {
 
-                        if(node_parent.parent == null || node_parent.parents.length >1)
+                        if(node.parent =="#"){
+                            if(node.id.substring(0,2)=="j2")
+                            return false;
+                        }
+
+                        if(node.id.substring(0,3)!="GRP") {
+                            if(node_parent.parent == null || node_parent.parents.length >1)
+                                return false;
+                        }
+
+                        if(node.id.substring(0,3)=="GRP")
+                        {
+                            if(node_parent.parent != null)
+                            {
+                                return false;
+                            }else
+                            {
+                                if(node_parent.id.substring(0,3)=="GRP")
+                                {
+                                    return false;
+                                }
+                            }
+                        }
+
+
+                        if(node_parent.id=="createGroup")
+                            return false;
+
+                        if(node.id=="createGroup")
                             return false;
                     },
                 },
@@ -216,6 +244,10 @@
             $('#jstree2').jstree({
                 'core': {
                     'check_callback': function(operation, node, node_parent, node_position, more) {
+                        if(node.parent == "#"){
+                            return false;
+                        }
+
                         if(node_parent.parent == null || node_parent.parents.length >1 || node.li_attr["data-jstree"].search('youCanDelete') != -1)
                             return false;
                     }
