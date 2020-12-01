@@ -446,7 +446,9 @@ def getRegisteredFarmers(user, project, request):
             + user
             + "_"
             + project
-            + ".REG_geninfo"
+            + ".REG_geninfo order by CAST("
+            + qstregkey.question_code
+            + " AS unsigned)"
         )
         print("*****************44")
         print(sql)
