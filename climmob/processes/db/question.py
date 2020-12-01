@@ -19,6 +19,7 @@ __all__ = [
     "QuestionsOptions",
     "getQuestionData",
     "getQuestionOptions",
+    "getQuestionOptionsByQuestionCode",
     "deleteOption",
     "optionExists",
     "getOptionData",
@@ -251,6 +252,17 @@ def getQuestionOptions(question, request):
     return mapFromSchema(
         request.dbsession.query(Qstoption)
         .filter(Qstoption.question_id == question)
+        .order_by(Qstoption.value_order)
+        .all()
+    )
+
+
+def getQuestionOptionsByQuestionCode(question_code, username, request):
+    return mapFromSchema(
+        request.dbsession.query(Qstoption)
+        .filter(Question.question_code == question_code)
+        .filter(Question.user_name == username)
+        .filter(Qstoption.question_id == Question.question_id)
         .order_by(Qstoption.value_order)
         .all()
     )
