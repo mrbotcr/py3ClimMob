@@ -47,8 +47,8 @@
                         <form class="form-horizontal" role="form" method="post" action="{{ request.path }}" >
                             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                             {% snippet 'snippets/enumerators/enumerator-form.jinja2', dataworking=dataworking, modify=modify %}
-                            <button type="submit" class="btn btn-primary pull-right btnsEnumerator" id="btn_add_enumerator" name="btn_add_enumerator"> {{ _('Add and close') }}</button>
-                            <button type="submit" class="btn btn-primary pull-right btnsEnumerator" id="btn_modify_enumerator" name="btn_modify_enumerator" style="display: none"> {{ _('Save and close') }}</button>
+                            <button type="submit" class="btn btn-primary pull-right btnsEnumerator" id="btn_add_enumerator" name="btn_add_enumerator"> {{ _('Add') }}</button>
+                            <button type="submit" class="btn btn-primary pull-right btnsEnumerator" id="btn_modify_enumerator" name="btn_modify_enumerator" style="display: none"> {{ _('Save') }}</button>
                         </form>
                     </div>
                     <br>

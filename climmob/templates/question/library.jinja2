@@ -655,10 +655,18 @@
 
             $(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
 
+
             if (question_requiredvalue == 1)
                 $("#ckb_required_value").bootstrapSwitch('state',true);
             else
                 $("#ckb_required_value").bootstrapSwitch('state',false);
+
+            if(question_dtype == '2' || question_dtype == '3')
+            {
+                $('#div_unit').css('display', 'block');
+            }else{
+                $('#div_unit').css('display', 'none');
+            }
 
             if (question_dtype != "9" && question_dtype != "10") {
                     $("#form_simple_question").css('display', 'initial')
