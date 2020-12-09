@@ -42,7 +42,7 @@
                                 {% if dataForAnalysis.Explanatory %}
                                     {%for c in dataForAnalysis.Explanatory%}
                                         {% if c.code == None %}
-                                            <label style="font-weight: inherit"> <input class="checkbox i-checks" type="checkbox" id="explanatory_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
+                                            <label style="font-weight: inherit"> <input class="checkbox i-checks" type="checkbox" id="explanatory_REG__{{c.id}}_add"><i></i> {{ c.name }}</label><br>
                                         {% endif%}
                                     {%endfor%}
                                 {% endif %}
@@ -51,7 +51,7 @@
                                 {% if dataForAnalysis.Characteristics %}
                                     {%for c in dataForAnalysis.Characteristics%}
                                         {% if c.code == None %}
-                                            <label style="font-weight: inherit"> <input class="checkbox i-checks" type="checkbox" id="characteristic_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
+                                            <label style="font-weight: inherit"> <input class="checkbox i-checks" type="checkbox" id="characteristic_REG__{{c.id}}_add"><i></i> {{ c.name }}</label><br>
                                         {% endif%}
                                     {%endfor%}
                                 {% endif %}
@@ -60,7 +60,7 @@
                                 {% if dataForAnalysis.Performance%}
                                     {%for c in dataForAnalysis.Performance%}
                                         {% if c.code == None %}
-                                            <label style="font-weight: inherit"> <input class="checkbox i-checks" type="checkbox" id="performance_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
+                                            <label style="font-weight: inherit"> <input class="checkbox i-checks" type="checkbox" id="performance_REG__{{c.id}}_add"><i></i> {{ c.name }}</label><br>
                                         {% endif%}
                                     {%endfor%}
                                 {% endif %}
@@ -73,7 +73,7 @@
                                     {% if dataForAnalysis.Explanatory %}
                                         {%for c in dataForAnalysis.Explanatory%}
                                             {% if c.code.ass_cod == assess.ass_cod %}
-                                                <label style="font-weight: inherit"> <input class="checkbox i-checks" type="checkbox" id="explanatory_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
+                                                <label style="font-weight: inherit"> <input class="checkbox i-checks" type="checkbox" id="explanatory_ASS_{{ assess.ass_cod }}_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
                                             {% endif%}
                                         {%endfor%}
                                     {% endif %}
@@ -82,7 +82,7 @@
                                     {% if dataForAnalysis.Characteristics %}
                                         {%for c in dataForAnalysis.Characteristics%}
                                             {% if c.code.ass_cod == assess.ass_cod %}
-                                                <label style="font-weight: inherit"> <input class="checkbox i-checks" type="checkbox" id="characteristic_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
+                                                <label style="font-weight: inherit"> <input class="checkbox i-checks" type="checkbox" id="characteristic_ASS_{{ assess.ass_cod }}_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
                                             {% endif%}
                                         {%endfor%}
                                     {% endif %}
@@ -91,7 +91,7 @@
                                     {% if dataForAnalysis.Performance%}
                                         {%for c in dataForAnalysis.Performance%}
                                             {% if c.code.ass_cod == assess.ass_cod %}
-                                                <label style="font-weight: inherit"> <input class="checkbox i-checks" type="checkbox" id="performance_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
+                                                <label style="font-weight: inherit"> <input class="checkbox i-checks" type="checkbox" id="performance_ASS_{{ assess.ass_cod }}_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
                                             {% endif%}
                                         {%endfor%}
                                     {% endif %}
