@@ -91,7 +91,7 @@ def getNamesEditByColums(
                             row.append(x.attrib["rtable"])
                             row.append(x.attrib["rfield"])
                         else:
-                            row.append(None)
+                            row.append("None")
                             row.append(x.attrib["name"])
                     elif x.attrib["odktype"] in ["integer"]:
                         row.append("decimal")
