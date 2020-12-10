@@ -56,17 +56,19 @@
                                 <td><h3 style="margin: 0px;">{{ log.enum_name }}</h3></td>
                             </tr>
                             <tr>
-                                <td><p style="margin: 0px;">{{ _("Error") }}: {{ log.detail }}</p></td>
+                                <td><p style="margin: 0px;">{% if log.detail %}{{ _("Error") }}: {{ log.detail }} {% else %} {{ _("Error: The .log file don't exits") }}{% endif %}</p></td>
                             </tr>
 {#                            <tr>#}
 {#                                <td class="text-center"><span >{{ log.log_dtime }}</span></td>#}
 {#                            </tr>#}
                             <tr>
                                 <td>
-                                    {% if formId == "registry" %}
-                                        <a class="btn btn-primary btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('CleanErrorLogsDetails',projectid=log.project_cod,formid='registry',logid=log.log_id) }}">{{ _("Show conflict") }}</a>
-                                    {% else %}
-                                        <a class="btn btn-primary btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('CleanErrorLogsDetailsAssessment',projectid=log.project_cod,formid='assessment',codeid=codeid,logid=log.log_id) }}">{{ _("Show conflict") }}</a>
+                                    {% if log.detail %}
+                                        {% if formId == "registry" %}
+                                            <a class="btn btn-primary btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('CleanErrorLogsDetails',projectid=log.project_cod,formid='registry',logid=log.log_id) }}">{{ _("Show conflict") }}</a>
+                                        {% else %}
+                                            <a class="btn btn-primary btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('CleanErrorLogsDetailsAssessment',projectid=log.project_cod,formid='assessment',codeid=codeid,logid=log.log_id) }}">{{ _("Show conflict") }}</a>
+                                        {% endif %}
                                     {% endif %}
                                 </td>
                             </tr>
