@@ -151,9 +151,11 @@
 
                                                             {% for model in Data["colModel"] %}
                                                                 {% if model["name"] == column[0] %}
-                                                                    {% for selected in New[column[0]].split(" ")%}
-                                                                        {{ model["editoptions"]["value"][selected] }}<br>
-                                                                    {% endfor %}
+                                                                    {% if column[0] in New %}
+                                                                        {% for selected in New[column[0]].split(" ")%}
+                                                                            {{ model["editoptions"]["value"][selected] }}<br>
+                                                                        {% endfor %}
+                                                                    {% endif %}
                                                                 {% endif %}
                                                             {% endfor %}
 
@@ -214,7 +216,6 @@
                                                                     {% endif %}
                                                                 {% endfor %}
                                                             {% else %}
-                                                                {{ Pos }}
                                                                 <select id="newqst2" name="newqst2" class="form-control" required="">
                                                                     {% for values in PosibleValues %}
                                                                         <option value="{{ values[0] }}" {% if values[1] == New[quest[0]] %}selected="selected"{% endif %} >{{ values[1] }}</option>
@@ -223,12 +224,13 @@
                                                             {% endif %}
                                                         {% else %}
                                                             {%if quest[2] == "select"%}
-
                                                                 {% for model in Data["colModel"] %}
                                                                     {% if model["name"] == quest[0] %}
-                                                                        {% for selected in New[quest[0]].split(" ")%}
-                                                                            {{ model["editoptions"]["value"][selected] }}<br>
-                                                                        {% endfor %}
+                                                                        {% if quest[0] in New %}
+                                                                            {% for selected in New[quest[0]].split(" ")%}
+                                                                                {{ model["editoptions"]["value"][selected] }}<br>
+                                                                            {% endfor %}
+                                                                        {% endif %}
                                                                     {% endif %}
                                                                 {% endfor %}
 
