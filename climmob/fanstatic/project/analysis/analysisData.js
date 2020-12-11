@@ -5,6 +5,21 @@ jQuery(document).ready(function() {
         radioClass: 'iradio_square-green',
     });
 
+    $('.i-checksAll').iCheck({
+        checkboxClass: 'icheckbox_square-green',
+        radioClass: 'iradio_square-green',
+    });
+
+    $('.i-checksAll').on('ifChanged', function()
+    {
+        id = $(this).attr("id")
+        if ($(this).prop('checked')) {
+            $("." + id).iCheck('check');
+        }else{
+            $("." + id).iCheck('uncheck');
+        }
+    });
+
 
     $('.i-checks').on('ifChanged', function()
     {
