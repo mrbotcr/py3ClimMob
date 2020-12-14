@@ -577,7 +577,7 @@
             actionCategory('update')
         })
 
-        function actionCategory(actionaction) {
+        function actionCategory(action) {
             if ($("#qstgroups_name").val() != "") {
                 $.ajax({
                     url: '{{ request.route_url('categories') }}',
