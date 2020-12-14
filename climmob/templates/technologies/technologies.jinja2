@@ -82,7 +82,7 @@
                 <div class="ibox-content">
                     {% snippet 'snippets/error.jinja2', error_summary=error_summary %}
 
-                    <form class="form-horizontal" id="form_technology" role="form" method="post" action="{{ request.path }}">
+                    <form class="form-horizontal formElement" id="form_technology" role="form" method="post" action="{{ request.path }}">
                         {% snippet 'snippets/technologies/technologies-form.jinja2', request=request, dataworking=dataworking %}
 
                         <button style="display: none" class="btn btn-danger pull-left BtnTechnology" id="btn_delete_technology" onclick="deleteTechnology()" type="button" title="{{ _("Delete technology") }}">{{ _("Delete technology") }}</button>
@@ -110,7 +110,7 @@
                 <div class="ibox-content">
                     {% snippet 'snippets/error.jinja2', error_summary=error_summary_options %}
 
-                    <form class="form-horizontal" id="form_technology_options" role="form" method="post" action="{{ request.path }}">
+                    <form class="form-horizontal formElement" id="form_technology_options" role="form" method="post" action="{{ request.path }}">
                         <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                         <input type="text" class="form-control tech_id" value="{{ dataworking.tech_id }}" name="tech_id" style="display: none">
                         <input type="text" class="form-control " value="{{ dataworking.alias_id }}" id="alias_id" name="alias_id" style="display: none">
@@ -434,5 +434,6 @@
 
     </script>
 
+    {% snippet 'snippets/loading.jinja2', request=request %}
 
 {% endblock pagecontent %}

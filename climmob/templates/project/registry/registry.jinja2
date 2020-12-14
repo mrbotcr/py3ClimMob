@@ -57,7 +57,7 @@
 
                                     {% snippet 'snippets/jstreeForm.jinja2', request=request, data=data, finalCloseQst=finalCloseQst, activeUser=activeUser, eventClick=False, classByUser=False, classByRegRequired=True, classByAssesRequired=False %}
 
-                                    <form class="form-horizontal" role="form" method="post" action="{{ request.path }}" id="formFoSendInformation" style="display: none">
+                                    <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}" id="formFoSendInformation" style="display: none">
                                         <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                                         <textarea id="nestable-output" name="neworder" class="form-control" style="display:none;"></textarea>
                                     </form>
@@ -75,7 +75,7 @@
                                     </div>
                                 </div>
                                 <div class="ibox-content">
-                                    <form class="form-horizontal" role="form" method="post" id="formSection" action="{{ request.url }}">
+                                    <form class="form-horizontal formElement" role="form" method="post" id="formSection" action="{{ request.url }}">
                                         {% snippet 'snippets/error.jinja2', error_summary=error_summary %}
 
                                         {% snippet 'snippets/project/registry/groupform.jinja2' %}
@@ -83,7 +83,7 @@
                                             <div >
                                                 <input id="btnNewSection"    style="display: none" type="submit" class="btn btn-primary pull-right btnsSection" value="{{ _("Save section") }}"></input>
                                                 <input id="btnUpdateSection" style="display: none" type="submit" class="btn btn-primary pull-right btnsSection" value="{{ _("Save section") }}"></input>
-                                                <input id="btnDeleteSection" style="display: none" onclick="showDeleteSection()" type="submit" class="btn btn-danger pull-left btnsSection" value="{{ _("Delete section") }}"></input>
+                                                <input id="btnDeleteSection" style="display: none" onclick="showDeleteSection()"  class="btn btn-danger pull-left btnsSection" value="{{ _("Delete section") }}"></input>
                                             </div>
                                         </div>
                                     </form>
@@ -440,7 +440,9 @@
         });
 
 
-
     </script>
+
+    {% snippet 'snippets/loading.jinja2', request=request %}
+
 {% endblock pagecontent %}
 

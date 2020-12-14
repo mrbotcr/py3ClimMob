@@ -99,7 +99,7 @@
                 <div class="ibox-content " >
                     {% snippet 'snippets/error.jinja2', error_summary=error_summary %}
 
-                    <form class="form-horizontal" role="form" method="post" id="formQuestion" action="{{ request.url }}">
+                    <form class="form-horizontal formElement" role="form" method="post" id="formQuestion" action="{{ request.url }}">
 
                         {% snippet 'snippets/question/question-form.jinja2',formdata=formdata, request=request, Categories =Categories %}
 
@@ -577,7 +577,7 @@
             actionCategory('update')
         })
 
-        function actionCategory(action) {
+        function actionCategory(actionaction) {
             if ($("#qstgroups_name").val() != "") {
                 $.ajax({
                     url: '{{ request.route_url('categories') }}',
@@ -905,5 +905,8 @@
         }
 
     </script>
+
+
+    {% snippet 'snippets/loading.jinja2', request=request %}
 
 {% endblock pagecontent %}

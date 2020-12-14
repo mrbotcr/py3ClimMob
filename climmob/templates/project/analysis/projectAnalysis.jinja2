@@ -126,7 +126,7 @@
                     <br>
                     <br>
                     <div class="text-center">
-                        <form method="post" class="form-horizontal" action="{{ request.path }}">
+                        <form method="post" class="form-horizontal formElement" action="{{ request.path }}">
                             <input type="text" id="txt_included_in_analysis" name="txt_included_in_analysis" style="width: 100%;display:none">
                             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                             <input type="text" id="txt_infosheets" name="txt_infosheets" value="true" style="width: 100%;display:none">
@@ -138,6 +138,8 @@
             </div>
         </div>
     </div>
+
+    {% snippet 'snippets/loading.jinja2', request=request %}
 
 {% endblock pagecontent%}
 

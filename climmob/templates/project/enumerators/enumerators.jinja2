@@ -31,7 +31,7 @@
                 </div>
                 <div class="ibox-content animated fadeInRightBig" style="height: 89%">
                     {% if enumerators %}
-                        <form class="form-horizontal" role="form" method="post" action="{{ request.path }}">
+                        <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}">
                             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                             <table class="table table-striped table-bordered">
                                 <tbody>
@@ -128,4 +128,7 @@
             });
         })
     </script>
+
+    {% snippet 'snippets/loading.jinja2', request=request %}
+
 {% endblock pagecontent%}

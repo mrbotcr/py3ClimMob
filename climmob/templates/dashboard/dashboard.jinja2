@@ -309,7 +309,7 @@
                                                     <br>
                                                     {% if progress.usableAssessments|length > 0 %}
                                                         {% snippet 'snippets/error.jinja2', error_summary=error_summary %}
-                                                        <form id="start_assessment"  role="form" method="post" action="{{ request.route_url("startassessments",projectid=activeProject.project_cod) }}">
+                                                        <form class="formElement" id="start_assessment"  role="form" method="post" action="{{ request.route_url("startassessments",projectid=activeProject.project_cod) }}">
                                                             <div class="form-group">
                                                                 <label>{{ _("Select the assessment for start the data collection") }}</label>
                                                                 <select id="assessment_id" name="assessment_id" class="form-control">
@@ -1080,6 +1080,8 @@
     </script>
 
 {% endblock script %}
+
+{% snippet 'snippets/loading.jinja2', request=request %}
 
 </body>
 
