@@ -24,12 +24,14 @@
         <div>
             <div>
                 {% block loginlogo %}
-                    <h1 class="logo-name">CM</h1>
+{#                    <h1 class="logo-name">CM</h1>#}
+                    <img src="{{ request.url_for_static('static/landing/climmob2.png') }}" alt="logo" width="300px"/>
+                    <br><br>
                 {% endblock loginlogo %}
 
             </div>
             {% block loginwelcome %}
-                <h3>{{ _("Welcome ClimMob") }}</h3>
+{#                <h3>{{ _("Welcome ClimMob") }}</h3>#}
             {% endblock loginwelcome %}
             {#
             <p>Perfectly designed and precisely prepared admin theme with over 50 pages with extra new web app views.
