@@ -282,16 +282,17 @@ class updateProject_view(apiView):
                                         self.request,
                                     )
 
-                            if str(
-                                dataworking["project_registration_and_analysis"]
-                            ) not in ["0", "1",]:
-                                response = Response(
-                                    status=401,
-                                    body=self._(
-                                        "The possible values in the parameter 'project_registration_and_analysis' are: ['0':' Registration is done first, followed by one or more data collection moments (with different forms)','1':'Requires registering participants and immediately asking questions to analyze the information']"
-                                    ),
-                                )
-                                return response
+                            if "project_registration_and_analysis" in dataworking.keys():
+                                if str(
+                                    dataworking["project_registration_and_analysis"]
+                                ) not in ["0", "1",]:
+                                    response = Response(
+                                        status=401,
+                                        body=self._(
+                                            "The possible values in the parameter 'project_registration_and_analysis' are: ['0':' Registration is done first, followed by one or more data collection moments (with different forms)','1':'Requires registering participants and immediately asking questions to analyze the information']"
+                                        ),
+                                    )
+                                    return response
 
                             if "project_localvariety" in dataworking.keys():
                                 if str(dataworking["project_localvariety"]) not in [
