@@ -8,7 +8,7 @@ from ...processes import (
     updateAlias,
     removeAlias,
     existAlias,
-    getAliasAssigned,
+    getAliasAssignedWithoutProjectCode,
 )
 
 import json
@@ -142,7 +142,7 @@ class updateAlias_view(apiView):
                         if existAlias(dataworking, self.request):
                             existAlias2 = findTechalias(dataworking, self.request)
                             if existAlias2 == False:
-                                if not getAliasAssigned(dataworking, self.request):
+                                if not getAliasAssignedWithoutProjectCode(dataworking, self.request):
                                     update, message = updateAlias(
                                         dataworking, self.request
                                     )
@@ -220,7 +220,7 @@ class deleteAliasView_api(apiView):
                     dataworking["user_name"] = self.user.login
                     if getTechnologyByUser(dataworking, self.request):
                         if existAlias(dataworking, self.request):
-                            if not getAliasAssigned(dataworking, self.request):
+                            if not getAliasAssignedWithoutProjectCode(dataworking, self.request):
                                 removed, message = removeAlias(
                                     dataworking, self.request
                                 )

@@ -219,6 +219,8 @@ class updateProject_view(apiView):
                 u"project_numobs",
                 u"project_cnty",
                 u"project_registration_and_analysis",
+                u"user_name",
+                u"project_numcom",
             ]
             obligatory = [u"project_cod"]
 

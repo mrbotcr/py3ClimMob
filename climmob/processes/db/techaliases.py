@@ -11,6 +11,7 @@ __all__ = [
     "removeAlias",
     "existAlias",
     "getAliasAssigned",
+    "getAliasAssignedWithoutProjectCode"
 ]
 
 
@@ -111,6 +112,21 @@ def getAliasAssigned(data, request):
     else:
         return True
 
+def getAliasAssignedWithoutProjectCode(data, request):
+    result = (
+        request.dbsession.query(func.count(Prjalia.alias_id).label("quantity"))
+        .filter(Prjalia.user_name == data["user_name"])
+        .filter(Prjalia.alias_used == data["alias_id"])
+        .filter(Prjalia.tech_used == data["tech_id"])
+        .one()
+    )
+    # print "_____________________________________________________44"
+    # print result
+    # print "_____________________________________________________44"
+    if result.quantity == 0:
+        return False
+    else:
+        return True
 
 def existAlias(data, request):
     result = (

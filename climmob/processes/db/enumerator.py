@@ -190,7 +190,7 @@ def isEnumeratorPassword(user, enumerator, password, request):
         request.dbsession.query(Enumerator.enum_password)
         .filter(Enumerator.user_name == user)
         .filter(Enumerator.enum_id == enumerator)
-        .filter(Enumerator.enum_password == encodeData(password))
+        .filter(Enumerator.enum_password == encodeData(request, password))
         .first()
     )
     if not result:
