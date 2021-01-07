@@ -18,7 +18,7 @@ class readProducts_view(apiView):
         if self.request.method == "GET":
             obligatory = [u"project_cod"]
             try:
-                dataworking = json.loads(self.request.params["Body"])
+                dataworking = json.loads(self.body)
             except:
                 response = Response(
                     status=401,
@@ -78,7 +78,7 @@ class downloadApi_view(apiView):
         if self.request.method == "GET":
             obligatory = [u"project_cod", u"celery_taskid"]
             try:
-                dataworking = json.loads(self.request.params["Body"])
+                dataworking = json.loads(self.body)
             except:
                 response = Response(
                     status=401,

@@ -370,17 +370,17 @@ class apiView(object):
                 )
                 return response
 
-            if self.request.method == "POST":
-                # EDITED BY BRANDON MADRIZ
-                try:
-                    self.body = self.request.params["Body"]
-                except:
-                    body = {}
-                    for va in self.request.params:
-                        if va != "Apikey":
-                            body[va] = self.request.params[va]
+            # EDITED BY BRANDON MADRIZ
+            #if self.request.method == "POST":
+            try:
+                self.body = self.request.params["Body"]
+            except:
+                body = {}
+                for va in self.request.params:
+                    if va != "Apikey":
+                        body[va] = self.request.params[va]
 
-                    self.body = json.dumps(body)
+                self.body = json.dumps(body)
 
                 """
                 try:

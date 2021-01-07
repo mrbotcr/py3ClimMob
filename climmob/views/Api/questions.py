@@ -471,7 +471,7 @@ class readQuestionValues_view(apiView):
             obligatory = [u"question_id", "user_name"]
 
             try:
-                dataworking = json.loads(self.request.params["Body"])
+                dataworking = json.loads(self.body)
             except:
                 response = Response(
                     status=401,

@@ -81,7 +81,7 @@ class readAlias_view(apiView):
         if self.request.method == "GET":
             obligatory = [u"tech_id"]
             try:
-                dataworking = json.loads(self.request.params["Body"])
+                dataworking = json.loads(self.body)
             except:
                 response = Response(status=401, body=self._("Error in the JSON."))
                 return response

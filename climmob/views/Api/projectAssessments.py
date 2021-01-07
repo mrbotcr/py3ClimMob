@@ -36,7 +36,7 @@ class readProjectAssessments_view(apiView):
         if self.request.method == "GET":
             obligatory = [u"project_cod"]
             try:
-                dataworking = json.loads(self.request.params["Body"])
+                dataworking = json.loads(self.body)
             except:
                 response = Response(
                     status=401,
@@ -314,7 +314,7 @@ class readProjectAssessmentStructure_view(apiView):
         if self.request.method == "GET":
             obligatory = [u"project_cod", u"ass_cod"]
             try:
-                dataworking = json.loads(self.request.params["Body"])
+                dataworking = json.loads(self.body)
             except:
                 response = Response(
                     status=401,
@@ -738,7 +738,7 @@ class readPossibleQuestionForAssessmentGroup_view(apiView):
         if self.request.method == "GET":
             obligatory = [u"project_cod", u"ass_cod"]
             try:
-                dataworking = json.loads(self.request.params["Body"])
+                dataworking = json.loads(self.body)
             except:
                 response = Response(
                     status=401,

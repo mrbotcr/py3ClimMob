@@ -13,7 +13,7 @@ class readDataOfProjectView_api(apiView):
 
                 obligatory = [u"project_cod"]
                 try:
-                    dataworking = json.loads(self.request.params["Body"])
+                    dataworking = json.loads(self.body)
                 except:
                     response = Response(
                         status=401,
