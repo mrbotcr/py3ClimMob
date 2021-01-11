@@ -12,7 +12,8 @@ __all__ = [
     "updateCategory",
     "deleteCategory",
     "getCategoriesParents",
-    "getCategoryById"
+    "getCategoryById",
+    "categoryExistsById"
 ]
 
 
@@ -50,6 +51,24 @@ def categoryExistsWithDifferentId(user, name, id, request):
 
     if result:
         return True
+    else:
+        return False
+
+def categoryExistsById(user, id, request):
+    result = (
+        request.dbsession.query(Question_group)
+        .filter(
+            or_(
+                Question_group.user_name == user,
+                Question_group.user_name == "bioversity",
+            )
+        )
+        .filter(Question_group.qstgroups_id == id)
+        .first()
+    )
+
+    if result:
+        return mapFromSchema(result)
     else:
         return False
 
