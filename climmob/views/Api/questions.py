@@ -14,7 +14,10 @@ from ...processes import (
     getOptionData,
     updateOption,
     questionExists,
-    categoryExistsById
+    categoryExistsById,
+    optionExistsWithName,
+    opcionNAinQuestion,
+    opcionOtherInQuestion
 )
 
 import json
@@ -600,6 +603,31 @@ class addQuestionValue_viewApi(apiView):
                                     data["question_dtype"] == 5
                                     or data["question_dtype"] == 6
                                 ):
+                                    if "value_isother" in dataworking.keys() and "value_isna" in dataworking.keys():
+                                        if int(dataworking["value_isother"]) == 1 and int(dataworking["value_isna"]) == 1:
+                                            response = Response(
+                                                status=401,
+                                                body=self._("An option cannot be 'Other' and 'Not applicable'."),
+                                            )
+                                            return response
+
+                                    if opcionOtherInQuestion(dataworking["question_id"], self.request):
+                                        if "value_isother" in dataworking.keys():
+                                            if int(dataworking["value_isother"]) == 1:
+                                                response = Response(
+                                                    status=401,
+                                                    body=self._("There is already an 'Other' option."),
+                                                )
+                                                return response
+
+                                    if opcionNAinQuestion(dataworking["question_id"], self.request):
+                                        if "value_isna" in dataworking.keys():
+                                            if int(dataworking["value_isna"]) == 1:
+                                                response = Response(
+                                                    status=401,
+                                                    body=self._("There is already an 'Not applicable' option."),
+                                                )
+                                                return response
 
                                     if "value_isother" not in dataworking.keys():
                                         dataworking["value_isother"] = 0
@@ -612,24 +640,35 @@ class addQuestionValue_viewApi(apiView):
                                         dataworking["value_code"],
                                         self.request,
                                     ):
-                                        addded, resp = addOptionToQuestion(
-                                            dataworking, self.request
-                                        )
-                                        if addded:
-                                            response = Response(
-                                                status=200,
-                                                body=self._(
-                                                    "The option was successfully added."
-                                                ),
+                                        if not optionExistsWithName(
+                                                dataworking["question_id"],
+                                                dataworking["value_desc"],
+                                                self.request,
+                                        ):
+                                            addded, resp = addOptionToQuestion(
+                                                dataworking, self.request
                                             )
-                                            return response
+                                            if addded:
+                                                response = Response(
+                                                    status=200,
+                                                    body=self._(
+                                                        "The option was successfully added."
+                                                    ),
+                                                )
+                                                return response
+                                            else:
+                                                response = Response(status=401, body=resp)
+                                                return response
                                         else:
-                                            response = Response(status=401, body=resp)
+                                            response = Response(
+                                                status=401,
+                                                body=self._("There is already an option with that description."),
+                                            )
                                             return response
                                     else:
                                         response = Response(
                                             status=401,
-                                            body=self._("Option already exists"),
+                                            body=self._("There is already an option with that code."),
                                         )
                                         return response
                                 else:

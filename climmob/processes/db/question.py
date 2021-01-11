@@ -26,6 +26,9 @@ __all__ = [
     "updateOption",
     "questionExists",
     "UserQuestionMoreBioversity",
+    "optionExistsWithName",
+    "opcionNAinQuestion",
+    "opcionOtherInQuestion"
 ]
 
 
@@ -278,3 +281,36 @@ def optionExists(question, option, request):
     if res is None:
         return False
     return True
+
+def optionExistsWithName(question, option, request):
+    res = (
+        request.dbsession.query(Qstoption)
+        .filter(Qstoption.question_id == question)
+        .filter(Qstoption.value_desc == option)
+        .first()
+    )
+    if res is None:
+        return False
+    return True
+
+def opcionNAinQuestion(question, request):
+    res = (
+        request.dbsession.query(Qstoption)
+        .filter(Qstoption.question_id == question)
+        .filter(Qstoption.value_isna == 1)
+        .all()
+    )
+    if res:
+        return True
+    return False
+
+def opcionOtherInQuestion(question, request):
+    res = (
+        request.dbsession.query(Qstoption)
+        .filter(Qstoption.question_id == question)
+        .filter(Qstoption.value_isother == 1)
+        .all()
+    )
+    if res :
+        return True
+    return False
