@@ -732,11 +732,9 @@ class updateQuestionValue_view(apiView):
                 u"question_id",
                 u"value_code",
                 u"value_desc",
-                u"value_isother",
-                u"value_isna",
                 "user_name",
             ]
-            obligatory = [u"question_id", u"value_code", "user_name"]
+            obligatory = [u"question_id", u"value_code",u"value_desc", "user_name"]
 
             dataworking = json.loads(self.body)
             dataworking["user_name"] = self.user.login
