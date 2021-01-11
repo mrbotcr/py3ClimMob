@@ -1,14 +1,18 @@
 from ...models import mapToSchema, mapFromSchema
-from ...models.climmobv4 import Question_group
+from ...models.climmobv4 import Question_group, Question
 from sqlalchemy import or_
 
 __all__ = [
     "categoryExists",
+    "categoryExistsByUserAndId",
+    "categoryExistsWithDifferentId",
+    "theCategoryHaveQuestions",
     "addCategory",
     "getCategories",
     "updateCategory",
     "deleteCategory",
     "getCategoriesParents",
+    "getCategoryById"
 ]
 
 
@@ -30,6 +34,50 @@ def categoryExists(user, name, request):
     else:
         return False
 
+def categoryExistsWithDifferentId(user, name, id, request):
+    result = (
+        request.dbsession.query(Question_group)
+        .filter(
+            or_(
+                Question_group.user_name == user,
+                Question_group.user_name == "bioversity",
+            )
+        )
+        .filter(Question_group.qstgroups_name == name)
+        .filter(Question_group.qstgroups_id != id)
+        .first()
+    )
+
+    if result:
+        return True
+    else:
+        return False
+
+def categoryExistsByUserAndId(user, id, request):
+    result = (
+        request.dbsession.query(Question_group)
+        .filter(Question_group.user_name == user)
+        .filter(Question_group.qstgroups_id == id)
+        .first()
+    )
+
+    if result:
+        return True
+    else:
+        return False
+
+def theCategoryHaveQuestions(user, id, request):
+    result = (
+        request.dbsession.query(Question)
+        .filter(Question.qstgroups_id == id)
+        .filter(Question.qstgroups_user == user)
+        .all()
+    )
+
+    if result:
+        return True
+    else:
+        return False
 
 def addCategory(user, data, request):
     data["user_name"] = user
@@ -68,6 +116,14 @@ def getCategoriesParents(user, request):
 
     return data
 
+def getCategoryById(qstgroups_id, request):
+    res = (
+        request.dbsession.query(Question_group)
+            .filter(Question_group.qstgroups_id == qstgroups_id).all()
+    )
+    result = mapFromSchema(res)
+
+    return result
 
 def updateCategory(user, data, request):
     mappedData = mapToSchema(Question_group, data)

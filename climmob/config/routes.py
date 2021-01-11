@@ -114,6 +114,7 @@ from ..views.techaliases import (
     modifyalias_view,
     deletealias_view,
 )
+
 from ..views.cleanErrorLogs import cleanErrorLogs_view
 from ..views.test import test_view
 
@@ -167,7 +168,12 @@ from ..views.Api.questions import (
     updateQuestion_view,
     deleteQuestion_viewApi,
 )
-
+from ..views.Api.questionsGroups import (
+    readGroupsOfQuestions_view,
+    createGroupOfQuestion_view,
+    updateGroupOfQuestion_view,
+    deleteGroupOfQuestion_view
+)
 from ..views.Api.dashboard import readProjectDetails_view
 from ..views.Api.projectEnumerators import (
     addProjectEnumerator_view,
@@ -1171,6 +1177,19 @@ def loadRoutes(config):
     )
     routes.append(
         addRoute("deletealias_api", "/api/deleteAlias", deleteAliasView_api, None)
+    )
+    # Groups
+    routes.append(
+        addRoute("readcategoriesofquestions_api","/api/readCategoriesOfQuestions", readGroupsOfQuestions_view, None)
+    )
+    routes.append(
+        addRoute("createcategoryofquestions_api","/api/createCategoryOfQuestions", createGroupOfQuestion_view, None)
+    )
+    routes.append(
+        addRoute("updatecategoryofquestions_api", "/api/updateCategoryOfQuestions", updateGroupOfQuestion_view, None)
+    )
+    routes.append(
+        addRoute("deletecategoryofquestions_api", "/api/deleteCategoryOfQuestions", deleteGroupOfQuestion_view, None)
     )
 
     # Questions
