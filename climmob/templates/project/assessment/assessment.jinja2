@@ -39,8 +39,8 @@
                         <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}">
                             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                             {% snippet 'snippets/project/assessment/assessmentform.jinja2', data=data, final_visible=new_available  %}
-                            <button class="btn btn-primary pull-right btnsAssesment" type="submit" name="btn_add_ass" id="btn_add_ass"> {{ _('Add and close') }}</button>
-                            <button class="btn btn-primary pull-right btnsAssesment" type="submit" name="btn_modify_ass" id="btn_modify_ass" style="display: none"> {{ _('Save and close') }}</button>
+                            <button class="btn btn-primary pull-right btnsAssesment" type="submit" name="btn_add_ass" id="btn_add_ass"> {{ _('Add') }}</button>
+                            <button class="btn btn-primary pull-right btnsAssesment" type="submit" name="btn_modify_ass" id="btn_modify_ass" style="display: none"> {{ _('Save') }}</button>
                         </form>
                         <br>
                         <br>

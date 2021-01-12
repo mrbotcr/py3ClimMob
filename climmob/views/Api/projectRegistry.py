@@ -435,7 +435,7 @@ class addQuestionToGroupRegistry_view(apiView):
                                             response = Response(
                                                 status=200,
                                                 body=self._(
-                                                    "The question was added to the record"
+                                                    "The question was added to the project"
                                                 ),
                                             )
                                             return response
