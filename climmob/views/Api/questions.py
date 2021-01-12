@@ -1018,7 +1018,7 @@ class updateQuestionCharacteristics_view(apiView):
                                         response = Response(
                                             status=200,
                                             body=self._(
-                                                "You successfully updated the characteristic."
+                                                "You successfully updated the ranking of options."
                                             ),
                                         )
                                         return response
@@ -1029,7 +1029,7 @@ class updateQuestionCharacteristics_view(apiView):
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "This is not a question of type characteristic."
+                                            "This is not a question of type ranking of options."
                                         ),
                                     )
                                     return response
@@ -1126,7 +1126,7 @@ class updateQuestionPerformance_view(apiView):
                                             response = Response(
                                                 status=200,
                                                 body=self._(
-                                                    "You successfully updated the performance statement."
+                                                    "You successfully updated the comparison with check."
                                                 ),
                                             )
                                             return response
@@ -1137,7 +1137,7 @@ class updateQuestionPerformance_view(apiView):
                                         response = Response(
                                             status=401,
                                             body=self._(
-                                                "The performance statement must have the wildcard {{option}}"
+                                                "The comparison with check must have the wildcard {{option}}"
                                             ),
                                         )
                                         return response
@@ -1145,7 +1145,7 @@ class updateQuestionPerformance_view(apiView):
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "This is not a question of type performance."
+                                            "This is not a question of type comparison with check."
                                         ),
                                     )
                                     return response

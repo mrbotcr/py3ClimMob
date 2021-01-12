@@ -104,11 +104,22 @@ class readAlias_view(apiView):
                         )
                         return response
                     else:
-                        response = Response(
-                            status=401,
-                            body=self._("You do not have a technology with this ID."),
-                        )
-                        return response
+                        dataworking["user_name"] = "bioversity"
+                        if getTechnologyByUser(dataworking, self.request):
+
+                            response = Response(
+                                status=200,
+                                body=json.dumps(
+                                    getTechsAlias(dataworking["tech_id"], self.request)
+                                ),
+                            )
+                            return response
+                        else:
+                            response = Response(
+                                status=401,
+                                body=self._("There is no technology with this ID."),
+                            )
+                            return response
                 else:
                     response = Response(
                         status=401, body=self._("Not all parameters have data.")
