@@ -11,8 +11,9 @@ def create_analysis(locale, user, project, data, info, infosheet, request, pathS
     # user.repository in development.ini/user/project/products/product/outputs
     path = createProductDirectory(request, user, project, "reports")
     # We call the Celery task that will generate the output packages.pdf
-    task = createReports.delay(
-        locale, path, user, project, data, info, infosheet, pathScript
+    task = createReports.apply_async(
+        (locale, path, user, project, data, info, infosheet, pathScript),
+        queue="ClimMob",
     )
     # We register the instance of the output with the task ID of celery
     # This will go to the products table that then you can monitor and use

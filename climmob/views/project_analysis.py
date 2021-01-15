@@ -39,14 +39,16 @@ class analysisDataView(privateView):
                                             data[_section][data[_section].index(_info)]
                                         )
 
-                                    if attr[1]=="ASS":
+                                    if attr[1] == "ASS":
                                         if _info["code"] is not None:
                                             if _info["code"]["ass_cod"] == attr[2]:
                                                 dict[_section].append(
-                                                    data[_section][data[_section].index(_info)]
+                                                    data[_section][
+                                                        data[_section].index(_info)
+                                                    ]
                                                 )
 
-                    #for element in part:
+                    # for element in part:
                     #    attr = element.split("_")
                     #    use.append(int(attr[2]))
 

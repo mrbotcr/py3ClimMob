@@ -16,7 +16,7 @@ from ...processes import (
     numberOfCombinationsForTheProject,
     setAssessmentIndividualStatus,
     AsessmentStatus,
-    getPackages
+    getPackages,
 )
 
 from ..registry import getDataFormPreview
@@ -80,11 +80,15 @@ class createProjectAssessment_view(apiView):
                                         )
 
                                         ncombs, packages = getPackages(
-                                            self.user.login, dataworking["project_cod"], self.request
+                                            self.user.login,
+                                            dataworking["project_cod"],
+                                            self.request,
                                         )
 
                                         data, finalCloseQst = getDataFormPreview(
-                                            self, dataworking["project_cod"], dataworking["ass_cod"]
+                                            self,
+                                            dataworking["project_cod"],
+                                            dataworking["ass_cod"],
                                         )
 
                                         create_document_form(

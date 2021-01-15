@@ -13,7 +13,9 @@ def create_general_report(request, locale, user, project, projectDetails):
     # user.repository in development.ini/user/project/products/product/outputs
     path = createProductDirectory(request, user, project, "generalreport")
     # We call the Celery task that will generate the output packages.pdf
-    task = createGeneralReport.delay(locale, user, path, project, projectDetails)
+    task = createGeneralReport.apply_async(
+        (locale, user, path, project, projectDetails), queue="ClimMob"
+    )
     # We register the instance of the output with the task ID of celery
     # This will go to the products table that then you can monitor and use
     # in the nice product interface

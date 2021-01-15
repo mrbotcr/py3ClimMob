@@ -172,7 +172,7 @@ from ..views.Api.questionsGroups import (
     readGroupsOfQuestions_view,
     createGroupOfQuestion_view,
     updateGroupOfQuestion_view,
-    deleteGroupOfQuestion_view
+    deleteGroupOfQuestion_view,
 )
 from ..views.Api.dashboard import readProjectDetails_view
 from ..views.Api.projectEnumerators import (
@@ -1180,16 +1180,36 @@ def loadRoutes(config):
     )
     # Groups
     routes.append(
-        addRoute("readcategoriesofquestions_api","/api/readCategoriesOfQuestions", readGroupsOfQuestions_view, None)
+        addRoute(
+            "readcategoriesofquestions_api",
+            "/api/readCategoriesOfQuestions",
+            readGroupsOfQuestions_view,
+            None,
+        )
     )
     routes.append(
-        addRoute("createcategoryofquestions_api","/api/createCategoryOfQuestions", createGroupOfQuestion_view, None)
+        addRoute(
+            "createcategoryofquestions_api",
+            "/api/createCategoryOfQuestions",
+            createGroupOfQuestion_view,
+            None,
+        )
     )
     routes.append(
-        addRoute("updatecategoryofquestions_api", "/api/updateCategoryOfQuestions", updateGroupOfQuestion_view, None)
+        addRoute(
+            "updatecategoryofquestions_api",
+            "/api/updateCategoryOfQuestions",
+            updateGroupOfQuestion_view,
+            None,
+        )
     )
     routes.append(
-        addRoute("deletecategoryofquestions_api", "/api/deleteCategoryOfQuestions", deleteGroupOfQuestion_view, None)
+        addRoute(
+            "deletecategoryofquestions_api",
+            "/api/deleteCategoryOfQuestions",
+            deleteGroupOfQuestion_view,
+            None,
+        )
     )
 
     # Questions

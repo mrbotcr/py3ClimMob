@@ -28,7 +28,7 @@ __all__ = [
     "UserQuestionMoreBioversity",
     "optionExistsWithName",
     "opcionNAinQuestion",
-    "opcionOtherInQuestion"
+    "opcionOtherInQuestion",
 ]
 
 
@@ -282,6 +282,7 @@ def optionExists(question, option, request):
         return False
     return True
 
+
 def optionExistsWithName(question, option, request):
     res = (
         request.dbsession.query(Qstoption)
@@ -292,6 +293,7 @@ def optionExistsWithName(question, option, request):
     if res is None:
         return False
     return True
+
 
 def opcionNAinQuestion(question, request):
     res = (
@@ -304,6 +306,7 @@ def opcionNAinQuestion(question, request):
         return True
     return False
 
+
 def opcionOtherInQuestion(question, request):
     res = (
         request.dbsession.query(Qstoption)
@@ -311,6 +314,6 @@ def opcionOtherInQuestion(question, request):
         .filter(Qstoption.value_isother == 1)
         .all()
     )
-    if res :
+    if res:
         return True
     return False

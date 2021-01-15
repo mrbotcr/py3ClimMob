@@ -114,7 +114,7 @@ def addQuestionToDictionary(questionData, numComb, assessment=None):
         questInfo["name"] = questionData["question_name"]
         questInfo["codeQst"] = questionData["question_code"]
         questInfo["id"] = questionData["question_id"]
-        questInfo["vars"] = code + "_" +questionData["question_code"].lower()
+        questInfo["vars"] = code + "_" + questionData["question_code"].lower()
         questInfo["code"] = assessment
 
         return "Explanatory", questInfo

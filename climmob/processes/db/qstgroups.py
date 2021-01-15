@@ -13,7 +13,7 @@ __all__ = [
     "deleteCategory",
     "getCategoriesParents",
     "getCategoryById",
-    "categoryExistsById"
+    "categoryExistsById",
 ]
 
 
@@ -35,6 +35,7 @@ def categoryExists(user, name, request):
     else:
         return False
 
+
 def categoryExistsWithDifferentId(user, name, id, request):
     result = (
         request.dbsession.query(Question_group)
@@ -54,6 +55,7 @@ def categoryExistsWithDifferentId(user, name, id, request):
     else:
         return False
 
+
 def categoryExistsById(user, id, request):
     result = (
         request.dbsession.query(Question_group)
@@ -72,6 +74,7 @@ def categoryExistsById(user, id, request):
     else:
         return False
 
+
 def categoryExistsByUserAndId(user, id, request):
     result = (
         request.dbsession.query(Question_group)
@@ -85,6 +88,7 @@ def categoryExistsByUserAndId(user, id, request):
     else:
         return False
 
+
 def theCategoryHaveQuestions(user, id, request):
     result = (
         request.dbsession.query(Question)
@@ -97,6 +101,7 @@ def theCategoryHaveQuestions(user, id, request):
         return True
     else:
         return False
+
 
 def addCategory(user, data, request):
     data["user_name"] = user
@@ -135,14 +140,17 @@ def getCategoriesParents(user, request):
 
     return data
 
+
 def getCategoryById(qstgroups_id, request):
     res = (
         request.dbsession.query(Question_group)
-            .filter(Question_group.qstgroups_id == qstgroups_id).all()
+        .filter(Question_group.qstgroups_id == qstgroups_id)
+        .all()
     )
     result = mapFromSchema(res)
 
     return result
+
 
 def updateCategory(user, data, request):
     mappedData = mapToSchema(Question_group, data)

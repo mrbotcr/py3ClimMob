@@ -21,7 +21,7 @@ from ...processes import (
     getRegistryGroup,
     getRegistryQuestionsApi,
     saveRegistryOrder,
-    getProjectData
+    getProjectData,
 )
 
 from pyramid.response import Response
@@ -125,7 +125,9 @@ class readPossibleQuestionsForRegistryGroup_view(apiView):
                     self.user.login, dataworking["project_cod"], self.request
                 )
                 if exitsproject:
-                    pro = getProjectData(self.user.login, dataworking["project_cod"], self.request)
+                    pro = getProjectData(
+                        self.user.login, dataworking["project_cod"], self.request
+                    )
                     response = Response(
                         status=200,
                         body=json.dumps(
@@ -134,7 +136,7 @@ class readPossibleQuestionsForRegistryGroup_view(apiView):
                                     self.user.login,
                                     dataworking["project_cod"],
                                     self.request,
-                                    pro["project_registration_and_analysis"]
+                                    pro["project_registration_and_analysis"],
                                 ),
                                 "QuestionsOptions": QuestionsOptions(
                                     self.user.login, self.request

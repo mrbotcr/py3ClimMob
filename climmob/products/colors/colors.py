@@ -15,7 +15,7 @@ def create_colors_cards(request, user, project, packages):
     path = createProductDirectory(request, user, project, "colors")
     # We call the Celery task that will generate the output packages.pdf
     print("*****create_qr_packages. Calling createQR.delay ")
-    task = createColors.delay(path, project, packages)
+    task = createColors.apply_async((path, project, packages), queue="ClimMob")
     # We register the instance of the output with the task ID of celery
     # This will go to the products table that then you can monitor and use
     # in the nice product interface

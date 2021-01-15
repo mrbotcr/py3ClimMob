@@ -527,7 +527,11 @@ class cancelRegistryApi_view(apiView):
                                 0,
                                 self.request,
                             )
-                            stopTasksByProcess(self.request,self.user.login,dataworking["project_cod"])
+                            stopTasksByProcess(
+                                self.request,
+                                self.user.login,
+                                dataworking["project_cod"],
+                            )
 
                             response = Response(
                                 status=200, body=self._("Cancel registration.")

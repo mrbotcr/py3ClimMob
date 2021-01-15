@@ -209,9 +209,30 @@ class generateProductView(privateView):
 
         if productid == "datacsv":
             locale = self.request.locale_name
-            info = getJSONResult(self.user.login, projectid, self.request)
+            infoProduct = processname.split("_")
+            if infoProduct[2] == "Registration":
+                info = getJSONResult(
+                    self.user.login, projectid, self.request, includeAssessment=False
+                )
+            else:
+                if infoProduct[2] == "Assessment":
+                    info = getJSONResult(
+                        self.user.login,
+                        projectid,
+                        self.request,
+                        assessmentCode=infoProduct[3],
+                    )
+                else:
+                    info = getJSONResult(self.user.login, projectid, self.request,)
 
-            create_datacsv(self.user.login, projectid, info, self.request)
+            create_datacsv(
+                self.user.login,
+                projectid,
+                info,
+                self.request,
+                infoProduct[2],
+                infoProduct[3],
+            )
 
         if productid == "documentform":
             ncombs, packages = getPackages(self.user.login, projectid, self.request)

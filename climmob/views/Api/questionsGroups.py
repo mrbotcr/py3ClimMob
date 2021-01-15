@@ -8,22 +8,20 @@ from ...processes import (
     theCategoryHaveQuestions,
     addCategory,
     updateCategory,
-    deleteCategory
+    deleteCategory,
 )
 
 import json
 from pyramid.response import Response
 import uuid
 
+
 class createGroupOfQuestion_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
 
-            obligatory = [
-                "qstgroups_name",
-                "user_name"
-            ]
+            obligatory = ["qstgroups_name", "user_name"]
 
             dataworking = json.loads(self.body)
             dataworking["user_name"] = self.user.login
@@ -44,27 +42,33 @@ class createGroupOfQuestion_view(apiView):
                 if dataInParams:
                     dataworking["qstgroups_id"] = str(uuid.uuid4())[-12:]
                     if not categoryExists(
-                            self.user.login, dataworking["qstgroups_name"], self.request
+                        self.user.login, dataworking["qstgroups_name"], self.request
                     ):
                         added, message = addCategory(
                             self.user.login, dataworking, self.request
                         )
                         if not added:
                             response = Response(
-                                status=401, body=self._("There was a problem with the creation of the category.")
+                                status=401,
+                                body=self._(
+                                    "There was a problem with the creation of the category."
+                                ),
                             )
                             return response
                         else:
                             response = Response(
                                 status=200,
                                 body=json.dumps(
-                                    getCategoryById(dataworking["qstgroups_id"], self.request)
+                                    getCategoryById(
+                                        dataworking["qstgroups_id"], self.request
+                                    )
                                 ),
                             )
                             return response
                     else:
                         response = Response(
-                            status=401, body=self._("There is already a category with this name.")
+                            status=401,
+                            body=self._("There is already a category with this name."),
                         )
                         return response
                 else:
@@ -82,17 +86,14 @@ class createGroupOfQuestion_view(apiView):
         else:
             response = Response(status=401, body=self._("Only accepts POST method."))
             return response
+
 
 class updateGroupOfQuestion_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
 
-            obligatory = [
-                "qstgroups_name",
-                "qstgroups_id",
-                "user_name"
-            ]
+            obligatory = ["qstgroups_name", "qstgroups_id", "user_name"]
 
             dataworking = json.loads(self.body)
             dataworking["user_name"] = self.user.login
@@ -111,34 +112,50 @@ class updateGroupOfQuestion_view(apiView):
                         dataInParams = False
 
                 if dataInParams:
-                    if categoryExistsByUserAndId(self.user.login,dataworking["qstgroups_id"], self.request):
+                    if categoryExistsByUserAndId(
+                        self.user.login, dataworking["qstgroups_id"], self.request
+                    ):
                         if not categoryExistsWithDifferentId(
-                                self.user.login, dataworking["qstgroups_name"],dataworking["qstgroups_id"], self.request
+                            self.user.login,
+                            dataworking["qstgroups_name"],
+                            dataworking["qstgroups_id"],
+                            self.request,
                         ):
                             update, message = updateCategory(
                                 self.user.login, dataworking, self.request
                             )
                             if not update:
                                 response = Response(
-                                    status=401, body=self._("There was a problem updating the category.")
+                                    status=401,
+                                    body=self._(
+                                        "There was a problem updating the category."
+                                    ),
                                 )
                                 return response
                             else:
                                 response = Response(
                                     status=200,
                                     body=json.dumps(
-                                        getCategoryById(dataworking["qstgroups_id"], self.request)
+                                        getCategoryById(
+                                            dataworking["qstgroups_id"], self.request
+                                        )
                                     ),
                                 )
                                 return response
                         else:
                             response = Response(
-                                status=401, body=self._("There is already a category with this name.")
+                                status=401,
+                                body=self._(
+                                    "There is already a category with this name."
+                                ),
                             )
                             return response
                     else:
                         response = Response(
-                            status=401, body=self._("You cannot edit this category because it does not belong to your personal library.")
+                            status=401,
+                            body=self._(
+                                "You cannot edit this category because it does not belong to your personal library."
+                            ),
                         )
                         return response
                 else:
@@ -157,15 +174,13 @@ class updateGroupOfQuestion_view(apiView):
             response = Response(status=401, body=self._("Only accepts POST method."))
             return response
 
+
 class deleteGroupOfQuestion_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
 
-            obligatory = [
-                "qstgroups_id",
-                "user_name"
-            ]
+            obligatory = ["qstgroups_id", "user_name"]
 
             dataworking = json.loads(self.body)
             dataworking["user_name"] = self.user.login
@@ -184,35 +199,45 @@ class deleteGroupOfQuestion_view(apiView):
                         dataInParams = False
 
                 if dataInParams:
-                    if categoryExistsByUserAndId(self.user.login, dataworking["qstgroups_id"], self.request):
+                    if categoryExistsByUserAndId(
+                        self.user.login, dataworking["qstgroups_id"], self.request
+                    ):
                         if not theCategoryHaveQuestions(
-                                self.user.login, dataworking["qstgroups_id"],self.request
+                            self.user.login, dataworking["qstgroups_id"], self.request
                         ):
                             delete, message = deleteCategory(
-                                self.user.login, dataworking["qstgroups_id"], self.request
+                                self.user.login,
+                                dataworking["qstgroups_id"],
+                                self.request,
                             )
                             if not delete:
                                 response = Response(
-                                    status=401, body=self._("There was a problem removing the category.")
+                                    status=401,
+                                    body=self._(
+                                        "There was a problem removing the category."
+                                    ),
                                 )
                                 return response
                             else:
                                 response = Response(
                                     status=200,
-                                    body=self._(
-                                        "The category was removed."
-                                    ),
+                                    body=self._("The category was removed."),
                                 )
                                 return response
                         else:
                             response = Response(
-                                status=401, body=self._("This category cannot be removed because it has questions.")
+                                status=401,
+                                body=self._(
+                                    "This category cannot be removed because it has questions."
+                                ),
                             )
                             return response
                     else:
                         response = Response(
-                            status=401, body=self._(
-                                "You cannot delete this category because it does not belong to your personal library.")
+                            status=401,
+                            body=self._(
+                                "You cannot delete this category because it does not belong to your personal library."
+                            ),
                         )
                         return response
                 else:
@@ -230,6 +255,7 @@ class deleteGroupOfQuestion_view(apiView):
         else:
             response = Response(status=401, body=self._("Only accepts POST method."))
             return response
+
 
 class readGroupsOfQuestions_view(apiView):
     def processView(self):
@@ -239,14 +265,16 @@ class readGroupsOfQuestions_view(apiView):
             groups = getCategoriesParents(self.user.login, self.request)
             listOfGroups = []
             for group in groups:
-                listOfGroups.append({"user_name":group[0], "qstgroups_id": group[1], "qstgroups_name": group[2], "numberOfQuestions": group[3]})
+                listOfGroups.append(
+                    {
+                        "user_name": group[0],
+                        "qstgroups_id": group[1],
+                        "qstgroups_name": group[2],
+                        "numberOfQuestions": group[3],
+                    }
+                )
 
-            response = Response(
-                status=200,
-                body=json.dumps(
-                    listOfGroups
-                ),
-            )
+            response = Response(status=200, body=json.dumps(listOfGroups),)
             return response
         else:
             response = Response(status=401, body=self._("Only accepts GET method."))

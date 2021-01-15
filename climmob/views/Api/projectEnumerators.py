@@ -56,9 +56,12 @@ class addProjectEnumerator_view(apiView):
                                 response = Response(status=401, body=message)
                                 return response
                             else:
-                                #EDITED FOR CREATE THE REPORT
+                                # EDITED FOR CREATE THE REPORT
                                 stopTasksByProcess(
-                                    self.request, self.user.login, dataworking["project_cod"], "create_fieldagents"
+                                    self.request,
+                                    self.user.login,
+                                    dataworking["project_cod"],
+                                    "create_fieldagents",
                                 )
                                 locale = self.request.locale_name
                                 create_fieldagents_report(
@@ -66,7 +69,11 @@ class addProjectEnumerator_view(apiView):
                                     self.request,
                                     self.user.login,
                                     dataworking["project_cod"],
-                                    getProjectEnumerators(self.user.login, dataworking["project_cod"], self.request),
+                                    getProjectEnumerators(
+                                        self.user.login,
+                                        dataworking["project_cod"],
+                                        self.request,
+                                    ),
                                 )
                                 response = Response(
                                     status=200,
@@ -234,7 +241,10 @@ class deleteProjectEnumerator_view(apiView):
                             if deleted:
                                 # EDITED FOR CREATE THE REPORT
                                 stopTasksByProcess(
-                                    self.request, self.user.login, dataworking["project_cod"], "create_fieldagents"
+                                    self.request,
+                                    self.user.login,
+                                    dataworking["project_cod"],
+                                    "create_fieldagents",
                                 )
                                 locale = self.request.locale_name
                                 create_fieldagents_report(
@@ -242,7 +252,11 @@ class deleteProjectEnumerator_view(apiView):
                                     self.request,
                                     self.user.login,
                                     dataworking["project_cod"],
-                                    getProjectEnumerators(self.user.login, dataworking["project_cod"], self.request),
+                                    getProjectEnumerators(
+                                        self.user.login,
+                                        dataworking["project_cod"],
+                                        self.request,
+                                    ),
                                 )
                                 response = Response(
                                     status=200,

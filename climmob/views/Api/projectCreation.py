@@ -282,7 +282,10 @@ class updateProject_view(apiView):
                                         self.request,
                                     )
 
-                            if "project_registration_and_analysis" in dataworking.keys():
+                            if (
+                                "project_registration_and_analysis"
+                                in dataworking.keys()
+                            ):
                                 if str(
                                     dataworking["project_registration_and_analysis"]
                                 ) not in ["0", "1",]:
