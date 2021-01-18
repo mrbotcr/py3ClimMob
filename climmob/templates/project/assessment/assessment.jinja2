@@ -63,15 +63,16 @@
                             <tr>
                                 <th class="text-center">{{ _('Data collection moment') }}</th>
                                 <th class="text-center">{{ _('Interval in days') }}</th>
-                                <th class="text-center"></th>
+                                <th class="text-center" style="width: 113px"></th>
                             </tr>
 
                             {% for assessment in assessments %}
                                 <tr>
                                     {% if assessment.totquestions > 0 %}
-                                        <td class="text-center"> {{ assessment.ass_desc }} <span class="label label-success">{{ assessment.totquestions }} {{ request.h.pluralize(_("question"),assessment.totquestions) }}</span> {% if assessment.ass_final == 1 %}<span class="label label-danger" title="You need to check this">{{ _("Overall performance ranking and comparison with check") }}</span>{% endif %}</td>
+                                        <td class="text-center"> {{ assessment.ass_desc }} <span class="label label-success" style="display: inline-block; margin-top: 3px">{{ assessment.totquestions }} {{ request.h.pluralize(_("question"),assessment.totquestions) }}</span> {% if assessment.ass_final == 1 %}<span class="label label-danger" title="You need to check this" style="display: inline-block; margin-top: 3px">{{ _("Overall performance") }}</span> <span class="label label-danger" title="You need to check this" style="display: inline-block; margin-top: 3px">{{ _("Comparison with check") }}</span>{% endif %}</td>
                                     {% else %}
-                                        <td class="text-center"> {{ assessment.ass_desc }} <span class="label label-danger">0 {{ _("questions") }}</span> {% if assessment.ass_final == 1 %}<span class="label label-danger" title="You need to check this">{{ _("Overall performance ranking and comparison with check") }}</span>{% endif %}</td>
+                                        <td class="text-center"> {{ assessment.ass_desc }}
+                                            <span class="label label-danger" style="display: inline-block; margin-top: 3px">0 {{ _("questions") }}</span> {% if assessment.ass_final == 1 %}<span class="label label-danger" title="You need to check this" style="display: inline-block; margin-top: 3px">{{ _("Overall performance") }}</span> <span class="label label-danger" title="You need to check this" style="display: inline-block; margin-top: 3px">{{ _("Comparison with check") }}</span>{% endif %}</td>
                                     {% endif %}
                                     <td class="text-center"> {{ assessment.ass_days }}</td>
                                     <td class="text-center">
@@ -111,6 +112,12 @@
             {% else %}
                 $("#ckb_final").bootstrapSwitch('state', false);
             {% endif %}
+        });
+
+        $(".formElement").bind("keypress", function(e) {
+            if (e.keyCode == 13) {
+                return false;
+            }
         });
 
         function seeAssessment(code, desc, days, final) {
