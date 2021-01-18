@@ -63,7 +63,7 @@
                             <tr>
                                 <th class="text-center">{{ _('Data collection moment') }}</th>
                                 <th class="text-center">{{ _('Interval in days') }}</th>
-                                <th class="text-center" style="width: 113px"></th>
+                                <th class="text-center" style="min-width: 113px"></th>
                             </tr>
 
                             {% for assessment in assessments %}
@@ -116,6 +116,7 @@
 
         $(".formElement").bind("keypress", function(e) {
             if (e.keyCode == 13) {
+                toastr.error("{{ _("Please click the button.") }}");
                 return false;
             }
         });

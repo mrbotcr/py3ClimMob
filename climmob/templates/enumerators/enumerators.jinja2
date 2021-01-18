@@ -74,7 +74,7 @@
                                 <th class="text-center">{{ _('Username') }}</th>
                                 <th class="text-center">{{ _('Password') }}</th>
                                 <th class="text-center">{{ _('Status') }}</th>
-                                <th class="text-center"></th>
+                                <th class="text-center" style="min-width: 81px;"></th>
                             </tr>
 
                             {% for enumerator in searchEnumerator %}
@@ -118,6 +118,13 @@
 
     $(document).ready(function () {
 
+    });
+
+    $(".formElement").bind("keypress", function(e) {
+        if (e.keyCode == 13) {
+            toastr.error("{{ _("Please click the button.") }}");
+            return false;
+        }
     });
 
     $("#btn_cancel_enumerator").click(function () {
