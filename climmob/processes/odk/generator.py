@@ -694,7 +694,7 @@ def generateODKFile(
                     excelFile.addOption(
                         "perf_" + question.question_code + "_" + str(opt + 1),
                         "2",
-                        request.translate("Worst"),
+                        request.translate("Worse"),
                     )
 
         if question.question_dtype == 5 or question.question_dtype == 6:

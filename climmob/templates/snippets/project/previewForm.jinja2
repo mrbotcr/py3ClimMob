@@ -86,7 +86,7 @@
                     {% for letter in letters %}
                         <h3 style='font-family:sans-serif; color: #000000'>{% if item.question_reqinreg == 1 %}<strong style="color: red" class="preview_required">*</strong>{% endif %} <strong>{{ item.question_perfstmt.replace("{{option}}", letter) }}</strong></h3>
                         <label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='perfstmt' value='1'>{{ _("Better") }}<hr style='margin: 10px 0px 10px 0px'></label><br>
-                        <label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='perfstmt' value='2'>{{ _("Worst") }}<hr style='margin: 10px 0px 10px 0px'></label><br>
+                        <label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='perfstmt' value='2'>{{ _("Worse") }}<hr style='margin: 10px 0px 10px 0px'></label><br>
 
                     {% endfor %}
                 </div>
