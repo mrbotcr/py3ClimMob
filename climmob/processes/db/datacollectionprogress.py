@@ -32,6 +32,7 @@ def getInformationFromProject(request, user, projectid):
 
     packagesInformation = []
     for res in result:
+        print(res)
         individualInformation = {}
         individualInformation["name"] = res[0]
         individualInformation["date"] = res[1].strftime("%d-%b")
@@ -117,7 +118,7 @@ def getInformationForMaps(request, user, projectid):
         try:
             result = sql_execute(sql)
         except:
-            result = sql_execute(sql.replace("_submitted_by","'_agent'"))
+            result = sql_execute(sql.replace("_submitted_by","'Username is missing'"))
 
         geoInformationDict["fieldAgents"] = createListOfFieldAgents(
             request, user, result, colors
@@ -170,7 +171,7 @@ def getInformationForMaps(request, user, projectid):
             try:
                 result = sql_execute(sql)
             except:
-                result = sql_execute(sql.replace("_submitted_by", "'_agent'"))
+                result = sql_execute(sql.replace("_submitted_by", "'Username is missing'"))
 
             geoInformationDict["fieldAgents"] = createListOfFieldAgents(
                 request, user, result, colors
