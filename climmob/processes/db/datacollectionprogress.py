@@ -114,7 +114,10 @@ def getInformationForMaps(request, user, projectid):
             + " order by qst162 +0"
         )
         # mySession = request.dbsession
-        result = sql_execute(sql)
+        try:
+            result = sql_execute(sql)
+        except:
+            result = sql_execute(sql.replace("_submitted_by","'_agent'"))
 
         geoInformationDict["fieldAgents"] = createListOfFieldAgents(
             request, user, result, colors
@@ -164,7 +167,10 @@ def getInformationForMaps(request, user, projectid):
                 + "_geninfo "
             )
             # mySession = request.dbsession
-            result = sql_execute(sql)
+            try:
+                result = sql_execute(sql)
+            except:
+                result = sql_execute(sql.replace("_submitted_by", "'_agent'"))
 
             geoInformationDict["fieldAgents"] = createListOfFieldAgents(
                 request, user, result, colors
