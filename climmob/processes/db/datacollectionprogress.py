@@ -32,10 +32,12 @@ def getInformationFromProject(request, user, projectid):
 
     packagesInformation = []
     for res in result:
-        print(res)
         individualInformation = {}
         individualInformation["name"] = res[0]
-        individualInformation["date"] = res[1].strftime("%d-%b")
+        if res[1] :
+            individualInformation["date"] = res[1].strftime("%d-%b")
+        else:
+            individualInformation["date"] = "The date is missing"
         individualInformation["package"] = res[2]
         packagesInformation.append(individualInformation)
 
@@ -59,8 +61,14 @@ def getInformationFromProject(request, user, projectid):
         result = sql_execute(sql)
 
         for res in result:
-            assessmentDetails["data"].append(res[0])
-            assessmentDetails["data"].append(res[1].strftime("%d-%b"))
+            infoPacka = {}
+            infoPacka["package"] = res[0]
+            if res[1]:
+                infoPacka["date"] = res[1].strftime("%d-%b")
+            else:
+                infoPacka["date"] = "The date is missing"
+            assessmentDetails["data"].append(infoPacka)
+
 
         assessmentsInformation.append(assessmentDetails)
 
