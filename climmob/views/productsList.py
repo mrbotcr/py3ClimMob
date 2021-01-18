@@ -25,6 +25,7 @@ from ..processes import (
     getProjectData,
     getProjectAssessments,
     getInformationFromProject,
+    getInformationForMaps,
     getProjectAssessmentInfo,
 )
 from .projectHelp.projectHelp import getImportantInformation
@@ -303,13 +304,16 @@ class generateProductView(privateView):
             )
 
         if productid == "datacollectionprogress":
-
+            geoInformation = getInformationForMaps(
+                self.request, self.user.login, projectid
+            )
             create_data_collection_progress(
                 self.request,
                 self.request.locale_name,
                 self.user.login,
                 projectid,
                 getInformationFromProject(self.request, self.user.login, projectid),
+                geoInformation
             )
 
         self.returnRawViewResult = True
