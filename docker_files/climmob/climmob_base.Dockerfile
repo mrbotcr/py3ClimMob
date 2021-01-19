@@ -1,4 +1,4 @@
-FROM ubuntu:19.10
+FROM ubuntu:20.04
 
 MAINTAINER Alianza Bioversity-CIAT
 ENV CR=America/Costa_Rica
@@ -10,6 +10,9 @@ RUN add-apt-repository universe && add-apt-repository multiverse
 RUN apt-get update
 
 RUN apt-get install -y build-essential qt5-default qtbase5-private-dev qtdeclarative5-dev libqt5sql5-mysql libqt5webkit5-dev libqt5svg5-dev libqt5xmlpatterns5-dev cmake mongodb jq libboost-all-dev unzip zlib1g-dev automake npm redis-server libmysqlclient-dev mysql-client-8.0 openjdk-11-jdk git python3-venv wget texlive-extra-utils r-base libcurl4-openssl-dev pandoc pandoc-citeproc libfontconfig1-dev libcairo2-dev libudunits2-dev libgdal-dev
+
+# This is a patched MySQL Drivet to allow connections between Client 8.0 and Server 5.7.X
+COPY ./docker_files/sqldriver/libqsqlmysql.s_o /usr/lib/x86_64-linux-gnu/qt5/plugins/sqldrivers/libqsqlmysql.so
 
 RUN npm install svg2png -g --unsafe-perm
 
@@ -23,12 +26,11 @@ RUN make install
 WORKDIR /opt
 RUN git clone https://github.com/agrobioinfoservices/ClimMob-analysis.git new_r_code
 
-RUN git clone https://github.com/BioversityCostaRica/odktools.git -b climmob odktools
+RUN git clone https://github.com/qlands/odktools.git
 
 RUN mkdir odktools-deps
 WORKDIR /opt/odktools-deps
 RUN wget --user=user https://github.com/mongodb/mongo-c-driver/releases/download/1.6.1/mongo-c-driver-1.6.1.tar.gz
-RUN wget --user=user https://github.com/open-source-parsers/jsoncpp/archive/1.8.4.tar.gz
 RUN wget --user=user https://github.com/jmcnamara/libxlsxwriter/archive/RELEASE_0.7.6.tar.gz
 RUN wget https://downloads.sourceforge.net/project/quazip/quazip/0.7.3/quazip-0.7.3.tar.gz
 RUN git clone https://github.com/rgamble/libcsv.git
@@ -36,15 +38,6 @@ RUN git clone https://github.com/rgamble/libcsv.git
 RUN tar xvfz mongo-c-driver-1.6.1.tar.gz
 WORKDIR /opt/odktools-deps/mongo-c-driver-1.6.1
 RUN ./configure
-RUN make
-RUN make install
-WORKDIR /opt/odktools-deps
-
-RUN tar xvfz 1.8.4.tar.gz
-WORKDIR /opt/odktools-deps/jsoncpp-1.8.4
-RUN mkdir build
-WORKDIR /opt/odktools-deps/jsoncpp-1.8.4/build
-RUN cmake ..
 RUN make
 RUN make install
 WORKDIR /opt/odktools-deps
@@ -68,6 +61,7 @@ WORKDIR /opt/odktools-deps/libxlsxwriter-RELEASE_0.7.6/build
 RUN cmake ..
 RUN make
 RUN make install
+WORKDIR /opt/odktools-deps
 
 WORKDIR /opt/odktools-deps/libcsv
 RUN ./configure
@@ -82,21 +76,6 @@ RUN make
 RUN make install
 WORKDIR /opt/odktools
 
-WORKDIR /opt/odktools/dependencies/json2csv-cpp
-RUN qmake
-RUN make
-RUN cp json2csv /usr/bin
-
-WORKDIR /opt/odktools
-RUN git submodule update --init --recursive
-WORKDIR /opt/odktools/3rdparty/qjson
-RUN mkdir build
-WORKDIR /opt/odktools/3rdparty/qjson/build
-RUN cmake ..
-RUN make
-RUN make install
-
-WORKDIR /opt/odktools
 RUN qmake
 RUN make
 
