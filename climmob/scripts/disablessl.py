@@ -9,7 +9,7 @@ def get_ini_value(ini_file, key, default=None):
     try:
         config = configparser.ConfigParser()
         config.read(ini_file)
-        return config.get("app:formshare", key)
+        return config.get("app:climmob", key)
     except Exception as e:
         print("Warning: Unable to find key {}. {} . Default used".format(key, str(e)))
         return default
@@ -26,12 +26,13 @@ def main(raw_args=None):
     formshare_ini_file_path = os.path.abspath(args.ini_path)
     config = configparser.ConfigParser()
     config.read(formshare_ini_file_path)
-    sqlalchemy_url = config.get("app:formshare", "sqlalchemy.url")
+    sqlalchemy_url = config.get("app:climmob", "sqlalchemy.url")
     if sqlalchemy_url.find("&ssl_disabled=True") == -1:
         shutil.copyfile(
             formshare_ini_file_path, formshare_ini_file_path + ".bk.20210113"
         )
         sqlalchemy_url = sqlalchemy_url + "&ssl_disabled=True"
-        config.set("app:formshare", "sqlalchemy.url", sqlalchemy_url)
+        config.set("app:climmob", "sqlalchemy.url", sqlalchemy_url)
+        config.set("app:climmob", "repository.url", sqlalchemy_url)
         with open(formshare_ini_file_path, "w") as configfile:
             config.write(configfile)
