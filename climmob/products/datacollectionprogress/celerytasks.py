@@ -63,14 +63,16 @@ def createDataCollectionProgress(
 
         urlMap = "file://" + saveMapPath
         outfn = os.path.join(pathoutput, form["Code"] + ".png")
-        subprocess.check_call(
-            [
-                "cutycapt",
-                "--url={}".format(urlMap),
-                "--out={}".format(outfn),
-                "--delay={}".format(3000),
-            ]
+        #subprocess.check_call(
+        #    [
+        os.system(
+                "xvfb-run cutycapt "+
+                " --url={}".format(urlMap)+
+                " --out={}".format(outfn)+
+                " --delay={}".format(3000)
         )
+        #    ]
+        #)
         form["Image"] = InlineImage(doc, outfn, width=Mm(140))
 
     data = {
