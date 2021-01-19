@@ -313,7 +313,7 @@ class generateProductView(privateView):
                 self.user.login,
                 projectid,
                 getInformationFromProject(self.request, self.user.login, projectid),
-                geoInformation
+                geoInformation,
             )
 
         self.returnRawViewResult = True

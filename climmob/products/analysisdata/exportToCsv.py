@@ -13,13 +13,14 @@ def getRealData(lkptables, rtable, rfield, value, isMultiSelect):
                             if res == None:
                                 res = data[rfield[:-3] + "des"]
                             else:
-                                res += " - "+data[rfield[:-3] + "des"]
+                                res += " - " + data[rfield[:-3] + "des"]
                 else:
                     if data[rfield] == value:
                         res = data[rfield[:-3] + "des"]
                         break
 
     return res
+
 
 def createCSV(outputPath, inputFile):
     myFile = open(outputPath, "w")
@@ -63,7 +64,11 @@ def createCSV(outputPath, inputFile):
 
                 for assessment in data["assessments"]:
                     for field in assessment["fields"]:
-                        if field["rtable"] != None and row["ASS" + assessment["code"] + "_" + field["name"]] != None:
+                        if (
+                            field["rtable"] != None
+                            and row["ASS" + assessment["code"] + "_" + field["name"]]
+                            != None
+                        ):
                             result = getRealData(
                                 assessment["lkptables"],
                                 field["rtable"],

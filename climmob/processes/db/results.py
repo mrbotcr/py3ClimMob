@@ -312,7 +312,16 @@ def getData(user, project, registry, assessments, request):
             + "_geninfo."
             + assessmentKey
         )
-    sql = sql + " ORDER BY cast(" + user + "_" + project + ".REG_geninfo." + registryKey +" AS unsigned)"
+    sql = (
+        sql
+        + " ORDER BY cast("
+        + user
+        + "_"
+        + project
+        + ".REG_geninfo."
+        + registryKey
+        + " AS unsigned)"
+    )
 
     # data = request.dbsession.execute(sql).fetchall()
     data = sql_fetch_all(sql)
