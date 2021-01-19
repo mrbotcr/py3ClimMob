@@ -3,7 +3,7 @@ from ..db.enumerator import searchEnumerator
 from ...models import Assessment, Registry, Question, AssDetail
 from climmob.models.repository import sql_execute
 
-__all__ = ["getInformationFromProject","getInformationForMaps"]
+__all__ = ["getInformationFromProject", "getInformationForMaps"]
 
 
 def getInformationFromProject(request, user, projectid):
@@ -34,7 +34,7 @@ def getInformationFromProject(request, user, projectid):
     for res in result:
         individualInformation = {}
         individualInformation["name"] = res[0]
-        if res[1] :
+        if res[1]:
             individualInformation["date"] = res[1].strftime("%d-%b")
         else:
             individualInformation["date"] = "The date is missing"
@@ -68,7 +68,6 @@ def getInformationFromProject(request, user, projectid):
             else:
                 infoPacka["date"] = "The date is missing"
             assessmentDetails["data"].append(infoPacka)
-
 
         assessmentsInformation.append(assessmentDetails)
 
@@ -126,7 +125,7 @@ def getInformationForMaps(request, user, projectid):
         try:
             result = sql_execute(sql)
         except:
-            result = sql_execute(sql.replace("_submitted_by","'Username is missing'"))
+            result = sql_execute(sql.replace("_submitted_by", "'Username is missing'"))
 
         geoInformationDict["fieldAgents"] = createListOfFieldAgents(
             request, user, result, colors
@@ -179,7 +178,9 @@ def getInformationForMaps(request, user, projectid):
             try:
                 result = sql_execute(sql)
             except:
-                result = sql_execute(sql.replace("_submitted_by", "'Username is missing'"))
+                result = sql_execute(
+                    sql.replace("_submitted_by", "'Username is missing'")
+                )
 
             geoInformationDict["fieldAgents"] = createListOfFieldAgents(
                 request, user, result, colors
@@ -213,7 +214,7 @@ def createListOfFieldAgents(request, user, result, colors):
             if enumerator:
                 dictOfFieldAgent["Name"] = enumerator["enum_name"]
             else:
-                dictOfFieldAgent["Name"] = "Other - "+res[0]
+                dictOfFieldAgent["Name"] = "Other - " + res[0]
 
             dictOfFieldAgent["Color"] = colors[count]
             dictOfFieldAgent["Points"] = []

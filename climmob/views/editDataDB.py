@@ -303,7 +303,9 @@ def update_edited_data(self, db, form, data, file, code):
                     val = str(row[key])
                 else:
                     if key in get_FieldsByType(["select1"], db, self, file, code):
-                        val = "'" + str(row[key]).replace("[", "").replace("]", "") + "'"
+                        val = (
+                            "'" + str(row[key]).replace("[", "").replace("]", "") + "'"
+                        )
                     else:
                         if key in get_FieldsByType(["select"], db, self, file, code):
                             val = "'" + " ".join(row[key]) + "'"
@@ -317,7 +319,7 @@ def update_edited_data(self, db, form, data, file, code):
             # print query_update
             try:
                 # transaction.begin()
-                #print(query_update)
+                # print(query_update)
                 # mySession.execute(query_update)
                 # mark_changed(mySession)
                 # transaction.commit()

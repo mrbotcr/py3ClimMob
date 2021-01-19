@@ -13,7 +13,7 @@ import glob
 
 @celeryApp.task(base=celeryTask, soft_time_limit=7200, time_limit=7200)
 def createDataCollectionProgress(
-        locale, user, path, project, informationAboutProject, geoInformation
+    locale, user, path, project, informationAboutProject, geoInformation
 ):
     if os.path.exists(path):
         sh.rmtree(path)
@@ -63,16 +63,16 @@ def createDataCollectionProgress(
 
         urlMap = "file://" + saveMapPath
         outfn = os.path.join(pathoutput, form["Code"] + ".png")
-        #subprocess.check_call(
+        # subprocess.check_call(
         #    [
         os.system(
-                "xvfb-run cutycapt "+
-                " --url={}".format(urlMap)+
-                " --out={}".format(outfn)+
-                " --delay={}".format(3000)
+            "xvfb-run cutycapt "
+            + " --url={}".format(urlMap)
+            + " --out={}".format(outfn)
+            + " --delay={}".format(3000)
         )
         #    ]
-        #)
+        # )
         form["Image"] = InlineImage(doc, outfn, width=Mm(140))
 
     data = {
