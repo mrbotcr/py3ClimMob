@@ -1,7 +1,7 @@
 #! /bin/bash
 
 /wait
-mysql -h $MYSQL_HOST_NAME -u $MYSQL_USER_NAME --password=$MYSQL_USER_PASSWORD --execute='CREATE SCHEMA IF NOT EXISTS climmobv4'
+mysql -h $MYSQL_HOST_NAME -u $MYSQL_USER_NAME --ssl-mode=DISABLED --password=$MYSQL_USER_PASSWORD --execute='CREATE SCHEMA IF NOT EXISTS climmobv4'
 source /opt/climmob_env/bin/activate
 cd /opt/climmob
 # If development.ini does not exists then create the basic database
@@ -15,6 +15,7 @@ ln -s /opt/climmob_config/development.ini ./development.ini
 python configure_celery.py ./development.ini
 python setup.py develop
 python setup.py compile_catalog
+disable_ssl ./development.ini
 configure_alembic ./development.ini .
 configure_mysql ./development.ini .
 alembic upgrade head
