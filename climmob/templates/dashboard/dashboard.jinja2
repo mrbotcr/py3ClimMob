@@ -78,16 +78,6 @@
                             <li>
                                 <a href="{{ request.route_url('dashboard') }}"><i class="fa fa-th-large"></i> <span class="nav-label">{{ _("Main menu") }}</span></a>
                             </li>
-                            {% if hasActiveProject %}
-                                {% if activeProject is string %}
-                                    {% set idForProject = activeProject %}
-                                {% else %}
-                                    {% set idForProject = activeProject.project_cod%}
-                                {% endif %}
-                                <li>
-                                    <a href="{{ request.route_url('modifyproject',projectid=idForProject) }}"><i class="fa fa-list-alt"></i> {{ _("Project profile") }}</a>
-                                </li>
-                            {% endif %}
                             <li class="active" style="border-left: initial;background: initial" id="nav_libraries">
                                 <a href="#"><i class="fa fa-book"></i> <span class="nav-label">{{ _("Library") }}</span><span class="fa arrow"></span></a>
                                 <ul class="nav nav-second-level collapse" style="border-left: initial;background: initial">
@@ -119,21 +109,23 @@
                                 <h2 style="margin: 14px 5px 5px 20px"> <span style="color: #1ab492">{{ _("ClimMob") }}</span></h2>
                             {% endblock headwelcome %}
 
+{#                        <div>#}
+{#                            {{ _('Language') }}:#}
+{#                            <select id="language">#}
+{#                                <option id="en" value="en">English</option>#}
+{#                                <option id="es" value="es">Español</option>#}
+{#                                <option id="es" value="fr">Frances</option>#}
+{#                            </select>#}
+{#                        </div>#}
                         </div>
                         <ul class="nav navbar-top-links navbar-right">
                             {% block headitems %}
-{#                                <li class="li_languages">#}
-{#                                    <img class="language" name="en" src="{{ request.url_for_static('static/landing/en.png') }}" style="height: 15px; width: 22px">#}
-{#                                </li>#}
-{#                                <li class="li_languages">#}
-{#                                    <img class="language" name="es" src="{{ request.url_for_static('static/landing/es.png') }}" style="height: 15px; width: 22px">#}
-{#                                </li>#}
+
                                 <li>
                                     <a href="{{ request.route_url('logout') }}">
                                         <i class="fa fa-sign-out"></i> {{ _("Log out") }}
                                     </a>
                                 </li>
-
                                 <li>
                                     {% block headsidebar %}
                                         <a class="right-sidebar-toggle">
@@ -276,17 +268,17 @@
                                                     <input readonly class=" form-control " style="margin-bottom: 5px; padding: 6px 12px; border-color: #1ab394; border-radius: 3px" type="text" id="aForCopy" value="{{ request.route_url("projectInformation", id = encrypted) }}" >
                                                     <button class="btn btn-default" onclick="copy()">{{ _("Copy to clipboard") }}</button>
                                                 </div>
-{#                                                <hr>#}
+                                                <hr>
                                             </div>
                                         </div>
-{#                                        <div class="row">#}
-{#                                            <div class="col-md-6">#}
-{#                                                <a class="btn btn-warning btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('modifyproject',projectid=activeProject.project_cod) }}"><i class="fa fa-wrench"></i> {{ _("Update project settings") }}</a>#}
-{#                                            </div>#}
-{#                                            <div class="col-md-6">#}
-{#                                                <a class="btn btn-danger btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" onclick="showDelete('{{ request.route_url('deleteproject',projectid=activeProject.project_cod) }}','{{ _("Do you really want to remove this project?") }}','{{ request.session.get_csrf_token() }}','{{ request.route_url('dashboard') }}')"><i class="fa fa-trash"></i> {{ _("Delete project") }}</a>#}
-{#                                            </div>#}
-{#                                        </div>#}
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <a class="btn btn-warning btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('modifyproject',projectid=activeProject.project_cod) }}"><i class="fa fa-wrench"></i> {{ _("Update project settings") }}</a>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <a class="btn btn-danger btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" onclick="showDelete('{{ request.route_url('deleteproject',projectid=activeProject.project_cod) }}','{{ _("Do you really want to remove this project?") }}','{{ request.session.get_csrf_token() }}','{{ request.route_url('dashboard') }}')"><i class="fa fa-trash"></i> {{ _("Delete project") }}</a>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -693,7 +685,7 @@
                                                 ],
                                                 type : 'bar',
                                                 color: function(inColor, data) {
-                                                    var colors = ['#1ab394', '#1c84c6', '#23c6c8','#f8ac59','#ed5565', '#a94442','#3c763d', '#122b40','#1ab394', '#1c84c6', '#23c6c8','#f8ac59','#ed5565', '#a94442','#3c763d', '#122b40'];
+                                                    var colors = ['#1ab394', '#BABABA', '#f8ac59','#1c84c6','#1ab394', '#BABABA', '#f8ac59','#1c84c6','#1ab394', '#BABABA', '#f8ac59','#1c84c6','#1ab394', '#BABABA', '#f8ac59','#1c84c6','#1ab394', '#BABABA', '#f8ac59','#1c84c6','#1ab394', '#BABABA', '#f8ac59','#1c84c6','#1ab394', '#BABABA', '#f8ac59','#1c84c6','#1ab394', '#BABABA', '#f8ac59','#1c84c6'];
 
                                                     if(data.index !== undefined) {
                                                         return colors[data.index];
@@ -740,7 +732,7 @@
             <div class="footer">
                 {% block footer %}
                     <div class="pull-right">
-                        0.6 (20170727)
+                        {{ request.h.get_version() }}
                     </div>
                     <div>
                         <strong>{{ _("Copyright") }}</strong> {{ _("2020, Alliance of Bioversity International and CIAT") }}
@@ -955,17 +947,11 @@
             var selectedLanguage = readCookie('_LOCALE_');
             if (selectedLanguage != null)
                 $('#language').val(selectedLanguage);
-
-            /*$("#language").bind('change', function() {
+            $("#language").bind('change', function() {
                 //on change set cookie and...
                 setCookie('_LOCALE_', this.value, 365);
                 location.reload();
-            });*/
-
-            $(".language").click(function () {
-                setCookie('_LOCALE_', this.getAttribute("name"), 365);
-                location.reload();
-            })
+            });
 
 
             {% if showHelp %}
