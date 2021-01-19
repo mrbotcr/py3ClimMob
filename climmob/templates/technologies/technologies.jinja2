@@ -82,7 +82,7 @@
                 <div class="ibox-content">
                     {% snippet 'snippets/error.jinja2', error_summary=error_summary %}
 
-                    <form class="form-horizontal" id="form_technology" role="form" method="post" action="{{ request.path }}">
+                    <form class="form-horizontal formElement" id="form_technology" role="form" method="post" action="{{ request.path }}">
                         {% snippet 'snippets/technologies/technologies-form.jinja2', request=request, dataworking=dataworking %}
 
                         <button style="display: none" class="btn btn-danger pull-left BtnTechnology" id="btn_delete_technology" onclick="deleteTechnology()" type="button" title="{{ _("Delete technology") }}">{{ _("Delete technology") }}</button>
@@ -110,7 +110,7 @@
                 <div class="ibox-content">
                     {% snippet 'snippets/error.jinja2', error_summary=error_summary_options %}
 
-                    <form class="form-horizontal" id="form_technology_options" role="form" method="post" action="{{ request.path }}">
+                    <form class="form-horizontal formElement" id="form_technology_options" role="form" method="post" action="{{ request.path }}">
                         <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                         <input type="text" class="form-control tech_id" value="{{ dataworking.tech_id }}" name="tech_id" style="display: none">
                         <input type="text" class="form-control " value="{{ dataworking.alias_id }}" id="alias_id" name="alias_id" style="display: none">
@@ -132,7 +132,7 @@
                         </div>
 
                         <br>
-                        <button style="display: none" class="btn btn-danger pull-left BtnTechnologyOptions" id="btn_delete_technology_option" onclick="deleteTechnologyOption()" type="button" title="{{ _("Delete technology option") }}">{{ _("Delete technology option") }}</button>
+                        <button style="display: none" class="btn btn-danger pull-left BtnTechnologyOptions" id="btn_delete_technology_option" onclick="deleteTechnologyOption()" type="button" title="{{ _("Delete option") }}">{{ _("Delete option") }}</button>
                         <input style="display: none" class="btn btn-primary pull-right BtnTechnologyOptions" type="submit" id="btn_add_alias" name="btn_add_alias" value="{{ _('Add and close') }}"></input>
                         <input style="display: none" class="btn btn-primary pull-right BtnTechnologyOptions" type="submit" id="btn_modify_alias" name="btn_modify_alias" value="{{ _('Save and close') }}"></input>
                     </form>
@@ -395,6 +395,7 @@
             if (e.target.localName == "input")
             {
                 if (e.keyCode == 13) {
+                    toastr.error("{{ _("Please click the button.") }}");
                     return false;
                 }
             }
@@ -407,6 +408,7 @@
                 $("#btn_modify_technology").css('display','initial')
             }
             if (e.keyCode == 13) {
+                toastr.error("{{ _("Please click the button.") }}");
                 return false;
             }
         });
@@ -434,5 +436,6 @@
 
     </script>
 
+    {% snippet 'snippets/loading.jinja2', request=request %}
 
 {% endblock pagecontent %}

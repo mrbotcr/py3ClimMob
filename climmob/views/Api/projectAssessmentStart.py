@@ -16,7 +16,11 @@ from ...processes import (
     numberOfCombinationsForTheProject,
     setAssessmentIndividualStatus,
     AsessmentStatus,
+    getPackages,
 )
+
+from ..registry import getDataFormPreview
+from ...products.forms.form import create_document_form
 import os
 import uuid
 from xml.dom import minidom
@@ -73,6 +77,29 @@ class createProjectAssessment_view(apiView):
                                             dataworking["ass_cod"],
                                             1,
                                             self.request,
+                                        )
+
+                                        ncombs, packages = getPackages(
+                                            self.user.login,
+                                            dataworking["project_cod"],
+                                            self.request,
+                                        )
+
+                                        data, finalCloseQst = getDataFormPreview(
+                                            self,
+                                            dataworking["project_cod"],
+                                            dataworking["ass_cod"],
+                                        )
+
+                                        create_document_form(
+                                            self.request,
+                                            "en",
+                                            self.user.login,
+                                            dataworking["project_cod"],
+                                            "Assessment",
+                                            dataworking["ass_cod"],
+                                            data,
+                                            packages,
                                         )
 
                                         response = Response(

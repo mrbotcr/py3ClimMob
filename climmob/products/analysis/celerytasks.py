@@ -12,7 +12,7 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 
 
 @celeryApp.task(base=climmobCeleryTask)
-def createReports(locale, path, user, projectid, data, info, infosheet):
+def createReports(locale, path, user, projectid, data, info, infosheet, pathScript):
 
     if os.path.exists(path):
         sh.rmtree(path)
@@ -51,9 +51,6 @@ def createReports(locale, path, user, projectid, data, info, infosheet):
         )
         es.install()
         _ = es.gettext
-
-    # pathScript = "/home/ubuntu/new_r_code/ClimMob-analysis"
-    pathScript = "/home/bmadriz/temp/ClimMob-analysis"
 
     os.system(
         "Rscript "

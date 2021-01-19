@@ -37,12 +37,18 @@
                             <th class="text-center" style="width: {{percentage}}% ">{{ _("Comparison with check") }}</th>
                         </tr>
                         <tr>
+                            <td class="text-center" style="border-top-style: hidden;"></td>
+                            <td class="text-center" style="border-top-style: hidden;"><label style="font-weight: inherit"> <input class="checkbox i-checksAll" type="checkbox" id="explanatorySelect"><i></i> {{ _("Select all") }}</label></td>
+                            <td class="text-center" style="border-top-style: hidden;"><label style="font-weight: inherit"> <input class="checkbox i-checksAll" type="checkbox" id="rankingSelect"><i></i> {{ _("Select all") }}</label></td>
+                            <td class="text-center" style="border-top-style: hidden;"><label style="font-weight: inherit"> <input class="checkbox i-checksAll" type="checkbox" id="comparisonSelect"><i></i> {{ _("Select all") }}</label></td>
+                        </tr>
+                        <tr>
                             <th style="vertical-align:middle"> {{ _("Registration") }}</th>
                             <td>
                                 {% if dataForAnalysis.Explanatory %}
                                     {%for c in dataForAnalysis.Explanatory%}
                                         {% if c.code == None %}
-                                            <label style="font-weight: inherit"> <input class="checkbox i-checks" type="checkbox" id="explanatory_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
+                                            <label style="font-weight: inherit"> <input class="checkbox i-checks explanatorySelect" type="checkbox" id="explanatory_REG__{{c.id}}_add"><i></i> {{ c.name }}</label><br>
                                         {% endif%}
                                     {%endfor%}
                                 {% endif %}
@@ -51,7 +57,7 @@
                                 {% if dataForAnalysis.Characteristics %}
                                     {%for c in dataForAnalysis.Characteristics%}
                                         {% if c.code == None %}
-                                            <label style="font-weight: inherit"> <input class="checkbox i-checks" type="checkbox" id="characteristic_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
+                                            <label style="font-weight: inherit"> <input class="checkbox i-checks rankingSelect" type="checkbox" id="characteristic_REG__{{c.id}}_add"><i></i> {{ c.name }}</label><br>
                                         {% endif%}
                                     {%endfor%}
                                 {% endif %}
@@ -60,7 +66,7 @@
                                 {% if dataForAnalysis.Performance%}
                                     {%for c in dataForAnalysis.Performance%}
                                         {% if c.code == None %}
-                                            <label style="font-weight: inherit"> <input class="checkbox i-checks" type="checkbox" id="performance_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
+                                            <label style="font-weight: inherit"> <input class="checkbox i-checks comparisonSelect" type="checkbox" id="performance_REG__{{c.id}}_add"><i></i> {{ c.name }}</label><br>
                                         {% endif%}
                                     {%endfor%}
                                 {% endif %}
@@ -73,7 +79,7 @@
                                     {% if dataForAnalysis.Explanatory %}
                                         {%for c in dataForAnalysis.Explanatory%}
                                             {% if c.code.ass_cod == assess.ass_cod %}
-                                                <label style="font-weight: inherit"> <input class="checkbox i-checks" type="checkbox" id="explanatory_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
+                                                <label style="font-weight: inherit"> <input class="checkbox i-checks explanatorySelect" type="checkbox" id="explanatory_ASS_{{ assess.ass_cod }}_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
                                             {% endif%}
                                         {%endfor%}
                                     {% endif %}
@@ -82,7 +88,7 @@
                                     {% if dataForAnalysis.Characteristics %}
                                         {%for c in dataForAnalysis.Characteristics%}
                                             {% if c.code.ass_cod == assess.ass_cod %}
-                                                <label style="font-weight: inherit"> <input class="checkbox i-checks" type="checkbox" id="characteristic_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
+                                                <label style="font-weight: inherit"> <input class="checkbox i-checks rankingSelect" type="checkbox" id="characteristic_ASS_{{ assess.ass_cod }}_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
                                             {% endif%}
                                         {%endfor%}
                                     {% endif %}
@@ -91,7 +97,7 @@
                                     {% if dataForAnalysis.Performance%}
                                         {%for c in dataForAnalysis.Performance%}
                                             {% if c.code.ass_cod == assess.ass_cod %}
-                                                <label style="font-weight: inherit"> <input class="checkbox i-checks" type="checkbox" id="performance_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
+                                                <label style="font-weight: inherit"> <input class="checkbox i-checks comparisonSelect" type="checkbox" id="performance_ASS_{{ assess.ass_cod }}_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
                                             {% endif%}
                                         {%endfor%}
                                     {% endif %}
@@ -120,7 +126,7 @@
                     <br>
                     <br>
                     <div class="text-center">
-                        <form method="post" class="form-horizontal" action="{{ request.path }}">
+                        <form method="post" class="form-horizontal formElement" action="{{ request.path }}">
                             <input type="text" id="txt_included_in_analysis" name="txt_included_in_analysis" style="width: 100%;display:none">
                             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                             <input type="text" id="txt_infosheets" name="txt_infosheets" value="true" style="width: 100%;display:none">
@@ -132,6 +138,8 @@
             </div>
         </div>
     </div>
+
+    {% snippet 'snippets/loading.jinja2', request=request %}
 
 {% endblock pagecontent%}
 

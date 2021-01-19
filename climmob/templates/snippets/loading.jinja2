@@ -1,0 +1,49 @@
+<style>
+    .overlay2
+    {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255,255,255,0.6);
+        z-index:100000;
+    }
+
+    #cargando2
+    {
+        width: 200px;
+        height: 200px;
+        margin: auto;
+        position: fixed;
+        top: 0;
+        right: 0;
+        left: 0;
+        bottom: 0;
+    }
+</style>
+
+<div align="center" id="carga" class='overlay2' style="display: none;">
+    <div id='cargando2'>
+        <img alt="image" src="{{ request.url_for_static('static/gif/loading.gif') }}" style="height: 200px; width: 200px"/>
+    </div>
+</div>
+
+<script>
+
+    Array.from(document.getElementsByClassName("formElement")).forEach(function(form) {
+       form.onsubmit = submitted.bind(form);
+    });
+
+    function submitted(event) {
+        $("#carga").show();
+    }
+
+    $(document).ajaxStart(function() {
+        $("#carga").show();
+    })
+    .ajaxStop(function() {
+        $("#carga").hide();
+    });
+
+</script>

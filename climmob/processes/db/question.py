@@ -19,12 +19,16 @@ __all__ = [
     "QuestionsOptions",
     "getQuestionData",
     "getQuestionOptions",
+    "getQuestionOptionsByQuestionCode",
     "deleteOption",
     "optionExists",
     "getOptionData",
     "updateOption",
     "questionExists",
     "UserQuestionMoreBioversity",
+    "optionExistsWithName",
+    "opcionNAinQuestion",
+    "opcionOtherInQuestion",
 ]
 
 
@@ -256,6 +260,17 @@ def getQuestionOptions(question, request):
     )
 
 
+def getQuestionOptionsByQuestionCode(question_code, username, request):
+    return mapFromSchema(
+        request.dbsession.query(Qstoption)
+        .filter(Question.question_code == question_code)
+        .filter(Question.user_name == username)
+        .filter(Qstoption.question_id == Question.question_id)
+        .order_by(Qstoption.value_order)
+        .all()
+    )
+
+
 def optionExists(question, option, request):
     res = (
         request.dbsession.query(Qstoption)
@@ -266,3 +281,39 @@ def optionExists(question, option, request):
     if res is None:
         return False
     return True
+
+
+def optionExistsWithName(question, option, request):
+    res = (
+        request.dbsession.query(Qstoption)
+        .filter(Qstoption.question_id == question)
+        .filter(Qstoption.value_desc == option)
+        .first()
+    )
+    if res is None:
+        return False
+    return True
+
+
+def opcionNAinQuestion(question, request):
+    res = (
+        request.dbsession.query(Qstoption)
+        .filter(Qstoption.question_id == question)
+        .filter(Qstoption.value_isna == 1)
+        .all()
+    )
+    if res:
+        return True
+    return False
+
+
+def opcionOtherInQuestion(question, request):
+    res = (
+        request.dbsession.query(Qstoption)
+        .filter(Qstoption.question_id == question)
+        .filter(Qstoption.value_isother == 1)
+        .all()
+    )
+    if res:
+        return True
+    return False

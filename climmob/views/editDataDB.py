@@ -3,7 +3,7 @@ import pprint
 import transaction
 import xml.etree.ElementTree as ET
 from zope.sqlalchemy import mark_changed
-from ..processes import getProjectData
+from ..processes import getProjectData, getQuestionOptionsByQuestionCode
 from climmob.models.repository import sql_execute
 
 
@@ -18,18 +18,26 @@ def make_selOneOpt(
 ):  # make value for select one and multiple in jqgrid
     mySession = self.request.dbsession
     vals = {}
-    result = mySession.execute(
-        "select %s as qc, %s as qd from %s.%s;"
-        % (
-            lkp_field,
-            lkp_field.replace("_cod", "_des"),
-            self.user.login + "_" + bd,
-            rtable,
+    if rtable != "None":
+        result = mySession.execute(
+            "select %s as qc, %s as qd from %s.%s;"
+            % (
+                lkp_field,
+                lkp_field.replace("_cod", "_des"),
+                self.user.login + "_" + bd,
+                rtable,
+            )
         )
-    )
 
-    for res in result:
-        vals[str(res["qc"])] = res["qd"]
+        for res in result:
+            vals[str(res["qc"])] = res["qd"]
+    else:
+        options = getQuestionOptionsByQuestionCode(
+            lkp_field, self.user.login, self.request
+        )
+        for option in options:
+            vals[str(option["value_code"])] = option["value_desc"]
+
     return vals
 
 
@@ -79,8 +87,12 @@ def getNamesEditByColums(
                         row.append(rfield)
                     elif "select_one" in x.attrib["odktype"].split(" ")[0]:
                         row.append("select1")
-                        row.append(x.attrib["rtable"])
-                        row.append(x.attrib["rfield"])
+                        if "rtable" in x.attrib.keys():
+                            row.append(x.attrib["rtable"])
+                            row.append(x.attrib["rfield"])
+                        else:
+                            row.append("None")
+                            row.append(x.attrib["name"])
                     elif x.attrib["odktype"] in ["integer"]:
                         row.append("decimal")
                         row.append("")
@@ -291,7 +303,7 @@ def update_edited_data(self, db, form, data, file, code):
                     val = str(row[key])
                 else:
                     if key in get_FieldsByType(["select1"], db, self, file, code):
-                        val = str(row[key]).replace("[", "").replace("]", "")
+                        val = "'" + str(row[key]).replace("[", "").replace("]", "") + "'"
                     else:
                         if key in get_FieldsByType(["select"], db, self, file, code):
                             val = "'" + " ".join(row[key]) + "'"
@@ -305,7 +317,7 @@ def update_edited_data(self, db, form, data, file, code):
             # print query_update
             try:
                 # transaction.begin()
-                print(query_update)
+                #print(query_update)
                 # mySession.execute(query_update)
                 # mark_changed(mySession)
                 # transaction.commit()

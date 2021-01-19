@@ -1121,7 +1121,7 @@ def generateStructureForInterfaceAssessment(user, project, ass_cod, request):
                         dataQuestion["question_options"].append(dataQuestionop)
                         # the worst option
                         dataQuestionop = createOption(
-                            request.translate("Worst"),
+                            request.translate("Worse"),
                             0,
                             2,
                             0,

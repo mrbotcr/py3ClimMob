@@ -317,7 +317,7 @@
                                                     <br>
                                                     {% if progress.usableAssessments|length > 0 %}
                                                         {% snippet 'snippets/error.jinja2', error_summary=error_summary %}
-                                                        <form id="start_assessment"  role="form" method="post" action="{{ request.route_url("startassessments",projectid=activeProject.project_cod) }}">
+                                                        <form class="formElement" id="start_assessment"  role="form" method="post" action="{{ request.route_url("startassessments",projectid=activeProject.project_cod) }}">
                                                             <div class="form-group">
                                                                 <label>{{ _("Select the assessment for start the data collection") }}</label>
                                                                 <select id="assessment_id" name="assessment_id" class="form-control">
@@ -595,7 +595,7 @@
 
 
 
-                                {% if total_ass_records > 0 or (activeProject.project_registration_and_analysis == 1 and progress.regtotal >=10)%}
+                                {% if total_ass_records > 0 or (activeProject.project_registration_and_analysis == 1 and progress.regtotal >=5)%}
                                     <div class="ibox float-e-margins" >
                                         <div class="ibox-title">
                                             <h5>{{ _("Analysis") }}</h5>
@@ -1094,6 +1094,8 @@
     </script>
 
 {% endblock script %}
+
+{% snippet 'snippets/loading.jinja2', request=request %}
 
 </body>
 

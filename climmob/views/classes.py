@@ -382,18 +382,18 @@ class apiView(object):
 
                 self.body = json.dumps(body)
 
-            """
-            try:
-                self.body = self.request.params["Body"]
-            except:
-                response = Response(
-                    status=401,
-                    body=self.request.translate(
-                        "Error in the JSON, It does not have the 'body' parameter."
-                    ),
-                )
-                return response
-            """
+                """
+                try:
+                    self.body = self.request.params["Body"]
+                except:
+                    response = Response(
+                        status=401,
+                        body=self.request.translate(
+                            "Error in the JSON, It does not have the 'body' parameter."
+                        ),
+                    )
+                    return response
+                """
         except:
             response = Response(
                 status=401, body=self.request.translate("Apikey non-existent")

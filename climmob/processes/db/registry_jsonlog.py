@@ -78,7 +78,7 @@ def get_error_from_log(inputFileLog):
         return errors[0].getAttribute("Error")
 
     else:
-        return "Error: The .log file don't exits"
+        return False
 
 
 def clean_registry_error_logs(request, projectid, user):

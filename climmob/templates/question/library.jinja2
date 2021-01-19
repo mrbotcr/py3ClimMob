@@ -99,7 +99,7 @@
                 <div class="ibox-content " >
                     {% snippet 'snippets/error.jinja2', error_summary=error_summary %}
 
-                    <form class="form-horizontal" role="form" method="post" id="formQuestion" action="{{ request.url }}">
+                    <form class="form-horizontal formElement" role="form" method="post" id="formQuestion" action="{{ request.url }}">
 
                         {% snippet 'snippets/question/question-form.jinja2',formdata=formdata, request=request, Categories =Categories %}
 
@@ -655,10 +655,18 @@
 
             $(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
 
+
             if (question_requiredvalue == 1)
                 $("#ckb_required_value").bootstrapSwitch('state',true);
             else
                 $("#ckb_required_value").bootstrapSwitch('state',false);
+
+            if(question_dtype == '2' || question_dtype == '3')
+            {
+                $('#div_unit').css('display', 'block');
+            }else{
+                $('#div_unit').css('display', 'none');
+            }
 
             if (question_dtype != "9" && question_dtype != "10") {
                     $("#form_simple_question").css('display', 'initial')
@@ -876,7 +884,7 @@
                 {
                     $(".preview_10").append("<h3 style='font-family:sans-serif; color: #000000'><strong style='color: red' class='preview_required'>*</strong> <strong>"+ question_perfstmt.replace("{ {option}}".replace(" ",""),letters[x]) +"</strong></h3>")
                     $(".preview_10").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='perfstmt"+x+" value='1'> Better<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                    $(".preview_10").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='perfstmt"+x+"' value='2'> Worst<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                    $(".preview_10").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='perfstmt"+x+"' value='2'> Worse<hr style='margin: 10px 0px 10px 0px'></label><br>")
                     if (x != 2 )
                         $(".preview_10").append("<hr style='margin: 10px 0px 10px 0px'>")
                 }
@@ -897,5 +905,8 @@
         }
 
     </script>
+
+
+    {% snippet 'snippets/loading.jinja2', request=request %}
 
 {% endblock pagecontent %}

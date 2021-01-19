@@ -44,11 +44,11 @@
                     {% endif %}
 
                     <div class="error-desc">
-                        <form class="form-horizontal" role="form" method="post" action="{{ request.path }}" >
+                        <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}" >
                             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                             {% snippet 'snippets/enumerators/enumerator-form.jinja2', dataworking=dataworking, modify=modify %}
-                            <button type="submit" class="btn btn-primary pull-right btnsEnumerator" id="btn_add_enumerator" name="btn_add_enumerator"> {{ _('Add and close') }}</button>
-                            <button type="submit" class="btn btn-primary pull-right btnsEnumerator" id="btn_modify_enumerator" name="btn_modify_enumerator" style="display: none"> {{ _('Save and close') }}</button>
+                            <button type="submit" class="btn btn-primary pull-right btnsEnumerator" id="btn_add_enumerator" name="btn_add_enumerator"> {{ _('Add') }}</button>
+                            <button type="submit" class="btn btn-primary pull-right btnsEnumerator" id="btn_modify_enumerator" name="btn_modify_enumerator" style="display: none"> {{ _('Save') }}</button>
                         </form>
                     </div>
                     <br>
@@ -74,7 +74,7 @@
                                 <th class="text-center">{{ _('Username') }}</th>
                                 <th class="text-center">{{ _('Password') }}</th>
                                 <th class="text-center">{{ _('Status') }}</th>
-                                <th class="text-center"></th>
+                                <th class="text-center" style="min-width: 81px;"></th>
                             </tr>
 
                             {% for enumerator in searchEnumerator %}
@@ -120,6 +120,13 @@
 
     });
 
+    $(".formElement").bind("keypress", function(e) {
+        if (e.keyCode == 13) {
+            toastr.error("{{ _("Please click the button.") }}");
+            return false;
+        }
+    });
+
     $("#btn_cancel_enumerator").click(function () {
         cleanButtons()
         cleanInputs()
@@ -156,5 +163,8 @@
         $("#enum_id").attr('readonly', false);
     }
     </script>
+
+    {% snippet 'snippets/loading.jinja2', request=request %}
+
 {% endblock pagecontent %}
 

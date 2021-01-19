@@ -11,7 +11,9 @@ def create_stickers_document(locale, request, user, project, packages):
     # user.repository in development.ini/user/project/products/product/outputs
     path = createProductDirectory(request, user, project, "stickers")
     # We call the Celery task that will generate the output packages.pdf
-    task = createStickerDocument.delay(locale, user, path, project, packages)
+    task = createStickerDocument.apply_async(
+        (locale, user, path, project, packages), queue="ClimMob"
+    )
     # We register the instance of the output with the task ID of celery
     # This will go to the products table that then you can monitor and use
     # in the nice product interface

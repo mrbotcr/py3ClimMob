@@ -11,7 +11,7 @@ def create_packages_excell(request, user, project, data, tech):
     # user.repository in development.ini/user/project/products/product/outputs
     path = createProductDirectory(request, user, project, "packages")
     # We call the Celery task that will generate the output packages.pdf
-    task = createPackages.delay(path, project, data, tech)
+    task = createPackages.apply_async((path, project, data, tech), queue="ClimMob")
     # We register the instance of the output with the task ID of celery
     # This will go to the products table that then you can monitor and use
     # in the nice product interface

@@ -11,7 +11,7 @@ def create_datacsv(user, project, info, request, form, code):
     # user.repository in development.ini/user/project/products/product/outputs
     path = createProductDirectory(request, user, project, "datacsv")
     # We call the Celery task that will generate the output packages.pdf
-    task = create_CSV.delay(path, info, project, form, code)
+    task = create_CSV.apply_async((path, info, project, form, code), queue="ClimMob")
     # We register the instance of the output with the task ID of celery
     # This will go to the products table that then you can monitor and use
     # in the nice product interface

@@ -14,7 +14,7 @@
                                 {% snippet 'snippets/question/question-title-shuffle.jinja2', request=request,question=question, activeUser=activeUser, eventClick=eventClick, classByUser=classByUser, classByRegRequired=classByRegRequired, classByAssesRequired=classByAssesRequired %}
                             {% endif %}
                         {% endfor %}
-                        {% if doActions %} <li data-jstree='{"icon": "fa fa-plus"}' onclick="openQuestions('','yes','yes','','','','{{ category.qstgroups_id }}[*$%&]{{ category.user_name }}',1,'',0,'','','',[])" > <strong class="label label-primary" style="font-size: 12px; background-color: #3c763d">{{ _("Create new question") }}</strong></li> {% endif %}
+                        {% if doActions %} <li data-jstree='{"icon": "fa fa-plus"}' onclick="openQuestions('','yes','yes','','','','{{ category.qstgroups_id }}[*$%&]{{ category.user_name }}',1,'',1,'','','',[])" > <strong class="label label-primary" style="font-size: 12px; background-color: #3c763d">{{ _("Create new question") }}</strong></li> {% endif %}
                     </ul>
                 </li>
             {% endfor %}

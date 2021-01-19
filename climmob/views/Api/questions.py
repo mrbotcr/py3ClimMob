@@ -14,6 +14,10 @@ from ...processes import (
     getOptionData,
     updateOption,
     questionExists,
+    categoryExistsById,
+    optionExistsWithName,
+    opcionNAinQuestion,
+    opcionOtherInQuestion,
 )
 
 import json
@@ -29,9 +33,11 @@ class createQuestion_view(apiView):
 
             possibles = [
                 u"question_code",
+                u"question_name",
                 u"question_desc",
                 u"question_dtype",
                 u"question_notes",
+                u"qstgroups_id",
                 u"question_unit",
                 u"question_alwaysinreg",
                 u"question_alwaysinasse",
@@ -40,9 +46,11 @@ class createQuestion_view(apiView):
             ]
             obligatory = [
                 u"question_code",
+                u"question_name",
                 u"question_desc",
                 u"question_dtype",
-                u"question_notes",
+                u"qstgroups_id",
+                u"question_requiredvalue",
             ]
             zeroOrTwo = [
                 "question_alwaysinreg",
@@ -126,45 +134,33 @@ class createQuestion_view(apiView):
                         if not questionExists(
                             self.user.login, dataworking["question_code"], self.request
                         ):
-                            add, idorerror = addQuestion(dataworking, self.request)
-                            if not add:
-                                response = Response(status=401, body=idorerror)
-                                return response
-                            else:
+                            categoryExists = categoryExistsById(
+                                self.user.login,
+                                dataworking["qstgroups_id"],
+                                self.request,
+                            )
+                            if categoryExists:
+                                dataworking["qstgroups_user"] = categoryExists[
+                                    "user_name"
+                                ]
 
-                                if (
-                                    str(dataworking["question_dtype"]) == "5"
-                                    or str(dataworking["question_dtype"]) == "6"
-                                    or str(dataworking["question_dtype"]) == "9"
-                                    or str(dataworking["question_dtype"]) == "10"
-                                ):
+                                add, idorerror = addQuestion(dataworking, self.request)
+                                if not add:
+                                    response = Response(status=401, body=idorerror)
+                                    return response
+                                else:
+
                                     if (
                                         str(dataworking["question_dtype"]) == "5"
                                         or str(dataworking["question_dtype"]) == "6"
+                                        or str(dataworking["question_dtype"]) == "9"
+                                        or str(dataworking["question_dtype"]) == "10"
                                     ):
-                                        # response = Response(status=200, body=self._("The question was successfully added. Add new values now."))
-                                        response = Response(
-                                            status=200,
-                                            body=json.dumps(
-                                                getQuestionData(
-                                                    dataworking["user_name"],
-                                                    idorerror,
-                                                    self.request,
-                                                )
-                                            ),
-                                        )
-                                        return response
-                                    else:
-                                        if str(dataworking["question_dtype"]) == "9":
-                                            response = Response(
-                                                status=200,
-                                                body=self._(
-                                                    "The question was successfully added. Configure the ranking of options now."
-                                                ),
-                                            )
-                                            return response
-                                        else:
-                                            # response = Response(status=200,body=self._("The question was successfully added. Configure the performance statement now."))
+                                        if (
+                                            str(dataworking["question_dtype"]) == "5"
+                                            or str(dataworking["question_dtype"]) == "6"
+                                        ):
+                                            # response = Response(status=200, body=self._("The question was successfully added. Add new values now."))
                                             response = Response(
                                                 status=200,
                                                 body=json.dumps(
@@ -176,19 +172,52 @@ class createQuestion_view(apiView):
                                                 ),
                                             )
                                             return response
-                                else:
-                                    # response = Response(status=200, body=self._("The question was successfully added."))
-                                    response = Response(
-                                        status=200,
-                                        body=json.dumps(
-                                            getQuestionData(
-                                                dataworking["user_name"],
-                                                idorerror,
-                                                self.request,
-                                            )
-                                        ),
-                                    )
-                                    return response
+                                        else:
+                                            if (
+                                                str(dataworking["question_dtype"])
+                                                == "9"
+                                            ):
+                                                response = Response(
+                                                    status=200,
+                                                    body=self._(
+                                                        "The question was successfully added. Configure the ranking of options now."
+                                                    ),
+                                                )
+                                                return response
+                                            else:
+                                                # response = Response(status=200,body=self._("The question was successfully added. Configure the performance statement now."))
+                                                response = Response(
+                                                    status=200,
+                                                    body=json.dumps(
+                                                        getQuestionData(
+                                                            dataworking["user_name"],
+                                                            idorerror,
+                                                            self.request,
+                                                        )
+                                                    ),
+                                                )
+                                                return response
+                                    else:
+                                        # response = Response(status=200, body=self._("The question was successfully added."))
+                                        response = Response(
+                                            status=200,
+                                            body=json.dumps(
+                                                getQuestionData(
+                                                    dataworking["user_name"],
+                                                    idorerror,
+                                                    self.request,
+                                                )
+                                            ),
+                                        )
+                                        return response
+                            else:
+                                response = Response(
+                                    status=401,
+                                    body=self._(
+                                        "There is no category with this identifier."
+                                    ),
+                                )
+                                return response
                         else:
                             response = Response(
                                 status=401,
@@ -248,6 +277,7 @@ class updateQuestion_view(apiView):
 
             possibles = [
                 u"question_id",
+                u"question_name",
                 u"question_desc",
                 u"question_dtype",
                 u"question_notes",
@@ -255,7 +285,8 @@ class updateQuestion_view(apiView):
                 u"question_alwaysinreg",
                 u"question_alwaysinasse",
                 u"question_requiredvalue",
-                "user_name",
+                u"qstgroups_id",
+                u"user_name",
             ]
             obligatory = [u"question_id"]
             zeroOrTwo = [
@@ -321,32 +352,52 @@ class updateQuestion_view(apiView):
                                         )
                                         return response
 
-                                if str(dataworking["question_dtype"]) not in [
-                                    "1",
-                                    "2",
-                                    "3",
-                                    "4",
-                                    "5",
-                                    "6",
-                                    "9",
-                                    "10",
-                                    "11",
-                                    "12",
-                                    "13",
-                                    "14",
-                                    "15",
-                                    "16",
-                                    "17",
-                                    "18",
-                                    "19",
-                                ]:
-                                    response = Response(
-                                        status=401,
-                                        body=self._(
-                                            "Check the ID of the question type."
-                                        ),
+                                if "qstgroups_id" in dataworking.keys():
+                                    categoryExists = categoryExistsById(
+                                        self.user.login,
+                                        dataworking["qstgroups_id"],
+                                        self.request,
                                     )
-                                    return response
+                                    if categoryExists:
+                                        dataworking["qstgroups_user"] = categoryExists[
+                                            "user_name"
+                                        ]
+                                    else:
+                                        response = Response(
+                                            status=401,
+                                            body=self._(
+                                                "There is a problem with the question category you want to assign."
+                                            ),
+                                        )
+                                        return response
+
+                                if "question_dtype" in dataworking.keys():
+                                    if str(dataworking["question_dtype"]) not in [
+                                        "1",
+                                        "2",
+                                        "3",
+                                        "4",
+                                        "5",
+                                        "6",
+                                        "9",
+                                        "10",
+                                        "11",
+                                        "12",
+                                        "13",
+                                        "14",
+                                        "15",
+                                        "16",
+                                        "17",
+                                        "18",
+                                        "19",
+                                    ]:
+                                        response = Response(
+                                            status=401,
+                                            body=self._(
+                                                "Check the ID of the question type."
+                                            ),
+                                        )
+                                        return response
 
                                 updated, idorerror = updateQuestion(
                                     dataworking, self.request
@@ -566,6 +617,47 @@ class addQuestionValue_viewApi(apiView):
                                     data["question_dtype"] == 5
                                     or data["question_dtype"] == 6
                                 ):
+                                    if (
+                                        "value_isother" in dataworking.keys()
+                                        and "value_isna" in dataworking.keys()
+                                    ):
+                                        if (
+                                            int(dataworking["value_isother"]) == 1
+                                            and int(dataworking["value_isna"]) == 1
+                                        ):
+                                            response = Response(
+                                                status=401,
+                                                body=self._(
+                                                    "An option cannot be 'Other' and 'Not applicable'."
+                                                ),
+                                            )
+                                            return response
+
+                                    if opcionOtherInQuestion(
+                                        dataworking["question_id"], self.request
+                                    ):
+                                        if "value_isother" in dataworking.keys():
+                                            if int(dataworking["value_isother"]) == 1:
+                                                response = Response(
+                                                    status=401,
+                                                    body=self._(
+                                                        "There is already an 'Other' option."
+                                                    ),
+                                                )
+                                                return response
+
+                                    if opcionNAinQuestion(
+                                        dataworking["question_id"], self.request
+                                    ):
+                                        if "value_isna" in dataworking.keys():
+                                            if int(dataworking["value_isna"]) == 1:
+                                                response = Response(
+                                                    status=401,
+                                                    body=self._(
+                                                        "There is already an 'Not applicable' option."
+                                                    ),
+                                                )
+                                                return response
 
                                     if "value_isother" not in dataworking.keys():
                                         dataworking["value_isother"] = 0
@@ -578,24 +670,41 @@ class addQuestionValue_viewApi(apiView):
                                         dataworking["value_code"],
                                         self.request,
                                     ):
-                                        addded, resp = addOptionToQuestion(
-                                            dataworking, self.request
-                                        )
-                                        if addded:
+                                        if not optionExistsWithName(
+                                            dataworking["question_id"],
+                                            dataworking["value_desc"],
+                                            self.request,
+                                        ):
+                                            addded, resp = addOptionToQuestion(
+                                                dataworking, self.request
+                                            )
+                                            if addded:
+                                                response = Response(
+                                                    status=200,
+                                                    body=self._(
+                                                        "The option was successfully added."
+                                                    ),
+                                                )
+                                                return response
+                                            else:
+                                                response = Response(
+                                                    status=401, body=resp
+                                                )
+                                                return response
+                                        else:
                                             response = Response(
-                                                status=200,
+                                                status=401,
                                                 body=self._(
-                                                    "The option was successfully added."
+                                                    "There is already an option with that description."
                                                 ),
                                             )
-                                            return response
-                                        else:
-                                            response = Response(status=401, body=resp)
                                             return response
                                     else:
                                         response = Response(
                                             status=401,
-                                            body=self._("Option already exists"),
+                                            body=self._(
+                                                "There is already an option with that code."
+                                            ),
                                         )
                                         return response
                                 else:
@@ -659,11 +768,9 @@ class updateQuestionValue_view(apiView):
                 u"question_id",
                 u"value_code",
                 u"value_desc",
-                u"value_isother",
-                u"value_isna",
                 "user_name",
             ]
-            obligatory = [u"question_id", u"value_code", "user_name"]
+            obligatory = [u"question_id", u"value_code", u"value_desc", "user_name"]
 
             dataworking = json.loads(self.body)
             dataworking["user_name"] = self.user.login
@@ -947,7 +1054,7 @@ class updateQuestionCharacteristics_view(apiView):
                                         response = Response(
                                             status=200,
                                             body=self._(
-                                                "You successfully updated the characteristic."
+                                                "You successfully updated the ranking of options."
                                             ),
                                         )
                                         return response
@@ -958,7 +1065,7 @@ class updateQuestionCharacteristics_view(apiView):
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "This is not a question of type characteristic."
+                                            "This is not a question of type ranking of options."
                                         ),
                                     )
                                     return response
@@ -1055,7 +1162,7 @@ class updateQuestionPerformance_view(apiView):
                                             response = Response(
                                                 status=200,
                                                 body=self._(
-                                                    "You successfully updated the performance statement."
+                                                    "You successfully updated the comparison with check."
                                                 ),
                                             )
                                             return response
@@ -1066,7 +1173,7 @@ class updateQuestionPerformance_view(apiView):
                                         response = Response(
                                             status=401,
                                             body=self._(
-                                                "The performance statement must have the wildcard {{option}}"
+                                                "The comparison with check must have the wildcard {{option}}"
                                             ),
                                         )
                                         return response
@@ -1074,7 +1181,7 @@ class updateQuestionPerformance_view(apiView):
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "This is not a question of type performance."
+                                            "This is not a question of type comparison with check."
                                         ),
                                     )
                                     return response

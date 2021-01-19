@@ -21,6 +21,7 @@ from ...processes import (
     getRegistryGroup,
     getRegistryQuestionsApi,
     saveRegistryOrder,
+    getProjectData,
 )
 
 from pyramid.response import Response
@@ -124,6 +125,9 @@ class readPossibleQuestionsForRegistryGroup_view(apiView):
                     self.user.login, dataworking["project_cod"], self.request
                 )
                 if exitsproject:
+                    pro = getProjectData(
+                        self.user.login, dataworking["project_cod"], self.request
+                    )
                     response = Response(
                         status=200,
                         body=json.dumps(
@@ -132,6 +136,7 @@ class readPossibleQuestionsForRegistryGroup_view(apiView):
                                     self.user.login,
                                     dataworking["project_cod"],
                                     self.request,
+                                    pro["project_registration_and_analysis"],
                                 ),
                                 "QuestionsOptions": QuestionsOptions(
                                     self.user.login, self.request
@@ -432,7 +437,7 @@ class addQuestionToGroupRegistry_view(apiView):
                                             response = Response(
                                                 status=200,
                                                 body=self._(
-                                                    "The question was added to the record"
+                                                    "The question was added to the project"
                                                 ),
                                             )
                                             return response

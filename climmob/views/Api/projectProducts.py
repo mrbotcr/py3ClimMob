@@ -123,7 +123,7 @@ class downloadApi_view(apiView):
                                 response = FileResponse(
                                     path + "/outputs/" + filename,
                                     request=self.request,
-                                    content_type=contentType.encode("utf-8"),
+                                    content_type=contentType,
                                 )
                                 response.content_disposition = (
                                     'attachment; filename="' + filename + '"'

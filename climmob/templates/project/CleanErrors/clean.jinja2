@@ -56,17 +56,19 @@
                                 <td><h3 style="margin: 0px;">{{ log.enum_name }}</h3></td>
                             </tr>
                             <tr>
-                                <td><p style="margin: 0px;">{{ _("Error") }}: {{ log.detail }}</p></td>
+                                <td><p style="margin: 0px;">{% if log.detail %}{{ _("Error") }}: {{ log.detail }} {% else %} {{ _("Error: The .log file don't exits") }}{% endif %}</p></td>
                             </tr>
 {#                            <tr>#}
 {#                                <td class="text-center"><span >{{ log.log_dtime }}</span></td>#}
 {#                            </tr>#}
                             <tr>
                                 <td>
-                                    {% if formId == "registry" %}
-                                        <a class="btn btn-primary btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('CleanErrorLogsDetails',projectid=log.project_cod,formid='registry',logid=log.log_id) }}">{{ _("Show conflict") }}</a>
-                                    {% else %}
-                                        <a class="btn btn-primary btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('CleanErrorLogsDetailsAssessment',projectid=log.project_cod,formid='assessment',codeid=codeid,logid=log.log_id) }}">{{ _("Show conflict") }}</a>
+                                    {% if log.detail %}
+                                        {% if formId == "registry" %}
+                                            <a class="btn btn-primary btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('CleanErrorLogsDetails',projectid=log.project_cod,formid='registry',logid=log.log_id) }}">{{ _("Show conflict") }}</a>
+                                        {% else %}
+                                            <a class="btn btn-primary btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('CleanErrorLogsDetailsAssessment',projectid=log.project_cod,formid='assessment',codeid=codeid,logid=log.log_id) }}">{{ _("Show conflict") }}</a>
+                                        {% endif %}
                                     {% endif %}
                                 </td>
                             </tr>
@@ -86,7 +88,7 @@
                         <h5>{{ _("Information collected") }}</h5>
                     </div>
                     <div class="ibox-content" >
-                        <form class="form-horizontal" role="form" method="post" action="{{ request.path }}">
+                        <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}">
                             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
 
                             <div style="text-align: center">
@@ -149,9 +151,11 @@
 
                                                             {% for model in Data["colModel"] %}
                                                                 {% if model["name"] == column[0] %}
-                                                                    {% for selected in New[column[0]].split(" ")%}
-                                                                        {{ model["editoptions"]["value"][selected] }}<br>
-                                                                    {% endfor %}
+                                                                    {% if column[0] in New %}
+                                                                        {% for selected in New[column[0]].split(" ")%}
+                                                                            {{ model["editoptions"]["value"][selected] }}<br>
+                                                                        {% endfor %}
+                                                                    {% endif %}
                                                                 {% endif %}
                                                             {% endfor %}
 
@@ -212,7 +216,6 @@
                                                                     {% endif %}
                                                                 {% endfor %}
                                                             {% else %}
-                                                                {{ Pos }}
                                                                 <select id="newqst2" name="newqst2" class="form-control" required="">
                                                                     {% for values in PosibleValues %}
                                                                         <option value="{{ values[0] }}" {% if values[1] == New[quest[0]] %}selected="selected"{% endif %} >{{ values[1] }}</option>
@@ -221,12 +224,13 @@
                                                             {% endif %}
                                                         {% else %}
                                                             {%if quest[2] == "select"%}
-
                                                                 {% for model in Data["colModel"] %}
                                                                     {% if model["name"] == quest[0] %}
-                                                                        {% for selected in New[quest[0]].split(" ")%}
-                                                                            {{ model["editoptions"]["value"][selected] }}<br>
-                                                                        {% endfor %}
+                                                                        {% if quest[0] in New %}
+                                                                            {% for selected in New[quest[0]].split(" ")%}
+                                                                                {{ model["editoptions"]["value"][selected] }}<br>
+                                                                            {% endfor %}
+                                                                        {% endif %}
                                                                     {% endif %}
                                                                 {% endfor %}
 
@@ -259,6 +263,8 @@
             </div>
         {% endif %}
     </div>
+
+    {% snippet 'snippets/loading.jinja2', request=request %}
 
 {% endblock pagecontent%}
 

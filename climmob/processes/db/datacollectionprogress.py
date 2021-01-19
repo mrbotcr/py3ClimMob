@@ -3,7 +3,7 @@ from ..db.enumerator import searchEnumerator
 from ...models import Assessment, Registry, Question, AssDetail
 from climmob.models.repository import sql_execute
 
-__all__ = ["getInformationFromProject", "getInformationForMaps"]
+__all__ = ["getInformationFromProject","getInformationForMaps"]
 
 
 def getInformationFromProject(request, user, projectid):
@@ -17,7 +17,8 @@ def getInformationFromProject(request, user, projectid):
         + ".REG_geninfo "
         + " order by qst162 +0"
     )
-    # mySession = request.dbsession
+    mySession = request.dbsession
+    # result = mySession.execute(sql)
     result = sql_execute(sql)
 
     assessments = (
@@ -33,7 +34,10 @@ def getInformationFromProject(request, user, projectid):
     for res in result:
         individualInformation = {}
         individualInformation["name"] = res[0]
-        individualInformation["date"] = res[1].strftime("%d-%b")
+        if res[1] :
+            individualInformation["date"] = res[1].strftime("%d-%b")
+        else:
+            individualInformation["date"] = "The date is missing"
         individualInformation["package"] = res[2]
         packagesInformation.append(individualInformation)
 
@@ -52,12 +56,19 @@ def getInformationFromProject(request, user, projectid):
             + assessment.ass_cod
             + "_geninfo "
         )
-
+        # mySession = request.dbsession
+        # result = mySession.execute(sql)
         result = sql_execute(sql)
 
         for res in result:
-            assessmentDetails["data"].append(res[0])
-            assessmentDetails["data"].append(res[1].strftime("%d-%b"))
+            infoPacka = {}
+            infoPacka["package"] = res[0]
+            if res[1]:
+                infoPacka["date"] = res[1].strftime("%d-%b")
+            else:
+                infoPacka["date"] = "The date is missing"
+            assessmentDetails["data"].append(infoPacka)
+
 
         assessmentsInformation.append(assessmentDetails)
 
@@ -112,7 +123,10 @@ def getInformationForMaps(request, user, projectid):
             + " order by qst162 +0"
         )
         # mySession = request.dbsession
-        result = sql_execute(sql)
+        try:
+            result = sql_execute(sql)
+        except:
+            result = sql_execute(sql.replace("_submitted_by","'Username is missing'"))
 
         geoInformationDict["fieldAgents"] = createListOfFieldAgents(
             request, user, result, colors
@@ -162,7 +176,10 @@ def getInformationForMaps(request, user, projectid):
                 + "_geninfo "
             )
             # mySession = request.dbsession
-            result = sql_execute(sql)
+            try:
+                result = sql_execute(sql)
+            except:
+                result = sql_execute(sql.replace("_submitted_by", "'Username is missing'"))
 
             geoInformationDict["fieldAgents"] = createListOfFieldAgents(
                 request, user, result, colors
@@ -196,7 +213,7 @@ def createListOfFieldAgents(request, user, result, colors):
             if enumerator:
                 dictOfFieldAgent["Name"] = enumerator["enum_name"]
             else:
-                dictOfFieldAgent["Name"] = "Other"
+                dictOfFieldAgent["Name"] = "Other - "+res[0]
 
             dictOfFieldAgent["Color"] = colors[count]
             dictOfFieldAgent["Points"] = []

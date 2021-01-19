@@ -46,7 +46,7 @@
                             {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, UserTechs=TechnologiesUser, checkbox=True, checked=False %}
                         </tbody>
                     </table>
-                    <form class="form-horizontal" role="form" method="post" action="{{ request.path }}">
+                    <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}">
                         <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                         <input type="text" id="txt_technologies_included" name="txt_technologies_included" style="width: 100%;display:none">
                         <input type="text" id="txt_technologies_excluded" name="txt_technologies_excluded" style="width: 100%; display:none">
@@ -58,7 +58,7 @@
                         </div>
                     </form>
 
-                    <form class="form-horizontal" role="form" method="post" action="{{ request.path }}" style="display:none">
+                    <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}" style="display:none">
                         <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                         <input type="text" class="tech_id" name="tech_id" style="width: 100%;display:none">
                         <div class="row" style="padding-top: 10px; height: 50px">
@@ -103,7 +103,7 @@
                             </div>
                         </div>
 
-                        <form class="form-horizontal" role="form" method="post" action="{{ request.path }}">
+                        <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}">
                             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                             <input type="text" class="tech_id" name="tech_id" style="width: 100%;display:none" value="{{ tech_id }}">
                             <input type="text" id="txt_technologies_alias_included" name="txt_technologies_included" style="width: 100%;display:none">
@@ -133,7 +133,7 @@
                         <p style="font-size: 14px">{{ _("Create an new level just for this project") }}</p>
                         <br>
                         <div class="error-desc">
-                            <form class="form-horizontal" method="post" action="{{ request.path }}">
+                            <form class="form-horizontal formElement" method="post" action="{{ request.path }}">
                                 <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                                 <div class="form-group">
                                     <label class="col-sm-4 control-label">{{ _('Name:') }}</label>
@@ -158,14 +158,6 @@
         $(document).ready(function () {
             $('.footable').footable();
         });
-
-        $( ".classForEyes" ).hover(
-          function() {
-            $( this ).append( $('<i style="color:#000000;" class="fa fa-eye">  </i>') );
-          }, function() {
-            $( this ).find( "i" ).last().remove();
-          }
-        );
 
         function showVarieties(techid)
         {
@@ -193,4 +185,7 @@
 
 
     </script>
+
+    {% snippet 'snippets/loading.jinja2', request=request %}
+
 {% endblock pagecontent %}
