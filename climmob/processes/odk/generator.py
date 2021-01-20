@@ -2,6 +2,7 @@ from ...models import Regsection, Assessment, Asssection, Question, Registry, As
 import xlsxwriter
 import os
 from pyxform import xls2xform
+from pyxform.xls2json import parse_file_to_json
 from subprocess import check_call, CalledProcessError, Popen, PIPE
 import logging
 from datetime import datetime
@@ -102,15 +103,26 @@ def buildDatabase(cnfFile, createFile, insertFile, schema, dropSchema):
 
 
 def createDatabase(xlsxFile, outputDir, schema, keyVar, preFix, dropSchema, request):
-    paths = ["ODKToMySQL", "odktomysql"]
-    ODKToMySQL = os.path.join(request.registry.settings["odktools.path"], *paths)
+    paths = ["JXFormToMysql", "jxformtomysql"]
+    jxform_to_mysql = os.path.join(request.registry.settings["odktools.path"], *paths)
 
-    args = []
-    args.append(ODKToMySQL)
-    args.append("-x " + xlsxFile)
-    args.append("-t geninfo")
-    args.append("-v " + keyVar)
-    args.append("-p " + preFix)
+    filename, file_extension = os.path.splitext(xlsxFile)
+    json_file = filename + ".srv"
+    warnings = []
+    json_dict = parse_file_to_json(xlsxFile, warnings=warnings)
+    # Save the JSON output to a File
+    with open(json_file, "w") as outfile:
+        json_string = json.dumps(json_dict, indent=4, ensure_ascii=False)
+        outfile.write(json_string)
+
+    args = [
+        jxform_to_mysql,
+        "-j " + json_file,
+        "-t geninfo",
+        "-v " + keyVar,
+        "-p " + preFix,
+        "-o m",
+    ]
 
     paths = ["tmp"]
     tempPath = os.path.join(outputDir, *paths)
@@ -226,10 +238,34 @@ class ODKExcelFile(object):
             os.remove(self.xlsxFile)
         except:
             pass
-
+        self.option_list = []
         self.book = xlsxwriter.Workbook(self.xlsxFile)
         self.sheet1 = self.book.add_worksheet("survey")
         self.sheet2 = self.book.add_worksheet("choices")
+
+    def get_options(self, option_name, new_options):
+        options_to_add = []
+        for element in new_options.iterchildren():
+            options_to_add.append({"code": element.get("code"), "label": element.get("label")})
+        duplicated_list = None
+        for a_list in self.option_list:
+            list_same = [True] * len(options_to_add)
+            if a_list["size"] == len(options_to_add) and len(options_to_add) > 0:
+                idx = 0
+                for an_option in a_list["options"]:
+                    for a_new_option in options_to_add:
+                        if an_option["code"].strip().upper() == a_new_option["code"].strip().upper() and \
+                                an_option["label"].strip().upper() == a_new_option["label"].strip().upper():
+                            list_same[idx] = True
+                    idx = idx + 1
+                if all(list_same):
+                    duplicated_list = a_list["name"]
+                    break
+        if duplicated_list is not None:
+            return True, duplicated_list
+        else:
+            self.option_list.append({"name": option_name, "size": len(options_to_add), "options": options_to_add})
+            return False, option_name
 
     def addGroup(
         self, name, label, appearance="field-list", inGroup=None, inRepeat=None
@@ -296,12 +332,20 @@ class ODKExcelFile(object):
                     ):
                         self.sheet1.write(self.surveyRow, 0, element.get("type"))
                     else:
-                        self.sheet1.write(
-                            self.surveyRow,
-                            0,
-                            element.get("type") + " " + element.get("name") + "_opts",
-                        )
-                        self.addOptionToFile(element[0], element.get("name") + "_opts")
+                        duplicated_list, duplicated_name = self.get_options(element.get("name"), element[0])
+                        if not duplicated_list:
+                            self.sheet1.write(
+                                self.surveyRow,
+                                0,
+                                element.get("type") + " " + element.get("name") + "_opts",
+                            )
+                            self.addOptionToFile(element[0], element.get("name") + "_opts")
+                        else:
+                            self.sheet1.write(
+                                self.surveyRow,
+                                0,
+                                element.get("type") + " " + duplicated_name + "_opts",
+                            )
                     self.sheet1.write(self.surveyRow, 1, element.get("name"))
                     self.sheet1.write(self.surveyRow, 2, element.get("label"))
                     self.sheet1.write(self.surveyRow, 3, element.get("hint"))
