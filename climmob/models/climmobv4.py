@@ -642,14 +642,6 @@ class Prjtech(Base):
 
 class Project(Base):
     __tablename__ = "project"
-    __table_args__ = (
-        ForeignKeyConstraint(
-            ["project_crop_cod", "project_lang_code", "project_alias_cod"],
-            [u"crop_alias.crop_cod", u"crop_alias.lang_code", u"crop_alias.alias_cod"],
-            ondelete=u"CASCADE",
-        ),
-        {"mysql_engine": "InnoDB", "mysql_charset": "utf8"},
-    )
 
     user_name = Column(
         ForeignKey(u"user.user_name"), primary_key=True, nullable=False, index=True
@@ -674,15 +666,11 @@ class Project(Base):
     project_creationdate = Column(DateTime, nullable=False)
     project_localvariety = Column(Integer, server_default=text("'0'"))
     project_cnty = Column(ForeignKey(u"country.cnty_cod"), nullable=True, index=True)
-    project_crop_cod = Column(String(12), nullable=True)
-    project_lang_code = Column(String(5), nullable=True)
-    project_alias_cod = Column(String(12), nullable=True)
     project_registration_and_analysis = Column(Integer, server_default=text("'0'"))
     extra = Column(Text)
 
     user = relationship(u"User")
     country = relationship(u"Country")
-    crop = relationship(u"CropAlias")
 
 
 class Qstoption(Base):
@@ -975,94 +963,3 @@ class Chat(Base):
     chat_date = Column(DateTime)
 
     project = relationship(u"User")
-
-
-class CropCategories(Base):
-    __tablename__ = "crop_categories"
-
-    category_cod = Column(String(12), primary_key=True)
-    category_name = Column(String(120))
-
-
-class Crops(Base):
-    __tablename__ = "crops"
-
-    crop_cod = Column(String(12), primary_key=True)
-    crop_scientific_name = Column(String(120), nullable=False)
-
-
-class CategoriesByCrop(Base):
-    __tablename__ = "categoriesbycrop"
-    crop_cod = Column(
-        ForeignKey(u"crops.crop_cod", ondelete=u"CASCADE"),
-        primary_key=True,
-        nullable=False,
-        index=True,
-    )
-    category_cod = Column(
-        ForeignKey(u"crop_categories.category_cod", ondelete=u"CASCADE"),
-        primary_key=True,
-        nullable=False,
-        index=True,
-    )
-
-    crop = relationship(u"Crops")
-    categories = relationship("CropCategories")
-
-
-class I18nCropCategories(Base):
-    __tablename__ = "i18n_crop_categories"
-
-    category_cod = Column(
-        ForeignKey(u"crop_categories.category_cod", ondelete=u"CASCADE"),
-        primary_key=True,
-        nullable=False,
-        index=True,
-    )
-    lang_code = Column(
-        ForeignKey(u"i18n.lang_code"), primary_key=True, nullable=False, index=True
-    )
-    category_name = Column(String(120))
-
-    i18n = relationship(u"I18n")
-    categories = relationship("CropCategories")
-
-
-class CropAlias(Base):
-    __tablename__ = "crop_alias"
-
-    crop_cod = Column(
-        ForeignKey(u"crops.crop_cod", ondelete=u"CASCADE"),
-        primary_key=True,
-        nullable=False,
-        index=True,
-    )
-    lang_code = Column(
-        ForeignKey(u"i18n.lang_code"), primary_key=True, nullable=False, index=True
-    )
-    alias_cod = Column(String(12), primary_key=True)
-    alias_name = Column(String(120), nullable=True)
-
-    i18n = relationship(u"I18n")
-    crop = relationship(u"Crops")
-
-
-class I18nQuestionGroup(Base):
-    __tablename__ = "i18n_qstgroups"
-    __table_args__ = (
-        ForeignKeyConstraint(
-            ["user_name", "qstgroups_id"],
-            [u"qstgroups.user_name", u"qstgroups.qstgroups_id"],
-            ondelete=u"CASCADE",
-        ),
-    )
-
-    user_name = Column(String(80), primary_key=True, nullable=False)
-    qstgroups_id = Column(String(80), primary_key=True, nullable=False)
-    lang_code = Column(
-        ForeignKey(u"i18n.lang_code"), primary_key=True, nullable=False, index=True
-    )
-    qstgroups_name = Column(String(120))
-
-    i18n = relationship(u"I18n")
-    tech = relationship(u"Question_group")

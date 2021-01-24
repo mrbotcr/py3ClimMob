@@ -11,7 +11,6 @@ from ..processes import (
     changeTheStateOfCreateComb,
     getCountryList,
     addToLog,
-    getListOfCrops,
 )
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 import json
@@ -41,7 +40,6 @@ class newProject_view(privateView):
         dataworking["project_regstatus"] = 0
         dataworking["project_localvariety"] = "on"
         dataworking["project_cnty"] = None
-        dataworking["project_crop"] = None
         dataworking["project_registration_and_analysis"] = 0
 
         if self.request.method == "POST":
@@ -56,11 +54,6 @@ class newProject_view(privateView):
                 dataworking["project_registration_and_analysis"] = int(
                     dataworking["project_registration_and_analysis"]
                 )
-
-                splitForCrop = dataworking["project_crop"].split("-")
-                dataworking["project_crop_cod"] = splitForCrop[0]
-                dataworking["project_lang_code"] = splitForCrop[1]
-                dataworking["project_alias_cod"] = splitForCrop[2]
 
                 dataworking["project_localvariety"] = 1
 
@@ -119,7 +112,6 @@ class newProject_view(privateView):
             "dataworking": dataworking,
             "newproject": newproject,
             "countries": getCountryList(self.request),
-            "crops": getListOfCrops(self.request),
             "error_summary": error_summary,
         }
 
@@ -152,11 +144,6 @@ class modifyProject_view(privateView):
                 data["project_registration_and_analysis"] = int(
                     data["project_registration_and_analysis"]
                 )
-
-                splitForCrop = data["project_crop"].split("-")
-                data["project_crop_cod"] = splitForCrop[0]
-                data["project_lang_code"] = splitForCrop[1]
-                data["project_alias_cod"] = splitForCrop[2]
 
                 data["project_localvariety"] = 1
 
@@ -193,7 +180,6 @@ class modifyProject_view(privateView):
             "data": data,
             "newproject": newproject,
             "countries": getCountryList(self.request),
-            "crops": getListOfCrops(self.request),
             "error_summary": error_summary,
         }
 

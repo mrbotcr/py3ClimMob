@@ -454,6 +454,7 @@ def getRegisteredFarmers(user, project, request):
         print(sql)
         print("*****************44")
         try:
+            # farmers = request.repsession.execute(sql).fetchall()
             farmers = sql_fetch_all(sql)
             for farmer in farmers:
                 res.append(
@@ -610,6 +611,7 @@ def getProjectProgress(user, project, request):
         result["project_numobs"] = totSubmissions
         sql = "SELECT COUNT(*) as total FROM " + user + "_" + project + ".REG_geninfo"
         try:
+            # res = request.repsession.execute(sql).fetchone()
             res = sql_fetch_one(sql)
             submissions = res["total"]
         except:
@@ -638,7 +640,6 @@ def getProjectProgress(user, project, request):
         request.dbsession.query(Assessment)
         .filter(Assessment.user_name == user)
         .filter(Assessment.project_cod == project)
-        .order_by(Assessment.ass_days)
         .all()
     )
     for assessment in assessments:
@@ -652,6 +653,7 @@ def getProjectProgress(user, project, request):
             + "_geninfo"
         )
         try:
+            # res = request.repsession.execute(sql).fetchone()
             res = sql_fetch_one(sql)
             totSubmissions = res["total"]
         except:
@@ -662,6 +664,7 @@ def getProjectProgress(user, project, request):
                 "SELECT COUNT(*) as total FROM " + user + "_" + project + ".REG_geninfo"
             )
             try:
+                # res = request.repsession.execute(sql).fetchone()
                 res = sql_fetch_one(sql)
                 submissions = res["total"]
             except:
@@ -697,6 +700,7 @@ def getProjectProgress(user, project, request):
                 "SELECT COUNT(*) as total FROM " + user + "_" + project + ".REG_geninfo"
             )
             try:
+                # res = request.repsession.execute(sql).fetchone()
                 res = sql_fetch_one(sql)
                 submissions = res["total"]
             except:

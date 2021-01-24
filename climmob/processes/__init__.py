@@ -28,4 +28,3 @@ from .db.registry_jsonlog import *
 from .db.assessment_jsonlog import *
 from .db.chat import *
 from .db.datacollectionprogress import *
-from .db.crops import *
