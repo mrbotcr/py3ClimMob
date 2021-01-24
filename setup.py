@@ -181,7 +181,6 @@ setup(
         "console_scripts": [
             "configure_mysql = climmob.scripts.configuremysql:main",
             "configure_alembic = climmob.scripts.configurealembic:main",
-            "disable_ssl = climmob.scripts.disablessl:main",
         ],
     },
 )
