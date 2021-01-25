@@ -34,17 +34,18 @@
                 <div class="ibox-title">
                     <h5>{{ _("Technologies available") }}</h5>
                     <div class="ibox-tools">
-                        <a onclick="showHelp()" class="btn btn-xs btn-primary pull-right" style="margin-right: 20px">{{ _("Show help") }}</a>
+{#                        <a onclick="showHelp()" class="btn btn-xs btn-primary pull-right" style="margin-right: 20px">{{ _("Show help") }}</a>#}
                     </div>
                 </div>
                 <div class="ibox-content">
                     <input type="text" class="form-control form-control-sm m-b-xs" id="filter" placeholder="{{ _("Search technology") }}">
                     <div class="activity-stream">
-                        <table class="footable table table-stripped" data-page-size="50000" data-filter=#filter>
+                        <table class="footable table table-stripped tableHover" data-page-size="50000" data-filter=#filter>
                             <thead>
                                 <tr>
-                                    <th style="text-align: center">{{ _("Technology")}}</th>
+                                    <th >{{ _("Technology")}}</th>
                                     <th style="text-align: center" data-type="numeric">{{  _("Number of options") }}</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -145,17 +146,29 @@
     </div>
 
     <style>
-        .technologyActive{
-            background-color: #ccc;
-            border-radius: 0.5em;
+
+        .tableHover tr:hover
+        {
+            background-color: #23c6c8;
+            color: black;
+        }
+
+        .tableHover2
+        {
+            background-color: #23c6c8;
+            color: black;
         }
     </style>
 
     <script>
 
         $(document).on('ifChecked', '.i-checkTech', function(event) {
-                id = $(this).attr("id")
-                $("#tech"+id.replace("radio","")).click()
+            id = $(this).attr("id")
+            $("#tech"+id.replace("radio","")).click()
+        });
+
+        $('.footable').on('click', 'tbody tr', function(event) {
+            $(this).addClass('tableHover2').siblings().removeClass('tableHover2');
         });
 
         $(document).ready(function () {
@@ -225,6 +238,7 @@
             $('.i-checkTech').iCheck('uncheck');
             $("#btn_cancel_technology_options").click()
             $("#div_create_technology").css('display','none')
+            $('.footable tbody tr').siblings().removeClass('tableHover2');
         });
 
         $("#btn_cancel_technology_options").click(function(){
@@ -234,7 +248,7 @@
         });
 
         function showVarietiesInTechnology(tech, closeError='yes') {
-            console.log("entra")
+            $("#tech"+tech.tech_id).addClass('tableHover2');
             if (!$("#radio"+tech.tech_id).prop('checked')) {
                 $("#radio"+tech.tech_id).iCheck('check');
             }
@@ -266,7 +280,7 @@
                     allHTML +="<div class='stream' style='padding:4px 0' >"
                     allHTML +="<div class='stream-badge'>"
                     /*allHTML +="<i class='fa fa-thumb-tack' style='color:#000000'></i>"*/
-                    allHTML +="<i style='border-color:#000000; padding: initial;'><input type='radio' class='i-checkOption i-checks-Black1' disabled='' name='technologyoptions' id='radioOption"+tech.tech_alias[i].alias_id+"'></i>"
+                    //allHTML +="<i style='border-color:#000000; padding: initial;'><input type='radio' class='i-checkOption i-checks-Black1' disabled='' name='technologyoptions' id='radioOption"+tech.tech_alias[i].alias_id+"'></i>"
                 }
                 allHTML +="</div>"
                 allHTML +="<div class='stream-panel' style='margin-top:4px'>"

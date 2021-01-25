@@ -32,18 +32,19 @@
                 </div>
                 <div class="ibox-content" >
                     <input type="text" class="form-control form-control-sm m-b-xs" id="filter" placeholder="{{ _("Search technology") }}">
-                    <table class="footable table table-stripped" data-page-size="50000" data-filter=#filter>
+                    <table class="footable  table table-stripped tableHover" data-page-size="50000" data-filter=#filter>
                         <thead>
                             <tr>
-                                <th style="text-align: center">{{ _("Technology")}}</th>
-                                <th style="text-align: center" data-type="numeric">{{  _("Number of options in the library") }}</th>
-                                <th style="text-align: center" data-type="numeric"> {{ _("Number of options Included in the project") }}</th>
+                                <th >{{ _("Technology")}}</th>
+                                <th style="text-align: center" data-type="numeric">{{  _("Available") }}</th>
+                                <th style="text-align: center" data-type="numeric"> {{ _("Selected") }}</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, UserTechs=TechnologiesInProject, checkbox=True, checked=True %}
+                            {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, UserTechs=TechnologiesInProject, checkbox=True, checked=True, color="#000000",showBold=True %}
 
-                            {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, UserTechs=TechnologiesUser, checkbox=True, checked=False %}
+                            {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, UserTechs=TechnologiesUser, checkbox=True, checked=False, color="#000000" %}
                         </tbody>
                     </table>
                     <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}">
@@ -52,7 +53,7 @@
                         <input type="text" id="txt_technologies_excluded" name="txt_technologies_excluded" style="width: 100%; display:none">
                         <div class="row" style="padding-top: 10px; height: 50px">
                             <div class="col-md-12">
-                                <button class="btn btn-primary pull-right clm-actions" name="btn_save_technologies" type="submit" id="btn_save_technologies"><i class="fa fa-check"></i>&nbsp;{{ _("Save changes") }}</button>
+{#                                <button class="btn btn-primary pull-right clm-actions" name="btn_save_technologies" type="submit" id="btn_save_technologies"><i class="fa fa-check"></i>&nbsp;{{ _("Save changes") }}</button>#}
 
                             </div>
                         </div>
@@ -154,9 +155,33 @@
 
     </div>
 
+    <style>
+
+        .tableHover tr:hover
+        {
+            background-color: #23c6c8;
+            color: black;
+        }
+
+        .tableHover2
+        {
+            background-color: #23c6c8;
+            color: black;
+        }
+    </style>
+
     <script>
         $(document).ready(function () {
             $('.footable').footable();
+            if ("{{ tech_id }}" !="")
+            {
+                $("#tech{{ tech_id }}").addClass("tableHover2");
+            }
+        });
+
+
+        $('.tableHover').on('click', 'tbody tr', function(event) {
+            $(this).addClass('tableHover2').siblings().removeClass('tableHover2');
         });
 
         function showVarieties(techid)
@@ -181,6 +206,7 @@
             $("#create_new_alias").css("display",'none')
             $(".tech_id").val("")
             $("#txt_add_alias").val("")
+            $('.tableHover tbody tr').siblings().removeClass('tableHover2');
         });
 
 

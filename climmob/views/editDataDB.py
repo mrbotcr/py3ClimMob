@@ -74,6 +74,13 @@ def getNamesEditByColums(
                     "surveyid",
                     "originid",
                     "",
+                    "_xform_id_string",
+                    "_geopoint",
+                    "_longitude",
+                    "_latitude",
+                    "_elevation",
+                    "_precision",
+                    "instancename"
                 ]:  # campos del formulario que no tienen que aparecer
                     # print x.attrib["name"]
                     row.append(x.attrib["name"])
@@ -85,6 +92,14 @@ def getNamesEditByColums(
                         )
                         row.append(rtable)
                         row.append(rfield)
+                    elif "select one" in x.attrib["odktype"]:#.split(" ")[0]:
+                        row.append("select1")
+                        if "rtable" in x.attrib.keys():
+                            row.append(x.attrib["rtable"])
+                            row.append(x.attrib["rfield"])
+                        else:
+                            row.append("None")
+                            row.append(x.attrib["name"])
                     elif "select_one" in x.attrib["odktype"].split(" ")[0]:
                         row.append("select1")
                         if "rtable" in x.attrib.keys():

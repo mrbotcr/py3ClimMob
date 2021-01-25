@@ -1,11 +1,11 @@
 
 <div class="form-group">
-    <label class="col-sm-4 control-label">{{ _("When comparing three") }}</label>
+    <label class="col-sm-4 control-label">{{ _("Question asked") }}</label>
     <div class="col-sm-8">
         <input type="text" class="form-control inputForQuestion inputForQuestionChar" required oninvalid="this.setCustomValidity('{{ _("Write the question.") }}')" onchange="this.setCustomValidity('')" name="question_posstm" id="question_posstm" placeholder=" " {% if editable != True %}readonly{%endif%}>
-        <span class="help-block m-b-none text-left">{{ _("e.g., Which variety gave you") }} <b>{{ _("more") }}</b> {{ _("yield") }}</span>
+        <span class="help-block m-b-none text-left">{{ _("Example") }}: <em>{{ _("Which variety gave you") }} <b>{{ _("more") }}</b> {{ _("yield") }}?</em></span>
         <br>
         <input type="text" class="form-control inputForQuestion inputForQuestionChar" required oninvalid="this.setCustomValidity('{{ _("Write the question.") }}')" onchange="this.setCustomValidity('')" name="question_negstm" id="question_negstm" placeholder=" " {% if editable != True %}readonly{%endif%}>
-        <span class="help-block m-b-none text-left">{{ _("e.g., Which variety gave you") }} <b>{{ _("less") }}</b> {{ _("yield") }}</span>
+        <span class="help-block m-b-none text-left">{{ _("Example") }}: <em>{{ _("Which variety gave you") }} <b>{{ _("less") }}</b> {{ _("yield") }} ?</em></span>
     </div>
 </div>

@@ -7,7 +7,7 @@
         <label class="col-sm-4 control-label">{{ _("Variable code") }}</label>
         <div class="col-sm-8">
             <input style="display: none"  type="text" id="question_id" class="form-control" name="question_id" >
-            <input style="max-width: 170px" maxlength="16" type="text" id="question_code" class="form-control inputForQuestion" name="question_code" required="" oninvalid="this.setCustomValidity('{{ _("Write the variable code.") }}')" onchange="this.setCustomValidity('')">
+            <input style="max-width: 215px" maxlength="25" type="text" id="question_code" class="form-control inputForQuestion" name="question_code" required="" oninvalid="this.setCustomValidity('{{ _("Write the variable code.") }}')" onchange="this.setCustomValidity('')">
             <span class="help-block m-b-none text-left">{{ _("Column label for the database (without spaces or special characters), for example 'grainyield'") }}</span>
         </div>
     </div>
@@ -101,11 +101,7 @@
         </div>
         <div class="panel-body">
             <div >
-                <p style="margin-bottom: 0.11in; line-height: 108%">{{ _("A ranking of options is a type of question that is used to compare two of more technologies based on a criterion. For example, if the criterion is &ldquo;yield&rdquo; for varieties of bean you could do it in the following way:") }}</p>
-
-                <p style="margin-left: 0.5in; margin-bottom: 0in; line-height: 100%"><font color="#2f5496">{{ _("'Which variety yielded better?'") }} </font>{{ ("and") }}
-                </p>
-                <p style="margin-left: 0.5in; margin-bottom: 0in; line-height: 100%"><font color="#2f5496">{{ _("'Which variety yielded worse?'") }}</font></p>
+                <p style="margin-bottom: 0.11in; line-height: 108%">{{ _("A ranking of options is a type of question that is used to compare two of more technologies based on a criterion. In tricot, we compare three options, so we can know the ranking of the options by asking two questions only.") }}</p>
             </div>
         </div>
     </div>

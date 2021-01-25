@@ -9,6 +9,7 @@
     {% cssresource request,'coreresources','tags' %}
     {% cssresource request,'coreresources','chosen' %}
     {% cssresource request,'coreresources','icheck' %}
+    {% cssresource request,'coreresources','sweet' %}
 {% endblock css %}
 
 {% block topScripts %}
@@ -17,6 +18,8 @@
     {% jsresource request,'coreresources','bootstrapmaxlength' %}
     {% jsresource request,'coreresources','chosen' %}
     {% jsresource request,'coreresources','icheck' %}
+    {% jsresource request,'coreresources','sweet' %}
+    {% jsresource request,'coreresources','delete' %}
 {% endblock topScripts %}
 
 {% block pageheading %}
@@ -38,7 +41,7 @@
             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
             {% block newprjform %}
                 {% snippet 'snippets/project/project_form.jinja2', dataworking=data, edit=True, countries=countries %}
-
+                <a class="btn btn-danger pull-left" onclick="showDelete('{{ request.route_url('deleteproject',projectid=data.project_cod) }}','{{ _("Do you really want to remove this project?") }}','{{ request.session.get_csrf_token() }}','{{ request.route_url('dashboard') }}')">{{ _("Delete project") }}</a>
                 <button type="submit" name="btn_addNewProject" id="btn_addNewProject" class="btn btn-warning pull-right">{{ _("Update project") }}</button>
 
             {% endblock newprjform %}

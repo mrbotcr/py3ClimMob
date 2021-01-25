@@ -250,7 +250,7 @@ class ODKExcelFile(object):
             options_to_add.append({"code": element.get("code"), "label": element.get("label")})
         duplicated_list = None
         for a_list in self.option_list:
-            list_same = [True] * len(options_to_add)
+            list_same = [False] * len(options_to_add)
             if a_list["size"] == len(options_to_add) and len(options_to_add) > 0:
                 idx = 0
                 for an_option in a_list["options"]:
