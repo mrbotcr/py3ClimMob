@@ -204,6 +204,7 @@ def createDatabase(xlsxFile, outputDir, schema, keyVar, preFix, dropSchema, requ
                 log.error(msg)
 
     print("****createDatabase**Calling ODKToMySQL******")
+    print(" ".join(args))
     try:
         check_call(args)
     except CalledProcessError as e:
