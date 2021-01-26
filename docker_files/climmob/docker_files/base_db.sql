@@ -1,13 +1,13 @@
--- MySQL dump 10.13  Distrib 8.0.21, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.22, for Linux (x86_64)
 --
--- Host: localhost    Database: climmobv4
+-- Host: localhost    Database: baseclimmob
 -- ------------------------------------------------------
--- Server version	8.0.21-0ubuntu0.20.04.4
+-- Server version	8.0.22-0ubuntu0.20.04.3
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!50503 SET NAMES utf8mb4 */;
+/*!50503 SET NAMES utf8 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -944,7 +944,7 @@ CREATE TABLE `qstgroups` (
 
 LOCK TABLES `qstgroups` WRITE;
 /*!40000 ALTER TABLE `qstgroups` DISABLE KEYS */;
-INSERT INTO `qstgroups` VALUES ('bioversity','4581ab3c093d','Uncategorized');
+INSERT INTO `qstgroups` VALUES ('bioversity','4581ab3c093d','Uncategorized'),('bioversity','c3847f8938b7','ClimMob questions'),('bioversity','d527fcee7b6b','Participant information');
 /*!40000 ALTER TABLE `qstgroups` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1059,7 +1059,7 @@ CREATE TABLE `question` (
 
 LOCK TABLES `question` WRITE;
 /*!40000 ALTER TABLE `question` DISABLE KEYS */;
-INSERT INTO `question` VALUES (162,'Package code','Dar un paquete al agricultor','',7,NULL,1,0,0,'bioversity',NULL,NULL,NULL,NULL,1,NULL,0,'QST162',1,0,NULL,0,0,0,0,0,0,0,'4581ab3c093d','bioversity',1,'Package code'),(163,'Select the farmer','Para seleccionar a un agricultor antes registrado.','Seleccione un agricultor',8,NULL,0,1,0,'bioversity',NULL,NULL,NULL,NULL,1,NULL,1,'QST163',0,0,NULL,0,0,0,0,0,0,0,'4581ab3c093d','bioversity',1,'Select the farmer'),(180,'Who controls the income','Who controls the income','',6,NULL,0,0,0,'bioversity',NULL,NULL,NULL,NULL,1,NULL,0,'whocontrolstheincome',0,0,NULL,0,0,0,0,0,0,0,'4581ab3c093d','bioversity',1,'Who controls the income'),(199,'Farmer name','The name of the farmer','',1,NULL,1,0,0,'bioversity',NULL,NULL,NULL,NULL,1,NULL,0,'farmername',0,0,NULL,0,1,1,0,0,0,0,'4581ab3c093d','bioversity',1,'Farmer name'),(204,'Overall Characteristic','This is the overall Characteristic','',9,NULL,0,0,0,'bioversity','Overall, which option performed better?','Overall, which option performed worst?','Overall, which option performed better?','Overall, which option is at position {{pos}}?',1,NULL,0,'overallperf',0,1,NULL,0,0,0,0,0,0,0,'4581ab3c093d','bioversity',1,'Overall Characteristic'),(205,'Overall performace','Overall performance against local','',10,NULL,0,0,0,'bioversity',NULL,NULL,NULL,NULL,1,NULL,0,'overallchar',0,0,'Overall, whichone is best {{option}} or what you usually use?',0,0,0,1,0,0,0,'4581ab3c093d','bioversity',1,'Overall performace'),(206,'Farm Geolocation','The location of the farm. This question should appear in the first assessment','',4,NULL,0,0,0,'bioversity',NULL,NULL,NULL,NULL,1,NULL,0,'farmgoelocation',0,0,NULL,0,0,0,0,0,0,0,'4581ab3c093d','bioversity',1,'Farm Geolocation'),(233,'Name of the Father or Name of the Husband/Wife','know the name: Name of the Father or Name of the Husband/Wife','',27,NULL,0,0,0,'bioversity',NULL,NULL,NULL,NULL,0,NULL,0,'familiyofthefarmer',0,0,NULL,0,1,0,0,0,1,0,'4581ab3c093d','bioversity',0,'Name of the Father or Name of the Husband/Wife'),(234,'What is the village of the farmer?','Village\r\n','',27,NULL,0,0,0,'bioversity',NULL,NULL,NULL,NULL,0,NULL,0,'Village',0,0,NULL,0,1,0,0,0,0,1,'4581ab3c093d','bioversity',0,'What is the village of the farmer?'),(235,'What is the district of the farmer?','District','',27,NULL,0,0,0,'bioversity',NULL,NULL,NULL,NULL,0,NULL,0,'district',0,0,NULL,0,1,0,0,1,0,0,'4581ab3c093d','bioversity',0,'What is the district of the farmer?'),(236,'What is the farmer\'s Telephone?','telephone','',1,NULL,0,0,0,'bioversity',NULL,NULL,NULL,NULL,0,NULL,0,'telephone',0,0,NULL,0,0,0,0,0,0,0,'4581ab3c093d','bioversity',0,'What is the farmer\'s Telephone?'),(237,'What is the gender ?','gender','',5,NULL,0,0,0,'bioversity',NULL,NULL,NULL,NULL,0,NULL,0,'gender',0,0,NULL,0,0,0,0,0,0,0,'4581ab3c093d','bioversity',0,'What is the gender ?'),(238,'How old are you?','age','',3,NULL,0,0,0,'bioversity',NULL,NULL,NULL,NULL,0,NULL,0,'age',0,0,NULL,0,0,0,0,0,0,0,'4581ab3c093d','bioversity',0,'How old are you?'),(239,'About energy','About energy','',9,NULL,0,0,0,'bioversity','Which color is most associated with energy?','which color is least associated with energy?','Which color represents more energy?','In terms of energy which color is at position {{pos}}',0,NULL,0,'energy',0,0,NULL,0,0,0,0,0,0,0,'4581ab3c093d','bioversity',0,'About energy'),(240,'About love','Love','',9,NULL,0,0,0,'bioversity','Which color is most associated with love?','Which color is least associated with love?','Which color represents more love?','In terms of love which color is at position {{pos}}',0,NULL,0,'love',0,0,NULL,0,0,0,0,0,0,0,'4581ab3c093d','bioversity',0,'About love'),(241,'About death','About death','',9,NULL,0,0,0,'bioversity','Which color is most associated with death?','Which color is least associated with death?','Which color represents more death?','In terms of death which color is at position {{pos}}',0,NULL,0,'death',0,0,NULL,0,0,0,0,0,0,0,'4581ab3c093d','bioversity',0,'About death'),(242,'About intelligence','About Intelligence','',9,NULL,0,0,0,'bioversity','Which color is most associated with intelligence?','Which color is least associated with intelligence?','Which color represents more intelligence?','in terms of intelligence which color is at position {{pos}}',0,NULL,0,'intelligence',0,0,NULL,0,0,0,0,0,0,0,'4581ab3c093d','bioversity',0,'About intelligence');
+INSERT INTO `question` VALUES (162,'Package code','Give a package to the farmer','',7,NULL,1,0,0,'bioversity',NULL,NULL,NULL,NULL,1,NULL,0,'QST162',1,0,NULL,0,0,0,0,0,0,0,'c3847f8938b7','bioversity',1,'Package code'),(163,'Select the farmer','Select a previously registered participant.','Select a previously registered participant.',8,NULL,0,1,0,'bioversity',NULL,NULL,NULL,NULL,1,NULL,1,'QST163',0,0,NULL,0,0,0,0,0,0,0,'c3847f8938b7','bioversity',1,'Select the farmer'),(180,'Who controls the income','Who controls the income','',6,NULL,0,0,0,'bioversity',NULL,NULL,NULL,NULL,1,NULL,0,'whocontrolstheincome',0,0,NULL,0,0,0,0,0,0,0,'4581ab3c093d','bioversity',1,'Who controls the income'),(199,'Farmer name','The name of the farmer','',1,NULL,1,0,0,'bioversity',NULL,NULL,NULL,NULL,1,NULL,0,'farmername',0,0,NULL,0,1,1,0,0,0,0,'d527fcee7b6b','bioversity',1,'Farmer name'),(204,'-','This is the overall characteristic','',9,NULL,0,0,0,'bioversity','Overall, which option was the best?','Overall, which option was the worst?','Overall, which option performed better?','Overall, which option is at position {{pos}}?',1,NULL,0,'overallchar',0,1,NULL,0,0,0,0,0,0,0,'c3847f8938b7','bioversity',1,'Overall ranking'),(205,'-','Overall performance against local','',10,NULL,0,0,0,'bioversity',NULL,NULL,NULL,NULL,1,NULL,0,'overallper',0,0,'Overall, is {{option}} better or worse than what you usually use?',0,0,0,1,0,0,0,'c3847f8938b7','bioversity',1,'Comparison with current'),(206,'Point of delivery','GPS point where the package is delivered','',4,NULL,0,0,0,'bioversity',NULL,NULL,NULL,NULL,1,NULL,0,'pointofdelivery',0,0,NULL,0,0,0,0,0,0,0,'4581ab3c093d','bioversity',1,'Point of delivery');
 /*!40000 ALTER TABLE `question` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1260,7 +1260,7 @@ CREATE TABLE `techalias` (
 
 LOCK TABLES `techalias` WRITE;
 /*!40000 ALTER TABLE `techalias` DISABLE KEYS */;
-INSERT INTO `techalias` VALUES (76,142,'Azul'),(76,143,'Blanco'),(76,144,'Rojo'),(76,145,'Negro'),(76,146,'Amarillo'),(76,1299,'tesfa'),(76,1300,'tesfa 1'),(76,1301,'magna 1'),(76,1302,'quncho 1'),(76,1303,'tseday1'),(76,1304,'boset1'),(76,1305,'dagem1'),(76,1306,'quncho22'),(76,1307,'tseday22'),(76,1308,'dagem22'),(76,1309,'tesfa22'),(76,2699,'Kora'),(76,2700,'Boset'),(76,2701,'Negus'),(76,2702,'Quncho'),(76,2703,'Tseday'),(76,2704,'Hibir'),(76,2705,'Gola'),(76,2706,'Simada'),(76,2707,'Flagot'),(76,2708,'Workiytu'),(76,2709,'Zobel'),(76,2710,'Lakech'),(76,2711,'Amarach'),(78,147,'Yellow'),(78,148,'Blue'),(78,149,'White'),(78,150,'Black'),(78,151,'Red'),(78,1558,'Wheat'),(78,1877,'Liban'),(78,1878,'Bulluk'),(78,1879,'Senate'),(78,1880,'Wane'),(78,1881,'Lemu'),(78,1882,'Dembel'),(78,1883,'Bika'),(78,1884,'Hiddasie'),(78,1885,'Oboro'),(78,1886,'Mandoyou'),(109,458,'INTA Fuerte Sequia'),(109,459,'INTA Rojo'),(109,460,'INTA Matagalpa'),(109,461,'INTA Ferroso'),(109,462,'INTA Centro Sur'),(109,600,'cvg'),(109,706,'Barley '),(109,741,'Nasir'),(109,742,'Awash 1'),(109,743,'Awash2'),(109,845,'SER 125'),(109,962,'intercroppinng'),(109,1351,'Highland Sorghum'),(109,1405,'Haricot Bean Varsities'),(109,1938,'tumsa,dedea,moti,shallo,welki,gebelcho,gora,alloshe,hachalu,obsie,dosha,mosisa'),(109,1995,'Awash 2'),(109,1996,'Awash Melka'),(109,1997,'Gofta'),(109,1998,'Ayenew'),(109,1999,'Kufanzik'),(109,2069,'Mangudo, King bird, Wane, Lemu, Ogolcho'),(109,2712,'SC Gadra'),(109,2713,'SC Ukulinga'),(109,2714,'SC Caldon'),(109,2715,'SC Caledon'),(109,2716,'SC Bounty'),(109,2749,'NUA 45'),(109,2750,'KHOLOPHETE'),(109,2751,'RED KIDNEY ');
+INSERT INTO `techalias` VALUES (76,142,'Azul'),(76,143,'Blanco'),(76,144,'Rojo'),(76,145,'Negro'),(76,146,'Amarillo'),(78,147,'Yellow'),(78,148,'Blue'),(78,149,'White'),(78,150,'Black'),(78,151,'Red');
 /*!40000 ALTER TABLE `techalias` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1287,7 +1287,7 @@ CREATE TABLE `technology` (
 
 LOCK TABLES `technology` WRITE;
 /*!40000 ALTER TABLE `technology` DISABLE KEYS */;
-INSERT INTO `technology` VALUES (76,'Colores','bioversity'),(78,'Colors','bioversity'),(109,'Bean varieties','bioversity');
+INSERT INTO `technology` VALUES (76,'Colores','bioversity'),(78,'Colors','bioversity');
 /*!40000 ALTER TABLE `technology` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1338,4 +1338,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-08-17 20:56:03
+-- Dump completed on 2021-01-25 10:34:41
