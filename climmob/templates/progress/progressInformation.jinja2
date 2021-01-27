@@ -3,7 +3,7 @@
 {% block meta %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:image" content="{{ request.url_for_static('static/landing/climmob.png') }}"/>
+    <meta property="og:image" content="{{ request.url_for_static('landing/climmob.png') }}"/>
 {% endblock %}
 {% block title %}
     <title>{{ _("ClimMob - Progress Information") }}</title>
@@ -25,14 +25,14 @@
 {% block body %}
     <div style="margin-right: 15px;margin-left: 15px">
         <div class="text-center" style="margin-top: 20px">
-            <img src="{{ request.url_for_static('static/landing/climmob.png') }}" style="width: 100%; max-width: 400px">
+            <img src="{{ request.url_for_static('landing/climmob.png') }}" style="width: 100%; max-width: 400px">
 
         </div>
 
         <div class="text-center" style="padding: 20px">
-            <img class="language" name="en" src="{{ request.url_for_static('static/landing/en.png') }}" style="height: 15px; width: 22px">&nbsp;&nbsp;&nbsp;&nbsp;
-            <img class="language" name="es" src="{{ request.url_for_static('static/landing/es.png') }}" style="height: 15px; width: 22px">&nbsp;&nbsp;&nbsp;&nbsp;
-{#            <img class="language" name="fr" src="{{ request.url_for_static('static/landing/fr.png') }}" style="height: 15px; width: 22px">#}
+            <img class="language" name="en" src="{{ request.url_for_static('landing/en.png') }}" style="height: 15px; width: 22px">&nbsp;&nbsp;&nbsp;&nbsp;
+            <img class="language" name="es" src="{{ request.url_for_static('landing/es.png') }}" style="height: 15px; width: 22px">&nbsp;&nbsp;&nbsp;&nbsp;
+{#            <img class="language" name="fr" src="{{ request.url_for_static('landing/fr.png') }}" style="height: 15px; width: 22px">#}
         </div>
 
         <div class="row">
@@ -98,7 +98,7 @@
                                     <span class="label label-primary" style="display: inline-block; margin-top: 3px">{{ tag }}</span>
                                 {% endfor %}
                                 <br>
-                                <img src="{{ request.url_for_static('static/landing/bioversity.png') }}" >
+                                <img src="{{ request.url_for_static('landing/bioversity.png') }}" >
                             </div>
 
                         </div>

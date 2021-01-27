@@ -99,7 +99,7 @@
                 </div>
                 <div class="ibox-content " >
                     <div id="htmlForPreview">
-                        {% snippet 'snippets/project/previewForm.jinja2', request=request, data=data, img1=request.url_for_static('static/landing/odk.png'), img2=request.url_for_static('static/landing/odk2.png'), img3=request.url_for_static('static/landing/odk3.png'), showPhone=True %}
+                        {% snippet 'snippets/project/previewForm.jinja2', request=request, data=data, img1=request.url_for_static('landing/odk.png'), img2=request.url_for_static('landing/odk2.png'), img3=request.url_for_static('landing/odk3.png'), showPhone=True %}
                     </div>
                 </div>
             </div>
@@ -316,7 +316,7 @@
                         {
                             element: "#div_for_help",
                             title: "{{ _("Prepare data collection") }}",
-                            content: "{{ _("Move the questions from left to right.") }}<img src='{{ request.url_for_static('static/gif/move_questions.gif') }}' />",
+                            content: "{{ _("Move the questions from left to right.") }}<img src='{{ request.url_for_static('gif/move_questions.gif') }}' />",
                             placement: "bottom"
                         }
                        ],

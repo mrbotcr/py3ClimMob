@@ -122,10 +122,10 @@
                         <ul class="nav navbar-top-links navbar-right">
                             {% block headitems %}
 {#                                <li class="li_languages">#}
-{#                                    <img class="language" name="en" src="{{ request.url_for_static('static/landing/en.png') }}" style="height: 15px; width: 22px">#}
+{#                                    <img class="language" name="en" src="{{ request.url_for_static('landing/en.png') }}" style="height: 15px; width: 22px">#}
 {#                                </li>#}
 {#                                <li class="li_languages">#}
-{#                                    <img class="language" name="es" src="{{ request.url_for_static('static/landing/es.png') }}" style="height: 15px; width: 22px">#}
+{#                                    <img class="language" name="es" src="{{ request.url_for_static('landing/es.png') }}" style="height: 15px; width: 22px">#}
 {#                                </li>#}
                                 <li>
                                     <a href="{{ request.route_url('logout') }}">
@@ -156,7 +156,7 @@
                                             <h2 ><strong>{{ activeProject.project_name }}</strong></h2>
                                         </td>
                                         <td rowspan="2" class="text-center">
-                                            <a href="https://climmob.net/blog/wiki/main-menu/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
+                                            <a href="https://climmob.net/blog/wiki/main-menu/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('landing/info.png') }}" alt="info"/> </a>
                                         </td>
                                     </tr>
                                     <tr>
@@ -730,7 +730,7 @@
                             <a class="btn btn-primary" href="{{ request.route_url('newproject') }}">{{ _("Create a new project") }}</a>
                             <br>
                             <br>
-                            <a href="https://climmob.net/blog/wiki/main-menu/" target="_blank"><img style="width: 50px; height: 50px " src="{{ request.url_for_static('static/landing/info.png') }}" alt="info"/> </a>
+                            <a href="https://climmob.net/blog/wiki/main-menu/" target="_blank"><img style="width: 50px; height: 50px " src="{{ request.url_for_static('landing/info.png') }}" alt="info"/> </a>
                         </div>
                     {% endif %}
                 {% endblock pagecontent %}

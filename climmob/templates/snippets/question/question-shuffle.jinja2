@@ -60,7 +60,7 @@
 {#        <div class="ss" style="display: inline-flex;border: 1px solid #000000;width: 100%">#}
 {##}
 {#            {% snippet 'snippets/question/question-title-shuffle.jinja2', question=question %}#}
-{#            <div class="message-avatar text-center" style="height:82px;background-color: #ffffff; border: white;padding: 3px;{% if showLogo == True %}background-image: url('{{ request.url_for_static('static/landing/bioversity.png') }}'); background-repeat:no-repeat; background-position:bottom;background-size: 45px{% endif %}">#}
+{#            <div class="message-avatar text-center" style="height:82px;background-color: #ffffff; border: white;padding: 3px;{% if showLogo == True %}background-image: url('{{ request.url_for_static('landing/bioversity.png') }}'); background-repeat:no-repeat; background-position:bottom;background-size: 45px{% endif %}">#}
 {#                {% if showtools %}#}
 {#                        {% if question.question_dtype == 5 or question.question_dtype == 6 %}#}
 {#                            <button  class="btn btn-default " onclick="location.href='{{ request.route_url('questionvalues', qid=question.question_id) }}'" type="button" title="{{ _("View/edit options") }}"><i class="fa fa-list-ul"></i></button>#}
