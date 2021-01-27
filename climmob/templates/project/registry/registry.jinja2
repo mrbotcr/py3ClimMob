@@ -60,9 +60,12 @@
                                 </div>
                                 <div class="ibox-content" style="min-height: 500px" id="div_form">
                                     {% snippet 'snippets/error.jinja2', error_summary=error_summary %}
-
-                                    {% snippet 'snippets/jstreeForm.jinja2', request=request, data=data, finalCloseQst=finalCloseQst, activeUser=activeUser, eventClick=False, classByUser=False, classByRegRequired=True, classByAssesRequired=False %}
-
+                                    {% set eventClick=False %}
+                                    {% set classByUser=False %}
+                                    {% set classByRegRequired=True %}
+                                    {% set classByAssesRequired=False %}
+                                    {% include 'snippets/jstreeForm.jinja2' %}
+{#                                    {% snippet 'snippets/jstreeForm.jinja2', request=request, data=data, finalCloseQst=finalCloseQst, activeUser=activeUser, eventClick=False, classByUser=False, classByRegRequired=True, classByAssesRequired=False %}#}
                                     <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}" id="formFoSendInformation" style="display: none">
                                         <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                                         <textarea id="nestable-output" name="neworder" class="form-control" style="display:none;"></textarea>

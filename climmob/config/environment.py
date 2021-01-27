@@ -34,7 +34,7 @@ my_session_factory = SignedCookieSessionFactory("b@HdX5Y6nL")
 # a full path to the static directory
 
 
-def __url_for_static(request, static_file, library="climmob_static"):
+def __url_for_static(request, static_file, library="static"):
     """
     This function return the address of a static URL. It substitutes request.static_url because static_url does not
     work for plugins when using a full path to the static directory
@@ -124,7 +124,7 @@ def load_environment(settings, config, apppath):
     config.add_settings(templatesPaths=templatesPathArray)
 
     staticPath = os.path.join(apppath, "static")
-    config.add_static_view("climmob_static", staticPath, cache_max_age=3600)
+    config.add_static_view("static", staticPath, cache_max_age=3600)
 
     config.add_jinja2_search_path(templatesPath)
 
