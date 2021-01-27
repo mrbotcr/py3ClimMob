@@ -60,7 +60,9 @@ class StoreCookieView(publicView):
             next_url = self.request.params.get("next") or self.request.route_url("home")
             response = HTTPFound(location=next_url)
             if "accept" in self.request.POST:
-                response.set_cookie("climmob_cookie_question", "accept", max_age=31536000)
+                response.set_cookie(
+                    "climmob_cookie_question", "accept", max_age=31536000
+                )
             return response
 
 

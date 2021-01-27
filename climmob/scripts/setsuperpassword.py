@@ -18,7 +18,9 @@ def main(raw_args=None):
     setup_logging(config_uri)
     settings = get_appsettings(config_uri, "climmob")
 
-    enc_pass = encode_data_with_aes_key(settings.get("auth.root.password", "dbcchieg"), settings["aes.key"].encode())
+    enc_pass = encode_data_with_aes_key(
+        settings.get("auth.root.password", "dbcchieg"), settings["aes.key"].encode()
+    )
 
     engine = get_engine(settings)
     Base.metadata.create_all(engine)
@@ -28,7 +30,9 @@ def main(raw_args=None):
     with transaction.manager:
         dbsession = get_tm_session(session_factory, transaction.manager)
         try:
-            dbsession.query(User).filter(User.user_name == "bioversity").update({"user_password": enc_pass})
+            dbsession.query(User).filter(User.user_name == "bioversity").update(
+                {"user_password": enc_pass}
+            )
         except Exception as e:
             print(str(e))
             error = 1

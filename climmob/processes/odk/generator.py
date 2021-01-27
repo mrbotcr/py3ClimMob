@@ -247,7 +247,9 @@ class ODKExcelFile(object):
     def get_options(self, option_name, new_options):
         options_to_add = []
         for element in new_options.iterchildren():
-            options_to_add.append({"code": element.get("code"), "label": element.get("label")})
+            options_to_add.append(
+                {"code": element.get("code"), "label": element.get("label")}
+            )
         duplicated_list = None
         for a_list in self.option_list:
             list_same = [False] * len(options_to_add)
@@ -255,8 +257,12 @@ class ODKExcelFile(object):
                 idx = 0
                 for an_option in a_list["options"]:
                     for a_new_option in options_to_add:
-                        if an_option["code"].strip().upper() == a_new_option["code"].strip().upper() and \
-                                an_option["label"].strip().upper() == a_new_option["label"].strip().upper():
+                        if (
+                            an_option["code"].strip().upper()
+                            == a_new_option["code"].strip().upper()
+                            and an_option["label"].strip().upper()
+                            == a_new_option["label"].strip().upper()
+                        ):
                             list_same[idx] = True
                     idx = idx + 1
                 if all(list_same):
@@ -265,7 +271,13 @@ class ODKExcelFile(object):
         if duplicated_list is not None:
             return True, duplicated_list
         else:
-            self.option_list.append({"name": option_name, "size": len(options_to_add), "options": options_to_add})
+            self.option_list.append(
+                {
+                    "name": option_name,
+                    "size": len(options_to_add),
+                    "options": options_to_add,
+                }
+            )
             return False, option_name
 
     def addGroup(
@@ -333,14 +345,21 @@ class ODKExcelFile(object):
                     ):
                         self.sheet1.write(self.surveyRow, 0, element.get("type"))
                     else:
-                        duplicated_list, duplicated_name = self.get_options(element.get("name"), element[0])
+                        duplicated_list, duplicated_name = self.get_options(
+                            element.get("name"), element[0]
+                        )
                         if not duplicated_list:
                             self.sheet1.write(
                                 self.surveyRow,
                                 0,
-                                element.get("type") + " " + element.get("name") + "_opts",
+                                element.get("type")
+                                + " "
+                                + element.get("name")
+                                + "_opts",
                             )
-                            self.addOptionToFile(element[0], element.get("name") + "_opts")
+                            self.addOptionToFile(
+                                element[0], element.get("name") + "_opts"
+                            )
                         else:
                             self.sheet1.write(
                                 self.surveyRow,
