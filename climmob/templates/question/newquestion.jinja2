@@ -51,7 +51,9 @@
                     {% snippet 'snippets/error.jinja2', error_summary=error_summary %}
 
                     <form class="form-horizontal" role="form" method="post" action="{{ request.path }}">
-                        {% snippet 'snippets/question/question-form.jinja2',formdata=formdata, request=request, Categories =Categories,hasCode=True %}
+                        {% set hasCode=True %}
+                        {% include 'snippets/question/question-form.jinja2' %}
+{#                        {% snippet 'snippets/question/question-form.jinja2',formdata=formdata, request=request, Categories =Categories,hasCode=True %}#}
                          <button type="submit" name="btn_add_question" class="btn btn-primary pull-right"> {{ _('Add question') }}</button>
                     </form>
                     <br>

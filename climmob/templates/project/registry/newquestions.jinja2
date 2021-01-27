@@ -64,7 +64,10 @@
                                             <ul>
                                             {% for question in UserQuestion %}
                                                 {% if question.qstgroups_id == category.qstgroups_id %}
-                                                    {% snippet 'snippets/question/question-title-shuffle.jinja2', request=request,question=question, activeUser=activeUser, eventClick=False, allowSelect=True %}
+                                                    {% set eventClick=False %}
+                                                    {% set allowSelect=True %}
+                                                    {% include 'snippets/question/question-title-shuffle.jinja2' %}
+{#                                                    {% snippet 'snippets/question/question-title-shuffle.jinja2', request=request,question=question, activeUser=activeUser, eventClick=False, allowSelect=True %}#}
                                                 {% endif %}
                                             {% endfor %}
                                             </ul>

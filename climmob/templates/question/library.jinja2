@@ -50,7 +50,12 @@
                 </div>
                 <div class="ibox-content " >
                     <div id="questionsTree" style="display: none">
-                    {% snippet 'snippets/jstreeQuestions.jinja2', request=request, UserQuestion=UserQuestion, activeUser=activeUser, Categories=Categories, doActions=True, jstreeId="jstree1", eventClick=True, classByUser=True %}
+                        {% set doActions=True %}
+                        {% set jstreeId="jstree1" %}
+                        {% set eventClick=True %}
+                        {% set classByUser=True %}
+                        {% include 'snippets/jstreeQuestions.jinja2' %}
+{#                    {% snippet 'snippets/jstreeQuestions.jinja2', request=request, UserQuestion=UserQuestion, activeUser=activeUser, Categories=Categories, doActions=True, jstreeId="jstree1", eventClick=True, classByUser=True %}#}
                     </div>
                 </div>
             </div>
@@ -101,7 +106,8 @@
 
                     <form class="form-horizontal formElement" role="form" method="post" id="formQuestion" action="{{ request.url }}">
 
-                        {% snippet 'snippets/question/question-form.jinja2',formdata=formdata, request=request, Categories =Categories %}
+                        {% include 'snippets/question/question-form.jinja2' %}
+{#                        {% snippet 'snippets/question/question-form.jinja2',formdata=formdata, request=request, Categories =Categories %}#}
 
                         <div>
                             <input id="btn_add_question"  type="submit" name="btn_add_question" class="btn btn-primary pull-right btnsQuestion" value="{{ _('Save and close') }}">
@@ -488,7 +494,10 @@
                     "question_group": $("#question_group").val(),
                     "question_dtype": parseInt($("#question_dtype").val()),
                     "question_requiredvalue": question_requiredvalue,
-                    "optionsValues":  JSON.stringify(optionsValues)
+                    "optionsValues":  JSON.stringify(optionsValues),
+                    {% block ajax_post_extra %}
+
+                    {% endblock ajax_post_extra %}
                 },
                 success: function (respuesta) {
 
@@ -633,7 +642,7 @@
             $("#qstgroups_name").focus()
         }
 
-        function openQuestions(question_id,isnew,owner,question_name,question_code, question_desc, question_group, question_dtype, question_unit, question_requiredvalue, question_posstm, question_negstm, question_perfstmt, assigned, options)
+        function openQuestions(question_id,isnew,owner,question_name,question_code, question_desc, question_group, question_dtype, question_unit, question_requiredvalue, question_posstm, question_negstm, question_perfstmt, assigned, options {% block library_function_open_questions_extra %} {% endblock library_function_open_questions_extra %})
         {
             showOther = true
             showNa = true
@@ -652,6 +661,9 @@
             $('#question_group').trigger("change.select2");
             $("#question_dtype").val(question_dtype)
             $('#question_dtype').trigger('change.select2');
+            {% block function_open_questions_extra_field %}
+
+            {% endblock function_open_questions_extra_field %}
 
             $(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
 

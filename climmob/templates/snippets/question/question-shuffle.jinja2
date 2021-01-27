@@ -3,7 +3,8 @@
 <li class="success-element" id="task1">
     <table style="width: 100%">
         <tr>
-            {% snippet 'snippets/question/question-title-shuffle.jinja2', question=question %}
+            {% include 'snippets/question/question-title-shuffle.jinja2' %}
+{#            {% snippet 'snippets/question/question-title-shuffle.jinja2', question=question %}#}
         </tr>
         <tr>
             <td colspan="2"  class="text-center">

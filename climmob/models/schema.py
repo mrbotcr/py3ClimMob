@@ -118,7 +118,7 @@ def mapFromSchema(data):
         if data is not None:
             if data.__class__.__name__ != "result":
                 for c in inspect(data).mapper.column_attrs:
-                    if c.key != "extras":
+                    if c.key != "extra":
                         mapped_data[c.key] = getattr(data, c.key)
                     else:
                         if getattr(data, c.key) is not None:
@@ -132,7 +132,7 @@ def mapFromSchema(data):
                 for key, value in dict_result.items():
                     if value.__class__.__module__ == "climmob.models.climmobv4":
                         for c in inspect(value).mapper.column_attrs:
-                            if c.key != "extras":
+                            if c.key != "extra":
                                 mapped_data[c.key] = getattr(value, c.key)
                             else:
                                 if getattr(value, c.key) is not None:
@@ -150,7 +150,7 @@ def mapFromSchema(data):
             temp = {}
             if row.__class__.__name__ != "result":
                 for c in inspect(row).mapper.column_attrs:
-                    if c.key != "extras":
+                    if c.key != "extra":
                         temp[c.key] = getattr(row, c.key)
                     else:
                         if getattr(row, c.key) is not None:
@@ -164,7 +164,7 @@ def mapFromSchema(data):
                 for key, value in dict_result.items():
                     if value.__class__.__module__ == "climmob.models.climmobv4":
                         for c in inspect(value).mapper.column_attrs:
-                            if c.key != "extras":
+                            if c.key != "extra":
                                 temp[c.key] = getattr(value, c.key)
                             else:
                                 if getattr(value, c.key) is not None:

@@ -37,7 +37,13 @@
                                 </div>
                             </div>
                             <div class="ibox-content" style="min-height: 400px" id="div_availables">
-                                {% snippet 'snippets/jstreeQuestions.jinja2', request=request, UserQuestion=UserQuestion, activeUser=activeUser, Categories=Categories, doActions=False, jstreeId="jstree2",eventClick=False, classByUser=False, classByRegRequired=True %}
+                                {% set doActions=False %}
+                                {% set jstreeId="jstree2" %}
+                                {% set eventClick=False %}
+                                {% set classByUser=False %}
+                                {% set classByRegRequired=True %}
+                                {% include 'snippets/jstreeQuestions.jinja2' %}
+{#                                {% snippet 'snippets/jstreeQuestions.jinja2', request=request, UserQuestion=UserQuestion, activeUser=activeUser, Categories=Categories, doActions=False, jstreeId="jstree2",eventClick=False, classByUser=False, classByRegRequired=True %}#}
                             </div>
                         </div>
                     </div>

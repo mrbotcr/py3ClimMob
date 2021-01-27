@@ -1,8 +1,3 @@
-
-
-
-
-
 <div class="panel-body">
     <div id="jstree1">
         <ul>
@@ -18,11 +13,16 @@
                     <li class="jstree-open"  data-jstree='{"type":"group","icon": "fa fa-folder"}' data-type="group" id="GRP{{ item.section_id }}" > <strong onclick="seeSection('{{ item.section_id }}','{{ item.section_name }}','{{ item.section_content }}')" style="font-size: 16px; color: #000000;" >Section: {{ item.section_name }} ({{ item.section_content }})</strong>
                         {% if item.hasQuestions %}
                             <ul >
-                                {% snippet 'snippets/question/question-title-shuffle.jinja2', request=request, question=item, activeUser=activeUser, eventClick=eventClick, classByUser=eventClick, classByRegRequired=classByRegRequired, classByAssesRequired=classByAssesRequired %}
+                                {% set question=item %}
+                                {% set classByUser=eventClick %}
+                                {% include 'snippets/question/question-title-shuffle.jinja2' %}
+{#                                {% snippet 'snippets/question/question-title-shuffle.jinja2', request=request, question=item, activeUser=activeUser, eventClick=eventClick, classByUser=eventClick, classByRegRequired=classByRegRequired, classByAssesRequired=classByAssesRequired %}#}
                         {% endif %}
                 {% else %}
-
-                    {% snippet 'snippets/question/question-title-shuffle.jinja2', request=request, question=item, activeUser=activeUser, eventClick=eventClick, classByUser=eventClick, classByRegRequired=classByRegRequired, classByAssesRequired=classByAssesRequired %}
+                    {% set question=item %}
+                    {% set classByUser=eventClick %}
+                    {% include 'snippets/question/question-title-shuffle.jinja2' %}
+{#                    {% snippet 'snippets/question/question-title-shuffle.jinja2', request=request, question=item, activeUser=activeUser, eventClick=eventClick, classByUser=eventClick, classByRegRequired=classByRegRequired, classByAssesRequired=classByAssesRequired %}#}
                 {% endif %}
             {% endfor %}
 
