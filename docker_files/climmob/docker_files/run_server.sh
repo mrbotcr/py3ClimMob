@@ -5,9 +5,9 @@ mysql -h $MYSQL_HOST_NAME -u $MYSQL_USER_NAME --ssl-mode=DISABLED --password=$MY
 source /opt/climmob_env/bin/activate
 cd /opt/climmob
 # If development.ini does not exists then create the basic database
-initial_database = "false"
+initial_database="false"
 if ! [ -f "/opt/climmob_config/development.ini" ]; then
-  initial_database = "true"
+  initial_database="true"
   mysql -h $MYSQL_HOST_NAME -u $MYSQL_USER_NAME --password=$MYSQL_USER_PASSWORD climmobv4 < /opt/climmob/docker_files/climmob/docker_files/base_db.sql
 fi
 
@@ -21,7 +21,7 @@ disable_ssl ./development.ini
 configure_alembic ./development.ini .
 configure_mysql ./development.ini .
 alembic upgrade head
-if [ $initial_database = "true" ]; then
+if [ $initial_database == "true" ]; then
   set_super_password ./development.ini
 fi
 deactivate
