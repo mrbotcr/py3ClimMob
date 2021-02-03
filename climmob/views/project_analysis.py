@@ -18,88 +18,13 @@ class analysisDataView(privateView):
             if "btn_createAnalysis" in self.request.POST:
                 dataworking = self.getPostDict()
 
-                dict = {}
+                #dict = {}
                 if dataworking["txt_included_in_analysis"] != "":
                     part = dataworking["txt_included_in_analysis"][:-1].split(",")
-
-                    data, _assessment = getQuestionsByType(
-                        self.user.login, activeProjectData["project_cod"], self.request
-                    )
-
-                    for element in part:
-                        attr = element.split("_")
-                        for _section in data:
-                            if _section not in dict:
-                                dict[_section] = []
-                            for _info in data[_section]:
-                                if _info["id"] == int(attr[3]):
-
-                                    if attr[1] == "REG" and _info["code"] is None:
-                                        dict[_section].append(
-                                            data[_section][data[_section].index(_info)]
-                                        )
-
-                                    if attr[1] == "ASS":
-                                        if _info["code"] is not None:
-                                            if _info["code"]["ass_cod"] == attr[2]:
-                                                dict[_section].append(
-                                                    data[_section][
-                                                        data[_section].index(_info)
-                                                    ]
-                                                )
-
-                    # for element in part:
-                    #    attr = element.split("_")
-                    #    use.append(int(attr[2]))
-
-                """use = []
-                if dataworking["txt_included_in_analysis"] != "":
-                    part = dataworking["txt_included_in_analysis"][:-1].split(",")
-
-                    for element in part:
-                        attr = element.split("_")
-                        use.append(int(attr[1]))
-
-                data, _assessment = getQuestionsByType(
-                    self.user.login, activeProjectData["project_cod"], self.request
-                )
-                dict = {}
-
-                for _section in data:
-                    dict[_section] = []
-                    for _info in data[_section]:
-                        if _info["id"] in use:
-                            dict[_section].append(
-                                data[_section][data[_section].index(_info)]
-                            )
-                """
-                infosheet = dataworking["txt_infosheets"].upper()
-                # print json.dumps(dict)
-                locale = self.request.locale_name
-                info = getJSONResult(
-                    self.user.login, activeProjectData["project_cod"], self.request
-                )
-
-                create_analysis(
-                    locale,
-                    self.user.login,
-                    activeProjectData["project_cod"],
-                    dict,
-                    info,
-                    infosheet,
-                    self.request,
-                    self.request.registry.settings["r.analysis.script"],
-                )
-
-                create_datacsv(
-                    self.user.login,
-                    activeProjectData["project_cod"],
-                    info,
-                    self.request,
-                    "Report",
-                    "",
-                )
-
+                    infosheet = dataworking["txt_infosheets"].upper()
+                    dataworking["project_cod"] = activeProjectData["project_cod"]
+                    pro = processToGenerateTheReport(self.user.login,dataworking, self.request, part, infosheet)
+                    
                 self.returnRawViewResult = True
                 return HTTPFound(location=self.request.route_url("productList"))
 
@@ -113,3 +38,61 @@ class analysisDataView(privateView):
             "assessmentsList": assessmentsList,
             "correct": False,
         }
+
+
+
+def processToGenerateTheReport(user, dataworking, request, variables, infosheet):
+
+    data, _assessment = getQuestionsByType(
+        user, dataworking["project_cod"], request
+    )
+
+    dict = {}
+    for element in variables:
+        attr = element.split("_")
+        for _section in data:
+            if _section not in dict:
+                dict[_section] = []
+            for _info in data[_section]:
+                if _info["id"] == int(attr[3]):
+
+                    if attr[1] == "REG" and _info["code"] is None:
+                        dict[_section].append(
+                            data[_section][data[_section].index(_info)]
+                        )
+
+                    if attr[1] == "ASS":
+                        if _info["code"] is not None:
+                            if _info["code"]["ass_cod"] == attr[2]:
+                                dict[_section].append(
+                                    data[_section][
+                                        data[_section].index(_info)
+                                    ]
+                                )
+
+    locale = request.locale_name
+    info = getJSONResult(
+        user, dataworking["project_cod"], request
+    )
+
+    create_analysis(
+        locale,
+        user,
+        dataworking["project_cod"],
+        dict,
+        info,
+        infosheet,
+        request,
+        request.registry.settings["r.analysis.script"],
+    )
+
+    create_datacsv(
+        user,
+        dataworking["project_cod"],
+        info,
+        request,
+        "Report",
+        "",
+    )
+
+    return True

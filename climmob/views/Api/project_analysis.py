@@ -2,6 +2,7 @@ from ..classes import apiView
 from ...processes import projectExists, getJSONResult, getQuestionsByType, getProjectProgress, getProjectData
 from ...products.analysis.analysis import create_analysis
 from ...products.analysisdata.analysisdata import create_datacsv
+from ..project_analysis import processToGenerateTheReport
 from pyramid.response import Response
 import json
 
@@ -174,64 +175,14 @@ class generateAnalysisByApiView_api(apiView):
 
                                 if not errorInVariables:
 
-                                    dict = {}
+
                                     if dataworking["variables_to_analyze"] :
-
-                                        data, _assessment = getQuestionsByType(
-                                            self.user.login, dataworking["project_cod"], self.request
-                                        )
-
-                                        for element in variables:
-                                            attr = element.split("_")
-                                            for _section in data:
-                                                if _section not in dict:
-                                                    dict[_section] = []
-                                                for _info in data[_section]:
-                                                    if _info["id"] == int(attr[3]):
-
-                                                        if attr[1] == "REG" and _info["code"] is None:
-                                                            dict[_section].append(
-                                                                data[_section][data[_section].index(_info)]
-                                                            )
-
-                                                        if attr[1] == "ASS":
-                                                            if _info["code"] is not None:
-                                                                if _info["code"]["ass_cod"] == attr[2]:
-                                                                    dict[_section].append(
-                                                                        data[_section][
-                                                                            data[_section].index(_info)
-                                                                        ]
-                                                                    )
-
-                                        locale = self.request.locale_name
-                                        info = getJSONResult(
-                                            self.user.login, dataworking["project_cod"], self.request
-                                        )
-
                                         if str(dataworking["infosheets"]) == "1":
                                             infosheet = "TRUE"
                                         else:
                                             infosheet = "FALSE"
 
-                                        create_analysis(
-                                            locale,
-                                            self.user.login,
-                                            dataworking["project_cod"],
-                                            dict,
-                                            info,
-                                            infosheet,
-                                            self.request,
-                                            self.request.registry.settings["r.analysis.script"],
-                                        )
-
-                                        create_datacsv(
-                                            self.user.login,
-                                            dataworking["project_cod"],
-                                            info,
-                                            self.request,
-                                            "Report",
-                                            "",
-                                        )
+                                        pro = processToGenerateTheReport(self.user.login, dataworking, self.request, variables, infosheet)
 
                                         response = Response(
                                             status=200,
@@ -256,8 +207,8 @@ class generateAnalysisByApiView_api(apiView):
                                     body=self._("The variable_to_analyze parameter must be a list."),
                                 )
                                 return response
-                        except:
-
+                        except Exception as e:
+                            print(e)
                             response = Response(
                                 status=401,
                                 body=self._("Problem with the data sent in the parameter: variables_to_analyze"),
