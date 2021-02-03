@@ -212,6 +212,7 @@ from ..views.Api.projectRegistryStart import (
     closeRegistryApi_view,
     readRegistryStructure_view,
     pushJsonToRegistry_view,
+    readRegistryData_view
 )
 from ..views.Api.projectProducts import readProducts_view, downloadApi_view
 from ..views.Api.projectAssessments import (
@@ -234,9 +235,14 @@ from ..views.Api.projectAssessmentStart import (
     closeAssessmentApi_view,
     readAssessmentStructure_view,
     pushJsonToAssessment_view,
+    readAssessmentData_view
 )
 from ..views.projectHelp.projectHelp import projectHelp_view
-from ..views.Api.project_analysis import readDataOfProjectView_api
+from ..views.Api.project_analysis import (
+    readDataOfProjectView_api,
+    readVariablesForAnalysisView_api,
+    generateAnalysisByApiView_api
+)
 
 from ..views.project_analysis import analysisDataView
 
@@ -1523,6 +1529,15 @@ def loadRoutes(config):
         )
     )
 
+    routes.append(
+        addRoute(
+            "readregistrydata",
+            "/api/readRegistryData",
+            readRegistryData_view,
+            None,
+        )
+    )
+
     # Products
     routes.append(
         addRoute("readproducts", "/api/readProducts", readProducts_view, None)
@@ -1668,12 +1683,40 @@ def loadRoutes(config):
         )
     )
 
+    routes.append(
+        addRoute(
+            "readassessmentdata",
+            "/api/readAssessmentData",
+            readAssessmentData_view,
+            None,
+        )
+    )
+
     # Information of project
     routes.append(
         addRoute(
             "readDataOfProject",
             "/api/readDataOfProject",
             readDataOfProjectView_api,
+            None,
+        )
+    )
+
+    # Information analyzes
+    routes.append(
+        addRoute(
+            "readvariablesforanalysis",
+            "/api/readVariablesForAnalysis",
+            readVariablesForAnalysisView_api,
+            None,
+        )
+    )
+
+    routes.append(
+        addRoute(
+            "createanalysisbyapi",
+            "/api/generateAnalysisByApi",
+            generateAnalysisByApiView_api,
             None,
         )
     )

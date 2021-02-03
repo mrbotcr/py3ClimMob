@@ -107,8 +107,12 @@ def addQuestionToDictionary(questionData, numComb, assessment=None):
 
     if assessment:
         code = "ASS" + assessment["ass_cod"]
+        code2= "ASS"
+        extracode = assessment["ass_cod"]
     else:
         code = "REG"
+        code2= "REG"
+        extracode = ""
 
     if questionData["question_dtype"] == 5:
         questInfo["name"] = questionData["question_name"]
@@ -116,7 +120,8 @@ def addQuestionToDictionary(questionData, numComb, assessment=None):
         questInfo["id"] = questionData["question_id"]
         questInfo["vars"] = code + "_" + questionData["question_code"].lower()
         questInfo["code"] = assessment
-
+        questInfo["type"] = "explanatory"
+        questInfo["codeForAnalysis"] = questInfo["type"] + "_" + code2 + "_" + extracode + "_" + str(questInfo["id"]) + "_add"
         return "Explanatory", questInfo
 
     if questionData["question_dtype"] == 9 or questionData["question_dtype"] == 10:
@@ -128,6 +133,7 @@ def addQuestionToDictionary(questionData, numComb, assessment=None):
         questInfo["code"] = assessment
 
         if questionData["question_dtype"] == 9:
+            questInfo["type"] = "characteristic"
 
             if numComb == 2:
                 varsData = {}
@@ -162,10 +168,11 @@ def addQuestionToDictionary(questionData, numComb, assessment=None):
                         + str(opt + 1)
                     )
                     questInfo["vars"].append(varsData)
-
+            questInfo["codeForAnalysis"] = questInfo["type"] + "_" + code2 + "_" + extracode + "_" + str(questInfo["id"]) + "_add"
             return "Characteristics", questInfo
 
         if questionData["question_dtype"] == 10:
+            questInfo["type"] = "performance"
             for opt in range(0, numComb):
                 varsData = {}
                 varsData["name"] = (
@@ -176,7 +183,7 @@ def addQuestionToDictionary(questionData, numComb, assessment=None):
                     + str(opt + 1)
                 )
                 questInfo["vars"].append(varsData)
-
+            questInfo["codeForAnalysis"] = questInfo["type"] + "_" + code2 + "_" + extracode + "_" + str(questInfo["id"]) + "_add"
             return "Performance", questInfo
 
     return "", ""

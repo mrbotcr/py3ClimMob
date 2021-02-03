@@ -18,6 +18,7 @@ from ...processes import (
     generateStructureForValidateJsonOdk,
     isRegistryClose,
     getProjectNumobs,
+    getJSONResult
 )
 
 from climmob.products import stopTasksByProcess
@@ -956,4 +957,76 @@ class pushJsonToRegistry_view(apiView):
                 return response
         else:
             response = Response(status=401, body=self._("Only accepts POST method."))
+            return response
+
+
+class readRegistryData_view(apiView):
+    def processView(self):
+
+        if self.request.method == "GET":
+            obligatory = [u"project_cod"]
+            try:
+                dataworking = json.loads(self.body)
+            except:
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "Error in the JSON, It does not have the 'body' parameter."
+                    ),
+                )
+                return response
+
+            if sorted(obligatory) == sorted(dataworking.keys()):
+                dataworking["user_name"] = self.user.login
+
+                dataInParams = True
+                for key in dataworking.keys():
+                    if dataworking[key] == "":
+                        dataInParams = False
+
+                if dataInParams:
+                    exitsproject = projectExists(
+                        self.user.login, dataworking["project_cod"], self.request
+                    )
+                    if exitsproject:
+                        if not projectRegStatus(
+                            self.user.login, dataworking["project_cod"], self.request
+                        ):
+                            info = getJSONResult(
+                                self.user.login,
+                                dataworking["project_cod"],
+                                self.request,
+                                True,
+                                False,
+                                "",
+                            )
+
+                            newJson = {"structure": info["registry"], "data": info["data"]}
+
+                            response = Response(
+                                status=200,
+                                body=json.dumps(newJson),
+                            )
+                            return response
+                        else:
+                            response = Response(
+                                status=401, body=self._("Registration has not started.")
+                            )
+                            return response
+                    else:
+                        response = Response(
+                            status=401,
+                            body=self._("There is no project with that code."),
+                        )
+                        return response
+                else:
+                    response = Response(
+                        status=401, body=self._("Not all parameters have data.")
+                    )
+                    return response
+            else:
+                response = Response(status=401, body=self._("Error in the JSON."))
+                return response
+        else:
+            response = Response(status=401, body=self._("Only accepts GET method."))
             return response

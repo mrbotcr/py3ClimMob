@@ -585,7 +585,7 @@ def getJSONResult(
                                     "create.xml",
                                 ]
                             )
-                            if os.path.exists(registryXML):
+                            if os.path.exists(assessmentXML):
                                 data["assessments"].append(
                                     {
                                         "code": assessment.ass_cod,

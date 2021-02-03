@@ -17,6 +17,7 @@ from ...processes import (
     setAssessmentIndividualStatus,
     AsessmentStatus,
     getPackages,
+    getJSONResult
 )
 
 from ..registry import getDataFormPreview
@@ -793,4 +794,96 @@ class pushJsonToAssessment_view(apiView):
                 return response
         else:
             response = Response(status=401, body=self._("Only accepts POST method."))
+            return response
+
+
+class readAssessmentData_view(apiView):
+    def processView(self):
+        if self.request.method == "GET":
+            obligatory = [u"project_cod", u"ass_cod"]
+            try:
+                dataworking = json.loads(self.body)
+            except:
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "Error in the JSON, It does not have the 'body' parameter."
+                    ),
+                )
+                return response
+
+            if sorted(obligatory) == sorted(dataworking.keys()):
+                dataworking["user_name"] = self.user.login
+                dataworking["section_private"] = None
+
+                dataInParams = True
+                for key in dataworking.keys():
+                    if dataworking[key] == "":
+                        dataInParams = False
+
+                if dataInParams:
+                    exitsproject = projectExists(
+                        self.user.login, dataworking["project_cod"], self.request
+                    )
+                    if exitsproject:
+                        if not projectAsessmentStatus(
+                            self.user.login,
+                            dataworking["project_cod"],
+                            dataworking["ass_cod"],
+                            self.request,
+                        ):
+                            if assessmentExists(
+                                self.user.login,
+                                dataworking["project_cod"],
+                                dataworking["ass_cod"],
+                                self.request,
+                            ):
+                                info = getJSONResult(
+                                    self.user.login,
+                                    dataworking["project_cod"],
+                                    self.request,
+                                    True,
+                                    True,
+                                    dataworking["ass_cod"],
+                                )
+
+                                newJson = {"structure": info["assessments"][0], "data": info["data"]}
+
+                                response = Response(
+                                    status=200,
+                                    body=json.dumps(
+                                        newJson
+                                    ),
+                                )
+                                return response
+                            else:
+                                response = Response(
+                                    status=401,
+                                    body=self._(
+                                        "There is no data collection with that code."
+                                    ),
+                                )
+                                return response
+                        else:
+                            response = Response(
+                                status=401,
+                                body=self._("Data collection has not started."),
+                            )
+                            return response
+                    else:
+                        response = Response(
+                            status=401,
+                            body=self._("There is no project with that code."),
+                        )
+                        return response
+                else:
+                    response = Response(
+                        status=401, body=self._("Not all parameters have data.")
+                    )
+                    return response
+            else:
+                response = Response(status=401, body=self._("Error in the JSON."))
+                return response
+        else:
+            response = Response(status=401, body=self._("Only accepts GET method."))
             return response
