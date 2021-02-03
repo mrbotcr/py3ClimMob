@@ -3,10 +3,6 @@ from ..processes import getActiveProject, getQuestionsByType, getJSONResult
 from ..products.analysis.analysis import create_analysis
 from ..products.analysisdata.analysisdata import create_datacsv
 from pyramid.httpexceptions import HTTPFound
-import climmob.plugins.utilities as u
-import climmob.plugins as p
-import json
-
 
 class analysisDataView(privateView):
     def processView(self):
@@ -18,13 +14,12 @@ class analysisDataView(privateView):
             if "btn_createAnalysis" in self.request.POST:
                 dataworking = self.getPostDict()
 
-                #dict = {}
                 if dataworking["txt_included_in_analysis"] != "":
                     part = dataworking["txt_included_in_analysis"][:-1].split(",")
                     infosheet = dataworking["txt_infosheets"].upper()
                     dataworking["project_cod"] = activeProjectData["project_cod"]
                     pro = processToGenerateTheReport(self.user.login,dataworking, self.request, part, infosheet)
-                    
+
                 self.returnRawViewResult = True
                 return HTTPFound(location=self.request.route_url("productList"))
 

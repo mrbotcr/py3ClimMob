@@ -1,7 +1,5 @@
 from ..classes import apiView
 from ...processes import projectExists, getJSONResult, getQuestionsByType, getProjectProgress, getProjectData
-from ...products.analysis.analysis import create_analysis
-from ...products.analysisdata.analysisdata import create_datacsv
 from ..project_analysis import processToGenerateTheReport
 from pyramid.response import Response
 import json
@@ -174,7 +172,6 @@ class generateAnalysisByApiView_api(apiView):
                                         errorInVariables = True
 
                                 if not errorInVariables:
-
 
                                     if dataworking["variables_to_analyze"] :
                                         if str(dataworking["infosheets"]) == "1":
