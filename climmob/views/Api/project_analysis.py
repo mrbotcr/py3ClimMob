@@ -1,5 +1,11 @@
 from ..classes import apiView
-from ...processes import projectExists, getJSONResult, getQuestionsByType, getProjectProgress, getProjectData
+from ...processes import (
+    projectExists,
+    getJSONResult,
+    getQuestionsByType,
+    getProjectProgress,
+    getProjectData,
+)
 from ..project_analysis import processToGenerateTheReport
 from pyramid.response import Response
 import json
@@ -81,17 +87,27 @@ class readVariablesForAnalysisView_api(apiView):
                 projectid = dataworking["project_cod"]
                 if projectExists(self.user.login, projectid, self.request):
 
-                    infoProject = getProjectData(self.user.login, projectid, self.request)
+                    infoProject = getProjectData(
+                        self.user.login, projectid, self.request
+                    )
                     progress, pcompleted = getProjectProgress(
                         self.user.login, projectid, self.request
                     )
 
                     total_ass_records = 0
                     for assessment in progress["assessments"]:
-                        if assessment["ass_status"] == 1 or assessment["ass_status"] == 2:
-                            total_ass_records = total_ass_records + assessment["asstotal"]
+                        if (
+                            assessment["ass_status"] == 1
+                            or assessment["ass_status"] == 2
+                        ):
+                            total_ass_records = (
+                                total_ass_records + assessment["asstotal"]
+                            )
 
-                    if (infoProject["project_registration_and_analysis"] == 1 and progress["regtotal"] >= 5) or (total_ass_records > 0):
+                    if (
+                        infoProject["project_registration_and_analysis"] == 1
+                        and progress["regtotal"] >= 5
+                    ) or (total_ass_records > 0):
 
                         dataForAnalysis, assessmentsList = getQuestionsByType(
                             self.user.login, projectid, self.request
@@ -100,13 +116,19 @@ class readVariablesForAnalysisView_api(apiView):
                         response = Response(
                             status=200,
                             body=json.dumps(
-                                {"dataForAnalysis": dataForAnalysis,"assessmentsList": assessmentsList}
+                                {
+                                    "dataForAnalysis": dataForAnalysis,
+                                    "assessmentsList": assessmentsList,
+                                }
                             ),
                         )
                         return response
                     else:
                         response = Response(
-                            status=401, body=self._("You don't have the amount of information needed to do a ClimMob analysis.")
+                            status=401,
+                            body=self._(
+                                "You don't have the amount of information needed to do a ClimMob analysis."
+                            ),
                         )
                         return response
                 else:
@@ -127,7 +149,7 @@ class generateAnalysisByApiView_api(apiView):
 
         if self.request.method == "POST":
 
-            obligatory = [u"project_cod", "variables_to_analyze","infosheets"]
+            obligatory = [u"project_cod", "variables_to_analyze", "infosheets"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -143,17 +165,27 @@ class generateAnalysisByApiView_api(apiView):
 
                 projectid = dataworking["project_cod"]
                 if projectExists(self.user.login, projectid, self.request):
-                    infoProject = getProjectData(self.user.login, projectid, self.request)
+                    infoProject = getProjectData(
+                        self.user.login, projectid, self.request
+                    )
                     progress, pcompleted = getProjectProgress(
                         self.user.login, projectid, self.request
                     )
 
                     total_ass_records = 0
                     for assessment in progress["assessments"]:
-                        if assessment["ass_status"] == 1 or assessment["ass_status"] == 2:
-                            total_ass_records = total_ass_records + assessment["asstotal"]
+                        if (
+                            assessment["ass_status"] == 1
+                            or assessment["ass_status"] == 2
+                        ):
+                            total_ass_records = (
+                                total_ass_records + assessment["asstotal"]
+                            )
 
-                    if (infoProject["project_registration_and_analysis"] == 1 and progress["regtotal"] >= 5) or (total_ass_records > 0):
+                    if (
+                        infoProject["project_registration_and_analysis"] == 1
+                        and progress["regtotal"] >= 5
+                    ) or (total_ass_records > 0):
 
                         try:
                             variables = dataworking["variables_to_analyze"]
@@ -164,7 +196,9 @@ class generateAnalysisByApiView_api(apiView):
                                 listOfAllowedVariables = []
                                 for _key in dataForAnalysis:
                                     for _variable in dataForAnalysis[_key]:
-                                        listOfAllowedVariables.append(_variable["codeForAnalysis"])
+                                        listOfAllowedVariables.append(
+                                            _variable["codeForAnalysis"]
+                                        )
 
                                 errorInVariables = False
                                 for variable in variables:
@@ -173,48 +207,66 @@ class generateAnalysisByApiView_api(apiView):
 
                                 if not errorInVariables:
 
-                                    if dataworking["variables_to_analyze"] :
+                                    if dataworking["variables_to_analyze"]:
                                         if str(dataworking["infosheets"]) == "1":
                                             infosheet = "TRUE"
                                         else:
                                             infosheet = "FALSE"
 
-                                        pro = processToGenerateTheReport(self.user.login, dataworking, self.request, variables, infosheet)
+                                        pro = processToGenerateTheReport(
+                                            self.user.login,
+                                            dataworking,
+                                            self.request,
+                                            variables,
+                                            infosheet,
+                                        )
 
                                         response = Response(
                                             status=200,
-                                            body=self._("The analysis is being generated, it is a process that requires time to be processed, as soon as it is ready you will be able to see it in the download list."),
+                                            body=self._(
+                                                "The analysis is being generated, it is a process that requires time to be processed, as soon as it is ready you will be able to see it in the download list."
+                                            ),
                                         )
                                         return response
                                     else:
                                         response = Response(
                                             status=401,
-                                            body=self._("The variable_to_analyze parameter must contain data."),
+                                            body=self._(
+                                                "The variable_to_analyze parameter must contain data."
+                                            ),
                                         )
                                         return response
                                 else:
                                     response = Response(
                                         status=401,
-                                        body=self._("One of the variables you sent for analysis does not exist."),
+                                        body=self._(
+                                            "One of the variables you sent for analysis does not exist."
+                                        ),
                                     )
                                     return response
                             else:
                                 response = Response(
                                     status=401,
-                                    body=self._("The variable_to_analyze parameter must be a list."),
+                                    body=self._(
+                                        "The variable_to_analyze parameter must be a list."
+                                    ),
                                 )
                                 return response
                         except Exception as e:
                             print(e)
                             response = Response(
                                 status=401,
-                                body=self._("Problem with the data sent in the parameter: variables_to_analyze"),
+                                body=self._(
+                                    "Problem with the data sent in the parameter: variables_to_analyze"
+                                ),
                             )
                             return response
                     else:
                         response = Response(
                             status=401,
-                            body=self._("You don't have the amount of information needed to do a ClimMob analysis.")
+                            body=self._(
+                                "You don't have the amount of information needed to do a ClimMob analysis."
+                            ),
                         )
                         return response
                 else:

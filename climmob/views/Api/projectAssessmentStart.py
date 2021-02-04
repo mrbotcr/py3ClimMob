@@ -17,7 +17,7 @@ from ...processes import (
     setAssessmentIndividualStatus,
     AsessmentStatus,
     getPackages,
-    getJSONResult
+    getJSONResult,
 )
 
 from ..registry import getDataFormPreview
@@ -847,13 +847,13 @@ class readAssessmentData_view(apiView):
                                     dataworking["ass_cod"],
                                 )
 
-                                newJson = {"structure": info["assessments"][0], "data": info["data"]}
+                                newJson = {
+                                    "structure": info["assessments"][0],
+                                    "data": info["data"],
+                                }
 
                                 response = Response(
-                                    status=200,
-                                    body=json.dumps(
-                                        newJson
-                                    ),
+                                    status=200, body=json.dumps(newJson),
                                 )
                                 return response
                             else:

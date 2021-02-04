@@ -3,9 +3,7 @@ import glob
 from requests.auth import HTTPDigestAuth
 
 headers = {"Content-Type": "text/xml"}
-for xml_file in glob.iglob(
-    "/path/to/xml/files/*.xml"
-):
+for xml_file in glob.iglob("/path/to/xml/files/*.xml"):
     xml_file = {"file": open(xml_file, "rb")}
     r = requests.post(
         "https://climmob.net/[climmob_user]/push",

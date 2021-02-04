@@ -9,8 +9,8 @@ from alembic import op
 from sqlalchemy.orm.session import Session
 
 # revision identifiers, used by Alembic.
-revision = '818e37fbf3e1'
-down_revision = 'ac44678ec11e'
+revision = "818e37fbf3e1"
+down_revision = "ac44678ec11e"
 branch_labels = None
 depends_on = None
 
@@ -59,4 +59,3 @@ def downgrade():
         print(str(e))
         exit(1)
     session.commit()
-

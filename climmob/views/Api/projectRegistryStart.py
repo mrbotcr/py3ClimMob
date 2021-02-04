@@ -18,7 +18,7 @@ from ...processes import (
     generateStructureForValidateJsonOdk,
     isRegistryClose,
     getProjectNumobs,
-    getJSONResult
+    getJSONResult,
 )
 
 from climmob.products import stopTasksByProcess
@@ -1001,12 +1001,12 @@ class readRegistryData_view(apiView):
                                 "",
                             )
 
-                            newJson = {"structure": info["registry"], "data": info["data"]}
+                            newJson = {
+                                "structure": info["registry"],
+                                "data": info["data"],
+                            }
 
-                            response = Response(
-                                status=200,
-                                body=json.dumps(newJson),
-                            )
+                            response = Response(status=200, body=json.dumps(newJson),)
                             return response
                         else:
                             response = Response(
