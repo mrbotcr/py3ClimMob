@@ -4,6 +4,7 @@ from ..products.analysis.analysis import create_analysis
 from ..products.analysisdata.analysisdata import create_datacsv
 from pyramid.httpexceptions import HTTPFound
 
+
 class analysisDataView(privateView):
     def processView(self):
         error_summary = {}
@@ -18,7 +19,9 @@ class analysisDataView(privateView):
                     part = dataworking["txt_included_in_analysis"][:-1].split(",")
                     infosheet = dataworking["txt_infosheets"].upper()
                     dataworking["project_cod"] = activeProjectData["project_cod"]
-                    pro = processToGenerateTheReport(self.user.login,dataworking, self.request, part, infosheet)
+                    pro = processToGenerateTheReport(
+                        self.user.login, dataworking, self.request, part, infosheet
+                    )
 
                 self.returnRawViewResult = True
                 return HTTPFound(location=self.request.route_url("productList"))
@@ -35,12 +38,9 @@ class analysisDataView(privateView):
         }
 
 
-
 def processToGenerateTheReport(user, dataworking, request, variables, infosheet):
 
-    data, _assessment = getQuestionsByType(
-        user, dataworking["project_cod"], request
-    )
+    data, _assessment = getQuestionsByType(user, dataworking["project_cod"], request)
 
     dict = {}
     for element in variables:
@@ -60,15 +60,11 @@ def processToGenerateTheReport(user, dataworking, request, variables, infosheet)
                         if _info["code"] is not None:
                             if _info["code"]["ass_cod"] == attr[2]:
                                 dict[_section].append(
-                                    data[_section][
-                                        data[_section].index(_info)
-                                    ]
+                                    data[_section][data[_section].index(_info)]
                                 )
 
     locale = request.locale_name
-    info = getJSONResult(
-        user, dataworking["project_cod"], request
-    )
+    info = getJSONResult(user, dataworking["project_cod"], request)
 
     create_analysis(
         locale,
@@ -82,12 +78,7 @@ def processToGenerateTheReport(user, dataworking, request, variables, infosheet)
     )
 
     create_datacsv(
-        user,
-        dataworking["project_cod"],
-        info,
-        request,
-        "Report",
-        "",
+        user, dataworking["project_cod"], info, request, "Report", "",
     )
 
     return True
