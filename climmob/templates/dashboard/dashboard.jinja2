@@ -314,7 +314,8 @@
                                                 <div class="col-md-12">
                                                     <br>
                                                     {% if progress.usableAssessments|length > 0 %}
-                                                        {% snippet 'snippets/error.jinja2', error_summary=error_summary %}
+                                                        {% include 'snippets/error.jinja2' %}
+{#                                                        {% snippet 'snippets/error.jinja2', error_summary=error_summary %}#}
                                                         <form class="formElement" id="start_assessment"  role="form" method="post" action="{{ request.route_url("startassessments",projectid=activeProject.project_cod) }}">
                                                             <div class="form-group">
                                                                 <label>{{ _("Select the assessment for start the data collection") }}</label>

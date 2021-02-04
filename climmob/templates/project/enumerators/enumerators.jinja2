@@ -16,7 +16,9 @@
 {% endblock topScripts %}
 
 {% block pageheading %}
-    {% snippet 'snippets/menuheading.jinja2', request=request, _title= _("Assign field agents"), _linkWiki="https://climmob.net/blog/wiki/assign-field-agents/" %}
+    {% set _title= _("Assign field agents") %}
+    {% set _linkWiki="https://climmob.net/blog/wiki/assign-field-agents/" %}
+    {% include 'snippets/menuheading.jinja2'%}
 {% endblock %}
 
 {% block pagecontent %}
@@ -48,7 +50,6 @@
                                         <td>
                                             {{ enumerator.enum_name }}
                                         </td>
-
                                     </tr>
                                 {% endfor %}
                                 </tbody>
@@ -89,7 +90,6 @@
                                 </tr>
 
                                 {% for enumerator in enumeratorsInProject %}
-
                                     <tr>
                                         <td style="vertical-align: middle;">
                                             {% if enumerator.enum_active == 1 %}
@@ -98,7 +98,6 @@
                                                 {{ enumerator.enum_name }} <span class="label label-danger">{{ _("Can not submit data") }}</span>
                                             {% endif %}
                                         </td>
-
                                         <td class="text-center" style="vertical-align: middle;">
                                             <button onclick="showDelete('{{ request.route_url('removeprjenumerator', projectid=projectid,enumeratorid=enumerator.enum_id) }}','{{ _("Do you really want to remove this field agent?") }}','{{ request.session.get_csrf_token() }}')" type="button" class="btn btn-sm btn-danger" title="{{_("Remove field agent")}}"><i class="fa fa-trash"></i></button>
                                         </td>
@@ -129,6 +128,6 @@
         })
     </script>
 
-    {% snippet 'snippets/loading.jinja2', request=request %}
+    {% include 'snippets/loading.jinja2' %}
 
 {% endblock pagecontent%}

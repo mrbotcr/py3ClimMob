@@ -48,7 +48,8 @@
                     </div>
                 </div>
                 <div class="ibox-content" style="height: 89%">
-                    {% snippet 'snippets/error.jinja2', error_summary=error_summary %}
+                    {% include 'snippets/error.jinja2' %}
+{#                    {% snippet 'snippets/error.jinja2', error_summary=error_summary %}#}
 
                     <form class="form-horizontal" role="form" method="post" action="{{ request.path }}">
                         {% set hasCode=False %}

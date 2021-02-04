@@ -18,6 +18,7 @@ class technologies_view(privateView):
     def processView(self):
         dataworking = {}
         error_summary = {}
+        error_summary_add={}
         error_summary_options = {}
         action = ""
         techSee = {}
@@ -27,7 +28,7 @@ class technologies_view(privateView):
             if "btn_add_technology" in self.request.POST:
                 dict_return = newtechnology_view.processView(self)
                 dataworking = dict_return["formdata"]
-                error_summary = dict_return["error_summary"]
+                error_summary_add = dict_return["error_summary"]
                 if not dict_return["redirect"]:
                     action = "addTechnology"
 
@@ -70,6 +71,7 @@ class technologies_view(privateView):
         return {
             "activeUser": self.user,
             "dataworking": dataworking,
+            "error_summary_add": error_summary_add,
             "error_summary": error_summary,
             "error_summary_options": error_summary_options,
             "UserTechs": getUserTechs(self.user.login, self.request),

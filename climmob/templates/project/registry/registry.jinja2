@@ -19,7 +19,9 @@
 {% endblock topScripts %}
 
 {% block pageheading %}
-    {% snippet 'snippets/menuheading.jinja2', request=request, _title= _("Prepare participant registration"), _linkWiki="https://climmob.net/blog/wiki/prepare-grower-registration/" %}
+    {% set _linkWiki="https://climmob.net/blog/wiki/prepare-grower-registration/" %}
+    {% set _title= _("Prepare participant registration") %}
+    {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
 
 {% block pagecontent %}
@@ -33,7 +35,6 @@
                             <div class="ibox-title" >
                                 <h5>{{ _("Available questions from library") }}</h5>
                                 <div class="ibox-tools">
-        {#                            <a onclick="showHelp()" class="btn btn-xs btn-primary pull-right" style="margin-right: 20px">{{ _("Show help") }}</a>#}
                                 </div>
                             </div>
                             <div class="ibox-content" style="min-height: 400px" id="div_availables">
@@ -43,7 +44,6 @@
                                 {% set classByUser=False %}
                                 {% set classByRegRequired=True %}
                                 {% include 'snippets/jstreeQuestions.jinja2' %}
-{#                                {% snippet 'snippets/jstreeQuestions.jinja2', request=request, UserQuestion=UserQuestion, activeUser=activeUser, Categories=Categories, doActions=False, jstreeId="jstree2",eventClick=False, classByUser=False, classByRegRequired=True %}#}
                             </div>
                         </div>
                     </div>
@@ -59,13 +59,12 @@
                                     </div>
                                 </div>
                                 <div class="ibox-content" style="min-height: 500px" id="div_form">
-                                    {% snippet 'snippets/error.jinja2', error_summary=error_summary %}
+                                    {% include 'snippets/error.jinja2' %}
                                     {% set eventClick=False %}
                                     {% set classByUser=False %}
                                     {% set classByRegRequired=True %}
                                     {% set classByAssesRequired=False %}
                                     {% include 'snippets/jstreeForm.jinja2' %}
-{#                                    {% snippet 'snippets/jstreeForm.jinja2', request=request, data=data, finalCloseQst=finalCloseQst, activeUser=activeUser, eventClick=False, classByUser=False, classByRegRequired=True, classByAssesRequired=False %}#}
                                     <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}" id="formFoSendInformation" style="display: none">
                                         <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                                         <textarea id="nestable-output" name="neworder" class="form-control" style="display:none;"></textarea>
@@ -85,9 +84,9 @@
                                 </div>
                                 <div class="ibox-content">
                                     <form class="form-horizontal formElement" role="form" method="post" id="formSection" action="{{ request.url }}">
-                                        {% snippet 'snippets/error.jinja2', error_summary=error_summary %}
+                                        {% include 'snippets/error.jinja2' %}
 
-                                        {% snippet 'snippets/project/registry/groupform.jinja2' %}
+                                        {% include 'snippets/project/registry/groupform.jinja2' %}
                                         <div class="row" style="text-align: right; padding-right: 15px">
                                             <div >
                                                 <input id="btnNewSection"    style="display: none" type="submit" class="btn btn-primary pull-right btnsSection" value="{{ _("Save section") }}"></input>
@@ -117,7 +116,11 @@
                 </div>
                 <div class="ibox-content " >
                     <div id="htmlForPreview">
-                        {% snippet 'snippets/project/previewForm.jinja2', request=request, data=data, showPhone=True,img1=request.url_for_static('landing/odk.png'), img2=request.url_for_static('landing/odk2.png'), img3=request.url_for_static('landing/odk3.png') %}
+                        {% set showPhone=True %}
+                        {% set img1=request.url_for_static('landing/odk.png') %}
+                        {% set img2=request.url_for_static('landing/odk2.png') %}
+                        {% set img3=request.url_for_static('landing/odk3.png') %}
+                        {% include 'snippets/project/previewForm.jinja2'%}
                     </div>
                 </div>
             </div>
@@ -295,7 +298,6 @@
                     success: function (respuesta) {
                         $("#htmlForPreview").html("")
                         $("#htmlForPreview").html(respuesta)
-                        //toastr.success("{{ _("Update completed.") }}");
                     },
                     error: function (respuesta) {
 
@@ -451,7 +453,7 @@
 
     </script>
 
-    {% snippet 'snippets/loading.jinja2', request=request %}
+    {% include 'snippets/loading.jinja2' %}
 
 {% endblock pagecontent %}
 

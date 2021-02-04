@@ -434,9 +434,9 @@ class registryFormCreation_view(privateView):
                 data, finalCloseQst = getDataFormPreview(self, projectid)
 
                 info = {
-                    "img1": self.request.url_for_static("static/landing/odk.png"),
-                    "img2": self.request.url_for_static("static/landing/odk2.png"),
-                    "img3": self.request.url_for_static("static/landing/odk3.png"),
+                    "img1": self.request.url_for_static("landing/odk.png"),
+                    "img2": self.request.url_for_static("landing/odk2.png"),
+                    "img3": self.request.url_for_static("landing/odk3.png"),
                     "data": data,
                     "_": self._,
                     "showPhone": True,

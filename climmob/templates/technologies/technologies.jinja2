@@ -23,7 +23,9 @@
 {% endblock topScripts %}
 
 {% block pageheading %}
-    {% snippet 'snippets/menuheading.jinja2', request=request, _title= _("Technologies library"), _linkWiki="https://climmob.net/blog/wiki/technologies-library/" %}
+    {% set _linkWiki="https://climmob.net/blog/wiki/technologies-library/" %}
+    {% set _title= _("Technologies library") %}
+    {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
 
 {% block pagecontent %}
@@ -38,6 +40,9 @@
                     </div>
                 </div>
                 <div class="ibox-content">
+                    {% set error_summary=error_summary_add %}
+                    {% include 'snippets/error.jinja2' %}
+
                     <input type="text" class="form-control form-control-sm m-b-xs" id="filter" placeholder="{{ _("Search technology") }}">
                     <div class="activity-stream">
                         <table class="footable table table-stripped tableHover" data-page-size="50000" data-filter=#filter>
@@ -49,9 +54,16 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, color="#000000",UserTechs=ClimMobTechs %}
+                                {% set resUserTechs = UserTechs %}
+                                {% set color="#000000"%}
+                                {% set UserTechs=ClimMobTechs %}
+                                {% set yourLib=False %}
+                                {% include 'snippets/technologies/technologies-stream.jinja2' %}
                                 {% if activeUser.login != "bioversity" %}
-                                    {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, color="#1ab394",UserTechs=UserTechs %}
+                                    {% set color="#1ab394" %}
+                                    {% set UserTechs=resUserTechs  %}
+                                    {% set yourLib=True %}
+                                    {% include 'snippets/technologies/technologies-stream.jinja2' %}
                                 {% endif %}
                             </tbody>
                         </table>
@@ -81,10 +93,10 @@
                     </div>
                 </div>
                 <div class="ibox-content">
-                    {% snippet 'snippets/error.jinja2', error_summary=error_summary %}
+                    {% include 'snippets/error.jinja2' %}
 
                     <form class="form-horizontal formElement" id="form_technology" role="form" method="post" action="{{ request.path }}">
-                        {% snippet 'snippets/technologies/technologies-form.jinja2', request=request, dataworking=dataworking %}
+                        {% include 'snippets/technologies/technologies-form.jinja2' %}
 
                         <button style="display: none" class="btn btn-danger pull-left BtnTechnology" id="btn_delete_technology" onclick="deleteTechnology()" type="button" title="{{ _("Delete technology") }}">{{ _("Delete technology") }}</button>
                         <button style="display: none" class="btn btn-primary pull-right BtnTechnology" type="submit" id="btn_add_technology" name="btn_add_technology" > {{ _('Add and close') }}</button>
@@ -109,7 +121,8 @@
                     </div>
                 </div>
                 <div class="ibox-content">
-                    {% snippet 'snippets/error.jinja2', error_summary=error_summary_options %}
+                    {% set error_summary=error_summary_options %}
+                    {% include 'snippets/error.jinja2' %}
 
                     <form class="form-horizontal formElement" id="form_technology_options" role="form" method="post" action="{{ request.path }}">
                         <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
@@ -450,6 +463,6 @@
 
     </script>
 
-    {% snippet 'snippets/loading.jinja2', request=request %}
+    {% include 'snippets/loading.jinja2' %}
 
 {% endblock pagecontent %}

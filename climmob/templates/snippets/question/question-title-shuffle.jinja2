@@ -15,7 +15,6 @@
 {% if question.question_dtype == 4 %} {% set fatype = "fa-map-marker" %} {% set qtype = "Geopoint" %} {% endif %}
 {% if question.question_dtype == 5 %} {% set fatype = "fa-dot-circle-o" %} {% set qtype = "Select one" %} {% set others = 1 %} {% endif %}
 {% if question.question_dtype == 6 %} {% set fatype = "fa-check-square-o" %} {% set qtype = "Select Multiple" %} {% set others = 1 %} {% endif %}
-
 {% if question.question_dtype == 11 %} {% set fatype = "fa-pencil" %} {% set qtype = "Geotrace" %} {% endif %}
 {% if question.question_dtype == 12 %} {% set fatype = "fa-square-o" %} {% set qtype = "Geoshape" %} {% endif %}
 {% if question.question_dtype == 13 %} {% set fatype = "fa-calendar" %} {% set qtype = "Date" %} {% endif %}
@@ -26,7 +25,6 @@
 {% if question.question_dtype == 18 %} {% set fatype = "fa-video-camera" %} {% set qtype = "Video" %} {% endif %}
 {% if question.question_dtype == 19 %} {% set fatype = "fa-barcode" %} {% set qtype = "Barcode/Qr" %} {% endif %}
 {% if question.question_dtype == 27 %} {% set fatype = "fa fa-map-signs" %} {% set qtype = "Location" %} {% endif %}
-
 {% if question.question_dtype == 7 %} {% set fatype = "fa-qrcode " %} {% set qtype = "Package" %} {% set qlabel = "label-package" %} {% endif %}
 {% if question.question_dtype == 8 %} {% set fatype = "fa-users" %} {% set qtype = "Observer" %} {% set qlabel = "label-observer" %} {% endif %}
 {% if question.question_dtype == 9 %} {% set fatype = "fa-th-list" %} {% set qtype = "Ranking of options" %} {% set qlabel = "label-characteristic" %} {% endif %}
@@ -40,23 +38,6 @@
 
     <li data-id="QST{{ question.question_id }}" id="QST{{ question.question_id }}" data-jstree='{"type":"question","icon": "fa {{ fatype }} {% if classByUser == True %}{% if question.assigned == 0 %}{% if question.user_name != 'bioversity' %}jstree-user{% endif %} {% endif %} {% endif %}  {% if classByRegRequired %} {% if question.question_reqinreg %}youCanDelete{% else %}jstree-user{% endif %}{% endif %} {% if classByAssesRequired %} {% if question.question_reqinasses %}youCanDelete{% else %}jstree-user{% endif %}{% endif %}"}' {% if eventClick %} onclick="openQuestions({{ question.question_id }},'no','{% if activeUser.login == question.user_name %}yes{% else %}no{% endif %}','{{ question.question_name.replace('"',"&quot;").replace("'","&#8242;")  }}','{{ question.question_code }}','{{ question.question_desc.replace('"',"&quot;").replace("'","&#8242;") }}','{{ question.qstgroups_id }}[*$%&]{{ question.qstgroups_user }}','{{ question.question_dtype }}','{{ question.question_unit.replace('"',"&quot;").replace("'","&#8242;") }}','{{ question.question_requiredvalue }}','{{ question.question_posstm }}','{{ question.question_negstm }}','{{ question.question_perfstmt }}', {{ question.assigned }}, {% if options %}{{ options }}{% else %}[]{% endif %} {% block shuffle_function_open_questions_extra %} {% endblock shuffle_function_open_questions_extra %})" {% endif %}>
         <span style="font-size: 14px; font-weight: initial; color: #000000; {% if activeUser.login == question.user_name %}font-style: italic{% endif %}">{{ question.question_name }}</span>
-{#        <span class="">#}
-{#            <span class="label {{ qlabel }}" style="display: inline-block; margin-top: 3px; font-size: 11px">{{ qtype }}</span>#}
-{#            {% if overall %}#}
-{#                <span class="label label-overall" style="display: inline-block; margin-top: 3px">{{ _("Overall") }}</span>#}
-{#            {% endif %}#}
-{#            {% if question.num_options == 0 %}#}
-{#                <span class="label label-danger" style="display: inline-block; margin-top: 3px">{{ _("Without options!") }}</span>#}
-{#            {% endif %}#}
-{#            {% if question.assigned != 0 %}#}
-{#                <span class="label label-danger" style="display: inline-block; margin-top: 3px">{{ _("Assigned in a form") }}</span>#}
-{#            {% endif %}#}
-{#        </span>#}
-{#        {% if allowSelect %}#}
-{#            <input name="CHK{{ question.question_id }}" type="checkbox">#}
-{#        {% endif %}#}
     </li>
-
-
 
 {% endblock qstitemtitle %}

@@ -1,10 +1,10 @@
 
-
-
-
-
 <div {% if showPhone %} class="text-center" {% endif %}>
-    {% if showPhone %}<div><img style="width: 100%; max-width: 320px" src="{{ img1 }}" alt="info"/></div>{% endif %}
+    {% if showPhone %}
+        <div>
+            <img style="width: 100%; max-width: 320px" src="{{ img1 }}" alt="info"/>
+        </div>
+    {% endif %}
     <div style="padding: 10px; text-align: left; {% if showPhone %} display: inline-block; background-color: #fafafa; overflow-y: scroll; height: 500px; max-width: 320px; {% endif %}  ">
         {% for item in data %}
             {% if item.createGRP %}

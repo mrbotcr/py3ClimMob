@@ -30,8 +30,9 @@
 {% endblock topScripts %}
 
 {% block pageheading %}
-    {% snippet 'snippets/menuheading.jinja2', request=request, _title= _("Questions library"), _linkWiki="https://climmob.net/blog/wiki/questions-library/" %}
-
+    {% set _title= _("Questions library") %}
+    {% set _linkWiki="https://climmob.net/blog/wiki/questions-library/" %}
+    {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
 
 {% block pagecontent %}
@@ -55,7 +56,6 @@
                         {% set eventClick=True %}
                         {% set classByUser=True %}
                         {% include 'snippets/jstreeQuestions.jinja2' %}
-{#                    {% snippet 'snippets/jstreeQuestions.jinja2', request=request, UserQuestion=UserQuestion, activeUser=activeUser, Categories=Categories, doActions=True, jstreeId="jstree1", eventClick=True, classByUser=True %}#}
                     </div>
                 </div>
             </div>
@@ -102,12 +102,11 @@
                     </div>
                 </div>
                 <div class="ibox-content " >
-                    {% snippet 'snippets/error.jinja2', error_summary=error_summary %}
+                    {% include 'snippets/error.jinja2' %}
 
                     <form class="form-horizontal formElement" role="form" method="post" id="formQuestion" action="{{ request.url }}">
 
                         {% include 'snippets/question/question-form.jinja2' %}
-{#                        {% snippet 'snippets/question/question-form.jinja2',formdata=formdata, request=request, Categories =Categories %}#}
 
                         <div>
                             <input id="btn_add_question"  type="submit" name="btn_add_question" class="btn btn-primary pull-right btnsQuestion" value="{{ _('Save and close') }}">
@@ -919,6 +918,6 @@
     </script>
 
 
-    {% snippet 'snippets/loading.jinja2', request=request %}
+    {% include 'snippets/loading.jinja2' %}
 
 {% endblock pagecontent %}

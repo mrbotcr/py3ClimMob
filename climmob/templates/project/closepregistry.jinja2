@@ -5,7 +5,9 @@
 {% endblock title %}
 
 {% block pageheading %}
-    {% snippet 'snippets/menuheading.jinja2', request=request, _title= _("Finish registration"), _linkWiki="https://climmob.net/blog/wiki/finish-form/" %}
+    {% set _title= _("Finish registration") %}
+    {% set _linkWiki="https://climmob.net/blog/wiki/finish-form/" %}
+    {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
 
 {% block pagecontent %}

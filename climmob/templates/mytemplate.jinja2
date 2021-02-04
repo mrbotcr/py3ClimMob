@@ -7,7 +7,9 @@
             <p class="lead"> {{ _("Welcome to") }} <span class="font-normal">{{ project }}</span>, a&nbsp;Pyramid application generated&nbsp;by<br><span class="font-normal">Cookiecutter</span>.</p>
         {% endblock title %}
         {% block extra %}
-            {% snippet 'snippets/my_snippet.jinja2',value='Value for the snippet is 1' %}
+            {% set value='Value for the snippet is 1' %}
+            {% include 'snippets/my_snippet.jinja2' %}
+{#            {% snippet 'snippets/my_snippet.jinja2',value='Value for the snippet is 1' %}#}
         {% endblock extra %}
     </div>
 {% endblock content %}

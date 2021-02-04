@@ -17,7 +17,9 @@
 {% endblock topScripts %}
 
 {% block pageheading %}
-     {% snippet 'snippets/menuheading.jinja2', request=request, _title= _("Prepare data collection"), _linkWiki="https://climmob.net/blog/wiki/prepare-data-collection/" %}
+    {% set _title= _("Prepare data collection")%}
+    {% set _linkWiki="https://climmob.net/blog/wiki/prepare-data-collection/" %}
+    {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
 
 {% block pagecontent %}
@@ -32,13 +34,13 @@
                 </div>
                 <div class="ibox-content">
 
-                    {% snippet 'snippets/error.jinja2', error_summary=error_summary %}
-
+                    {% include 'snippets/error.jinja2' %}
 
                     <div class="error-desc">
                         <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}">
                             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
-                            {% snippet 'snippets/project/assessment/assessmentform.jinja2', data=data, final_visible=new_available  %}
+                            {% set final_visible=new_available %}
+                            {% include 'snippets/project/assessment/assessmentform.jinja2' %}
                             <button class="btn btn-primary pull-right btnsAssesment" type="submit" name="btn_add_ass" id="btn_add_ass"> {{ _('Add') }}</button>
                             <button class="btn btn-primary pull-right btnsAssesment" type="submit" name="btn_modify_ass" id="btn_modify_ass" style="display: none"> {{ _('Save') }}</button>
                         </form>
@@ -160,7 +162,7 @@
 
     </script>
 
-    {% snippet 'snippets/loading.jinja2', request=request %}
+    {% include 'snippets/loading.jinja2' %}
 
 {% endblock pagecontent%}
 

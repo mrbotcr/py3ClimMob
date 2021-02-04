@@ -434,72 +434,7 @@ def loadRoutes(config):
             "renderer": "json",
         }
     )
-    # routes.append(
-    #     {
-    #         "name": "newquestion",
-    #         "path": "/question/{category_id}/{category_user}/new",
-    #         "view": newQuestion_view,
-    #         "renderer": "question/newquestion.jinja2",
-    #     }
-    # )
-    # routes.append(
-    #     {
-    #         "name": "questionvalues",
-    #         "path": "/question/{qid}/values",
-    #         "view": questionValues_view,
-    #         "renderer": "question/questionvalues.jinja2",
-    #     }
-    # )
-    # routes.append(
-    #     {
-    #         "name": "questioncharacteristics",
-    #         "path": "/question/{qid}/characteristics",
-    #         "view": questionCharacteristics_view,
-    #         "renderer": "question/questioncharacteristics.jinja2",
-    #     }
-    # )
-    # routes.append(
-    #     {
-    #         "name": "questionperformance",
-    #         "path": "/question/{qid}/performance",
-    #         "view": questionPerformance_view,
-    #         "renderer": "question/questionperformance.jinja2",
-    #     }
-    # )
-    #
-    # routes.append(
-    #     {
-    #         "name": "addquestionvalue",
-    #         "path": "/question/{qid}/value/add",
-    #         "view": addQuestionValue_view,
-    #         "renderer": "question/addquestionvalue.jinja2",
-    #     }
-    # )
-    # routes.append(
-    #     {
-    #         "name": "editquestionvalue",
-    #         "path": "/question/{qid}/value/{valueid}/edit",
-    #         "view": modifyQuestionValue_view,
-    #         "renderer": "question/editquestionvalue.jinja2",
-    #     }
-    # )
-    # routes.append(
-    #     {
-    #         "name": "deletequestionvalue",
-    #         "path": "/question/{qid}/value/{valueid}/delete",
-    #         "view": deleteQuestionValue_view,
-    #         "renderer": "json",
-    #     }
-    # )
-    #
-    # routes.append(
-    #     {
-    #         "name": "modifyquestion",
-    #         "path": "/question/{qid}/edit",
-    #         "view": modifyQuestion_view,
-    #         "renderer": "question/modifyquestion.jinja2",
-    #     }
-    # )
+
     routes.append(
         {
             "name": "deletequestion",
@@ -518,22 +453,7 @@ def loadRoutes(config):
             "enumerators/enumerators.jinja2",
         )
     )
-    """routes.append(
-        addRoute(
-            "addenumerator",
-            "/enumerators/add",
-            addEnumerator_view,
-            "enumerators/addenumerator.jinja2",
-        )
-    )
-    routes.append(
-        addRoute(
-            "modifyenumerator",
-            "/enumerator/{enumeratorid}/modify",
-            modifyEnumerator_view,
-            "enumerators/modifyenumerator.jinja2",
-        )
-    )"""
+
     routes.append(
         addRoute(
             "deleteenumerator",
@@ -552,14 +472,7 @@ def loadRoutes(config):
             "technologies/technologies.jinja2",
         )
     )
-    routes.append(
-        addRoute(
-            "newusertechnology",
-            "/technology/new",
-            newtechnology_view,
-            "technologies/newTechnology.jinja2",
-        )
-    )
+
     routes.append(
         addRoute(
             "modifyusertechnology",
@@ -621,14 +534,6 @@ def loadRoutes(config):
     )
     routes.append(
         addRoute(
-            "addprjenumerators",
-            "/project/{projectid}/enumerators/add",
-            addProjectEnumerators_view,
-            "project/enumerators/addenumerators.jinja2",
-        )
-    )
-    routes.append(
-        addRoute(
             "removeprjenumerator",
             "/project/{projectid}/enumerator/{enumeratorid}/remove",
             removeProjectEnumerators_view,
@@ -653,23 +558,6 @@ def loadRoutes(config):
             "string",
         )
     )
-
-    routes.append(
-        addRoute(
-            "registrypreview",
-            "/project/{projectid}/registry/preview",
-            registryPreview_view,
-            "project/registry/previewform.jinja2",
-        )
-    )
-    routes.append(
-        addRoute(
-            "registryenketo",
-            "/project/{projectid}/registry/preview/{file}",
-            registryEnketo_view,
-            None,
-        )
-    )
     routes.append(
         addRoute(
             "newregistryquestion",
@@ -686,22 +574,6 @@ def loadRoutes(config):
             "json",
         )
     )
-    # routes.append(
-    #     addRoute(
-    #         "modifyregistrygroup",
-    #         "project/{projectid}/registry/{groupid}/modify",
-    #         modifyRegistrySection_view,
-    #         "project/registry/modifygroup.jinja2",
-    #     )
-    # )
-    # routes.append(
-    #     addRoute(
-    #         "newregistrygroup",
-    #         "project/{projectid}/registry/newsection",
-    #         newRegistrySection_view,
-    #         "project/registry/newgroup.jinja2",
-    #     )
-    # )
     routes.append(
         {
             "name": "registrySectionActions",
@@ -736,14 +608,6 @@ def loadRoutes(config):
             "project/assessment/assessment.jinja2",
         )
     )
-    """routes.append(
-        addRoute(
-            "newassessment",
-            "/project/{projectid}/assessments/new",
-            newassessmenthead_view,
-            "project/assessment/newassessment.jinja2",
-        )
-    )"""
     routes.append(
         addRoute(
             "startassessments",
@@ -752,15 +616,6 @@ def loadRoutes(config):
             "project/startassessments.jinja2",
         )
     )
-    # routes.append(addRoute('cancelassessments', '/project/{projectid}/assessment/{assessmentid}/cancel', cancelAssessment_view,'project/cancelassessment.jinja2'))
-    """routes.append(
-        addRoute(
-            "modifyassessment",
-            "/project/{projectid}/assessment/{assessmentid}/edit",
-            modifyassessmenthead_view,
-            "project/assessment/modifyassessment.jinja2",
-        )
-    )"""
     routes.append(
         addRoute(
             "deleteassessment",
@@ -835,22 +690,6 @@ def loadRoutes(config):
             "json",
         )
     )
-    # routes.append(
-    #     addRoute(
-    #         "modifyassessmentgroup",
-    #         "project/{projectid}/assessment/{assessmentid}/{groupid}/modify",
-    #         modifyAssessmentSection_view,
-    #         "project/assessment/modifygroup.jinja2",
-    #     )
-    # )
-    # routes.append(
-    #     addRoute(
-    #         "newassessmentgroup",
-    #         "project/{projectid}/assessment/{assessmentid}/newsection",
-    #         newAssessmentSection_view,
-    #         "project/assessment/newgroup.jinja2",
-    #     )
-    # )
     routes.append(
         {
             "name": "assessmentSectionActions",

@@ -18,7 +18,10 @@
 
 
 {% block pageheading %}
-    {% snippet 'snippets/menuheading.jinja2', request=request, _title= _("Field agents"), _linkWiki="https://climmob.net/blog/wiki/field-agents-library/" %}
+    {% set _title= _("Field agents") %}
+    {% set _linkWiki= "https://climmob.net/blog/wiki/field-agents-library/"%}
+    {% include 'snippets/menuheading.jinja2' %}
+
 {% endblock %}
 
 {% block pagecontent %}
@@ -46,7 +49,8 @@
                     <div class="error-desc">
                         <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}" >
                             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
-                            {% snippet 'snippets/enumerators/enumerator-form.jinja2', dataworking=dataworking, modify=modify %}
+                            {% include 'snippets/enumerators/enumerator-form.jinja2'%}
+
                             <button type="submit" class="btn btn-primary pull-right btnsEnumerator" id="btn_add_enumerator" name="btn_add_enumerator"> {{ _('Add') }}</button>
                             <button type="submit" class="btn btn-primary pull-right btnsEnumerator" id="btn_modify_enumerator" name="btn_modify_enumerator" style="display: none"> {{ _('Save') }}</button>
                         </form>
@@ -62,7 +66,6 @@
                 <div class="ibox-title">
                     <h5>{{ _("Registered field agents") }}</h5>
                     <div class="ibox-tools">
-{#                        <a href="{{ request.route_url('addenumerator') }}"  class="btn btn-xs btn-primary pull-right clm-grpactions" style="margin-right: 20px">{{ _("Add new field agent") }}</a>#}
                     </div>
                 </div>
                 <div class="ibox-content" >
@@ -93,7 +96,6 @@
                                     </td>
                                     <td class="text-center" style="vertical-align: middle;">
                                         <button class="btn btn-warning btn-circle" onclick='seeEnumerator({{ enumerator.enum_name| tojson }},{{ enumerator.enum_id| tojson }},{{ enumerator.enum_password| tojson }},{{ enumerator.enum_active }})'  title="Edit field agent"><i class="fa fa-pencil"></i></button>
-{#                                        <button class="btn btn-danger btn-circle" onclick="showDeleteEnumerator('{{request.route_url('deleteenumerator',enumeratorid = enumerator.enum_id)}}','Remove field agent','Remove');" type="button" title="Remove field agent"><i class="fa fa-times"></i></button>#}
                                         <button class="btn btn-danger btn-circle" onclick="showDelete('{{ request.route_url('deleteenumerator',enumeratorid = enumerator.enum_id)}}','{{ _("Do you really want to remove this field agent?") }}','{{ request.session.get_csrf_token() }}')" type="button" title="Remove field agent"><i class="fa fa-times"></i></button>
                                     </td>
                                 </tr>
@@ -104,7 +106,6 @@
                     {% else %}
                         <div style="width: 100%; text-align: center">
                             <h3><b>{{ _("No field agents to display") }}</b></h3>
-{#                            <a href="{{ request.route_url('addenumerator') }}"  class="btn btn-primary clm-grpactions" style="margin-right: 20px">{{ _("Add new field agent") }}</a>#}
                         </div>
                     {% endif %}
                 </div>
@@ -164,7 +165,7 @@
     }
     </script>
 
-    {% snippet 'snippets/loading.jinja2', request=request %}
+    {% include 'snippets/loading.jinja2' %}
 
 {% endblock pagecontent %}
 
