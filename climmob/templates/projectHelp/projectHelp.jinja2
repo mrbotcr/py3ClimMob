@@ -12,7 +12,9 @@
 
 
 {% block pageheading %}
-    {% snippet 'snippets/menuheading.jinja2', request=request, _title= _("Project help"), _linkWiki="https://climmob.net/blog/wiki/project-help/" %}
+    {% set _title= _("Project help") %}
+    {% set _linkWiki="https://climmob.net/blog/wiki/project-help/"%}
+    {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
 
 

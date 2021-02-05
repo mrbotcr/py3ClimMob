@@ -18,7 +18,7 @@ class technologies_view(privateView):
     def processView(self):
         dataworking = {}
         error_summary = {}
-        error_summary_add={}
+        error_summary_add = {}
         error_summary_options = {}
         action = ""
         techSee = {}

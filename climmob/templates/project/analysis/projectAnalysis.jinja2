@@ -17,7 +17,9 @@
 {% endblock topScripts %}
 
 {% block pageheading %}
-    {% snippet 'snippets/menuheading.jinja2', request=request, _title= _("Analize data"), _linkWiki="https://climmob.net/blog/wiki/analyze-data/" %}
+    {% set  _title= _("Analize data") %}
+    {% set _linkWiki="https://climmob.net/blog/wiki/analyze-data/" %}
+    {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
 
 {% block pagecontent %}
@@ -139,7 +141,7 @@
         </div>
     </div>
 
-    {% snippet 'snippets/loading.jinja2', request=request %}
+    {% include 'snippets/loading.jinja2' %}
 
 {% endblock pagecontent%}
 

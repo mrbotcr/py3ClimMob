@@ -16,7 +16,9 @@
 {% endblock topScripts %}
 
 {% block pageheading %}
-    {% snippet 'snippets/menuheading.jinja2', request=request, _title= _("Select technologies"), _linkWiki="https://climmob.net/blog/wiki/select-technology-options/" %}
+    {% set _title= _("Select technologies") %}
+    {% set _linkWiki="https://climmob.net/blog/wiki/select-technology-options/" %}
+    {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
 
 {% block pagecontent %}
@@ -42,9 +44,18 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, UserTechs=TechnologiesInProject, checkbox=True, checked=True, color="#000000",showBold=True %}
-
-                            {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, UserTechs=TechnologiesUser, checkbox=True, checked=False, color="#000000" %}
+                            {% set UserTechs=TechnologiesInProject %}
+                            {% set checkbox=True %}
+                            {% set checked=True %}
+                            {% set color="#000000" %}
+                            {% set showBold=True %}
+                            {% include 'snippets/technologies/technologies-stream.jinja2' %}
+                            {% set UserTechs=TechnologiesUser %}
+                            {% set checkbox=True %}
+                            {% set checked=False %}
+                            {% set color="#000000" %}
+                            {% set showBold=False %}
+                            {% include 'snippets/technologies/technologies-stream.jinja2' %}
                         </tbody>
                     </table>
                     <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}">
@@ -86,11 +97,23 @@
                     <div class="ibox-content animated fadeInRightBig" >
                         <table class="footable table table-stripped" data-page-size="50000" data-filter=#filter>
                             <tbody>
-                                {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, UserTechs=alias.AliasTechnologyInProject, checkbox=True, checked=True, isAlias=True %}
-
-                                {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, UserTechs=alias.AliasExtraTechnologyInProject, extra=True, checkbox=True, checked=True, isAlias=True %}
-
-                                {% snippet 'snippets/technologies/technologies-stream.jinja2', request=request, UserTechs=alias.AliasTechnology, checkbox=True, checked=False, isAlias=True %}
+                                {% set UserTechs=alias.AliasTechnologyInProject %}
+                                {% set checkbox=True %}
+                                {% set checked=True %}
+                                {% set isAlias=True %}
+                                {% include 'snippets/technologies/technologies-stream.jinja2' %}
+                                {% set UserTechs=alias.AliasExtraTechnologyInProject %}
+                                {% set extra=True %}
+                                {% set checkbox=True %}
+                                {% set checked=True %}
+                                {% set isAlias=True %}
+                                {% include 'snippets/technologies/technologies-stream.jinja2' %}
+                                {% set UserTechs=alias.AliasTechnology %}
+                                {% set checkbox=True %}
+                                {% set checked=False %}
+                                {% set isAlias=True %}
+                                {% set extra=False %}
+                                {% include 'snippets/technologies/technologies-stream.jinja2' %}
                             </tbody>
                         </table>
                         <div class="stream" style="padding: 4px 0" onclick="showCreateTechnology()">
@@ -130,7 +153,7 @@
                     </div>
                     <div class="ibox-content animated fadeInRightBig" >
 
-                        {% snippet 'snippets/error.jinja2', error_summary=error_summary %}
+                        {% include 'snippets/error.jinja2' %}
                         <p style="font-size: 14px">{{ _("Create an new level just for this project") }}</p>
                         <br>
                         <div class="error-desc">
@@ -212,6 +235,6 @@
 
     </script>
 
-    {% snippet 'snippets/loading.jinja2', request=request %}
+    {% include 'snippets/loading.jinja2' %}
 
 {% endblock pagecontent %}

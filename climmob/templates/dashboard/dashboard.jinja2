@@ -5,6 +5,7 @@
     {% block meta %}
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="shortcut icon" href="{{ request.url_for_static('landing/icon.png') }}">
     {% endblock meta %}
 
     {% block title %}
@@ -315,7 +316,6 @@
                                                     <br>
                                                     {% if progress.usableAssessments|length > 0 %}
                                                         {% include 'snippets/error.jinja2' %}
-{#                                                        {% snippet 'snippets/error.jinja2', error_summary=error_summary %}#}
                                                         <form class="formElement" id="start_assessment"  role="form" method="post" action="{{ request.route_url("startassessments",projectid=activeProject.project_cod) }}">
                                                             <div class="form-group">
                                                                 <label>{{ _("Select the assessment for start the data collection") }}</label>
@@ -433,12 +433,7 @@
                                                                     <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('EditDataRegistry',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-table"></i> {{ _("View data") }}</a>
 
                                                                     <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataRegistry',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data") }}</a>
-                                                                    {% if progress.regsubmissions == 1%}
 
-{#                                                                        <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{request.route_url('uploadDataRegistry',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-cloud-upload"></i> {{ _("Upload data") }}</a>#}
-                                                                    {% endif %}
-{#                                                                    <br>#}
-{#                                                                    <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" data-toggle="modal" data-target="#modalRegistry"><i class="fa fa-pie-chart"></i> {{ _("Field agent submissions") }}</a>#}
                                                                 {% endif %}
                                                                 {% if progress.regerrors > 0 and progress.regsubmissions == 1%}
                                                                     <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;white-space: normal !important;word-wrap: break-word !important;" href="{{request.route_url('CleanErrorLogs',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-bug"></i> {{ _("Show submissions with conflicts") }}</a>
@@ -893,7 +888,7 @@
                                 <ul class="sidebar-list">
                                     {% if hasActiveProject %}
                                         {% for project in userProjects %}
-                                            {% snippet 'snippets/dashboard/project_details.jinja2',project=project,request=request  %}
+                                            {% include 'snippets/dashboard/project_details.jinja2' %}
                                         {% endfor %}
                                     {% endif %}
                                 </ul>
@@ -1088,7 +1083,7 @@
 
 {% endblock script %}
 
-{% snippet 'snippets/loading.jinja2', request=request %}
+{% include 'snippets/loading.jinja2' %}
 
 </body>
 

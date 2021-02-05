@@ -40,6 +40,7 @@
                     </div>
                 </div>
                 <div class="ibox-content">
+                    {% set  error_summary_aux = error_summary %}
                     {% set error_summary=error_summary_add %}
                     {% include 'snippets/error.jinja2' %}
 
@@ -93,6 +94,7 @@
                     </div>
                 </div>
                 <div class="ibox-content">
+                    {% set error_summary = error_summary_aux %}
                     {% include 'snippets/error.jinja2' %}
 
                     <form class="form-horizontal formElement" id="form_technology" role="form" method="post" action="{{ request.path }}">
@@ -226,7 +228,7 @@
                     $("#div_create_technology_option").css('display','initial')
                 {% endif%}
             {% else %}
-                {% if error_summary %}
+                {% if error_summary_aux %}
                     $("#btn_add_technology").css('display','initial')
                     $("#div_create_technology").css('display','initial')
                 {% endif%}
@@ -245,6 +247,10 @@
             $("#tech_name").val("")
             $(".tech_id").val("")
             $("#div_create_technology").css('display','initial')
+
+            if ($('.closeError').length) {
+                $(".closeError").click()
+            }
         }
 
         $("#btn_cancel_technology").click(function () {
@@ -361,15 +367,30 @@
             $("#btn_add_alias").css('display','block')
             $("#div_create_option").css('display','block')
             $("#div_create_technology_option").css("display","initial")
-        }
-
-        function showAlias(alias)
-        {
-            $("#option"+alias.alias_id).iCheck('check');
 
             if ($('.closeError').length) {
                 $(".closeError").click()
             }
+        }
+
+        var changeError=0
+        function showAlias(alias)
+        {
+            $("#option"+alias.alias_id).iCheck('check');
+            {% if not error_summary_options %}
+                if ($('.closeError').length) {
+                    $(".closeError").click()
+                }
+            {% else %}
+                if (changeError > 0)
+                {
+                    if ($('.closeError').length) {
+                        $(".closeError").click()
+                    }
+                }
+                changeError =changeError + 1
+            {% endif %}
+
             $("#alias_name").prop('required',true);
             $("#alias_name_insert").prop('required',false);
             cleanSectionsOptions()
@@ -405,9 +426,9 @@
         function cleanBtsTechnologyOptions() {
             $(".BtnTechnologyOptions").css('display','none')
 
-            if ($('.closeError').length) {
+            /*if ($('.closeError').length) {
                 $(".closeError").click()
-            }
+            }*/
         }
 
         function cleanSectionsOptions(){

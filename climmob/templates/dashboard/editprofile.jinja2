@@ -13,7 +13,11 @@
 {% endblock topScripts %}
 
 {% block pageheading %}
-    {% snippet 'snippets/menuheading.jinja2', request=request, _title= _("Profile"), _linkWiki="https://climmob.net/blog/wiki/profile/", extra=[[_("Profile"), request.route_url('profile')]],otherTitle= _("Edit") %}
+    {% set _title= _("Profile")%}
+    {% set _linkWiki="https://climmob.net/blog/wiki/profile/"%}
+    {% set extra=[[_("Profile"), request.route_url('profile')]] %}
+    {% set otherTitle= _("Edit") %}
+    {% include 'snippets/menuheading.jinja2'%}
 {% endblock %}
 
 {% block profileinfo %}

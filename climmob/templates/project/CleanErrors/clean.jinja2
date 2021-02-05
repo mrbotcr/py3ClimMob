@@ -5,7 +5,9 @@
 {% endblock title %}
 
 {% block pageheading %}
-    {% snippet 'snippets/menuheading.jinja2', request=request, _title= _("Solve conflicts"), _linkWiki="https://climmob.net/blog/wiki/solve-conflicts/" %}
+    {% set _title= _("Solve conflicts") %}
+    {% set _linkWiki="https://climmob.net/blog/wiki/solve-conflicts/" %}
+    {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
 
 {% block pagecontent %}
@@ -27,29 +29,6 @@
                     <h5>{{ _("Select the conflict you want to solve") }}</h5>
                 </div>
                 <div class="ibox-content" >
-{#                    <div id="vertical-timeline" class="vertical-container light-timeline no-margins" >#}
-{#                        {% for log in Logs %}#}
-{#                            <div class="vertical-timeline-block">#}
-{#                                <div class="vertical-timeline-icon navy-bg">#}
-{#                                    <i class="fa fa-bug"></i>#}
-{#                                </div>#}
-{##}
-{#                                <div class="vertical-timeline-content">#}
-{#                                    <h2>{{ log.enum_name }}</h2>#}
-{#                                    <p>{{ _("Error") }}: {{ log.detail }}</p>#}
-{##}
-{#                                    <div style="width: 100%;text-align: center">#}
-{#                                        <span >{{ log.log_dtime }}</span><br>#}
-{#                                        {% if formId == "registry" %}#}
-{#                                            <a class="btn btn-primary btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('CleanErrorLogsDetails',projectid=log.project_cod,formid='registry',logid=log.log_id) }}">{{ _("Show conflicts") }}</a>#}
-{#                                        {% else %}#}
-{#                                            <a class="btn btn-primary btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('CleanErrorLogsDetailsAssessment',projectid=log.project_cod,formid='assessment',codeid=codeid,logid=log.log_id) }}">{{ _("Show conflicts") }}</a>#}
-{#                                        {% endif %}#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                            </div>#}
-{#                        {% endfor %}#}
-{#                    </div>#}
                     <table style="width: 100%">
                         {% for log in Logs %}
                             <tr>
@@ -58,9 +37,6 @@
                             <tr>
                                 <td><p style="margin: 0px;">{% if log.detail %}{{ _("Error") }}: {{ log.detail }} {% else %} {{ _("Error: The .log file don't exits") }}{% endif %}</p></td>
                             </tr>
-{#                            <tr>#}
-{#                                <td class="text-center"><span >{{ log.log_dtime }}</span></td>#}
-{#                            </tr>#}
                             <tr>
                                 <td>
                                     {% if log.detail %}
@@ -264,7 +240,7 @@
         {% endif %}
     </div>
 
-    {% snippet 'snippets/loading.jinja2', request=request %}
+    {% include 'snippets/loading.jinja2' %}
 
 {% endblock pagecontent%}
 

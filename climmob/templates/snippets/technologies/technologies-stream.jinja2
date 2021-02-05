@@ -1,5 +1,4 @@
 
-
 {% for technology in UserTechs %}
     <tr id="tech{{ technology.tech_id}}" {% if not checkbox %}onclick='showVarietiesInTechnology({{ technology| tojson }})'{% else%}{%if not isAlias%}{% if checked%}onclick='showVarieties({{technology.tech_id}})'{% else %}onclick='showLibraryVarieties({{technology.tech_id}})'{%endif%}{%endif%}{% endif %}>
         <td style="vertical-align: middle">

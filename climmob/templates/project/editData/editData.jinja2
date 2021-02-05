@@ -20,7 +20,9 @@
 {% endblock topScripts %}
 
 {% block pageheading %}
-    {% snippet 'snippets/menuheading.jinja2', request=request, _title= _("Edit data"), _linkWiki="https://climmob.net/blog/wiki/edit-data/" %}
+    {% set _title= _("Edit data") %}
+    {% set _linkWiki="https://climmob.net/blog/wiki/edit-data/" %}
+    {% include 'snippets/menuheading.jinja2' %}
 {% endblock pageheading %}
 
 {% block pagecontent %}

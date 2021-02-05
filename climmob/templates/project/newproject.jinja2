@@ -20,22 +20,9 @@
 {% endblock topScripts %}
 
 {% block pageheading %}
-    <div class="row wrapper border-bottom white-bg page-heading">
-        <div class="col-lg-10">
-            <h2>{{ _("Create project") }}</h2>
-            <ol class="breadcrumb">
-                <li>
-                    <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
-                </li>
-                <li class="active">
-                    <strong>{{ _("Create project") }}</strong>
-                </li>
-            </ol>
-        </div>
-        <div class="col-lg-2">
-
-        </div>
-    </div>
+    {% set _title= _("Create project") %}
+    {% set _linkWiki= "https://climmob.net/blog/wiki/create-project-2/"%}
+    {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
 
 {% block pagecontent %}
@@ -52,7 +39,8 @@
         <form method="post" class="form-horizontal" action="{{ request.path }}">
             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
             {% block newprjform %}
-                {% snippet 'snippets/project/project_form.jinja2', dataworking=dataworking, edit=False, countries=countries %}
+                {% set edit=False %}
+                {% include 'snippets/project/project_form.jinja2' %}
 
                 <button type="submit" name="btn_addNewProject" id="btn_addNewProject" class="btn btn-primary pull-right">{{ _("Create project") }}</button>
 

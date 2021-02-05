@@ -27,26 +27,13 @@ from ..views.project import (
 from ..views.question import (
     qlibrary_view,
     categories_view,
-    newQuestion_view,
-    modifyQuestion_view,
     deleteQuestion_view,
-    questionValues_view,
-    addQuestionValue_view,
-    modifyQuestionValue_view,
-    deleteQuestionValue_view,
-    questionCharacteristics_view,
-    questionPerformance_view,
     questionsActions_view,
 )
 
 from ..views.registry import (
     registry_view,
-    registryPreview_view,
-    newRegistryQuestion_view,
-    newRegistrySection_view,
     deleteRegistrySection_view,
-    modifyRegistrySection_view,
-    registryEnketo_view,
     cancelRegistry_view,
     closeRegistry_view,
     registryFormCreation_view,
@@ -55,14 +42,8 @@ from ..views.registry import (
 
 from ..views.assessment import (
     assessment_view,
-    assessmentPreview_view,
-    newAssessmentQuestion_view,
-    newAssessmentSection_view,
     deleteAssessmentSection_view,
-    modifyAssessmentSection_view,
     assessmenthead_view,
-    # newassessmenthead_view,
-    # modifyassessmenthead_view,
     deleteassessmenthead_view,
     assessmentEnketo_view,
     startAssessments_view,
@@ -73,14 +54,10 @@ from ..views.assessment import (
 )
 from ..views.project_technologies import (
     projectTecnologies_view,
-    prjTechAliases_view,
-    prjTechAliasAdd_view,
     prjTechAliasDelete_view,
 )
 from ..views.enumerator import (
     enumerators_view,
-    # addEnumerator_view,
-    # modifyEnumerator_view,
     deleteEnumerator_view,
 )
 from ..views.project_combinations import projectCombinations_view
@@ -98,22 +75,14 @@ from ..views.odk import (
 
 from ..views.project_enumerators import (
     projectEnumerators_view,
-    addProjectEnumerators_view,
     removeProjectEnumerators_view,
 )
 
 from ..views.technologies import (
     technologies_view,
-    newtechnology_view,
-    modifytechnology_view,
     deletetechnology_view,
 )
-from ..views.techaliases import (
-    alias_view,
-    newalias_view,
-    modifyalias_view,
-    deletealias_view,
-)
+from ..views.techaliases import deletealias_view
 
 from ..views.cleanErrorLogs import cleanErrorLogs_view
 from ..views.test import test_view
@@ -126,7 +95,7 @@ from ..views.productsList import (
     dataView,
 )
 
-from ..views.editData import editDataView, downloadDataView, uploadDataView
+from ..views.editData import editDataView, downloadDataView
 
 # -------Api-------#
 
@@ -174,7 +143,6 @@ from ..views.Api.questionsGroups import (
     updateGroupOfQuestion_view,
     deleteGroupOfQuestion_view,
 )
-from ..views.Api.dashboard import readProjectDetails_view
 from ..views.Api.projectEnumerators import (
     addProjectEnumerator_view,
     readProjectEnumerators_view,
@@ -397,7 +365,7 @@ def loadRoutes(config):
             "name": "deleteproject",
             "path": "/project/{projectid}/delete",
             "view": deleteProject_view,
-            "renderer": "project/deleteproject.jinja2",
+            "renderer": "json",
         }
     )
     routes.append(
@@ -475,14 +443,6 @@ def loadRoutes(config):
 
     routes.append(
         addRoute(
-            "modifyusertechnology",
-            "/technology/{technologyid}/modify",
-            modifytechnology_view,
-            "technologies/modifyTechnology.jinja2",
-        )
-    )
-    routes.append(
-        addRoute(
             "deleteusertechnology",
             "/technology/{technologyid}/delete",
             deletetechnology_view,
@@ -490,30 +450,6 @@ def loadRoutes(config):
         )
     )
 
-    routes.append(
-        addRoute(
-            "useralias",
-            "/technology/{technologyid}/alias",
-            alias_view,
-            "technologies/aliases/alias.jinja2",
-        )
-    )
-    routes.append(
-        addRoute(
-            "newuseralias",
-            "/technology/{technologyid}/alias/new",
-            newalias_view,
-            "technologies/aliases/newAlias.jinja2",
-        )
-    )
-    routes.append(
-        addRoute(
-            "modifyuseralias",
-            "/technology/{technologyid}/alias/{aliasid}/modify",
-            modifyalias_view,
-            "technologies/aliases/modifyAlias.jinja2",
-        )
-    )
     routes.append(
         addRoute(
             "deleteuseralias",
@@ -558,14 +494,7 @@ def loadRoutes(config):
             "string",
         )
     )
-    routes.append(
-        addRoute(
-            "newregistryquestion",
-            "project/{projectid}/registry/{groupid}/newquestion",
-            newRegistryQuestion_view,
-            "project/registry/newquestions.jinja2",
-        )
-    )
+
     routes.append(
         addRoute(
             "deleteregistrygroup",
@@ -608,6 +537,7 @@ def loadRoutes(config):
             "project/assessment/assessment.jinja2",
         )
     )
+    """HAY QUE REVISAR"""
     routes.append(
         addRoute(
             "startassessments",
@@ -657,14 +587,7 @@ def loadRoutes(config):
             "string",
         )
     )
-    routes.append(
-        addRoute(
-            "assessmentpreview",
-            "/project/{projectid}/assessment/{assessmentid}/preview",
-            assessmentPreview_view,
-            "project/assessment/previewform.jinja2",
-        )
-    )
+
     routes.append(
         addRoute(
             "assessmentenketo",
@@ -674,14 +597,6 @@ def loadRoutes(config):
         )
     )
 
-    routes.append(
-        addRoute(
-            "newassessmentquestion",
-            "project/{projectid}/assessment/{assessmentid}/{groupid}/newquestion",
-            newAssessmentQuestion_view,
-            "project/assessment/newquestions.jinja2",
-        )
-    )
     routes.append(
         addRoute(
             "deleteassessmentgroup",
@@ -707,28 +622,13 @@ def loadRoutes(config):
             "project/technologies/technologies.jinja2",
         )
     )
-    routes.append(
-        addRoute(
-            "prjtechaliases",
-            "/project/{projectid}/technology/{tech_id}/aliases",
-            prjTechAliases_view,
-            "project/technologies/technologyaliases.jinja2",
-        )
-    )
-    routes.append(
-        addRoute(
-            "addprjtechalias",
-            "/project/{projectid}/technology/{tech_id}/addalias",
-            prjTechAliasAdd_view,
-            "project/technologies/addalias.jinja2",
-        )
-    )
+
     routes.append(
         addRoute(
             "deleteprjtechalias",
             "/project/{projectid}/technology/{tech_id}/alias/{alias_id}/delete",
             prjTechAliasDelete_view,
-            "project/technologies/deletealias.jinja2",
+            "json",
         )
     )
 
@@ -805,23 +705,6 @@ def loadRoutes(config):
             "/project/{projectid}/form/{formid}/{codeid}/Download",
             downloadDataView,
             "json",
-        )
-    )
-
-    routes.append(
-        addRoute(
-            "uploadDataRegistry",
-            "/project/{projectid}/form/{formid}/Upload",
-            uploadDataView,
-            "project/editData/upload.jinja2",
-        )
-    )
-    routes.append(
-        addRoute(
-            "uploadDataAssessment",
-            "/project/{projectid}/form/{formid}/{codeid}/Upload",
-            uploadDataView,
-            "project/editData/upload.jinja2",
         )
     )
 

@@ -44,10 +44,10 @@
                                     <div class="form-group">
                                         <label>{{ _("Assessment") }}</label>
                                         <select id="assessment_id" name="assessment_id" class="form-control">
-                                                {% for assessment in assessments %}
-                                                    <option value="{{ assessment.ass_cod }}">{{ assessment.ass_desc }}</option>>
-                                                {% endfor %}
-                                            </select>
+                                            {% for assessment in assessments %}
+                                                <option value="{{ assessment.ass_cod }}">{{ assessment.ass_desc }}</option>>
+                                            {% endfor %}
+                                        </select>
                                     </div>
                                     <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                                     <button id="start_assessment_button" class="btn btn-primary pull-right" type="submit" name="startAssessment"> {{ _('Start data collection') }}</button>

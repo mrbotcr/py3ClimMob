@@ -16,13 +16,11 @@
                                 {% set question=item %}
                                 {% set classByUser=eventClick %}
                                 {% include 'snippets/question/question-title-shuffle.jinja2' %}
-{#                                {% snippet 'snippets/question/question-title-shuffle.jinja2', request=request, question=item, activeUser=activeUser, eventClick=eventClick, classByUser=eventClick, classByRegRequired=classByRegRequired, classByAssesRequired=classByAssesRequired %}#}
                         {% endif %}
                 {% else %}
                     {% set question=item %}
                     {% set classByUser=eventClick %}
                     {% include 'snippets/question/question-title-shuffle.jinja2' %}
-{#                    {% snippet 'snippets/question/question-title-shuffle.jinja2', request=request, question=item, activeUser=activeUser, eventClick=eventClick, classByUser=eventClick, classByRegRequired=classByRegRequired, classByAssesRequired=classByAssesRequired %}#}
                 {% endif %}
             {% endfor %}
 
@@ -34,7 +32,6 @@
                 </li>
             {% endif %}
             <li data-jstree='{"type":"group","icon": "fa fa-plus"}' id="createGroup" onclick="createSection()"> <strong class="label label-primary" style="font-size: 12px; background-color: #337ab7">{{ _("Create new section") }}</strong></li>
-
         </ul>
     </div>
 </div>

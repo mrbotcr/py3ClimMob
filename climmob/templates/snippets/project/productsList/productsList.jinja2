@@ -17,11 +17,6 @@
 
         {% for product in Products %}
             {% set color = '#1c84c6' %}
-{#            {% if product.product_id == "qrpackage" or product.product_id == "packages" or product.product_id == "fieldagents"%}#}
-{#                {% set color = "#1ab394" %}#}
-{#            {% else %}#}
-{#                {% set color = "#1c84c6" %}#}
-{#            {% endif %}#}
             <tr>
                 <td style="vertical-align: middle;">
                     {% if product.product_id == "qrpackage" %}
@@ -186,7 +181,5 @@
                 <td></td>
             </tr>
         {% endif %}
-
-{#    <a href="{{ request.route_url('generateProduct', productid="datacollectionprogress", projectid=activeProject.project_cod, processname="datacollectionprogress") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Aquiiiii") }}</a>#}
     </tbody>
 </table>

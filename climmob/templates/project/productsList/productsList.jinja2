@@ -12,44 +12,9 @@
 
 {% block pageheading %}
     <input type="hidden" id="csrf_token" value="{{ request.session.get_csrf_token() }}">
-    {% snippet 'snippets/menuheading.jinja2', request=request, _title= _("Downloads") +" - "+activeProject.project_name, _linkWiki="https://climmob.net/blog/wiki/downloads/" %}
-{#    <div class="row wrapper border-bottom white-bg page-heading">#}
-{#        <div class="col-sm-3">#}
-{#            <h2>{{ _("Downloads") }}</h2>#}
-{#            <ol class="breadcrumb">#}
-{#                <li>#}
-{#                    <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>#}
-{#                </li>#}
-{#                <li class="active">#}
-{#                    <strong>{{ _("Downloads") }}</strong>#}
-{#                </li>#}
-{#            </ol>#}
-{#            <a href="https://climmob.net/blog/wiki/2019/09/30/products-library/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('landing/info.png') }}" alt="info"/> </a>#}
-{#        </div>#}
-{##}
-{#        {% if hasActiveProject %}#}
-{#            <div class="col-sm-6 text-center">#}
-{#                <div class="ibox collapsed">#}
-{#                    <div class="ibox-title">#}
-{##}
-{#                        <h2 class="text-center">{{ activeProject.project_name }}</h2>#}
-{#                        <div class="ibox-tools">#}
-{#                            <a class="collapse-link">#}
-{#                                <i class="fa fa-chevron-up"></i>#}
-{#                            </a>#}
-{#                        </div>#}
-{#                    </div>#}
-{#                    <div class="ibox-content">#}
-{#                        {{ activeProject.project_abstract }}#}
-{#                    </div>#}
-{#                </div>#}
-{#            </div>#}
-{#        {% endif %}#}
-{#        <div class="col-sm-3">#}
-{##}
-{#        </div>#}
-{#    </div>#}
-
+    {% set _title= _("Downloads") +" - "+activeProject.project_name %}
+    {% set _linkWiki="https://climmob.net/blog/wiki/downloads/" %}
+    {% include 'snippets/menuheading.jinja2' %}
 {% endblock pageheading%}
 
 {% block pagecontent %}
@@ -63,7 +28,7 @@
                     <br><br>
                 </div>
                 <div class="col-lg-12" id="content_product">
-                    {% snippet 'snippets/project/productsList/productsList.jinja2', request= request, Products=Products, activeProject=activeProject%}
+                    {% include 'snippets/project/productsList/productsList.jinja2' %}
                 </div>
             {% else %}
                 <div style="width: 100%; text-align: center">

@@ -67,12 +67,6 @@ class newalias_view(privateView):
 
                     if badalias == "":
                         redirect = True
-                        # self.returnRawViewResult = True
-                        # return HTTPFound(
-                        #     location=self.request.route_url(
-                        #         "useralias", technologyid=formdata["tech_id"]
-                        #     )
-                        # )
                     else:
                         formdata["alias_name"] = badalias
                         error_summary = {

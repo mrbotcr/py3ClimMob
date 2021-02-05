@@ -23,7 +23,9 @@
 {% endblock topScripts %}
 
 {% block pageheading %}
-    {% snippet 'snippets/menuheading.jinja2', request=request, _title= _("Update project"), _linkWiki="https://climmob.net/blog/wiki/update-project/" %}
+    {% set _title= _("Update project")%}
+    {% set _linkWiki="https://climmob.net/blog/wiki/update-project/" %}
+    {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
 
 {% block pagecontent %}
@@ -40,7 +42,9 @@
         <form id="formModify" method="post" class="form-horizontal" action="{{ request.path }}">
             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
             {% block newprjform %}
-                {% snippet 'snippets/project/project_form.jinja2', dataworking=data, edit=True, countries=countries %}
+                {% set edit=True%}
+                {% set dataworking=data %}
+                {% include 'snippets/project/project_form.jinja2' %}
                 <a class="btn btn-danger pull-left" onclick="showDelete('{{ request.route_url('deleteproject',projectid=data.project_cod) }}','{{ _("Do you really want to remove this project?") }}','{{ request.session.get_csrf_token() }}','{{ request.route_url('dashboard') }}')">{{ _("Delete project") }}</a>
                 <button type="submit" name="btn_addNewProject" id="btn_addNewProject" class="btn btn-warning pull-right">{{ _("Update project") }}</button>
 
