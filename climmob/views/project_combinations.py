@@ -195,9 +195,9 @@ def startTheRegistry(self, projectid):
     )
     time.sleep(1)
     # create_cards(self.request, self.user.login, projectid, packages)
-    create_stickers_document(
-        self.request.locale_name, self.request, self.user.login, projectid, packages
-    )
+    #create_stickers_document(
+    #    self.request.locale_name, self.request, self.user.login, projectid, packages
+    #)
 
     time.sleep(1)
     create_packages_excell(
