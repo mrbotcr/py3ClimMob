@@ -117,6 +117,7 @@ def addQuestionToDictionary(questionData, numComb, assessment=None):
     if questionData["question_dtype"] == 5:
         questInfo["name"] = questionData["question_name"]
         questInfo["codeQst"] = questionData["question_code"]
+        questInfo["questionAsked"] = questionData["question_desc"]
         questInfo["id"] = questionData["question_id"]
         questInfo["vars"] = code + "_" + questionData["question_code"].lower()
         questInfo["code"] = assessment
@@ -140,6 +141,7 @@ def addQuestionToDictionary(questionData, numComb, assessment=None):
         questInfo["id"] = questionData["question_id"]
         questInfo["vars"] = []
         questInfo["code"] = assessment
+        questInfo["questionAsked"] = []
 
         if questionData["question_dtype"] == 9:
             questInfo["type"] = "characteristic"
@@ -150,6 +152,7 @@ def addQuestionToDictionary(questionData, numComb, assessment=None):
                     code + "_char_" + questionData["question_code"].lower()
                 )
                 questInfo["vars"].append(varsData)
+                questInfo["questionAsked"].append(questionData["question_twoitems"])
 
             if numComb == 3:
                 varsData = {}
@@ -158,6 +161,7 @@ def addQuestionToDictionary(questionData, numComb, assessment=None):
                     code + "_char_" + questionData["question_code"].lower() + "_pos"
                 )
                 questInfo["vars"].append(varsData)
+                questInfo["questionAsked"].append(questionData["question_posstm"])
 
                 varsData = {}
                 # The negative
@@ -165,6 +169,7 @@ def addQuestionToDictionary(questionData, numComb, assessment=None):
                     code + "_char_" + questionData["question_code"].lower() + "_neg"
                 )
                 questInfo["vars"].append(varsData)
+                questInfo["questionAsked"].append(questionData["question_negstm"])
 
             if numComb >= 4:
                 for opt in range(0, numComb):
@@ -177,6 +182,14 @@ def addQuestionToDictionary(questionData, numComb, assessment=None):
                         + str(opt + 1)
                     )
                     questInfo["vars"].append(varsData)
+                    codeOption = chr(65 + opt)
+                    renderedString = (
+                        Environment()
+                            .from_string(questionData["question_perfstmt"])
+                            .render(option=codeOption)
+                    )
+                    questInfo["questionAsked"].append(renderedString)
+
             questInfo["codeForAnalysis"] = (
                 questInfo["type"]
                 + "_"
@@ -201,6 +214,14 @@ def addQuestionToDictionary(questionData, numComb, assessment=None):
                     + str(opt + 1)
                 )
                 questInfo["vars"].append(varsData)
+                codeOption = chr(65 + opt)
+                renderedString = (
+                    Environment()
+                        .from_string(questionData["question_perfstmt"])
+                        .render(option=codeOption)
+                )
+                questInfo["questionAsked"].append(renderedString)
+
             questInfo["codeForAnalysis"] = (
                 questInfo["type"]
                 + "_"
