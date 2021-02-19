@@ -862,25 +862,25 @@
         {% if withsidebar %}
             <div id="right-sidebar" class="animated">
                 <div class="sidebar-container">
-                    <ul class="nav nav-tabs navs-3">
-                        {% block sidebartabs %}
-                            <li class="active"><a data-toggle="tab" href="#tab-1">
-                                {{ _("Projects") }}
-                            </a></li>
+{#                    <ul class="nav nav-tabs navs-3">#}
+{#                        {% block sidebartabs %}#}
+{#                            <li class="active"><a data-toggle="tab" href="#tab-1">#}
+{#                                {{ _("Projects") }}#}
+{#                            </a></li>#}
 {#                            <li class=""><a data-toggle="tab" href="#tab-2">#}
 {#                                <i class="fa fa-gear"></i>#}
 {#                            </a></li>#}
-                        {% endblock sidebartabs %}
-                    </ul>
+{#                        {% endblock sidebartabs %}#}
+{#                    </ul>#}
                     <div class="tab-content">
                         {% block sidebarcontent %}
                             <div id="tab-1" class="tab-pane active">
-                                <div class="sidebar-title">
-                                    <h3> <i class="fa fa-cube"></i> {{ _("Latest projects") }}</h3>
+                                <div class="sidebar-title text-center">
+{#                                    <h3> <i class="fa fa-cube"></i> {{ _("Latest projects") }}</h3>#}
                                     {% if hasActiveProject %}
-                                        <small><i class="fa fa-tim"></i> {{ _("You have") }} {{ userProjects|length }} {{ request.h.pluralize(_("project"),userProjects|length) }}.</small>
+                                        <h3><i class="fa fa-tim"></i> {{ _("You have") }} {{ userProjects|length }} {{ request.h.pluralize(_("project"),userProjects|length) }}.</h3>
                                     {% else %}
-                                        <small><i class="fa fa-tim"></i> {{ _("You don't have projects.") }}</small>
+                                        <h3><i class="fa fa-tim"></i> {{ _("You don't have projects.") }}</h3>
                                     {% endif %}
                                     <br/>
                                     <a class="btn btn-primary" href="{{ request.route_url('newproject') }}">{{ _("Add new project") }}</a>

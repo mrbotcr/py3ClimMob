@@ -1,7 +1,7 @@
 {% extends 'dashboard/dashboard.jinja2' %}
 
 {% block title %}
-    <title>{{ _("ClimMob | Update project") }}</title>
+    <title>{{ _("ClimMob | Project details") }}</title>
 {% endblock title %}
 
 {% block css %}
@@ -23,7 +23,7 @@
 {% endblock topScripts %}
 
 {% block pageheading %}
-    {% set _title= _("Update project")%}
+    {% set _title= _("Project details")%}
     {% set _linkWiki="https://climmob.net/blog/wiki/update-project/" %}
     {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
@@ -45,9 +45,18 @@
                 {% set edit=True%}
                 {% set dataworking=data %}
                 {% include 'snippets/project/project_form.jinja2' %}
-                <a class="btn btn-danger pull-left" onclick="showDelete('{{ request.route_url('deleteproject',projectid=data.project_cod) }}','{{ _("Do you really want to remove this project?") }}','{{ request.session.get_csrf_token() }}','{{ request.route_url('dashboard') }}')">{{ _("Delete project") }}</a>
-                <button type="submit" name="btn_addNewProject" id="btn_addNewProject" class="btn btn-warning pull-right">{{ _("Update project") }}</button>
 
+                <div class="row">
+                    <div class="col-md-4">
+                        <a class="btn btn-danger pull-left" onclick="showDelete('{{ request.route_url('deleteproject',projectid=data.project_cod) }}','{{ _("Do you really want to remove this project?") }}','{{ request.session.get_csrf_token() }}','{{ request.route_url('dashboard') }}')">{{ _("Delete") }}</a>
+                    </div>
+                    <div class="col-md-4 text-center">
+{#                        <a class="btn btn-success" style="background-color: darkgrey" href='{{ request.route_url('cloneProject') }}'>{{ _("Clone") }}</a>#}
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" name="btn_addNewProject" id="btn_addNewProject" class="btn btn-warning pull-right">{{ _("Update") }}</button>
+                    </div>
+                </div>
             {% endblock newprjform %}
 
             <br>

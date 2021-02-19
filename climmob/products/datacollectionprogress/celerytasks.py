@@ -46,16 +46,17 @@ def createDataCollectionProgress(
 
         for fieldAgent in form["fieldAgents"]:
             for point in fieldAgent["Points"]:
-                folium.CircleMarker(
-                    location=[point.split(" ")[0], point.split(" ")[1]],
-                    radius=4,
-                    popup=fieldAgent["Name"],
-                    color=fieldAgent["Color"],
-                    opacity=1,
-                    fill=True,
-                    fill_color=fieldAgent["Color"],
-                    fill_opacity=1,
-                ).add_to(m)
+                if point:
+                    folium.CircleMarker(
+                        location=[point.split(" ")[0], point.split(" ")[1]],
+                        radius=4,
+                        popup=fieldAgent["Name"],
+                        color=fieldAgent["Color"],
+                        opacity=1,
+                        fill=True,
+                        fill_color=fieldAgent["Color"],
+                        fill_opacity=1,
+                    ).add_to(m)
 
         m.fit_bounds(m.get_bounds())
         saveMapPath = pathoutput + "/" + form["Code"] + ".html"

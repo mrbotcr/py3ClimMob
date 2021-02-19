@@ -1,7 +1,7 @@
 <li>
     <a href="{{ request.route_url('dashboard', _query={'project':project.project_cod}) }}">
         <h4>{{ project.project_name|truncate(35) }}</h4>
-        {{ project.project_abstract|truncate(110) }}
+        <p>{{ project.project_abstract|truncate(110) }}</p>
 
         <div class="small">{{ _("Setup") }} {{ project.perc }}% {{ _("completed") }}</div>
         <div class="progress progress-mini">
@@ -41,7 +41,6 @@
                     {% set pbtype = "progress-bar-warning" %}
                 {% endif %}
             {% endif %}
-
             <div class="progress progress-mini">
                 <div style="width: {{ assessment.assperc }}%;" class="progress-bar {{ pbtype }}"></div>
             </div>
