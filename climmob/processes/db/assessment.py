@@ -51,9 +51,37 @@ __all__ = [
     "get_usable_assessments",
     "AsessmentStatus",
     "getAnalysisControl",
+    "getAllAssessmentGroups",
+    "addProjectAssessmentClone",
+    "getQuestionsByGroupInAssessment",
 ]
 
 log = logging.getLogger(__name__)
+
+
+def getQuestionsByGroupInAssessment(user, project, ass_cod, section_id, request):
+    data = (
+        request.dbsession.query(AssDetail)
+        .filter(AssDetail.user_name == user)
+        .filter(AssDetail.project_cod == project)
+        .filter(AssDetail.ass_cod == ass_cod)
+        .filter(AssDetail.section_id == section_id)
+        .order_by(AssDetail.section_id)
+        .all()
+    )
+    return mapFromSchema(data)
+
+
+def getAllAssessmentGroups(data, request):
+    result = (
+        request.dbsession.query(Asssection)
+        .filter(Asssection.user_name == data["user_name"])
+        .filter(Asssection.project_cod == data["project_cod"])
+        .filter(Asssection.ass_cod == data["ass_cod"])
+        .order_by(Asssection.section_id)
+        .all()
+    )
+    return mapFromSchema(result)
 
 
 def canDeleteTheAssessmentGroup(data, request):
@@ -391,6 +419,21 @@ def addProjectAssessment(data, request, _from=""):
                     request,
                 ),
             )
+    except Exception as e:
+        return False, e
+
+
+def addProjectAssessmentClone(data, request):
+    id = uuid.uuid4().hex[-12:]
+    data["ass_cod"] = id
+    mappedData = mapToSchema(Assessment, data)
+    newAssessment = Assessment(**mappedData)
+    try:
+        request.dbsession.add(newAssessment)
+        request.dbsession.flush()
+
+        return True, data["ass_cod"]
+
     except Exception as e:
         return False, e
 

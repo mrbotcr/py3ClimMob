@@ -655,9 +655,9 @@ class assessmentFormCreation_view(privateView):
 
                 data, finalCloseQst = getDataFormPreview(self, projectid, assessmentid)
                 info = {
-                    "img1": self.request.url_for_static("static/landing/odk.png"),
-                    "img2": self.request.url_for_static("static/landing/odk2.png"),
-                    "img3": self.request.url_for_static("static/landing/odk3.png"),
+                    "img1": self.request.url_for_static("landing/odk.png"),
+                    "img2": self.request.url_for_static("landing/odk2.png"),
+                    "img3": self.request.url_for_static("landing/odk3.png"),
                     "data": data,
                     "_": self._,
                     "showPhone": True,
@@ -673,12 +673,14 @@ class assessmentFormCreation_view(privateView):
 class startAssessments_view(privateView):
     def processView(self):
         projectid = self.request.matchdict["projectid"]
-        print("projectExists")
+        onlyError = False
+        error_summary = {}
         if not projectExists(self.user.login, projectid, self.request):
             raise HTTPNotFound()
         else:
             if self.request.method == "GET":
-                redirect = False
+                # Edited by brandon - > this URL is only for POST
+                """redirect = False
                 usable_assessments = get_usable_assessments(
                     self.request, self.user.login, projectid
                 )
@@ -689,7 +691,9 @@ class startAssessments_view(privateView):
                     "error_summary": [],
                     "checkPass": True,
                     "redirect": redirect,
-                }
+                }"""
+                raise HTTPNotFound()
+
             if self.request.method == "POST":
                 data = self.getPostDict()
                 assessment_id = data["assessment_id"]
@@ -700,43 +704,58 @@ class startAssessments_view(privateView):
                 )
                 if checkPass:
                     print("generateAssessmentFiles")
-                    generateAssessmentFiles(
+                    correct = generateAssessmentFiles(
                         self.user.login, projectid, assessment_id, self.request
                     )
-                    print("setAssessmentIndividualStatus")
-                    setAssessmentIndividualStatus(
-                        self.user.login, projectid, assessment_id, 1, self.request
-                    )
-                    # setAssessmentStatus(self.user.login,projectid,1,self.request)
-                    # WORKING HERE FOR CREATE THE ASSESSMENT DOCUMENT
-                    print("getPackages")
-                    ncombs, packages = getPackages(
-                        self.user.login, projectid, self.request
-                    )
-                    print("getDataFormPreview")
-                    data, finalCloseQst = getDataFormPreview(
-                        self, projectid, assessment_id
-                    )
-                    print("create_document_form")
-                    create_document_form(
-                        self.request,
-                        "en",
-                        self.user.login,
-                        projectid,
-                        "Assessment",
-                        assessment_id,
-                        data,
-                        packages,
-                    )
-                    print("Returning")
-                    self.returnRawViewResult = True
-                    return HTTPFound(location=self.request.route_url("dashboard"))
+
+                    # Edited by Brandon
+                    if correct[0]["result"]:
+                        print("setAssessmentIndividualStatus")
+                        setAssessmentIndividualStatus(
+                            self.user.login, projectid, assessment_id, 1, self.request
+                        )
+                        # setAssessmentStatus(self.user.login,projectid,1,self.request)
+                        # WORKING HERE FOR CREATE THE ASSESSMENT DOCUMENT
+                        print("getPackages")
+                        ncombs, packages = getPackages(
+                            self.user.login, projectid, self.request
+                        )
+                        print("getDataFormPreview")
+                        data, finalCloseQst = getDataFormPreview(
+                            self, projectid, assessment_id
+                        )
+                        print("create_document_form")
+                        create_document_form(
+                            self.request,
+                            "en",
+                            self.user.login,
+                            projectid,
+                            "Assessment",
+                            assessment_id,
+                            data,
+                            packages,
+                        )
+                        print("Returning")
+                        self.returnRawViewResult = True
+                        return HTTPFound(location=self.request.route_url("dashboard"))
+                    else:
+                        onlyError = True
+                        error_summary = {
+                            "error": self._(
+                                "There has been a problem in the creation of the basic structure of the project, this may be due to something wrong with the form."
+                            ),
+                            "contact": self._(
+                                "Contact the ClimMob team to get the solution to the problem."
+                            ),
+                        }
+
                 return {
                     "activeUser": self.user,
                     "projectid": projectid,
-                    "error_summary": errors,
+                    "error_summary": error_summary,
                     "checkPass": checkPass,
                     "redirect": redirect,
+                    "onlyError": onlyError,
                 }
 
 

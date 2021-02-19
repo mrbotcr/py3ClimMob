@@ -33,80 +33,91 @@
                 <div class="ibox-title">
                 </div>
                 <div class="ibox-content">
-                    <div style="margin-left: 10px; margin-right: 10px">
-                        <div class="row" id="header">
+                    {% if stage != 3 %}
+                        <div style="margin-left: 10px; margin-right: 10px">
+                            <div class="row" id="header">
 
-                            {% set stage1Color = 'gray-bg' %}
-                            {% set stage2Color = 'gray-bg' %}
-                            {% set stage3Color = 'gray-bg' %}
-                            {% set stage1State = 'disabled' %}
-                            {% set stage2State = 'disabled' %}
-                            {% set stage3State = 'disabled' %}
+                                {% set stage1Color = 'gray-bg' %}
+                                {% set stage2Color = 'gray-bg' %}
+                                {% set stage3Color = 'gray-bg' %}
+                                {% set stage1State = 'disabled' %}
+                                {% set stage2State = 'disabled' %}
+                                {% set stage3State = 'disabled' %}
 
-                            {% if stage == 1 %}
-                                {% set stage1Color = 'navy-bg' %}
-                                {% set stage1State = '' %}
-                            {% endif %}
-
-                            {% if stage == 2 %}
-                                {% set stage2Color = 'navy-bg' %}
-                                {% set stage2State = '' %}
-                            {% endif %}
-
-                            {% if stage == 3 %}
-                                {% set stage3Color = 'navy-bg' %}
-                                {% set stage3State = '' %}
-                            {% endif %}
-
-                            <div class="col-xs-6">
-                                <div class="widget style1 {{ stage1Color }}" style="padding: 10px 20px">
-                                    <div class="row vertical-align">
-                                        <div class="col-xs-12 text-left">
-                                            <h3 class="font-bold"><span class="step {{ stage1State }}">1</span> {{ _("Set combinations") }}</h3>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xs-6">
-                                <div class="widget style1 {{ stage2Color }}" style="padding: 10px 20px">
-                                    <div class="row vertical-align">
-                                        <div class="col-xs-12 text-left">
-                                            <h3 class="font-bold"><span class="step {{ stage2State }}">2</span> {{ _("Review packages") }}</h3>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <input type="hidden" id="stage" value="{{ stage  }}">
-
-                        </div>
-                        <div class="row">
-                            <div id="content">
                                 {% if stage == 1 %}
-                                    <input type="hidden" id="numelements" value="{{ combArray|length  }}">
-                                    <input type="hidden" id="elemsperpage" value="{{ combArray|length / techs|length  }}">
-                                    <div class="col-md-12">
-                                        {% include 'snippets/project/registry/create/combination_table.jinja2' %}
-                                    </div>
+                                    {% set stage1Color = 'navy-bg' %}
+                                    {% set stage1State = '' %}
                                 {% endif %}
+
                                 {% if stage == 2 %}
-                                    <div class="col-md-12">
-                                        {% include 'snippets/project/registry/create/package_table.jinja2' %}
-                                    </div>
+                                    {% set stage2Color = 'navy-bg' %}
+                                    {% set stage2State = '' %}
                                 {% endif %}
+
+                                {% if stage == 3 %}
+                                    {% set stage3Color = 'navy-bg' %}
+                                    {% set stage3State = '' %}
+                                {% endif %}
+
+                                <div class="col-xs-6">
+                                    <div class="widget style1 {{ stage1Color }}" style="padding: 10px 20px">
+                                        <div class="row vertical-align">
+                                            <div class="col-xs-12 text-left">
+                                                <h3 class="font-bold"><span class="step {{ stage1State }}">1</span> {{ _("Set combinations") }}</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6">
+                                    <div class="widget style1 {{ stage2Color }}" style="padding: 10px 20px">
+                                        <div class="row vertical-align">
+                                            <div class="col-xs-12 text-left">
+                                                <h3 class="font-bold"><span class="step {{ stage2State }}">2</span> {{ _("Review packages") }}</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="stage" value="{{ stage  }}">
+
                             </div>
-                        </div>
-                        <div class="row" id="footer">
-                            <div class="col-md-12">
+                            <div class="row">
+                                <div id="content">
                                     {% if stage == 1 %}
-                                        <button type="button" style="margin-left: 10px" onclick="this.disabled=true; this.innerText='Creating packages. Please wait…'; location.href='{{ request.route_url("combinations", projectid=projectid, _query={"stage":2})}}'"  class="btn btn-primary pull-right">{{ _("Continue") }}</button>
+                                        <input type="hidden" id="numelements" value="{{ combArray|length  }}">
+                                        <input type="hidden" id="elemsperpage" value="{{ combArray|length / techs|length  }}">
+                                        <div class="col-md-12">
+                                            {% include 'snippets/project/registry/create/combination_table.jinja2' %}
+                                        </div>
                                     {% endif %}
                                     {% if stage == 2 %}
-                                        <button type="button" style="margin-left: 10px" onclick="this.disabled=true; this.innerText='Opening the registration of participants. Please wait…'; location.href='{{ request.route_url("combinations", projectid=projectid, _query={"stage":3})}}'" class="btn btn-success pull-right">{{ _("Confirm") }}</button>
-                                        <button type="button" onclick="location.href='{{ request.route_url("combinations", projectid=projectid, _query={"stage":1})}}'" class="btn  btn-primary pull-right">{{ _("Modify") }}</button>
+                                        <div class="col-md-12">
+                                            {% include 'snippets/project/registry/create/package_table.jinja2' %}
+                                        </div>
                                     {% endif %}
+                                </div>
+                            </div>
+                            <div class="row" id="footer">
+                                <div class="col-md-12">
+                                        {% if stage == 1 %}
+                                            <button type="button" style="margin-left: 10px" onclick="this.disabled=true; this.innerText='Creating packages. Please wait…'; location.href='{{ request.route_url("combinations", projectid=projectid, _query={"stage":2})}}'"  class="btn btn-primary pull-right">{{ _("Continue") }}</button>
+                                        {% endif %}
+                                        {% if stage == 2 %}
+                                            <button type="button" style="margin-left: 10px" onclick="this.disabled=true; this.innerText='Opening the registration of participants. Please wait…'; location.href='{{ request.route_url("combinations", projectid=projectid, _query={"stage":3})}}'" class="btn btn-success pull-right">{{ _("Confirm") }}</button>
+                                            <button type="button" onclick="location.href='{{ request.route_url("combinations", projectid=projectid, _query={"stage":1})}}'" class="btn  btn-primary pull-right">{{ _("Modify") }}</button>
+                                        {% endif %}
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    {% else %}
+                        <div style="width: 100%; text-align: center; display: flex">
+                            <div style="width: 25%"></div>
+                            <div style="width: 50%">
+                                {% include 'snippets/error.jinja2' %}
+                                 <a type="submit" class="btn btn-primary" href="{{ request.route_url('dashboard', _query={"project": projectid}) }}">{{ _("Go to the menu") }}</a>
+                            </div>
+                            <div style="width: 25%"></div>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

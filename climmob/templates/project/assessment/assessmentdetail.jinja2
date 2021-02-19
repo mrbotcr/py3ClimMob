@@ -62,6 +62,8 @@
                             {% set classByUser=False %}
                             {% set classByRegRequired=False %}
                             {% set classByAssesRequired=True %}
+                            {% set createSection=True %}
+                            {% set jstreeName="jstree1" %}
                             {% include 'snippets/jstreeForm.jinja2'  %}
                             <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}" id="formFoSendInformation" style="display: none">
                                 <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">

@@ -46,65 +46,20 @@ class newProject_view(privateView):
             if "btn_addNewProject" in self.request.POST:
 
                 dataworking = self.getPostDict()
-                dataworking["user_name"] = self.user.login
-                dataworking["project_regstatus"] = 0
-                dataworking["project_lat"] = ""
-                dataworking["project_lon"] = ""
 
-                dataworking["project_registration_and_analysis"] = int(
-                    dataworking["project_registration_and_analysis"]
+                dataworking, error_summary, added = createProjectFunction(
+                    dataworking, error_summary, self
                 )
-
-                dataworking["project_localvariety"] = 1
-
-                if int(dataworking["project_numobs"]) > 0:
-                    if dataworking["project_cod"] != "":
-                        exitsproject = projectInDatabase(
-                            self.user.login, dataworking["project_cod"], self.request
+                if added:
+                    self.request.session.flash(
+                        self._("The project was created successfully")
+                    )
+                    self.returnRawViewResult = True
+                    return HTTPFound(
+                        location=self.request.route_url(
+                            "dashboard", _query={"project": dataworking["project_cod"]},
                         )
-                        if not exitsproject:
-                            added, message = addProject(dataworking, self.request)
-                            if not added:
-                                error_summary = {"dberror": message}
-                            else:
-                                addToLog(
-                                    self.user.login,
-                                    "PRF",
-                                    "Created a new project",
-                                    datetime.datetime.now(),
-                                    self.request,
-                                )
-                                self.request.session.flash(
-                                    self._("The project was created successfully")
-                                )
-                                self.returnRawViewResult = True
-                                return HTTPFound(
-                                    location=self.request.route_url(
-                                        "dashboard",
-                                        _query={"project": dataworking["project_cod"]},
-                                    )
-                                )
-                        else:
-                            error_summary = {
-                                "exitsproject": self._(
-                                    "A project already exists with this code."
-                                )
-                            }
-                    else:
-                        error_summary = {
-                            "codempty": self._("The project code can't be empty")
-                        }
-                else:
-                    error_summary = {
-                        "observations": self._(
-                            "The number of observations must be greater than 0."
-                        )
-                    }
-
-                if int(dataworking["project_localvariety"]) == 1:
-                    dataworking["project_localvariety"] = "on"
-                else:
-                    dataworking["project_localvariety"] = "off"
+                    )
 
         return {
             "activeUser": self.user,
@@ -114,6 +69,56 @@ class newProject_view(privateView):
             "countries": getCountryList(self.request),
             "error_summary": error_summary,
         }
+
+
+def createProjectFunction(dataworking, error_summary, self):
+    added = False
+    dataworking["user_name"] = self.user.login
+    dataworking["project_regstatus"] = 0
+    dataworking["project_lat"] = ""
+    dataworking["project_lon"] = ""
+
+    dataworking["project_registration_and_analysis"] = int(
+        dataworking["project_registration_and_analysis"]
+    )
+
+    dataworking["project_localvariety"] = 1
+
+    if int(dataworking["project_numobs"]) > 0:
+        if dataworking["project_cod"] != "":
+            exitsproject = projectInDatabase(
+                self.user.login, dataworking["project_cod"], self.request
+            )
+            if not exitsproject:
+                added, message = addProject(dataworking, self.request)
+                if not added:
+                    error_summary = {"dberror": message}
+                else:
+                    addToLog(
+                        self.user.login,
+                        "PRF",
+                        "Created a new project",
+                        datetime.datetime.now(),
+                        self.request,
+                    )
+
+            else:
+                error_summary = {
+                    "exitsproject": self._("A project already exists with this code.")
+                }
+        else:
+            error_summary = {"codempty": self._("The project code can't be empty")}
+    else:
+        error_summary = {
+            "observations": self._("The number of observations must be greater than 0.")
+        }
+
+    if int(dataworking["project_localvariety"]) == 1:
+        dataworking["project_localvariety"] = "on"
+    else:
+        dataworking["project_localvariety"] = "off"
+
+    return dataworking, error_summary, added
 
 
 class modifyProject_view(privateView):

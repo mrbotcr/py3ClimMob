@@ -14,20 +14,20 @@
     {% if redirect == False %}
         {% block dltqstmessage %}
             <div class="text-center">
-                <h2 class="font-bold text-danger">{{ _("You are going to close the data collection") }} "{{ assessmentData.ass_desc }}"</h2>
+                <h2 class="font-bold text-danger">{{ _("You are going to finish the data collection") }} "{{ assessmentData.ass_desc }}"</h2>
                 <p>
                 {% if progress.asstotal < progress.submissions %}
                         <h2>{{ _("You still have") }} {{ progress.submissions - progress.asstotal }} {{ request.h.pluralize(_("participant"),progress.submissions - progress.asstotal) }} {{ _("to survey") }}</h2>
                     {% endif %}
                 <div class="error-desc">
 
-                    <h3>{{ _("After you close this data collection no more participants will be able to submit data") }}</h3>
-                    <h3>{{ _("Are you sure that you want to close this data collection?") }}</h3>
+                    <h3>{{ _("After you finish this data collection no more participants will be able to submit data") }}</h3>
+                    <h3>{{ _("Are you sure that you want to finish this data collection?") }}</h3>
                 </div>
                 <form class="form-horizontal" role="form" method="post" action="{{ request.path }}">
                     <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                     <a class="btn btn-default" href="{{ request.route_url('dashboard') }}"> {{ _("Go back") }}</a><br><br>
-                    <button class="btn btn-danger" type="submit" name="closeAssessment"> {{ _('Close data collection') }}</button>
+                    <button class="btn btn-danger" type="submit" name="closeAssessment"> {{ _('Finish data collection') }}</button>
                 </form>
             </div>
         {% endblock dltqstmessage %}

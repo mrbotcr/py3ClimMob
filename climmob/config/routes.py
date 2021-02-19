@@ -206,6 +206,10 @@ from ..views.Api.projectAssessmentStart import (
     readAssessmentData_view,
 )
 from ..views.projectHelp.projectHelp import projectHelp_view
+from ..views.cloneProjects.cloneProjects import cloneProjects_view
+from ..views.mapForProjectVisualization.mapForProjectVisualization import (
+    showMapForProjectVisualization_view,
+)
 from ..views.Api.project_analysis import (
     readDataOfProjectView_api,
     readVariablesForAnalysisView_api,
@@ -316,14 +320,6 @@ def loadRoutes(config):
             "path": "/projects",
             "view": dashboard_view,
             "renderer": "dashboard/dashboard.jinja2",
-        }
-    )
-    routes.append(
-        {
-            "name": "projectHelp",
-            "path": "/projectHelp",
-            "view": projectHelp_view,
-            "renderer": "projectHelp/projectHelp.jinja2",
         }
     )
     routes.append(
@@ -744,6 +740,16 @@ def loadRoutes(config):
             "project/CleanErrors/clean.jinja2",
         )
     )
+
+    routes.append(
+        addRoute(
+            "map",
+            "/map",
+            showMapForProjectVisualization_view,
+            "mapForProjectVisualization/mapForVisualization.jinja2",
+        )
+    )
+
     # ODK forms
     routes.append(addRoute("odkformlist", "/{userid}/formList", formList_view, None))
     routes.append(
@@ -808,6 +814,26 @@ def loadRoutes(config):
             "progress/progressInformation.jinja2",
         )
     )
+    # Specific functions
+
+    routes.append(
+        {
+            "name": "projectHelp",
+            "path": "/projectHelp",
+            "view": projectHelp_view,
+            "renderer": "projectHelp/projectHelp.jinja2",
+        }
+    )
+
+    routes.append(
+        {
+            "name": "cloneProject",
+            "path": "/cloneProject",
+            "view": cloneProjects_view,
+            "renderer": "cloneProjects/cloneProjects.jinja2",
+        }
+    )
+
     # --------------------------------------------------------ClimMob API--------------------------------------------------------#
 
     # Create Project

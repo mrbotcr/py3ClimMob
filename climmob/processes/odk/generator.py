@@ -204,16 +204,14 @@ def createDatabase(xlsxFile, outputDir, schema, keyVar, preFix, dropSchema, requ
                 log.error(msg)
 
     print("****createDatabase**Calling ODKToMySQL******")
-    print(" ".join(args))
     try:
-        check_call(args)
+        info = check_call(args)
     except CalledProcessError as e:
-        # print("2")
         msg = "Error creating database files \n"
-        msg = msg + "Commang: " + " ".join(args) + "\n"
         msg = msg + "Error: \n"
         msg = msg + str(e)
         log.debug(msg)
+        print(msg)
         return True
 
     return buildDatabase(
@@ -1206,7 +1204,9 @@ def generateAssessmentFiles(user, projectid, assessment, request):
             paths = ["db", "ass", assessment.ass_cod]
             if not os.path.exists(os.path.join(path, *paths)):
                 os.makedirs(os.path.join(path, *paths))
-            if createDatabase(
+
+            # Edited by Brandon -> The validation was incorrect if createDatabase
+            if not createDatabase(
                 xlsxFile,
                 os.path.join(path, *paths),
                 user + "_" + projectid,

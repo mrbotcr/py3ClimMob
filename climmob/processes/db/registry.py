@@ -33,6 +33,8 @@ __all__ = [
     "generateStructureForValidateJsonOdk",
     "isRegistryClose",
     "getProjectNumobs",
+    "getAllRegistryGroups",
+    "getQuestionsByGroupInRegistry",
 ]
 
 
@@ -416,6 +418,30 @@ def getRegistryGroupInformation(user, project, section, request):
     return mapFromSchema(data)
 
 
+def getAllRegistryGroups(user, project, request):
+    data = (
+        request.dbsession.query(Regsection)
+        .filter(Regsection.user_name == user)
+        .filter(Regsection.project_cod == project)
+        .order_by(Regsection.section_id)
+        .all()
+    )
+    return mapFromSchema(data)
+
+
+def getQuestionsByGroupInRegistry(user, project, section_id, request):
+
+    data = (
+        request.dbsession.query(Registry)
+        .filter(Registry.user_name == user)
+        .filter(Registry.project_cod == project)
+        .filter(Registry.section_id == section_id)
+        .order_by(Registry.question_order)
+        .all()
+    )
+    return mapFromSchema(data)
+
+
 def saveRegistryOrder(user, project, order, request):
     # Delete all questions in the registry
     request.dbsession.query(Registry).filter(Registry.user_name == user).filter(
@@ -594,7 +620,6 @@ def getRegistryQuestionsApi(data, self):
 
 
 def addRegistryQuestionToGroup(data, request):
-
     max_order = (
         request.dbsession.query(
             func.ifnull(func.max(Registry.question_order), 0).label("id_max")

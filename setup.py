@@ -183,6 +183,7 @@ setup(
             "configure_alembic = climmob.scripts.configurealembic:main",
             "disable_ssl = climmob.scripts.disablessl:main",
             "set_super_password = climmob.scripts.setsuperpassword:main",
+            "update_map_points = climmob.scripts.updatemappoints:main",
         ],
     },
 )

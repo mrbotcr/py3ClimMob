@@ -9,7 +9,7 @@
             <th class="text-center">{{ _('Action') }}</th>
             <th></th>
         </tr>
-        {% set changes = {'projectSummary': true, 'DataCollectionProgress': false} %}
+        {% set changes = {'projectSummary': true, 'DataCollectionProgress': false, 'projectDataCollected': true} %}
 
         {% if activeProject.project_regstatus > 0 %}
             {% if changes.update({'DataCollectionProgress': true }) %} {% endif %}
@@ -34,7 +34,8 @@
                                     {% if product.product_id == "datacsv" %}
 
                                         {% if product.process_name == "create_data_Report_" %}
-                                            {{ _("Information collected in the project and used to create the report") }}
+                                            {% if changes.update({'projectDataCollected': false }) %}{% endif %}
+                                            {{ _("Information collected in all the project") }}
                                         {% else %}
                                             {% if product.process_name == "create_data_Registration_" %}
                                                 {{ _("Information collected in the registration form") }}
@@ -147,6 +148,10 @@
                 <td class="text-center" style="width: 110px">
                     {% if product.state == "Success"%}
                         {% if product.exists == "correct" %}
+                            {% if product.product_id == "datacsv" and product.process_name == "create_data_Report_" %}
+                                <a href="{{ request.route_url('generateProduct', productid="datacsv", projectid=activeProject.project_cod, processname="create_data_Report_") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Update") }}</a>
+                            {% endif %}
+
                             {% if product.product_id == "generalreport" %}
                                 <a href="{{ request.route_url('generateProduct', productid="generalreport", projectid=activeProject.project_cod, processname="generalreport") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Update") }}</a>
                             {% endif %}
@@ -159,6 +164,17 @@
                 </td>
             </tr>
         {% endfor %}
+        {% if changes.projectDataCollected %}
+            <tr>
+                <td>{{ _("Information collected in all the project") }}</td>
+                <td></td>
+                <td></td>
+                <td class="text-center">
+                    <a href="{{ request.route_url('generateProduct', productid="datacsv", projectid=activeProject.project_cod, processname="create_data_Report_") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
+                </td>
+                <td></td>
+            </tr>
+        {% endif %}
         {% if changes.projectSummary %}
             <tr>
                 <td>{{ _("Project summary") }}</td>

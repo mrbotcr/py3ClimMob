@@ -1,5 +1,5 @@
 <div class="panel-body">
-    <div id="jstree1">
+    <div id="{{ jstreeName }}">
         <ul>
             {% for item in data %}
                 {% if item.closeGrp %}
@@ -31,7 +31,10 @@
             {% if data|length > 0 %}
                 </li>
             {% endif %}
-            <li data-jstree='{"type":"group","icon": "fa fa-plus"}' id="createGroup" onclick="createSection()"> <strong class="label label-primary" style="font-size: 12px; background-color: #337ab7">{{ _("Create new section") }}</strong></li>
+
+            {% if createSection %}
+                <li data-jstree='{"type":"group","icon": "fa fa-plus"}' id="createGroup" onclick="createSection()"> <strong class="label label-primary" style="font-size: 12px; background-color: #337ab7">{{ _("Create new section") }}</strong></li>
+            {% endif %}
         </ul>
     </div>
 </div>

@@ -149,12 +149,17 @@ def createResources(apppath, config):
     r.add_css_resource("progress", "animate2", "animate.css", "bootstrap2")
     r.add_css_resource("progress", "style2", "style.css", "bootstrap2")
 
+    r.add_library("map", os.path.join(apppath, "fanstatic/mapForVisualization"), config)
+    r.add_css_resource("map", "style", "style.css")
+    r.add_css_resource("map", "normalize", "normalize.min.css")
+    r.add_css_resource("map", "leaflet", "leaflet.css")
     # ----------------------------------------------------------------------------------------------------------
 
     # Add core JS
     r.add_js_resource(
         "coreresources", "jquery", "inspinia/js/jquery-3.1.1.min.js", None
     )
+    r.add_js_resource("map", "leaflet", "leaflet.js")
     r.add_js_resource(
         "coreresources", "bootstrap", "inspinia/js/bootstrap.js", "jquery"
     )

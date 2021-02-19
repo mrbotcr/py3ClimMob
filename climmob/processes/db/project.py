@@ -450,9 +450,9 @@ def getRegisteredFarmers(user, project, request):
             + qstregkey.question_code
             + " AS unsigned)"
         )
-        print("*****************44")
-        print(sql)
-        print("*****************44")
+        # print("*****************44")
+        # print(sql)
+        # print("*****************44")
         try:
             # farmers = request.repsession.execute(sql).fetchall()
             farmers = sql_fetch_all(sql)

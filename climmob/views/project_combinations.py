@@ -164,77 +164,100 @@ class projectCombinations_view(privateView):
                         )
                     )
 
-                startTheRegistry(self, projectid)
+                startIsOk = startTheRegistry(self, projectid)
 
-                self.returnRawViewResult = True
-                return HTTPFound(location=self.request.route_url("dashboard"))
+                if startIsOk:
+                    self.returnRawViewResult = True
+                    return HTTPFound(location=self.request.route_url("dashboard"))
+                else:
+                    return {
+                        "projectid": projectid,
+                        "stage": stage,
+                        "error_summary": {
+                            "error": self._(
+                                "There has been a problem in the creation of the basic structure of the project, this may be due to something wrong with the form."
+                            ),
+                            "contact": self._(
+                                "Contact the ClimMob team to get the solution to the problem."
+                            ),
+                        },
+                    }
 
 
 def startTheRegistry(self, projectid):
     locale = self.request.locale_name
 
-    setRegistryStatus(self.user.login, projectid, 1, self.request)
+    correct = generateRegistry(self.user.login, projectid, self.request)
 
-    generateRegistry(self.user.login, projectid, self.request)
+    if correct:
 
-    ncombs, packages = getPackages(self.user.login, projectid, self.request)
+        setRegistryStatus(self.user.login, projectid, 1, self.request)
 
-    create_qr_packages(self.request, self.user.login, projectid, ncombs, packages)
-    time.sleep(1)
+        ncombs, packages = getPackages(self.user.login, projectid, self.request)
 
-    data, finalCloseQst = getDataFormPreview(self, projectid)
-    create_document_form(
-        self.request,
-        locale,
-        self.user.login,
-        projectid,
-        "Registration",
-        "",
-        data,
-        packages,
-    )
-    time.sleep(1)
-    # create_cards(self.request, self.user.login, projectid, packages)
-    #create_stickers_document(
-    #    self.request.locale_name, self.request, self.user.login, projectid, packages
-    #)
+        create_qr_packages(self.request, self.user.login, projectid, ncombs, packages)
+        time.sleep(1)
 
-    time.sleep(1)
-    create_packages_excell(
-        self.request,
-        self.user.login,
-        projectid,
-        packages,
-        getTech(self.user.login, projectid, self.request),
-    )
-    time.sleep(1)
+        data, finalCloseQst = getDataFormPreview(self, projectid)
+        create_document_form(
+            self.request,
+            locale,
+            self.user.login,
+            projectid,
+            "Registration",
+            "",
+            data,
+            packages,
+        )
+        time.sleep(1)
+        # create_cards(self.request, self.user.login, projectid, packages)
+        # create_stickers_document(
+        #    self.request.locale_name, self.request, self.user.login, projectid, packages
+        # )
 
-    create_fieldagents_report(
-        locale,
-        self.request,
-        self.user.login,
-        projectid,
-        getProjectEnumerators(self.user.login, projectid, self.request),
-    )
-
-    numberOfCombinations = numberOfCombinationsForTheProject(
-        self.user.login, projectid, self.request
-    )
-
-    if numberOfCombinations == 3:
-        tech = searchTechnologiesInProject(self.user.login, projectid, self.request)
-        if len(tech) == 1:
-            if tech[0]["tech_name"] == "Colores" or tech[0]["tech_name"] == "Colors":
-                time.sleep(1)
-                create_colors_cards(self.request, self.user.login, projectid, packages)
-    # Call extenal plugins here
-
-    for plugin in p.PluginImplementations(p.IPackage):
-        plugin.after_create_packages(
+        time.sleep(1)
+        create_packages_excell(
             self.request,
             self.user.login,
             projectid,
-            "create_packages",
-            ncombs,
             packages,
+            getTech(self.user.login, projectid, self.request),
         )
+        time.sleep(1)
+
+        create_fieldagents_report(
+            locale,
+            self.request,
+            self.user.login,
+            projectid,
+            getProjectEnumerators(self.user.login, projectid, self.request),
+        )
+
+        numberOfCombinations = numberOfCombinationsForTheProject(
+            self.user.login, projectid, self.request
+        )
+
+        if numberOfCombinations == 3:
+            tech = searchTechnologiesInProject(self.user.login, projectid, self.request)
+            if len(tech) == 1:
+                if (
+                    tech[0]["tech_name"] == "Colores"
+                    or tech[0]["tech_name"] == "Colors"
+                ):
+                    time.sleep(1)
+                    create_colors_cards(
+                        self.request, self.user.login, projectid, packages
+                    )
+        # Call extenal plugins here
+
+        for plugin in p.PluginImplementations(p.IPackage):
+            plugin.after_create_packages(
+                self.request,
+                self.user.login,
+                projectid,
+                "create_packages",
+                ncombs,
+                packages,
+            )
+
+    return correct
