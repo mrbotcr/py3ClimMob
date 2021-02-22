@@ -114,7 +114,7 @@
                 <td class="text-center" style="width: 140px">
                     {% if product.state == "Success"%}
                         {% if product.exists == "correct" %}
-                            {% if product.product_id != "datadesk" %}
+                            {% if product.product_id != "datadesk" and product.product_id != "cards"%}
                                 <a href="{{ request.route_url('download', product_id=product.celery_taskid) }}" class="btn btn-primary" style="background-color:{{ color }}; border-color: {{ color }}"><i class="fa fa-download"></i> {{ _("Download") }}</a>
                             {% else %}
                                 <a id="{{product.celery_taskid}}$#%%#${{product.output_id}}" class="btn btn-primary btn_datadesk" style="background-color:{{ color }}; border-color: {{ color }}"><i class="fa fa-download"></i> {{ _("Download") }}</a>
@@ -123,7 +123,7 @@
                             {% if  product.product_id == "reports"%}
                                 <a href="{{ request.route_url('createAnalysis') }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
                             {% else %}
-                                {% if  product.product_id != "datadesk"%}
+                                {% if  product.product_id != "datadesk" and product.product_id != "cards"%}
                                     <a href="{{ request.route_url('generateProduct', productid=product.product_id, projectid=activeProject.project_cod, processname=product.process_name) }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
                                 {% endif %}
                             {% endif %}
@@ -137,7 +137,7 @@
                             {% if  product.product_id == "reports"%}
                                 <a href="{{ request.route_url('createAnalysis') }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
                             {% else %}
-                                {% if  product.product_id != "datadesk"%}
+                                {% if  product.product_id != "datadesk" and product.product_id != "cards"%}
                                     <a href="{{ request.route_url('generateProduct', productid=product.product_id, projectid=activeProject.project_cod, processname=product.process_name) }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
                                 {% endif %}
                             {% endif %}
