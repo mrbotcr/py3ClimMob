@@ -45,7 +45,6 @@ from ..views.assessment import (
     deleteAssessmentSection_view,
     assessmenthead_view,
     deleteassessmenthead_view,
-    assessmentEnketo_view,
     startAssessments_view,
     closeAssessment_view,
     CancelAssessmentView,
@@ -581,15 +580,6 @@ def loadRoutes(config):
             "/project/{projectid}/assessment/{assessmentid}/savechanges",
             assessmentFormCreation_view,
             "string",
-        )
-    )
-
-    routes.append(
-        addRoute(
-            "assessmentenketo",
-            "/project/{projectid}/assessment/{assessmentid}/preview/{file}",
-            assessmentEnketo_view,
-            None,
         )
     )
 

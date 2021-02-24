@@ -12,7 +12,6 @@ from ..processes import (
     saveRegistryOrder,
     getRegistryGroupInformation,
     availableRegistryQuestions,
-    generateRegistryPreview,
     setRegistryStatus,
     getProjectProgress,
     clean_registry_error_logs,
@@ -286,49 +285,6 @@ class newRegistryQuestion_view(privateView):
                 "groupInfo": getRegistryGroupData(data, self),
                 "Categories": getCategories(self.user.login, self.request),
             }
-
-
-class registryEnketo_view(privateView):
-    def processView(self):
-        projectid = self.request.matchdict["projectid"]
-        fileid = self.request.matchdict["file"]
-        if not projectExists(self.user.login, projectid, self.request):
-            raise HTTPNotFound()
-        else:
-            path = os.path.join(
-                self.request.registry.settings["user.repository"],
-                *[self.user.login, projectid, "tmp", fileid]
-            )
-
-            if os.path.isfile(path):
-                content_type, content_enc = mimetypes.guess_type(path)
-                fileName = os.path.basename(path)
-                response = FileResponse(
-                    path, request=self.request, content_type=content_type
-                )
-                response.content_disposition = 'attachment; filename="' + fileName + '"'
-                return response
-            else:
-                raise HTTPNotFound()
-
-
-class registryPreview_view(privateView):
-    def processView(self):
-        projectid = self.request.matchdict["projectid"]
-        if not projectExists(self.user.login, projectid, self.request):
-            raise HTTPNotFound()
-        else:
-            generated, file = generateRegistryPreview(
-                self.user.login, projectid, self.request
-            )
-            if generated:
-                file = os.path.basename(file)
-                pathToXML = self.request.route_url(
-                    "registryenketo", projectid=projectid, file=file
-                )
-            else:
-                pathToXML = ""
-        return {"activeUser": self.user, "pathToXML": pathToXML, "projectid": projectid}
 
 
 class cancelRegistry_view(privateView):

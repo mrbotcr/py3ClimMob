@@ -12,7 +12,6 @@ from ..processes import (
     saveAssessmentOrder,
     getAssessmentGroupInformation,
     availableAssessmentQuestions,
-    generateAssessmentPreview,
     getProjectAssessments,
     addProjectAssessment,
     getProjectAssessmentInfo,
@@ -24,8 +23,7 @@ from ..processes import (
     setAssessmentIndividualStatus,
     getAssesmentProgress,
     there_is_final_assessment,
-    is_assessment_final,
-    get_usable_assessments,
+    getTheGroupOfThePackageCodeAssessment,
     clean_assessments_error_logs,
     getPackages,
 )
@@ -326,67 +324,6 @@ class newAssessmentQuestion_view(privateView):
                 "groupInfo": getAssessmentGroupData(data, self),
                 "Categories": getCategories(self.user.login, self.request),
             }
-
-
-class assessmentEnketo_view(privateView):
-    def processView(self):
-        projectid = self.request.matchdict["projectid"]
-        assessmentid = self.request.matchdict["assessmentid"]
-        fileid = self.request.matchdict["file"]
-        if not projectExists(self.user.login, projectid, self.request):
-            raise HTTPNotFound()
-        else:
-            data = getProjectAssessmentInfo(
-                self.user.login, projectid, assessmentid, self.request
-            )
-            if data:
-                path = os.path.join(
-                    self.request.registry.settings["user.repository"],
-                    *[self.user.login, projectid, "tmp", fileid]
-                )
-
-                if os.path.isfile(path):
-                    content_type, content_enc = mimetypes.guess_type(path)
-                    fileName = os.path.basename(path)
-                    response = FileResponse(
-                        path, request=self.request, content_type=content_type
-                    )
-                    response.content_disposition = (
-                        'attachment; filename="' + fileName + '"'
-                    )
-                    return response
-                else:
-                    raise HTTPNotFound()
-            else:
-                raise HTTPNotFound()
-
-
-class assessmentPreview_view(privateView):
-    def processView(self):
-        projectid = self.request.matchdict["projectid"]
-        assessmentid = self.request.matchdict["assessmentid"]
-
-        generated, file = generateAssessmentPreview(
-            self.user.login, projectid, assessmentid, self.request
-        )
-        if generated:
-            file = os.path.basename(file)
-            pathToXML = self.request.route_url(
-                "assessmentenketo",
-                projectid=projectid,
-                assessmentid=assessmentid,
-                file=file,
-            )
-        else:
-            pathToXML = ""
-
-        return {
-            "activeUser": self.user,
-            "pathToXML": pathToXML,
-            "projectid": projectid,
-            "assessmentid": assessmentid,
-        }
-
 
 class assessmenthead_view(privateView):
     def processView(self):
@@ -704,8 +641,9 @@ class startAssessments_view(privateView):
                 )
                 if checkPass:
                     print("generateAssessmentFiles")
+                    sectionOfThePackageCode = getTheGroupOfThePackageCodeAssessment(self.user.login, projectid, assessment_id,self.request)
                     correct = generateAssessmentFiles(
-                        self.user.login, projectid, assessment_id, self.request
+                        self.user.login, projectid, assessment_id, self.request, sectionOfThePackageCode
                     )
 
                     # Edited by Brandon

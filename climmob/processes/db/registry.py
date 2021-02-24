@@ -35,8 +35,19 @@ __all__ = [
     "getProjectNumobs",
     "getAllRegistryGroups",
     "getQuestionsByGroupInRegistry",
+    "getTheGroupOfThePackageCode"
 ]
 
+def getTheGroupOfThePackageCode(user, project, request):
+
+    data = (
+        request.dbsession.query(Registry.section_id)
+            .filter(Registry.user_name == user)
+            .filter(Registry.project_cod == project)
+            .filter(Registry.question_id == 162)
+            .first()
+    )
+    return data[0]
 
 def setRegistryStatus(user, project, status, request):
     request.dbsession.query(Project).filter(Project.user_name == user).filter(

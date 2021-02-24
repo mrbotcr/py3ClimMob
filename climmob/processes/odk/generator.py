@@ -18,8 +18,6 @@ log = logging.getLogger(__name__)
 __all__ = [
     "generateRegistry",
     "generateAssessmentFiles",
-    "generateRegistryPreview",
-    "generateAssessmentPreview",
 ]
 
 
@@ -427,6 +425,7 @@ class ODKExcelFile(object):
             26: "phonenumber",
             27: "text",
             28: "calculate",
+            29: "note"
         }
         ODKType = options[type]
 
@@ -564,14 +563,27 @@ def generateODKFile(
     questions,
     numComb,
     request,
+    selectedPackageQuestionGroup
 ):
     excelFile = ODKExcelFile(xlsxFile, formID, formLabel, formInstance)
 
     excelFile.addQuestion("clm_deviceimei", "Device IMEI", 23, "")
     excelFile.addQuestion("clm_start", request.translate("Start of survey"), 20, "")
 
+    # Edited by Brandon
     for group in groups:
         excelFile.addGroup("grp_" + str(group.section_id), group.section_name)
+        if group.section_id == selectedPackageQuestionGroup:
+            excelFile.addGroup("grp_validation", "Validation of the selected participant")
+
+    if formID[:3] == "REG":
+        excelFile.addQuestion("clc_before","",28,calculation="substring-before(${QST162},'-"+project+"~')", inGroup="grp_validation")
+        excelFile.addQuestion("clc_after", "", 28, calculation="substring-after(${clc_before},'"+user+"-')", inGroup="grp_validation")
+        excelFile.addQuestion("note_validation", 'You scanned the package number:<br><span style="color:#009551; font-weight:bold">${clc_after}</span> <br>For the participant:<br><span style="color:#009551; font-weight:bold">${farmername}</span>', 29, inGroup="grp_validation")
+    else:
+        excelFile.addQuestion("clc_after", "", 28, calculation="substring-after(${cal_QST163},'-')", inGroup="grp_validation")
+        excelFile.addQuestion("note_validation", 'You selected the package number:<br><span style="color:#009551; font-weight:bold">${QST163}</span> <br>This package is the property of the participant:<br><span style="color:#009551; font-weight:bold">${clc_after}</span>', 29, inGroup="grp_validation")
+    # End of edition
 
     for question in questions:
         if (
@@ -793,72 +805,7 @@ def generateODKFile(
 
     excelFile.renderFile()
 
-
-def generateRegistryPreview(user, projectid, request):
-    formID = "REG_" + user + "_" + projectid + "_" + datetime.now().strftime("%Y%m%d")
-    path = os.path.join(
-        request.registry.settings["user.repository"], *[user, projectid]
-    )
-    if not os.path.exists(path):
-        os.makedirs(path)
-    paths = ["tmp"]
-    if not os.path.exists(os.path.join(path, *paths)):
-        os.makedirs(os.path.join(path, *paths))
-
-    paths = ["tmp", formID + ".xlsx"]
-    xlsxFile = os.path.join(path, *paths)
-
-    paths = ["tmp", formID + ".xml"]
-    xmlFile = os.path.join(path, *paths)
-
-    groups = (
-        request.dbsession.query(Regsection)
-        .filter(Regsection.user_name == user)
-        .filter(Regsection.project_cod == projectid)
-        .order_by(Regsection.section_order)
-        .all()
-    )
-
-    sql = (
-        "SELECT question.question_code,question.question_desc,question.question_unit,question.question_dtype,question.question_twoitems,"
-        "registry.section_id,question.question_posstm,question.question_negstm,question.question_moreitems,question.question_perfstmt,"
-        "question.question_requiredvalue,question.question_id FROM question,registry "
-        "WHERE question.question_id = registry.question_id "
-        "AND registry.user_name = '" + user + "' "
-        "AND registry.project_cod = '" + projectid + "'"
-    )
-    questions = request.dbsession.execute(sql).fetchall()
-
-    prjdata = getProjectData(user, projectid, request)
-    label = request.translate("Registration-") + prjdata["project_name"]
-    formInstance = "concat('" + projectid + "_Regis_',${farmername})"
-    generateODKFile(
-        user,
-        projectid,
-        xlsxFile,
-        formID,
-        label,
-        formInstance,
-        groups,
-        questions,
-        prjdata["project_numcom"],
-        request,
-    )
-
-    try:
-        xls2xform.xls2xform_convert(xlsxFile, xmlFile)
-        return True, xmlFile
-    except Exception as e:
-        msg = request.translate("Error converting XLSX to XML") + "\n"
-        msg = msg + "XLSX File: " + xlsxFile + "\n"
-        msg = msg + "XML File: " + xmlFile + "\n"
-        msg = msg + "Error: \n"
-        msg = msg + str(e)
-        log.error(msg)
-        return False, str(e)
-
-
-def generateRegistry(user, projectid, request):
+def generateRegistry(user, projectid, request, sectionOfThePackageCode):
     formID = "REG_" + user + "_" + projectid + "_" + datetime.now().strftime("%Y%m%d")
 
     path = os.path.join(
@@ -934,6 +881,7 @@ def generateRegistry(user, projectid, request):
     prjdata = getProjectData(user, projectid, request)
     label = request.translate("Registration-") + prjdata["project_name"]
     formInstance = "concat('" + projectid + "_Regis_',${farmername})"
+
     generateODKFile(
         user,
         projectid,
@@ -945,6 +893,7 @@ def generateRegistry(user, projectid, request):
         questions,
         prjdata["project_numcom"],
         request,
+        sectionOfThePackageCode
     )
 
     print("****generateRegistry**Convert XLSX to XML******")
@@ -986,95 +935,7 @@ def generateRegistry(user, projectid, request):
         request,
     )
 
-
-def generateAssessmentPreview(user, projectid, assessment, request):
-    assessment = (
-        request.dbsession.query(Assessment)
-        .filter(Assessment.user_name == user)
-        .filter(Assessment.project_cod == projectid)
-        .filter(Assessment.ass_cod == assessment)
-        .first()
-    )
-    formID = (
-        "ASS_"
-        + user
-        + "_"
-        + projectid
-        + "_"
-        + assessment.ass_cod
-        + "_"
-        + datetime.now().strftime("%Y%m%d")
-    )
-    path = os.path.join(
-        request.registry.settings["user.repository"], *[user, projectid]
-    )
-    if not os.path.exists(path):
-        os.makedirs(path)
-    paths = ["tmp"]
-    if not os.path.exists(os.path.join(path, *paths)):
-        os.makedirs(os.path.join(path, *paths))
-
-    paths = ["tmp", formID + ".xlsx"]
-    xlsxFile = os.path.join(path, *paths)
-
-    paths = ["tmp", formID + ".xml"]
-    xmlFile = os.path.join(path, *paths)
-
-    groups = (
-        request.dbsession.query(Asssection)
-        .filter(Asssection.user_name == user)
-        .filter(Asssection.project_cod == projectid)
-        .order_by(Asssection.section_order)
-        .all()
-    )
-
-    sql = (
-        "SELECT question.question_code,question.question_desc,question.question_unit,question.question_dtype,question.question_twoitems,"
-        "assdetail.section_id,question.question_posstm,question.question_negstm,question.question_moreitems,question.question_perfstmt,"
-        "question.question_requiredvalue,question.question_id "
-        "FROM question,assdetail "
-        "WHERE question.question_id = assdetail.question_id "
-        "AND assdetail.user_name = '" + user + "' "
-        "AND assdetail.project_cod = '" + projectid + "' "
-        "AND assdetail.ass_cod = '" + assessment.ass_cod + "'"
-    )
-    questions = request.dbsession.execute(sql).fetchall()
-
-    prjdata = getProjectData(user, projectid, request)
-    label = (
-        request.translate("Data collection - ")
-        + assessment.ass_desc
-        + " - "
-        + prjdata["project_name"]
-    )
-    formInstance = "concat('" + projectid + "_Assess_',${cal_QST163})"
-    generateODKFile(
-        user,
-        projectid,
-        xlsxFile,
-        formID,
-        label,
-        formInstance,
-        groups,
-        questions,
-        prjdata["project_numcom"],
-        request,
-    )
-
-    try:
-        xls2xform.xls2xform_convert(xlsxFile, xmlFile)
-        return True, xmlFile
-    except Exception as e:
-        msg = request.translate("Error converting XLSX to XML") + "\n"
-        msg = msg + "XLSX File: " + xlsxFile + "\n"
-        msg = msg + "XML File: " + xmlFile + "\n"
-        msg = msg + "Error: \n"
-        msg = msg + str(e)
-        log.error(msg)
-        return False, str(e)
-
-
-def generateAssessmentFiles(user, projectid, assessment, request):
+def generateAssessmentFiles(user, projectid, assessment, request, sectionOfThePackageCode):
     result = []
     keyQuestion = (
         request.dbsession.query(Question).filter(Question.question_asskey == 1).first()
@@ -1186,6 +1047,7 @@ def generateAssessmentFiles(user, projectid, assessment, request):
             questions,
             prjdata["project_numcom"],
             request,
+            sectionOfThePackageCode
         )
 
         try:

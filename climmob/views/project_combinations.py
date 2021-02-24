@@ -13,6 +13,7 @@ from ..processes import (
     generateRegistry,
     numberOfCombinationsForTheProject,
     searchTechnologiesInProject,
+    getTheGroupOfThePackageCode
 )
 import climmob.plugins as p
 from ..products.qrpackages.qrpackages import create_qr_packages
@@ -187,7 +188,8 @@ class projectCombinations_view(privateView):
 def startTheRegistry(self, projectid):
     locale = self.request.locale_name
 
-    correct = generateRegistry(self.user.login, projectid, self.request)
+    sectionOfThePackageCode = getTheGroupOfThePackageCode(self.user.login, projectid, self.request)
+    correct = generateRegistry(self.user.login, projectid, self.request, sectionOfThePackageCode)
 
     if correct:
 
