@@ -192,9 +192,11 @@
                                                                     {% endif %}
                                                                 {% endfor %}
                                                             {% else %}
+
                                                                 <select id="newqst2" name="newqst2" class="form-control" required="">
                                                                     {% for values in PosibleValues %}
-                                                                        <option value="{{ values[0] }}" {% if values[1] == New[quest[0]] %}selected="selected"{% endif %} >{{ values[1] }}</option>
+
+                                                                        <option value="{{ values[0] }}" {% if values[0]|string == New[quest[0]]|string %}selected{% endif %} >{{ values[1] }}</option>
                                                                     {% endfor %}
                                                                 </select>
                                                             {% endif %}

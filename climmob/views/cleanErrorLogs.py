@@ -266,6 +266,28 @@ class cleanErrorLogs_view(privateView):
                         "PosibleValues": array,
                     }
                 else:
+                    #Edited by Brandon
+                    path = os.path.join(
+                        self.request.registry.settings["user.repository"],
+                        *[self.user.login, proId]
+                    )
+                    paths = ["db", "ass", codeId, "create.xml"]
+                    path = os.path.join(path, *paths)
+
+                    rtable = ""
+                    columns = []
+                    tree = ET.parse(path)
+                    for i, x in enumerate(tree.find("tables/table")):
+                        if "odktype" in x.attrib:
+                            if x.attrib["name"] == "qst163":
+                                rtable = x.attrib["rtable"]
+
+                    for i, x in enumerate(tree.find("lkptables")):
+                        if x.attrib["name"] == rtable:
+                            for s,y in enumerate(x):
+                                columns.append(y.attrib["name"])
+                    ###
+
                     queryR = (
                         "select qst163 from "
                         + self.user.login
@@ -284,15 +306,16 @@ class cleanErrorLogs_view(privateView):
                         if int(x[0]) != int(new_json["qst163"]):
                             array.append(int(x[0]))
 
+                    # Edited by Brandon
                     _filters = ""
                     if array:
                         _filters = (
-                            "where qst163_cod not in("
+                            "where "+columns[0]+" not in("
                             + ",".join(map(str, array))
                             + ");"
                         )
 
-                    query = (
+                    """query = (
                         "select qst163_cod, qst163_des from "
                         + self.user.login
                         + "_"
@@ -301,7 +324,18 @@ class cleanErrorLogs_view(privateView):
                         + codeId
                         + "_lkpqst163 "
                         + _filters
+                    )"""
+                    query = (
+                        "select "+columns[0]+", "+columns[1]+" from "
+                        + self.user.login
+                        + "_"
+                        + proId
+                        + "."
+                        + rtable+" "
+                        + _filters
                     )
+                    #end edited
+
                     mySession = self.request.dbsession
                     result = mySession.execute(query)
                     array = []
