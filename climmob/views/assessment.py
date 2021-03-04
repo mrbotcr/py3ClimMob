@@ -325,6 +325,7 @@ class newAssessmentQuestion_view(privateView):
                 "Categories": getCategories(self.user.login, self.request),
             }
 
+
 class assessmenthead_view(privateView):
     def processView(self):
 
@@ -641,9 +642,15 @@ class startAssessments_view(privateView):
                 )
                 if checkPass:
                     print("generateAssessmentFiles")
-                    sectionOfThePackageCode = getTheGroupOfThePackageCodeAssessment(self.user.login, projectid, assessment_id,self.request)
+                    sectionOfThePackageCode = getTheGroupOfThePackageCodeAssessment(
+                        self.user.login, projectid, assessment_id, self.request
+                    )
                     correct = generateAssessmentFiles(
-                        self.user.login, projectid, assessment_id, self.request, sectionOfThePackageCode
+                        self.user.login,
+                        projectid,
+                        assessment_id,
+                        self.request,
+                        sectionOfThePackageCode,
                     )
 
                     # Edited by Brandon

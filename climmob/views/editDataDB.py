@@ -67,9 +67,15 @@ def getNamesEditByColums(
     for i, x in enumerate(tree.find("tables/table")):
         row = []
         if "odktype" in x.attrib:
-            #print(x.attrib["odktype"])
-            #print(x.attrib["name"])
-            if x.attrib["odktype"] not in ["barcode", "deviceid", "start", "end","calculate"]:
+            # print(x.attrib["odktype"])
+            # print(x.attrib["name"])
+            if x.attrib["odktype"] not in [
+                "barcode",
+                "deviceid",
+                "start",
+                "end",
+                "calculate",
+            ]:
                 if x.attrib["name"] not in [
                     "rowuuid",
                     "surveyid",

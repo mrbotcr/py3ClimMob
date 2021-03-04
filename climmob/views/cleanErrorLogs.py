@@ -266,7 +266,7 @@ class cleanErrorLogs_view(privateView):
                         "PosibleValues": array,
                     }
                 else:
-                    #Edited by Brandon
+                    # Edited by Brandon
                     path = os.path.join(
                         self.request.registry.settings["user.repository"],
                         *[self.user.login, proId]
@@ -284,7 +284,7 @@ class cleanErrorLogs_view(privateView):
 
                     for i, x in enumerate(tree.find("lkptables")):
                         if x.attrib["name"] == rtable:
-                            for s,y in enumerate(x):
+                            for s, y in enumerate(x):
                                 columns.append(y.attrib["name"])
                     ###
 
@@ -310,7 +310,9 @@ class cleanErrorLogs_view(privateView):
                     _filters = ""
                     if array:
                         _filters = (
-                            "where "+columns[0]+" not in("
+                            "where "
+                            + columns[0]
+                            + " not in("
                             + ",".join(map(str, array))
                             + ");"
                         )
@@ -326,15 +328,20 @@ class cleanErrorLogs_view(privateView):
                         + _filters
                     )"""
                     query = (
-                        "select "+columns[0]+", "+columns[1]+" from "
+                        "select "
+                        + columns[0]
+                        + ", "
+                        + columns[1]
+                        + " from "
                         + self.user.login
                         + "_"
                         + proId
                         + "."
-                        + rtable+" "
+                        + rtable
+                        + " "
                         + _filters
                     )
-                    #end edited
+                    # end edited
 
                     mySession = self.request.dbsession
                     result = mySession.execute(query)

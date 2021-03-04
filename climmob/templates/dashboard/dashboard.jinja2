@@ -437,6 +437,7 @@
                                                                 {% endif %}
                                                                 {% if progress.regerrors > 0 and progress.regsubmissions == 1%}
                                                                     <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;white-space: normal !important;word-wrap: break-word !important;" href="{{request.route_url('CleanErrorLogs',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-bug"></i> {{ _("Show submissions with conflicts") }}</a>
+                                                                    <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;white-space: normal !important;word-wrap: break-word !important;" href="{{request.route_url('downloadErrorLogDocumentRegistry',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-cloud-download"></i> {{ _("Download submissions with conflicts") }}</a>
                                                                 {% endif %}
                                                             </td>
                                                         </tr>
@@ -554,6 +555,7 @@
                                                                         {% endif %}
                                                                         {% if assessment.errors > 0 and assessment.ass_status == 1%}
                                                                             <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;white-space: normal !important;word-wrap: break-word !important;" href="{{request.route_url('CleanErrorLogsAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-bug"></i> {{ _("Show submissions with conflicts") }}</a>
+                                                                            <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;white-space: normal !important;word-wrap: break-word !important;" href="{{request.route_url('downloadErrorLogDocumentAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-cloud-download"></i> {{ _("Download submissions with conflicts") }}</a>
                                                                         {% endif %}
                                                                     </td>
                                                                 </tr>

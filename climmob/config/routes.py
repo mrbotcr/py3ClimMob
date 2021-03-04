@@ -94,7 +94,11 @@ from ..views.productsList import (
     dataView,
 )
 
-from ..views.editData import editDataView, downloadDataView
+from ..views.editData import (
+    editDataView,
+    downloadDataView,
+    downloadErroLogDocument_view,
+)
 
 # -------Api-------#
 
@@ -715,6 +719,15 @@ def loadRoutes(config):
 
     routes.append(
         addRoute(
+            "downloadErrorLogDocumentRegistry",
+            "/project/{projectid}/form/{formid}/DownloadErrorLogDocument",
+            downloadErroLogDocument_view,
+            "json",
+        )
+    )
+
+    routes.append(
+        addRoute(
             "CleanErrorLogsAssessment",
             "/project/{projectid}/form/{formid}/{codeid}/CleanErrorLogs",
             cleanErrorLogs_view,
@@ -728,6 +741,15 @@ def loadRoutes(config):
             "/project/{projectid}/form/{formid}/{codeid}/logId/{logid}/CleanErrorLogs",
             cleanErrorLogs_view,
             "project/CleanErrors/clean.jinja2",
+        )
+    )
+
+    routes.append(
+        addRoute(
+            "downloadErrorLogDocumentAssessment",
+            "/project/{projectid}/form/{formid}/{codeid}/DownloadErrorLogDocument",
+            downloadErroLogDocument_view,
+            "json",
         )
     )
 

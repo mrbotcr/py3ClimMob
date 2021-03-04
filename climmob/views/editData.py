@@ -8,7 +8,14 @@ from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 import os
 from ..products.datadesk.datadesk import create_data_desk
 from ..products.analysisdata.analysisdata import create_datacsv
-from climmob.processes import getQuestionsStructure
+from ..products.errorLogDocument.errorLogDocument import create_error_log_document
+from climmob.processes import (
+    getQuestionsStructure,
+    generateStructureForInterface,
+    generateStructureForInterfaceAssessment,
+    get_registry_logs,
+    get_assessment_logs,
+)
 
 ##########
 import json
@@ -47,6 +54,45 @@ class downloadDataView(privateView):
         )
 
         create_datacsv(self.user.login, proId, info, self.request, formId, code)
+
+        url = self.request.route_url("productList")
+        self.returnRawViewResult = True
+        return HTTPFound(location=url)
+
+
+class downloadErroLogDocument_view(privateView):
+    def processView(self):
+        proId = self.request.matchdict["projectid"]
+        formId = self.request.matchdict["formid"]
+        code = ""
+        data = {}
+        _errors = []
+        if not projectExists(self.user.login, proId, self.request):
+            raise HTTPNotFound()
+        else:
+
+            if formId == "registry":
+                formId = "Registration"
+                data = generateStructureForInterface(
+                    self.user.login, proId, self.request
+                )
+                _errors = get_registry_logs(self.request, self.user.login, proId)
+            else:
+                if formId == "assessment":
+                    formId = "Assessment"
+                    code = self.request.matchdict["codeid"]
+                    data = generateStructureForInterfaceAssessment(
+                        self.user.login, proId, code, self.request
+                    )
+                    _errors = get_assessment_logs(
+                        self.request, self.user.login, proId, code
+                    )
+                else:
+                    raise HTTPNotFound()
+
+        create_error_log_document(
+            self.request, self.user.login, proId, formId, code, data, _errors
+        )
 
         url = self.request.route_url("productList")
         self.returnRawViewResult = True

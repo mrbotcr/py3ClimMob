@@ -425,7 +425,7 @@ class ODKExcelFile(object):
             26: "phonenumber",
             27: "text",
             28: "calculate",
-            29: "note"
+            29: "note",
         }
         ODKType = options[type]
 
@@ -563,7 +563,7 @@ def generateODKFile(
     questions,
     numComb,
     request,
-    selectedPackageQuestionGroup
+    selectedPackageQuestionGroup,
 ):
     excelFile = ODKExcelFile(xlsxFile, formID, formLabel, formInstance)
 
@@ -574,15 +574,45 @@ def generateODKFile(
     for group in groups:
         excelFile.addGroup("grp_" + str(group.section_id), group.section_name)
         if group.section_id == selectedPackageQuestionGroup:
-            excelFile.addGroup("grp_validation", "Validation of the selected participant")
+            excelFile.addGroup(
+                "grp_validation", "Validation of the selected participant"
+            )
 
     if formID[:3] == "REG":
-        excelFile.addQuestion("clc_before","",28,calculation="substring-before(${QST162},'-"+project+"~')", inGroup="grp_validation")
-        excelFile.addQuestion("clc_after", "", 28, calculation="substring-after(${clc_before},'"+user+"-')", inGroup="grp_validation")
-        excelFile.addQuestion("note_validation", 'You scanned the package number:<br><span style="color:#009551; font-weight:bold">${clc_after}</span> <br>For the participant:<br><span style="color:#009551; font-weight:bold">${farmername}</span>', 29, inGroup="grp_validation")
+        excelFile.addQuestion(
+            "clc_before",
+            "",
+            28,
+            calculation="substring-before(${QST162},'-" + project + "~')",
+            inGroup="grp_validation",
+        )
+        excelFile.addQuestion(
+            "clc_after",
+            "",
+            28,
+            calculation="substring-after(${clc_before},'" + user + "-')",
+            inGroup="grp_validation",
+        )
+        excelFile.addQuestion(
+            "note_validation",
+            'You scanned the package number:<br><span style="color:#009551; font-weight:bold">${clc_after}</span> <br>For the participant:<br><span style="color:#009551; font-weight:bold">${farmername}</span>',
+            29,
+            inGroup="grp_validation",
+        )
     else:
-        excelFile.addQuestion("clc_after", "", 28, calculation="substring-after(${cal_QST163},'-')", inGroup="grp_validation")
-        excelFile.addQuestion("note_validation", 'You selected the package number:<br><span style="color:#009551; font-weight:bold">${QST163}</span> <br>This package is the property of the participant:<br><span style="color:#009551; font-weight:bold">${clc_after}</span>', 29, inGroup="grp_validation")
+        excelFile.addQuestion(
+            "clc_after",
+            "",
+            28,
+            calculation="substring-after(${cal_QST163},'-')",
+            inGroup="grp_validation",
+        )
+        excelFile.addQuestion(
+            "note_validation",
+            'You selected the package number:<br><span style="color:#009551; font-weight:bold">${QST163}</span> <br>This package is the property of the participant:<br><span style="color:#009551; font-weight:bold">${clc_after}</span>',
+            29,
+            inGroup="grp_validation",
+        )
     # End of edition
 
     for question in questions:
@@ -805,6 +835,7 @@ def generateODKFile(
 
     excelFile.renderFile()
 
+
 def generateRegistry(user, projectid, request, sectionOfThePackageCode):
     formID = "REG_" + user + "_" + projectid + "_" + datetime.now().strftime("%Y%m%d")
 
@@ -893,7 +924,7 @@ def generateRegistry(user, projectid, request, sectionOfThePackageCode):
         questions,
         prjdata["project_numcom"],
         request,
-        sectionOfThePackageCode
+        sectionOfThePackageCode,
     )
 
     print("****generateRegistry**Convert XLSX to XML******")
@@ -935,7 +966,10 @@ def generateRegistry(user, projectid, request, sectionOfThePackageCode):
         request,
     )
 
-def generateAssessmentFiles(user, projectid, assessment, request, sectionOfThePackageCode):
+
+def generateAssessmentFiles(
+    user, projectid, assessment, request, sectionOfThePackageCode
+):
     result = []
     keyQuestion = (
         request.dbsession.query(Question).filter(Question.question_asskey == 1).first()
@@ -1047,7 +1081,7 @@ def generateAssessmentFiles(user, projectid, assessment, request, sectionOfThePa
             questions,
             prjdata["project_numcom"],
             request,
-            sectionOfThePackageCode
+            sectionOfThePackageCode,
         )
 
         try:

@@ -229,4 +229,17 @@ def register_products(config):
     )
     products.append(datacollectionprogressProduct)
 
+    # ERROR LOG DOCUMENT
+    errorLogDocument = addProduct(
+        "errorlogdocument", "Create a document xlsx with the error in the submission."
+    )
+    addMetadataToProduct(errorLogDocument, "author", "Brandon Madriz")
+    addMetadataToProduct(errorLogDocument, "version", "1.0")
+    addMetadataToProduct(
+        errorLogDocument,
+        "Licence",
+        "Copyright 2020, Alliance of Bioversity International and CIAT",
+    )
+    products.append(errorLogDocument)
+
     return products

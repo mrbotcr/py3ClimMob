@@ -9,7 +9,7 @@ from climmob.models import (
     AssDetail,
     Assessment,
     User,
-    Prjtech
+    Prjtech,
 )
 import os
 import json
@@ -221,7 +221,7 @@ def main(raw_args=None):
         dbsession = get_tm_session(session_factory, transaction.manager)
         try:
             listOfProyects = []
-            #print(len(getProjectWithGeoPointInRegistry(dbsession)))
+            # print(len(getProjectWithGeoPointInRegistry(dbsession)))
             for project in getProjectWithGeoPointInRegistry(dbsession):
                 info, infoInTheProject = getTheFirstGeoPointQuestionCodeInRegistry(
                     project["user_name"], project["project_cod"], dbsession
@@ -231,7 +231,7 @@ def main(raw_args=None):
                     if result:
                         listOfProyects.append(result)
 
-            #print(len(getProjectWithGeoPointInAssessment(dbsession)))
+            # print(len(getProjectWithGeoPointInAssessment(dbsession)))
             for project in getProjectWithGeoPointInAssessment(dbsession):
                 info, infoInTheProject = getTheFirstGeoPointQuestionCodeInAssessment(
                     project["user_name"], project["project_cod"], dbsession

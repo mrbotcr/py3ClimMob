@@ -27,6 +27,10 @@ from ..processes import (
     getInformationFromProject,
     getInformationForMaps,
     getProjectAssessmentInfo,
+    generateStructureForInterface,
+    get_registry_logs,
+    generateStructureForInterfaceAssessment,
+    get_assessment_logs,
 )
 from .projectHelp.projectHelp import getImportantInformation
 from .registry import getDataFormPreview
@@ -42,6 +46,7 @@ from ..products.stickers.stickers import create_stickers_document
 from ..products.datacollectionprogress.dataCollectionProgress import (
     create_data_collection_progress,
 )
+from ..products.errorLogDocument.errorLogDocument import create_error_log_document
 
 
 def getDataProduct(user, project, request):
@@ -135,6 +140,7 @@ class productsView(climmobPrivateView):
                     if (
                         product["product_id"] == "documentform"
                         or product["product_id"] == "datacsv"
+                        or product["product_id"] == "errorlogdocument"
                     ):
                         product["extraInformation"] = getProjectAssessmentInfo(
                             self.user.login,
@@ -261,6 +267,39 @@ class generateProductView(privateView):
                     assessment_id,
                     data,
                     packages,
+                )
+
+        if productid == "errorlogdocument":
+            if processname == "create_errorlog_Registration_":
+                data = generateStructureForInterface(
+                    self.user.login, projectid, self.request
+                )
+                _errors = get_registry_logs(self.request, self.user.login, projectid)
+                create_error_log_document(
+                    self.request,
+                    self.user.login,
+                    projectid,
+                    "Registration",
+                    "",
+                    data,
+                    _errors,
+                )
+            else:
+                assessment_id = processname.split("_")[3]
+                data = generateStructureForInterfaceAssessment(
+                    self.user.login, projectid, assessment_id, self.request
+                )
+                _errors = get_assessment_logs(
+                    self.request, self.user.login, projectid, assessment_id
+                )
+                create_error_log_document(
+                    self.request,
+                    self.user.login,
+                    projectid,
+                    "Assessment",
+                    assessment_id,
+                    data,
+                    _errors,
                 )
 
         if productid == "generalreport":

@@ -68,7 +68,15 @@
                                                             {% if product.product_id == "stickers" %}
                                                                 {{ _("Stickers for each variety pack") }}
                                                             {% else %}
-                                                                {{ product.product_id }}
+                                                                {% if product.product_id == "errorlogdocument" %}
+                                                                    {% if product.process_name == "create_errorlog_Registration_" %}
+                                                                        {{ _("Document of submissions with conflicts in the registration form") }}
+                                                                    {% else %}
+                                                                        {{ _("Document of submissions with conflicts in the assessment form") }}: {{ product.extraInformation.ass_desc }}
+                                                                    {% endif %}
+                                                                {% else %}
+                                                                    {{ product.product_id }}
+                                                                {% endif %}
                                                             {% endif %}
                                                         {% endif %}
                                                     {% endif %}
@@ -85,26 +93,22 @@
                     {{ product.datetime_added }}
                 </td>
                 <td class="text-center" style="vertical-align: middle;">
-                    {% if product.output_mimetype == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" %}
-                        <i class="fa fa-file-excel-o" aria-hidden="true" style="font-size: 17px;color: {{ color }}"></i>
+                    {% if product.output_mimetype == "application/pdf" %}
+                        <i class="fa fa-file-pdf-o" aria-hidden="true" style="font-size: 17px;color: {{ color }}"></i>
                     {% else %}
-                        {% if product.output_mimetype == "application/pdf" %}
-                            <i class="fa fa-file-pdf-o" aria-hidden="true" style="font-size: 17px;color: {{ color }}"></i>
+                        {% if product.output_mimetype == "application/zip" %}
+                            <i class="fa fa-file-zip-o" aria-hidden="true" style="font-size: 17px;color: {{ color }}"></i>
                         {% else %}
-                            {% if product.output_mimetype == "application/zip" %}
-                                <i class="fa fa-file-zip-o" aria-hidden="true" style="font-size: 17px;color: {{ color }}"></i>
+                            {% if product.output_mimetype == "application/json" %}
+                                <i class="fa fa-file-text" aria-hidden="true" style="font-size: 17px;color: {{ color }}"></i>
                             {% else %}
-                                {% if product.output_mimetype == "application/json" %}
-                                    <i class="fa fa-file-text" aria-hidden="true" style="font-size: 17px;color: {{ color }}"></i>
+                                {% if product.output_mimetype == "text/csv" or product.output_mimetype == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" %}
+                                    <i class="fa fa-file-excel-o" placeholder="asasd" aria-hidden="true" style="font-size: 17px;color: {{ color }}"></i>
                                 {% else %}
-                                    {% if product.output_mimetype == "text/csv" %}
-                                        <i class="fa fa-file-excel-o" placeholder="asasd" aria-hidden="true" style="font-size: 17px;color: {{ color }}"></i>
+                                    {% if product.output_mimetype == "application/vnd.openxmlformats-officedocument.wordprocessingml.document" %}
+                                        <i class="fa fa-file-word-o" aria-hidden="true" style="font-size: 17px;color: {{ color }}"></i>
                                     {% else %}
-                                        {% if product.output_mimetype == "application/vnd.openxmlformats-officedocument.wordprocessingml.document" %}
-                                            <i class="fa fa-file-word-o" aria-hidden="true" style="font-size: 17px;color: {{ color }}"></i>
-                                        {% else %}
-                                            {{ product.output_mimetype }}
-                                        {% endif %}
+                                        {{ product.output_mimetype }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}

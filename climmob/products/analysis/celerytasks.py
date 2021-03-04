@@ -52,7 +52,8 @@ def createReports(locale, path, user, projectid, data, info, infosheet, pathScri
         es.install()
         _ = es.gettext
 
-    print("Rscript "
+    print(
+        "Rscript "
         + pathScript
         + "/ClimMob.R"
         + " "
@@ -63,7 +64,9 @@ def createReports(locale, path, user, projectid, data, info, infosheet, pathScri
         + "/info.json"
         + " "
         + pathouttemp
-        + " "+infosheet+" "
+        + " "
+        + infosheet
+        + " "
         + " "
         + locale
         + " "
@@ -73,7 +76,8 @@ def createReports(locale, path, user, projectid, data, info, infosheet, pathScri
         + " "
         + _("item")
         + " "
-        + pathScript)
+        + pathScript
+    )
 
     os.system(
         "Rscript "

@@ -6,6 +6,8 @@ from .assessment import setAssessmentStatus
 from ..db.question import getQuestionOptions
 import os, shutil
 import json
+from .project import numberOfCombinationsForTheProject
+from jinja2 import Environment
 
 __all__ = [
     "availableRegistryQuestions",
@@ -35,19 +37,21 @@ __all__ = [
     "getProjectNumobs",
     "getAllRegistryGroups",
     "getQuestionsByGroupInRegistry",
-    "getTheGroupOfThePackageCode"
+    "getTheGroupOfThePackageCode",
 ]
+
 
 def getTheGroupOfThePackageCode(user, project, request):
 
     data = (
         request.dbsession.query(Registry.section_id)
-            .filter(Registry.user_name == user)
-            .filter(Registry.project_cod == project)
-            .filter(Registry.question_id == 162)
-            .first()
+        .filter(Registry.user_name == user)
+        .filter(Registry.project_cod == project)
+        .filter(Registry.question_id == 162)
+        .first()
     )
     return data[0]
+
 
 def setRegistryStatus(user, project, status, request):
     request.dbsession.query(Project).filter(Project.user_name == user).filter(
@@ -239,6 +243,7 @@ def generateStructureForValidateJsonOdk(user, project, request):
         return False
 
 
+"""
 def generateStructureForInterface(user, project, request):
 
     data = []
@@ -377,6 +382,326 @@ def generateStructureForInterface(user, project, request):
     data.append(necessarySection)
 
     return data
+"""
+
+
+def generateStructureForInterface(user, project, request):
+
+    data = []
+    sections = mapFromSchema(
+        request.dbsession.query(Regsection)
+        .filter(Regsection.user_name == user)
+        .filter(Regsection.project_cod == project)
+        .order_by(Regsection.section_order)
+        .all()
+    )
+    numComb = numberOfCombinationsForTheProject(user, project, request)
+
+    for section in sections:
+
+        dataSection = {}
+        dataSection["section_name"] = section["section_name"]
+        dataSection["section_content"] = section["section_content"]
+        dataSection["section_id"] = section["section_id"]
+        dataSection["section_questions"] = []
+
+        questions = mapFromSchema(
+            request.dbsession.query(Registry)
+            .filter(Registry.user_name == user)
+            .filter(Registry.project_cod == project)
+            .filter(Registry.section_id == section["section_id"])
+            .order_by(Registry.question_order)
+            .all()
+        )
+        for question in questions:
+            questionData = mapFromSchema(
+                request.dbsession.query(Question)
+                .filter(Question.question_id == question["question_id"])
+                .first()
+            )
+            dataQuestion = {}
+            if (
+                questionData["question_dtype"] != 9
+                and questionData["question_dtype"] != 10
+            ):
+                # create the question
+                dataQuestion = createQuestionRegistry(
+                    questionData["question_id"],
+                    questionData["question_desc"],
+                    questionData["question_dtype"],
+                    questionData["question_notes"],
+                    questionData["question_unit"],
+                    questionData["question_requiredvalue"],
+                    questionData["question_code"],
+                    "grp_"
+                    + str(section["section_id"])
+                    + "/"
+                    + questionData["question_code"],
+                )
+
+                if (
+                    questionData["question_dtype"] == 5
+                    or questionData["question_dtype"] == 6
+                ):
+                    options = mapFromSchema(
+                        request.dbsession.query(Qstoption)
+                        .filter(Qstoption.question_id == question["question_id"])
+                        .all()
+                    )
+
+                    for option in options:
+                        dataQuestion["question_options"].append(option)
+
+                dataSection["section_questions"].append(dataQuestion)
+            else:
+
+                if questionData["question_dtype"] == 9:
+
+                    optionsReq = []
+                    for opt in range(0, numComb):
+                        code = chr(65 + opt)
+                        dataQuestionop = createOption(
+                            "Option " + code,
+                            0,
+                            str(opt + 1),
+                            0,
+                            str(opt + 1),
+                            questionData["question_id"],
+                        )
+                        optionsReq.append(dataQuestionop)
+
+                    if numComb == 2:
+                        # the unique question
+                        dataQuestion = createQuestionRegistry(
+                            questionData["question_id"],
+                            questionData["question_twoitems"],
+                            5,
+                            questionData["question_notes"],
+                            questionData["question_unit"],
+                            questionData["question_requiredvalue"],
+                            questionData["question_code"],
+                            "grp_"
+                            + str(section["section_id"])
+                            + "/char_"
+                            + questionData["question_code"],
+                        )
+                        dataQuestion["question_options"] = optionsReq
+                        dataSection["section_questions"].append(dataQuestion)
+
+                    if numComb == 3:
+                        # The possitive
+                        dataQuestion = createQuestionRegistry(
+                            questionData["question_id"],
+                            questionData["question_posstm"],
+                            5,
+                            questionData["question_notes"],
+                            questionData["question_unit"],
+                            questionData["question_requiredvalue"],
+                            questionData["question_code"],
+                            "grp_"
+                            + str(section["section_id"])
+                            + "/char_"
+                            + questionData["question_code"]
+                            + "_pos",
+                        )
+                        dataQuestion["question_options"] = optionsReq
+                        dataSection["section_questions"].append(dataQuestion)
+                        # The negative
+                        dataQuestion = createQuestionRegistry(
+                            questionData["question_id"],
+                            questionData["question_negstm"],
+                            5,
+                            questionData["question_notes"],
+                            questionData["question_unit"],
+                            questionData["question_requiredvalue"],
+                            questionData["question_code"],
+                            "grp_"
+                            + str(section["section_id"])
+                            + "/char_"
+                            + questionData["question_code"]
+                            + "_neg",
+                        )
+                        dataQuestion["question_options"] = optionsReq
+                        dataSection["section_questions"].append(dataQuestion)
+
+                    if numComb >= 4:
+
+                        for opt in range(0, numComb):
+                            renderedString = (
+                                Environment()
+                                .from_string(questionData["question_moreitems"])
+                                .render(pos=opt + 1)
+                            )
+                            dataQuestion = createQuestionRegistry(
+                                questionData["question_id"],
+                                renderedString,
+                                5,
+                                questionData["question_notes"],
+                                questionData["question_unit"],
+                                questionData["question_requiredvalue"],
+                                questionData["question_code"],
+                                "grp_"
+                                + str(section["section_id"])
+                                + "/char_"
+                                + questionData["question_code"]
+                                + "_stmt_"
+                                + str(opt + 1),
+                            )
+                            dataQuestion["question_options"] = optionsReq
+                            dataSection["section_questions"].append(dataQuestion)
+
+                if questionData["question_dtype"] == 10:
+                    for opt in range(0, numComb):
+                        code = chr(65 + opt)
+                        renderedString = (
+                            Environment()
+                            .from_string(questionData["question_perfstmt"])
+                            .render(option=code)
+                        )
+                        # create the question
+                        dataQuestion = createQuestionRegistry(
+                            questionData["question_id"],
+                            renderedString,
+                            5,
+                            questionData["question_notes"],
+                            questionData["question_unit"],
+                            questionData["question_requiredvalue"],
+                            questionData["question_code"],
+                            "grp_"
+                            + str(section["section_id"])
+                            + "/perf_"
+                            + questionData["question_code"]
+                            + "_"
+                            + str(opt + 1),
+                        )
+                        # the best option
+                        dataQuestionop = createOption(
+                            request.translate("Better"),
+                            0,
+                            1,
+                            0,
+                            1,
+                            questionData["question_id"],
+                        )
+                        dataQuestion["question_options"].append(dataQuestionop)
+                        # the worst option
+                        dataQuestionop = createOption(
+                            request.translate("Worse"),
+                            0,
+                            2,
+                            0,
+                            2,
+                            questionData["question_id"],
+                        )
+                        dataQuestion["question_options"].append(dataQuestionop)
+                        # add to the section
+                        dataSection["section_questions"].append(dataQuestion)
+
+        data.append(dataSection)
+
+    # Extra section for necessary questions in the json
+    necessarySection = {}
+    necessarySection["section_name"] = "Extra Field"
+    necessarySection["section_content"] = request.translate(
+        "Have necessary questions for documentation."
+    )
+    necessarySection["section_id"] = "None"
+    necessarySection["section_questions"] = []
+    # Start survey
+    dataQuestion = createQuestionRegistry(
+        "-1",
+        request.translate("Start of survey"),
+        15,
+        request.translate("Start of survey"),
+        "",
+        1,
+        "__CLMQST1__",
+        "clm_start",
+    )
+    necessarySection["section_questions"].append(dataQuestion)
+    # End survey
+    dataQuestion = createQuestionRegistry(
+        "-2",
+        request.translate("End of survey"),
+        15,
+        request.translate("End of survey"),
+        "",
+        1,
+        "__CLMQST2__",
+        "clm_end",
+    )
+    necessarySection["section_questions"].append(dataQuestion)
+    data.append(necessarySection)
+
+    return data
+
+
+def createQuestionRegistry(
+    question_id,
+    question_desc,
+    question_dtype,
+    question_notes,
+    question_unit,
+    question_requiredvalue,
+    question_code,
+    question_datafield,
+):
+    options = {
+        1: "text",
+        2: "decimal",
+        3: "integer",
+        4: "geopoint",
+        5: "select_one",
+        6: "select_multiple",
+        7: "barcode",
+        8: "select_one",
+        9: "select_one",
+        10: "select_one",
+        11: "geotrace",
+        12: "geoshape",
+        13: "date",
+        14: "time",
+        15: "dateTime",
+        16: "image",
+        17: "audio",
+        18: "video",
+        19: "barcode",
+        20: "start",
+        21: "end",
+        22: "today",
+        23: "deviceid",
+        24: "subscriberid",
+        25: "simserial",
+        26: "phonenumber",
+    }
+    ODKType = options[question_dtype]
+    dataQuestion = {}
+    dataQuestion["question_id"] = question_id
+    dataQuestion["question_desc"] = question_desc
+    dataQuestion["question_dtype"] = ODKType
+    dataQuestion["question_notes"] = question_notes
+    dataQuestion["question_unit"] = question_unit
+    dataQuestion["question_requiredvalue"] = question_requiredvalue
+    dataQuestion["question_code"] = question_code
+    dataQuestion["question_datafield"] = question_datafield
+    if ODKType == "select_one" or ODKType == "select_multiple":
+        dataQuestion["question_options"] = []
+
+    return dataQuestion
+
+
+def createOption(
+    value_desc, value_isother, value_code, value_isna, value_order, question_id
+):
+    dataQuestionop = {}
+    dataQuestionop["value_desc"] = value_desc
+    dataQuestionop["value_isother"] = value_isother
+    dataQuestionop["value_code"] = value_code
+    dataQuestionop["value_isna"] = value_isna
+    dataQuestionop["value_order"] = value_order
+    dataQuestionop["question_id"] = question_id
+
+    return dataQuestionop
 
 
 def getRegistryQuestions(user, project, request, createAutoRegistry=True):

@@ -18,7 +18,7 @@ from ...processes import (
     AsessmentStatus,
     getPackages,
     getJSONResult,
-    getTheGroupOfThePackageCodeAssessment
+    getTheGroupOfThePackageCodeAssessment,
 )
 
 from ..registry import getDataFormPreview
@@ -66,13 +66,18 @@ class createProjectAssessment_view(apiView):
                                         self.request,
                                     )
                                     if checkPass:
-                                        sectionOfThePackageCode = getTheGroupOfThePackageCodeAssessment(self.user.login, dataworking["project_cod"],dataworking["ass_cod"], self.request)
+                                        sectionOfThePackageCode = getTheGroupOfThePackageCodeAssessment(
+                                            self.user.login,
+                                            dataworking["project_cod"],
+                                            dataworking["ass_cod"],
+                                            self.request,
+                                        )
                                         generateAssessmentFiles(
                                             self.user.login,
                                             dataworking["project_cod"],
                                             dataworking["ass_cod"],
                                             self.request,
-                                            sectionOfThePackageCode
+                                            sectionOfThePackageCode,
                                         )
                                         # setAssessmentStatus(self.user.login, dataworking['project_cod'], 1, self.request)
                                         setAssessmentIndividualStatus(

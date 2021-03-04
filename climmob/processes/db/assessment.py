@@ -54,22 +54,24 @@ __all__ = [
     "getAllAssessmentGroups",
     "addProjectAssessmentClone",
     "getQuestionsByGroupInAssessment",
-    "getTheGroupOfThePackageCodeAssessment"
+    "getTheGroupOfThePackageCodeAssessment",
 ]
 
 log = logging.getLogger(__name__)
 
-def getTheGroupOfThePackageCodeAssessment(user, project, ass_cod,request):
+
+def getTheGroupOfThePackageCodeAssessment(user, project, ass_cod, request):
 
     data = (
         request.dbsession.query(AssDetail.section_id)
-            .filter(AssDetail.user_name == user)
-            .filter(AssDetail.project_cod == project)
-            .filter(AssDetail.ass_cod == ass_cod)
-            .filter(AssDetail.question_id == 163)
-            .first()
+        .filter(AssDetail.user_name == user)
+        .filter(AssDetail.project_cod == project)
+        .filter(AssDetail.ass_cod == ass_cod)
+        .filter(AssDetail.question_id == 163)
+        .first()
     )
     return data[0]
+
 
 def getQuestionsByGroupInAssessment(user, project, ass_cod, section_id, request):
     data = (
