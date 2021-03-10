@@ -11,18 +11,18 @@ function msj(flag) {
             showMethod: 'slideDown',
             timeOut: 4000
         };
-        toastr.error("Seleccione al menos una columna");
+        toastr.error("Select at least one column");
 
     }
 
     if (flag == 1) {
-        swal({title: "Listo!", text: "Sus cambios fueron guardados en la base de datos", type: "success"});
+        swal({title: "Ready!", text: "Your changes were saved in the database.", type: "success"});
     }
 
     if (flag == 0) {
         swal({
             title: "Error!",
-            text: "Sucedio un error al actualizar sus datos, por favor intentelo de nuevo",
+            text: "An error occurred while updating your data, please try again.",
             type: "error"
         });
     }
@@ -74,7 +74,7 @@ function drawtable(data_fill) {
             })
 
             var cell = $('#jqGrid').jqGrid('getCell',enQueFila,enEstaPosicionEstaElQueOcupo)
-            if(queValor == cell)
+            if(queValor == cell & (queValor !=98 & queValor != 99 ))
             {
                 cuantosRepetidos = cuantosRepetidos + 1
             }
@@ -83,7 +83,7 @@ function drawtable(data_fill) {
         //alert(cuantosRepetidos)
 
         if (cuantosRepetidos>0)
-            return [false,"Revise que el valor no se duplique en otra columna."];
+            return [false,"Check that the value is not duplicated in another column."];
         else
             return [true]
     };
@@ -105,7 +105,7 @@ function drawtable(data_fill) {
         pager: "#pager_list_2",
         //colNames: vals['colNames'],
         colModel: vals['colModel'],
-        caption: "Tabla de edicion",
+        caption: "Table of edition",
         hidegrid: false,
         cellEdit: true,
         cellsubmit: 'clientArray',
@@ -137,13 +137,12 @@ function drawtable(data_fill) {
     {
         enQueFila = rowid
         queValor  = value
-
         var cm = $('#jqGrid').jqGrid('getGridParam','colModel')
         cm.forEach(function(element)
         {
             if(element.name == cellname)
             {
-                queValido = element["validation"]
+                queValido = element["validation"];
             }
         })
     });
@@ -341,13 +340,13 @@ function drawtable(data_fill) {
             if (document.activeElement.id == 'cancel_jq') {
                 e.preventDefault();
                 swal({
-                        title: "Hay cambios sin guardar!",
-                        text: "Desea guardar los cambios realizados en la base de datos?",
+                        title: "There are unsaved changes!",
+                        text: "Do you want to save the changes made to the database?",
                         type: "warning",
                         showCancelButton: true,
                         confirmButtonColor: "#DD6B55",
-                        confirmButtonText: "Si, deseo guardarlos!",
-                        cancelButtonText: "No, deseo cancelar!",
+                        confirmButtonText: "Yes, I want to keep them!",
+                        cancelButtonText: "No, I want to cancel!",
                         closeOnConfirm: false,
                         closeOnCancel: false
                     },
@@ -358,8 +357,8 @@ function drawtable(data_fill) {
                         } else {
                             $('#json_data').val('');
                             swal({
-                                title: "Cancelado",
-                                text: "Sus cambios no se almacenaran en la base de datos)",
+                                title: "Cancelled",
+                                text: "Your changes will not be stored in the database.",
                                 type: "error"
                             }, function () {
                                 $("#jqEditTable").off('submit').submit()

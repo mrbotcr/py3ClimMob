@@ -595,7 +595,7 @@ def generateODKFile(
         )
         excelFile.addQuestion(
             "note_validation",
-            'You scanned the package number:<br><span style="color:#009551; font-weight:bold">${clc_after}</span> <br>For the participant:<br><span style="color:#009551; font-weight:bold">${farmername}</span>',
+            'You scanned package number <span style="color:#009551; font-weight:bold">${clc_after}</span> for participant <span style="color:#009551; font-weight:bold">${farmername}</span>.',
             29,
             inGroup="grp_validation",
         )
@@ -609,7 +609,7 @@ def generateODKFile(
         )
         excelFile.addQuestion(
             "note_validation",
-            'You selected the package number:<br><span style="color:#009551; font-weight:bold">${QST163}</span> <br>This package is the property of the participant:<br><span style="color:#009551; font-weight:bold">${clc_after}</span>',
+            'You selected package number <span style="color:#009551; font-weight:bold">${QST163}</span>, this package belongs to <br><span style="color:#009551; font-weight:bold">${clc_after}</span>.',
             29,
             inGroup="grp_validation",
         )
@@ -651,6 +651,13 @@ def generateODKFile(
                 )
         else:
             if question.question_dtype == 8:
+                excelFile.addQuestion(
+                    "note_dtype8",
+                    "In the following field try to write the name of the participant to filter the information and find him/her more easily.",
+                    29,
+                    inGroup="grp_" + str(question.section_id)
+                )
+
                 excelFile.addQuestion(
                     question.question_code,
                     question.question_desc,
@@ -696,6 +703,21 @@ def generateODKFile(
                             str(opt + 1),
                             "Option " + code,
                         )
+
+                    if question.question_tied == 1:
+                        excelFile.addOption(
+                            "char_" + question.question_code,
+                            str(98),
+                            "Tied",
+                        )
+
+                    if question.question_notobserved == 1:
+                        excelFile.addOption(
+                            "char_" + question.question_code,
+                            str(99),
+                            "Not observed",
+                        )
+
                 if numComb == 3:
                     excelFile.addQuestion(
                         "char_" + question.question_code + "_pos",
@@ -705,9 +727,22 @@ def generateODKFile(
                         question.question_requiredvalue,
                         "grp_" + str(question.section_id),
                     )
-                    constraintGen = (
-                        ". != ${" + "char_" + question.question_code + "_pos" + "}"
-                    )
+                    # EDITED BY BRANDON
+                    constraintGen = ""
+                    if question.question_tied == 1:
+                        constraintGen = ". = " + str(98)
+
+                    if question.question_notobserved == 1:
+                        if constraintGen == "":
+                            constraintGen = ". = " + str(99)
+                        else:
+                            constraintGen += " or . = " + str(99)
+
+                    if constraintGen =="":
+                        constraintGen = ". != ${" + "char_" + question.question_code + "_pos" + "}"
+                    else:
+                        constraintGen += " or . != ${" + "char_" + question.question_code + "_pos" + "}"
+                    # END EDITED
                     excelFile.addQuestion(
                         "char_" + question.question_code + "_neg",
                         question.question_negstm,
@@ -729,6 +764,32 @@ def generateODKFile(
                             str(opt + 1),
                             "Option " + code,
                         )
+                    # EDITED BY BRANDON
+                    if question.question_tied == 1:
+                        excelFile.addOption(
+                            "char_" + question.question_code + "_pos",
+                            str(98),
+                            "Tied",
+                        )
+                        excelFile.addOption(
+                            "char_" + question.question_code + "_neg",
+                            str(98),
+                            "Tied",
+                        )
+                    if question.question_notobserved == 1:
+                        excelFile.addOption(
+                            "char_" + question.question_code + "_pos",
+                            str(99),
+                            "Not observed",
+                        )
+
+                        excelFile.addOption(
+                            "char_" + question.question_code + "_neg",
+                            str(99),
+                            "Not observed",
+                        )
+                    # END EDITED
+
                 if numComb >= 4:
                     constraintGen = ""
                     for opt in range(0, numComb):
@@ -748,7 +809,7 @@ def generateODKFile(
                         )
                         if constraintGen == "":
                             constraintGen += (
-                                ". != ${"
+                                ". = "+str(numComb+1)+" or . != ${"
                                 + "char_"
                                 + question.question_code
                                 + "_stmt_"
@@ -774,6 +835,30 @@ def generateODKFile(
                                 str(opt2 + 1),
                                 "Option " + code,
                             )
+
+                        optionValue = numComb
+                        if question.question_tied == 1:
+                            optionValue += 1
+                            excelFile.addOption(
+                                "char_"
+                                + question.question_code
+                                + "_stmt_"
+                                + str(optionValue),
+                                str(optionValue),
+                                "Tied",
+                            )
+
+                        if question.question_notobserved == 1:
+                            optionValue += 1
+                            excelFile.addOption(
+                                "char_"
+                                + question.question_code
+                                + "_stmt_"
+                                + str(optionValue),
+                                str(optionValue),
+                                "Not observed",
+                            )
+
             if question.question_dtype == 10:
                 for opt in range(0, numComb):
                     code = chr(65 + opt)
@@ -900,7 +985,7 @@ def generateRegistry(user, projectid, request, sectionOfThePackageCode):
     sql = (
         "SELECT question.question_code,question.question_desc,question.question_unit,question.question_dtype,question.question_twoitems,"
         "registry.section_id,question.question_posstm,question.question_negstm,question.question_moreitems,question.question_perfstmt,"
-        "question.question_requiredvalue,registry.question_order,question.question_id FROM question,registry "
+        "question.question_requiredvalue,registry.question_order,question.question_id,question.question_tied, question.question_notobserved FROM question,registry "
         "WHERE question.question_id = registry.question_id "
         "AND registry.user_name = '" + user + "' "
         "AND registry.project_cod = '"
@@ -1051,7 +1136,7 @@ def generateAssessmentFiles(
         sql = (
             "SELECT question.question_code,question.question_desc,question.question_unit,question.question_dtype,question.question_twoitems,"
             "assdetail.section_id,question.question_posstm,question.question_negstm,question.question_moreitems,question.question_perfstmt,"
-            "question.question_requiredvalue,question.question_id "
+            "question.question_requiredvalue,question.question_id, question.question_tied, question.question_notobserved "
             "FROM question,assdetail "
             "WHERE question.question_id = assdetail.question_id "
             "AND assdetail.user_name = '" + user + "' "

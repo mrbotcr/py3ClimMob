@@ -885,7 +885,9 @@
                                         <h3><i class="fa fa-tim"></i> {{ _("You don't have projects.") }}</h3>
                                     {% endif %}
                                     <br/>
-                                    <a class="btn btn-primary" href="{{ request.route_url('newproject') }}">{{ _("Add new project") }}</a>
+                                    <a class="btn btn-primary" href="{{ request.route_url('newproject') }}">{{ _("Add new project") }}</a><br><br>
+
+                                    <a class="btn btn-primary" href="{{ request.route_url('cloneProject') }}">{{ _("Clone existing project") }}</a>
                                 </div>
                                 <ul class="sidebar-list">
                                     {% if hasActiveProject %}

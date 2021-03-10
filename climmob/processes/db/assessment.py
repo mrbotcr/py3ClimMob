@@ -658,7 +658,7 @@ def getAssessmentQuestions(user, project, assessment, request):
     sql = (
         "SELECT asssection.section_id,asssection.section_name,asssection.section_content,asssection.section_order,asssection.section_private,"
         "question.question_id,question.question_desc,question.question_name,question.question_notes,question.question_dtype, question.question_posstm,question.question_negstm, question.question_perfstmt,IFNULL(assdetail.question_order,0) as question_order,"
-        "question.question_reqinasses FROM asssection LEFT JOIN assdetail ON assdetail.section_user = asssection.user_name AND assdetail.section_project = asssection.project_cod "
+        "question.question_reqinasses, question.question_tied, question.question_notobserved FROM asssection LEFT JOIN assdetail ON assdetail.section_user = asssection.user_name AND assdetail.section_project = asssection.project_cod "
         " AND assdetail.section_assessment = asssection.ass_cod AND assdetail.section_id = asssection.section_id "
         " LEFT JOIN question ON assdetail.question_id = question.question_id WHERE "
         "asssection.user_name = '"

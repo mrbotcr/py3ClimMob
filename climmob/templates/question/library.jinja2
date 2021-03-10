@@ -293,7 +293,8 @@
 
                 if(value == 9 )
                 {
-                    $("#form_characteristics").css("display",'initial')
+                    $("#form_characteristics").css("display",'initial');
+                    $("#extraForCharacteristics").css("display","initial");
                     $(".inputForQuestionChar").prop('disabled',false);
                     $("#question_desc").val("-")
                 }
@@ -472,6 +473,14 @@
             if ($("#ckb_required_value").is(':checked'))
                 question_requiredvalue = 1;
 
+            var question_tied = 0;
+            if ($("#ckb_answer_tied").is(':checked'))
+                question_tied = 1;
+
+            var question_notobserved = 0;
+            if ($("#ckb_answer_notobserved").is(':checked'))
+                question_notobserved = 1;
+
             optionsValues = prepareOptionsValues()
 
             $.ajax({
@@ -492,6 +501,8 @@
                     "question_group": $("#question_group").val(),
                     "question_dtype": parseInt($("#question_dtype").val()),
                     "question_requiredvalue": question_requiredvalue,
+                    "question_tied": question_tied,
+                    "question_notobserved": question_notobserved,
                     "optionsValues":  JSON.stringify(optionsValues),
                     {% block ajax_post_extra %}
 
@@ -640,7 +651,7 @@
             $("#qstgroups_name").focus()
         }
 
-        function openQuestions(question_id,isnew,owner,question_name,question_code, question_desc, question_group, question_dtype, question_unit, question_requiredvalue, question_posstm, question_negstm, question_perfstmt, assigned, options {% block library_function_open_questions_extra %} {% endblock library_function_open_questions_extra %})
+        function openQuestions(question_id,isnew,owner,question_name,question_code, question_desc, question_group, question_dtype, question_unit, question_requiredvalue, question_posstm, question_negstm, question_perfstmt, assigned, options, question_tied, question_notobserved, {% block library_function_open_questions_extra %} {% endblock library_function_open_questions_extra %})
         {
             showOther = true
             showNa = true
@@ -671,6 +682,16 @@
             else
                 $("#ckb_required_value").bootstrapSwitch('state',false);
 
+            if (question_tied == 1)
+                $("#ckb_answer_tied").bootstrapSwitch('state',true);
+            else
+                $("#ckb_answer_tied").bootstrapSwitch('state',false);
+
+            if (question_notobserved == 1)
+                $("#ckb_answer_notobserved").bootstrapSwitch('state',true);
+            else
+                $("#ckb_answer_notobserved").bootstrapSwitch('state',false);
+
             if(question_dtype == '2' || question_dtype == '3')
             {
                 $('#div_unit').css('display', 'block');
@@ -685,6 +706,7 @@
             if(question_dtype == "9" )
             {
                 $("#form_characteristics").css("display",'initial')
+                $("#extraForCharacteristics").css("display","initial")
                 $(".inputForQuestionChar").prop('disabled',false);
                 $("#question_desc").val("-")
             }
@@ -797,7 +819,7 @@
 
             if(isnew == 'no') {
                 clean_all_preview_elements()
-                showPreview(question_dtype, question_desc, question_requiredvalue, question_posstm, question_negstm, question_perfstmt, options)
+                showPreview(question_dtype, question_desc, question_requiredvalue, question_posstm, question_negstm, question_perfstmt, options, question_tied, question_notobserved)
             }
 
             $("#question_code").focus()
@@ -832,7 +854,7 @@
             $(".btnsQuestion").css('display','none')
         }
 
-        function showPreview(question_dtype, question_desc, question_required, question_posstm, question_negstm, question_perfstmt, options) {
+        function showPreview(question_dtype, question_desc, question_required, question_posstm, question_negstm, question_perfstmt, options, question_tied, question_notobserved) {
             $("#preview_question").css("display","initial");
 
             if (question_dtype != 9 & question_dtype != 10) {
@@ -879,11 +901,27 @@
                 $(".preview_9").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='1'> Option A<hr style='margin: 10px 0px 10px 0px'></label><br>")
                 $(".preview_9").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='2'> Option B<hr style='margin: 10px 0px 10px 0px'></label><br>")
                 $(".preview_9").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='3'> Option C<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                if (question_tied == 1)
+                {
+                    $(".preview_9").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='4'> Tied<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                }
+                if(question_notobserved == 1)
+                {
+                    $(".preview_9").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='3'> Not observed<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                }
                 $(".preview_9").append("<hr style='margin: 10px 0px 10px 0px'>")
                 $(".preview_9").append("<h3 style='font-family:sans-serif; color: #000000'><strong style='color: red' class='preview_required'>*</strong> <strong>"+ question_negstm +"</strong></h3>")
                 $(".preview_9").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm' value='1'> Option A<hr style='margin: 10px 0px 10px 0px'></label><br>")
                 $(".preview_9").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm' value='2'> Option B<hr style='margin: 10px 0px 10px 0px'></label><br>")
                 $(".preview_9").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm' value='3'> Option C<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                if (question_tied == 1)
+                {
+                    $(".preview_9").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='4'> Tied<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                }
+                if(question_notobserved == 1)
+                {
+                    $(".preview_9").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='3'> Not observed<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                }
             }
 
             if (question_dtype == 10)

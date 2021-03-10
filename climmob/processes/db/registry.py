@@ -721,7 +721,7 @@ def getRegistryQuestions(user, project, request, createAutoRegistry=True):
     sql = (
         "SELECT regsection.section_id,regsection.section_name,regsection.section_content,regsection.section_order,regsection.section_private,"
         "question.question_id,question.question_desc,question.question_name,question.question_notes,question.question_dtype, question.question_posstm,question.question_negstm, question.question_perfstmt,IFNULL(registry.question_order,0) as question_order,"
-        "question.question_reqinreg FROM regsection LEFT JOIN registry ON registry.section_user = regsection.user_name AND registry.section_project = regsection.project_cod "
+        "question.question_reqinreg,question.question_tied, question.question_notobserved FROM regsection LEFT JOIN registry ON registry.section_user = regsection.user_name AND registry.section_project = regsection.project_cod "
         " AND registry.section_id = regsection.section_id "
         " LEFT JOIN question ON registry.question_id = question.question_id WHERE "
         "regsection.user_name = '"
