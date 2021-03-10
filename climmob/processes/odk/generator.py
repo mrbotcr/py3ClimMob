@@ -595,7 +595,7 @@ def generateODKFile(
         )
         excelFile.addQuestion(
             "note_validation",
-            'You scanned package number <span style="color:#009551; font-weight:bold">${clc_after}</span> for participant <span style="color:#009551; font-weight:bold">${farmername}</span>.',
+            'You scanned package number <span style="color:#009551; font-weight:bold">${clc_after}</span>.<br>This package belongs to <span style="color:#009551; font-weight:bold">${farmername}</span>.',
             29,
             inGroup="grp_validation",
         )
@@ -609,7 +609,7 @@ def generateODKFile(
         )
         excelFile.addQuestion(
             "note_validation",
-            'You selected package number <span style="color:#009551; font-weight:bold">${QST163}</span>, this package belongs to <br><span style="color:#009551; font-weight:bold">${clc_after}</span>.',
+            'You selected package number <span style="color:#009551; font-weight:bold">${QST163}</span>.<br>This package belongs to <span style="color:#009551; font-weight:bold">${clc_after}</span>.',
             29,
             inGroup="grp_validation",
         )
