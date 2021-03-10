@@ -836,26 +836,23 @@ def generateODKFile(
                                 "Option " + code,
                             )
 
-                        optionValue = numComb
                         if question.question_tied == 1:
-                            optionValue += 1
                             excelFile.addOption(
                                 "char_"
                                 + question.question_code
                                 + "_stmt_"
-                                + str(optionValue),
-                                str(optionValue),
+                                + str(98),
+                                str(98),
                                 "Tied",
                             )
 
                         if question.question_notobserved == 1:
-                            optionValue += 1
                             excelFile.addOption(
                                 "char_"
                                 + question.question_code
                                 + "_stmt_"
-                                + str(optionValue),
-                                str(optionValue),
+                                + str(99),
+                                str(99),
                                 "Not observed",
                             )
 
