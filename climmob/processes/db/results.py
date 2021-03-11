@@ -558,6 +558,11 @@ def getJSONResult(
                         "lkptables": getLookups(registryXML, user, project, request),
                         "fields": getFields(registryXML, "REG_geninfo"),
                     }
+            else:
+                data["registry"] = {
+                    "lkptables": [],
+                    "fields":[]
+                }
 
             data["assessments"] = []
             haveAssessments = False

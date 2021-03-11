@@ -227,6 +227,7 @@ def generateStructureForValidateJsonOdk(user, project, request):
             Regsection.section_id,
             Question.question_code,
             Question.question_requiredvalue,
+            Question.question_dtype
         )
         .filter(Regsection.user_name == user)
         .filter(Regsection.project_cod == project)
@@ -241,148 +242,6 @@ def generateStructureForValidateJsonOdk(user, project, request):
         return result
     else:
         return False
-
-
-"""
-def generateStructureForInterface(user, project, request):
-
-    data = []
-    sections = mapFromSchema(
-        request.dbsession.query(Regsection)
-        .filter(Regsection.user_name == user)
-        .filter(Regsection.project_cod == project)
-        .order_by(Regsection.section_order)
-        .all()
-    )
-
-    for section in sections:
-
-        dataSection = {}
-        dataSection["section_name"] = section["section_name"]
-        dataSection["section_content"] = section["section_content"]
-        dataSection["section_id"] = section["section_id"]
-        dataSection["section_questions"] = []
-
-        questions = mapFromSchema(
-            request.dbsession.query(Registry)
-            .filter(Registry.user_name == user)
-            .filter(Registry.project_cod == project)
-            .filter(Registry.section_id == section["section_id"])
-            .order_by(Registry.question_order)
-            .all()
-        )
-        for question in questions:
-            questionData = mapFromSchema(
-                request.dbsession.query(Question)
-                .filter(Question.question_id == question["question_id"])
-                .first()
-            )
-
-            dataQuestion = {}
-            dataQuestion["question_id"] = questionData["question_id"]
-            dataQuestion["question_desc"] = questionData["question_desc"]
-            dataQuestion["question_notes"] = questionData["question_notes"]
-            dataQuestion["question_unit"] = questionData["question_unit"]
-            dataQuestion["question_requiredvalue"] = questionData[
-                "question_requiredvalue"
-            ]
-            dataQuestion["question_code"] = questionData["question_code"]
-            dataQuestion["question_datafield"] = (
-                "grp_"
-                + str(section["section_id"])
-                + "/"
-                + dataQuestion["question_code"]
-            )
-
-            if questionData["question_dtype"] == 1:
-                dataQuestion["question_dtype"] = "text"
-            if questionData["question_dtype"] == 2:
-                dataQuestion["question_dtype"] = "decimal"
-            if questionData["question_dtype"] == 3:
-                dataQuestion["question_dtype"] = "integer"
-            if questionData["question_dtype"] == 4:
-                dataQuestion["question_dtype"] = "geopoint"
-            if questionData["question_dtype"] == 11:
-                dataQuestion["question_dtype"] = "geotrace"
-            if questionData["question_dtype"] == 12:
-                dataQuestion["question_dtype"] = "geoshape"
-            if questionData["question_dtype"] == 13:
-                dataQuestion["question_dtype"] = "date"
-            if questionData["question_dtype"] == 14:
-                dataQuestion["question_dtype"] = "time"
-            if questionData["question_dtype"] == 15:
-                dataQuestion["question_dtype"] = "dateTime"
-            if questionData["question_dtype"] == 16:
-                dataQuestion["question_dtype"] = "image"
-            if questionData["question_dtype"] == 17:
-                dataQuestion["question_dtype"] = "audio"
-            if questionData["question_dtype"] == 18:
-                dataQuestion["question_dtype"] = "video"
-            if questionData["question_dtype"] == 19:
-                dataQuestion["question_dtype"] = "barcode"
-            if questionData["question_dtype"] == 7:
-                dataQuestion["question_dtype"] = "package"
-            if questionData["question_dtype"] == 8:
-                dataQuestion["question_dtype"] = "observer"
-
-            if questionData["question_dtype"] == 5:
-                dataQuestion["question_dtype"] = "Select one"
-
-            if questionData["question_dtype"] == 6:
-                dataQuestion["question_dtype"] = "Select Multiple"
-
-            if (
-                questionData["question_dtype"] == 5
-                or questionData["question_dtype"] == 6
-            ):
-                options = mapFromSchema(
-                    request.dbsession.query(Qstoption)
-                    .filter(Qstoption.question_id == question["question_id"])
-                    .all()
-                )
-                dataQuestion["question_options"] = []
-
-                for option in options:
-                    dataQuestion["question_options"].append(option)
-
-            dataSection["section_questions"].append(dataQuestion)
-
-        data.append(dataSection)
-
-    # Extra section for necessary questions in the json
-    necessarySection = {}
-    necessarySection["section_name"] = "Extra Field"
-    necessarySection["section_content"] = request.translate(
-        "Have necessary questions for documentation."
-    )
-    necessarySection["section_id"] = "None"
-    necessarySection["section_questions"] = [
-        {
-            "question_desc": request.translate("Start of survey"),
-            "question_dtype": "datetime",
-            "question_notes": request.translate("Start of survey"),
-            "question_datafield": "clm_start",
-            "question_requiredvalue": 1,
-            "question_unit": "",
-            "question_code": "__CLMQST1__",
-            "question_id": -1,
-        },
-        {
-            "question_desc": request.translate("End of survey"),
-            "question_dtype": "datetime",
-            "question_notes": request.translate("End of survey"),
-            "question_datafield": "clm_end",
-            "question_requiredvalue": 1,
-            "question_unit": "",
-            "question_code": "__CLMQST2__",
-            "question_id": -2,
-        },
-    ]
-
-    data.append(necessarySection)
-
-    return data
-"""
 
 
 def generateStructureForInterface(user, project, request):
@@ -451,6 +310,13 @@ def generateStructureForInterface(user, project, request):
 
                     for option in options:
                         dataQuestion["question_options"].append(option)
+                        if option["value_isother"] == 1:
+                            dataQuestion2 = createQuestionRegistry("-3", request.translate("Other"), 1, "", "", 0,
+                                                              questionData["question_code"] + "_oth", "grp_"
+                                                              + str(section["section_id"])
+                                                              + "/"
+                                                              + questionData["question_code"] + "_oth")
+                            dataSection["section_questions"].append(dataQuestion2)
 
                 dataSection["section_questions"].append(dataQuestion)
             else:
@@ -466,6 +332,28 @@ def generateStructureForInterface(user, project, request):
                             str(opt + 1),
                             0,
                             str(opt + 1),
+                            questionData["question_id"],
+                        )
+                        optionsReq.append(dataQuestionop)
+
+                    if questionData["question_tied"] ==1:
+                        dataQuestionop = createOption(
+                            "Tied",
+                            0,
+                            98,
+                            0,
+                            98,
+                            questionData["question_id"],
+                        )
+                        optionsReq.append(dataQuestionop)
+
+                    if questionData["question_notobserved"] ==1:
+                        dataQuestionop = createOption(
+                            "Not observed",
+                            0,
+                            99,
+                            0,
+                            99,
                             questionData["question_id"],
                         )
                         optionsReq.append(dataQuestionop)

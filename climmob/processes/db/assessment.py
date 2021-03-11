@@ -1043,6 +1043,13 @@ def generateStructureForInterfaceAssessment(user, project, ass_cod, request):
 
                     for option in options:
                         dataQuestion["question_options"].append(option)
+                        if option["value_isother"] == 1:
+                            dataQuestion2 = createQuestionAss("-3", request.translate("Other"), 1, "","",0,
+                                                                   questionData["question_code"] + "_oth", "grp_"
+                                                                   + str(section["section_id"])
+                                                                   + "/"
+                                                                   + questionData["question_code"]+"_oth")
+                            dataSection["section_questions"].append(dataQuestion2)
 
                 dataSection["section_questions"].append(dataQuestion)
             else:
@@ -1058,6 +1065,28 @@ def generateStructureForInterfaceAssessment(user, project, ass_cod, request):
                             str(opt + 1),
                             0,
                             str(opt + 1),
+                            questionData["question_id"],
+                        )
+                        optionsReq.append(dataQuestionop)
+
+                    if questionData["question_tied"] ==1:
+                        dataQuestionop = createOption(
+                            "Tied",
+                            0,
+                            98,
+                            0,
+                            98,
+                            questionData["question_id"],
+                        )
+                        optionsReq.append(dataQuestionop)
+
+                    if questionData["question_notobserved"] ==1:
+                        dataQuestionop = createOption(
+                            "Not observed",
+                            0,
+                            99,
+                            0,
+                            99,
                             questionData["question_id"],
                         )
                         optionsReq.append(dataQuestionop)

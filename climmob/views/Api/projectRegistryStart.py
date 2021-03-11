@@ -748,6 +748,14 @@ class pushJsonToRegistry_view(apiView):
                                         possibleQuestions.append(
                                             "grp_" + str(_data[0]) + "/" + str(_data[1])
                                         )
+                                        if _data[3] == 6:
+                                            possibleQuestions.append(
+                                                "grp_"
+                                                + str(_data[0])
+                                                + "/"
+                                                + str(_data[1]) + "_oth"
+                                            )
+
                                         if str(_data[1]) == "QST162":
                                             searchQST162 = (
                                                 "grp_"

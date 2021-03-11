@@ -67,16 +67,28 @@ class downloadErroLogDocument_view(privateView):
         code = ""
         data = {}
         _errors = []
+        includeRegistry = True
+        includeAssessment = True
         if not projectExists(self.user.login, proId, self.request):
             raise HTTPNotFound()
         else:
 
             if formId == "registry":
                 formId = "Registration"
+                includeAssessment = False
                 data = generateStructureForInterface(
                     self.user.login, proId, self.request
                 )
                 _errors = get_registry_logs(self.request, self.user.login, proId)
+
+                info = getJSONResult(
+                    self.user.login,
+                    proId,
+                    self.request,
+                    includeRegistry,
+                    includeAssessment,
+                    code,
+                )
             else:
                 if formId == "assessment":
                     formId = "Assessment"
@@ -87,11 +99,21 @@ class downloadErroLogDocument_view(privateView):
                     _errors = get_assessment_logs(
                         self.request, self.user.login, proId, code
                     )
+                    includeRegistry = False
+                    info = getJSONResult(
+                        self.user.login,
+                        proId,
+                        self.request,
+                        includeRegistry,
+                        includeAssessment,
+                        code,
+                    )
+
                 else:
                     raise HTTPNotFound()
 
         create_error_log_document(
-            self.request, self.user.login, proId, formId, code, data, _errors
+            self.request, self.user.login, proId, formId, code, data, _errors, info
         )
 
         url = self.request.route_url("productList")

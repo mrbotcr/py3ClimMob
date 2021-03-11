@@ -458,6 +458,13 @@ class pushJsonToAssessment_view(apiView):
                                                     + "/"
                                                     + str(_data[1])
                                                 )
+                                                if _data[2] == 6:
+                                                    possibleQuestions.append(
+                                                        "grp_"
+                                                        + str(_data[0])
+                                                        + "/"
+                                                        + str(_data[1])+"_oth"
+                                                    )
                                                 if _data[3] == 1:
                                                     obligatoryQuestions.append(
                                                         "grp_"
@@ -620,8 +627,7 @@ class pushJsonToAssessment_view(apiView):
                                                                 ]:
 
                                                                     if (
-                                                                        not _json[_var]
-                                                                        in letter
+                                                                            (not _json[_var] in letter) or str(_json[_var]) == "98" or str(_json[_var]) == "99"
                                                                     ):
                                                                         letter.append(
                                                                             _json[_var]
