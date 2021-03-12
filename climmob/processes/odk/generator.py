@@ -3,7 +3,7 @@ import xlsxwriter
 import os
 from pyxform import xls2xform
 from pyxform.xls2json import parse_file_to_json
-from subprocess import check_call, CalledProcessError, Popen, PIPE
+from subprocess import check_call, CalledProcessError, Popen, PIPE,check_output
 import logging
 from datetime import datetime
 import json
@@ -203,14 +203,18 @@ def createDatabase(xlsxFile, outputDir, schema, keyVar, preFix, dropSchema, requ
 
     print("****createDatabase**Calling ODKToMySQL******")
     try:
-        info = check_call(args)
+        info = check_output(args)
     except CalledProcessError as e:
         msg = "Error creating database files \n"
         msg = msg + "Error: \n"
         msg = msg + str(e)
         log.debug(msg)
-        print(msg)
-        return True
+        try:
+            error = e.output
+        except:
+            error =""
+
+        return True, error
 
     return buildDatabase(
         request.registry.settings["mysql.cnf"],
@@ -218,7 +222,7 @@ def createDatabase(xlsxFile, outputDir, schema, keyVar, preFix, dropSchema, requ
         insertFile,
         schema,
         dropSchema,
-    )
+    ),b''
 
 
 class ODKExcelFile(object):
@@ -1038,7 +1042,7 @@ def generateRegistry(user, projectid, request, sectionOfThePackageCode):
         request.dbsession.query(Question).filter(Question.question_regkey == 1).first()
     )
     paths = ["db", "reg"]
-    return not createDatabase(
+    state,error = createDatabase(
         xlsxFile,
         os.path.join(path, *paths),
         user + "_" + projectid,
@@ -1048,6 +1052,7 @@ def generateRegistry(user, projectid, request, sectionOfThePackageCode):
         request,
     )
 
+    return not state, error
 
 def generateAssessmentFiles(
     user, projectid, assessment, request, sectionOfThePackageCode
@@ -1184,7 +1189,7 @@ def generateAssessmentFiles(
                 os.makedirs(os.path.join(path, *paths))
 
             # Edited by Brandon -> The validation was incorrect if createDatabase
-            if not createDatabase(
+            state, error = createDatabase(
                 xlsxFile,
                 os.path.join(path, *paths),
                 user + "_" + projectid,
@@ -1192,10 +1197,11 @@ def generateAssessmentFiles(
                 "ASS" + assessment.ass_cod,
                 False,
                 request,
-            ):
-                result.append({"code": assessment.ass_cod, "result": True})
+            )
+            if not state:
+                result.append({"code": assessment.ass_cod, "result": True, "error": error})
             else:
-                result.append({"code": assessment.ass_cod, "result": False})
+                result.append({"code": assessment.ass_cod, "result": False, "error": error})
 
         except Exception as e:
             msg = request.translate("Error converting XLSX to XML") + "\n"

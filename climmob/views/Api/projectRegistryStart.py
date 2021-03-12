@@ -440,15 +440,23 @@ class createProjectRegistry_view(apiView):
                                         self.request,
                                     ):
 
-                                        startTheRegistry(
+                                        startIsOk, error = startTheRegistry(
                                             self, dataworking["project_cod"]
                                         )
-
-                                        response = Response(
-                                            status=200,
-                                            body=self._("Registration started."),
-                                        )
-                                        return response
+                                        if startIsOk:
+                                            response = Response(
+                                                status=200,
+                                                body=self._("Registration started."),
+                                            )
+                                            return response
+                                        else:
+                                            response = Response(
+                                                status=401,
+                                                body=self._(
+                                                    "There has been a problem in the creation of the basic structure of the project, this may be due to something wrong with the form. Contact the ClimMob team with the next message to get the solution to the problem"
+                                                )+": "+error,
+                                            )
+                                            return response
 
                                     else:
                                         response = Response(

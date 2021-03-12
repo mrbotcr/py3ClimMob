@@ -72,50 +72,56 @@ class createProjectAssessment_view(apiView):
                                             dataworking["ass_cod"],
                                             self.request,
                                         )
-                                        generateAssessmentFiles(
+                                        correct = generateAssessmentFiles(
                                             self.user.login,
                                             dataworking["project_cod"],
                                             dataworking["ass_cod"],
                                             self.request,
                                             sectionOfThePackageCode,
                                         )
-                                        # setAssessmentStatus(self.user.login, dataworking['project_cod'], 1, self.request)
-                                        setAssessmentIndividualStatus(
-                                            self.user.login,
-                                            dataworking["project_cod"],
-                                            dataworking["ass_cod"],
-                                            1,
-                                            self.request,
-                                        )
+                                        if correct[0]["result"]:
+                                            # setAssessmentStatus(self.user.login, dataworking['project_cod'], 1, self.request)
+                                            setAssessmentIndividualStatus(
+                                                self.user.login,
+                                                dataworking["project_cod"],
+                                                dataworking["ass_cod"],
+                                                1,
+                                                self.request,
+                                            )
 
-                                        ncombs, packages = getPackages(
-                                            self.user.login,
-                                            dataworking["project_cod"],
-                                            self.request,
-                                        )
+                                            ncombs, packages = getPackages(
+                                                self.user.login,
+                                                dataworking["project_cod"],
+                                                self.request,
+                                            )
 
-                                        data, finalCloseQst = getDataFormPreview(
-                                            self,
-                                            dataworking["project_cod"],
-                                            dataworking["ass_cod"],
-                                        )
+                                            data, finalCloseQst = getDataFormPreview(
+                                                self,
+                                                dataworking["project_cod"],
+                                                dataworking["ass_cod"],
+                                            )
 
-                                        create_document_form(
-                                            self.request,
-                                            "en",
-                                            self.user.login,
-                                            dataworking["project_cod"],
-                                            "Assessment",
-                                            dataworking["ass_cod"],
-                                            data,
-                                            packages,
-                                        )
+                                            create_document_form(
+                                                self.request,
+                                                "en",
+                                                self.user.login,
+                                                dataworking["project_cod"],
+                                                "Assessment",
+                                                dataworking["ass_cod"],
+                                                data,
+                                                packages,
+                                            )
 
-                                        response = Response(
-                                            status=200,
-                                            body=self._("Data collection started."),
-                                        )
-                                        return response
+                                            response = Response(
+                                                status=200,
+                                                body=self._("Data collection started."),
+                                            )
+                                            return response
+                                        else:
+                                            response = Response(status=401, body=self._("There has been a problem in the creation of the basic structure of the project, this may be due to something wrong with the form. Contact the ClimMob team with the next message to get the solution to the problem")+": "+str(correct[0]["error"], 'utf-8')
+                                                                )
+                                            return response
+
                                     else:
                                         response = Response(
                                             status=401,

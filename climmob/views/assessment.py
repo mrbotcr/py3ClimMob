@@ -690,8 +690,9 @@ class startAssessments_view(privateView):
                                 "There has been a problem in the creation of the basic structure of the project, this may be due to something wrong with the form."
                             ),
                             "contact": self._(
-                                "Contact the ClimMob team to get the solution to the problem."
+                                "Contact the ClimMob team with the next message to get the solution to the problem:"
                             ),
+                            "copie": str(correct[0]["error"],'utf-8')
                         }
 
                 return {

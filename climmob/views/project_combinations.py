@@ -165,7 +165,7 @@ class projectCombinations_view(privateView):
                         )
                     )
 
-                startIsOk = startTheRegistry(self, projectid)
+                startIsOk, error = startTheRegistry(self, projectid)
 
                 if startIsOk:
                     self.returnRawViewResult = True
@@ -179,8 +179,9 @@ class projectCombinations_view(privateView):
                                 "There has been a problem in the creation of the basic structure of the project, this may be due to something wrong with the form."
                             ),
                             "contact": self._(
-                                "Contact the ClimMob team to get the solution to the problem."
+                                "Contact the ClimMob team with the next message to get the solution to the problem:"
                             ),
+                            "copie": error
                         },
                     }
 
@@ -191,7 +192,7 @@ def startTheRegistry(self, projectid):
     sectionOfThePackageCode = getTheGroupOfThePackageCode(
         self.user.login, projectid, self.request
     )
-    correct = generateRegistry(
+    correct,error = generateRegistry(
         self.user.login, projectid, self.request, sectionOfThePackageCode
     )
 
@@ -266,4 +267,4 @@ def startTheRegistry(self, projectid):
                 packages,
             )
 
-    return correct
+    return correct, str(error,'utf-8')
