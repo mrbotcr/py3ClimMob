@@ -1,4 +1,4 @@
-FROM alliancecostarica/climmob_base:20210126
+FROM alliancecostarica/climmob_base:20210315
 
 MAINTAINER Alliance Bioversity-CIAT
 
@@ -18,7 +18,7 @@ VOLUME /opt/climmob_plugins
 RUN mkdir climmob_gunicorn
 RUN python3 -m venv climmob_env
 
-RUN git clone https://BioversityCostaRica:bioversity2016@github.com/BioversityCostaRica/py3ClimMob.git -b stable-3.0.0 climmob
+RUN git clone https://BioversityCostaRica:bioversity2016@github.com/BioversityCostaRica/py3ClimMob.git -b stable-3.2.0 climmob
 RUN . ./climmob_env/bin/activate && pip install wheel && pip install -r /opt/climmob/requirements.txt && python /opt/climmob/download_nltk_packages.py
 
 ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.6.0/wait /wait
