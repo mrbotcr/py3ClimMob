@@ -178,9 +178,11 @@ def processTheProject(
         # Iterates each point and adds it to a list in case it is not null
         for res in infoInTheProject:
             if res[0] and res[0] != "null":
-                listOfLatitude.append(float(res[0]))
-                listOfLongitude.append(float(res[1]))
-
+                try:
+                    listOfLatitude.append(float(res[0]))
+                    listOfLongitude.append(float(res[1]))
+                except:
+                    print("Some values are incorrect")
         # if the valid points are more than 5
         if len(listOfLatitude) > minimunNumberOfPoints:
             averageLatitude, averageLongitude = calculationOfFinalCoordinates(
