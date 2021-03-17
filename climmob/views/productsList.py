@@ -275,6 +275,14 @@ class generateProductView(privateView):
                     self.user.login, projectid, self.request
                 )
                 _errors = get_registry_logs(self.request, self.user.login, projectid)
+                info = getJSONResult(
+                    self.user.login,
+                    projectid,
+                    self.request,
+                    includeRegistry=True,
+                    includeAssessment=False,
+                    assessmentCode=""
+                )
                 create_error_log_document(
                     self.request,
                     self.user.login,
@@ -283,6 +291,7 @@ class generateProductView(privateView):
                     "",
                     data,
                     _errors,
+                    info
                 )
             else:
                 assessment_id = processname.split("_")[3]
@@ -292,6 +301,14 @@ class generateProductView(privateView):
                 _errors = get_assessment_logs(
                     self.request, self.user.login, projectid, assessment_id
                 )
+                info = getJSONResult(
+                    self.user.login,
+                    projectid,
+                    self.request,
+                    includeRegistry=False,
+                    includeAssessment=True,
+                    assessmentCode=assessment_id
+                )
                 create_error_log_document(
                     self.request,
                     self.user.login,
@@ -300,6 +317,7 @@ class generateProductView(privateView):
                     assessment_id,
                     data,
                     _errors,
+                    info
                 )
 
         if productid == "generalreport":
