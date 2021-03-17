@@ -174,9 +174,10 @@ def processTheProject(
     minimunNumberOfPoints = 5
     # The minimum number of points allowed
     if infoInTheProject.rowcount > minimunNumberOfPoints:
+        print("_____"+project["project_cod"])
         # Iterates each point and adds it to a list in case it is not null
         for res in infoInTheProject:
-            if res[0]:
+            if res[0] and res[0] != "null":
                 listOfLatitude.append(float(res[0]))
                 listOfLongitude.append(float(res[1]))
 
