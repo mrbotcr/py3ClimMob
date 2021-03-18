@@ -381,7 +381,7 @@ def getQuestionsStructure(user, project, ass_cod, request):
                     if opcionOtherInQuestion(questionData["question_id"],request):
                         questInfo = {}
                         questInfo["name"] = questionData["question_name"] + " - Other"
-                        questInfo["id"] = -1
+                        questInfo["id"] = "-"+str(questionData["question_id"])
                         questInfo["vars"] = [
                             {"name": questionData["question_code"]+"_oth", "validation": ""}
                         ]
