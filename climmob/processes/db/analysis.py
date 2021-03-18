@@ -7,6 +7,7 @@ from climmob.models import (
     Regsection,
     Registry,
 )
+from .question import opcionOtherInQuestion
 from climmob.processes.db.project import numberOfCombinationsForTheProject
 from sqlalchemy import or_
 from jinja2 import Environment
@@ -241,28 +242,45 @@ def getQuestionsStructure(user, project, ass_cod, request):
     data = []
 
     dic = []
-
-    sections = mapFromSchema(
-        request.dbsession.query(Asssection)
-        .filter(Asssection.user_name == user)
-        .filter(Asssection.project_cod == project)
-        .filter(Asssection.ass_cod == ass_cod)
-        .order_by(Asssection.section_order)
-        .all()
-    )
+    if ass_cod =="":
+        sections = mapFromSchema(
+            request.dbsession.query(Regsection)
+            .filter(Regsection.user_name == user)
+            .filter(Regsection.project_cod == project)
+            .order_by(Regsection.section_order)
+            .all()
+        )
+    else:
+        sections = mapFromSchema(
+            request.dbsession.query(Asssection)
+            .filter(Asssection.user_name == user)
+            .filter(Asssection.project_cod == project)
+            .filter(Asssection.ass_cod == ass_cod)
+            .order_by(Asssection.section_order)
+            .all()
+        )
     numComb = numberOfCombinationsForTheProject(user, project, request)
 
     for section in sections:
-
-        questions = mapFromSchema(
-            request.dbsession.query(AssDetail)
-            .filter(AssDetail.user_name == user)
-            .filter(AssDetail.project_cod == project)
-            .filter(AssDetail.ass_cod == ass_cod)
-            .filter(AssDetail.section_id == section["section_id"])
-            .order_by(AssDetail.question_order)
-            .all()
-        )
+        if ass_cod =="":
+            questions = mapFromSchema(
+                request.dbsession.query(Registry)
+                .filter(Registry.user_name == user)
+                .filter(Registry.project_cod == project)
+                .filter(Registry.section_id == section["section_id"])
+                .order_by(Registry.question_order)
+                .all()
+            )
+        else:
+            questions = mapFromSchema(
+                request.dbsession.query(AssDetail)
+                .filter(AssDetail.user_name == user)
+                .filter(AssDetail.project_cod == project)
+                .filter(AssDetail.ass_cod == ass_cod)
+                .filter(AssDetail.section_id == section["section_id"])
+                .order_by(AssDetail.question_order)
+                .all()
+            )
         for question in questions:
             questInfo = {}
             questionData = mapFromSchema(
@@ -355,4 +373,21 @@ def getQuestionsStructure(user, project, ass_cod, request):
                 ]
 
                 dic.append(questInfo)
+
+                if (
+                    questionData["question_dtype"] == 5
+                    or questionData["question_dtype"] == 6
+                ):
+                    if opcionOtherInQuestion(questionData["question_id"],request):
+                        questInfo = {}
+                        questInfo["name"] = questionData["question_name"] + " - Other"
+                        questInfo["id"] = -1
+                        questInfo["vars"] = [
+                            {"name": questionData["question_code"]+"_oth", "validation": ""}
+                        ]
+
+                        dic.append(questInfo)
+
+
+
     return dic

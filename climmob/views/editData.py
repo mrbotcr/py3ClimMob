@@ -291,27 +291,27 @@ class editDataView(privateView):
 
             # Added by Brandon
             dataXML = getNamesEditByColums(proId, path, code)
-            if formId == "ass":
-                # print "*********************************"
-                dataOriginal = getQuestionsStructure(
-                    self.user.login, proId, code, self.request
-                )
-                newStructure = []
-                for originalData in dataOriginal:
-                    questInfo = {}
-                    questInfo["name"] = originalData["name"]
-                    questInfo["id"] = originalData["id"]
-                    questInfo["vars"] = []
-                    for vars in originalData["vars"]:
+            #if formId == "ass":
+            #    # print "*********************************"
+            dataOriginal = getQuestionsStructure(
+                self.user.login, proId, code, self.request
+            )
+            newStructure = []
+            for originalData in dataOriginal:
+                questInfo = {}
+                questInfo["name"] = originalData["name"]
+                questInfo["id"] = originalData["id"]
+                questInfo["vars"] = []
+                for vars in originalData["vars"]:
 
-                        for xmldata in dataXML:
-                            if vars["name"].lower() == xmldata[0]:
-                                xmldata.append(vars["validation"].lower())
-                                questInfo["vars"].append(xmldata)
-                    newStructure.append(questInfo)
-            else:
-                newStructure = dataXML
-                # print newStructure
+                    for xmldata in dataXML:
+                        if vars["name"].lower() == xmldata[0]:
+                            xmldata.append(vars["validation"].lower())
+                            questInfo["vars"].append(xmldata)
+                newStructure.append(questInfo)
+            #else:
+            #    newStructure = dataXML
+            #    # print newStructure
 
             # Finish Brandon
             # print newStructure

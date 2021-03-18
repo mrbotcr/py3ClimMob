@@ -321,19 +321,29 @@ def update_edited_data(self, db, form, data, file, code):
             del row["flag_update"]
             for key in row:
                 val = ""
+                addField = True
                 if key in get_FieldsByType(["int", "decimal"], db, self, file, code):
-                    val = str(row[key])
+                    if row[key] and row[key] != "None":
+                        val = str(row[key])
+                    else:
+                        val = "0"
                 else:
                     if key in get_FieldsByType(["select1"], db, self, file, code):
-                        val = (
-                            "'" + str(row[key]).replace("[", "").replace("]", "") + "'"
-                        )
+                        if row[key] and row[key] != "None":
+                            val = (
+                                "'" + str(row[key]).replace("[", "").replace("]", "") + "'"
+                            )
+                        else:
+                            addField =False
                     else:
                         if key in get_FieldsByType(["select"], db, self, file, code):
                             val = "'" + " ".join(row[key]) + "'"
                         else:
                             val = "'" + str(row[key]) + "'"
-                query_update += key + "=" + val + ", "
+
+                if addField:
+                    query_update += key + "=" + val + ", "
+
             query_update = (
                 query_update[:-2] + " where surveyid ='" + str(row["surveyid"]) + "';"
             )
