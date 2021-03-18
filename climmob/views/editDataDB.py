@@ -356,7 +356,6 @@ def update_edited_data(self, db, form, data, file, code):
                 # mark_changed(mySession)
                 # transaction.commit()
                 sql_execute(query_update)
-            except ValueError:
-                print(ValueError)
+            except:
                 return 0
     return 1
