@@ -115,7 +115,7 @@ def getNamesEditByColums(
                         else:
                             row.append("None")
                             row.append(x.attrib["name"])
-                    elif x.attrib["odktype"] in ["integer"]:
+                    elif x.attrib["odktype"] in ["integer","decimal"]:
                         row.append("decimal")
                         row.append("")
                         row.append("")
@@ -356,6 +356,7 @@ def update_edited_data(self, db, form, data, file, code):
                 # mark_changed(mySession)
                 # transaction.commit()
                 sql_execute(query_update)
-            except:
+            except ValueError:
+                print(ValueError)
                 return 0
     return 1
