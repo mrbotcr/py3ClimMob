@@ -51,21 +51,21 @@
 {#</li>#}
 
 
-<li>
+<li style="padding: 4px 20px">
     <a href="{{ request.route_url('dashboard', _query={'project':project.project_cod}) }}">
         <h4>{{ project.project_name|truncate(35) }}</h4>
 
         {% if project.progress.regsubmissions == 0 %}
-            <div class="small">{{ _("You can start the registration form.") }}</div>
+            <div class="small">{{ _("Registration not yet started") }}</div>
         {% else %}
             {% if project.progress.regsubmissions == 1 %}
-                <div class="small">{{ _("Participants are being registered in the project") }}</div>
+                <div class="small">{{ _("Registration ongoing") }}</div>
             {% else %}
                 {% if project.progress.regsubmissions == 2 %}
                     {% if project.progress.assessments|length == 0 %}
-                        <div class="small">{{ _("You don't have data collection moments.") }}</div>
+                        <div class="small">{{ _("Registration closed") }}</div>
                     {% else %}
-                        <div class="small">{{ _("You have") }}: {{ project.progress.assessments|length}} {{ _(" data collection moment created") }}</div>
+                        <div class="small">{{ _("Data collection / analysis ongoing") }}</div>
 {#                        {% set values = {"started":0, "finished":0, "notyetstarted":0 } %}#}
 {#                        {% set notyetstarted=0 %}#}
 {#                        {% set started=0 %}#}
@@ -136,6 +136,6 @@
 {#            </div>#}
 {#        {% endfor %}#}
 
-        <div class="small text-muted m-t-xs" title="{{ request.h.readble_date(project.project_creationdate) }}">{{ _("Project created") }}: {{ request.h.humanize_date(project.project_creationdate) }}</div>
+        <div class="small" title="{{ request.h.readble_date(project.project_creationdate) }}">{{ _("Project created") }}: {{ request.h.humanize_date(project.project_creationdate) }}</div>
     </a>
 </li>

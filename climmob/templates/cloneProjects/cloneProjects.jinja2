@@ -80,7 +80,7 @@
                                 <div class="widget style1 {{ stage1Color }}" style="padding: 10px 20px">
                                     <div class="row vertical-align">
                                         <div class="col-xs-12 text-left">
-                                            <h3 class="font-bold"><span class="step {{ stage1State }}">1</span> {{ _("Project identification") }}</h3>
+                                            <h3 class="font-bold"><span class="step {{ stage1State }}">1</span> {{ _("Selection") }}</h3>
                                         </div>
                                     </div>
                                 </div>
@@ -90,7 +90,7 @@
                                 <div class="widget style1 {{ stage2Color }}" style="padding: 10px 20px">
                                     <div class="row vertical-align">
                                         <div class="col-xs-12 text-left">
-                                            <h3 class="font-bold"><span class="step {{ stage2State }}">2</span> {{ _("Project details") }}</h3>
+                                            <h3 class="font-bold"><span class="step {{ stage2State }}">2</span> {{ _("Confirm") }}</h3>
                                         </div>
                                     </div>
                                 </div>
@@ -100,7 +100,7 @@
                                 <div class="widget style1 {{ stage3Color }}" style="padding: 10px 20px">
                                     <div class="row vertical-align">
                                         <div class="col-xs-12 text-left">
-                                            <h3 class="font-bold"><span class="step {{ stage3State }}">3</span> {{ _("Definition of new project") }}</h3>
+                                            <h3 class="font-bold"><span class="step {{ stage3State }}">3</span> {{ _("New profile") }}</h3>
                                         </div>
                                     </div>
                                 </div>
@@ -110,7 +110,7 @@
                                 <div class="widget style1 {{ stage4Color }}" style="padding: 10px 20px">
                                     <div class="row vertical-align">
                                         <div class="col-xs-12 text-left">
-                                            <h3 class="font-bold"><span class="step {{ stage4State }}">4</span> {{ _("Cloning Summary") }}</h3>
+                                            <h3 class="font-bold"><span class="step {{ stage4State }}">4</span> {{ _("Verification") }}</h3>
                                         </div>
                                     </div>
                                 </div>
@@ -134,13 +134,13 @@
                                             <div class="ibox float-e-margins">
                                                 <div class="ibox-content" style="background-color: #f3f3f4;">
                                                     <div class="row">
-                                                        <div class="col-lg-4" >
+                                                        <div class="col-lg-8" >
                                                             <div class="ibox-content" >
                                                                 <div class="form-group">
                                                                     <label class="col-sm-4 control-label">{{ _("Project") }}</label>
                                                                     <div class="col-sm-8">
                                                                         <select id="slt_project_cod" name="slt_project_cod" class="form-control chosen-select" tabindex="2" required oninvalid="this.setCustomValidity('{{ _("Select one project.") }}')" onchange="this.setCustomValidity('')">
-                                                                            <option value="">{{ _("Select one project") }}</option>
+                                                                            <option value="">{{ _("Select a project to clone") }}</option>
                                                                             {% for project in projects %}
                                                                                 <option value="{{ project.project_cod }}" {% if project.project_cod == dataworking.slt_project_cod %}selected{% endif %} >{{ project.project_cod }} - {{ project.project_name }}</option>
                                                                             {% endfor %}
@@ -152,7 +152,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <button type="submit" name="btn_view_project" id="btn_view_project" class="btn btn-primary pull-right">{{ _("View project") }}</button>
+                                            <button type="submit" name="btn_view_project" id="btn_view_project" class="btn btn-primary pull-right">{{ _("Next step") }}</button>
                                         </div>
                                     </div>
 

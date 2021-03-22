@@ -125,32 +125,34 @@ def getTheValueForField(field, new_json, structure):
             splited = question["question_datafield"].split("/")
             if len(splited) >= 2:
                 if field["name"] == splited[1].lower():
-                    value = new_json[question["question_datafield"]]
+                    try:
+                        value = new_json[question["question_datafield"]]
+                    except:
+                        value = "None"
 
-                    if question["question_dtype"] == "select_one":
-                        for option in question["question_options"]:
-                            if str(option["value_code"]) == str(
-                                    new_json[question["question_datafield"]]
-                            ):
-                                return option["value_desc"]
-                    else:
-                        if question["question_dtype"] == "select_multiple":
-                            allOptionSelected = ""
-                            selectedValues = [
-                                str(x)
-                                for x in new_json[
-                                    question["question_datafield"]
-                                ].split(" ")
-                            ]
+                    if value != "None":
+                        if question["question_dtype"] == "select_one":
                             for option in question["question_options"]:
-                                if str(option["value_code"]) in selectedValues:
-                                    if allOptionSelected == "":
-                                        allOptionSelected = option["value_desc"]
-                                    else:
-                                        allOptionSelected += (
-                                                "\n" + option["value_desc"]
-                                        )
-                            return allOptionSelected
+                                if str(option["value_code"]) == str(
+                                        value
+                                ):
+                                    return option["value_desc"]
+                        else:
+                            if question["question_dtype"] == "select_multiple":
+                                allOptionSelected = ""
+                                selectedValues = [
+                                    str(x)
+                                    for x in value.split(" ")
+                                ]
+                                for option in question["question_options"]:
+                                    if str(option["value_code"]) in selectedValues:
+                                        if allOptionSelected == "":
+                                            allOptionSelected = option["value_desc"]
+                                        else:
+                                            allOptionSelected += (
+                                                    "\n" + option["value_desc"]
+                                            )
+                                return allOptionSelected
             else:
                 if field["name"] == question["question_code"]:
                     return new_json[question["question_datafield"]]
