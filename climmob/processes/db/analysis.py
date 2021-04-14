@@ -126,6 +126,39 @@ def addQuestionToDictionary(questionData, numComb, assessment=None):
         questInfo["code"] = assessment
         questInfo["questionAsked"] = []
         questInfo["type"] = "quantitative"
+        options = {
+            1: "text",
+            2: "decimal",
+            3: "integer",
+            4: "geopoint",
+            5: "select_one",
+            6: "select_multiple",
+            7: "barcode",
+            8: "select_one",
+            9: "select_one",
+            10: "select_one",
+            11: "geotrace",
+            12: "geoshape",
+            13: "date",
+            14: "time",
+            15: "dateTime",
+            16: "image",
+            17: "audio",
+            18: "video",
+            19: "barcode",
+            20: "start",
+            21: "end",
+            22: "today",
+            23: "deviceid",
+            24: "subscriberid",
+            25: "simserial",
+            26: "phonenumber",
+            27: "text",
+            28: "calculate",
+            29: "note",
+        }
+        
+        questInfo["class"] = options[questionData["question_dtype"]]
 
         for questionNumber in range(0, numComb):
             nameExtra = "_" + chr(65 + questionNumber).lower()
