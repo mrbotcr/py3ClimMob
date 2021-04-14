@@ -128,63 +128,7 @@
                     <div  class="text-center">
                         <img style="width: 100%; max-width: 320px" src="{{ request.url_for_static('landing/odk.png') }}" alt="info"/>
                         <div style="padding: 10px; overflow-y: scroll; height: 500px; max-width: 320px; background-color: #fafafa; display: inline-block; text-align: left ">
-                            <h3 style="font-family:sans-serif; color: #000000" id="preview_question"><strong style="color: red" class="preview_required">*</strong> <strong id="preview_text"></strong></h3>
-                            <br><br>
-                            <input class="previewElement preview_1" data-role="keypad" data-keys="q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,ñ,z,x,c,v,b,n,m"  data-open="false" data-position="bottom" style="font-family:sans-serif; font-size: 16px;width: 100%; border: none; border-bottom: 2px solid black;">
-
-                            <input class="previewElement preview_2" id="preview_2" data-role="keypad" data-open="false" data-position="bottom" data-on-change="$('#preview_2').val(arguments[0]+'.0')" style="font-family:sans-serif; font-size: 16px;width: 100%; border: none; border-bottom: 2px solid black;">
-
-                            <input class="previewElement preview_3" data-role="keypad" data-open="false" data-position="bottom" style="font-family:sans-serif; font-size: 16px;width: 100%; border: none; border-bottom: 2px solid black;">
-
-                            <button type="submit" class="previewElement preview_4 preview_11 preview_12 preview_27"  style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Get GPS point") }}</button>
-
-                            <div class="previewElement preview_5 preview_6 preview_8 preview_9 preview_10" >
-
-                            </div>
-
-                            <button type="submit" class="previewElement preview_7  preview_19"  style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Get Barcode") }}</button>
-
-                            <div class="previewElement preview_16" >
-
-                                <button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Take Picture") }}</button>
-                                <br><br>
-                                <button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Choose Image") }}</button>
-
-                            </div>
-
-                            <div class="previewElement preview_17" >
-                                <button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Record Sound") }}</button>
-                                <br><br>
-                                <button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Choose Sound") }}</button>
-                                <br><br>
-                                <button disabled type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Play Sound") }}</button>
-                            </div>
-
-                            <div class="previewElement preview_18" >
-                                <button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Record Video") }}</button>
-                                <br><br>
-                                <button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Choose Video") }}</button>
-                                <br><br>
-                                <button disabled type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Play Video") }}</button>
-                            </div>
-
-                            <div class="previewElement preview_13">
-                                <button id="btn_date13" type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Select date") }}</button>
-                                <label id="txt_date13" style="font-family:sans-serif; font-size: 16px;font-weight: initial; width: 100%; color:#000000;">{{ _("No date selected") }}</label>
-                            </div>
-
-                            <div class="previewElement preview_14">
-                                <button id="btn_time14" type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Select time") }}</button>
-                                <label id="txt_time14" style="font-family:sans-serif; font-size: 16px;font-weight: initial; width: 100%; color:#000000;">{{ _("No time selected") }}</label>
-
-                            </div>
-
-                            <div class="previewElement preview_15">
-                                <button id="btn_date15" type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Select date") }}</button>
-                                <label id="txt_date15" style="font-family:sans-serif; font-size: 16px;font-weight: initial; width: 100%; color:#000000;">{{ _("No date selected") }}</label>
-
-                                <button id="btn_time15" type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Select time") }}</button>
-                                <label id="txt_time15" style="font-family:sans-serif; font-size: 16px;font-weight: initial; width: 100%; color:#000000;">{{ _("No time selected") }}</label>
+                            <div style="width: 100%" id="divForPreview">
 
                             </div>
 
@@ -280,8 +224,13 @@
 
                 var value = $('#question_dtype').val();
 
+
+
                 if (value != 9 && value != 10) {
+                    $("#extraQuantitative").css("display","block")
                     $("#form_simple_question").css('display', 'initial')
+                }else{
+                    $("#ckb_tricot_quantitative").bootstrapSwitch('state', false);
                 }
 
                 if(value==2 || value==3)
@@ -481,6 +430,10 @@
             if ($("#ckb_answer_notobserved").is(':checked'))
                 question_notobserved = 1;
 
+            var question_quantitative = 0;
+            if ($("#ckb_tricot_quantitative").is(':checked'))
+                question_quantitative = 1;
+
             optionsValues = prepareOptionsValues()
 
             $.ajax({
@@ -503,6 +456,7 @@
                     "question_requiredvalue": question_requiredvalue,
                     "question_tied": question_tied,
                     "question_notobserved": question_notobserved,
+                    "question_quantitative":question_quantitative,
                     "optionsValues":  JSON.stringify(optionsValues),
                     {% block ajax_post_extra %}
 
@@ -651,7 +605,7 @@
             $("#qstgroups_name").focus()
         }
 
-        function openQuestions(question_id,isnew,owner,question_name,question_code, question_desc, question_group, question_dtype, question_unit, question_requiredvalue, question_posstm, question_negstm, question_perfstmt, assigned, options, question_tied, question_notobserved {% block library_function_open_questions_extra %} {% endblock library_function_open_questions_extra %})
+        function openQuestions(question_id,isnew,owner,question_name,question_code, question_desc, question_group, question_dtype, question_unit, question_requiredvalue, question_posstm, question_negstm, question_perfstmt, assigned, options, question_tied, question_notobserved, question_quantitative {% block library_function_open_questions_extra %} {% endblock library_function_open_questions_extra %})
         {
             showOther = true
             showNa = true
@@ -692,6 +646,12 @@
             else
                 $("#ckb_answer_notobserved").bootstrapSwitch('state',false);
 
+            if (question_quantitative == 1)
+                $("#ckb_tricot_quantitative").bootstrapSwitch('state',true);
+            else
+                $("#ckb_tricot_quantitative").bootstrapSwitch('state',false);
+
+
             if(question_dtype == '2' || question_dtype == '3')
             {
                 $('#div_unit').css('display', 'block');
@@ -700,6 +660,7 @@
             }
 
             if (question_dtype != "9" && question_dtype != "10") {
+                    $("#extraQuantitative").css("display","block")
                     $("#form_simple_question").css('display', 'initial')
                 }
 
@@ -819,7 +780,7 @@
 
             if(isnew == 'no') {
                 clean_all_preview_elements()
-                showPreview(question_dtype, question_desc, question_requiredvalue, question_posstm, question_negstm, question_perfstmt, options, question_tied, question_notobserved)
+                showPreview(question_dtype, question_desc, question_requiredvalue, question_posstm, question_negstm, question_perfstmt, options, question_tied, question_notobserved, question_quantitative)
             }
 
             $("#question_code").focus()
@@ -827,6 +788,7 @@
 
         function clean_extra_fields()
         {
+            $("#extraQuantitative").css("display","none");
             $(".formExtraForQuestion").css("display","none");
             $(".inputForQuestionChar").prop('disabled',true);
             $(".inputForQuestionPerf").prop('disabled',true);
@@ -854,94 +816,187 @@
             $(".btnsQuestion").css('display','none')
         }
 
-        function showPreview(question_dtype, question_desc, question_required, question_posstm, question_negstm, question_perfstmt, options, question_tied, question_notobserved) {
+        function showPreview(question_dtype, question_desc, question_required, question_posstm, question_negstm, question_perfstmt, options, question_tied, question_notobserved, question_quantitative) {
             $("#preview_question").css("display","initial");
+            var letters = ["A", "B", "C"]
 
-            if (question_dtype != 9 & question_dtype != 10) {
-                $("#preview_text").text(question_desc)
-            }else{
-                if(question_dtype ==9)
-                    $("#preview_text").text(question_posstm)
-                if (question_dtype ==10)
-                    $("#preview_question").css("display","none");
-            }
-            $(".preview_"+question_dtype).css('display','initial')
-
-            if(question_dtype == 5)
+            $("#divForPreview").html("");
+            var quantitative = 0;
+            if (question_quantitative == 1)
             {
-                $(".preview_5").html("")
-                for (var i = 0; i < options.length; i+=1)
-                {
-                    $(".preview_5").append("<label class='radio-inline  control-label' for='radio' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='radio' value='"+options[i].value_code+"'> "+options[i].value_desc+"<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                }
-
+                quantitative = 2;
             }
 
-            if(question_dtype == 6)
-            {
-                $(".preview_6").html("")
-                for (var i = 0; i < options.length; i+=1)
-                {
-                    $(".preview_6").append("<label class='checkbox-inline  control-label' for='check' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='checkbox' name='check' value='"+options[i].value_code+"'> "+options[i].value_desc+"<hr style='margin: 10px 0px 10px 0px'></label><br>")
+            for(var repQuestion=0; repQuestion <= quantitative; repQuestion++) {
+
+                var nameExtra = ""
+                if (question_quantitative == 1) {
+                    nameExtra = " - Option "+letters[repQuestion]
                 }
 
-            }
+                if (question_dtype != 9 & question_dtype != 10) {
+                    var questionHTML = '<h3 style="font-family:sans-serif; color: #000000" id="preview_question">';
+                    if(question_required == 1)
+                    {
+                        questionHTML += '<strong style="color: red" class="preview_required">*</strong> ';
+                    }
+                    questionHTML += '<strong id="preview_text">'+ question_desc+ nameExtra +'</strong></h3>';
+                    $("#divForPreview").append(questionHTML+'<br>');
 
-            if(question_dtype == 8)
-            {
-                $(".preview_8").html("")
-                $(".preview_8").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='observer' value='1'> Juan Mora Brenes<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                $(".preview_8").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='observer' value='2'> María Rojas Fonseca<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                $(".preview_8").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='observer' value='3'> Tom Castro Durán<hr style='margin: 10px 0px 10px 0px'></label><br>")
-            }
+                    if(question_dtype == 1)
+                    {
+                        $("#divForPreview").append('<input class="previewElement preview_1" data-role="keypad" data-keys="q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,ñ,z,x,c,v,b,n,m"  data-open="false" data-position="bottom" style="font-family:sans-serif; font-size: 16px;width: 100%; border: none; border-bottom: 2px solid black;">');
+                    }
 
-            if(question_dtype == 9)
-            {
-                $(".preview_9").html("")
-                $(".preview_9").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='1'> Option A<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                $(".preview_9").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='2'> Option B<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                $(".preview_9").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='3'> Option C<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                if (question_tied == 1)
-                {
-                    $(".preview_9").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='4'> Tied<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                }
-                if(question_notobserved == 1)
-                {
-                    $(".preview_9").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='3'> Not observed<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                }
-                $(".preview_9").append("<hr style='margin: 10px 0px 10px 0px'>")
-                $(".preview_9").append("<h3 style='font-family:sans-serif; color: #000000'><strong style='color: red' class='preview_required'>*</strong> <strong>"+ question_negstm +"</strong></h3>")
-                $(".preview_9").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm' value='1'> Option A<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                $(".preview_9").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm' value='2'> Option B<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                $(".preview_9").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm' value='3'> Option C<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                if (question_tied == 1)
-                {
-                    $(".preview_9").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='4'> Tied<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                }
-                if(question_notobserved == 1)
-                {
-                    $(".preview_9").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='3'> Not observed<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                }
-            }
+                    if(question_dtype == 2)
+                    {
+                        $("#divForPreview").append('<input class="previewElement preview_2" id="preview_2" data-role="keypad" data-open="false" data-position="bottom" data-on-change="$(this).val(arguments[0]+\'.0\')" style="font-family:sans-serif; font-size: 16px;width: 100%; border: none; border-bottom: 2px solid black;">')
+                    }
+                    if(question_dtype ==3)
+                    {
+                        $("#divForPreview").append('<input class="previewElement preview_3" data-role="keypad" data-open="false" data-position="bottom" style="font-family:sans-serif; font-size: 16px;width: 100%; border: none; border-bottom: 2px solid black;">')
+                    }
 
-            if (question_dtype == 10)
-            {
-                var letters = ["A","B","C"]
-                $(".preview_10").html("")
-                for (x=0; x<=2; x++)
-                {
-                    $(".preview_10").append("<h3 style='font-family:sans-serif; color: #000000'><strong style='color: red' class='preview_required'>*</strong> <strong>"+ question_perfstmt.replace("{ {option}}".replace(" ",""),letters[x]) +"</strong></h3>")
-                    $(".preview_10").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='perfstmt"+x+" value='1'> Better<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                    $(".preview_10").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='perfstmt"+x+"' value='2'> Worse<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                    if (x != 2 )
-                        $(".preview_10").append("<hr style='margin: 10px 0px 10px 0px'>")
-                }
-            }
+                    if(question_dtype ==4 || question_dtype == 11 || question_dtype == 12)
+                    {
+                        $("#divForPreview").append('<button type="submit" class="previewElement preview_4 preview_11 preview_12 preview_27"  style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Get GPS point") }}</button>')
+                    }
 
-            if (question_required == 1) {
-                $(".preview_required").text("*")
-            }else{
-                $(".preview_required").text("")
+                    if(question_dtype ==5)
+                    {
+                        var isOther = false;
+                        for (var i = 0; i < options.length; i += 1) {
+                            if(options[i].value_isother == 1)
+                            {
+                                isOther = true;
+                            }
+                            $("#divForPreview").append("<label class='radio-inline  control-label' for='radio' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='radio' value='" + options[i].value_code + "'> " + options[i].value_desc + "<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                        }
+                        if (isOther)
+                        {
+                            var questionHTML = '<h3 style="font-family:sans-serif; color: #000000" id="preview_question">';
+                            questionHTML += '<strong id="preview_text">'+ question_desc+ nameExtra + ' {{ _("Other") }}</strong></h3>';
+                            $("#divForPreview").append(questionHTML+'<br>');
+                            $("#divForPreview").append('<input class="previewElement preview_1" data-role="keypad" data-keys="q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,ñ,z,x,c,v,b,n,m"  data-open="false" data-position="bottom" style="font-family:sans-serif; font-size: 16px;width: 100%; border: none; border-bottom: 2px solid black;">');
+                        }
+
+                    }
+                    if(question_dtype ==6)
+                    {
+                        var isOther = false;
+                        for (var i = 0; i < options.length; i += 1) {
+                            if(options[i].value_isother == 1)
+                            {
+                                isOther = true;
+                            }
+                            $("#divForPreview").append("<label class='checkbox-inline  control-label' for='check' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='checkbox' name='check' value='" + options[i].value_code + "'> " + options[i].value_desc + "<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                        }
+                        if (isOther)
+                        {
+                            var questionHTML = '<h3 style="font-family:sans-serif; color: #000000" id="preview_question">';
+                            questionHTML += '<strong id="preview_text">'+ question_desc+ nameExtra + ' {{ _("Other") }}</strong></h3>';
+                            $("#divForPreview").append(questionHTML+'<br>');
+                            $("#divForPreview").append('<input class="previewElement preview_1" data-role="keypad" data-keys="q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,ñ,z,x,c,v,b,n,m"  data-open="false" data-position="bottom" style="font-family:sans-serif; font-size: 16px;width: 100%; border: none; border-bottom: 2px solid black;">');
+                        }
+                    }
+                    if(question_dtype ==7 || question_dtype == 19)
+                    {
+                        $("#divForPreview").append('<button type="submit" class="previewElement preview_7  preview_19"  style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Get Barcode") }}</button>')
+                    }
+                    if(question_dtype ==8)
+                    {
+                        $("divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='observer' value='1'> Juan Mora Brenes<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                        $("divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='observer' value='2'> María Rojas Fonseca<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                        $("divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='observer' value='3'> Tom Castro Durán<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                    }
+                    if(question_dtype ==13 || question_dtype ==15)
+                    {
+                        $("#divForPreview").append('<button id="btn_date13" type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Select date") }}</button><br>');
+                        $("#divForPreview").append('<label id="txt_date13" style="font-family:sans-serif; font-size: 16px;font-weight: initial; width: 100%; color:#000000;">{{ _("No date selected") }}</label>')
+                    }
+                    if(question_dtype ==14 || question_dtype ==15)
+                    {
+                        $("#divForPreview").append('<button id="btn_time14" type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Select time") }}</button>');
+                        $("#divForPreview").append('<label id="txt_time14" style="font-family:sans-serif; font-size: 16px;font-weight: initial; width: 100%; color:#000000;">{{ _("No time selected") }}</label>');
+                    }
+                    if(question_dtype ==16)
+                    {
+                        $("#divForPreview").append('<button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Take Picture") }}</button>');
+                        $("#divForPreview").append('<br><br>');
+                        $("#divForPreview").append('<button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Choose Image") }}</button>')
+                    }
+                    if(question_dtype ==17)
+                    {
+                        $("#divForPreview").append('<button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Record Sound") }}</button>');
+                        $("#divForPreview").append('<br><br>');
+                        $("#divForPreview").append('<button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Choose Sound") }}</button>');
+                        $("#divForPreview").append('<br><br>');
+                        $("#divForPreview").append('<button disabled type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Play Sound") }}</button>')
+                    }
+                    if(question_dtype ==18)
+                    {
+                        $("#divForPreview").append('<button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Record Video") }}</button>');
+                        $("#divForPreview").append('<br><br>');
+                        $("#divForPreview").append('<button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Choose Video") }}</button>');
+                        $("#divForPreview").append('<br><br>');
+                        $("#divForPreview").append('<button disabled type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Play Video") }}</button>')
+                    }
+
+                }else{
+                    if (question_dtype == 9) {
+                        var questionHTML = '<h3 style="font-family:sans-serif; color: #000000" id="preview_question">';
+                        if(question_required == 1)
+                        {
+                            questionHTML += '<strong style="color: red" class="preview_required">*</strong> ';
+                        }
+                        questionHTML += '<strong id="preview_text">'+ question_posstm +'</strong></h3>';
+                        $("#divForPreview").append(questionHTML+'<br>');
+                        $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='1'> Option A<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                        $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='2'> Option B<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                        $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='3'> Option C<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                        if (question_tied == 1) {
+                            $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='4'> Tied<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                        }
+                        if (question_notobserved == 1) {
+                            $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='3'> Not observed<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                        }
+                        $("#divForPreview").append("<hr style='margin: 10px 0px 10px 0px'>")
+                        var questionHTML = '<h3 style="font-family:sans-serif; color: #000000" id="preview_question">';
+                        if(question_required == 1)
+                        {
+                            questionHTML += '<strong style="color: red" class="preview_required">*</strong> ';
+                        }
+                        questionHTML += '<strong id="preview_text">'+ question_negstm +'</strong></h3>';
+                        $("#divForPreview").append(questionHTML+'<br>');
+                        $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm' value='1'> Option A<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                        $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm' value='2'> Option B<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                        $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm' value='3'> Option C<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                        if (question_tied == 1) {
+                            $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='4'> Tied<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                        }
+                        if (question_notobserved == 1) {
+                            $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='3'> Not observed<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                        }
+                    }
+
+                    if (question_dtype == 10) {
+
+                        for (x = 0; x <= 2; x++) {
+                            var questionHTML = '<h3 style="font-family:sans-serif; color: #000000" id="preview_question">';
+                            if(question_required == 1)
+                            {
+                                questionHTML += '<strong style="color: red" class="preview_required">*</strong> ';
+                            }
+                            questionHTML += '<strong id="preview_text">'+ question_perfstmt.replace("{ {option}}".replace(" ", ""), letters[x]) +'</strong></h3>';
+                            $("#divForPreview").append(questionHTML+'<br>');
+                            $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='perfstmt" + x + " value='1'> Better<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                            $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='perfstmt" + x + "' value='2'> Worse<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                            if (x != 2)
+                                $("#divForPreview").append("<hr style='margin: 10px 0px 10px 0px'>")
+                        }
+                    }
+                }
+                $("#divForPreview").append('<hr>');
             }
 
             $("#ibox_preview").css('display','initial');

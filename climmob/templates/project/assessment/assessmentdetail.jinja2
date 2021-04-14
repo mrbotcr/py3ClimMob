@@ -27,79 +27,87 @@
 {% endblock %}
 
 {% block pagecontent %}
+
     <div class="row">
-        <div class="col-md-8">
-            <div class="col-md-6">
-                <div class="ibox">
-                    <div class="ibox-title" >
-                        <h5>{{ _("Available questions from library") }}</h5>
-                        <div class="ibox-tools">
-                            <a onclick="showHelp()" class="btn btn-xs btn-primary pull-right" style="margin-right: 20px">{{ _("Show help") }}</a>
-                        </div>
-                    </div>
-                    <div class="ibox-content" style="min-height: 400px" id="div_availables">
-                        {% set doActions=False %}
-                        {% set jstreeId="jstree2" %}
-                        {% set eventClick=False %}
-                        {% set classByUser=False %}
-                        {% set classByRegRequired=True %}
-                        {% include 'snippets/jstreeQuestions.jinja2' %}
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-6">
-                <div class="col-lg-12">
-                    <div class="ibox float-e-margins">
-                        <div class="ibox-title">
-                            <h5>{{ _("Assessment form") }}</h5>
-                            <div class="ibox-tools">
+        <div class="col-md-8" style="padding-right: 5px; padding-left: 5px">
+            <div style="display:flex;">
+                <div style="width: 49%; ">
+                    <div class="col-md-12" style="padding-right: 5px; padding-left: 5px">
+                        <div class="ibox">
+                            <div class="ibox-title" >
+                                <h5>{{ _("Available questions from library") }}</h5>
+                                <div class="ibox-tools">
+                                </div>
                             </div>
-                        </div>
-                        <div class="ibox-content" style="min-height: 400px" id="div_form">
-                            {% include 'snippets/error.jinja2' %}
-                            {% set eventClick=False %}
-                            {% set classByUser=False %}
-                            {% set classByRegRequired=False %}
-                            {% set classByAssesRequired=True %}
-                            {% set createSection=True %}
-                            {% set jstreeName="jstree1" %}
-                            {% include 'snippets/jstreeForm.jinja2'  %}
-                            <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}" id="formFoSendInformation" style="display: none">
-                                <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
-                                <textarea id="nestable-output" name="neworder" class="form-control" style="display:none;"></textarea>
-                            </form>
+                            <div class="ibox-content" style="min-height: 400px" id="div_availables">
+                                {% set doActions=False %}
+                                {% set jstreeId="jstree2" %}
+                                {% set eventClick=False %}
+                                {% set classByUser=False %}
+                                {% set classByRegRequired=True %}
+                                {% include 'snippets/jstreeQuestions.jinja2' %}
+                            </div>
                         </div>
                     </div>
                 </div>
+                <div style="width: 49%;">
+                    <div class="col-md-12" style="padding-right: 5px; padding-left: 5px">
+                        <div class="col-lg-12" id="form_questions" style="padding-right: 0px; padding-left: 0px">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title">
+                                    <h5>{{ _("Assessment form") }}</h5>
+                                    <div class="ibox-tools">
 
-                <div class="col-lg-12 extraDiv" id="form_section" style="display:none">
-                    <div class="ibox float-e-margins">
-                        <div class="ibox-title">
-                            <h5>{{ _("New section") }}</h5>
-                            <div class="ibox-tools">
-                                <button id="btnCancelSection"  class="btn btn-xs btn-default pull-right " ><i class="fa fa-close"></i></button>
-                            </div>
-                        </div>
-                        <div class="ibox-content">
-                            <form class="form-horizontal formElement" role="form" method="post" id="formSection" action="{{ request.url }}">
-                                {% include 'snippets/error.jinja2' %}
-
-                                {% include 'snippets/project/registry/groupform.jinja2' %}
-
-                                <div class="row" style="text-align: right; padding-right: 15px">
-                                    <div >
-                                        <input id="btnNewSection"    style="display: none" type="submit" class="btn btn-primary pull-right btnsSection" value="{{ _("Save section") }}"></input>
-                                        <input id="btnUpdateSection" style="display: none" type="submit" class="btn btn-primary pull-right btnsSection" value="{{ _("Save section") }}"></input>
-                                        <input id="btnDeleteSection" style="display: none" onclick="showDeleteSection()" class="btn btn-danger pull-left btnsSection" value="{{ _("Delete section") }}"></input>
                                     </div>
                                 </div>
-                            </form>
+                                <div class="ibox-content" style="min-height: 500px" id="div_form">
+                                    {% include 'snippets/error.jinja2' %}
+                                    {% set eventClick=False %}
+                                    {% set classByUser=False %}
+                                    {% set classByRegRequired=False %}
+                                    {% set classByAssesRequired=True %}
+                                    {% set createSection=True %}
+                                    {% set jstreeName="jstree1" %}
+                                    {% include 'snippets/jstreeForm.jinja2'  %}
+                                    <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}" id="formFoSendInformation" style="display: none">
+                                        <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                                        <textarea id="nestable-output" name="neworder" class="form-control" style="display:none;"></textarea>
+                                    </form>
 
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12 extraDiv" id="form_section" style="display:none; padding-right: 0px; padding-left: 0px">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title">
+                                    <h5>{{ _("New section") }}</h5>
+                                    <div class="ibox-tools">
+                                        <button id="btnCancelSection"  class="btn btn-xs btn-default pull-right " ><i class="fa fa-close"></i></button>
+                                    </div>
+                                </div>
+                                <div class="ibox-content">
+                                    <form class="form-horizontal formElement" role="form" method="post" id="formSection" action="{{ request.url }}">
+                                        {% include 'snippets/error.jinja2' %}
+
+                                        {% include 'snippets/project/registry/groupform.jinja2' %}
+                                        <div class="row" style="text-align: right; padding-right: 15px">
+                                            <div >
+                                                <input id="btnNewSection"    style="display: none" type="submit" class="btn btn-primary pull-right btnsSection" value="{{ _("Save section") }}"></input>
+                                                <input id="btnUpdateSection" style="display: none" type="submit" class="btn btn-primary pull-right btnsSection" value="{{ _("Save section") }}"></input>
+                                                <input id="btnDeleteSection" style="display: none" onclick="showDeleteSection()" class="btn btn-danger pull-left btnsSection" value="{{ _("Delete section") }}"></input>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+
+
         </div>
 
         <div class="col-md-4">
@@ -107,15 +115,14 @@
                 <div class="ibox-title" >
                     <h5>{{ _("Preview") }}</h5>
                     <div class="ibox-tools">
-
                     </div>
                 </div>
                 <div class="ibox-content " >
                     <div id="htmlForPreview">
+                        {% set showPhone=True %}
                         {% set img1=request.url_for_static('landing/odk.png') %}
                         {% set img2=request.url_for_static('landing/odk2.png') %}
                         {% set img3=request.url_for_static('landing/odk3.png') %}
-                        {% set showPhone=True %}
                         {% include 'snippets/project/previewForm.jinja2' %}
                     </div>
                 </div>
@@ -309,10 +316,11 @@
                 $('#div_form').css('overflow-y','initial')
                 $('#div_availables').css('overflow-y','initial')
 
-                availables = $('#div_availables').css('height').replace("px","");
-                form =$('#div_form').css('height').replace("px","");
+                var availables = $('#div_availables').css('height').replace("px","");
+                var form = $('#div_form').css('height').replace("px","");
 
-                if(availables<form){
+                if(parseInt(availables)<parseInt(form))
+                {
                     $('#div_form').css('height',availables)
                     $('#div_form').css('overflow-y','scroll')
                 }else{

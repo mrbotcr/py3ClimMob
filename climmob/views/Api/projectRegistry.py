@@ -51,7 +51,10 @@ class readProjectRegistry_view(apiView):
                 )
                 if exitsproject:
                     data = getRegistryQuestions(
-                        self.user.login, dataworking["project_cod"], self.request
+                        self.user.login,
+                        dataworking["project_cod"],
+                        self.request,
+                        onlyShowTheBasicQuestions=True,
                     )
                     # The following is to help jinja2 to render the groups and questions
                     # This because the scope constraint makes it difficult to control

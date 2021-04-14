@@ -54,7 +54,9 @@
                                             <span class="m-l-xs">{{ general["name"] }}</span>
 
                                             <div style="display:none">
+                                                {{ general["vars"] }}
                                                 {% for i in general["vars"] %}
+                                                    {{ i }}
                                                     <input type="checkbox" value="{{ i[0] }}$%*{{ i[1] }}$%*{{ i[2] }}$%*{{ i[3] }}$%*{{ i[4] }}$%*{{ i[5] }}" name="q_reg" class="i-checks check_{{ general.id }}" id="q_reg"/>
                                                     <span class="m-l-xs">{{ i[1] }}</span>
                                                 {% endfor %}

@@ -559,10 +559,7 @@ def getJSONResult(
                         "fields": getFields(registryXML, "REG_geninfo"),
                     }
             else:
-                data["registry"] = {
-                    "lkptables": [],
-                    "fields":[]
-                }
+                data["registry"] = {"lkptables": [], "fields": []}
 
             data["assessments"] = []
             haveAssessments = False

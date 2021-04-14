@@ -35,12 +35,14 @@
                         <tr>
                             <th class="text-center" style="width: {{percentage}}% ">{{ _("Data collection moments") }}</th>
                             <th class="text-center" style="width: {{percentage}}% ">{{ _("Explanatory") }}</th>
+                            <th class="text-center" style="width: {{percentage}}% ">{{ _("Quantitative") }}</th>
                             <th class="text-center" style="width: {{percentage}}% ">{{ _("Ranking of options") }}</th>
                             <th class="text-center" style="width: {{percentage}}% ">{{ _("Comparison with check") }}</th>
                         </tr>
                         <tr>
                             <td class="text-center" style="border-top-style: hidden;"></td>
                             <td class="text-center" style="border-top-style: hidden;"><label style="font-weight: inherit"> <input class="checkbox i-checksAll" type="checkbox" id="explanatorySelect"><i></i> {{ _("Select all") }}</label></td>
+                            <td class="text-center" style="border-top-style: hidden;"><label style="font-weight: inherit"> <input class="checkbox i-checksAll" type="checkbox" id="quantitativeSelect"><i></i> {{ _("Select all") }}</label></td>
                             <td class="text-center" style="border-top-style: hidden;"><label style="font-weight: inherit"> <input class="checkbox i-checksAll" type="checkbox" id="rankingSelect"><i></i> {{ _("Select all") }}</label></td>
                             <td class="text-center" style="border-top-style: hidden;"><label style="font-weight: inherit"> <input class="checkbox i-checksAll" type="checkbox" id="comparisonSelect"><i></i> {{ _("Select all") }}</label></td>
                         </tr>
@@ -51,6 +53,15 @@
                                     {%for c in dataForAnalysis.Explanatory%}
                                         {% if c.code == None %}
                                             <label style="font-weight: inherit"> <input class="checkbox i-checks explanatorySelect" type="checkbox" id="explanatory_REG__{{c.id}}_add"><i></i> {{ c.name }}</label><br>
+                                        {% endif%}
+                                    {%endfor%}
+                                {% endif %}
+                            </td>
+                           <td>
+                                {% if dataForAnalysis.Quantitative %}
+                                    {%for c in dataForAnalysis.Quantitative%}
+                                        {% if c.code == None %}
+                                            <label style="font-weight: inherit"> <input class="checkbox i-checks quantitativeSelect" type="checkbox" id="quantitaive_REG__{{c.id}}_add"><i></i> {{ c.name }}</label><br>
                                         {% endif%}
                                     {%endfor%}
                                 {% endif %}
@@ -82,6 +93,15 @@
                                         {%for c in dataForAnalysis.Explanatory%}
                                             {% if c.code.ass_cod == assess.ass_cod %}
                                                 <label style="font-weight: inherit"> <input class="checkbox i-checks explanatorySelect" type="checkbox" id="explanatory_ASS_{{ assess.ass_cod }}_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
+                                            {% endif%}
+                                        {%endfor%}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if dataForAnalysis.Quantitative %}
+                                        {%for c in dataForAnalysis.Quantitative%}
+                                            {% if c.code.ass_cod == assess.ass_cod %}
+                                                <label style="font-weight: inherit"> <input class="checkbox i-checks quantitativeSelect" type="checkbox" id="quantitative_ASS_{{ assess.ass_cod }}_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
                                             {% endif%}
                                         {%endfor%}
                                     {% endif %}

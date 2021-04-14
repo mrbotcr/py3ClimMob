@@ -3,7 +3,7 @@ import xlsxwriter
 import os
 from pyxform import xls2xform
 from pyxform.xls2json import parse_file_to_json
-from subprocess import check_call, CalledProcessError, Popen, PIPE,check_output
+from subprocess import check_call, CalledProcessError, Popen, PIPE, check_output
 import logging
 from datetime import datetime
 import json
@@ -212,17 +212,20 @@ def createDatabase(xlsxFile, outputDir, schema, keyVar, preFix, dropSchema, requ
         try:
             error = e.output
         except:
-            error =""
+            error = ""
 
         return True, error
 
-    return buildDatabase(
-        request.registry.settings["mysql.cnf"],
-        createFile,
-        insertFile,
-        schema,
-        dropSchema,
-    ),b''
+    return (
+        buildDatabase(
+            request.registry.settings["mysql.cnf"],
+            createFile,
+            insertFile,
+            schema,
+            dropSchema,
+        ),
+        b"",
+    )
 
 
 class ODKExcelFile(object):
@@ -620,302 +623,333 @@ def generateODKFile(
     # End of edition
 
     for question in questions:
-        if (
-            question.question_dtype != 8
-            and question.question_dtype != 9
-            and question.question_dtype != 10
-        ):
-            if question.question_dtype != 7:
-                excelFile.addQuestion(
-                    question.question_code,
-                    question.question_desc,
-                    question.question_dtype,
-                    question.question_unit,
-                    question.question_requiredvalue,
-                    "grp_" + str(question.section_id),
-                )
-            else:
-                # print "EL PACKAGE CODE"
-                lenuser = len(user) + 1
-                excelFile.addQuestion(
-                    question.question_code,
-                    question.question_desc,
-                    question.question_dtype,
-                    question.question_unit,
-                    question.question_requiredvalue,
-                    "grp_" + str(question.section_id),
-                    None,
-                    "substr(${QST162}, 0, "
-                    + str(lenuser)
-                    + ") = '"
-                    + user
-                    + "-' and contains(.,'-"
-                    + project
-                    + "~')",
-                )
-        else:
-            if question.question_dtype == 8:
-                excelFile.addQuestion(
-                    "note_dtype8",
-                    "In the following field try to write the name of the participant to filter the information and find him/her more easily.",
-                    29,
-                    inGroup="grp_" + str(question.section_id)
-                )
+        repeatQuestion = 1
+        if question.question_quantitative == 1:
+            repeatQuestion = numComb
 
-                excelFile.addQuestion(
-                    question.question_code,
-                    question.question_desc,
-                    question.question_dtype,
-                    question.question_unit,
-                    question.question_requiredvalue,
-                    "grp_" + str(question.section_id),
-                )
-                farmers = getRegisteredFarmers(user, project, request)
-                for farmer in farmers:
-                    excelFile.addOption(
+        for questionNumber in range(0, repeatQuestion):
+            nameExtra = ""
+            descExtra = ""
+            if question.question_quantitative == 1:
+                nameExtra = "_" + chr(65 + questionNumber).lower()
+                descExtra = " - Option " + chr(65 + questionNumber)
+
+            if (
+                question.question_dtype != 8
+                and question.question_dtype != 9
+                and question.question_dtype != 10
+            ):
+                if question.question_dtype != 7:
+                    excelFile.addQuestion(
+                        question.question_code + nameExtra,
+                        question.question_desc + descExtra,
+                        question.question_dtype,
+                        question.question_unit,
+                        question.question_requiredvalue,
+                        "grp_" + str(question.section_id),
+                    )
+                else:
+                    # print "EL PACKAGE CODE"
+                    lenuser = len(user) + 1
+                    excelFile.addQuestion(
                         question.question_code,
-                        farmer["farmer_id"],
-                        farmer["farmer_name"],
+                        question.question_desc,
+                        question.question_dtype,
+                        question.question_unit,
+                        question.question_requiredvalue,
+                        "grp_" + str(question.section_id),
+                        None,
+                        "substr(${QST162}, 0, "
+                        + str(lenuser)
+                        + ") = '"
+                        + user
+                        + "-' and contains(.,'-"
+                        + project
+                        + "~')",
                     )
-                if question.question_code == "QST163":
+            else:
+                if question.question_dtype == 8:
                     excelFile.addQuestion(
-                        "cal_" + question.question_code,
-                        "",
-                        28,
+                        "note_dtype8",
+                        "In the following field try to write the name of the participant to filter the information and find him/her more easily.",
+                        29,
                         inGroup="grp_" + str(question.section_id),
-                        calculation="jr:choice-name(${"
-                        + question.question_code
-                        + "}, '${"
-                        + question.question_code
-                        + "}')",
                     )
 
-            if question.question_dtype == 9:
-                if numComb == 2:
                     excelFile.addQuestion(
-                        "char_" + question.question_code,
-                        question.question_twoitems,
-                        5,
-                        "",
+                        question.question_code,
+                        question.question_desc,
+                        question.question_dtype,
+                        question.question_unit,
                         question.question_requiredvalue,
                         "grp_" + str(question.section_id),
                     )
-                    for opt in range(0, numComb):
-                        code = chr(65 + opt)
+                    farmers = getRegisteredFarmers(user, project, request)
+                    for farmer in farmers:
                         excelFile.addOption(
-                            "char_" + question.question_code,
-                            str(opt + 1),
-                            "Option " + code,
+                            question.question_code,
+                            farmer["farmer_id"],
+                            farmer["farmer_name"],
                         )
-
-                    if question.question_tied == 1:
-                        excelFile.addOption(
-                            "char_" + question.question_code,
-                            str(98),
-                            "Tied",
-                        )
-
-                    if question.question_notobserved == 1:
-                        excelFile.addOption(
-                            "char_" + question.question_code,
-                            str(99),
-                            "Not observed",
-                        )
-
-                if numComb == 3:
-                    excelFile.addQuestion(
-                        "char_" + question.question_code + "_pos",
-                        question.question_posstm,
-                        5,
-                        "",
-                        question.question_requiredvalue,
-                        "grp_" + str(question.section_id),
-                    )
-                    # EDITED BY BRANDON
-                    constraintGen = ""
-                    if question.question_tied == 1:
-                        constraintGen = ". = " + str(98)
-
-                    if question.question_notobserved == 1:
-                        if constraintGen == "":
-                            constraintGen = ". = " + str(99)
-                        else:
-                            constraintGen += " or . = " + str(99)
-
-                    if constraintGen =="":
-                        constraintGen = ". != ${" + "char_" + question.question_code + "_pos" + "}"
-                    else:
-                        constraintGen += " or . != ${" + "char_" + question.question_code + "_pos" + "}"
-                    # END EDITED
-                    excelFile.addQuestion(
-                        "char_" + question.question_code + "_neg",
-                        question.question_negstm,
-                        5,
-                        "",
-                        question.question_requiredvalue,
-                        "grp_" + str(question.section_id),
-                        constraint=constraintGen,
-                    )
-                    for opt in range(0, numComb):
-                        code = chr(65 + opt)
-                        excelFile.addOption(
-                            "char_" + question.question_code + "_pos",
-                            str(opt + 1),
-                            "Option " + code,
-                        )
-                        excelFile.addOption(
-                            "char_" + question.question_code + "_neg",
-                            str(opt + 1),
-                            "Option " + code,
-                        )
-                    # EDITED BY BRANDON
-                    if question.question_tied == 1:
-                        excelFile.addOption(
-                            "char_" + question.question_code + "_pos",
-                            str(98),
-                            "Tied",
-                        )
-                        excelFile.addOption(
-                            "char_" + question.question_code + "_neg",
-                            str(98),
-                            "Tied",
-                        )
-                    if question.question_notobserved == 1:
-                        excelFile.addOption(
-                            "char_" + question.question_code + "_pos",
-                            str(99),
-                            "Not observed",
-                        )
-
-                        excelFile.addOption(
-                            "char_" + question.question_code + "_neg",
-                            str(99),
-                            "Not observed",
-                        )
-                    # END EDITED
-
-                if numComb >= 4:
-                    constraintGen = ""
-                    for opt in range(0, numComb):
-                        renderedString = (
-                            Environment()
-                            .from_string(question.question_moreitems)
-                            .render(pos=opt + 1)
-                        )
+                    if question.question_code == "QST163":
                         excelFile.addQuestion(
-                            "char_" + question.question_code + "_stmt_" + str(opt + 1),
-                            renderedString,
+                            "cal_" + question.question_code,
+                            "",
+                            28,
+                            inGroup="grp_" + str(question.section_id),
+                            calculation="jr:choice-name(${"
+                            + question.question_code
+                            + "}, '${"
+                            + question.question_code
+                            + "}')",
+                        )
+
+                if question.question_dtype == 9:
+                    if numComb == 2:
+                        excelFile.addQuestion(
+                            "char_" + question.question_code,
+                            question.question_twoitems,
+                            5,
+                            "",
+                            question.question_requiredvalue,
+                            "grp_" + str(question.section_id),
+                        )
+                        for opt in range(0, numComb):
+                            code = chr(65 + opt)
+                            excelFile.addOption(
+                                "char_" + question.question_code,
+                                str(opt + 1),
+                                "Option " + code,
+                            )
+
+                        if question.question_tied == 1:
+                            excelFile.addOption(
+                                "char_" + question.question_code, str(98), "Tied",
+                            )
+
+                        if question.question_notobserved == 1:
+                            excelFile.addOption(
+                                "char_" + question.question_code,
+                                str(99),
+                                "Not observed",
+                            )
+
+                    if numComb == 3:
+                        excelFile.addQuestion(
+                            "char_" + question.question_code + "_pos",
+                            question.question_posstm,
+                            5,
+                            "",
+                            question.question_requiredvalue,
+                            "grp_" + str(question.section_id),
+                        )
+                        # EDITED BY BRANDON
+                        constraintGen = ""
+                        if question.question_tied == 1:
+                            constraintGen = ". = " + str(98)
+
+                        if question.question_notobserved == 1:
+                            if constraintGen == "":
+                                constraintGen = ". = " + str(99)
+                            else:
+                                constraintGen += " or . = " + str(99)
+
+                        if constraintGen == "":
+                            constraintGen = (
+                                ". != ${"
+                                + "char_"
+                                + question.question_code
+                                + "_pos"
+                                + "}"
+                            )
+                        else:
+                            constraintGen += (
+                                " or . != ${"
+                                + "char_"
+                                + question.question_code
+                                + "_pos"
+                                + "}"
+                            )
+                        # END EDITED
+                        excelFile.addQuestion(
+                            "char_" + question.question_code + "_neg",
+                            question.question_negstm,
                             5,
                             "",
                             question.question_requiredvalue,
                             "grp_" + str(question.section_id),
                             constraint=constraintGen,
                         )
-                        if constraintGen == "":
-                            constraintGen += (
-                                ". = "+str(numComb+1)+" or . != ${"
-                                + "char_"
-                                + question.question_code
-                                + "_stmt_"
-                                + str(opt + 1)
-                                + "}"
-                            )
-                        else:
-                            constraintGen += (
-                                " and . != ${"
-                                + "char_"
-                                + question.question_code
-                                + "_stmt_"
-                                + str(opt + 1)
-                                + "}"
-                            )
-                        for opt2 in range(0, numComb):
-                            code = chr(65 + opt2)
+                        for opt in range(0, numComb):
+                            code = chr(65 + opt)
                             excelFile.addOption(
-                                "char_"
-                                + question.question_code
-                                + "_stmt_"
-                                + str(opt + 1),
-                                str(opt2 + 1),
+                                "char_" + question.question_code + "_pos",
+                                str(opt + 1),
                                 "Option " + code,
                             )
-
+                            excelFile.addOption(
+                                "char_" + question.question_code + "_neg",
+                                str(opt + 1),
+                                "Option " + code,
+                            )
+                        # EDITED BY BRANDON
                         if question.question_tied == 1:
                             excelFile.addOption(
-                                "char_"
-                                + question.question_code
-                                + "_stmt_"
-                                + str(98),
+                                "char_" + question.question_code + "_pos",
                                 str(98),
                                 "Tied",
                             )
-
+                            excelFile.addOption(
+                                "char_" + question.question_code + "_neg",
+                                str(98),
+                                "Tied",
+                            )
                         if question.question_notobserved == 1:
                             excelFile.addOption(
-                                "char_"
-                                + question.question_code
-                                + "_stmt_"
-                                + str(99),
+                                "char_" + question.question_code + "_pos",
                                 str(99),
                                 "Not observed",
                             )
 
-            if question.question_dtype == 10:
-                for opt in range(0, numComb):
-                    code = chr(65 + opt)
-                    renderedString = (
-                        Environment()
-                        .from_string(question.question_perfstmt)
-                        .render(option=code)
+                            excelFile.addOption(
+                                "char_" + question.question_code + "_neg",
+                                str(99),
+                                "Not observed",
+                            )
+                        # END EDITED
+
+                    if numComb >= 4:
+                        constraintGen = ""
+                        for opt in range(0, numComb):
+                            renderedString = (
+                                Environment()
+                                .from_string(question.question_moreitems)
+                                .render(pos=opt + 1)
+                            )
+                            excelFile.addQuestion(
+                                "char_"
+                                + question.question_code
+                                + "_stmt_"
+                                + str(opt + 1),
+                                renderedString,
+                                5,
+                                "",
+                                question.question_requiredvalue,
+                                "grp_" + str(question.section_id),
+                                constraint=constraintGen,
+                            )
+                            if constraintGen == "":
+                                constraintGen += (
+                                    ". = "
+                                    + str(numComb + 1)
+                                    + " or . != ${"
+                                    + "char_"
+                                    + question.question_code
+                                    + "_stmt_"
+                                    + str(opt + 1)
+                                    + "}"
+                                )
+                            else:
+                                constraintGen += (
+                                    " and . != ${"
+                                    + "char_"
+                                    + question.question_code
+                                    + "_stmt_"
+                                    + str(opt + 1)
+                                    + "}"
+                                )
+                            for opt2 in range(0, numComb):
+                                code = chr(65 + opt2)
+                                excelFile.addOption(
+                                    "char_"
+                                    + question.question_code
+                                    + "_stmt_"
+                                    + str(opt + 1),
+                                    str(opt2 + 1),
+                                    "Option " + code,
+                                )
+
+                            if question.question_tied == 1:
+                                excelFile.addOption(
+                                    "char_"
+                                    + question.question_code
+                                    + "_stmt_"
+                                    + str(98),
+                                    str(98),
+                                    "Tied",
+                                )
+
+                            if question.question_notobserved == 1:
+                                excelFile.addOption(
+                                    "char_"
+                                    + question.question_code
+                                    + "_stmt_"
+                                    + str(99),
+                                    str(99),
+                                    "Not observed",
+                                )
+
+                if question.question_dtype == 10:
+                    for opt in range(0, numComb):
+                        code = chr(65 + opt)
+                        renderedString = (
+                            Environment()
+                            .from_string(question.question_perfstmt)
+                            .render(option=code)
+                        )
+                        excelFile.addQuestion(
+                            "perf_" + question.question_code + "_" + str(opt + 1),
+                            renderedString,
+                            5,
+                            "",
+                            question.question_requiredvalue,
+                            "grp_" + str(question.section_id),
+                        )
+                        excelFile.addOption(
+                            "perf_" + question.question_code + "_" + str(opt + 1),
+                            "1",
+                            request.translate("Better"),
+                        )
+                        excelFile.addOption(
+                            "perf_" + question.question_code + "_" + str(opt + 1),
+                            "2",
+                            request.translate("Worse"),
+                        )
+
+            if question.question_dtype == 5 or question.question_dtype == 6:
+                print("****generateODKFile**Query options******")
+                sql = (
+                    "SELECT qstoption.value_code,qstoption.value_desc,qstoption.value_isother,qstoption.value_order "
+                    "FROM question,qstoption "
+                    "WHERE qstoption.question_id = question.question_id "
+                    "AND (question.question_dtype = 5 or question.question_dtype = 6) "
+                    "AND question.question_code = '" + question.question_code + "' "
+                    "AND question.question_id= " + str(question.question_id) + " "
+                    "ORDER BY qstoption.value_order"
+                )
+
+                values = request.dbsession.execute(sql).fetchall()
+                other = False
+                for value in values:
+                    if value.value_isother == 1:
+                        other = True
+                    excelFile.addOption(
+                        question.question_code + nameExtra,
+                        value.value_code,
+                        value.value_desc,
                     )
+                if other:
                     excelFile.addQuestion(
-                        "perf_" + question.question_code + "_" + str(opt + 1),
-                        renderedString,
-                        5,
-                        "",
-                        question.question_requiredvalue,
+                        question.question_code + nameExtra + "_oth",
+                        question.question_desc
+                        + descExtra
+                        + " "
+                        + request.translate("Other"),
+                        1,
+                        request.translate("Add the other value here"),
+                        0,
                         "grp_" + str(question.section_id),
                     )
-                    excelFile.addOption(
-                        "perf_" + question.question_code + "_" + str(opt + 1),
-                        "1",
-                        request.translate("Better"),
-                    )
-                    excelFile.addOption(
-                        "perf_" + question.question_code + "_" + str(opt + 1),
-                        "2",
-                        request.translate("Worse"),
-                    )
-
-        if question.question_dtype == 5 or question.question_dtype == 6:
-            print("****generateODKFile**Query options******")
-            sql = (
-                "SELECT qstoption.value_code,qstoption.value_desc,qstoption.value_isother,qstoption.value_order "
-                "FROM question,qstoption "
-                "WHERE qstoption.question_id = question.question_id "
-                "AND (question.question_dtype = 5 or question.question_dtype = 6) "
-                "AND question.question_code = '" + question.question_code + "' "
-                "AND question.question_id= " + str(question.question_id) + " "
-                "ORDER BY qstoption.value_order"
-            )
-
-            values = request.dbsession.execute(sql).fetchall()
-            other = False
-            for value in values:
-                if value.value_isother == 1:
-                    other = True
-                excelFile.addOption(
-                    question.question_code, value.value_code, value.value_desc
-                )
-            if other:
-                excelFile.addQuestion(
-                    question.question_code + "_oth",
-                    request.translate("Other"),
-                    1,
-                    request.translate("Add the other value here"),
-                    0,
-                    "grp_" + str(question.section_id),
-                )
 
     excelFile.addQuestion("clm_end", request.translate("End of survey"), 21, "")
 
@@ -986,7 +1020,7 @@ def generateRegistry(user, projectid, request, sectionOfThePackageCode):
     sql = (
         "SELECT question.question_code,question.question_desc,question.question_unit,question.question_dtype,question.question_twoitems,"
         "registry.section_id,question.question_posstm,question.question_negstm,question.question_moreitems,question.question_perfstmt,"
-        "question.question_requiredvalue,registry.question_order,question.question_id,question.question_tied, question.question_notobserved FROM question,registry "
+        "question.question_requiredvalue,registry.question_order,question.question_id,question.question_tied, question.question_notobserved, question.question_quantitative FROM question,registry "
         "WHERE question.question_id = registry.question_id "
         "AND registry.user_name = '" + user + "' "
         "AND registry.project_cod = '"
@@ -1042,7 +1076,7 @@ def generateRegistry(user, projectid, request, sectionOfThePackageCode):
         request.dbsession.query(Question).filter(Question.question_regkey == 1).first()
     )
     paths = ["db", "reg"]
-    state,error = createDatabase(
+    state, error = createDatabase(
         xlsxFile,
         os.path.join(path, *paths),
         user + "_" + projectid,
@@ -1053,6 +1087,7 @@ def generateRegistry(user, projectid, request, sectionOfThePackageCode):
     )
 
     return not state, error
+
 
 def generateAssessmentFiles(
     user, projectid, assessment, request, sectionOfThePackageCode
@@ -1138,7 +1173,7 @@ def generateAssessmentFiles(
         sql = (
             "SELECT question.question_code,question.question_desc,question.question_unit,question.question_dtype,question.question_twoitems,"
             "assdetail.section_id,question.question_posstm,question.question_negstm,question.question_moreitems,question.question_perfstmt,"
-            "question.question_requiredvalue,question.question_id, question.question_tied, question.question_notobserved "
+            "question.question_requiredvalue,question.question_id, question.question_tied, question.question_notobserved, question.question_quantitative "
             "FROM question,assdetail "
             "WHERE question.question_id = assdetail.question_id "
             "AND assdetail.user_name = '" + user + "' "
@@ -1199,9 +1234,13 @@ def generateAssessmentFiles(
                 request,
             )
             if not state:
-                result.append({"code": assessment.ass_cod, "result": True, "error": error})
+                result.append(
+                    {"code": assessment.ass_cod, "result": True, "error": error}
+                )
             else:
-                result.append({"code": assessment.ass_cod, "result": False, "error": error})
+                result.append(
+                    {"code": assessment.ass_cod, "result": False, "error": error}
+                )
 
         except Exception as e:
             msg = request.translate("Error converting XLSX to XML") + "\n"

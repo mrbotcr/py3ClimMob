@@ -14,7 +14,7 @@ from ...processes import (
     getPackages,
     projectCreatePackages,
     setRegistryStatus,
-    generateStructureForInterface,
+    generateStructureForInterfaceForms,
     generateStructureForValidateJsonOdk,
     isRegistryClose,
     getProjectNumobs,
@@ -454,7 +454,9 @@ class createProjectRegistry_view(apiView):
                                                 status=401,
                                                 body=self._(
                                                     "There has been a problem in the creation of the basic structure of the project, this may be due to something wrong with the form. Contact the ClimMob team with the next message to get the solution to the problem"
-                                                )+": "+error,
+                                                )
+                                                + ": "
+                                                + error,
                                             )
                                             return response
 
@@ -683,9 +685,10 @@ class readRegistryStructure_view(apiView):
                             response = Response(
                                 status=200,
                                 body=json.dumps(
-                                    generateStructureForInterface(
+                                    generateStructureForInterfaceForms(
                                         self.user.login,
                                         dataworking["project_cod"],
+                                        "registry",
                                         self.request,
                                     )
                                 ),
@@ -743,42 +746,32 @@ class pushJsonToRegistry_view(apiView):
                                 dataworking["project_cod"],
                                 self.request,
                             ):
-                                structure = generateStructureForValidateJsonOdk(
+                                structure = generateStructureForInterfaceForms(
                                     self.user.login,
                                     dataworking["project_cod"],
+                                    "registry",
                                     self.request,
                                 )
                                 if structure:
                                     obligatoryQuestions = [u"clm_start", u"clm_end"]
                                     possibleQuestions = [u"clm_start", u"clm_end"]
                                     searchQST162 = ""
-                                    for _data in structure:
-                                        possibleQuestions.append(
-                                            "grp_" + str(_data[0]) + "/" + str(_data[1])
-                                        )
-                                        if _data[3] == 6:
+                                    for section in structure:
+                                        for question in section["section_questions"]:
+
                                             possibleQuestions.append(
-                                                "grp_"
-                                                + str(_data[0])
-                                                + "/"
-                                                + str(_data[1]) + "_oth"
+                                                question["question_datafield"]
                                             )
 
-                                        if str(_data[1]) == "QST162":
-                                            searchQST162 = (
-                                                "grp_"
-                                                + str(_data[0])
-                                                + "/"
-                                                + str(_data[1])
-                                            )
+                                            if question["question_code"] == "QST162":
+                                                searchQST162 = question[
+                                                    "question_datafield"
+                                                ]
 
-                                        if _data[2] == 1:
-                                            obligatoryQuestions.append(
-                                                "grp_"
-                                                + str(_data[0])
-                                                + "/"
-                                                + str(_data[1])
-                                            )
+                                            if question["question_requiredvalue"] == 1:
+                                                obligatoryQuestions.append(
+                                                    question["question_datafield"]
+                                                )
 
                                     try:
                                         _json = json.loads(dataworking["json"])
@@ -928,11 +921,12 @@ class pushJsonToRegistry_view(apiView):
                                                 ),
                                             )
                                             return response
-                                    except:
+                                    except Exception as e:
                                         response = Response(
                                             status=401,
                                             body=self._(
-                                                "Error in the JSON sent by parameter."
+                                                "Error in the JSON sent by parameter. "
+                                                + str(e)
                                             ),
                                         )
                                         return response

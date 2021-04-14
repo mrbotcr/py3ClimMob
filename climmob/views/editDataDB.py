@@ -115,7 +115,7 @@ def getNamesEditByColums(
                         else:
                             row.append("None")
                             row.append(x.attrib["name"])
-                    elif x.attrib["odktype"] in ["integer","decimal"]:
+                    elif x.attrib["odktype"] in ["integer", "decimal"]:
                         row.append("decimal")
                         row.append("")
                         row.append("")
@@ -331,10 +331,12 @@ def update_edited_data(self, db, form, data, file, code):
                     if key in get_FieldsByType(["select1"], db, self, file, code):
                         if row[key] and row[key] != "None":
                             val = (
-                                "'" + str(row[key]).replace("[", "").replace("]", "") + "'"
+                                "'"
+                                + str(row[key]).replace("[", "").replace("]", "")
+                                + "'"
                             )
                         else:
-                            addField =False
+                            addField = False
                     else:
                         if key in get_FieldsByType(["select"], db, self, file, code):
                             val = "'" + " ".join(row[key]) + "'"

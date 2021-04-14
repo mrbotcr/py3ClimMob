@@ -139,7 +139,7 @@
                                                             {% if column[0] == "qst162" %}
                                                                 <select id="newqst" name="newqst" class="form-control" required="">
                                                                     {% for values in PosibleValues %}
-                                                                        <option value="{{ activeUser.login }}-{{ values }}-{{ proId }}" {% if values == New[column[0]] %}selected="selected"{% endif %} >{{ _("Package") }} #{{ values }}</option>
+                                                                        <option value="{{ activeUser.login }}-{{ values }}-{{ proId }}" {% if values|string == New[column[0]]|string %}selected="selected"{% endif %} >{{ _("Package") }} #{{ values }}</option>
                                                                     {% endfor %}
                                                                 </select>
                                                             {% else %}

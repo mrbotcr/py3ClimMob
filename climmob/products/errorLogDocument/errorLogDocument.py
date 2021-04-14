@@ -17,7 +17,8 @@ def create_error_log_document(
     path = createProductDirectory(request, user, project, "errorlogdocument")
     # We call the Celery task that will generate the output packages.pdf
     task = createErrorLogDocument.apply_async(
-        (user, path, project, form, code, structure, listOfErrors, info), queue="ClimMob",
+        (user, path, project, form, code, structure, listOfErrors, info),
+        queue="ClimMob",
     )
     # We register the instance of the output with the task ID of celery
     # This will go to the products table that then you can monitor and use

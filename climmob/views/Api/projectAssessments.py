@@ -348,6 +348,7 @@ class readProjectAssessmentStructure_view(apiView):
                                 dataworking["project_cod"],
                                 dataworking["ass_cod"],
                                 self.request,
+                                onlyShowTheBasicQuestions=True,
                             )
                             # The following is to help jinja2 to render the groups and questions
                             # This because the scope constraint makes it difficult to control

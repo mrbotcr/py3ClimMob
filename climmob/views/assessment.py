@@ -8,7 +8,6 @@ from ..processes import (
     deleteAssessmentGroup,
     modifyAssessmentGroup,
     getAssessmentGroupData,
-    getAssessmentQuestions,
     saveAssessmentOrder,
     getAssessmentGroupInformation,
     availableAssessmentQuestions,
@@ -692,7 +691,7 @@ class startAssessments_view(privateView):
                             "contact": self._(
                                 "Contact the ClimMob team with the next message to get the solution to the problem:"
                             ),
-                            "copie": str(correct[0]["error"],'utf-8')
+                            "copie": str(correct[0]["error"], "utf-8"),
                         }
 
                 return {

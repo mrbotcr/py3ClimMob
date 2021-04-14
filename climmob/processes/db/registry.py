@@ -2,7 +2,7 @@ from sqlalchemy import func
 from climmob.models.schema import mapFromSchema, mapToSchema
 from ...models import Regsection, Registry, Project, Question, Qstoption
 from .project import addRegistryQuestionsToProject
-from .assessment import setAssessmentStatus
+from .assessment import setAssessmentStatus, formattingQuestions
 from ..db.question import getQuestionOptions
 import os, shutil
 import json
@@ -28,7 +28,7 @@ __all__ = [
     "deleteRegistryQuestionFromGroup",
     "exitsQuestionInGroup",
     "haveTheBasicStructure",
-    "generateStructureForInterface",
+    # "generateStructureForInterface",
     "haveTheBasic",
     "getRegistryGroup",
     "getRegistryQuestionsApi",
@@ -227,7 +227,7 @@ def generateStructureForValidateJsonOdk(user, project, request):
             Regsection.section_id,
             Question.question_code,
             Question.question_requiredvalue,
-            Question.question_dtype
+            Question.question_dtype,
         )
         .filter(Regsection.user_name == user)
         .filter(Regsection.project_cod == project)
@@ -244,6 +244,7 @@ def generateStructureForValidateJsonOdk(user, project, request):
         return False
 
 
+"""
 def generateStructureForInterface(user, project, request):
 
     data = []
@@ -318,6 +319,7 @@ def generateStructureForInterface(user, project, request):
                                                               + questionData["question_code"] + "_oth")
                             dataSection["section_questions"].append(dataQuestion2)
 
+                print(dataQuestion["question_code"])
                 dataSection["section_questions"].append(dataQuestion)
             else:
 
@@ -590,9 +592,12 @@ def createOption(
     dataQuestionop["question_id"] = question_id
 
     return dataQuestionop
+"""
 
 
-def getRegistryQuestions(user, project, request, createAutoRegistry=True):
+def getRegistryQuestions(
+    user, project, request, createAutoRegistry=True, onlyShowTheBasicQuestions=False
+):
 
     hasSections = (
         request.dbsession.query(Regsection)
@@ -609,7 +614,7 @@ def getRegistryQuestions(user, project, request, createAutoRegistry=True):
     sql = (
         "SELECT regsection.section_id,regsection.section_name,regsection.section_content,regsection.section_order,regsection.section_private,"
         "question.question_id,question.question_desc,question.question_name,question.question_notes,question.question_dtype, question.question_posstm,question.question_negstm, question.question_perfstmt,IFNULL(registry.question_order,0) as question_order,"
-        "question.question_reqinreg,question.question_tied, question.question_notobserved FROM regsection LEFT JOIN registry ON registry.section_user = regsection.user_name AND registry.section_project = regsection.project_cod "
+        "question.question_reqinreg,question.question_tied, question.question_notobserved, question.question_requiredvalue, question.question_quantitative FROM regsection LEFT JOIN registry ON registry.section_user = regsection.user_name AND registry.section_project = regsection.project_cod "
         " AND registry.section_id = regsection.section_id "
         " LEFT JOIN question ON registry.question_id = question.question_id WHERE "
         "regsection.user_name = '"
@@ -620,13 +625,17 @@ def getRegistryQuestions(user, project, request, createAutoRegistry=True):
     )
     questions = request.dbsession.execute(sql).fetchall()
 
-    result = []
+    """result = []
     for qst in questions:
         dct = dict(qst)
         if dct["question_dtype"] == 5 or dct["question_dtype"] == 6:
             options = getQuestionOptions(dct["question_id"], request)
             dct["question_options"] = options
-        result.append(dct)
+        result.append(dct)"""
+
+    result = formattingQuestions(
+        questions, request, onlyShowTheBasicQuestions=onlyShowTheBasicQuestions
+    )
 
     return result
 
