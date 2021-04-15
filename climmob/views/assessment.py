@@ -636,7 +636,7 @@ class startAssessments_view(privateView):
                 assessment_id = data["assessment_id"]
                 redirect = False
                 print("checkAssessments")
-                checkPass, errors = checkAssessments(
+                checkPass, error_summary = checkAssessments(
                     self.user.login, projectid, assessment_id, self.request
                 )
                 if checkPass:

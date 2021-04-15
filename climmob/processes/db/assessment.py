@@ -179,10 +179,10 @@ def AsessmentStatus(user, project, assessment, request):
 
 def checkAssessments(user, project, assessment, request):
     if not is_assessment_final(request, user, project, assessment):
-        return True, []
+        return True, {}
 
     localVariety = getProjectLocalVariety(user, project, request)
-    errors = []
+    errors = {}
     sql = (
         "SELECT assdetail.question_id "
         "FROM assdetail,question "
@@ -194,14 +194,10 @@ def checkAssessments(user, project, assessment, request):
     )
     data = request.dbsession.execute(sql).fetchone()
     if data is None:
-        errors.append(
-            {
-                "error": "NoOverAllChar",
-                "message": request.translate(
-                    "An overall characteristic question is not part of the final assessments. You need to add this type of question to the assessment."
-                ),
-            }
-        )
+        errors["NoOverAllChar"] = request.translate(
+                    " 'Overrall ranking' question is not part of the final assessments. It is necessary to add this question from the ClimMob library to the assessment."
+                )
+
 
     if localVariety == 1:
         sql = (
@@ -215,14 +211,10 @@ def checkAssessments(user, project, assessment, request):
         )
         data = request.dbsession.execute(sql).fetchone()
         if data is None:
-            errors.append(
-                {
-                    "error": "NoOverAllPerf",
-                    "message": request.translate(
-                        "An overall performance question is not part of the final assessments. You need to add this type of question to the assessment."
-                    ),
-                }
-            )
+            errors["NoOverAllPerf"] = request.translate(
+                        "'Comparison with current' question is not part of the final assessments. It is necessary to add this question from the ClimMob library to the assessment."
+                    )
+
 
     # sql = "SELECT assdetail.question_id " \
     #       "FROM assdetail,question " \
