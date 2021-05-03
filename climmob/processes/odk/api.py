@@ -384,7 +384,7 @@ def storeJSONInMySQL(
     # print(JSONFile)
     importedFile = os.path.splitext(JSONFile)[0] + ".imp"
     # print(importedFile)
-    importedFile = "/".join(JSONFile.split("/")[:-2]) + "/myimportedFile.imp"
+    importedFile = "/".join(JSONFile.split("/")[:-2]) + "/myimportedFile.sqlite"
 
     logFile = os.path.splitext(JSONFile)[0] + ".log"
     jsonPath = os.path.dirname(JSONFile)
