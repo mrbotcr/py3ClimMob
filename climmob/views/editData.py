@@ -11,8 +11,7 @@ from ..products.analysisdata.analysisdata import create_datacsv
 from ..products.errorLogDocument.errorLogDocument import create_error_log_document
 from climmob.processes import (
     getQuestionsStructure,
-    generateStructureForInterface,
-    generateStructureForInterfaceAssessment,
+    generateStructureForInterfaceForms,
     get_registry_logs,
     get_assessment_logs,
 )
@@ -76,8 +75,8 @@ class downloadErroLogDocument_view(privateView):
             if formId == "registry":
                 formId = "Registration"
                 includeAssessment = False
-                data = generateStructureForInterface(
-                    self.user.login, proId, self.request
+                data = generateStructureForInterfaceForms(
+                    self.user.login, proId, "registry", self.request
                 )
                 _errors = get_registry_logs(self.request, self.user.login, proId)
 
@@ -93,8 +92,8 @@ class downloadErroLogDocument_view(privateView):
                 if formId == "assessment":
                     formId = "Assessment"
                     code = self.request.matchdict["codeid"]
-                    data = generateStructureForInterfaceAssessment(
-                        self.user.login, proId, code, self.request
+                    data = generateStructureForInterfaceForms(
+                        self.user.login, proId, "assessment", self.request, ass_cod=code
                     )
                     _errors = get_assessment_logs(
                         self.request, self.user.login, proId, code
@@ -250,6 +249,7 @@ class editDataView(privateView):
 
             if "btn_EditData" in self.request.POST:
                 selected_contacts = self.request.POST.getall("q_reg")
+                print(selected_contacts)
                 if (
                     len(selected_contacts) == 0
                 ):  # if non selected columns in check options
@@ -291,7 +291,8 @@ class editDataView(privateView):
 
             # Added by Brandon
             dataXML = getNamesEditByColums(proId, path, code)
-            #if formId == "ass":
+            # print(dataXML)
+            # if formId == "ass":
             #    # print "*********************************"
             dataOriginal = getQuestionsStructure(
                 self.user.login, proId, code, self.request
@@ -302,14 +303,17 @@ class editDataView(privateView):
                 questInfo["name"] = originalData["name"]
                 questInfo["id"] = originalData["id"]
                 questInfo["vars"] = []
+                # print(originalData)
                 for vars in originalData["vars"]:
-
+                    # print(vars["name"].lower())
                     for xmldata in dataXML:
                         if vars["name"].lower() == xmldata[0]:
                             xmldata.append(vars["validation"].lower())
                             questInfo["vars"].append(xmldata)
+
+                # print(questInfo)
                 newStructure.append(questInfo)
-            #else:
+            # else:
             #    newStructure = dataXML
             #    # print newStructure
 

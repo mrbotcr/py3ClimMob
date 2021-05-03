@@ -1,6 +1,15 @@
 from sqlalchemy import func
 from climmob.models.schema import mapFromSchema, mapToSchema
-from ...models import AssDetail, Asssection, Assessment, Project, Question, Qstoption
+from ...models import (
+    AssDetail,
+    Asssection,
+    Assessment,
+    Project,
+    Question,
+    Qstoption,
+    Regsection,
+    Registry,
+)
 from .project import (
     addQuestionsToAssessment,
     numberOfCombinationsForTheProject,
@@ -42,7 +51,7 @@ __all__ = [
     "canUseTheQuestionAssessment",
     "exitsQuestionInGroupAssessment",
     "deleteAssessmentQuestionFromGroup",
-    "generateStructureForInterfaceAssessment",
+    "generateStructureForInterfaceForms",
     "generateStructureForValidateJsonOdkAssessment",
     "getAssessmentGroup",
     "getAssessmentQuestionsApi",
@@ -55,6 +64,7 @@ __all__ = [
     "addProjectAssessmentClone",
     "getQuestionsByGroupInAssessment",
     "getTheGroupOfThePackageCodeAssessment",
+    "formattingQuestions",
 ]
 
 log = logging.getLogger(__name__)
@@ -80,7 +90,7 @@ def getQuestionsByGroupInAssessment(user, project, ass_cod, section_id, request)
         .filter(AssDetail.project_cod == project)
         .filter(AssDetail.ass_cod == ass_cod)
         .filter(AssDetail.section_id == section_id)
-        .order_by(AssDetail.section_id)
+        .order_by(AssDetail.question_order)
         .all()
     )
     return mapFromSchema(data)
@@ -169,10 +179,10 @@ def AsessmentStatus(user, project, assessment, request):
 
 def checkAssessments(user, project, assessment, request):
     if not is_assessment_final(request, user, project, assessment):
-        return True, []
+        return True, {}
 
     localVariety = getProjectLocalVariety(user, project, request)
-    errors = []
+    errors = {}
     sql = (
         "SELECT assdetail.question_id "
         "FROM assdetail,question "
@@ -184,14 +194,10 @@ def checkAssessments(user, project, assessment, request):
     )
     data = request.dbsession.execute(sql).fetchone()
     if data is None:
-        errors.append(
-            {
-                "error": "NoOverAllChar",
-                "message": request.translate(
-                    "An overall characteristic question is not part of the final assessments. You need to add this type of question to the assessment."
-                ),
-            }
-        )
+        errors["NoOverAllChar"] = request.translate(
+                    " 'Overrall ranking' question is not part of the final assessments. It is necessary to add this question from the ClimMob library to the assessment."
+                )
+
 
     if localVariety == 1:
         sql = (
@@ -205,14 +211,10 @@ def checkAssessments(user, project, assessment, request):
         )
         data = request.dbsession.execute(sql).fetchone()
         if data is None:
-            errors.append(
-                {
-                    "error": "NoOverAllPerf",
-                    "message": request.translate(
-                        "An overall performance question is not part of the final assessments. You need to add this type of question to the assessment."
-                    ),
-                }
-            )
+            errors["NoOverAllPerf"] = request.translate(
+                        "'Comparison with current' question is not part of the final assessments. It is necessary to add this question from the ClimMob library to the assessment."
+                    )
+
 
     # sql = "SELECT assdetail.question_id " \
     #       "FROM assdetail,question " \
@@ -229,6 +231,90 @@ def checkAssessments(user, project, assessment, request):
         return False, errors
     else:
         return True, errors
+
+
+def formattingQuestions(questions, request, onlyShowTheBasicQuestions=False):
+
+    result = []
+    for qst in questions:
+
+        dct = dict(qst)
+        options = []
+        if dct["question_dtype"] == 5 or dct["question_dtype"] == 6:
+            options = getQuestionOptions(dct["question_id"], request)
+            dct["question_options"] = options
+
+        if not onlyShowTheBasicQuestions:
+            dct["isParentQuestion"] = 1
+        result.append(dct)
+
+        if not onlyShowTheBasicQuestions:
+            if qst["question_quantitative"] == 0:
+                isOther = False
+                for option in options:
+                    if option["value_isother"] == 1:
+                        isOther = True
+
+                if isOther:
+                    newQuestion = dict(qst)
+                    newQuestion["question_desc"] = (
+                        newQuestion["question_desc"] + " Other "
+                    )
+                    newQuestion["question_name"] = (
+                        newQuestion["question_name"] + " Other "
+                    )
+                    newQuestion["question_dtype"] = 1
+                    newQuestion["question_requiredvalue"] = 0
+                    newQuestion["isParentQuestion"] = 0
+
+                    result.append(newQuestion)
+
+        # We add the extra questions to the base dictionary but add the isParentQuestion flag, since this dictionary is used both in
+        # the list of questions added to the project and to show the preview.
+        # In the list you only have to see the single question, while in the preview you should see the questions by the number of packages.
+        if not onlyShowTheBasicQuestions:
+            if qst["question_quantitative"] == 1:
+                for questionNumber in range(0, 3):
+                    newQuestion = dict(qst)
+                    descExtra = " - Option " + chr(65 + questionNumber)
+                    newQuestion["question_desc"] = (
+                        newQuestion["question_desc"] + descExtra
+                    )
+                    newQuestion["question_name"] = (
+                        newQuestion["question_name"] + descExtra
+                    )
+                    options = []
+                    if (
+                        newQuestion["question_dtype"] == 5
+                        or newQuestion["question_dtype"] == 6
+                    ):
+                        options = getQuestionOptions(
+                            newQuestion["question_id"], request
+                        )
+                        newQuestion["question_options"] = options
+                    newQuestion["isParentQuestion"] = 0
+                    result.append(newQuestion)
+
+                    isOther = False
+                    for option in options:
+                        if option["value_isother"] == 1:
+                            isOther = True
+
+                    if isOther:
+                        newQuestion = dict(qst)
+                        descExtra = " - Option " + chr(65 + questionNumber)
+                        newQuestion["question_desc"] = (
+                            newQuestion["question_desc"] + descExtra + " Other "
+                        )
+                        newQuestion["question_name"] = (
+                            newQuestion["question_name"] + descExtra + " Other "
+                        )
+                        newQuestion["question_dtype"] = 1
+                        newQuestion["question_requiredvalue"] = 0
+                        newQuestion["isParentQuestion"] = 0
+                        result.append(newQuestion)
+
+    return result
 
 
 def setAssessmentStatus(user, project, status, request):
@@ -644,7 +730,9 @@ def haveTheBasicStructureAssessment(user, project, assessment, request):
         addQuestionsToAssessment(user, project, assessment, request)
 
 
-def getAssessmentQuestions(user, project, assessment, request):
+def getAssessmentQuestions(
+    user, project, assessment, request, onlyShowTheBasicQuestions=False
+):
     hasSections = (
         request.dbsession.query(Asssection)
         .filter(Asssection.user_name == user)
@@ -658,7 +746,7 @@ def getAssessmentQuestions(user, project, assessment, request):
     sql = (
         "SELECT asssection.section_id,asssection.section_name,asssection.section_content,asssection.section_order,asssection.section_private,"
         "question.question_id,question.question_desc,question.question_name,question.question_notes,question.question_dtype, question.question_posstm,question.question_negstm, question.question_perfstmt,IFNULL(assdetail.question_order,0) as question_order,"
-        "question.question_reqinasses, question.question_tied, question.question_notobserved FROM asssection LEFT JOIN assdetail ON assdetail.section_user = asssection.user_name AND assdetail.section_project = asssection.project_cod "
+        "question.question_reqinasses, question.question_tied, question.question_notobserved, question.question_requiredvalue, question.question_quantitative FROM asssection LEFT JOIN assdetail ON assdetail.section_user = asssection.user_name AND assdetail.section_project = asssection.project_cod "
         " AND assdetail.section_assessment = asssection.ass_cod AND assdetail.section_id = asssection.section_id "
         " LEFT JOIN question ON assdetail.question_id = question.question_id WHERE "
         "asssection.user_name = '"
@@ -671,13 +759,19 @@ def getAssessmentQuestions(user, project, assessment, request):
     )
     questions = request.dbsession.execute(sql).fetchall()
 
-    result = []
+    """result = []
     for qst in questions:
         dct = dict(qst)
         if dct["question_dtype"] == 5 or dct["question_dtype"] == 6:
             options = getQuestionOptions(dct["question_id"], request)
             dct["question_options"] = options
         result.append(dct)
+
+    return result"""
+
+    result = formattingQuestions(
+        questions, request, onlyShowTheBasicQuestions=onlyShowTheBasicQuestions
+    )
 
     return result
 
@@ -961,17 +1055,26 @@ def getAssesmentProgress(user, project, assessment, request):
     return result, perc
 
 
-def generateStructureForInterfaceAssessment(user, project, ass_cod, request):
+def generateStructureForInterfaceForms(user, project, form, request, ass_cod=""):
 
     data = []
-    sections = mapFromSchema(
-        request.dbsession.query(Asssection)
-        .filter(Asssection.user_name == user)
-        .filter(Asssection.project_cod == project)
-        .filter(Asssection.ass_cod == ass_cod)
-        .order_by(Asssection.section_order)
-        .all()
-    )
+    if form == "assessment":
+        sections = mapFromSchema(
+            request.dbsession.query(Asssection)
+            .filter(Asssection.user_name == user)
+            .filter(Asssection.project_cod == project)
+            .filter(Asssection.ass_cod == ass_cod)
+            .order_by(Asssection.section_order)
+            .all()
+        )
+    else:
+        sections = mapFromSchema(
+            request.dbsession.query(Regsection)
+            .filter(Regsection.user_name == user)
+            .filter(Regsection.project_cod == project)
+            .order_by(Regsection.section_order)
+            .all()
+        )
     numComb = numberOfCombinationsForTheProject(user, project, request)
 
     for section in sections:
@@ -982,15 +1085,26 @@ def generateStructureForInterfaceAssessment(user, project, ass_cod, request):
         dataSection["section_id"] = section["section_id"]
         dataSection["section_questions"] = []
 
-        questions = mapFromSchema(
-            request.dbsession.query(AssDetail)
-            .filter(AssDetail.user_name == user)
-            .filter(AssDetail.project_cod == project)
-            .filter(AssDetail.ass_cod == ass_cod)
-            .filter(AssDetail.section_id == section["section_id"])
-            .order_by(AssDetail.question_order)
-            .all()
-        )
+        if form == "assessment":
+            questions = mapFromSchema(
+                request.dbsession.query(AssDetail)
+                .filter(AssDetail.user_name == user)
+                .filter(AssDetail.project_cod == project)
+                .filter(AssDetail.ass_cod == ass_cod)
+                .filter(AssDetail.section_id == section["section_id"])
+                .order_by(AssDetail.question_order)
+                .all()
+            )
+        else:
+            questions = mapFromSchema(
+                request.dbsession.query(Registry)
+                .filter(Registry.user_name == user)
+                .filter(Registry.project_cod == project)
+                .filter(Registry.section_id == section["section_id"])
+                .order_by(Registry.question_order)
+                .all()
+            )
+
         for question in questions:
             questionData = mapFromSchema(
                 request.dbsession.query(Question)
@@ -1002,56 +1116,85 @@ def generateStructureForInterfaceAssessment(user, project, ass_cod, request):
                 questionData["question_dtype"] != 9
                 and questionData["question_dtype"] != 10
             ):
-                # create the question
-                dataQuestion = createQuestionAss(
-                    questionData["question_id"],
-                    questionData["question_desc"],
-                    questionData["question_dtype"],
-                    questionData["question_notes"],
-                    questionData["question_unit"],
-                    questionData["question_requiredvalue"],
-                    questionData["question_code"],
-                    "grp_"
-                    + str(section["section_id"])
-                    + "/"
-                    + questionData["question_code"],
-                )
+                repeatQuestion = 1
+                if questionData["question_quantitative"] == 1:
+                    repeatQuestion = numComb
 
-                if questionData["question_dtype"] == 8:
-                    dataFarmer = getRegisteredFarmers(user, project, request)
-                    for farmer in dataFarmer:
-                        dataQuestion["question_options"].append(
-                            createOption(
-                                farmer["farmer_name"],
-                                0,
-                                farmer["farmer_id"],
-                                0,
-                                farmer["farmer_id"],
-                                questionData["question_id"],
-                            )
-                        )
+                for questionNumber in range(0, repeatQuestion):
 
-                if (
-                    questionData["question_dtype"] == 5
-                    or questionData["question_dtype"] == 6
-                ):
-                    options = mapFromSchema(
-                        request.dbsession.query(Qstoption)
-                        .filter(Qstoption.question_id == question["question_id"])
-                        .all()
+                    nameExtra = ""
+                    descExtra = ""
+                    if questionData["question_quantitative"] == 1:
+                        nameExtra = "_" + chr(65 + questionNumber).lower()
+                        descExtra = " - Option " + chr(65 + questionNumber)
+
+                    # create the question
+                    dataQuestion = createQuestionForm(
+                        questionData["question_id"],
+                        questionData["question_desc"] + descExtra,
+                        questionData["question_dtype"],
+                        questionData["question_notes"],
+                        questionData["question_unit"],
+                        questionData["question_requiredvalue"],
+                        questionData["question_code"] + nameExtra,
+                        "grp_"
+                        + str(section["section_id"])
+                        + "/"
+                        + questionData["question_code"]
+                        + nameExtra,
+                        questionData["question_dtype"],
                     )
 
-                    for option in options:
-                        dataQuestion["question_options"].append(option)
-                        if option["value_isother"] == 1:
-                            dataQuestion2 = createQuestionAss("-3", request.translate("Other"), 1, "","",0,
-                                                                   questionData["question_code"] + "_oth", "grp_"
-                                                                   + str(section["section_id"])
-                                                                   + "/"
-                                                                   + questionData["question_code"]+"_oth")
-                            dataSection["section_questions"].append(dataQuestion2)
+                    if questionData["question_dtype"] == 8:
+                        dataFarmer = getRegisteredFarmers(user, project, request)
+                        for farmer in dataFarmer:
+                            dataQuestion["question_options"].append(
+                                createOption(
+                                    farmer["farmer_name"],
+                                    0,
+                                    farmer["farmer_id"],
+                                    0,
+                                    farmer["farmer_id"],
+                                    questionData["question_id"],
+                                )
+                            )
 
-                dataSection["section_questions"].append(dataQuestion)
+                    dataSection["section_questions"].append(dataQuestion)
+
+                    if (
+                        questionData["question_dtype"] == 5
+                        or questionData["question_dtype"] == 6
+                    ):
+                        options = mapFromSchema(
+                            request.dbsession.query(Qstoption)
+                            .filter(Qstoption.question_id == question["question_id"])
+                            .all()
+                        )
+
+                        for option in options:
+                            dataQuestion["question_options"].append(option)
+                            if option["value_isother"] == 1:
+                                dataQuestion2 = createQuestionForm(
+                                    questionData["question_id"],
+                                    questionData["question_desc"]
+                                    + descExtra
+                                    + " "
+                                    + request.translate("Other"),
+                                    1,
+                                    "",
+                                    "",
+                                    0,
+                                    questionData["question_code"] + nameExtra + "_oth",
+                                    "grp_"
+                                    + str(section["section_id"])
+                                    + "/"
+                                    + questionData["question_code"]
+                                    + nameExtra
+                                    + "_oth",
+                                    questionData["question_dtype"],
+                                )
+                                dataSection["section_questions"].append(dataQuestion2)
+
             else:
 
                 if questionData["question_dtype"] == 9:
@@ -1069,31 +1212,21 @@ def generateStructureForInterfaceAssessment(user, project, ass_cod, request):
                         )
                         optionsReq.append(dataQuestionop)
 
-                    if questionData["question_tied"] ==1:
+                    if questionData["question_tied"] == 1:
                         dataQuestionop = createOption(
-                            "Tied",
-                            0,
-                            98,
-                            0,
-                            98,
-                            questionData["question_id"],
+                            "Tied", 0, 98, 0, 98, questionData["question_id"],
                         )
                         optionsReq.append(dataQuestionop)
 
-                    if questionData["question_notobserved"] ==1:
+                    if questionData["question_notobserved"] == 1:
                         dataQuestionop = createOption(
-                            "Not observed",
-                            0,
-                            99,
-                            0,
-                            99,
-                            questionData["question_id"],
+                            "Not observed", 0, 99, 0, 99, questionData["question_id"],
                         )
                         optionsReq.append(dataQuestionop)
 
                     if numComb == 2:
                         # the unique question
-                        dataQuestion = createQuestionAss(
+                        dataQuestion = createQuestionForm(
                             questionData["question_id"],
                             questionData["question_twoitems"],
                             5,
@@ -1105,13 +1238,14 @@ def generateStructureForInterfaceAssessment(user, project, ass_cod, request):
                             + str(section["section_id"])
                             + "/char_"
                             + questionData["question_code"],
+                            questionData["question_dtype"],
                         )
                         dataQuestion["question_options"] = optionsReq
                         dataSection["section_questions"].append(dataQuestion)
 
                     if numComb == 3:
                         # The possitive
-                        dataQuestion = createQuestionAss(
+                        dataQuestion = createQuestionForm(
                             questionData["question_id"],
                             questionData["question_posstm"],
                             5,
@@ -1124,11 +1258,12 @@ def generateStructureForInterfaceAssessment(user, project, ass_cod, request):
                             + "/char_"
                             + questionData["question_code"]
                             + "_pos",
+                            questionData["question_dtype"],
                         )
                         dataQuestion["question_options"] = optionsReq
                         dataSection["section_questions"].append(dataQuestion)
                         # The negative
-                        dataQuestion = createQuestionAss(
+                        dataQuestion = createQuestionForm(
                             questionData["question_id"],
                             questionData["question_negstm"],
                             5,
@@ -1141,6 +1276,7 @@ def generateStructureForInterfaceAssessment(user, project, ass_cod, request):
                             + "/char_"
                             + questionData["question_code"]
                             + "_neg",
+                            questionData["question_dtype"],
                         )
                         dataQuestion["question_options"] = optionsReq
                         dataSection["section_questions"].append(dataQuestion)
@@ -1153,7 +1289,7 @@ def generateStructureForInterfaceAssessment(user, project, ass_cod, request):
                                 .from_string(questionData["question_moreitems"])
                                 .render(pos=opt + 1)
                             )
-                            dataQuestion = createQuestionAss(
+                            dataQuestion = createQuestionForm(
                                 questionData["question_id"],
                                 renderedString,
                                 5,
@@ -1167,6 +1303,7 @@ def generateStructureForInterfaceAssessment(user, project, ass_cod, request):
                                 + questionData["question_code"]
                                 + "_stmt_"
                                 + str(opt + 1),
+                                questionData["question_dtype"],
                             )
                             dataQuestion["question_options"] = optionsReq
                             dataSection["section_questions"].append(dataQuestion)
@@ -1180,7 +1317,7 @@ def generateStructureForInterfaceAssessment(user, project, ass_cod, request):
                             .render(option=code)
                         )
                         # create the question
-                        dataQuestion = createQuestionAss(
+                        dataQuestion = createQuestionForm(
                             questionData["question_id"],
                             renderedString,
                             5,
@@ -1194,6 +1331,7 @@ def generateStructureForInterfaceAssessment(user, project, ass_cod, request):
                             + questionData["question_code"]
                             + "_"
                             + str(opt + 1),
+                            questionData["question_dtype"],
                         )
                         # the best option
                         dataQuestionop = createOption(
@@ -1229,7 +1367,7 @@ def generateStructureForInterfaceAssessment(user, project, ass_cod, request):
     necessarySection["section_id"] = "None"
     necessarySection["section_questions"] = []
     # Start survey
-    dataQuestion = createQuestionAss(
+    dataQuestion = createQuestionForm(
         "-1",
         request.translate("Start of survey"),
         15,
@@ -1238,10 +1376,11 @@ def generateStructureForInterfaceAssessment(user, project, ass_cod, request):
         1,
         "__CLMQST1__",
         "clm_start",
+        questionData["question_dtype"],
     )
     necessarySection["section_questions"].append(dataQuestion)
     # End survey
-    dataQuestion = createQuestionAss(
+    dataQuestion = createQuestionForm(
         "-2",
         request.translate("End of survey"),
         15,
@@ -1250,6 +1389,7 @@ def generateStructureForInterfaceAssessment(user, project, ass_cod, request):
         1,
         "__CLMQST2__",
         "clm_end",
+        questionData["question_dtype"],
     )
     necessarySection["section_questions"].append(dataQuestion)
     data.append(necessarySection)
@@ -1257,7 +1397,7 @@ def generateStructureForInterfaceAssessment(user, project, ass_cod, request):
     return data
 
 
-def createQuestionAss(
+def createQuestionForm(
     question_id,
     question_desc,
     question_dtype,
@@ -1266,6 +1406,7 @@ def createQuestionAss(
     question_requiredvalue,
     question_code,
     question_datafield,
+    question_dtype2,
 ):
     options = {
         1: "text",
@@ -1300,6 +1441,7 @@ def createQuestionAss(
     dataQuestion["question_id"] = question_id
     dataQuestion["question_desc"] = question_desc
     dataQuestion["question_dtype"] = ODKType
+    dataQuestion["question_dtype2"] = question_dtype2
     dataQuestion["question_notes"] = question_notes
     dataQuestion["question_unit"] = question_unit
     dataQuestion["question_requiredvalue"] = question_requiredvalue

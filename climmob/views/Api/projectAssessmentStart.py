@@ -8,9 +8,8 @@ from ...processes import (
     getProjectProgress,
     checkAssessments,
     generateAssessmentFiles,
-    setAssessmentStatus,
     assessmentExists,
-    generateStructureForInterfaceAssessment,
+    generateStructureForInterfaceForms,
     isAssessmentOpen,
     generateStructureForValidateJsonOdkAssessment,
     numberOfCombinationsForTheProject,
@@ -118,8 +117,14 @@ class createProjectAssessment_view(apiView):
                                             )
                                             return response
                                         else:
-                                            response = Response(status=401, body=self._("There has been a problem in the creation of the basic structure of the project, this may be due to something wrong with the form. Contact the ClimMob team with the next message to get the solution to the problem")+": "+str(correct[0]["error"], 'utf-8')
-                                                                )
+                                            response = Response(
+                                                status=401,
+                                                body=self._(
+                                                    "There has been a problem in the creation of the basic structure of the project, this may be due to something wrong with the form. Contact the ClimMob team with the next message to get the solution to the problem"
+                                                )
+                                                + ": "
+                                                + str(correct[0]["error"], "utf-8"),
+                                            )
                                             return response
 
                                     else:
@@ -359,11 +364,12 @@ class readAssessmentStructure_view(apiView):
                                 response = Response(
                                     status=200,
                                     body=json.dumps(
-                                        generateStructureForInterfaceAssessment(
+                                        generateStructureForInterfaceForms(
                                             self.user.login,
                                             dataworking["project_cod"],
-                                            dataworking["ass_cod"],
+                                            "assessment",
                                             self.request,
+                                            ass_cod=dataworking["ass_cod"],
                                         )
                                     ),
                                 )
@@ -439,11 +445,12 @@ class pushJsonToAssessment_view(apiView):
                                     dataworking["ass_cod"],
                                     self.request,
                                 ):
-                                    structure = generateStructureForValidateJsonOdkAssessment(
+                                    structure = generateStructureForInterfaceForms(
                                         self.user.login,
                                         dataworking["project_cod"],
-                                        dataworking["ass_cod"],
+                                        "assessment",
                                         self.request,
+                                        ass_cod=dataworking["ass_cod"],
                                     )
                                     if structure:
                                         numComb = numberOfCombinationsForTheProject(
@@ -451,150 +458,49 @@ class pushJsonToAssessment_view(apiView):
                                             dataworking["project_cod"],
                                             self.request,
                                         )
-                                        obligatoryQuestions = [u"clm_start", u"clm_end"]
-                                        possibleQuestions = [u"clm_start", u"clm_end"]
+                                        obligatoryQuestions = []
+                                        possibleQuestions = []
                                         searchQST163 = ""
                                         groupsForValidation = {}
-                                        for _data in structure:
-                                            # the index number 2 is the question.dtype
-                                            if _data[2] != 9 and _data[2] != 10:
+                                        for section in structure:
+                                            for question in section[
+                                                "section_questions"
+                                            ]:
+
                                                 possibleQuestions.append(
-                                                    "grp_"
-                                                    + str(_data[0])
-                                                    + "/"
-                                                    + str(_data[1])
+                                                    question["question_datafield"]
                                                 )
-                                                if _data[2] == 6:
-                                                    possibleQuestions.append(
-                                                        "grp_"
-                                                        + str(_data[0])
-                                                        + "/"
-                                                        + str(_data[1])+"_oth"
-                                                    )
-                                                if _data[3] == 1:
+
+                                                if (
+                                                    question["question_requiredvalue"]
+                                                    == 1
+                                                ):
                                                     obligatoryQuestions.append(
-                                                        "grp_"
-                                                        + str(_data[0])
-                                                        + "/"
-                                                        + str(_data[1])
+                                                        question["question_datafield"]
                                                     )
-                                            else:
-                                                if _data[2] == 9:
 
-                                                    if numComb == 2:
-                                                        possibleQuestions.append(
-                                                            "grp_"
-                                                            + str(_data[0])
-                                                            + "/char_"
-                                                            + _data[1]
-                                                        )
-                                                        if _data[3] == 1:
-                                                            obligatoryQuestions.append(
-                                                                "grp_"
-                                                                + str(_data[0])
-                                                                + "/char_"
-                                                                + _data[1]
-                                                            )
-                                                    if numComb == 3:
-                                                        possibleQuestions.append(
-                                                            "grp_"
-                                                            + str(_data[0])
-                                                            + "/char_"
-                                                            + _data[1]
-                                                            + "_pos"
-                                                        )
-                                                        possibleQuestions.append(
-                                                            "grp_"
-                                                            + str(_data[0])
-                                                            + "/char_"
-                                                            + _data[1]
-                                                            + "_neg"
-                                                        )
-                                                        if _data[3] == 1:
-                                                            obligatoryQuestions.append(
-                                                                "grp_"
-                                                                + str(_data[0])
-                                                                + "/char_"
-                                                                + _data[1]
-                                                                + "_pos"
-                                                            )
-                                                            obligatoryQuestions.append(
-                                                                "grp_"
-                                                                + str(_data[0])
-                                                                + "/char_"
-                                                                + _data[1]
-                                                                + "_neg"
-                                                            )
-
+                                                if question["question_dtype2"] == 9:
+                                                    if (
+                                                        question["question_code"]
+                                                        not in groupsForValidation.keys()
+                                                    ):
                                                         groupsForValidation[
-                                                            _data[1]
+                                                            question["question_code"]
                                                         ] = []
-                                                        groupsForValidation[
-                                                            _data[1]
-                                                        ].append(
-                                                            "grp_"
-                                                            + str(_data[0])
-                                                            + "/char_"
-                                                            + _data[1]
-                                                            + "_pos"
-                                                        )
-                                                        groupsForValidation[
-                                                            _data[1]
-                                                        ].append(
-                                                            "grp_"
-                                                            + str(_data[0])
-                                                            + "/char_"
-                                                            + _data[1]
-                                                            + "_neg"
-                                                        )
 
-                                                    if numComb == 4:
-                                                        groupsForValidation[
-                                                            _data[1]
-                                                        ] = []
-                                                        for opt in range(0, numComb):
-                                                            tittle = (
-                                                                "grp_"
-                                                                + str(_data[0])
-                                                                + "/char_"
-                                                                + _data[1]
-                                                                + "_stmt_"
-                                                                + str(opt + 1)
-                                                            )
-                                                            groupsForValidation[
-                                                                _data[1]
-                                                            ].append(tittle)
-                                                            possibleQuestions.append(
-                                                                tittle
-                                                            )
-                                                            if _data[3] == 1:
-                                                                obligatoryQuestions.append(
-                                                                    tittle
-                                                                )
+                                                    groupsForValidation[
+                                                        question["question_code"]
+                                                    ].append(
+                                                        question["question_datafield"]
+                                                    )
 
-                                                if _data[2] == 10:
-                                                    for opt in range(0, numComb):
-                                                        tittle = (
-                                                            "grp_"
-                                                            + str(_data[0])
-                                                            + "/perf_"
-                                                            + _data[1]
-                                                            + "_"
-                                                            + str(opt + 1)
-                                                        )
-                                                        possibleQuestions.append(tittle)
-                                                        if _data[3] == 1:
-                                                            obligatoryQuestions.append(
-                                                                tittle
-                                                            )
-
-                                            if str(_data[1]) == "QST163":
-                                                searchQST163 = (
-                                                    "grp_"
-                                                    + str(_data[0])
-                                                    + "/"
-                                                    + str(_data[1])
-                                                )
+                                                if (
+                                                    question["question_code"]
+                                                    == "QST163"
+                                                ):
+                                                    searchQST163 = question[
+                                                        "question_datafield"
+                                                    ]
 
                                         try:
                                             _json = json.loads(dataworking["json"])
@@ -633,7 +539,20 @@ class pushJsonToAssessment_view(apiView):
                                                                 ]:
 
                                                                     if (
-                                                                            (not _json[_var] in letter) or str(_json[_var]) == "98" or str(_json[_var]) == "99"
+                                                                        (
+                                                                            not _json[
+                                                                                _var
+                                                                            ]
+                                                                            in letter
+                                                                        )
+                                                                        or str(
+                                                                            _json[_var]
+                                                                        )
+                                                                        == "98"
+                                                                        or str(
+                                                                            _json[_var]
+                                                                        )
+                                                                        == "99"
                                                                     ):
                                                                         letter.append(
                                                                             _json[_var]

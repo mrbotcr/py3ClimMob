@@ -27,9 +27,8 @@ from ..processes import (
     getInformationFromProject,
     getInformationForMaps,
     getProjectAssessmentInfo,
-    generateStructureForInterface,
+    generateStructureForInterfaceForms,
     get_registry_logs,
-    generateStructureForInterfaceAssessment,
     get_assessment_logs,
 )
 from .projectHelp.projectHelp import getImportantInformation
@@ -271,8 +270,8 @@ class generateProductView(privateView):
 
         if productid == "errorlogdocument":
             if processname == "create_errorlog_Registration_":
-                data = generateStructureForInterface(
-                    self.user.login, projectid, self.request
+                data = generateStructureForInterfaceForms(
+                    self.user.login, projectid, "registry", self.request
                 )
                 _errors = get_registry_logs(self.request, self.user.login, projectid)
                 info = getJSONResult(
@@ -281,7 +280,7 @@ class generateProductView(privateView):
                     self.request,
                     includeRegistry=True,
                     includeAssessment=False,
-                    assessmentCode=""
+                    assessmentCode="",
                 )
                 create_error_log_document(
                     self.request,
@@ -291,12 +290,16 @@ class generateProductView(privateView):
                     "",
                     data,
                     _errors,
-                    info
+                    info,
                 )
             else:
                 assessment_id = processname.split("_")[3]
-                data = generateStructureForInterfaceAssessment(
-                    self.user.login, projectid, assessment_id, self.request
+                data = generateStructureForInterfaceForms(
+                    self.user.login,
+                    projectid,
+                    "assessment",
+                    self.request,
+                    ass_cod=assessment_id,
                 )
                 _errors = get_assessment_logs(
                     self.request, self.user.login, projectid, assessment_id
@@ -307,7 +310,7 @@ class generateProductView(privateView):
                     self.request,
                     includeRegistry=False,
                     includeAssessment=True,
-                    assessmentCode=assessment_id
+                    assessmentCode=assessment_id,
                 )
                 create_error_log_document(
                     self.request,
@@ -317,7 +320,7 @@ class generateProductView(privateView):
                     assessment_id,
                     data,
                     _errors,
-                    info
+                    info,
                 )
 
         if productid == "generalreport":

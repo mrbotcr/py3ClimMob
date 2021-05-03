@@ -181,7 +181,7 @@ class projectCombinations_view(privateView):
                             "contact": self._(
                                 "Contact the ClimMob team with the next message to get the solution to the problem:"
                             ),
-                            "copie": error
+                            "copie": error,
                         },
                     }
 
@@ -192,7 +192,7 @@ def startTheRegistry(self, projectid):
     sectionOfThePackageCode = getTheGroupOfThePackageCode(
         self.user.login, projectid, self.request
     )
-    correct,error = generateRegistry(
+    correct, error = generateRegistry(
         self.user.login, projectid, self.request, sectionOfThePackageCode
     )
 
@@ -267,4 +267,4 @@ def startTheRegistry(self, projectid):
                 packages,
             )
 
-    return correct, str(error,'utf-8')
+    return correct, str(error, "utf-8")

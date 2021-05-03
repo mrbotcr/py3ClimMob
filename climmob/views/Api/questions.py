@@ -42,6 +42,9 @@ class createQuestion_view(apiView):
                 u"question_alwaysinreg",
                 u"question_alwaysinasse",
                 u"question_requiredvalue",
+                u"question_tied",
+                u"question_notobserved",
+                u"question_quantitative",
                 "user_name",
             ]
             obligatory = [
@@ -56,6 +59,9 @@ class createQuestion_view(apiView):
                 "question_alwaysinreg",
                 "question_alwaysinasse",
                 "question_requiredvalue",
+                "question_tied",
+                "question_notobserved",
+                "question_quantitative",
             ]
 
             dataworking = json.loads(self.body)
@@ -93,12 +99,21 @@ class createQuestion_view(apiView):
                         if "question_unit" not in dataworking.keys():
                             dataworking["question_unit"] = ""
 
+                        if "question_tied" not in dataworking.keys():
+                            dataworking["question_tied"] = 0
+
+                        if "question_notobserved" not in dataworking.keys():
+                            dataworking["question_notobserved"] = 0
+
+                        if "question_quantitative" not in dataworking.keys():
+                            dataworking["question_quantitative"] = 0
+
                         for data in zeroOrTwo:
                             if str(dataworking[data]) not in ["0", "1"]:
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "The possible values in the parameters: 'question_alwaysinreg','question_alwaysinasse','question_requiredvalue' is 1 or 0."
+                                        "The possible values in the parameters: 'question_alwaysinreg','question_alwaysinasse','question_requiredvalue', 'question_quantitative' is 1 or 0."
                                     ),
                                 )
                                 return response
@@ -143,6 +158,16 @@ class createQuestion_view(apiView):
                                 dataworking["qstgroups_user"] = categoryExists[
                                     "user_name"
                                 ]
+
+                                if (
+                                    str(dataworking["question_dtype"]) == "9"
+                                    or str(dataworking["question_dtype"]) == "10"
+                                ):
+                                    dataworking["question_quantitative"] = 0
+
+                                if str(dataworking["question_dtype"]) != "9":
+                                    dataworking["question_tied"] = 0
+                                    dataworking["question_notobserved"] = 0
 
                                 add, idorerror = addQuestion(dataworking, self.request)
                                 if not add:
@@ -285,6 +310,9 @@ class updateQuestion_view(apiView):
                 u"question_alwaysinreg",
                 u"question_alwaysinasse",
                 u"question_requiredvalue",
+                u"question_tied",
+                u"question_notobserved",
+                u"question_quantitative",
                 u"qstgroups_id",
                 u"user_name",
             ]
@@ -293,6 +321,9 @@ class updateQuestion_view(apiView):
                 "question_alwaysinreg",
                 "question_alwaysinasse",
                 "question_requiredvalue",
+                "question_tied",
+                "question_notobserved",
+                "question_quantitative",
             ]
 
             dataworking = json.loads(self.body)
@@ -301,6 +332,7 @@ class updateQuestion_view(apiView):
             permitedKeys = True
             for key in dataworking.keys():
                 if key not in possibles:
+                    print(key)
                     permitedKeys = False
 
             obligatoryKeys = True
@@ -339,6 +371,19 @@ class updateQuestion_view(apiView):
                                         "question_requiredvalue"
                                     ]
 
+                                if "question_tied" not in dataworking.keys():
+                                    dataworking["question_tied"] = data["question_tied"]
+
+                                if "question_notobserved" not in dataworking.keys():
+                                    dataworking["question_notobserved"] = data[
+                                        "question_notobserved"
+                                    ]
+
+                                if "question_quantitative" not in dataworking.keys():
+                                    dataworking["question_quantitative"] = data[
+                                        "question_quantitative"
+                                    ]
+
                                 if "question_unit" not in dataworking.keys():
                                     dataworking["question_unit"] = data["question_unit"]
 
@@ -347,7 +392,7 @@ class updateQuestion_view(apiView):
                                         response = Response(
                                             status=401,
                                             body=self._(
-                                                "The possible values in the parameters: 'question_alwaysinreg','question_alwaysinasse','question_requiredvalue' is 1 or 0."
+                                                "The possible values in the parameters: 'question_alwaysinreg','question_alwaysinasse','question_requiredvalue', 'question_quantitative' is 1 or 0."
                                             ),
                                         )
                                         return response
@@ -398,6 +443,27 @@ class updateQuestion_view(apiView):
                                             ),
                                         )
                                         return response
+                                if "question_dtype" in dataworking.keys():
+                                    if (
+                                        str(dataworking["question_dtype"]) == "9"
+                                        or str(dataworking["question_dtype"]) == "10"
+                                    ):
+                                        dataworking["question_quantitative"] = 0
+
+                                    if str(dataworking["question_dtype"]) != "9":
+                                        dataworking["question_tied"] = 0
+                                        dataworking["question_notobserved"] = 0
+
+                                else:
+                                    if (
+                                        str(data["question_dtype"]) == "9"
+                                        or str(data["question_dtype"]) == "10"
+                                    ):
+                                        dataworking["question_quantitative"] = 0
+
+                                    if str(data["question_dtype"]) != "9":
+                                        dataworking["question_tied"] = 0
+                                        dataworking["question_notobserved"] = 0
 
                                 updated, idorerror = updateQuestion(
                                     dataworking, self.request

@@ -22,7 +22,7 @@ from ...processes import (
     addAssessmentGroup,
     getQuestionsByGroupInAssessment,
     addAssessmentQuestionToGroup,
-projectExists
+    projectExists,
 )
 from ..project import createProjectFunction
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
@@ -36,7 +36,7 @@ class cloneProjects_view(privateView):
         dataworking = {}
         showForm = False
         error_summary = {}
-        projectid=""
+        projectid = ""
 
         if not "stage" in self.request.params.keys():
             stage = 1
@@ -46,10 +46,8 @@ class cloneProjects_view(privateView):
             except:
                 stage = 1
 
-
         if stage < 1 or stage > 4:
             raise HTTPNotFound()
-
 
         try:
             projectid = self.request.params["projectid"]
@@ -65,16 +63,20 @@ class cloneProjects_view(privateView):
                 self.returnRawViewResult = True
                 return HTTPFound(
                     location=self.request.route_url(
-                        "cloneProject", _query={"stage": 2, "projectid": dataworking["slt_project_cod"] }
+                        "cloneProject",
+                        _query={
+                            "stage": 2,
+                            "projectid": dataworking["slt_project_cod"],
+                        },
                     )
                 )
             else:
-                if projectid !="":
+                if projectid != "":
                     dataworking["slt_project_cod"] = projectid
                 return {
                     "dataworking": dataworking,
                     "projects": getUserProjects(self.user.login, self.request),
-                    "stage":stage
+                    "stage": stage,
                 }
 
         if stage == 2:
@@ -87,7 +89,7 @@ class cloneProjects_view(privateView):
             return {
                 "dataworking": dataworking,
                 "projects": getUserProjects(self.user.login, self.request),
-                "stage": stage
+                "stage": stage,
             }
 
         if stage == 3:
@@ -104,7 +106,9 @@ class cloneProjects_view(privateView):
                     )
                     if added:
                         enumerators = getProjectEnumerators(
-                            self.user.login, dataworking["slt_project_cod"], self.request
+                            self.user.login,
+                            dataworking["slt_project_cod"],
+                            self.request,
                         )
                         for enumerator in enumerators:
                             addEnumeratorToProject(
@@ -115,7 +119,9 @@ class cloneProjects_view(privateView):
                             )
 
                         techInfo = searchTechnologiesInProject(
-                            self.user.login, dataworking["slt_project_cod"], self.request
+                            self.user.login,
+                            dataworking["slt_project_cod"],
+                            self.request,
                         )
                         for tech in techInfo:
                             added, message = addTechnologyProject(
@@ -138,7 +144,9 @@ class cloneProjects_view(privateView):
                                     data["project_cod"] = dataworking["project_cod"]
                                     data["tech_id"] = tech["tech_id"]
                                     data["alias_id"] = alias["alias_idTec"]
-                                    add, message = AddAliasTechnology(data, self.request)
+                                    add, message = AddAliasTechnology(
+                                        data, self.request
+                                    )
 
                                 allAliasExtra = AliasExtraSearchTechnologyInProject(
                                     tech["tech_id"],
@@ -155,7 +163,9 @@ class cloneProjects_view(privateView):
                                     add, message = addTechAliasExtra(data, self.request)
 
                         groupsInRegistry = getAllRegistryGroups(
-                            self.user.login, dataworking["slt_project_cod"], self.request
+                            self.user.login,
+                            dataworking["slt_project_cod"],
+                            self.request,
                         )
                         for group in groupsInRegistry:
                             group["project_cod"] = dataworking["project_cod"]
@@ -170,13 +180,17 @@ class cloneProjects_view(privateView):
                                 )
                                 for question in questionsInRegistry:
                                     question["project_cod"] = dataworking["project_cod"]
-                                    question["section_project"] = dataworking["project_cod"]
+                                    question["section_project"] = dataworking[
+                                        "project_cod"
+                                    ]
                                     addq, message = addRegistryQuestionToGroup(
                                         question, self.request
                                     )
 
                         assessments = getProjectAssessments(
-                            self.user.login, dataworking["slt_project_cod"], self.request
+                            self.user.login,
+                            dataworking["slt_project_cod"],
+                            self.request,
                         )
                         for assessment in assessments:
                             newAssessment = {}
@@ -216,14 +230,19 @@ class cloneProjects_view(privateView):
                                             question["project_cod"] = dataworking[
                                                 "project_cod"
                                             ]
-                                            question["ass_cod"] = newAssessment["ass_cod"]
+                                            question["ass_cod"] = newAssessment[
+                                                "ass_cod"
+                                            ]
                                             question["section_project"] = dataworking[
                                                 "project_cod"
                                             ]
-                                            question["section_assessment"] = newAssessment[
-                                                "ass_cod"
-                                            ]
-                                            addq, message = addAssessmentQuestionToGroup(
+                                            question[
+                                                "section_assessment"
+                                            ] = newAssessment["ass_cod"]
+                                            (
+                                                addq,
+                                                message,
+                                            ) = addAssessmentQuestionToGroup(
                                                 question, self.request
                                             )
 
@@ -232,7 +251,12 @@ class cloneProjects_view(privateView):
                             self.returnRawViewResult = True
                             return HTTPFound(
                                 location=self.request.route_url(
-                                    "cloneProject", _query={"stage": 4, "projectid": dataworking["slt_project_cod"], "cloned": dataworking["project_cod"]}
+                                    "cloneProject",
+                                    _query={
+                                        "stage": 4,
+                                        "projectid": dataworking["slt_project_cod"],
+                                        "cloned": dataworking["project_cod"],
+                                    },
                                 )
                             )
 
@@ -243,16 +267,16 @@ class cloneProjects_view(privateView):
                 dataworking["project_registration_and_analysis"] = 0
 
             return {
-                        "activeUser": self.user,
-                        "dataworking": dataworking,
-                        "projects": getUserProjects(self.user.login, self.request),
-                        "countries": getCountryList(self.request),
-                        "showForm": showForm,
-                        "error_summary": error_summary,
-                        "stage":stage
-                    }
+                "activeUser": self.user,
+                "dataworking": dataworking,
+                "projects": getUserProjects(self.user.login, self.request),
+                "countries": getCountryList(self.request),
+                "showForm": showForm,
+                "error_summary": error_summary,
+                "stage": stage,
+            }
 
-        if stage ==4:
+        if stage == 4:
             dataworking["slt_project_cod"] = projectid
 
             try:
@@ -263,18 +287,12 @@ class cloneProjects_view(privateView):
             except:
                 raise HTTPNotFound()
 
-            dataworking["clonedProject"] = getAllInformationForProject(
-                self, cloned
-            )
+            dataworking["clonedProject"] = getAllInformationForProject(self, cloned)
             dataworking["projectBeingCloned"] = getAllInformationForProject(
                 self, dataworking["slt_project_cod"]
             )
 
-            return {
-                "activeUser": self.user,
-                "dataworking": dataworking,
-                "stage":4
-            }
+            return {"activeUser": self.user, "dataworking": dataworking, "stage": 4}
 
 
 # class cloneProjects_view(privateView):

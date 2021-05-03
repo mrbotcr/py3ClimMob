@@ -21,6 +21,8 @@
 {% block pageheading %}
     {% set _linkWiki="https://climmob.net/blog/wiki/prepare-grower-registration/" %}
     {% set _title= _("Prepare participant registration") %}
+
+
     {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
 
@@ -315,7 +317,7 @@
                 availables = $('#div_availables').css('height').replace("px","");
                 form =$('#div_form').css('height').replace("px","");
 
-                if(availables<form){
+                if(parseInt(availables)<parseInt(form)){
                     $('#div_form').css('height',availables)
                     $('#div_form').css('overflow-y','scroll')
                 }else{

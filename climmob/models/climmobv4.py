@@ -768,6 +768,7 @@ class Question(Base):
     question_visible = Column(Integer, server_default=text("'1'"))
     question_tied = Column(Integer, server_default=text("'0'"))
     question_notobserved = Column(Integer, server_default=text("'0'"))
+    question_quantitative = Column(Integer, server_default=text("'0'"))
 
     qstgroups_user = Column(String(80), nullable=True)
     qstgroups_id = Column(String(80), nullable=True)

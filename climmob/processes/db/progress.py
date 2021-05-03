@@ -67,6 +67,7 @@ def AssessmentsInformation(request, info, registered):
         request.dbsession.query(Assessment)
         .filter(Assessment.user_name == info["user_name"])
         .filter(Assessment.project_cod == info["project_cod"])
+        .order_by(Assessment.ass_days)
         .all()
     )
     for assessment in assessments:

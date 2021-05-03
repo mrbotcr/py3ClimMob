@@ -8,8 +8,11 @@ import json
 import pandas as pd
 from ..analysisdata.exportToCsv import getRealData
 
+
 @celeryApp.task(base=celeryTask, soft_time_limit=7200, time_limit=7200)
-def createErrorLogDocument(user, path, project, form, code, structure, listOfErrors, info):
+def createErrorLogDocument(
+    user, path, project, form, code, structure, listOfErrors, info
+):
     if not os.path.exists(path):
         os.makedirs(path)
 
@@ -21,23 +24,38 @@ def createErrorLogDocument(user, path, project, form, code, structure, listOfErr
     if not os.path.exists(pathoutput):
         os.makedirs(pathoutput)
 
-    _columns = ["Field agent","Error"]
+    _columns = ["Field agent", "Error"]
 
-    _rows=[]
+    _rows = []
     _used = []
 
-    listOfBadQuestions = ["surveyid","originid","cal_qst163","_xform_id_string","_submitted_by","_submitted_date","_geopoint","_longitude","_latitude","_elevation","_precision","clm_deviceimei","instancename","clc_after","clc_before"]
+    listOfBadQuestions = [
+        "surveyid",
+        "originid",
+        "cal_qst163",
+        "_xform_id_string",
+        "_submitted_by",
+        "_submitted_date",
+        "_geopoint",
+        "_longitude",
+        "_latitude",
+        "_elevation",
+        "_precision",
+        "clm_deviceimei",
+        "instancename",
+        "clc_after",
+        "clc_before",
+    ]
 
     firstPart = "REG_"
     qst = "qst162"
     fields = info["registry"]["fields"]
     lkps = info["registry"]["lkptables"]
     if code != "":
-        firstPart = "ASS"+code+"_"
+        firstPart = "ASS" + code + "_"
         qst = "qst163"
         fields = info["assessments"][0]["fields"]
         lkps = info["assessments"][0]["lkptables"]
-
 
     for field in fields:
         if field["name"] not in listOfBadQuestions:
@@ -53,12 +71,12 @@ def createErrorLogDocument(user, path, project, form, code, structure, listOfErr
                 _dataInRow.append(errorFile["detail"])
                 for field in fields:
                     if field["name"] not in listOfBadQuestions:
-                        value = getTheValueForField(field, new_json ,structure)
-                        if field["name"] =="qst163":
+                        value = getTheValueForField(field, new_json, structure)
+                        if field["name"] == "qst163":
                             value = int(value.split(":")[1].split("-")[0])
                             _used.append(int(value))
 
-                        if field["name"] =="qst162":
+                        if field["name"] == "qst162":
                             value = int(value.split("-")[1])
                             _used.append(int(value))
 
@@ -67,21 +85,26 @@ def createErrorLogDocument(user, path, project, form, code, structure, listOfErr
 
                         _dataInRow.append(value)
 
-
         _rows.append(_dataInRow)
 
     primaryKey = -1
     for row in info["data"]:
         cont = 1
-        if row[firstPart+qst]:
-            if int(row[firstPart+qst]) in _used:
+        if row[firstPart + qst]:
+            if int(row[firstPart + qst]) in _used:
                 _dataInRow = []
-                if firstPart+"_submitted_by" in row.keys():
-                    _dataInRow.append(row[firstPart+"_submitted_by"])
+                if firstPart + "_submitted_by" in row.keys():
+                    _dataInRow.append(row[firstPart + "_submitted_by"])
                 else:
                     _dataInRow.append("")
 
-                _dataInRow.append("Duplicate entry '"+str(row[firstPart+qst])+"' for key '"+firstPart+"geninfo.PRIMARY'")
+                _dataInRow.append(
+                    "Duplicate entry '"
+                    + str(row[firstPart + qst])
+                    + "' for key '"
+                    + firstPart
+                    + "geninfo.PRIMARY'"
+                )
 
                 for field in fields:
                     if field["name"] not in listOfBadQuestions:
@@ -90,7 +113,11 @@ def createErrorLogDocument(user, path, project, form, code, structure, listOfErr
                         if field["key"] == "true" and primaryKey == -1:
                             primaryKey = cont
 
-                        if field["rtable"] != None and row[firstPart + field["name"]] != None and field["name"] !="qst163" :
+                        if (
+                            field["rtable"] != None
+                            and row[firstPart + field["name"]] != None
+                            and field["name"] != "qst163"
+                        ):
                             result = getRealData(
                                 lkps,
                                 field["rtable"],
@@ -100,10 +127,8 @@ def createErrorLogDocument(user, path, project, form, code, structure, listOfErr
                             )
                             _dataInRow.append(str(result).replace(",", ""))
                         else:
-                            if field["name"] =="qst163" or field["name"] =="qst162":
-                                _dataInRow.append(
-                                    int(row[firstPart + field["name"]])
-                                )
+                            if field["name"] == "qst163" or field["name"] == "qst162":
+                                _dataInRow.append(int(row[firstPart + field["name"]]))
 
                             else:
                                 _dataInRow.append(
@@ -117,8 +142,9 @@ def createErrorLogDocument(user, path, project, form, code, structure, listOfErr
 
     return ""
 
+
 def getTheValueForField(field, new_json, structure):
-    value=""
+    value = ""
     for section in structure:
         for question in section["section_questions"]:
 
@@ -133,32 +159,32 @@ def getTheValueForField(field, new_json, structure):
                     if value != "None":
                         if question["question_dtype"] == "select_one":
                             for option in question["question_options"]:
-                                if str(option["value_code"]) == str(
-                                        value
-                                ):
+                                if str(option["value_code"]) == str(value):
                                     return option["value_desc"]
                         else:
                             if question["question_dtype"] == "select_multiple":
                                 allOptionSelected = ""
-                                selectedValues = [
-                                    str(x)
-                                    for x in value.split(" ")
-                                ]
+                                selectedValues = [str(x) for x in value.split(" ")]
                                 for option in question["question_options"]:
                                     if str(option["value_code"]) in selectedValues:
                                         if allOptionSelected == "":
                                             allOptionSelected = option["value_desc"]
                                         else:
                                             allOptionSelected += (
-                                                    "\n" + option["value_desc"]
+                                                "\n" + option["value_desc"]
                                             )
                                 return allOptionSelected
             else:
                 if field["name"] == question["question_code"]:
                     return new_json[question["question_datafield"]]
 
-                if (field["name"] == "clm_start" and question["question_code"] == "__CLMQST1__") or (
-                        field["name"] == "clm_end" and question["question_code"] == "__CLMQST2__"):
+                if (
+                    field["name"] == "clm_start"
+                    and question["question_code"] == "__CLMQST1__"
+                ) or (
+                    field["name"] == "clm_end"
+                    and question["question_code"] == "__CLMQST2__"
+                ):
                     return new_json[question["question_datafield"]]
 
     return value
