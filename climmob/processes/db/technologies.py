@@ -37,12 +37,13 @@ def getUserTechs(user, request):
     for technology in result:
 
         res3 = (
-            request.dbsession.query(func.count(Prjtech.tech_id).label("found"))
-            .filter(Prjtech.tech_id == technology[0].tech_id)
-            #.filter(Prjtech.user_name == user)
+            request.dbsession.query(func.count(Prjtech.tech_id).label("found")).filter(
+                Prjtech.tech_id == technology[0].tech_id
+            )
+            # .filter(Prjtech.user_name == user)
             .one()
         )
-        
+
         res.append(
             {
                 "tech_id": technology[0].tech_id,

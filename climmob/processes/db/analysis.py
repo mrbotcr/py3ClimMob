@@ -157,7 +157,7 @@ def addQuestionToDictionary(questionData, numComb, assessment=None):
             28: "calculate",
             29: "note",
         }
-        
+
         questInfo["class"] = options[questionData["question_dtype"]]
 
         for questionNumber in range(0, numComb):

@@ -195,9 +195,8 @@ def checkAssessments(user, project, assessment, request):
     data = request.dbsession.execute(sql).fetchone()
     if data is None:
         errors["NoOverAllChar"] = request.translate(
-                    " 'Overrall ranking' question is not part of the final assessments. It is necessary to add this question from the ClimMob library to the assessment."
-                )
-
+            " 'Overrall ranking' question is not part of the final assessments. It is necessary to add this question from the ClimMob library to the assessment."
+        )
 
     if localVariety == 1:
         sql = (
@@ -212,9 +211,8 @@ def checkAssessments(user, project, assessment, request):
         data = request.dbsession.execute(sql).fetchone()
         if data is None:
             errors["NoOverAllPerf"] = request.translate(
-                        "'Comparison with current' question is not part of the final assessments. It is necessary to add this question from the ClimMob library to the assessment."
-                    )
-
+                "'Comparison with current' question is not part of the final assessments. It is necessary to add this question from the ClimMob library to the assessment."
+            )
 
     # sql = "SELECT assdetail.question_id " \
     #       "FROM assdetail,question " \
