@@ -178,6 +178,8 @@ def AsessmentStatus(user, project, assessment, request):
 
 
 def checkAssessments(user, project, assessment, request):
+    _ = request.translate
+
     if not is_assessment_final(request, user, project, assessment):
         return True, {}
 
@@ -194,7 +196,7 @@ def checkAssessments(user, project, assessment, request):
     )
     data = request.dbsession.execute(sql).fetchone()
     if data is None:
-        errors["NoOverAllChar"] = request.translate(
+        errors["NoOverAllChar"] = _(
             " 'Overrall ranking' question is not part of the final assessments. It is necessary to add this question from the ClimMob library to the assessment."
         )
 
@@ -210,7 +212,7 @@ def checkAssessments(user, project, assessment, request):
         )
         data = request.dbsession.execute(sql).fetchone()
         if data is None:
-            errors["NoOverAllPerf"] = request.translate(
+            errors["NoOverAllPerf"] = _(
                 "'Comparison with current' question is not part of the final assessments. It is necessary to add this question from the ClimMob library to the assessment."
             )
 
@@ -1054,6 +1056,7 @@ def getAssesmentProgress(user, project, assessment, request):
 
 
 def generateStructureForInterfaceForms(user, project, form, request, ass_cod=""):
+    _ = request.translate
 
     data = []
     if form == "assessment":
@@ -1177,7 +1180,7 @@ def generateStructureForInterfaceForms(user, project, form, request, ass_cod="")
                                     questionData["question_desc"]
                                     + descExtra
                                     + " "
-                                    + request.translate("Other"),
+                                    + _("Other"),
                                     1,
                                     "",
                                     "",
@@ -1333,7 +1336,7 @@ def generateStructureForInterfaceForms(user, project, form, request, ass_cod="")
                         )
                         # the best option
                         dataQuestionop = createOption(
-                            request.translate("Better"),
+                            _("Better"),
                             0,
                             1,
                             0,
@@ -1343,7 +1346,7 @@ def generateStructureForInterfaceForms(user, project, form, request, ass_cod="")
                         dataQuestion["question_options"].append(dataQuestionop)
                         # the worst option
                         dataQuestionop = createOption(
-                            request.translate("Worse"),
+                            _("Worse"),
                             0,
                             2,
                             0,
@@ -1359,7 +1362,7 @@ def generateStructureForInterfaceForms(user, project, form, request, ass_cod="")
     # Extra section for necessary questions in the json
     necessarySection = {}
     necessarySection["section_name"] = "Extra Field"
-    necessarySection["section_content"] = request.translate(
+    necessarySection["section_content"] = _(
         "Have necessary questions for documentation."
     )
     necessarySection["section_id"] = "None"
@@ -1367,9 +1370,9 @@ def generateStructureForInterfaceForms(user, project, form, request, ass_cod="")
     # Start survey
     dataQuestion = createQuestionForm(
         "-1",
-        request.translate("Start of survey"),
+        _("Start of survey"),
         15,
-        request.translate("Start of survey"),
+        _("Start of survey"),
         "",
         1,
         "__CLMQST1__",
@@ -1380,9 +1383,9 @@ def generateStructureForInterfaceForms(user, project, form, request, ass_cod="")
     # End survey
     dataQuestion = createQuestionForm(
         "-2",
-        request.translate("End of survey"),
+        _("End of survey"),
         15,
-        request.translate("End of survey"),
+        _("End of survey"),
         "",
         1,
         "__CLMQST2__",

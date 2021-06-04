@@ -11,10 +11,26 @@ from ..analysisdata.exportToCsv import getRealData
 
 @celeryApp.task(base=celeryTask, soft_time_limit=7200, time_limit=7200)
 def createErrorLogDocument(
-    user, path, project, form, code, structure, listOfErrors, info
+    locale, user, path, project, form, code, structure, listOfErrors, info
 ):
     if not os.path.exists(path):
         os.makedirs(path)
+
+    PATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    this_file_path = PATH + "/locale"
+    try:
+        es = gettext.translation(
+            "climmob", localedir=this_file_path, languages=[locale]
+        )
+        es.install()
+        _ = es.gettext
+    except:
+        locale = "en"
+        es = gettext.translation(
+            "climmob", localedir=this_file_path, languages=[locale]
+        )
+        es.install()
+        _ = es.gettext
 
     nameOutput = form + "_form"
     if code != "":
@@ -24,7 +40,7 @@ def createErrorLogDocument(
     if not os.path.exists(pathoutput):
         os.makedirs(pathoutput)
 
-    _columns = ["Field agent", "Error"]
+    _columns = [_("Field agent"), _("Error")]
 
     _rows = []
     _used = []

@@ -246,7 +246,7 @@ class deleteAliasView_api(apiView):
                                     response = Response(
                                         status=200,
                                         body=self._(
-                                            "The alias was deleted successfully."
+                                            "The technology option was deleted successfully."
                                         ),
                                     )
                                     return response

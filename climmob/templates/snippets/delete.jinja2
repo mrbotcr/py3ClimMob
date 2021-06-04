@@ -1,0 +1,51 @@
+<script>
+
+function showDelete (url,text, csrf, where = '') {
+
+    swal({
+            title: "{{ _("Are you sure") }}?",
+            text: text,
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "{{ _("Yes, delete it!") }}",
+            cancelButtonText: "{{ _("No, cancel!") }}",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        },
+        function (isConfirm) {
+            if (isConfirm) {
+
+                $.ajax({
+                    url: url,
+                    datatype: "json",
+                    type: "POST",
+                    data: {"csrf_token": csrf},
+                    success: function(respuesta) {
+                        if (where != 'noRedirect' & where != 'noRedirectAndAction') {
+                            if (where == '') {
+                                location.href = window.location.href;
+                            } else {
+                                location.href = where;
+                            }
+                        }else{
+                            swal.close()
+
+                            if(where == "noRedirectAndAction")
+                            {
+                                myCustomAction()
+                            }
+                        }
+                    },
+                    error: function(respuesta) {
+                        swal("{{ _("Cancelled") }}", "{{ _("The information could not be deleted.") }}", "error");
+                    }
+                });
+
+            } else {
+                swal("{{ _("Cancelled") }}", "{{ _("We have not deleted the data") }}", "error");
+            }
+        });
+}
+
+</script>

@@ -34,6 +34,13 @@ def createDataCollectionProgress(
         es.install()
         _ = es.gettext
 
+    _("Alliance")
+    _("Progress report on data collection")
+    _("Maps of georeferenced points where the forms were applied by field agents.")
+    _("Table to show if the information was collected and on what date.")
+    _("Form map")
+    _("Registry")
+
     pathoutput = os.path.join(path, "outputs")
     os.makedirs(pathoutput)
 

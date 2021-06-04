@@ -102,7 +102,7 @@ class createProjectAssessment_view(apiView):
 
                                             create_document_form(
                                                 self.request,
-                                                "en",
+                                                self.request.locale_name,
                                                 self.user.login,
                                                 dataworking["project_cod"],
                                                 "Assessment",

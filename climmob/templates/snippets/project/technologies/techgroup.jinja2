@@ -26,9 +26,9 @@
                                     {% if title == 'Included' %}
 
                                         <i class="fa fa-arrows text-danger"></i>
-                                        <b>{{ val.tech_name }}</b> {{ _('with') }} {{ val.quantity }} {{ _('Aliases') }}
+                                        <b>{{ val.tech_name }}</b> {{ _('with') }} {{ val.quantity }} {{ _('Technology options') }}
 
-                                        <button type="button" class="dd-nodrag btn btn-primary btn-xs pull-right addAlias" onclick="location.href='{{ request.route_url('prjtechaliases', projectid=projectid, tech_id=val.tech_id) }}';" >{% if val.quantity == 0 %}{{ _("Add") }}{% else %}{{ _("Modify") }}{% endif %} {{ _("Alias") }}</button>
+                                        <button type="button" class="dd-nodrag btn btn-primary btn-xs pull-right addAlias" onclick="location.href='{{ request.route_url('prjtechaliases', projectid=projectid, tech_id=val.tech_id) }}';" >{% if val.quantity == 0 %}{{ _("Add") }}{% else %}{{ _("Modify") }}{% endif %} {{ _("Technology options") }}</button>
 
                                     {% else %}
                                         <i class="fa fa-arrows text-info "></i> {{ val.tech_name }}

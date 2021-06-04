@@ -3,13 +3,29 @@ from climmob.config.celery_app import celeryApp
 import os
 from climmob.config.celery_class import celeryTask
 import csv
-
+import gettext
 
 @celeryApp.task(base=celeryTask, soft_time_limit=7200, time_limit=7200)
-def createPackages(path, projectid, packages, techs):
+def createPackages(locale, path, projectid, packages, techs):
 
     if os.path.exists(path):
         sh.rmtree(path)
+
+    PATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    this_file_path = PATH + "/locale"
+    try:
+        es = gettext.translation(
+            "climmob", localedir=this_file_path, languages=[locale]
+        )
+        es.install()
+        _ = es.gettext
+    except:
+        locale = "en"
+        es = gettext.translation(
+            "climmob", localedir=this_file_path, languages=[locale]
+        )
+        es.install()
+        _ = es.gettext
 
     os.makedirs(path)
 
@@ -48,7 +64,7 @@ def createPackages(path, projectid, packages, techs):
 
     num_observations = packages[0]["project_numcom"]
 
-    firstRow = ["Package code"]
+    firstRow = [_("Package code")]
     SecondRow = [""]
     allRows = []
 
@@ -57,12 +73,12 @@ def createPackages(path, projectid, packages, techs):
 
         for x in range(0, num_observations):
             if len(techs) == 1:
-                firstRow.append("Option " + alphabet[x])
+                firstRow.append(_("Option ") + alphabet[x])
                 SecondRow.append(techs[0]["tech_name"])
             else:
                 cont = 0
                 for y in range(0, len(techs)):
-                    firstRow.append("Option " + alphabet[x])
+                    firstRow.append(_("Option ") + alphabet[x])
                     SecondRow.append(techs[cont]["tech_name"])
                     cont = cont + 1
 

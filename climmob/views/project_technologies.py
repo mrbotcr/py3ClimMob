@@ -307,7 +307,7 @@ class prjTechAliasAdd_view(privateView):
                     else:
                         # error
                         error_summary = {
-                            "nameempty": self._("The name of the alias cannot be empy")
+                            "nameempty": self._("The name of the technology option cannot be empy")
                         }
         return {
             "activeUser": self.user,

@@ -102,6 +102,8 @@ def getUserLog(user, request, limit=True):
 
 
 def getUserStats(user, request):
+    _ = request.translate
+
     sql = "SELECT count(project_cod) FROM project WHERE user_name = '" + user + "'"
     projects = request.dbsession.execute(sql).first()
 
@@ -111,7 +113,7 @@ def getUserStats(user, request):
 
     lastProject = request.dbsession.execute(sql).first()
     if lastProject[0] is None:
-        lastProject = request.translate("Does not have projects yet")
+        lastProject = _("Does not have projects yet")
     else:
         ar = arrow.get(lastProject[0])
         lastProject = ar.format("dddd Do of MMMM, YYYY")

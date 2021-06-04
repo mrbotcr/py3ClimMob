@@ -195,7 +195,7 @@ class register_view(publicView):
             else:
                 data["user_policy"] = "False"
 
-            errors, error_summary = valideRegisterForm(data, self.request)
+            errors, error_summary = valideRegisterForm(data, self.request, self._)
             if not errors:
                 res, message = addUser(data, self.request)
                 # print("res ---->" + str(res))
@@ -210,7 +210,7 @@ class register_view(publicView):
                                 addToLog(
                                     user.login,
                                     "PRF",
-                                    self._("Welcome to ClimMob"),
+                                    "Welcome to ClimMob",
                                     datetime.datetime.now(),
                                     self.request,
                                 )

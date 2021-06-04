@@ -316,7 +316,7 @@ class addProjectTechnologyAlias_view(apiView):
                                         response = Response(
                                             status=401,
                                             body=self._(
-                                                "The alias has not been assigned to the project."
+                                                "The technology option has not been assigned to the project."
                                             ),
                                         )
                                         return response
@@ -324,7 +324,7 @@ class addProjectTechnologyAlias_view(apiView):
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "There is no alias with that identifier for this technology."
+                                            "There is no technology option with that identifier for this technology."
                                         ),
                                     )
                                     return response
@@ -348,7 +348,7 @@ class addProjectTechnologyAlias_view(apiView):
                         response = Response(
                             status=401,
                             body=self._(
-                                "You can not add an alias for technologies. You have already started registration."
+                                "You can not add an technology option for technologies. You have already started registration."
                             ),
                         )
                         return response
@@ -422,7 +422,7 @@ class addProjectTechnologyAliasExtra_view(apiView):
                         response = Response(
                             status=401,
                             body=self._(
-                                "You can not add an alias for technologies. You have already started registration."
+                                "You can not add technology option for technologies. You have already started registration."
                             ),
                         )
                         return response
@@ -661,7 +661,7 @@ class deleteProjectTechnologyAlias_view(apiView):
                                         response = Response(
                                             status=200,
                                             body=self._(
-                                                "The alias has been deleted in the project."
+                                                "The technology option has been deleted in the project."
                                             ),
                                         )
                                         return response
@@ -669,7 +669,7 @@ class deleteProjectTechnologyAlias_view(apiView):
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "There is no alias with that identifier for this technology."
+                                            "There is no technology option with that identifier for this technology."
                                         ),
                                     )
                                     return response
@@ -693,7 +693,7 @@ class deleteProjectTechnologyAlias_view(apiView):
                         response = Response(
                             status=401,
                             body=self._(
-                                "You can not delete an alias for technologies. You started registration."
+                                "You can not delete the technology option for technologies. You started registration."
                             ),
                         )
                         return response

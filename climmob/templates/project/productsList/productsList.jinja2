@@ -12,7 +12,11 @@
 
 {% block pageheading %}
     <input type="hidden" id="csrf_token" value="{{ request.session.get_csrf_token() }}">
-    {% set _title= _("Downloads") +" - "+activeProject.project_name %}
+    {% if activeProject.project_name %}
+        {% set _title= _("Downloads") +" - "+activeProject.project_name %}
+    {% else %}
+        {% set _title= _("Downloads") %}
+    {% endif %}
     {% set _linkWiki="https://climmob.net/blog/wiki/downloads/" %}
     {% include 'snippets/menuheading.jinja2' %}
 {% endblock pageheading%}

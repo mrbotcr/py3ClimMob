@@ -13,7 +13,10 @@
 {% block topScripts %}
     {% jsresource request,'coreresources','switch' %}
     {% jsresource request,'coreresources','sweet' %}
-    {% jsresource request,'coreresources','delete' %}
+
+    {#    {% jsresource request,'coreresources','delete' %}#}
+    {% jsresource request,'coreresources','toastr' %}
+    {% include 'snippets/delete.jinja2' %}
 {% endblock topScripts %}
 
 
@@ -94,8 +97,8 @@
 
                                     </td>
                                     <td class="text-center" style="vertical-align: middle;">
-                                        <button class="btn btn-warning btn-circle" onclick='seeEnumerator({{ enumerator.enum_name| tojson }},{{ enumerator.enum_id| tojson }},{{ enumerator.enum_password| tojson }},{{ enumerator.enum_active }})'  title="Edit field agent"><i class="fa fa-pencil"></i></button>
-                                        <button class="btn btn-danger btn-circle" onclick="showDelete('{{ request.route_url('deleteenumerator',enumeratorid = enumerator.enum_id)}}','{{ _("Do you really want to remove this field agent?") }}','{{ request.session.get_csrf_token() }}')" type="button" title="Remove field agent"><i class="fa fa-times"></i></button>
+                                        <button class="btn btn-warning btn-circle" onclick='seeEnumerator({{ enumerator.enum_name| tojson }},{{ enumerator.enum_id| tojson }},{{ enumerator.enum_password| tojson }},{{ enumerator.enum_active }})'  title="{{ _("Edit field agent") }}"><i class="fa fa-pencil"></i></button>
+                                        <button class="btn btn-danger btn-circle" onclick="showDelete('{{ request.route_url('deleteenumerator',enumeratorid = enumerator.enum_id)}}','{{ _("Do you really want to remove this field agent?") }}','{{ request.session.get_csrf_token() }}')" type="button" title="{{ _("Remove field agent") }}"><i class="fa fa-times"></i></button>
                                     </td>
                                 </tr>
                             {% endfor %}

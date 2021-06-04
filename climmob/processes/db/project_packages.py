@@ -178,6 +178,8 @@ def getPackages(user, project, request):
 
 
 def create_packages_with_r(user, project, request):
+    _ = request.translate
+
     path = os.path.join(
         request.registry.settings["user.repository"], *[user, project, "r"]
     )
@@ -236,7 +238,7 @@ def create_packages_with_r(user, project, request):
                             user_name=user,
                             project_cod=project,
                             package_id=pkgid,
-                            package_code="Package #" + str(pkgid),
+                            package_code= _("Package")+" #" + str(pkgid),
                         )
                         request.dbsession.add(newPackage)
 

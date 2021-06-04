@@ -13,7 +13,7 @@
         <div class="ibox-content" >
             <div id="content_{{ title }}">
                 {% if title == 'Included' %}
-                    <h3>{{ _("Alias from libraries") }}</h3>
+                    <h3>{{ _("Technology option from libraries") }}</h3>
                     {% set state = 'exists' %}
                 {% else %}
                     {% set state = 'new' %}
@@ -41,10 +41,10 @@
                     <hr>
                     <div class="row">
                         <div class="col-md-10">
-                            <h3>{{ _("Aliases included for this project") }}</h3>
+                            <h3>{{ _("Technology options included for this project") }}</h3>
                         </div>
                         <div class="col-md-2">
-                            <button class="btn btn-primary pull-right clm-actions aliasExtra" name="addnewaliastechnology" type="submit" onclick="location.href='{{ request.route_url('addprjtechalias', projectid=projectid, tech_id=tech_id) }}';">{{ _("Add new alias") }}</button>
+                            <button class="btn btn-primary pull-right clm-actions aliasExtra" name="addnewaliastechnology" type="submit" onclick="location.href='{{ request.route_url('addprjtechalias', projectid=projectid, tech_id=tech_id) }}';">{{ _("Add new technology option") }}</button>
                         </div>
                     </div>
 

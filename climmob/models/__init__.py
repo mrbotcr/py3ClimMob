@@ -8,6 +8,7 @@ from sqlalchemy.pool import NullPool
 # import or define all models here to ensure they are attached to the
 # Base.metadata prior to any initialization routines
 from .climmobv4 import (
+    Base,
     Activitylog,
     Apilog,
     Country,
@@ -67,6 +68,7 @@ def get_engine(settings, prefix="sqlalchemy."):
 def get_session_factory(engine):
     factory = sessionmaker()
     factory.configure(bind=engine)
+    Base.metadata.bind = engine
     return factory
 
 
@@ -110,6 +112,7 @@ def initializeClimmobDB(config):
 
     session_factory = get_session_factory(get_engine(settings))
     config.registry["dbsession_factory"] = session_factory
+    config.registry["dbsession_metadata"] = Base.metadata
 
     # make request.dbsession available for use in Pyramid
     config.add_request_method(

@@ -671,7 +671,7 @@ class startAssessments_view(privateView):
                         print("create_document_form")
                         create_document_form(
                             self.request,
-                            "en",
+                            self.request.locale_name,
                             self.user.login,
                             projectid,
                             "Assessment",

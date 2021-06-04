@@ -724,6 +724,7 @@ def saveRegistryOrder(user, project, order, request):
 
 
 def addRegistryGroup(data, self, _from=""):
+    _ = self.request.translate
     result = (
         self.request.dbsession.query(func.count(Regsection.section_id).label("total"))
         .filter(Regsection.project_cod == data["project_cod"])
@@ -762,10 +763,12 @@ def addRegistryGroup(data, self, _from=""):
         except Exception as e:
             return False, e
     else:
-        return False, self.request.translate("This section already exists")
+        return False, _("This section already exists")
 
 
 def modifyRegistryGroup(data, self):
+    _ = self.request.translate
+
     result = (
         self.request.dbsession.query(func.count(Regsection.section_id).label("total"))
         .filter(Regsection.project_cod == data["project_cod"])
@@ -788,7 +791,7 @@ def modifyRegistryGroup(data, self):
         except Exception as e:
             return False, e
     else:
-        return False, self.request.translate("This section already exists")
+        return False, _("This section already exists")
 
 
 def getRegistryGroupData(data, self):

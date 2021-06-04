@@ -202,7 +202,7 @@ def startTheRegistry(self, projectid):
 
         ncombs, packages = getPackages(self.user.login, projectid, self.request)
 
-        create_qr_packages(self.request, self.user.login, projectid, ncombs, packages)
+        create_qr_packages(self.request, self.request.locale_name,self.user.login, projectid, ncombs, packages)
         time.sleep(1)
 
         data, finalCloseQst = getDataFormPreview(self, projectid)
@@ -225,6 +225,7 @@ def startTheRegistry(self, projectid):
         time.sleep(1)
         create_packages_excell(
             self.request,
+            self.request.locale_name,
             self.user.login,
             projectid,
             packages,

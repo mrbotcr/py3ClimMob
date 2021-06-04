@@ -122,12 +122,12 @@
                         </div>
                         <ul class="nav navbar-top-links navbar-right">
                             {% block headitems %}
-{#                                <li class="li_languages">#}
-{#                                    <img class="language" name="en" src="{{ request.url_for_static('landing/en.png') }}" style="height: 15px; width: 22px">#}
-{#                                </li>#}
-{#                                <li class="li_languages">#}
-{#                                    <img class="language" name="es" src="{{ request.url_for_static('landing/es.png') }}" style="height: 15px; width: 22px">#}
-{#                                </li>#}
+                                <li class="li_languages">
+                                    <img class="language" name="en" src="{{ request.url_for_static('landing/en.png') }}" style="height: 15px; width: 22px">
+                                </li>
+                                <li class="li_languages">
+                                    <img class="language" name="es" src="{{ request.url_for_static('landing/es.png') }}" style="height: 15px; width: 22px">
+                                </li>
                                 <li>
                                     <a href="{{ request.route_url('logout') }}">
                                         <i class="fa fa-sign-out"></i> {{ _("Log out") }}
@@ -950,14 +950,14 @@
 
     <script>
         $(document).ready(function() {
-            /*var selectedLanguage = readCookie('_LOCALE_');
+            var selectedLanguage = readCookie('_LOCALE_');
             if (selectedLanguage != null)
                 $('#language').val(selectedLanguage);
 
             $(".language").click(function () {
                 setCookie('_LOCALE_', this.getAttribute("name"), 365);
                 location.reload();
-            })*/
+            })
 
 
             {% if showHelp %}

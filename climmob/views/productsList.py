@@ -171,11 +171,11 @@ class generateProductView(privateView):
 
             ncombs, packages = getPackages(self.user.login, projectid, self.request)
             create_qr_packages(
-                self.request, self.user.login, projectid, ncombs, packages
+                self.request, self.request.locale_name, self.user.login, projectid, ncombs, packages
             )
 
         if productid == "packages":
-            ncombs, packages = getPackages(self.user.login, projectid, self.request)
+            ncombs, packages = getPackages(self.request.locale_name, self.user.login, projectid, self.request)
             create_packages_excell(
                 self.request,
                 self.user.login,
@@ -246,7 +246,7 @@ class generateProductView(privateView):
                 data, finalCloseQst = getDataFormPreview(self, projectid)
                 create_document_form(
                     self.request,
-                    "en",
+                    self.request.locale_name,
                     self.user.login,
                     projectid,
                     "Registration",
@@ -259,7 +259,7 @@ class generateProductView(privateView):
                 data, finalCloseQst = getDataFormPreview(self, projectid, assessment_id)
                 create_document_form(
                     self.request,
-                    "en",
+                    self.request.locale_name,
                     self.user.login,
                     projectid,
                     "Assessment",
@@ -284,6 +284,7 @@ class generateProductView(privateView):
                 )
                 create_error_log_document(
                     self.request,
+                    self.request.locale_name,
                     self.user.login,
                     projectid,
                     "Registration",
@@ -314,6 +315,7 @@ class generateProductView(privateView):
                 )
                 create_error_log_document(
                     self.request,
+                    self.request.locale_name,
                     self.user.login,
                     projectid,
                     "Assessment",

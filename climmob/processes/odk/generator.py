@@ -229,7 +229,7 @@ def createDatabase(xlsxFile, outputDir, schema, keyVar, preFix, dropSchema, requ
 
 
 class ODKExcelFile(object):
-    def __init__(self, xlsxFile, formID, formLabel, formInstance):
+    def __init__(self, xlsxFile, formID, formLabel, formInstance, _):
         self.xlsxFile = xlsxFile
         self.root = etree.Element("root")
         self.log = logging.getLogger(__name__)
@@ -238,6 +238,7 @@ class ODKExcelFile(object):
         self.formInstance = formInstance
         self.surveyRow = 0
         self.choicesRow = 1
+        self._ = _
         try:
             os.remove(self.xlsxFile)
         except:
@@ -318,6 +319,7 @@ class ODKExcelFile(object):
             self.choicesRow = self.choicesRow + 1
 
     def addNodeToFile(self, rootElement):
+
         for element in rootElement.iterchildren():
             self.surveyRow = self.surveyRow + 1
             if element.tag == "group" or element.tag == "repeat":
@@ -382,13 +384,13 @@ class ODKExcelFile(object):
                         self.sheet1.write(
                             self.surveyRow,
                             5,
-                            "The scanned Qr is incorrect, it is not for this project.",
+                            self._("The scanned Qr is incorrect, it is not for this project."),
                         )
                     if element.get("required") == "True":
                         self.sheet1.write(
                             self.surveyRow,
                             7,
-                            element.get("label") + " requires a value",
+                            element.get("label") + self._(" requires a value"),
                         )
 
     def addQuestion(
@@ -572,17 +574,19 @@ def generateODKFile(
     request,
     selectedPackageQuestionGroup,
 ):
-    excelFile = ODKExcelFile(xlsxFile, formID, formLabel, formInstance)
+    _ = request.translate
 
-    excelFile.addQuestion("clm_deviceimei", "Device IMEI", 23, "")
-    excelFile.addQuestion("clm_start", request.translate("Start of survey"), 20, "")
+    excelFile = ODKExcelFile(xlsxFile, formID, formLabel, formInstance, _)
+
+    excelFile.addQuestion("clm_deviceimei", _("Device IMEI"), 23, "")
+    excelFile.addQuestion("clm_start", _("Start of survey"), 20, "")
 
     # Edited by Brandon
     for group in groups:
         excelFile.addGroup("grp_" + str(group.section_id), group.section_name)
         if group.section_id == selectedPackageQuestionGroup:
             excelFile.addGroup(
-                "grp_validation", "Validation of the selected participant"
+                "grp_validation", _("Validation of the selected participant")
             )
 
     if formID[:3] == "REG":
@@ -602,7 +606,7 @@ def generateODKFile(
         )
         excelFile.addQuestion(
             "note_validation",
-            'You scanned package number <span style="color:#009551; font-weight:bold">${clc_after}</span>.<br>This package belongs to <span style="color:#009551; font-weight:bold">${farmername}</span>.',
+            _('You scanned package number <span style="color:#009551; font-weight:bold">${clc_after}</span>.<br>This package belongs to <span style="color:#009551; font-weight:bold">${farmername}</span>.'),
             29,
             inGroup="grp_validation",
         )
@@ -616,7 +620,7 @@ def generateODKFile(
         )
         excelFile.addQuestion(
             "note_validation",
-            'You selected package number <span style="color:#009551; font-weight:bold">${QST163}</span>.<br>This package belongs to <span style="color:#009551; font-weight:bold">${clc_after}</span>.',
+            _('You selected package number <span style="color:#009551; font-weight:bold">${QST163}</span>.<br>This package belongs to <span style="color:#009551; font-weight:bold">${clc_after}</span>.'),
             29,
             inGroup="grp_validation",
         )
@@ -671,7 +675,7 @@ def generateODKFile(
                 if question.question_dtype == 8:
                     excelFile.addQuestion(
                         "note_dtype8",
-                        "In the following field try to write the name of the participant to filter the information and find him/her more easily.",
+                        _("In the following field try to write the name of the participant to filter the information and find him/her more easily."),
                         29,
                         inGroup="grp_" + str(question.section_id),
                     )
@@ -719,7 +723,7 @@ def generateODKFile(
                             excelFile.addOption(
                                 "char_" + question.question_code,
                                 str(opt + 1),
-                                "Option " + code,
+                                _("Option ") + code,
                             )
 
                         if question.question_tied == 1:
@@ -731,7 +735,7 @@ def generateODKFile(
                             excelFile.addOption(
                                 "char_" + question.question_code,
                                 str(99),
-                                "Not observed",
+                                _("Not observed"),
                             )
 
                     if numComb == 3:
@@ -785,36 +789,36 @@ def generateODKFile(
                             excelFile.addOption(
                                 "char_" + question.question_code + "_pos",
                                 str(opt + 1),
-                                "Option " + code,
+                                _("Option ") + code,
                             )
                             excelFile.addOption(
                                 "char_" + question.question_code + "_neg",
                                 str(opt + 1),
-                                "Option " + code,
+                                _("Option ") + code,
                             )
                         # EDITED BY BRANDON
                         if question.question_tied == 1:
                             excelFile.addOption(
                                 "char_" + question.question_code + "_pos",
                                 str(98),
-                                "Tied",
+                                _("Tied"),
                             )
                             excelFile.addOption(
                                 "char_" + question.question_code + "_neg",
                                 str(98),
-                                "Tied",
+                                _("Tied"),
                             )
                         if question.question_notobserved == 1:
                             excelFile.addOption(
                                 "char_" + question.question_code + "_pos",
                                 str(99),
-                                "Not observed",
+                                _("Not observed"),
                             )
 
                             excelFile.addOption(
                                 "char_" + question.question_code + "_neg",
                                 str(99),
-                                "Not observed",
+                                _("Not observed"),
                             )
                         # END EDITED
 
@@ -866,7 +870,7 @@ def generateODKFile(
                                     + "_stmt_"
                                     + str(opt + 1),
                                     str(opt2 + 1),
-                                    "Option " + code,
+                                    _("Option ") + code,
                                 )
 
                             if question.question_tied == 1:
@@ -876,7 +880,7 @@ def generateODKFile(
                                     + "_stmt_"
                                     + str(98),
                                     str(98),
-                                    "Tied",
+                                    _("Tied"),
                                 )
 
                             if question.question_notobserved == 1:
@@ -886,7 +890,7 @@ def generateODKFile(
                                     + "_stmt_"
                                     + str(99),
                                     str(99),
-                                    "Not observed",
+                                    _("Not observed"),
                                 )
 
                 if question.question_dtype == 10:
@@ -908,12 +912,12 @@ def generateODKFile(
                         excelFile.addOption(
                             "perf_" + question.question_code + "_" + str(opt + 1),
                             "1",
-                            request.translate("Better"),
+                            _("Better"),
                         )
                         excelFile.addOption(
                             "perf_" + question.question_code + "_" + str(opt + 1),
                             "2",
-                            request.translate("Worse"),
+                            _("Worse"),
                         )
 
             if question.question_dtype == 5 or question.question_dtype == 6:
@@ -944,19 +948,21 @@ def generateODKFile(
                         question.question_desc
                         + descExtra
                         + " "
-                        + request.translate("Other"),
+                        + _("Other"),
                         1,
-                        request.translate("Add the other value here"),
+                        _("Add the other value here"),
                         0,
                         "grp_" + str(question.section_id),
                     )
 
-    excelFile.addQuestion("clm_end", request.translate("End of survey"), 21, "")
+    excelFile.addQuestion("clm_end", _("End of survey"), 21, "")
 
     excelFile.renderFile()
 
 
 def generateRegistry(user, projectid, request, sectionOfThePackageCode):
+    _ = request.translate
+
     formID = "REG_" + user + "_" + projectid + "_" + datetime.now().strftime("%Y%m%d")
 
     path = os.path.join(
@@ -1018,19 +1024,32 @@ def generateRegistry(user, projectid, request, sectionOfThePackageCode):
     # Terminan los cambios
 
     sql = (
-        "SELECT question.question_code,question.question_desc,question.question_unit,question.question_dtype,question.question_twoitems,"
-        "registry.section_id,question.question_posstm,question.question_negstm,question.question_moreitems,question.question_perfstmt,"
-        "question.question_requiredvalue,registry.question_order,question.question_id,question.question_tied, question.question_notobserved, question.question_quantitative FROM question,registry "
-        "WHERE question.question_id = registry.question_id "
-        "AND registry.user_name = '" + user + "' "
-        "AND registry.project_cod = '"
-        + projectid
-        + "' ORDER BY registry.question_order"
+        # "SELECT question.question_code,question.question_desc,question.question_unit,question.question_dtype,question.question_twoitems,"
+        # "registry.section_id,question.question_posstm,question.question_negstm,question.question_moreitems,question.question_perfstmt,"
+        # "question.question_requiredvalue,registry.question_order,question.question_id,question.question_tied, question.question_notobserved, question.question_quantitative FROM question,registry "
+        # "WHERE question.question_id = registry.question_id "
+        # "AND registry.user_name = '" + user + "' "
+        # "AND registry.project_cod = '"
+        # + projectid
+        # + "' ORDER BY registry.question_order"
+
+        "SELECT q.question_code,COALESCE(i.question_desc,q.question_desc) as question_desc,COALESCE(i.question_unit,q.question_unit) as question_unit, q.question_dtype, q.question_twoitems, "
+        "r.section_id, COALESCE(i.question_posstm, q.question_posstm) as question_posstm, COALESCE(i.question_negstm ,q.question_negstm) as question_negstm, q.question_moreitems, COALESCE(i.question_perfstmt, q.question_perfstmt) as question_perfstmt, "
+        "q.question_requiredvalue, r.question_order, q.question_id, q.question_tied, q.question_notobserved, q.question_quantitative "
+        "FROM registry r,question q "
+        "LEFT JOIN i18n_question i "
+        "ON        q.question_id = i.question_id " 
+        "AND       i.lang_code = '"+ request.locale_name +"' "
+        "WHERE q.question_id = r.question_id "
+        "AND r.user_name = '" + user + "' "
+        "AND r.project_cod = '"+ projectid+ "'"
+        "ORDER BY r.question_order"
     )
+
     questions = request.dbsession.execute(sql).fetchall()
 
     prjdata = getProjectData(user, projectid, request)
-    label = request.translate("Registration-") + prjdata["project_name"]
+    label = _("Registration-") + prjdata["project_name"]
     formInstance = "concat('" + projectid + "_Regis_',${farmername})"
 
     generateODKFile(
@@ -1051,7 +1070,7 @@ def generateRegistry(user, projectid, request, sectionOfThePackageCode):
     try:
         xls2xform.xls2xform_convert(xlsxFile, xmlFile)
     except Exception as e:
-        msg = request.translate("Error converting XLSX to XML") + "\n"
+        msg = _("Error converting XLSX to XML") + "\n"
         msg = msg + "XLSX File: " + xlsxFile + "\n"
         msg = msg + "XML File: " + xmlFile + "\n"
         msg = msg + "Error: \n"
@@ -1092,6 +1111,8 @@ def generateRegistry(user, projectid, request, sectionOfThePackageCode):
 def generateAssessmentFiles(
     user, projectid, assessment, request, sectionOfThePackageCode
 ):
+    _ = request.translate
+
     result = []
     keyQuestion = (
         request.dbsession.query(Question).filter(Question.question_asskey == 1).first()
@@ -1171,22 +1192,35 @@ def generateAssessmentFiles(
         # End
 
         sql = (
-            "SELECT question.question_code,question.question_desc,question.question_unit,question.question_dtype,question.question_twoitems,"
-            "assdetail.section_id,question.question_posstm,question.question_negstm,question.question_moreitems,question.question_perfstmt,"
-            "question.question_requiredvalue,question.question_id, question.question_tied, question.question_notobserved, question.question_quantitative "
-            "FROM question,assdetail "
-            "WHERE question.question_id = assdetail.question_id "
-            "AND assdetail.user_name = '" + user + "' "
-            "AND assdetail.project_cod = '" + projectid + "' "
-            "AND assdetail.ass_cod = '"
-            + assessment.ass_cod
-            + "' order by assdetail.question_order"
+            # "SELECT question.question_code,question.question_desc,question.question_unit,question.question_dtype,question.question_twoitems,"
+            # "assdetail.section_id,question.question_posstm,question.question_negstm,question.question_moreitems,question.question_perfstmt,"
+            # "question.question_requiredvalue,question.question_id, question.question_tied, question.question_notobserved, question.question_quantitative "
+            # "FROM question,assdetail "
+            # "WHERE question.question_id = assdetail.question_id "
+            # "AND assdetail.user_name = '" + user + "' "
+            # "AND assdetail.project_cod = '" + projectid + "' "
+            # "AND assdetail.ass_cod = '"
+            # + assessment.ass_cod
+            # + "' order by assdetail.question_order"
+
+            "SELECT q.question_code, COALESCE(i.question_desc,q.question_desc) as question_desc,COALESCE(i.question_unit,q.question_unit) as question_unit, q.question_dtype, q.question_twoitems, "
+            "a.section_id, COALESCE(i.question_posstm, q.question_posstm) as question_posstm, COALESCE(i.question_negstm ,q.question_negstm) as question_negstm, q.question_moreitems, COALESCE(i.question_perfstmt, q.question_perfstmt) as question_perfstmt, "
+            "q.question_requiredvalue, q.question_id, q.question_tied, q.question_notobserved, q.question_quantitative "
+            "FROM assdetail a, question q "
+            "LEFT JOIN i18n_question i "
+            "ON        q.question_id = i.question_id "
+            "AND       i.lang_code = 'es' "
+            "WHERE q.question_id = a.question_id "
+            "AND a.user_name = '" + user + "' "
+            "AND a.project_cod = '" + projectid + "' "
+            "AND a.ass_cod = '"+assessment.ass_cod+"' "
+            "order by a.question_order "
         )
         questions = request.dbsession.execute(sql).fetchall()
 
         prjdata = getProjectData(user, projectid, request)
         label = (
-            request.translate("Data collection - ")
+            _("Data collection - ")
             + assessment.ass_desc
             + " - "
             + prjdata["project_name"]
@@ -1243,7 +1277,7 @@ def generateAssessmentFiles(
                 )
 
         except Exception as e:
-            msg = request.translate("Error converting XLSX to XML") + "\n"
+            msg = _("Error converting XLSX to XML") + "\n"
             msg = msg + "XLSX File: " + xlsxFile + "\n"
             msg = msg + "XML File: " + xmlFile + "\n"
             msg = msg + "Error: \n"

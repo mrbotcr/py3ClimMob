@@ -35,6 +35,12 @@ def createGeneralReport(locale, user, path, project, projectDetails):
     PATH2 = os.path.dirname(os.path.abspath(__file__))
     doc = DocxTemplate(PATH2 + "/template/generalGeneralTemplate.docx")
 
+    _("Assigned field agents")
+    _("Selected technologies")
+    _("Pending step")
+    _("Combinations included in the project")
+    _("Section")
+
     data = {
         "date": datetime.today().strftime("%d-%m-%Y"),
         "dataworking": projectDetails,

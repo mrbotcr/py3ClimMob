@@ -112,7 +112,7 @@ class downloadErroLogDocument_view(privateView):
                     raise HTTPNotFound()
 
         create_error_log_document(
-            self.request, self.user.login, proId, formId, code, data, _errors, info
+            self.request, self.request.locale_name,self.user.login, proId, formId, code, data, _errors, info
         )
 
         url = self.request.route_url("productList")

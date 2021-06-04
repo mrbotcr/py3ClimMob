@@ -63,6 +63,7 @@ class Assessment(Base):
     ass_days = Column(Integer)
     ass_status = Column(Integer, server_default=text("'0'"))
     ass_final = Column(Integer, server_default=text("'0'"))
+    extra = Column(Text)
 
     project = relationship(u"Project")
 
@@ -359,6 +360,7 @@ class I18nQuestion(Base):
     question_unit = Column(String(120))
     question_posstm = Column(String(120))
     question_negstm = Column(String(120))
+    question_perfstmt = Column(String(120))
 
     i18n = relationship(u"I18n")
     question = relationship(u"Question")

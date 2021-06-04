@@ -60,6 +60,7 @@ class projectHelp_view(privateView):
                         )
                         create_qr_packages(
                             self.request,
+                            self.request.locale_name,
                             dataworking["project_username"],
                             dataworking["project_cod"],
                             ncombs,

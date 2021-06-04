@@ -21,6 +21,8 @@ __all__ = [
     "ISubmissionStorage",
     "IProduct",
     "ITemplateHelpers",
+    "ITranslation",
+    "IDatabase"
 ]
 
 
@@ -212,6 +214,11 @@ class ISubmissionStorage(Interface):
             Warning: Any elements that you add will not enter the MySQL unless you also extend beforeSaveInJSON
         """
 
+    def report_data_entry_to_a_project(self, request, user, project, fieldagent):
+        """
+        Esto es un test
+        """
+
 
 class IProduct(Interface):
     """
@@ -280,4 +287,39 @@ class ITemplateHelpers(Interface):
         Function names should start with the name of the extension providing
         the function, to prevent name clashes between extensions.
         :return:
+        """
+
+class ITranslation(Interface):
+    """
+    Allows extensions to provide their own translation strings.
+    """
+
+    def get_translation_directory(self):
+        """
+        Called by ClimMob so plugins can add a translation directory
+        :return: String path to the translation directory
+        """
+        raise NotImplementedError(
+            "translation_directory must be implemented in subclasses"
+        )
+
+    def get_translation_domain(self):
+        """
+        Called by ClimMob so plugins can add a translation domain
+        :return: String domain name
+        """
+        raise NotImplementedError(
+            "translation_domain must be implemented in subclasses"
+        )
+
+class IDatabase(Interface):  # pragma: no cover
+    """
+    Allows to hook into the database schema so plugins can add new tables
+    After calling this
+    """
+
+    def update_orm(self, metadata):
+        """
+        Called by FormShare so plugins can add new tables to FormShare ORM
+        :param metadata: FormShare ORM metadata object
         """

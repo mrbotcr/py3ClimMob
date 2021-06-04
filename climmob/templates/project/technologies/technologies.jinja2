@@ -134,7 +134,7 @@
                             <input type="text" id="txt_technologies_alias_excluded" name="txt_technologies_excluded" style="width: 100%; display:none">
                             <div class="row" style="padding-top: 10px; height: 50px">
                                 <div class="col-md-12">
-                                    <button class="btn btn-primary pull-right clm-actions" name="btn_save_technologies_alias" type="submit" id="btn_save_technologies_alias"><i class="fa fa-check"></i> {{ _("Save changes") }}</button>
+                                    <button class="btn btn-primary pull-right clm-actions" name="btn_save_technologies_alias" type="submit" id="btn_save_technologies_alias">{{ _("Save") }}</button>
                                 </div>
                             </div>
 
@@ -154,7 +154,7 @@
                     <div class="ibox-content animated fadeInRightBig" >
 
                         {% include 'snippets/error.jinja2' %}
-                        <p style="font-size: 14px">{{ _("Create an new level just for this project") }}</p>
+                        <p style="font-size: 14px">{{ _("Create an new technology option just for this project") }}</p>
                         <br>
                         <div class="error-desc">
                             <form class="form-horizontal formElement" method="post" action="{{ request.path }}">
@@ -163,10 +163,10 @@
                                     <label class="col-sm-4 control-label">{{ _('Name:') }}</label>
                                     <div class="col-sm-8">
                                         <input type="text" class="tech_id" name="tech_id" style="width: 100%;display:none" value="{{ tech_id }}">
-                                        <input type="text" class="form-control" value="{{ dataworking.alias_name }}" id="txt_add_alias" name="txt_add_alias" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("Write the level name.") }}')" onchange="this.setCustomValidity('')">
+                                        <input type="text" class="form-control" value="{{ dataworking.alias_name }}" id="txt_add_alias" name="txt_add_alias" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("Write the technology option name.") }}')" onchange="this.setCustomValidity('')">
                                     </div>
                                 </div>
-                                <button type="submit" name="btn_add_alias" class="btn btn-primary pull-right">{{ _("Add new technology option") }}</button>
+                                <button type="submit" name="btn_add_alias" class="btn btn-primary pull-right">{{ _("Add") }}</button>
                                 <br><br>
                             </form>
                         </div>

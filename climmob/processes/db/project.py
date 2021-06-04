@@ -49,13 +49,15 @@ def getProjectCount(request):
 
 
 def addQuestionsToAssessment(user, project, assessment, request):
+    _ = request.translate
+
     data = {}
     data["user_name"] = user
     data["project_cod"] = project
     data["ass_cod"] = assessment
     data["section_id"] = 1
-    data["section_name"] = request.translate("Farmer selection")
-    data["section_content"] = request.translate(
+    data["section_name"] = _("Farmer selection")
+    data["section_content"] = _(
         "List of farmers included in the registration form"
     )
     data["section_order"] = 1
@@ -79,8 +81,8 @@ def addQuestionsToAssessment(user, project, assessment, request):
     data["project_cod"] = project
     data["ass_cod"] = assessment
     data["section_id"] = 2
-    data["section_name"] = request.translate("Main section")
-    data["section_content"] = request.translate("General data")
+    data["section_name"] = _("Main section")
+    data["section_content"] = _("General data")
     data["section_order"] = 2
     data["section_private"] = 0
     newAsssection = Asssection(**data)
@@ -179,12 +181,13 @@ def addQuestionsToAssessment(user, project, assessment, request):
 
 
 def addRegistryQuestionsToProject(user, project, request):
+    _ = request.translate
     data = {}
     data["user_name"] = user
     data["project_cod"] = project
     data["section_id"] = 1
-    data["section_name"] = request.translate("Main section")
-    data["section_content"] = request.translate("General data")
+    data["section_name"] = _("Main section")
+    data["section_content"] = _("General data")
     data["section_order"] = 1
     data["section_private"] = 0
     newRegsection = Regsection(**data)
@@ -471,6 +474,7 @@ def modification_date(filename):
 
 
 def getLastRegistrySubmissionDate(user, project, request):
+    _ = request.translate
     path = os.path.join(
         request.registry.settings["user.repository"],
         *[user, project, "data", "reg", "*"]
@@ -480,10 +484,11 @@ def getLastRegistrySubmissionDate(user, project, request):
         files.sort(key=os.path.getmtime)
         return human(modification_date(files[0]), precision=1)
     else:
-        return request.translate("Without submissions")
+        return _("Without submissions")
 
 
 def getLastAssessmentSubmissionDate(user, project, assessment, request):
+    _ = request.translate
     path = os.path.join(
         request.registry.settings["user.repository"],
         *[user, project, "data", "ass", assessment]
@@ -493,10 +498,11 @@ def getLastAssessmentSubmissionDate(user, project, assessment, request):
         files.sort(key=os.path.getmtime)
         return human(modification_date(files[0]), precision=1)
     else:
-        return request.translate("Without submissions")
+        return _("Without submissions")
 
 
 def getProjectProgress(user, project, request):
+    _ = request.translate
     result = {}
     perc = 0
     result["enumerators_by_user"] = countEnumerators(user, request)
@@ -605,7 +611,7 @@ def getProjectProgress(user, project, request):
         result["regtotal"] = 0
         result["regperc"] = 0
         result["project_numobs"] = 0
-        result["lastreg"] = request.translate("Not yet started")
+        result["lastreg"] = _("Not yet started")
     else:
         totSubmissions = arstatus.project_numobs
         result["project_numobs"] = totSubmissions
@@ -715,7 +721,7 @@ def getProjectProgress(user, project, request):
                     "assperc": 0,
                     "submissions": submissions,
                     "errors": 0,
-                    "lastass": request.translate("Without submissions"),
+                    "lastass": _("Without submissions"),
                 }
             )
     result["assessments"] = assessmentArray

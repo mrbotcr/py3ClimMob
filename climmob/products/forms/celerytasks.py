@@ -54,8 +54,13 @@ def createDocumentForm(
         qr = create_qr(package, projectid, pathqr)
         imgsOfQRs.append(InlineImage(doc, qr, width=Mm(50)))
 
+    if form =="Registration":
+        tittle = _("Registration form for the project")
+    else:
+        tittle = _("Assessment form for the project")
+
     data = {
-        "tittle": _(form + " form for the project"),
+        "tittle": tittle,
         "projectid": projectid,
         "Instruction": _("Please complete this form"),
         "data": formGroupsAndQuestions,

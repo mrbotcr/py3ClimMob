@@ -13,7 +13,7 @@ from ..processes import (
     getAssessmentMediaFile,
 )
 from pyramid.response import Response
-
+import climmob.plugins as p
 
 class formList_view(odkView):
     def processView(self):
@@ -43,6 +43,8 @@ class push_view(odkView):
                     print(error)
                     print("********************77")
                     if stored:
+                        for plugin in p.PluginImplementations(p.ISubmissionStorage):
+                            plugin.report_data_entry_to_a_project(self, self.request, self.user.login, "xxxx", userid)
                         response = Response(status=201)
                         return response
                     else:

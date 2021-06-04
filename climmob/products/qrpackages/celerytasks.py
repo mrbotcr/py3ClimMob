@@ -3,7 +3,7 @@ from climmob.config.celery_app import celeryApp
 import base64
 import os
 import bz2
-
+import gettext
 # from qrtools import QR
 import qrcode
 import uuid
@@ -50,9 +50,25 @@ def create_index_html(html, png, qrid, packageid, projectid, projectname, projec
 
 
 @celeryApp.task(base=celeryTask, soft_time_limit=7200, time_limit=7200)
-def createQR(path, projectid, packages):
+def createQR(locale, path, projectid, packages):
     if os.path.exists(path):
         sh.rmtree(path)
+
+    PATH_lo = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    this_file_path = PATH_lo + "/locale"
+    try:
+        es = gettext.translation(
+            "climmob", localedir=this_file_path, languages=[locale]
+        )
+        es.install()
+        _ = es.gettext
+    except:
+        locale = "en"
+        es = gettext.translation(
+            "climmob", localedir=this_file_path, languages=[locale]
+        )
+        es.install()
+        _ = es.gettext
 
     os.makedirs(path)
     pathout = os.path.join(path, "outputs")
@@ -100,7 +116,7 @@ def createQR(path, projectid, packages):
             html,
             png,
             qr,
-            "Package " + str(package["package_id"]),
+            _("Package ") + str(package["package_id"]),
             projectid,
             package["project_name"],
             str(package["project_creationdate"])[:-9],
