@@ -5,6 +5,7 @@ from climmob.config.celery_class import celeryTask
 import csv
 import gettext
 
+
 @celeryApp.task(base=celeryTask, soft_time_limit=7200, time_limit=7200)
 def createPackages(locale, path, projectid, packages, techs):
 

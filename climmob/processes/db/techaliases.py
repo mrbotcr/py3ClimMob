@@ -1,5 +1,5 @@
-from climmob.models.climmobv4 import Techalia, Prjalia
-from sqlalchemy import func
+from climmob.models.climmobv4 import Techalia, Prjalia, I18nTechalia
+from sqlalchemy import func, and_
 from ...models.schema import mapFromSchema, mapToSchema
 
 __all__ = [
@@ -23,6 +23,18 @@ def getTechsAlias(idtech, request):
             request.dbsession.query(func.count(Prjalia.alias_id))
             .filter(Techalia.alias_id == Prjalia.alias_used)
             .label("quantity"),
+            func.coalesce(I18nTechalia.alias_name, Techalia.alias_name).label(
+                "tech_name"
+            ),
+        )
+        .join(
+            I18nTechalia,
+            and_(
+                Techalia.tech_id == I18nTechalia.tech_id,
+                Techalia.alias_id == I18nTechalia.alias_id,
+                I18nTechalia.lang_code == request.locale_name,
+            ),
+            isouter=True,
         )
         .filter(Techalia.tech_id == idtech)
         .order_by(Techalia.alias_name)
@@ -34,7 +46,8 @@ def getTechsAlias(idtech, request):
             {
                 "tech_id": techalias[0].tech_id,
                 "alias_id": techalias[0].alias_id,
-                "alias_name": techalias[0].alias_name,
+                # "alias_name": techalias[0].alias_name,
+                "alias_name": techalias[2],
                 "quantity": techalias.quantity,
             }
         )

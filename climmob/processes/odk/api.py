@@ -578,7 +578,7 @@ def storeSubmission(userid, userEnum, request):
     error = 404
     for key in request.POST.keys():
         filename = request.POST[key].filename
-        if filename.upper().find(".XML") >= 0:
+        if filename.upper().find(".XML") >= 0 or filename == "xml_submission_file":
             input_file = request.POST[key].file
             input_file.seek(0)
             (
@@ -632,7 +632,7 @@ def storeSubmission(userid, userEnum, request):
             filename = request.POST[key].filename
             input_file = request.POST[key].file
             file_path = os.path.join(path, filename)
-            if file_path.upper().find(".XML") >= 0:
+            if file_path.upper().find(".XML") >= 0 or filename == "xml_submission_file":
                 XMLFile = file_path
             temp_file_path = file_path + "~"
 

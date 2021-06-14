@@ -4,6 +4,7 @@ import base64
 import os
 import bz2
 import gettext
+
 # from qrtools import QR
 import qrcode
 import uuid
@@ -54,7 +55,9 @@ def createQR(locale, path, projectid, packages):
     if os.path.exists(path):
         sh.rmtree(path)
 
-    PATH_lo = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    PATH_lo = os.path.dirname(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    )
     this_file_path = PATH_lo + "/locale"
     try:
         es = gettext.translation(

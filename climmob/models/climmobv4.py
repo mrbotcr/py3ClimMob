@@ -346,6 +346,26 @@ class I18nQstoption(Base):
     question = relationship(u"Qstoption")
 
 
+class I18nQuestion_group(Base):
+    __tablename__ = "i18n_qstgroups"
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["user_name", "qstgroups_id"],
+            [u"qstgroups.user_name", u"qstgroups.qstgroups_id",],
+        ),
+    )
+
+    user_name = Column(String(80), primary_key=True, nullable=False)
+    qstgroups_id = Column(String(80), primary_key=True, nullable=False)
+    lang_code = Column(
+        ForeignKey(u"i18n.lang_code"), primary_key=True, nullable=False, index=True
+    )
+    qstgroups_name = Column(String(120))
+
+    i18n = relationship(u"I18n")
+    question = relationship(u"Question_group")
+
+
 class I18nQuestion(Base):
     __tablename__ = "i18n_question"
 
@@ -361,6 +381,7 @@ class I18nQuestion(Base):
     question_posstm = Column(String(120))
     question_negstm = Column(String(120))
     question_perfstmt = Column(String(120))
+    question_name = Column(String(120))
 
     i18n = relationship(u"I18n")
     question = relationship(u"Question")

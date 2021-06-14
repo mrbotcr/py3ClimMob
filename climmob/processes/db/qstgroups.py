@@ -128,12 +128,26 @@ def getCategories(user, request):
 
 
 def getCategoriesParents(user, request):
+    # sql = (
+    #     "select qstgroups.user_name,qstgroups.qstgroups_id, qstgroups_name,(select count(question.question_id)from question where question.qstgroups_id = qstgroups.qstgroups_id "
+    #     "and question.qstgroups_user = qstgroups.user_name) as count "
+    #     "from qstgroups where (qstgroups.user_name = '"
+    #     + user
+    #     + "' or qstgroups.user_name = 'bioversity') and qstgroups_id not in (select distinct(group_id) from qstsubgroups where parent_username='bioversity')"
+    # )
+
     sql = (
-        "select qstgroups.user_name,qstgroups.qstgroups_id, qstgroups_name,(select count(question.question_id)from question where question.qstgroups_id = qstgroups.qstgroups_id "
-        "and question.qstgroups_user = qstgroups.user_name) as count "
-        "from qstgroups where (qstgroups.user_name = '"
-        + user
-        + "' or qstgroups.user_name = 'bioversity') and qstgroups_id not in (select distinct(group_id) from qstsubgroups where parent_username='bioversity')"
+        "SELECT "
+        "qstgroups.user_name, qstgroups.qstgroups_id, COALESCE(i.qstgroups_name, qstgroups.qstgroups_name) as qstgroups_name, "
+        "(select count(question.question_id)from question where question.qstgroups_id = qstgroups.qstgroups_id and question.qstgroups_user = qstgroups.user_name) as count "
+        "FROM qstgroups "
+        "LEFT JOIN i18n_qstgroups i "
+        "ON        qstgroups.user_name = i.user_name "
+        "AND		  qstgroups.qstgroups_id = i.qstgroups_id "
+        "AND       i.lang_code = '" + request.locale_name + "' "
+        "WHERE "
+        "(qstgroups.user_name = '" + user + "' OR qstgroups.user_name = 'bioversity') "
+        "and qstgroups.qstgroups_id not in (select distinct(group_id) from qstsubgroups where parent_username='bioversity')"
     )
 
     data = request.dbsession.execute(sql).fetchall()

@@ -146,17 +146,20 @@ def availableRegistryQuestions(user, project, request, registration_and_analysis
     # sql = "SELECT * FROM question WHERE (user_name = '" + user + "' OR user_name = 'bioversity') AND " \
     #      "question.question_reqinasses = 0 AND question.question_alwaysinasse = 0 AND question_id NOT IN (SELECT distinct question_id FROM registry WHERE user_name = '" + user + "' AND project_cod = '" + project  + "')"
     if registration_and_analysis == 1:
-        startWith = "SELECT * FROM (select * from question where (question_dtype!=5 and question_dtype!=6) UNION "
+        startWith = "SELECT question.*, COALESCE(i18n_question.question_name, question.question_name) as question_name FROM (select * from question where (question_dtype!=5 and question_dtype!=6) UNION "
     else:
-        startWith = "SELECT * FROM (select * from question where (question_dtype!=5 and question_dtype!=6 and question_dtype!= 9 and question_dtype != 10) UNION "
+        startWith = "SELECT question.*, COALESCE(i18n_question.question_name, question.question_name) as question_name FROM (select * from question where (question_dtype!=5 and question_dtype!=6 and question_dtype!= 9 and question_dtype != 10) UNION "
     sql = (
         startWith
         + "SELECT * FROM question WHERE (question_dtype=5 or question_dtype=6) AND question_id in (SELECT DISTINCT(question_id) FROM qstoption)) AS question "
+        "LEFT JOIN i18n_question ON question.question_id = i18n_question.question_id AND       i18n_question.lang_code = '"
+        + request.locale_name
+        + "'"
         "WHERE (user_name = '" + user + "' OR user_name = 'bioversity') AND "
         "question_reqinasses = 0 AND "
         "question_alwaysinasse = 0 AND "
         "question_visible = 1 AND "
-        "question_id NOT IN (SELECT distinct question_id FROM registry WHERE user_name = '"
+        "question.question_id NOT IN (SELECT distinct question_id FROM registry WHERE user_name = '"
         + user
         + "' AND project_cod = '"
         + project
@@ -612,17 +615,22 @@ def getRegistryQuestions(
             return []
 
     sql = (
-        "SELECT regsection.section_id,regsection.section_name,regsection.section_content,regsection.section_order,regsection.section_private,"
-        "question.question_id,question.question_desc,question.question_name,question.question_notes,question.question_dtype, question.question_posstm,question.question_negstm, question.question_perfstmt,IFNULL(registry.question_order,0) as question_order,"
-        "question.question_reqinreg,question.question_tied, question.question_notobserved, question.question_requiredvalue, question.question_quantitative FROM regsection LEFT JOIN registry ON registry.section_user = regsection.user_name AND registry.section_project = regsection.project_cod "
-        " AND registry.section_id = regsection.section_id "
+        " SELECT regsection.section_id,regsection.section_name,regsection.section_content,regsection.section_order,regsection.section_private,"
+        " question.question_id,COALESCE(i18n_question.question_desc,question.question_desc) as question_desc, COALESCE(i18n_question.question_name, question.question_name) as question_name,question.question_notes,question.question_dtype, "
+        " COALESCE(i18n_question.question_posstm, question.question_posstm) as question_posstm, COALESCE(i18n_question.question_negstm ,question.question_negstm) as question_negstm, COALESCE(i18n_question.question_perfstmt, question.question_perfstmt) as question_perfstmt,IFNULL(registry.question_order,0) as question_order,"
+        " question.question_reqinreg,question.question_tied, question.question_notobserved, question.question_requiredvalue, question.question_quantitative FROM regsection "
+        " LEFT JOIN registry ON registry.section_user = regsection.user_name AND registry.section_project = regsection.project_cod AND registry.section_id = regsection.section_id "
+        " LEFT JOIN i18n_question ON registry.question_id = i18n_question.question_id  AND i18n_question.lang_code = '"
+        + request.locale_name
+        + "'"
         " LEFT JOIN question ON registry.question_id = question.question_id WHERE "
-        "regsection.user_name = '"
+        " regsection.user_name = '"
         + user
         + "' AND regsection.project_cod = '"
         + project
         + "' ORDER BY section_order,question_order"
     )
+
     questions = request.dbsession.execute(sql).fetchall()
 
     """result = []

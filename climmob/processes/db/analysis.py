@@ -6,10 +6,11 @@ from climmob.models import (
     Question,
     Regsection,
     Registry,
+    I18nQuestion,
 )
 from .question import opcionOtherInQuestion
 from climmob.processes.db.project import numberOfCombinationsForTheProject
-from sqlalchemy import or_
+from sqlalchemy import or_, func, and_
 from jinja2 import Environment
 import json
 
@@ -46,7 +47,32 @@ def getQuestionsByType(user, project, request):
         for question in questions:
             questInfo = {}
             questionData = mapFromSchema(
-                request.dbsession.query(Question)
+                request.dbsession.query(
+                    Question,
+                    func.coalesce(
+                        I18nQuestion.question_name, Question.question_name
+                    ).label("question_name"),
+                    func.coalesce(
+                        I18nQuestion.question_desc, Question.question_desc
+                    ).label("question_desc"),
+                    func.coalesce(
+                        I18nQuestion.question_posstm, Question.question_posstm
+                    ).label("question_posstm"),
+                    func.coalesce(
+                        I18nQuestion.question_negstm, Question.question_negstm
+                    ).label("question_negstm"),
+                    func.coalesce(
+                        I18nQuestion.question_perfstmt, Question.question_perfstmt
+                    ).label("question_perfstmt"),
+                )
+                .join(
+                    I18nQuestion,
+                    and_(
+                        Question.question_id == I18nQuestion.question_id,
+                        I18nQuestion.lang_code == request.locale_name,
+                    ),
+                    isouter=True,
+                )
                 .filter(Question.question_id == question["question_id"])
                 .first()
             )
@@ -90,7 +116,32 @@ def getQuestionsByType(user, project, request):
             for question in questions:
 
                 questionData = mapFromSchema(
-                    request.dbsession.query(Question)
+                    request.dbsession.query(
+                        Question,
+                        func.coalesce(
+                            I18nQuestion.question_name, Question.question_name
+                        ).label("question_name"),
+                        func.coalesce(
+                            I18nQuestion.question_desc, Question.question_desc
+                        ).label("question_desc"),
+                        func.coalesce(
+                            I18nQuestion.question_posstm, Question.question_posstm
+                        ).label("question_posstm"),
+                        func.coalesce(
+                            I18nQuestion.question_negstm, Question.question_negstm
+                        ).label("question_negstm"),
+                        func.coalesce(
+                            I18nQuestion.question_perfstmt, Question.question_perfstmt
+                        ).label("question_perfstmt"),
+                    )
+                    .join(
+                        I18nQuestion,
+                        and_(
+                            Question.question_id == I18nQuestion.question_id,
+                            I18nQuestion.lang_code == request.locale_name,
+                        ),
+                        isouter=True,
+                    )
                     .filter(Question.question_id == question["question_id"])
                     .first()
                 )
@@ -351,7 +402,20 @@ def getQuestionsStructure(user, project, ass_cod, request):
         for question in questions:
 
             questionData = mapFromSchema(
-                request.dbsession.query(Question)
+                request.dbsession.query(
+                    Question,
+                    func.coalesce(
+                        I18nQuestion.question_name, Question.question_name
+                    ).label("question_name"),
+                )
+                .join(
+                    I18nQuestion,
+                    and_(
+                        Question.question_id == I18nQuestion.question_id,
+                        I18nQuestion.lang_code == request.locale_name,
+                    ),
+                    isouter=True,
+                )
                 .filter(Question.question_id == question["question_id"])
                 .first()
             )

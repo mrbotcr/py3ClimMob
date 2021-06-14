@@ -8,7 +8,7 @@ from .celerytasks import createErrorLogDocument
 
 # This function has been declated in climmob.plugins.interfaces.IPackage#after_create_packages
 def create_error_log_document(
-    request, locale,user, project, form, code, structure, listOfErrors, info
+    request, locale, user, project, form, code, structure, listOfErrors, info
 ):
     # We create the plugin directory if it does not exists and return it
     # The path user.repository in development.ini/user/project/products/product and

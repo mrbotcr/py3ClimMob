@@ -124,6 +124,7 @@ class projectCombinations_view(privateView):
                 #        "combinations", _query={"stage": 1}, projectid=projectid
                 #    )
                 # )
+
                 createCombinations(self.user.login, projectid, self.request)
 
                 create_packages_with_r(self.user.login, projectid, self.request)
@@ -202,7 +203,14 @@ def startTheRegistry(self, projectid):
 
         ncombs, packages = getPackages(self.user.login, projectid, self.request)
 
-        create_qr_packages(self.request, self.request.locale_name,self.user.login, projectid, ncombs, packages)
+        create_qr_packages(
+            self.request,
+            self.request.locale_name,
+            self.user.login,
+            projectid,
+            ncombs,
+            packages,
+        )
         time.sleep(1)
 
         data, finalCloseQst = getDataFormPreview(self, projectid)
@@ -216,7 +224,7 @@ def startTheRegistry(self, projectid):
             data,
             packages,
         )
-        time.sleep(1)
+        # time.sleep(1)
         # create_cards(self.request, self.user.login, projectid, packages)
         # create_stickers_document(
         #    self.request.locale_name, self.request, self.user.login, projectid, packages
@@ -257,6 +265,11 @@ def startTheRegistry(self, projectid):
                         self.request, self.user.login, projectid, packages
                     )
         # Call extenal plugins here
+
+        for plugin in p.PluginImplementations(p.IForm):
+            plugin.after_adding_form(
+                self.request, self.user.login, projectid, "registry", ""
+            )
 
         for plugin in p.PluginImplementations(p.IPackage):
             plugin.after_create_packages(

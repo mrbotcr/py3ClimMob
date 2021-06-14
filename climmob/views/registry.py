@@ -22,7 +22,7 @@ from ..processes import (
 from jinja2 import Environment, FileSystemLoader
 from climmob.products import stopTasksByProcess
 from pyramid.response import FileResponse
-
+import climmob.plugins as p
 import mimetypes
 
 
@@ -300,6 +300,11 @@ class cancelRegistry_view(privateView):
 
                 stopTasksByProcess(self.request, self.user.login, projectid)
 
+                for plugin in p.PluginImplementations(p.IForm):
+                    plugin.after_deleting_form(
+                        self.request, self.user.login, projectid, "registry", ""
+                    )
+
                 self.returnRawViewResult = True
                 return HTTPFound(location=self.request.route_url("dashboard"))
 
@@ -318,6 +323,12 @@ class closeRegistry_view(privateView):
         if self.request.method == "POST":
             if "closeRegistry" in self.request.params.keys():
                 setRegistryStatus(self.user.login, projectid, 2, self.request)
+
+                for plugin in p.PluginImplementations(p.IForm):
+                    plugin.after_deleting_form(
+                        self.request, self.user.login, projectid, "registry", ""
+                    )
+
                 self.returnRawViewResult = True
                 return HTTPFound(location=self.request.route_url("dashboard"))
 

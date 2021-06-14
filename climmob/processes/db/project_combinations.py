@@ -69,8 +69,12 @@ def setCombinationStatus(user, project, id, status, request):
 
 def getTech(user, project, request):
     sql = (
-        "SELECT prjcombdet.tech_id,technology.tech_name FROM "
-        "prjcombdet,technology WHERE "
+        "SELECT prjcombdet.tech_id,COALESCE(i.tech_name,technology.tech_name) as tech_name FROM "
+        "prjcombdet,technology "
+        " LEFT JOIN i18n_technology i "
+        " ON        technology.tech_id = i.tech_id "
+        " AND       i.lang_code = '" + request.locale_name + "' "
+        " WHERE "
         "prjcombdet.tech_id = technology.tech_id AND "
         "prjcombdet.prjcomb_user = '" + user + "' AND "
         "prjcombdet.prjcomb_project = '" + project + "' AND "
@@ -87,12 +91,16 @@ def getTech(user, project, request):
 def getCombinations(user, project, request):
     # Get the tehcnologies used
     sql = (
-        "SELECT prjcombdet.tech_id,technology.tech_name FROM "
-        "prjcombdet,technology WHERE "
-        "prjcombdet.tech_id = technology.tech_id AND "
-        "prjcombdet.prjcomb_user = '" + user + "' AND "
-        "prjcombdet.prjcomb_project = '" + project + "' AND "
-        "comb_code = 1 ORDER BY alias_order"
+        "SELECT prjcombdet.tech_id,COALESCE(i.tech_name,technology.tech_name) as tech_name FROM "
+        " prjcombdet,technology "
+        " LEFT JOIN i18n_technology i "
+        " ON        technology.tech_id = i.tech_id "
+        " AND       i.lang_code = '" + request.locale_name + "' "
+        " WHERE "
+        " prjcombdet.tech_id = technology.tech_id AND "
+        " prjcombdet.prjcomb_user = '" + user + "' AND "
+        " prjcombdet.prjcomb_project = '" + project + "' AND "
+        " comb_code = 1 ORDER BY alias_order"
     )
     ttechs = request.dbsession.execute(sql).fetchall()
     techs = []
@@ -103,8 +111,13 @@ def getCombinations(user, project, request):
     sql = (
         "SELECT * FROM (("
         "SELECT prjcombdet.comb_code,prjcombination.comb_usable,prjcombdet.tech_id,techalias.alias_id,"
-        "techalias.alias_name,prjcombdet.alias_order FROM "
-        "prjcombdet,prjalias,techalias,prjcombination WHERE "
+        "COALESCE(i.alias_name,techalias.alias_name) as alias_name,prjcombdet.alias_order FROM "
+        "prjcombdet,prjalias,prjcombination,techalias "
+        "LEFT JOIN i18n_techalias i "
+        "ON        techalias.tech_id = i.tech_id "
+        "AND       techalias.alias_id = i.alias_id "
+        "AND       i.lang_code = '" + request.locale_name + "'"
+        "WHERE "
         "prjcombdet.user_name = prjalias.user_name AND "
         "prjcombdet.project_cod = prjalias.project_cod AND "
         "prjcombdet.tech_id = prjalias.tech_id AND "
@@ -196,11 +209,16 @@ def createCombinations(user, project, request):
         # Only create the combinations if its needed
         if prjData.project_createcomb == 1:
             sql = (
-                "SELECT DISTINCT prjalias.tech_id,technology.tech_name FROM prjalias,technology "
-                "WHERE prjalias.tech_id = technology.tech_id AND "
-                "prjalias.user_name = '" + user + "' AND "
-                "prjalias.project_cod = '" + project + "' "
-                "ORDER BY prjalias.tech_id"
+                "SELECT DISTINCT prjalias.tech_id, COALESCE( i18n_technology.tech_name ,technology.tech_name) as tech_name "
+                "FROM prjalias,technology "
+                "LEFT JOIN i18n_technology "
+                "ON        i18n_technology.tech_id = technology.tech_id "
+                "AND       i18n_technology.lang_code = '" + request.locale_name + "' "
+                "WHERE prjalias.tech_id = technology.tech_id AND prjalias.user_name = '"
+                + user
+                + "' AND prjalias.project_cod = '"
+                + project
+                + "' ORDER BY prjalias.tech_id "
             )
 
             techs = request.dbsession.execute(sql).fetchall()
@@ -210,7 +228,11 @@ def createCombinations(user, project, request):
                 tech_id = tech.tech_id
                 alias_array = []
                 sql = (
-                    "SELECT prjalias.alias_id,prjalias.alias_used,techalias.alias_name FROM prjalias,techalias "
+                    "SELECT prjalias.alias_id,prjalias.alias_used, COALESCE(i18n_techalias.alias_name ,techalias.alias_name) as alias_name FROM prjalias,techalias "
+                    "LEFT JOIN i18n_techalias "
+                    "ON        i18n_techalias.tech_id = techalias.tech_id "
+                    "AND       i18n_techalias.alias_id = techalias.alias_id "
+                    "AND       i18n_techalias.lang_code = '" + request.locale_name + "'"
                     "WHERE prjalias.tech_used = techalias.tech_id AND "
                     "prjalias.alias_used = techalias.alias_id AND "
                     "prjalias.user_name = '" + user + "' AND "

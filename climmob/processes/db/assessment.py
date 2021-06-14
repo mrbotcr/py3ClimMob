@@ -234,7 +234,7 @@ def checkAssessments(user, project, assessment, request):
 
 
 def formattingQuestions(questions, request, onlyShowTheBasicQuestions=False):
-
+    _ = request.translate
     result = []
     for qst in questions:
 
@@ -257,11 +257,11 @@ def formattingQuestions(questions, request, onlyShowTheBasicQuestions=False):
 
                 if isOther:
                     newQuestion = dict(qst)
-                    newQuestion["question_desc"] = (
-                        newQuestion["question_desc"] + " Other "
+                    newQuestion["question_desc"] = newQuestion["question_desc"] + _(
+                        " Other "
                     )
-                    newQuestion["question_name"] = (
-                        newQuestion["question_name"] + " Other "
+                    newQuestion["question_name"] = newQuestion["question_name"] + _(
+                        " Other "
                     )
                     newQuestion["question_dtype"] = 1
                     newQuestion["question_requiredvalue"] = 0
@@ -276,7 +276,7 @@ def formattingQuestions(questions, request, onlyShowTheBasicQuestions=False):
             if qst["question_quantitative"] == 1:
                 for questionNumber in range(0, 3):
                     newQuestion = dict(qst)
-                    descExtra = " - Option " + chr(65 + questionNumber)
+                    descExtra = " - " + _("Option ") + chr(65 + questionNumber)
                     newQuestion["question_desc"] = (
                         newQuestion["question_desc"] + descExtra
                     )
@@ -302,12 +302,12 @@ def formattingQuestions(questions, request, onlyShowTheBasicQuestions=False):
 
                     if isOther:
                         newQuestion = dict(qst)
-                        descExtra = " - Option " + chr(65 + questionNumber)
+                        descExtra = " - " + _("Option ") + chr(65 + questionNumber)
                         newQuestion["question_desc"] = (
-                            newQuestion["question_desc"] + descExtra + " Other "
+                            newQuestion["question_desc"] + descExtra + _(" Other ")
                         )
                         newQuestion["question_name"] = (
-                            newQuestion["question_name"] + descExtra + " Other "
+                            newQuestion["question_name"] + descExtra + _(" Other ")
                         )
                         newQuestion["question_dtype"] = 1
                         newQuestion["question_requiredvalue"] = 0
@@ -613,18 +613,20 @@ def availableAssessmentQuestions(user, project, assessment, request):
     )
 
     sql = (
-        "SELECT * FROM question WHERE (user_name = '"
-        + user
-        + "' OR user_name = 'bioversity') AND "
-        "question.question_reqinreg = 0 AND question.question_alwaysinreg = 0 AND question.question_visible = 1 AND question_id NOT IN (SELECT distinct question_id "
-        "FROM assdetail WHERE user_name = '"
+        "SELECT question.*, COALESCE(i18n_question.question_name, question.question_name) as question_name FROM question "
+        " LEFT JOIN i18n_question ON question.question_id = i18n_question.question_id AND i18n_question.lang_code = '"
+        + request.locale_name
+        + "' "
+        " WHERE (user_name = '" + user + "' OR user_name = 'bioversity') AND "
+        " question.question_reqinreg = 0 AND question.question_alwaysinreg = 0 AND question.question_visible = 1 AND question.question_id NOT IN (SELECT distinct question_id "
+        " FROM assdetail WHERE user_name = '"
         + user
         + "' AND project_cod = '"
         + project
         + "' AND ass_cod = '"
         + assessment
         + "')"
-        "AND question_id NOT IN (" + sqlOverral + ")"
+        " AND question.question_id NOT IN (" + sqlOverral + ")"
     )
     questions = request.dbsession.execute(sql).fetchall()
 
@@ -745,9 +747,13 @@ def getAssessmentQuestions(
 
     sql = (
         "SELECT asssection.section_id,asssection.section_name,asssection.section_content,asssection.section_order,asssection.section_private,"
-        "question.question_id,question.question_desc,question.question_name,question.question_notes,question.question_dtype, question.question_posstm,question.question_negstm, question.question_perfstmt,IFNULL(assdetail.question_order,0) as question_order,"
+        "question.question_id,COALESCE(i18n_question.question_desc,question.question_desc) as question_desc,COALESCE(i18n_question.question_name, question.question_name) as question_name,question.question_notes,question.question_dtype, "
+        " COALESCE(i18n_question.question_posstm, question.question_posstm) as question_posstm, COALESCE(i18n_question.question_negstm ,question.question_negstm) as question_negstm, COALESCE(i18n_question.question_perfstmt, question.question_perfstmt) as question_perfstmt,IFNULL(assdetail.question_order,0) as question_order,"
         "question.question_reqinasses, question.question_tied, question.question_notobserved, question.question_requiredvalue, question.question_quantitative FROM asssection LEFT JOIN assdetail ON assdetail.section_user = asssection.user_name AND assdetail.section_project = asssection.project_cod "
         " AND assdetail.section_assessment = asssection.ass_cod AND assdetail.section_id = asssection.section_id "
+        " LEFT JOIN i18n_question ON assdetail.question_id = i18n_question.question_id  AND i18n_question.lang_code = '"
+        + request.locale_name
+        + "'"
         " LEFT JOIN question ON assdetail.question_id = question.question_id WHERE "
         "asssection.user_name = '"
         + user
@@ -1127,7 +1133,7 @@ def generateStructureForInterfaceForms(user, project, form, request, ass_cod="")
                     descExtra = ""
                     if questionData["question_quantitative"] == 1:
                         nameExtra = "_" + chr(65 + questionNumber).lower()
-                        descExtra = " - Option " + chr(65 + questionNumber)
+                        descExtra = " - " + _("Option ") + chr(65 + questionNumber)
 
                     # create the question
                     dataQuestion = createQuestionForm(
@@ -1336,22 +1342,12 @@ def generateStructureForInterfaceForms(user, project, form, request, ass_cod="")
                         )
                         # the best option
                         dataQuestionop = createOption(
-                            _("Better"),
-                            0,
-                            1,
-                            0,
-                            1,
-                            questionData["question_id"],
+                            _("Better"), 0, 1, 0, 1, questionData["question_id"],
                         )
                         dataQuestion["question_options"].append(dataQuestionop)
                         # the worst option
                         dataQuestionop = createOption(
-                            _("Worse"),
-                            0,
-                            2,
-                            0,
-                            2,
-                            questionData["question_id"],
+                            _("Worse"), 0, 2, 0, 2, questionData["question_id"],
                         )
                         dataQuestion["question_options"].append(dataQuestionop)
                         # add to the section

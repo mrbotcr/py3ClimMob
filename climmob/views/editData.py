@@ -112,7 +112,15 @@ class downloadErroLogDocument_view(privateView):
                     raise HTTPNotFound()
 
         create_error_log_document(
-            self.request, self.request.locale_name,self.user.login, proId, formId, code, data, _errors, info
+            self.request,
+            self.request.locale_name,
+            self.user.login,
+            proId,
+            formId,
+            code,
+            data,
+            _errors,
+            info,
         )
 
         url = self.request.route_url("productList")
@@ -249,7 +257,7 @@ class editDataView(privateView):
 
             if "btn_EditData" in self.request.POST:
                 selected_contacts = self.request.POST.getall("q_reg")
-                print(selected_contacts)
+                # print(selected_contacts)
                 if (
                     len(selected_contacts) == 0
                 ):  # if non selected columns in check options

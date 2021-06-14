@@ -24,7 +24,9 @@
 
         {% jsresource request,'coreresources','dashboard' %}
         {% jsresource request,'coreresources','sweet' %}
-        {% jsresource request,'coreresources','delete' %}
+        {#    {% jsresource request,'coreresources','delete' %}#}
+        {% jsresource request,'coreresources','toastr' %}
+        {% include 'snippets/delete.jinja2' %}
         {% jsresource request,'coreresources','d3' %}
         {% jsresource request,'coreresources','c3' %}
         {% jsresource request,'coreresources','tour' %}
@@ -427,6 +429,14 @@
                                                             <td >{{ _("Last submission") }}</td>
                                                             <td >{{ progress.lastreg }}</td>
                                                         </tr>
+                                                        {% if progress.regsubmissions == 1 %}
+
+                                                            {% block enketo_information_registry %}
+
+                                                            {% endblock enketo_information_registry %}
+
+                                                        {% endif %}
+
                                                         <tr>
                                                             <td colspan="2">
                                                                 {% if progress.regtotal > 0 %}
@@ -544,6 +554,15 @@
                                                                     <td>{{ _("Last submission") }}</td>
                                                                     <td>{{ assessment.lastass }}</td>
                                                                 </tr>
+
+                                                                {% if assessment.ass_status == 1 %}
+
+                                                                    {% block enketo_information_assessment scoped%}
+
+                                                                    {% endblock enketo_information_assessment %}
+
+                                                                {% endif %}
+
                                                                 <tr>
                                                                     <td colspan="2">
                                                                         {% if assessment.asstotal > 0 %}

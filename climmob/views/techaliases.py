@@ -76,7 +76,9 @@ class newalias_view(privateView):
                         }
                 else:
                     error_summary = {
-                        "nameempty": self._("The name of the technology option cannot be empy")
+                        "nameempty": self._(
+                            "The name of the technology option cannot be empy"
+                        )
                     }
 
         data = getTechnology(formdata, self.request)
@@ -160,7 +162,9 @@ class modifyalias_view(privateView):
                         }
                 else:
                     error_summary = {
-                        "nameempty": self._("The name of the technology option cannot be empy")
+                        "nameempty": self._(
+                            "The name of the technology option cannot be empy"
+                        )
                     }
 
         data2 = getTechnology(formdata, self.request)

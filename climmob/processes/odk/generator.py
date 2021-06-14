@@ -384,7 +384,9 @@ class ODKExcelFile(object):
                         self.sheet1.write(
                             self.surveyRow,
                             5,
-                            self._("The scanned Qr is incorrect, it is not for this project."),
+                            self._(
+                                "The scanned Qr is incorrect, it is not for this project."
+                            ),
                         )
                     if element.get("required") == "True":
                         self.sheet1.write(
@@ -606,7 +608,9 @@ def generateODKFile(
         )
         excelFile.addQuestion(
             "note_validation",
-            _('You scanned package number <span style="color:#009551; font-weight:bold">${clc_after}</span>.<br>This package belongs to <span style="color:#009551; font-weight:bold">${farmername}</span>.'),
+            _(
+                'You scanned package number <span style="color:#009551; font-weight:bold">${clc_after}</span>.<br>This package belongs to <span style="color:#009551; font-weight:bold">${farmername}</span>.'
+            ),
             29,
             inGroup="grp_validation",
         )
@@ -620,7 +624,9 @@ def generateODKFile(
         )
         excelFile.addQuestion(
             "note_validation",
-            _('You selected package number <span style="color:#009551; font-weight:bold">${QST163}</span>.<br>This package belongs to <span style="color:#009551; font-weight:bold">${clc_after}</span>.'),
+            _(
+                'You selected package number <span style="color:#009551; font-weight:bold">${QST163}</span>.<br>This package belongs to <span style="color:#009551; font-weight:bold">${clc_after}</span>.'
+            ),
             29,
             inGroup="grp_validation",
         )
@@ -636,7 +642,7 @@ def generateODKFile(
             descExtra = ""
             if question.question_quantitative == 1:
                 nameExtra = "_" + chr(65 + questionNumber).lower()
-                descExtra = " - Option " + chr(65 + questionNumber)
+                descExtra = " - " + _("Option ") + chr(65 + questionNumber)
 
             if (
                 question.question_dtype != 8
@@ -675,7 +681,9 @@ def generateODKFile(
                 if question.question_dtype == 8:
                     excelFile.addQuestion(
                         "note_dtype8",
-                        _("In the following field try to write the name of the participant to filter the information and find him/her more easily."),
+                        _(
+                            "In the following field try to write the name of the participant to filter the information and find him/her more easily."
+                        ),
                         29,
                         inGroup="grp_" + str(question.section_id),
                     )
@@ -923,12 +931,16 @@ def generateODKFile(
             if question.question_dtype == 5 or question.question_dtype == 6:
                 print("****generateODKFile**Query options******")
                 sql = (
-                    "SELECT qstoption.value_code,qstoption.value_desc,qstoption.value_isother,qstoption.value_order "
-                    "FROM question,qstoption "
-                    "WHERE qstoption.question_id = question.question_id "
-                    "AND (question.question_dtype = 5 or question.question_dtype = 6) "
-                    "AND question.question_code = '" + question.question_code + "' "
-                    "AND question.question_id= " + str(question.question_id) + " "
+                    " SELECT qstoption.value_code, coalesce(i18n_qstoption.value_desc, qstoption.value_desc) as value_desc,qstoption.value_isother,qstoption.value_order "
+                    " FROM question,qstoption "
+                    "LEFT JOIN i18n_qstoption "
+                    " ON i18n_qstoption.question_id = qstoption.question_id "
+                    " AND i18n_qstoption.value_code = qstoption.value_code "
+                    " AND i18n_qstoption.lang_code = '" + request.locale_name + "' "
+                    " WHERE qstoption.question_id = question.question_id "
+                    " AND (question.question_dtype = 5 or question.question_dtype = 6) "
+                    " AND question.question_code = '" + question.question_code + "' "
+                    " AND question.question_id= " + str(question.question_id) + " "
                     "ORDER BY qstoption.value_order"
                 )
 
@@ -945,10 +957,7 @@ def generateODKFile(
                 if other:
                     excelFile.addQuestion(
                         question.question_code + nameExtra + "_oth",
-                        question.question_desc
-                        + descExtra
-                        + " "
-                        + _("Other"),
+                        question.question_desc + descExtra + " " + _("Other"),
                         1,
                         _("Add the other value here"),
                         0,
@@ -1032,17 +1041,16 @@ def generateRegistry(user, projectid, request, sectionOfThePackageCode):
         # "AND registry.project_cod = '"
         # + projectid
         # + "' ORDER BY registry.question_order"
-
         "SELECT q.question_code,COALESCE(i.question_desc,q.question_desc) as question_desc,COALESCE(i.question_unit,q.question_unit) as question_unit, q.question_dtype, q.question_twoitems, "
         "r.section_id, COALESCE(i.question_posstm, q.question_posstm) as question_posstm, COALESCE(i.question_negstm ,q.question_negstm) as question_negstm, q.question_moreitems, COALESCE(i.question_perfstmt, q.question_perfstmt) as question_perfstmt, "
         "q.question_requiredvalue, r.question_order, q.question_id, q.question_tied, q.question_notobserved, q.question_quantitative "
         "FROM registry r,question q "
         "LEFT JOIN i18n_question i "
-        "ON        q.question_id = i.question_id " 
-        "AND       i.lang_code = '"+ request.locale_name +"' "
+        "ON        q.question_id = i.question_id "
+        "AND       i.lang_code = '" + request.locale_name + "' "
         "WHERE q.question_id = r.question_id "
         "AND r.user_name = '" + user + "' "
-        "AND r.project_cod = '"+ projectid+ "'"
+        "AND r.project_cod = '" + projectid + "'"
         "ORDER BY r.question_order"
     )
 
@@ -1202,18 +1210,17 @@ def generateAssessmentFiles(
             # "AND assdetail.ass_cod = '"
             # + assessment.ass_cod
             # + "' order by assdetail.question_order"
-
             "SELECT q.question_code, COALESCE(i.question_desc,q.question_desc) as question_desc,COALESCE(i.question_unit,q.question_unit) as question_unit, q.question_dtype, q.question_twoitems, "
             "a.section_id, COALESCE(i.question_posstm, q.question_posstm) as question_posstm, COALESCE(i.question_negstm ,q.question_negstm) as question_negstm, q.question_moreitems, COALESCE(i.question_perfstmt, q.question_perfstmt) as question_perfstmt, "
             "q.question_requiredvalue, q.question_id, q.question_tied, q.question_notobserved, q.question_quantitative "
             "FROM assdetail a, question q "
             "LEFT JOIN i18n_question i "
             "ON        q.question_id = i.question_id "
-            "AND       i.lang_code = 'es' "
+            "AND       i.lang_code = '" + request.locale_name + "' "
             "WHERE q.question_id = a.question_id "
             "AND a.user_name = '" + user + "' "
             "AND a.project_cod = '" + projectid + "' "
-            "AND a.ass_cod = '"+assessment.ass_cod+"' "
+            "AND a.ass_cod = '" + assessment.ass_cod + "' "
             "order by a.question_order "
         )
         questions = request.dbsession.execute(sql).fetchall()

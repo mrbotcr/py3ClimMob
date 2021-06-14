@@ -140,6 +140,10 @@ def addFieldToProjectSchema(fieldName, fieldDesc):
     return {"schema": "project", "fieldname": fieldName, "fielddesc": fieldDesc}
 
 
+def addFieldToAssessmentSchema(fieldName, fieldDesc):
+    return {"schema": "assessment", "fieldname": fieldName, "fielddesc": fieldDesc}
+
+
 def addFieldToQuestionSchema(fieldName, fieldDesc):
     return {"schema": "question", "fieldname": fieldName, "fielddesc": fieldDesc}
 

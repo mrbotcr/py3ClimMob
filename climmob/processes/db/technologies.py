@@ -1,6 +1,6 @@
-from climmob.models.climmobv4 import Technology, Techalia, Prjtech
+from climmob.models.climmobv4 import Technology, Techalia, Prjtech, I18nTechnology
 from ...models.schema import mapToSchema, mapFromSchema
-from sqlalchemy import func
+from sqlalchemy import func, and_
 from .techaliases import getTechsAlias
 
 __all__ = [
@@ -28,8 +28,19 @@ def getUserTechs(user, request):
             request.dbsession.query(func.count(Techalia.tech_id))
             .filter(Technology.tech_id == Techalia.tech_id)
             .label("quantity"),
+            func.coalesce(I18nTechnology.tech_name, Technology.tech_name).label(
+                "tech_name"
+            ),
         )
-        .filter_by(user_name=user)
+        .join(
+            I18nTechnology,
+            and_(
+                Technology.tech_id == I18nTechnology.tech_id,
+                I18nTechnology.lang_code == request.locale_name,
+            ),
+            isouter=True,
+        )
+        .filter(Technology.user_name == user)
         .order_by(Technology.tech_name)
         .all()
     )
@@ -47,13 +58,15 @@ def getUserTechs(user, request):
         res.append(
             {
                 "tech_id": technology[0].tech_id,
-                "tech_name": technology[0].tech_name,
+                # "tech_name": technology[0].tech_name,
+                "tech_name": technology[2],
                 "user_name": technology[0].user_name,
                 "quantity": technology.quantity,
                 "tech_alias": getTechsAlias(technology[0].tech_id, request),
                 "found": res3.found,
             }
         )
+
     return res
 
 

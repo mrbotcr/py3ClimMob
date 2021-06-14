@@ -22,7 +22,8 @@ __all__ = [
     "IProduct",
     "ITemplateHelpers",
     "ITranslation",
-    "IDatabase"
+    "IDatabase",
+    "IForm",
 ]
 
 
@@ -289,6 +290,7 @@ class ITemplateHelpers(Interface):
         :return:
         """
 
+
 class ITranslation(Interface):
     """
     Allows extensions to provide their own translation strings.
@@ -312,6 +314,7 @@ class ITranslation(Interface):
             "translation_domain must be implemented in subclasses"
         )
 
+
 class IDatabase(Interface):  # pragma: no cover
     """
     Allows to hook into the database schema so plugins can add new tables
@@ -322,4 +325,26 @@ class IDatabase(Interface):  # pragma: no cover
         """
         Called by FormShare so plugins can add new tables to FormShare ORM
         :param metadata: FormShare ORM metadata object
+        """
+
+
+class IForm(Interface):  # pragma: no cover
+    """
+    Allows to hook into the processes that create, update and delete forms
+    """
+
+    def after_adding_form(self, request, user_name, projectid, formId, ass_cod):
+        """
+        Tengo que documentar
+        """
+
+    def after_deleting_form(self, request, user_name, projectid, formId, ass_cod):
+        """
+        Called by FormShare so plugins can perform actions after FormShare deletes a form from the database
+        :param request: ``pyramid.request`` object
+        :param form_type: Type of form: ODK, CSPRO, etc
+        :param user_id: User ID
+        :param project_code: Project id
+        :param form_id: Form ID
+        :return: None
         """

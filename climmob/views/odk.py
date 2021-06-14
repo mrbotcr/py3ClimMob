@@ -15,6 +15,7 @@ from ..processes import (
 from pyramid.response import Response
 import climmob.plugins as p
 
+
 class formList_view(odkView):
     def processView(self):
         userid = self.request.matchdict["userid"]
@@ -43,8 +44,6 @@ class push_view(odkView):
                     print(error)
                     print("********************77")
                     if stored:
-                        for plugin in p.PluginImplementations(p.ISubmissionStorage):
-                            plugin.report_data_entry_to_a_project(self, self.request, self.user.login, "xxxx", userid)
                         response = Response(status=201)
                         return response
                     else:
@@ -73,8 +72,30 @@ class submission_view(odkView):
             else:
                 return self.askForCredentials()
         else:
-            response = Response(status=404)
-            return response
+            if self.request.method == "POST":
+                if isEnumeratorActive(userid, self.user, self.request):
+                    if self.authorize(
+                        getEnumeratorPassword(userid, self.user, self.request)
+                    ):
+                        stored, error = storeSubmission(userid, self.user, self.request)
+                        print("********************77")
+                        print(stored)
+                        print(error)
+                        print("********************77")
+                        if stored:
+                            response = Response(status=201)
+                            return response
+                        else:
+                            response = Response(status=error)
+                            return response
+                    else:
+                        return self.askForCredentials()
+                else:
+                    response = Response(status=401)
+                    return response
+            else:
+                response = Response(status=404)
+                return response
 
 
 class XMLForm_view(odkView):

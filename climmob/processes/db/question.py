@@ -5,9 +5,11 @@ from ...models import (
     mapFromSchema,
     Qstoption,
     AssDetail,
+    I18nQuestion,
+    I18nQstoption,
 )
 import json
-from sqlalchemy import func, or_
+from sqlalchemy import func, or_, and_
 
 __all__ = [
     "addQuestion",
@@ -157,14 +159,39 @@ def UserQuestion(user, request):
 
 
 def UserQuestionMoreBioversity(user, request):
-
     mappedData = mapFromSchema(
-        request.dbsession.query(Question)
+        request.dbsession.query(
+            Question,
+            func.coalesce(I18nQuestion.question_desc, Question.question_desc).label(
+                "question_desc"
+            ),
+            func.coalesce(I18nQuestion.question_name, Question.question_name).label(
+                "question_name"
+            ),
+            func.coalesce(I18nQuestion.question_posstm, Question.question_posstm).label(
+                "question_posstm"
+            ),
+            func.coalesce(I18nQuestion.question_negstm, Question.question_negstm).label(
+                "question_negstm"
+            ),
+            func.coalesce(
+                I18nQuestion.question_perfstmt, Question.question_perfstmt
+            ).label("question_perfstmt"),
+        )
+        .join(
+            I18nQuestion,
+            and_(
+                Question.question_id == I18nQuestion.question_id,
+                I18nQuestion.lang_code == request.locale_name,
+            ),
+            isouter=True,
+        )
         .filter(or_(Question.user_name == user, Question.user_name == "bioversity"))
         .filter(Question.question_visible == 1)
         .order_by(Question.user_name, Question.question_dtype)
         .all()
     )
+
     result = []
     for data in mappedData:
         registry = (
@@ -253,7 +280,21 @@ def getOptionData(question, value, request):
 
 def getQuestionOptions(question, request):
     return mapFromSchema(
-        request.dbsession.query(Qstoption)
+        request.dbsession.query(
+            Qstoption,
+            func.coalesce(I18nQstoption.value_desc, Qstoption.value_desc).label(
+                "value_desc"
+            ),
+        )
+        .join(
+            I18nQstoption,
+            and_(
+                Qstoption.question_id == I18nQstoption.question_id,
+                Qstoption.value_code == I18nQstoption.value_code,
+                I18nQstoption.lang_code == request.locale_name,
+            ),
+            isouter=True,
+        )
         .filter(Qstoption.question_id == question)
         .order_by(Qstoption.value_order)
         .all()

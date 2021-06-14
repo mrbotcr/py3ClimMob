@@ -54,9 +54,17 @@ def getPackages(user, project, request):
         "          SELECT"
         "          user.user_name,user.user_fullname, project.project_name,project.project_pi,project.project_piemail,project.project_numobs,project.project_lat,project.project_lon,project.project_creationdate,project.project_numcom,"
         "          pkgcomb.package_id,package.package_code,"
-        "          technology.tech_name,techalias.alias_name,pkgcomb.comb_order, technology.tech_id FROM"
-        "          pkgcomb,package,prjcombination,prjcombdet,prjalias,techalias,"
-        "          technology,user,project WHERE"
+        "          COALESCE(t.tech_name,technology.tech_name) as tech_name,COALESCE(i.alias_name,techalias.alias_name) as alias_name,pkgcomb.comb_order, technology.tech_id FROM "
+        "          pkgcomb,package,prjcombination,prjcombdet,prjalias,"
+        "          user,project, technology,techalias"
+        "          LEFT JOIN i18n_techalias i "
+        "          ON        techalias.tech_id = i.tech_id "
+        "          AND       techalias.alias_id = i.alias_id "
+        "          AND       i.lang_code = '" + request.locale_name + "' "
+        "          LEFT JOIN i18n_technology t "
+        "          ON        techalias.tech_id = t.tech_id "
+        "          AND       t.lang_code = '" + request.locale_name + "' "
+        "          WHERE "
         "          pkgcomb.user_name = user.user_name AND"
         "          pkgcomb.user_name = project.user_name AND"
         "          pkgcomb.project_cod = project.project_cod AND"
@@ -86,9 +94,13 @@ def getPackages(user, project, request):
         "          SELECT"
         "          user.user_name,user.user_fullname, project.project_name,project.project_pi,project.project_piemail,project.project_numobs,project.project_lat,project.project_lon,project.project_creationdate, project.project_numcom,"
         "          pkgcomb.package_id,package.package_code,"
-        "          technology.tech_name,prjalias.alias_name,pkgcomb.comb_order, technology.tech_id FROM"
+        "          COALESCE(t.tech_name,technology.tech_name) as tech_name,prjalias.alias_name,pkgcomb.comb_order, technology.tech_id FROM"
         "          pkgcomb,package,prjcombination,prjcombdet,prjalias,"
-        "          technology,user,project WHERE"
+        "          user,project,technology "
+        "          LEFT JOIN i18n_technology t "
+        "          ON        technology.tech_id = t.tech_id "
+        "          AND       t.lang_code = '" + request.locale_name + "' "
+        "          WHERE "
         "          pkgcomb.user_name = user.user_name AND"
         "          pkgcomb.user_name = project.user_name AND"
         "          pkgcomb.project_cod = project.project_cod AND"
@@ -238,7 +250,7 @@ def create_packages_with_r(user, project, request):
                             user_name=user,
                             project_cod=project,
                             package_id=pkgid,
-                            package_code= _("Package")+" #" + str(pkgid),
+                            package_code=_("Package") + " #" + str(pkgid),
                         )
                         request.dbsession.add(newPackage)
 

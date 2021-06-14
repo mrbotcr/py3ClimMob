@@ -20,6 +20,7 @@ from .climmobv4 import (
     I18nRegsection,
     I18nTechalia,
     I18nTechnology,
+    I18nQstoption,
     Package,
     Pkgcomb,
     Prjalia,

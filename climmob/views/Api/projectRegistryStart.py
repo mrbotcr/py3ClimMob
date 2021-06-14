@@ -34,6 +34,7 @@ import os
 import uuid
 import climmob.plugins as p
 
+
 class readProjectCombinations_view(apiView):
     def processView(self):
 
@@ -871,14 +872,24 @@ class pushJsonToRegistry_view(apiView):
                                                                 )
                                                                 return response
 
-                                                            print("****************Estoy acá********")
-                                                            for plugin in p.PluginImplementations(p.ISubmissionStorage):
-                                                                plugin.report_data_entry_to_a_project(self.request,
-                                                                                                      self.user.login,
-                                                                                                      "xxxx",
-                                                                                                      "API user")
+                                                            print(
+                                                                "****************Estoy acá********"
+                                                            )
+                                                            for (
+                                                                plugin
+                                                            ) in p.PluginImplementations(
+                                                                p.ISubmissionStorage
+                                                            ):
+                                                                plugin.report_data_entry_to_a_project(
+                                                                    self.request,
+                                                                    self.user.login,
+                                                                    "xxxx",
+                                                                    "API user",
+                                                                )
 
-                                                            print("****************Estoy acá y salí********")
+                                                            print(
+                                                                "****************Estoy acá y salí********"
+                                                            )
                                                             response = Response(
                                                                 status=200,
                                                                 body=self._(

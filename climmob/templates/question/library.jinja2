@@ -19,7 +19,8 @@
 {% block topScripts %}
     {% jsresource request,'coreresources','qlibrary' %}
     {% jsresource request,'coreresources','sweet' %}
-    {% jsresource request,'coreresources','delete' %}
+    {#    {% jsresource request,'coreresources','delete' %}#}
+    {% include 'snippets/delete.jinja2' %}
     {% jsresource request,'coreresources','switch' %}
     {% jsresource request,'coreresources','toastr' %}
     {% jsresource request,'coreresources','jstree' %}
@@ -488,7 +489,7 @@
 
             $("#tableForOptions").append("" +
             "<tr>" +
-            "<td class='text-center' style='padding: 10px'><input type='text' class='form-control inputForOption' id='inputOptions"+(rowCount+1)+"' name='input_array_name[]' placeholder='Option' required oninvalid=\"this.setCustomValidity('{{ _("Write the option value.") }}')\" onchange=\"this.setCustomValidity('')\" /></td>" +
+            "<td class='text-center' style='padding: 10px'><input type='text' class='form-control inputForOption' id='inputOptions"+(rowCount+1)+"' name='input_array_name[]' placeholder='{{ _("Option") }}' required oninvalid=\"this.setCustomValidity('{{ _("Write the option value.") }}')\" onchange=\"this.setCustomValidity('')\" /></td>" +
             "<td class='text-center'></td>" +
             "<td class='text-center'> <a class='btn_delete_option btn btn-danger btnsQuestion' style='margin: 5px'> <i class='fa fa-trash'></i></a></td>" +
             "</tr>")
@@ -507,7 +508,7 @@
             $("#btn_add_option_other").prop('disabled', true);
             $("#tableForOptions").append("" +
             "<tr>" +
-            "<td class='text-center' style='padding: 10px'><input type='text' class='form-control inputForOption' id='inputOptions"+(rowCount+1)+"' value='{{ _("Other") }}' placeholder='Option' required oninvalid=\"this.setCustomValidity('{{ _("Write the option value.") }}')\" onchange=\"this.setCustomValidity('')\" /></td>" +
+            "<td class='text-center' style='padding: 10px'><input type='text' class='form-control inputForOption' id='inputOptions"+(rowCount+1)+"' value='{{ _("Other") }}' placeholder='{{ _("Option") }}' required oninvalid=\"this.setCustomValidity('{{ _("Write the option value.") }}')\" onchange=\"this.setCustomValidity('')\" /></td>" +
             "<td class='text-center'><div class='bg-success p-xs b-r-sm'> {{ _("Other") }}</div><div style='display:none'><label class='control-label'>{{ _("Value is other") }}</label><br><input type='checkbox' disabled  class='inputForQuestionCheck' id='checkOtherOptions"+(rowCount+1)+"' data-on-color='success' data-off-color='danger' data-on-text='Yes' data-off-text='No' checked=''><br><br></div></td>" +
             "<td class='text-center'> <a class='btn_delete_option_other btn btn-danger btnsQuestion' style='margin: 5px'> <i class='fa fa-trash'></i></a></td>" +
             "</tr>")
@@ -528,7 +529,7 @@
 
             $("#tableForOptions").append("" +
             "<tr>" +
-            "<td class='text-center' style='padding: 10px'><input type='text' class='form-control inputForOption' id='inputOptions"+(rowCount+1)+"' value='{{ _("Not applicable") }}' placeholder='Option' required oninvalid=\"this.setCustomValidity('{{ _("Write the option value.") }}')\" onchange=\"this.setCustomValidity('')\" /></td>" +
+            "<td class='text-center' style='padding: 10px'><input type='text' class='form-control inputForOption' id='inputOptions"+(rowCount+1)+"' value='{{ _("Not applicable") }}' placeholder='{{ _("Option") }}' required oninvalid=\"this.setCustomValidity('{{ _("Write the option value.") }}')\" onchange=\"this.setCustomValidity('')\" /></td>" +
             "<td class='text-center'><div class='bg-info p-xs b-r-sm'> {{ _("Not applicable") }}</div><div style='display:none'><label class='control-label'>{{ _("Value is not applicable") }}</label><br><input type='checkbox' disabled class='inputForQuestionCheck' id='checkNaOptions"+(rowCount+1)+"'  data-on-color='success' data-off-color='danger' data-on-text='Yes' data-off-text='No' checked=''><br><br></div></td>" +
             "<td class='text-center'> <a class='btn_delete_option_na btn btn-danger btnsQuestion' style='margin: 5px'> <i class='fa fa-trash'></i></a></td>" +
             "</tr>")
@@ -688,7 +689,7 @@
                     isother = false
                     isna = false
                     detail = "<tr>" +
-                    "<td class='text-center' style='padding: 10px; width:60%'><input type='text' class='form-control inputForOption' id='inputOptions"+(i+1)+"' placeholder='Option' required oninvalid=\"this.setCustomValidity('{{ _("Write the option value.") }}')\" onchange=\"this.setCustomValidity('')\"  value='"+options[i].value_desc+"'/></td>" +
+                    "<td class='text-center' style='padding: 10px; width:60%'><input type='text' class='form-control inputForOption' id='inputOptions"+(i+1)+"' placeholder='{{ _("Option") }}' required oninvalid=\"this.setCustomValidity('{{ _("Write the option value.") }}')\" onchange=\"this.setCustomValidity('')\"  value='"+options[i].value_desc+"'/></td>" +
                     "<td class='text-center' style='width:30%'>"
 
                     if(options[i].value_isother == 1)
@@ -905,9 +906,9 @@
                     }
                     if(question_dtype ==8)
                     {
-                        $("divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='observer' value='1'> Juan Mora Brenes<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                        $("divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='observer' value='2'> María Rojas Fonseca<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                        $("divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='observer' value='3'> Tom Castro Durán<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                        $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='observer' value='1'> Juan Mora Brenes<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                        $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='observer' value='2'> María Rojas Fonseca<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                        $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='observer' value='3'> Tom Castro Durán<hr style='margin: 10px 0px 10px 0px'></label><br>")
                     }
                     if(question_dtype ==13 || question_dtype ==15)
                     {
@@ -951,14 +952,14 @@
                         }
                         questionHTML += '<strong id="preview_text">'+ question_posstm +'</strong></h3>';
                         $("#divForPreview").append(questionHTML+'<br>');
-                        $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='1'> Option A<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                        $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='2'> Option B<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                        $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='3'> Option C<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                        $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='1'> {{ _("Option") }} A<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                        $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='2'> {{ _("Option") }} B<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                        $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='3'> {{ _("Option") }} C<hr style='margin: 10px 0px 10px 0px'></label><br>")
                         if (question_tied == 1) {
-                            $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='4'> Tied<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                            $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='4'> {{ _("Tied") }}<hr style='margin: 10px 0px 10px 0px'></label><br>")
                         }
                         if (question_notobserved == 1) {
-                            $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='3'> Not observed<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                            $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='3'> {{ _("Not observed") }}<hr style='margin: 10px 0px 10px 0px'></label><br>")
                         }
                         $("#divForPreview").append("<hr style='margin: 10px 0px 10px 0px'>")
                         var questionHTML = '<h3 style="font-family:sans-serif; color: #000000" id="preview_question">';
@@ -968,14 +969,14 @@
                         }
                         questionHTML += '<strong id="preview_text">'+ question_negstm +'</strong></h3>';
                         $("#divForPreview").append(questionHTML+'<br>');
-                        $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm' value='1'> Option A<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                        $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm' value='2'> Option B<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                        $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm' value='3'> Option C<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                        $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm' value='1'> {{ _("Option") }} A<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                        $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm' value='2'> {{ _("Option") }} B<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                        $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm' value='3'> {{ _("Option") }} C<hr style='margin: 10px 0px 10px 0px'></label><br>")
                         if (question_tied == 1) {
-                            $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='4'> Tied<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                            $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='4'> {{ _("Tied") }}<hr style='margin: 10px 0px 10px 0px'></label><br>")
                         }
                         if (question_notobserved == 1) {
-                            $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='3'> Not observed<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                            $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='3'> {{ _("Not observed") }}<hr style='margin: 10px 0px 10px 0px'></label><br>")
                         }
                     }
 
@@ -989,8 +990,8 @@
                             }
                             questionHTML += '<strong id="preview_text">'+ question_perfstmt.replace("{ {option}}".replace(" ", ""), letters[x]) +'</strong></h3>';
                             $("#divForPreview").append(questionHTML+'<br>');
-                            $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='perfstmt" + x + " value='1'> Better<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                            $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='perfstmt" + x + "' value='2'> Worse<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                            $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='perfstmt" + x + " value='1'> {{ _("Better") }}<hr style='margin: 10px 0px 10px 0px'></label><br>")
+                            $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='perfstmt" + x + "' value='2'> {{ _("Worse") }}<hr style='margin: 10px 0px 10px 0px'></label><br>")
                             if (x != 2)
                                 $("#divForPreview").append("<hr style='margin: 10px 0px 10px 0px'>")
                         }

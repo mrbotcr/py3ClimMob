@@ -57,9 +57,7 @@ def addQuestionsToAssessment(user, project, assessment, request):
     data["ass_cod"] = assessment
     data["section_id"] = 1
     data["section_name"] = _("Farmer selection")
-    data["section_content"] = _(
-        "List of farmers included in the registration form"
-    )
+    data["section_content"] = _("List of farmers included in the registration form")
     data["section_order"] = 1
     data["section_private"] = 1
     newAsssection = Asssection(**data)
@@ -649,13 +647,17 @@ def getProjectProgress(user, project, request):
         .all()
     )
     for assessment in assessments:
+        assessment = mapFromSchema(assessment)
+        if "enketo_url" not in assessment.keys():
+            assessment["enketo_url"] = ""
+
         sql = (
             "SELECT COUNT(*) as total FROM "
             + user
             + "_"
             + project
             + ".ASS"
-            + assessment.ass_cod
+            + assessment["ass_cod"]
             + "_geninfo"
         )
         try:
@@ -677,28 +679,29 @@ def getProjectProgress(user, project, request):
                 submissions = 0
 
             lastAss = getLastAssessmentSubmissionDate(
-                user, project, assessment.ass_cod, request
+                user, project, assessment["ass_cod"], request
             )
 
             errorsCount = (
                 request.dbsession.query(AssessmentJsonLog)
                 .filter(AssessmentJsonLog.user_name == user)
                 .filter(AssessmentJsonLog.project_cod == project)
-                .filter(AssessmentJsonLog.ass_cod == assessment.ass_cod)
+                .filter(AssessmentJsonLog.ass_cod == assessment["ass_cod"])
                 .filter(AssessmentJsonLog.status == 1)
                 .count()
             )
 
             assessmentArray.append(
                 {
-                    "ass_cod": assessment.ass_cod,
-                    "ass_desc": assessment.ass_desc,
-                    "ass_status": assessment.ass_status,
+                    "ass_cod": assessment["ass_cod"],
+                    "ass_desc": assessment["ass_desc"],
+                    "ass_status": assessment["ass_status"],
                     "asstotal": totSubmissions,
                     "assperc": (totSubmissions * 100) / submissions,
                     "submissions": submissions,
                     "errors": errorsCount,
                     "lastass": lastAss,
+                    "enketo_url": assessment["enketo_url"],
                 }
             )
         else:
@@ -714,14 +717,15 @@ def getProjectProgress(user, project, request):
 
             assessmentArray.append(
                 {
-                    "ass_cod": assessment.ass_cod,
-                    "ass_desc": assessment.ass_desc,
-                    "ass_status": assessment.ass_status,
+                    "ass_cod": assessment["ass_cod"],
+                    "ass_desc": assessment["ass_desc"],
+                    "ass_status": assessment["ass_status"],
                     "asstotal": 0,
                     "assperc": 0,
                     "submissions": submissions,
                     "errors": 0,
                     "lastass": _("Without submissions"),
+                    "enketo_url": assessment["enketo_url"],
                 }
             )
     result["assessments"] = assessmentArray

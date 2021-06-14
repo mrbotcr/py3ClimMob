@@ -19,7 +19,9 @@
     {% jsresource request,'coreresources','chosen' %}
     {% jsresource request,'coreresources','icheck' %}
     {% jsresource request,'coreresources','sweet' %}
-    {% jsresource request,'coreresources','delete' %}
+    {#    {% jsresource request,'coreresources','delete' %}#}
+    {% jsresource request,'coreresources','toastr' %}
+    {% include 'snippets/delete.jinja2' %}
 {% endblock topScripts %}
 
 {% block pageheading %}

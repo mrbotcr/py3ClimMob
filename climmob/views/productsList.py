@@ -171,11 +171,18 @@ class generateProductView(privateView):
 
             ncombs, packages = getPackages(self.user.login, projectid, self.request)
             create_qr_packages(
-                self.request, self.request.locale_name, self.user.login, projectid, ncombs, packages
+                self.request,
+                self.request.locale_name,
+                self.user.login,
+                projectid,
+                ncombs,
+                packages,
             )
 
         if productid == "packages":
-            ncombs, packages = getPackages(self.request.locale_name, self.user.login, projectid, self.request)
+            ncombs, packages = getPackages(
+                self.request.locale_name, self.user.login, projectid, self.request
+            )
             create_packages_excell(
                 self.request,
                 self.user.login,

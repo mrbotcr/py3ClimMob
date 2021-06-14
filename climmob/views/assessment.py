@@ -31,7 +31,7 @@ from jinja2 import Environment, FileSystemLoader
 from .registry import getDataFormPreview
 from pyramid.response import FileResponse
 import mimetypes, os
-
+import climmob.plugins as p
 import pprint
 
 
@@ -680,6 +680,16 @@ class startAssessments_view(privateView):
                             packages,
                         )
                         print("Returning")
+
+                        for plugin in p.PluginImplementations(p.IForm):
+                            plugin.after_adding_form(
+                                self.request,
+                                self.user.login,
+                                projectid,
+                                "assessment",
+                                assessment_id,
+                            )
+
                         self.returnRawViewResult = True
                         return HTTPFound(location=self.request.route_url("dashboard"))
                     else:
@@ -736,6 +746,16 @@ class closeAssessment_view(privateView):
                 setAssessmentIndividualStatus(
                     self.user.login, projectid, assessmentid, 2, self.request
                 )
+
+                for plugin in p.PluginImplementations(p.IForm):
+                    plugin.after_deleting_form(
+                        self.request,
+                        self.user.login,
+                        projectid,
+                        "assessment",
+                        assessmentid,
+                    )
+
                 self.returnRawViewResult = True
                 return HTTPFound(location=self.request.route_url("dashboard"))
 
@@ -768,6 +788,16 @@ class CancelAssessmentView(privateView):
                 clean_assessments_error_logs(
                     self.request, projectid, self.user.login, assessmentid
                 )
+
+                for plugin in p.PluginImplementations(p.IForm):
+                    plugin.after_deleting_form(
+                        self.request,
+                        self.user.login,
+                        projectid,
+                        "assessment",
+                        assessmentid,
+                    )
+
                 self.returnRawViewResult = True
                 return HTTPFound(location=self.request.route_url("dashboard"))
 

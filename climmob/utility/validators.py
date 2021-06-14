@@ -21,9 +21,7 @@ def valideRegisterForm(data, request, _):
         )
         errors = True
     if data["user_policy"] == "False":
-        error_summary["CheckPolicy"] = _(
-            "You need to accept the terms of service"
-        )
+        error_summary["CheckPolicy"] = _("You need to accept the terms of service")
         errors = True
     if data["user_name"] == "":
         error_summary["EmptyUser"] = _("User cannot be emtpy")

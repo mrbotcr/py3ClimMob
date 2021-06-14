@@ -146,7 +146,7 @@ def fillDataTable(self, db, form, columns, file, code, where=""):
 
     columns.insert(0, "surveyid$%*ID$%*string")
     if form == "reg":
-        columns.insert(1, "qst162$%*Package code$%*string")
+        columns.insert(1, "qst162$%*" + self._("Package code") + "$%*string")
 
     # hidden field
     ret["colNames"].append("flag_update")
@@ -168,7 +168,7 @@ def fillDataTable(self, db, form, columns, file, code, where=""):
             proData = getProjectData(self.user.login, db, self.request)
             packages = {}
             for y in range(1, proData["project_numobs"] + 1):
-                packages[y] = "Package #" + str(y)
+                packages[y] = self._("Package") + " #" + str(y)
 
             ret["colModel"].append(
                 {

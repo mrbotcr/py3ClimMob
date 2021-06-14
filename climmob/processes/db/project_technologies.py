@@ -1,6 +1,14 @@
-from ...models import Prjtech, Technology, Prjalia, Techalia, Project
+from ...models import (
+    Prjtech,
+    Technology,
+    Prjalia,
+    Techalia,
+    Project,
+    I18nTechnology,
+    I18nTechalia,
+)
 from ...models.schema import mapToSchema, mapFromSchema
-from sqlalchemy import func, or_
+from sqlalchemy import func, or_, and_
 
 __all__ = [
     "searchTechnologies",
@@ -37,6 +45,17 @@ def searchTechnologies(user, projectid, request):
             request.dbsession.query(func.count(Techalia.tech_id))
             .filter(Techalia.tech_id == Technology.tech_id)
             .label("quantityAlias"),
+            func.coalesce(I18nTechnology.tech_name, Technology.tech_name).label(
+                "tech_name"
+            ),
+        )
+        .join(
+            I18nTechnology,
+            and_(
+                Technology.tech_id == I18nTechnology.tech_id,
+                I18nTechnology.lang_code == request.locale_name,
+            ),
+            isouter=True,
         )
         .filter(or_(Technology.user_name == user, Technology.user_name == "bioversity"))
         .filter(Technology.tech_id.notin_(subquery))
@@ -47,7 +66,8 @@ def searchTechnologies(user, projectid, request):
         res.append(
             {
                 "tech_id": technology[0].tech_id,
-                "tech_name": technology[0].tech_name,
+                # "tech_name": technology[0].tech_name,
+                "tech_name": technology[2],
                 "user_name": technology[0].user_name,
                 "quantity": 0,
                 "quantityAlias": technology.quantityAlias,
@@ -61,7 +81,9 @@ def searchTechnologiesInProject(user, project_id, request):
 
     result = (
         request.dbsession.query(
-            Technology.tech_name,
+            func.coalesce(I18nTechnology.tech_name, Technology.tech_name).label(
+                "tech_name"
+            ),
             Prjtech,
             request.dbsession.query(func.count(Prjalia.alias_id))
             .filter(Prjalia.tech_id == Prjtech.tech_id)
@@ -71,6 +93,14 @@ def searchTechnologiesInProject(user, project_id, request):
             request.dbsession.query(func.count(Techalia.tech_id))
             .filter(Techalia.tech_id == Prjtech.tech_id)
             .label("quantityAlias"),
+        )
+        .join(
+            I18nTechnology,
+            and_(
+                Prjtech.tech_id == I18nTechnology.tech_id,
+                I18nTechnology.lang_code == request.locale_name,
+            ),
+            isouter=True,
         )
         .filter(Prjtech.tech_id == Technology.tech_id)
         .filter(Prjtech.user_name == user)
@@ -161,7 +191,22 @@ def AliasSearchTechnology(technology, user, projectid, request):
         .filter(Prjalia.alias_name == "")
     )
     result = (
-        request.dbsession.query(Technology, Techalia)
+        request.dbsession.query(
+            Technology,
+            Techalia,
+            func.coalesce(I18nTechalia.alias_name, Techalia.alias_name).label(
+                "alias_name"
+            ),
+        )
+        .join(
+            I18nTechalia,
+            and_(
+                Techalia.tech_id == I18nTechalia.tech_id,
+                Techalia.alias_id == I18nTechalia.alias_id,
+                I18nTechalia.lang_code == request.locale_name,
+            ),
+            isouter=True,
+        )
         .filter(Techalia.tech_id == Technology.tech_id)
         .filter(Technology.tech_id == technology)
         .filter(Techalia.alias_id.notin_(subquery))
@@ -175,7 +220,7 @@ def AliasSearchTechnology(technology, user, projectid, request):
                 "user_name": technology[0].user_name,
                 "tech_idAlias": technology[1].tech_id,
                 "alias_id": technology[1].alias_id,
-                "alias_name": technology[1].alias_name,
+                "alias_name": technology[2],
             }
         )
 
@@ -185,7 +230,22 @@ def AliasSearchTechnology(technology, user, projectid, request):
 def AliasSearchTechnologyInProject(technology, user, projectid, request):
     res = []
     result = (
-        request.dbsession.query(Prjalia, Techalia)
+        request.dbsession.query(
+            Prjalia,
+            Techalia,
+            func.coalesce(I18nTechalia.alias_name, Techalia.alias_name).label(
+                "alias_name"
+            ),
+        )
+        .join(
+            I18nTechalia,
+            and_(
+                Techalia.tech_id == I18nTechalia.tech_id,
+                Techalia.alias_id == I18nTechalia.alias_id,
+                I18nTechalia.lang_code == request.locale_name,
+            ),
+            isouter=True,
+        )
         .filter(Prjalia.user_name == user)
         .filter(Prjalia.project_cod == projectid)
         .filter(Prjalia.tech_id == technology)
@@ -204,7 +264,7 @@ def AliasSearchTechnologyInProject(technology, user, projectid, request):
                 "alias_used": technology[0].alias_used,
                 "tech_idTec": technology[1].tech_id,
                 "alias_idTec": technology[1].alias_id,
-                "alias_name": technology[1].alias_name,
+                "alias_name": technology[2],
             }
         )
 
