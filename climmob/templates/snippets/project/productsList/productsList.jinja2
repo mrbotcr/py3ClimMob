@@ -82,7 +82,11 @@
                                                                             {{ _("Multimedia content collected in the assessment form") }}: {{ product.extraInformation.ass_desc }}
                                                                         {% endif %}
                                                                     {% else %}
-                                                                        {{ product.product_id }}
+                                                                        {% if product.product_id == "infosheets" %}
+                                                                            {{ _("Individual feedback reports for participants") }}
+                                                                        {% else %}
+                                                                            {{ product.product_id }}
+                                                                        {% endif %}
                                                                     {% endif %}
                                                                 {% endif %}
                                                             {% endif %}
@@ -132,7 +136,7 @@
                                 <a id="{{product.celery_taskid}}$#%%#${{product.output_id}}" class="btn btn-primary btn_datadesk" style="background-color:{{ color }}; border-color: {{ color }}"><i class="fa fa-download"></i> {{ _("Download") }}</a>
                             {% endif %}
                         {% else %}
-                            {% if  product.product_id == "reports"%}
+                            {% if  product.product_id == "reports" or product.product_id == "infosheets"%}
                                 <a href="{{ request.route_url('createAnalysis') }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
                             {% else %}
                                 {% if  product.product_id != "datadesk" and product.product_id != "cards"%}
@@ -146,7 +150,8 @@
                         {% if product.state =="Pending..." %}
                             <a  onclick=" location.reload(); " class="btn btn-primary" style="background-color: #f8ac59; border-color: #f8ac59" ><i class="fa fa-refresh"></i> {{ "Pending" }}</a>
                         {% else %}
-                            {% if  product.product_id == "reports"%}
+
+                            {% if  product.product_id == "reports" or product.product_id == "infosheets"%}
                                 <a href="{{ request.route_url('createAnalysis') }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
                             {% else %}
                                 {% if  product.product_id != "datadesk" and product.product_id != "cards"%}
