@@ -65,6 +65,7 @@ __all__ = [
     "getQuestionsByGroupInAssessment",
     "getTheGroupOfThePackageCodeAssessment",
     "formattingQuestions",
+    "assessmentHaveQuestionOfMultimediaType"
 ]
 
 log = logging.getLogger(__name__)
@@ -1521,3 +1522,12 @@ def getAssessmentQuestionsApi(data, self):
         res.append(int(re.question_id))
 
     return res
+
+def assessmentHaveQuestionOfMultimediaType(request, user, project, ass_cod):
+
+    result = request.dbsession.query(func.count(AssDetail.question_id).label("count")).filter(AssDetail.ass_cod == ass_cod).filter(AssDetail.user_name == user).filter(AssDetail.project_cod == project).filter(AssDetail.question_id == Question.question_id).filter(Question.question_dtype.in_([16,17,18])).one()
+
+    if result[0] > 0:
+        return True
+    else:
+        return False

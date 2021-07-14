@@ -650,7 +650,7 @@ def loadRoutes(config):
         )
     )
 
-    routes.append(addRoute("download", "/download/{product_id}", downloadView, None))
+    routes.append(addRoute("download", "/download/{celery_taskid}/{product_id}", downloadView, None))
     routes.append(
         addRoute("downloadJson", "/downloadJson/{product_id}", downloadJsonView, "json")
     )

@@ -733,12 +733,13 @@ def getProjectProgress(user, project, request):
     return result, perc
 
 
-def getProductData(user, project, celery_taskid, request):
+def getProductData(user, project, celery_taskid, product_id, request):
     mappedData = mapFromSchema(
         request.dbsession.query(Products)
         .filter(Project.user_name == user)
         .filter(Project.project_cod == project)
         .filter(Products.celery_taskid == celery_taskid)
+        .filter(Products.product_id == product_id)
         .first()
     )
     return mappedData

@@ -46,7 +46,7 @@ from ..products.datacollectionprogress.dataCollectionProgress import (
     create_data_collection_progress,
 )
 from ..products.errorLogDocument.errorLogDocument import create_error_log_document
-
+import climmob.plugins as p
 
 def getDataProduct(user, project, request):
 
@@ -140,6 +140,7 @@ class productsView(climmobPrivateView):
                         product["product_id"] == "documentform"
                         or product["product_id"] == "datacsv"
                         or product["product_id"] == "errorlogdocument"
+                        or product["product_id"] == "multimediadownloads"
                     ):
                         product["extraInformation"] = getProjectAssessmentInfo(
                             self.user.login,
@@ -385,19 +386,28 @@ class generateProductView(privateView):
                 geoInformation,
             )
 
+        if productid == "multimediadownloads":
+            for plugin in p.PluginImplementations(p.IMultimedia):
+                if processname == "create_multimedia_Registration_":
+                    plugin.start_multimedia_download(self.request, self.user.login, projectid, "Registration", "")
+                else:
+                    assessment_id = processname.split("_")[3]
+                    plugin.start_multimedia_download(self.request, self.user.login, projectid, "Assessment", assessment_id)
+
         self.returnRawViewResult = True
         return HTTPFound(location=self.request.route_url("productList"))
 
 
 class downloadJsonView(climmobPrivateView):
     def processView(self):
-
-        celery_taskid = self.request.matchdict["product_id"]
+        celery_taskid = self.request.matchdict["celery_taskid"]
+        product_id = self.request.matchdict["product_id"]
         activeProjectData = getActiveProject(self.user.login, self.request)
         dataworking = getProductData(
             self.user.login,
             activeProjectData["project_cod"],
             celery_taskid,
+            product_id,
             self.request,
         )
         product_id = dataworking["product_id"]
@@ -422,12 +432,14 @@ class downloadJsonView(climmobPrivateView):
 
 class downloadView(climmobPrivateView):
     def processView(self):
-        celery_taskid = self.request.matchdict["product_id"]
+        celery_taskid = self.request.matchdict["celery_taskid"]
+        product_id = self.request.matchdict["product_id"]
         activeProjectData = getActiveProject(self.user.login, self.request)
         dataworking = getProductData(
             self.user.login,
             activeProjectData["project_cod"],
             celery_taskid,
+            product_id,
             self.request,
         )
         product_id = dataworking["product_id"]

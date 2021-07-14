@@ -105,146 +105,8 @@ class cloneProjects_view(privateView):
                         dataworking, error_summary, self
                     )
                     if added:
-                        enumerators = getProjectEnumerators(
-                            self.user.login,
-                            dataworking["slt_project_cod"],
-                            self.request,
-                        )
-                        for enumerator in enumerators:
-                            addEnumeratorToProject(
-                                self.user.login,
-                                dataworking["project_cod"],
-                                enumerator["enum_id"],
-                                self.request,
-                            )
 
-                        techInfo = searchTechnologiesInProject(
-                            self.user.login,
-                            dataworking["slt_project_cod"],
-                            self.request,
-                        )
-                        for tech in techInfo:
-                            added, message = addTechnologyProject(
-                                self.user.login,
-                                dataworking["project_cod"],
-                                tech["tech_id"],
-                                self.request,
-                            )
-
-                            if added:
-                                allAlias = AliasSearchTechnologyInProject(
-                                    tech["tech_id"],
-                                    self.user.login,
-                                    dataworking["slt_project_cod"],
-                                    self.request,
-                                )
-                                for alias in allAlias:
-                                    data = {}
-                                    data["user_name"] = self.user.login
-                                    data["project_cod"] = dataworking["project_cod"]
-                                    data["tech_id"] = tech["tech_id"]
-                                    data["alias_id"] = alias["alias_idTec"]
-                                    add, message = AddAliasTechnology(
-                                        data, self.request
-                                    )
-
-                                allAliasExtra = AliasExtraSearchTechnologyInProject(
-                                    tech["tech_id"],
-                                    self.user.login,
-                                    dataworking["slt_project_cod"],
-                                    self.request,
-                                )
-                                for alias in allAliasExtra:
-                                    data = {}
-                                    data["user_name"] = self.user.login
-                                    data["project_cod"] = dataworking["project_cod"]
-                                    data["tech_id"] = tech["tech_id"]
-                                    data["alias_name"] = alias["alias_name"]
-                                    add, message = addTechAliasExtra(data, self.request)
-
-                        groupsInRegistry = getAllRegistryGroups(
-                            self.user.login,
-                            dataworking["slt_project_cod"],
-                            self.request,
-                        )
-                        for group in groupsInRegistry:
-                            group["project_cod"] = dataworking["project_cod"]
-                            addgroup, message = addRegistryGroup(group, self)
-
-                            if addgroup:
-                                questionsInRegistry = getQuestionsByGroupInRegistry(
-                                    self.user.login,
-                                    dataworking["slt_project_cod"],
-                                    group["section_id"],
-                                    self.request,
-                                )
-                                for question in questionsInRegistry:
-                                    question["project_cod"] = dataworking["project_cod"]
-                                    question["section_project"] = dataworking[
-                                        "project_cod"
-                                    ]
-                                    addq, message = addRegistryQuestionToGroup(
-                                        question, self.request
-                                    )
-
-                        assessments = getProjectAssessments(
-                            self.user.login,
-                            dataworking["slt_project_cod"],
-                            self.request,
-                        )
-                        for assessment in assessments:
-                            newAssessment = {}
-                            newAssessment["ass_desc"] = assessment["ass_desc"]
-                            newAssessment["ass_days"] = assessment["ass_days"]
-                            newAssessment["ass_final"] = assessment["ass_final"]
-                            newAssessment["user_name"] = self.user.login
-                            newAssessment["project_cod"] = dataworking["project_cod"]
-                            newAssessment["ass_status"] = 0
-                            added, msg = addProjectAssessmentClone(
-                                newAssessment, self.request
-                            )
-
-                            if added:
-                                newAssessment["ass_cod"] = msg
-                                data = {}
-                                data["user_name"] = self.user.login
-                                data["project_cod"] = dataworking["slt_project_cod"]
-                                data["ass_cod"] = assessment["ass_cod"]
-                                groupsInAssessment = getAllAssessmentGroups(
-                                    data, self.request
-                                )
-                                for group in groupsInAssessment:
-                                    group["project_cod"] = dataworking["project_cod"]
-                                    group["ass_cod"] = newAssessment["ass_cod"]
-                                    addgroup, message = addAssessmentGroup(group, self)
-
-                                    if addgroup:
-                                        questionInAssessment = getQuestionsByGroupInAssessment(
-                                            self.user.login,
-                                            dataworking["slt_project_cod"],
-                                            assessment["ass_cod"],
-                                            group["section_id"],
-                                            self.request,
-                                        )
-                                        for question in questionInAssessment:
-                                            question["project_cod"] = dataworking[
-                                                "project_cod"
-                                            ]
-                                            question["ass_cod"] = newAssessment[
-                                                "ass_cod"
-                                            ]
-                                            question["section_project"] = dataworking[
-                                                "project_cod"
-                                            ]
-                                            question[
-                                                "section_assessment"
-                                            ] = newAssessment["ass_cod"]
-                                            (
-                                                addq,
-                                                message,
-                                            ) = addAssessmentQuestionToGroup(
-                                                question, self.request
-                                            )
+                        ok = functionCreateClone(self, dataworking)
 
                         if not error_summary:
                             #     stage = 4
@@ -294,6 +156,149 @@ class cloneProjects_view(privateView):
 
             return {"activeUser": self.user, "dataworking": dataworking, "stage": 4}
 
+def functionCreateClone(self, dataworking):
+    enumerators = getProjectEnumerators(
+        self.user.login,
+        dataworking["slt_project_cod"],
+        self.request,
+    )
+    for enumerator in enumerators:
+        addEnumeratorToProject(
+            self.user.login,
+            dataworking["project_cod"],
+            enumerator["enum_id"],
+            self.request,
+        )
+
+    techInfo = searchTechnologiesInProject(
+        self.user.login,
+        dataworking["slt_project_cod"],
+        self.request,
+    )
+    for tech in techInfo:
+        added, message = addTechnologyProject(
+            self.user.login,
+            dataworking["project_cod"],
+            tech["tech_id"],
+            self.request,
+        )
+
+        if added:
+            allAlias = AliasSearchTechnologyInProject(
+                tech["tech_id"],
+                self.user.login,
+                dataworking["slt_project_cod"],
+                self.request,
+            )
+            for alias in allAlias:
+                data = {}
+                data["user_name"] = self.user.login
+                data["project_cod"] = dataworking["project_cod"]
+                data["tech_id"] = tech["tech_id"]
+                data["alias_id"] = alias["alias_idTec"]
+                add, message = AddAliasTechnology(
+                    data, self.request
+                )
+
+            allAliasExtra = AliasExtraSearchTechnologyInProject(
+                tech["tech_id"],
+                self.user.login,
+                dataworking["slt_project_cod"],
+                self.request,
+            )
+            for alias in allAliasExtra:
+                data = {}
+                data["user_name"] = self.user.login
+                data["project_cod"] = dataworking["project_cod"]
+                data["tech_id"] = tech["tech_id"]
+                data["alias_name"] = alias["alias_name"]
+                add, message = addTechAliasExtra(data, self.request)
+
+    groupsInRegistry = getAllRegistryGroups(
+        self.user.login,
+        dataworking["slt_project_cod"],
+        self.request,
+    )
+    for group in groupsInRegistry:
+        group["project_cod"] = dataworking["project_cod"]
+        addgroup, message = addRegistryGroup(group, self)
+
+        if addgroup:
+            questionsInRegistry = getQuestionsByGroupInRegistry(
+                self.user.login,
+                dataworking["slt_project_cod"],
+                group["section_id"],
+                self.request,
+            )
+            for question in questionsInRegistry:
+                question["project_cod"] = dataworking["project_cod"]
+                question["section_project"] = dataworking[
+                    "project_cod"
+                ]
+                addq, message = addRegistryQuestionToGroup(
+                    question, self.request
+                )
+
+    assessments = getProjectAssessments(
+        self.user.login,
+        dataworking["slt_project_cod"],
+        self.request,
+    )
+    for assessment in assessments:
+        newAssessment = {}
+        newAssessment["ass_desc"] = assessment["ass_desc"]
+        newAssessment["ass_days"] = assessment["ass_days"]
+        newAssessment["ass_final"] = assessment["ass_final"]
+        newAssessment["user_name"] = self.user.login
+        newAssessment["project_cod"] = dataworking["project_cod"]
+        newAssessment["ass_status"] = 0
+        added, msg = addProjectAssessmentClone(
+            newAssessment, self.request
+        )
+
+        if added:
+            newAssessment["ass_cod"] = msg
+            data = {}
+            data["user_name"] = self.user.login
+            data["project_cod"] = dataworking["slt_project_cod"]
+            data["ass_cod"] = assessment["ass_cod"]
+            groupsInAssessment = getAllAssessmentGroups(
+                data, self.request
+            )
+            for group in groupsInAssessment:
+                group["project_cod"] = dataworking["project_cod"]
+                group["ass_cod"] = newAssessment["ass_cod"]
+                addgroup, message = addAssessmentGroup(group, self)
+
+                if addgroup:
+                    questionInAssessment = getQuestionsByGroupInAssessment(
+                        self.user.login,
+                        dataworking["slt_project_cod"],
+                        assessment["ass_cod"],
+                        group["section_id"],
+                        self.request,
+                    )
+                    for question in questionInAssessment:
+                        question["project_cod"] = dataworking[
+                            "project_cod"
+                        ]
+                        question["ass_cod"] = newAssessment[
+                            "ass_cod"
+                        ]
+                        question["section_project"] = dataworking[
+                            "project_cod"
+                        ]
+                        question[
+                            "section_assessment"
+                        ] = newAssessment["ass_cod"]
+                        (
+                            addq,
+                            message,
+                        ) = addAssessmentQuestionToGroup(
+                            question, self.request
+                        )
+
+    return ""
 
 # class cloneProjects_view(privateView):
 #     def processView(self):

@@ -69,10 +69,10 @@ def addMetadataToProduct(product, key, value):
 
 
 def registerProductInstance(
-    user, project, product, output, mimeType, processName, instanceID, request
+    user, project, product, output, mimeType, processName, instanceID, request, newTask=True
 ):
     p.registerProductInstance(
-        user, project, product, output, mimeType, processName, instanceID, request
+        user, project, product, output, mimeType, processName, instanceID, request, newTask
     )
 
 
@@ -144,7 +144,7 @@ def register_products(config):
     products.append(colorsProduct)
 
     # REPORT
-    analysysProduct = addProduct("reports", "Create reports and infosheets.")
+    analysysProduct = addProduct("reports", "Create reports.")
     addMetadataToProduct(analysysProduct, "author", "Brandon Madriz")
     addMetadataToProduct(analysysProduct, "version", "1.0")
     addMetadataToProduct(
@@ -153,6 +153,16 @@ def register_products(config):
         "Copyright 2020, Alliance of Bioversity International and CIAT",
     )
     products.append(analysysProduct)
+
+    infosheetsProduct = addProduct("infosheets", "Create infosheets.")
+    addMetadataToProduct(infosheetsProduct, "author", "Brandon Madriz")
+    addMetadataToProduct(infosheetsProduct, "version", "1.0")
+    addMetadataToProduct(
+        infosheetsProduct,
+        "Licence",
+        "Copyright 2021, MrBot Software Solutions",
+    )
+    products.append(infosheetsProduct)
 
     # FIELD AGENTS
     fieldagents = addProduct("fieldagents", "Create report of field agents.")
@@ -230,6 +240,7 @@ def register_products(config):
     products.append(datacollectionprogressProduct)
 
     # ERROR LOG DOCUMENT
+
     errorLogDocument = addProduct(
         "errorlogdocument", "Create a document xlsx with the error in the submission."
     )
@@ -241,5 +252,19 @@ def register_products(config):
         "Copyright 2020, Alliance of Bioversity International and CIAT",
     )
     products.append(errorLogDocument)
+
+    # MULTIMEDIA
+
+    multimediadownloads = addProduct(
+        "multimediadownloads", "Multimedia content downloads."
+    )
+    addMetadataToProduct(multimediadownloads, "author", "Brandon Madriz")
+    addMetadataToProduct(multimediadownloads, "version", "1.0")
+    addMetadataToProduct(
+        multimediadownloads,
+        "Licence",
+        "Copyright 2021, MrBot Software Solutions",
+    )
+    products.append(multimediadownloads)
 
     return products

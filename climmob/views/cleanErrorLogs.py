@@ -96,11 +96,6 @@ class cleanErrorLogs_view(privateView):
                                                 + dataworking["newqst"].split("-")[1]
                                                 + "'"
                                             )
-                                            # mySession = self.request.dbsession
-                                            # transaction.begin()
-                                            # mySession.execute(query)
-                                            # mark_changed(mySession)
-                                            # transaction.commit()
                                             sql_execute(query)
 
                                         storeJSONInMySQL(
@@ -155,11 +150,6 @@ class cleanErrorLogs_view(privateView):
                                                 + dataworking["newqst2"]
                                                 + "'"
                                             )
-                                            # mySession = self.request.dbsession
-                                            # transaction.begin()
-                                            # mySession.execute(query)
-                                            # mark_changed(mySession)
-                                            # transaction.commit()
                                             sql_execute(query)
 
                                         storeJSONInMySQL(
@@ -240,8 +230,6 @@ class cleanErrorLogs_view(privateView):
                         + proId
                         + ".REG_geninfo;"
                     )
-                    # mySession = self.request.dbsession
-                    # result = mySession.execute(query)
                     result = sql_execute(query)
                     array = [int(new_json["qst162"])]
                     # array = []
@@ -297,8 +285,6 @@ class cleanErrorLogs_view(privateView):
                         + codeId
                         + "_geninfo;"
                     )
-                    # mySession = self.request.dbsession
-                    # resultR = mySession.execute(queryR)
                     resultR = sql_execute(queryR)
 
                     array = []
@@ -343,8 +329,8 @@ class cleanErrorLogs_view(privateView):
                     )
                     # end edited
 
-                    mySession = self.request.dbsession
-                    result = mySession.execute(query)
+                    result = sql_execute(query)
+
                     array = []
 
                     for x in result:

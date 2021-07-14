@@ -16,10 +16,9 @@ def get_FieldsByType(types, db, self, file, code):
 def make_selOneOpt(
     self, bd, form, rtable, lkp_field
 ):  # make value for select one and multiple in jqgrid
-    mySession = self.request.dbsession
     vals = {}
     if rtable != "None":
-        result = mySession.execute(
+        result = sql_execute(
             "select %s as qc, %s as qd from %s.%s;"
             % (
                 lkp_field,
@@ -290,8 +289,6 @@ def fillDataTable(self, db, form, columns, file, code, where=""):
 
     # print sql
     # print "***************************************************************************"
-    # mySession = self.request.dbsession
-    # result = mySession.execute(sql)
     result = sql_execute(sql)
     for res in result:
         rowx = {}
@@ -352,11 +349,6 @@ def update_edited_data(self, db, form, data, file, code):
 
             # print query_update
             try:
-                # transaction.begin()
-                # print(query_update)
-                # mySession.execute(query_update)
-                # mark_changed(mySession)
-                # transaction.commit()
                 sql_execute(query_update)
             except:
                 return 0

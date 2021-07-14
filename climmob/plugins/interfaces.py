@@ -24,6 +24,7 @@ __all__ = [
     "ITranslation",
     "IDatabase",
     "IForm",
+    "IMultimedia"
 ]
 
 
@@ -335,16 +336,36 @@ class IForm(Interface):  # pragma: no cover
 
     def after_adding_form(self, request, user_name, projectid, formId, ass_cod):
         """
-        Tengo que documentar
+        Called by ClimMob so plugins can perform actions after FormShare deletes a form from the database
+        :param request: ``pyramid.request`` object
+        :param user_name: User ID
+        :param projectid: Project ID
+        :param formId: Form: assessment - registry
+        :param ass_cod: Assessment ID - "" for registry
+        :return: None
         """
 
     def after_deleting_form(self, request, user_name, projectid, formId, ass_cod):
         """
-        Called by FormShare so plugins can perform actions after FormShare deletes a form from the database
+        Called by ClimMob so plugins can perform actions after FormShare deletes a form from the database
         :param request: ``pyramid.request`` object
-        :param form_type: Type of form: ODK, CSPRO, etc
-        :param user_id: User ID
-        :param project_code: Project id
-        :param form_id: Form ID
+        :param user_name: User ID
+        :param projectid: Project ID
+        :param formId: Form: assessment - registry
+        :param ass_cod: Assessment ID - "" for registry
+        :return: None
+        """
+
+class IMultimedia(Interface):
+
+    def start_multimedia_download(self, path, user_name, projectid, formId, ass_cod):
+        """
+        Called by ClimMob so plugins can perform actions after FormShare deletes a form from the database
+        :param request: ``pyramid.request`` object
+        :paran path: Path for the result
+        :param user_name: User ID
+        :param projectid: Project ID
+        :param formId: Form: assessment - registry
+        :param ass_cod: Assessment ID - "" for registry
         :return: None
         """

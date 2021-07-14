@@ -28,6 +28,8 @@ class readProducts_view(apiView):
                 )
                 return response
 
+            print(obligatory)
+            print(dataworking.keys())
             if sorted(obligatory) == sorted(dataworking.keys()):
                 dataworking["user_name"] = self.user.login
 
@@ -76,7 +78,7 @@ class downloadApi_view(apiView):
     def processView(self):
 
         if self.request.method == "GET":
-            obligatory = [u"project_cod", u"celery_taskid"]
+            obligatory = [u"project_cod", u"celery_taskid", u"product_id"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -106,6 +108,7 @@ class downloadApi_view(apiView):
                             self.user.login,
                             dataworking["project_cod"],
                             dataworking["celery_taskid"],
+                            dataworking["product_id"],
                             self.request,
                         )
                         if productData:

@@ -44,11 +44,11 @@ def addProduct(product):
 
 
 def registerProductInstance(
-    user, project, product, output, mimeType, processName, instanceID, request
+    user, project, product, output, mimeType, processName, instanceID, request, newTask=True
 ):
     if product_found(product):
         addProductInstance(
-            user, project, product, output, mimeType, processName, instanceID, request
+            user, project, product, output, mimeType, processName, instanceID, request, newTask
         )
 
 

@@ -199,7 +199,7 @@ class Products(Base):
     process_name = Column(String(80), nullable=False)
     user_name = Column(String(80), nullable=False)
     project_cod = Column(String(80), nullable=False)
-    product_id = Column(String(80), nullable=False)
+    product_id = Column(String(80), primary_key=True, nullable=False)
     output_id = Column(String(80), nullable=False)
     output_mimetype = Column(String(80), nullable=False)
     datetime_added = Column(DateTime)

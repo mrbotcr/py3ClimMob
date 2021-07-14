@@ -75,7 +75,15 @@
                                                                         {{ _("Document of submissions with conflicts in the assessment form") }}: {{ product.extraInformation.ass_desc }}
                                                                     {% endif %}
                                                                 {% else %}
-                                                                    {{ product.product_id }}
+                                                                    {% if product.product_id == "multimediadownloads" %}
+                                                                        {% if product.process_name == "create_multimedia_Registration_" %}
+                                                                            {{ _("Multimedia content collected in the registration form") }}
+                                                                        {% else %}
+                                                                            {{ _("Multimedia content collected in the assessment form") }}: {{ product.extraInformation.ass_desc }}
+                                                                        {% endif %}
+                                                                    {% else %}
+                                                                        {{ product.product_id }}
+                                                                    {% endif %}
                                                                 {% endif %}
                                                             {% endif %}
                                                         {% endif %}
@@ -119,7 +127,7 @@
                     {% if product.state == "Success"%}
                         {% if product.exists == "correct" %}
                             {% if product.product_id != "datadesk" and product.product_id != "cards"%}
-                                <a href="{{ request.route_url('download', product_id=product.celery_taskid) }}" class="btn btn-primary" style="background-color:{{ color }}; border-color: {{ color }}"><i class="fa fa-download"></i> {{ _("Download") }}</a>
+                                <a href="{{ request.route_url('download', celery_taskid=product.celery_taskid, product_id= product.product_id) }}" class="btn btn-primary" style="background-color:{{ color }}; border-color: {{ color }}"><i class="fa fa-download"></i> {{ _("Download") }}</a>
                             {% else %}
                                 <a id="{{product.celery_taskid}}$#%%#${{product.output_id}}" class="btn btn-primary btn_datadesk" style="background-color:{{ color }}; border-color: {{ color }}"><i class="fa fa-download"></i> {{ _("Download") }}</a>
                             {% endif %}

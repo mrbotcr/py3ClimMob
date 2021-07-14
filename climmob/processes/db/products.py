@@ -5,7 +5,7 @@ __all__ = ["addProductInstance", "deleteProducts"]
 
 
 def addProductInstance(
-    user, project, product, output, mimeType, processName, instanceID, request
+    user, project, product, output, mimeType, processName, instanceID, request, newTask=True
 ):
     newInstance = Products(
         user_name=user,
@@ -17,10 +17,11 @@ def addProductInstance(
         celery_taskid=instanceID,
         datetime_added=datetime.datetime.now(),
     )
-    newTask = Tasks(taskid=instanceID)
     try:
         request.dbsession.add(newInstance)
-        request.dbsession.add(newTask)
+        if newTask:
+            newTask = Tasks(taskid=instanceID)
+            request.dbsession.add(newTask)
         return True, ""
     except Exception as e:
         return False, str(e)

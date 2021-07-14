@@ -10,9 +10,13 @@ def create_analysis(locale, user, project, data, info, infosheet, request, pathS
     # The path user.repository in development.ini/user/project/products/product and
     # user.repository in development.ini/user/project/products/product/outputs
     path = createProductDirectory(request, user, project, "reports")
+    if infosheet == "TRUE":
+        pathInfosheets = createProductDirectory(request, user, project, "infosheets")
+    else:
+        pathInfosheets = ""
     # We call the Celery task that will generate the output packages.pdf
     task = createReports.apply_async(
-        (locale, path, user, project, data, info, infosheet, pathScript),
+        (locale, path, pathInfosheets, user, project, data, info, infosheet, pathScript),
         queue="ClimMob",
     )
     # We register the instance of the output with the task ID of celery
@@ -29,3 +33,16 @@ def create_analysis(locale, user, project, data, info, infosheet, request, pathS
         task.id,
         request,
     )
+
+    if infosheet == "TRUE":
+        registerProductInstance(
+            user,
+            project,
+            "infosheets",
+            "Infosheets_" + project + ".docx",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "infosheets",
+            task.id,
+            request,
+            newTask=False
+        )

@@ -38,6 +38,7 @@ __all__ = [
     "getAllRegistryGroups",
     "getQuestionsByGroupInRegistry",
     "getTheGroupOfThePackageCode",
+    "registryHaveQuestionOfMultimediaType"
 ]
 
 
@@ -944,6 +945,15 @@ def canDeleteTheGroup(data, request):
     result = request.dbsession.execute(sql).fetchall()
 
     if not result:
+        return True
+    else:
+        return False
+
+def registryHaveQuestionOfMultimediaType(request, user, project):
+
+    result = request.dbsession.query(func.count(Registry.question_id).label("count")).filter(Registry.user_name == user).filter(Registry.project_cod == project).filter(Registry.question_id == Question.question_id).filter(Question.question_dtype.in_([16,17,18])).one()
+
+    if result[0] > 0:
         return True
     else:
         return False

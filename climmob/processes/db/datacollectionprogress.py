@@ -17,8 +17,7 @@ def getInformationFromProject(request, user, projectid):
         + ".REG_geninfo "
         + " order by qst162 +0"
     )
-    mySession = request.dbsession
-    # result = mySession.execute(sql)
+
     result = sql_execute(sql)
 
     assessments = (
@@ -56,8 +55,6 @@ def getInformationFromProject(request, user, projectid):
             + assessment.ass_cod
             + "_geninfo "
         )
-        # mySession = request.dbsession
-        # result = mySession.execute(sql)
         result = sql_execute(sql)
 
         for res in result:

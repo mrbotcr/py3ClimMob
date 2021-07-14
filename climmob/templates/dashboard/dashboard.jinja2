@@ -568,6 +568,7 @@
                                                                         {% if assessment.asstotal > 0 %}
                                                                             <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('EditDataAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}" href="#"><i class="fa fa-table"></i> {{ _("View data") }}</a>
                                                                             <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-cloud-download"></i> {{ _("Download data") }}</a>
+
                                                                             {% if assessment.ass_status == 1%}
 {#                                                                                <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{request.route_url('uploadDataAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-cloud-upload"></i> {{ _("Upload data") }}</a>#}
                                                                             {% endif %}
