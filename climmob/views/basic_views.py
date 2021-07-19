@@ -36,6 +36,24 @@ class home_view(publicView):
         }
 
 
+class HealthView(publicView):
+    def processView(self):
+        engine = self.request.dbsession.get_bind()
+        try:
+            res = self.request.dbsession.execute(
+                "show status like 'Threads_connected%'"
+            ).fetchone()
+            threads_connected = res[1]
+        except Exception as e:
+            threads_connected = str(e)
+        return {
+            "health": {
+                "pool": engine.pool.status(),
+                "threads_connected": threads_connected,
+            }
+        }
+
+
 class TermsView(publicView):
     def processView(self):
         return {}
