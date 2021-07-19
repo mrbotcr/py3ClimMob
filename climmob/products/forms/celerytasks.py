@@ -41,8 +41,6 @@ def createDocumentForm(
 
     pathqr = os.path.join(path, "qr")
     if form == "Registration":
-        pathqr = os.path.join(path, "qr")
-
         if os.path.exists(pathqr):
             sh.rmtree(pathqr)
 
