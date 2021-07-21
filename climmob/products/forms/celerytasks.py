@@ -40,7 +40,11 @@ def createDocumentForm(
         nameOutput += "_" + code
 
     pathqr = os.path.join(path, "qr")
-    os.makedirs(pathqr)
+    if form == "Registration":
+        if os.path.exists(pathqr):
+            sh.rmtree(pathqr)
+
+        os.makedirs(pathqr)
 
     pathoutput = os.path.join(path, "outputs")
     if not os.path.exists(pathoutput):
@@ -49,10 +53,11 @@ def createDocumentForm(
     PATH2 = os.path.dirname(os.path.abspath(__file__))
     doc = DocxTemplate(PATH2 + "/template/word_template.docx")
     imgsOfQRs = []
-    for package in packages:
+    if form == "Registration":
+        for package in packages:
 
-        qr = create_qr(package, projectid, pathqr)
-        imgsOfQRs.append(InlineImage(doc, qr, width=Mm(50)))
+            qr = create_qr(package, projectid, pathqr)
+            imgsOfQRs.append(InlineImage(doc, qr, width=Mm(50)))
 
     if form == "Registration":
         tittle = _("Registration form for the project")
@@ -73,8 +78,13 @@ def createDocumentForm(
     }
 
     doc.render(data)
+
+    if os.path.exists(pathoutput + "/" + nameOutput + "_" + projectid + ".docx"):
+        os.remove(pathoutput + "/" + nameOutput + "_" + projectid + ".docx")
+
     doc.save(pathoutput + "/" + nameOutput + "_" + projectid + ".docx")
 
-    sh.rmtree(pathqr)
+    if os.path.exists(pathqr):
+        sh.rmtree(pathqr)
 
     return ""
