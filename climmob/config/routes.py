@@ -6,6 +6,7 @@ These functions setup the routes for the host application and any plugins connec
 
 from ..views.basic_views import (
     home_view,
+    HealthView,
     notfound_view,
     login_view,
     register_view,
@@ -255,6 +256,14 @@ def loadRoutes(config):
     routes = []
     routes.append(
         {"name": "home", "path": "/", "view": home_view, "renderer": "landing.jinja2"}
+    )
+    routes.append(
+        {
+            "name": "health",
+            "path": "/health",
+            "view": HealthView,
+            "renderer": "json",
+        }
     )
     routes.append(
         {
