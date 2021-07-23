@@ -9,13 +9,12 @@ import base64
 import qrcode
 import gettext
 from weasyprint import HTML
-
 PATH = os.path.dirname(os.path.abspath(__file__))
 # pip install "weasyprint<43"
 
 
-@celeryApp.task(base=celeryTask, soft_time_limit=7200, time_limit=7200)
-def createFieldAgentsReport(locale, url, user, path, projectid, fieldagents):
+@celeryApp.task(bind=True, base=celeryTask, soft_time_limit=7200, time_limit=7200)
+def createFieldAgentsReport(self, locale, url, user, path, projectid, fieldagents):
     parts = __file__.split("/products/")
     this_file_path = parts[0] + "/locale"
     try:
@@ -52,6 +51,11 @@ def createFieldAgentsReport(locale, url, user, path, projectid, fieldagents):
     url = url + "/" + user
 
     for fieldagent in fieldagents:
+
+        if self.is_aborted():
+            sh.rmtree(path)
+            return ""
+
         odk_settings = {
             "admin": {"change_server": True, "change_form_metadata": False},
             "general": {
@@ -76,6 +80,10 @@ def createFieldAgentsReport(locale, url, user, path, projectid, fieldagents):
         )
         img.save(qr_file)
 
+        if self.is_aborted():
+            sh.rmtree(path)
+            return ""
+
     data = {
         "tittle": _("List of field agents for the project"),
         "projectid": projectid,
@@ -99,12 +107,21 @@ def createFieldAgentsReport(locale, url, user, path, projectid, fieldagents):
         trim_blocks=False,
     )
     template = env.get_template("app.jinja2")
+
+    if self.is_aborted():
+        sh.rmtree(path)
+        return ""
+
     render_temp = template.render(data)
 
     with open(
         pathouttemp + "/fieldagents_" + projectid + ".html", "w"
     ) as f:  # saves tex_code to outpout file
         f.write(render_temp)
+
+    if self.is_aborted():
+        sh.rmtree(path)
+        return ""
 
     html = HTML(filename=pathouttemp + "/fieldagents_" + projectid + ".html")
     html.write_pdf(pathoutput + "/fieldagents_" + projectid + ".pdf")

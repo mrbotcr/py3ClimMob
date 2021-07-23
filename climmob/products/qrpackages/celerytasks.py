@@ -50,8 +50,8 @@ def create_index_html(html, png, qrid, packageid, projectid, projectname, projec
     imgkit.from_url(html, png, options=options)
 
 
-@celeryApp.task(base=celeryTask, soft_time_limit=7200, time_limit=7200)
-def createQR(locale, path, projectid, packages):
+@celeryApp.task(bind=True, base=celeryTask, soft_time_limit=7200, time_limit=7200)
+def createQR(self, locale, path, projectid, packages):
     if os.path.exists(path):
         sh.rmtree(path)
 
@@ -100,6 +100,10 @@ def createQR(locale, path, projectid, packages):
     contador = 1
     veces = 0
     for package in packages:
+
+        if self.is_aborted():
+            sh.rmtree(path)
+            return ""
 
         qr = create_qr(package, projectid, pathqr)
 
@@ -184,21 +188,12 @@ def createQR(locale, path, projectid, packages):
             + ".pdf"
         )
 
-    # Changed by Carlos
+    if self.is_aborted():
+        sh.rmtree(path)
+        return ""
+
     os.system("pdfjam " + pathpdf + "/*.pdf --no-landscape  --outfile " + pathfinal)
 
-    # files = glob(pathsvg+"/*")
-    # for f in files:
-    #    f = f.replace(pathsvg,"").replace(".svg","").replace("/","")
-    #    qr = pathqr+"/"+str(f)+".png"
-    #    svg = pathsvg+"/"+str(f)+".svg"
-    #    png = pathpng+"/"+str(f)+".png"
-    #    os.remove(qr)
-    #    os.remove(svg)
-    #    os.remove(png)
-
-    # os.system("rm -R "+pathpdf)
-    # print(path)
     sh.rmtree(path)
 
     return ""

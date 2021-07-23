@@ -1,6 +1,6 @@
 ago==0.0.93
 alembic==1.4.2
-amqp==2.6.1
+amqp==5.0.6
 appdirs==1.4.4
 arrow==0.15.8
 attrs==19.3.0
@@ -8,12 +8,13 @@ Babel==2.8.0
 backports.csv==1.0.7
 backports.functools-lru-cache==1.6.1
 beautifulsoup4==4.9.1
-billiard==3.6.3.0
+billiard==3.6.4.0
 binaryornot==0.4.4
 black==19.10b0
+branca==0.4.2
 cairocffi==1.1.0
 CairoSVG==2.4.2
-celery==4.4.2
+celery==5.1.2
 certifi==2020.6.20
 cffi==1.14.1
 Chameleon==3.8.1
@@ -21,11 +22,15 @@ chardet==3.0.4
 cheroot==8.4.4
 CherryPy==18.6.0
 click==7.1.2
+click-didyoumean==0.0.3
+click-plugins==1.1.1
+click-repl==0.2.0
 cookiecutter==1.7.2
 cryptography==3.0
 cssselect2==0.3.0
 decorator==4.4.2
 defusedxml==0.6.0
+dnspython==1.16.0
 docxtpl==0.10.0
 fanstatic==1.1
 feedparser==5.2.1
@@ -50,7 +55,7 @@ jaraco.text==3.2.0
 Jinja2==2.11.2
 jinja2-time==0.2.0
 joblib==0.16.0
-kombu==4.6.10
+kombu==5.1.0
 linecache2==1.0.0
 lingua==4.14
 lxml==4.5.2
@@ -73,6 +78,7 @@ plaster-pastedeploy==0.7
 polib==1.1.0
 portend==2.6
 poyo==0.5.0
+prompt-toolkit==3.0.19
 protobuf==3.12.4
 pycparser==2.20
 pycrypto==2.6.1
@@ -102,6 +108,7 @@ repoze.lru==0.7
 requests==2.24.0
 rutter==0.3
 scipy==1.5.2
+setproctitle==1.2.2
 shutilwhich==1.1.0
 six==1.15.0
 sortedcontainers==2.2.2
@@ -123,8 +130,9 @@ unittest2==1.1.0
 urllib3==1.25.10
 validators==0.17.1
 venusian==3.0.0
-vine==1.3.0
+vine==5.0.0
 waitress==1.4.4
+wcwidth==0.2.5
 WeasyPrint==51
 webencodings==0.5.1
 WebHelpers2==2.0

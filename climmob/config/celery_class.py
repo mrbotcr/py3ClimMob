@@ -2,8 +2,9 @@ from celery import Task
 from sqlalchemy import create_engine
 from climmob.config.celery_app import get_ini_value
 
+from celery.contrib.abortable import AbortableTask
 
-class celeryTask(Task):
+class celeryTask(AbortableTask):
     def on_success(self, retval, task_id, args, kwargs):
         engine = create_engine(get_ini_value("sqlalchemy.url"))
         engine.execute(
