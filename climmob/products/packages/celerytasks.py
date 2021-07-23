@@ -5,8 +5,9 @@ from climmob.config.celery_class import celeryTask
 import csv
 
 
-@celeryApp.task(base=celeryTask, soft_time_limit=7200, time_limit=7200)
-def createPackages(path, projectid, packages, techs):
+
+@celeryApp.task(bind=True, base=celeryTask, soft_time_limit=7200, time_limit=7200)
+def createPackages(self, path, projectid, packages, techs):
 
     if os.path.exists(path):
         sh.rmtree(path)
@@ -52,16 +53,30 @@ def createPackages(path, projectid, packages, techs):
     SecondRow = [""]
     allRows = []
 
+    if self.is_aborted():
+        sh.rmtree(path)
+        return ""
+
     with open(pathfinal, "w") as csvfile:
         filewriter = csv.writer(csvfile, delimiter=",")
 
         for x in range(0, num_observations):
+
+            if self.is_aborted():
+                sh.rmtree(path)
+                return ""
+
             if len(techs) == 1:
                 firstRow.append("Option " + alphabet[x])
                 SecondRow.append(techs[0]["tech_name"])
             else:
                 cont = 0
                 for y in range(0, len(techs)):
+
+                    if self.is_aborted():
+                        sh.rmtree(path)
+                        return ""
+
                     firstRow.append("Option " + alphabet[x])
                     SecondRow.append(techs[cont]["tech_name"])
                     cont = cont + 1
@@ -70,6 +85,11 @@ def createPackages(path, projectid, packages, techs):
         filewriter.writerow(SecondRow)
 
         for package in packages:
+
+            if self.is_aborted():
+                sh.rmtree(path)
+                return ""
+
             simpleRow = [package["package_code"]]
 
             for combination in package["combs"]:

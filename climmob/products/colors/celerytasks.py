@@ -40,8 +40,8 @@ def create_index_html(svg, packageid, letterA, letterB, letterC, qr):
         f.write(html)
 
 
-@celeryApp.task(base=celeryTask, soft_time_limit=7200, time_limit=7200)
-def createColors(path, projectid, packages):
+@celeryApp.task(bind=True, base=celeryTask, soft_time_limit=7200, time_limit=7200)
+def createColors(self, path, projectid, packages):
     if os.path.exists(path):
         shutil.rmtree(path)
 
@@ -72,6 +72,10 @@ def createColors(path, projectid, packages):
     contador = 1
     veces = 0
     for package in packages:
+
+        if self.is_aborted():
+            shutil.rmtree(path)
+            return ""
 
         qr = create_qr(package, projectid, pathqr, all=False)
 
@@ -152,6 +156,10 @@ def createColors(path, projectid, packages):
             contador = 0
         contador = contador + 1
 
+    if self.is_aborted():
+        shutil.rmtree(path)
+        return ""
+
     if allPNGpaths != "":
         veces = veces + 1
         os.system(
@@ -174,6 +182,10 @@ def createColors(path, projectid, packages):
             + str(veces)
             + ".pdf"
         )
+
+    if self.is_aborted():
+        shutil.rmtree(path)
+        return ""
 
     # Changed by Carlos
     os.system("pdfjam " + pathpdf + "/*.pdf --no-landscape  --outfile " + pathfinal)

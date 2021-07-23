@@ -4,7 +4,7 @@ from ..processes import (
     cancelTask,
     deleteProducts,
 )
-from climmob.config.celery_app import celeryApp
+from celery.contrib.abortable import AbortableAsyncResult
 
 __all__ = [
     "addProduct",
@@ -60,8 +60,10 @@ def stopTasksByProcess(request, user, project, processName="ALL"):
     tasks = getRunningTasksByProcess(request, user, project, processName)
     for task in tasks:
         print("*****stopTasksByProcess. Revoking task " + task)
-        celeryApp.control.revoke(task, terminate=True)
+        result = AbortableAsyncResult(task)
+        result.abort()
+        #celeryApp.control.revoke(task, terminate=False, signal=signal.SIGKILL)
         print("*****stopTasksByProcess. Cancelling task from database " + task)
-        cancelTask(request, task)
+        #cancelTask(request, task)
 
     deleteProducts(request, user, project, processName)

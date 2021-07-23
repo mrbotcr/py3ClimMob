@@ -8,9 +8,9 @@ from docx.shared import Mm
 from ..qrpackages.celerytasks import create_qr
 
 
-@celeryApp.task(base=celeryTask, soft_time_limit=7200, time_limit=7200)
+@celeryApp.task(bind=True, base=celeryTask, soft_time_limit=7200, time_limit=7200)
 def createDocumentForm(
-    locale, user, path, projectid, formGroupsAndQuestions, form, code, packages,
+    self, locale, user, path, projectid, formGroupsAndQuestions, form, code, packages,
 ):
 
     # NO SE BORRA EL PATH PORQUE PUEDE TENER VARIOS ARCHIVOS
@@ -56,6 +56,10 @@ def createDocumentForm(
     if form == "Registration":
         for package in packages:
 
+            if self.is_aborted():
+                sh.rmtree(pathqr)
+                return ""
+
             qr = create_qr(package, projectid, pathqr)
             imgsOfQRs.append(InlineImage(doc, qr, width=Mm(50)))
 
@@ -72,10 +76,12 @@ def createDocumentForm(
         "_": _,
     }
 
+    if self.is_aborted():
+        return ""
+
     doc.render(data)
 
     if os.path.exists(pathoutput + "/" + nameOutput + "_" + projectid + ".docx"):
-        print("Lo elimina")
         os.remove(pathoutput + "/" + nameOutput + "_" + projectid + ".docx")
 
     doc.save(pathoutput + "/" + nameOutput + "_" + projectid + ".docx")
