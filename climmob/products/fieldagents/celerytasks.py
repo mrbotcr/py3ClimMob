@@ -9,6 +9,7 @@ import base64
 import qrcode
 import gettext
 from weasyprint import HTML
+
 PATH = os.path.dirname(os.path.abspath(__file__))
 # pip install "weasyprint<43"
 

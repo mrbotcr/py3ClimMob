@@ -4,7 +4,11 @@ from climmob.products.climmob_products import (
 )
 from .celerytasks import create_CSV
 import climmob.plugins as p
-from ...processes import registryHaveQuestionOfMultimediaType,assessmentHaveQuestionOfMultimediaType
+from ...processes import (
+    registryHaveQuestionOfMultimediaType,
+    assessmentHaveQuestionOfMultimediaType,
+)
+
 
 def create_datacsv(user, project, info, request, form, code):
     # We create the plugin directory if it does not exists and return it
@@ -35,10 +39,14 @@ def create_datacsv(user, project, info, request, form, code):
     for plugin in p.PluginImplementations(p.IMultimedia):
         thereAreMultimedia = False
         if form == "Registration":
-            thereAreMultimedia = registryHaveQuestionOfMultimediaType(request, user, project)
+            thereAreMultimedia = registryHaveQuestionOfMultimediaType(
+                request, user, project
+            )
 
         if form == "Assessment":
-            thereAreMultimedia = assessmentHaveQuestionOfMultimediaType(request, user, project, code)
+            thereAreMultimedia = assessmentHaveQuestionOfMultimediaType(
+                request, user, project, code
+            )
 
         if thereAreMultimedia:
             plugin.start_multimedia_download(request, user, project, form, code)

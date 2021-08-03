@@ -489,7 +489,7 @@ def convertXMLToJSON(
             # may change the JSON data
             with open(JSONFile) as data_file:
                 data = json.load(data_file)
-            #for plugin in p.PluginImplementations(p.ISubmissionStorage):
+            # for plugin in p.PluginImplementations(p.ISubmissionStorage):
             #    data = plugin.before_save_in_json(request, userid, projectID, data)
             with open(JSONFile, "w") as outfile:
                 data["_submitted_by"] = userEnum

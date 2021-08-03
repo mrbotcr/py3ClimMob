@@ -69,10 +69,26 @@ def addMetadataToProduct(product, key, value):
 
 
 def registerProductInstance(
-    user, project, product, output, mimeType, processName, instanceID, request, newTask=True
+    user,
+    project,
+    product,
+    output,
+    mimeType,
+    processName,
+    instanceID,
+    request,
+    newTask=True,
 ):
     p.registerProductInstance(
-        user, project, product, output, mimeType, processName, instanceID, request, newTask
+        user,
+        project,
+        product,
+        output,
+        mimeType,
+        processName,
+        instanceID,
+        request,
+        newTask,
     )
 
 
@@ -158,9 +174,7 @@ def register_products(config):
     addMetadataToProduct(infosheetsProduct, "author", "Brandon Madriz")
     addMetadataToProduct(infosheetsProduct, "version", "1.0")
     addMetadataToProduct(
-        infosheetsProduct,
-        "Licence",
-        "Copyright 2021, MrBot Software Solutions",
+        infosheetsProduct, "Licence", "Copyright 2021, MrBot Software Solutions",
     )
     products.append(infosheetsProduct)
 
@@ -261,9 +275,7 @@ def register_products(config):
     addMetadataToProduct(multimediadownloads, "author", "Brandon Madriz")
     addMetadataToProduct(multimediadownloads, "version", "1.0")
     addMetadataToProduct(
-        multimediadownloads,
-        "Licence",
-        "Copyright 2021, MrBot Software Solutions",
+        multimediadownloads, "Licence", "Copyright 2021, MrBot Software Solutions",
     )
     products.append(multimediadownloads)
 

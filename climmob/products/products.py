@@ -44,11 +44,27 @@ def addProduct(product):
 
 
 def registerProductInstance(
-    user, project, product, output, mimeType, processName, instanceID, request, newTask=True
+    user,
+    project,
+    product,
+    output,
+    mimeType,
+    processName,
+    instanceID,
+    request,
+    newTask=True,
 ):
     if product_found(product):
         addProductInstance(
-            user, project, product, output, mimeType, processName, instanceID, request, newTask
+            user,
+            project,
+            product,
+            output,
+            mimeType,
+            processName,
+            instanceID,
+            request,
+            newTask,
         )
 
 
@@ -62,8 +78,8 @@ def stopTasksByProcess(request, user, project, processName="ALL"):
         print("*****stopTasksByProcess. Revoking task " + task)
         result = AbortableAsyncResult(task)
         result.abort()
-        #celeryApp.control.revoke(task, terminate=False, signal=signal.SIGKILL)
+        # celeryApp.control.revoke(task, terminate=False, signal=signal.SIGKILL)
         print("*****stopTasksByProcess. Cancelling task from database " + task)
-        #cancelTask(request, task)
+        # cancelTask(request, task)
 
     deleteProducts(request, user, project, processName)

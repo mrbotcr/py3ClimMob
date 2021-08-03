@@ -5,7 +5,15 @@ __all__ = ["addProductInstance", "deleteProducts"]
 
 
 def addProductInstance(
-    user, project, product, output, mimeType, processName, instanceID, request, newTask=True
+    user,
+    project,
+    product,
+    output,
+    mimeType,
+    processName,
+    instanceID,
+    request,
+    newTask=True,
 ):
     newInstance = Products(
         user_name=user,

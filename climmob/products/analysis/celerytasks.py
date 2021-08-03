@@ -12,7 +12,9 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 
 
 @celeryApp.task(base=climmobCeleryTask)
-def createReports(locale, path, pathInfosheets, user, projectid, data, info, infosheet, pathScript):
+def createReports(
+    locale, path, pathInfosheets, user, projectid, data, info, infosheet, pathScript
+):
 
     if os.path.exists(path):
         sh.rmtree(path)
@@ -124,11 +126,17 @@ def createReports(locale, path, pathInfosheets, user, projectid, data, info, inf
         infosheetsDoc = pathouttemp + "/participants_report.docx"
 
         if os.path.exists(infosheetsDoc):
-            os.system("mv " + infosheetsDoc + " " + pathout + "/Infosheets_" + projectid + ".docx")
+            os.system(
+                "mv "
+                + infosheetsDoc
+                + " "
+                + pathout
+                + "/Infosheets_"
+                + projectid
+                + ".docx"
+            )
         else:
             print("No existe el archivo")
-
-
 
     sh.rmtree(pathouttemp)
 

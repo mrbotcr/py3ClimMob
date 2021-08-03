@@ -24,7 +24,7 @@ __all__ = [
     "ITranslation",
     "IDatabase",
     "IForm",
-    "IMultimedia"
+    "IMultimedia",
 ]
 
 
@@ -356,8 +356,8 @@ class IForm(Interface):  # pragma: no cover
         :return: None
         """
 
-class IMultimedia(Interface):
 
+class IMultimedia(Interface):
     def start_multimedia_download(self, path, user_name, projectid, formId, ass_cod):
         """
         Called by ClimMob so plugins can perform actions after FormShare deletes a form from the database

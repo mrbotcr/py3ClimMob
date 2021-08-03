@@ -156,11 +156,10 @@ class cloneProjects_view(privateView):
 
             return {"activeUser": self.user, "dataworking": dataworking, "stage": 4}
 
+
 def functionCreateClone(self, dataworking):
     enumerators = getProjectEnumerators(
-        self.user.login,
-        dataworking["slt_project_cod"],
-        self.request,
+        self.user.login, dataworking["slt_project_cod"], self.request,
     )
     for enumerator in enumerators:
         addEnumeratorToProject(
@@ -171,16 +170,11 @@ def functionCreateClone(self, dataworking):
         )
 
     techInfo = searchTechnologiesInProject(
-        self.user.login,
-        dataworking["slt_project_cod"],
-        self.request,
+        self.user.login, dataworking["slt_project_cod"], self.request,
     )
     for tech in techInfo:
         added, message = addTechnologyProject(
-            self.user.login,
-            dataworking["project_cod"],
-            tech["tech_id"],
-            self.request,
+            self.user.login, dataworking["project_cod"], tech["tech_id"], self.request,
         )
 
         if added:
@@ -196,9 +190,7 @@ def functionCreateClone(self, dataworking):
                 data["project_cod"] = dataworking["project_cod"]
                 data["tech_id"] = tech["tech_id"]
                 data["alias_id"] = alias["alias_idTec"]
-                add, message = AddAliasTechnology(
-                    data, self.request
-                )
+                add, message = AddAliasTechnology(data, self.request)
 
             allAliasExtra = AliasExtraSearchTechnologyInProject(
                 tech["tech_id"],
@@ -215,9 +207,7 @@ def functionCreateClone(self, dataworking):
                 add, message = addTechAliasExtra(data, self.request)
 
     groupsInRegistry = getAllRegistryGroups(
-        self.user.login,
-        dataworking["slt_project_cod"],
-        self.request,
+        self.user.login, dataworking["slt_project_cod"], self.request,
     )
     for group in groupsInRegistry:
         group["project_cod"] = dataworking["project_cod"]
@@ -232,17 +222,11 @@ def functionCreateClone(self, dataworking):
             )
             for question in questionsInRegistry:
                 question["project_cod"] = dataworking["project_cod"]
-                question["section_project"] = dataworking[
-                    "project_cod"
-                ]
-                addq, message = addRegistryQuestionToGroup(
-                    question, self.request
-                )
+                question["section_project"] = dataworking["project_cod"]
+                addq, message = addRegistryQuestionToGroup(question, self.request)
 
     assessments = getProjectAssessments(
-        self.user.login,
-        dataworking["slt_project_cod"],
-        self.request,
+        self.user.login, dataworking["slt_project_cod"], self.request,
     )
     for assessment in assessments:
         newAssessment = {}
@@ -252,9 +236,7 @@ def functionCreateClone(self, dataworking):
         newAssessment["user_name"] = self.user.login
         newAssessment["project_cod"] = dataworking["project_cod"]
         newAssessment["ass_status"] = 0
-        added, msg = addProjectAssessmentClone(
-            newAssessment, self.request
-        )
+        added, msg = addProjectAssessmentClone(newAssessment, self.request)
 
         if added:
             newAssessment["ass_cod"] = msg
@@ -262,9 +244,7 @@ def functionCreateClone(self, dataworking):
             data["user_name"] = self.user.login
             data["project_cod"] = dataworking["slt_project_cod"]
             data["ass_cod"] = assessment["ass_cod"]
-            groupsInAssessment = getAllAssessmentGroups(
-                data, self.request
-            )
+            groupsInAssessment = getAllAssessmentGroups(data, self.request)
             for group in groupsInAssessment:
                 group["project_cod"] = dataworking["project_cod"]
                 group["ass_cod"] = newAssessment["ass_cod"]
@@ -279,26 +259,16 @@ def functionCreateClone(self, dataworking):
                         self.request,
                     )
                     for question in questionInAssessment:
-                        question["project_cod"] = dataworking[
-                            "project_cod"
-                        ]
-                        question["ass_cod"] = newAssessment[
-                            "ass_cod"
-                        ]
-                        question["section_project"] = dataworking[
-                            "project_cod"
-                        ]
-                        question[
-                            "section_assessment"
-                        ] = newAssessment["ass_cod"]
-                        (
-                            addq,
-                            message,
-                        ) = addAssessmentQuestionToGroup(
+                        question["project_cod"] = dataworking["project_cod"]
+                        question["ass_cod"] = newAssessment["ass_cod"]
+                        question["section_project"] = dataworking["project_cod"]
+                        question["section_assessment"] = newAssessment["ass_cod"]
+                        (addq, message,) = addAssessmentQuestionToGroup(
                             question, self.request
                         )
 
     return ""
+
 
 # class cloneProjects_view(privateView):
 #     def processView(self):

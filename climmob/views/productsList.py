@@ -48,6 +48,7 @@ from ..products.datacollectionprogress.dataCollectionProgress import (
 from ..products.errorLogDocument.errorLogDocument import create_error_log_document
 import climmob.plugins as p
 
+
 def getDataProduct(user, project, request):
 
     sql = (
@@ -389,10 +390,18 @@ class generateProductView(privateView):
         if productid == "multimediadownloads":
             for plugin in p.PluginImplementations(p.IMultimedia):
                 if processname == "create_multimedia_Registration_":
-                    plugin.start_multimedia_download(self.request, self.user.login, projectid, "Registration", "")
+                    plugin.start_multimedia_download(
+                        self.request, self.user.login, projectid, "Registration", ""
+                    )
                 else:
                     assessment_id = processname.split("_")[3]
-                    plugin.start_multimedia_download(self.request, self.user.login, projectid, "Assessment", assessment_id)
+                    plugin.start_multimedia_download(
+                        self.request,
+                        self.user.login,
+                        projectid,
+                        "Assessment",
+                        assessment_id,
+                    )
 
         self.returnRawViewResult = True
         return HTTPFound(location=self.request.route_url("productList"))

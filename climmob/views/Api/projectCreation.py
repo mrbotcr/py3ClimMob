@@ -107,7 +107,6 @@ class createProject_view(apiView):
                                 )
                                 return response
 
-
                         dataworking["project_lat"] = ""
                         dataworking["project_lon"] = ""
                         if re.search("^[A-Za-z0-9]*$", dataworking["project_cod"]):
@@ -137,7 +136,9 @@ class createProject_view(apiView):
                                         and dataworking["project_numcom"] > 0
                                     ):
                                         if str(
-                                            dataworking["project_registration_and_analysis"]
+                                            dataworking[
+                                                "project_registration_and_analysis"
+                                            ]
                                         ) not in ["0", "1",]:
                                             response = Response(
                                                 status=401,
@@ -147,10 +148,9 @@ class createProject_view(apiView):
                                             )
                                             return response
 
-                                        if str(dataworking["project_localvariety"]) not in [
-                                            "0",
-                                            "1",
-                                        ]:
+                                        if str(
+                                            dataworking["project_localvariety"]
+                                        ) not in ["0", "1",]:
                                             response = Response(
                                                 status=401,
                                                 body=self._(
@@ -175,10 +175,14 @@ class createProject_view(apiView):
                                         )
 
                                         if added:
-                                            dataworking["slt_project_cod"] = dataworking["project_clone"]
+                                            dataworking[
+                                                "slt_project_cod"
+                                            ] = dataworking["project_clone"]
                                             if "project_clone" in dataworking.keys():
 
-                                                ok = functionCreateClone(self, dataworking)
+                                                ok = functionCreateClone(
+                                                    self, dataworking
+                                                )
 
                                                 response = Response(
                                                     status=200,
@@ -189,7 +193,9 @@ class createProject_view(apiView):
                                                 return response
 
                                         if not added:
-                                            response = Response(status=401, body=message)
+                                            response = Response(
+                                                status=401, body=message
+                                            )
                                             return response
                                         else:
                                             response = Response(
@@ -237,7 +243,12 @@ class createProject_view(apiView):
                         )
                         return response
                 else:
-                    response = Response(status=401, body=self._("You are trying to use a parameter that is not allowed.."))
+                    response = Response(
+                        status=401,
+                        body=self._(
+                            "You are trying to use a parameter that is not allowed.."
+                        ),
+                    )
                     return response
             else:
                 response = Response(
