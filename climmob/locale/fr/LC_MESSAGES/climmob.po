@@ -2152,7 +2152,7 @@ msgstr "Créer un résumé du projet"
 
 #: climmob/templates/project/productsList/productsList.jinja2:47
 msgid "To download files you need to have an active project."
-msgstr "Pour télécharger des fichiers, vous devez avoir un projet actif."
+msgstr "Pour téléchargements des fichiers, vous devez avoir un projet actif."
 
 #: climmob/templates/project/registry/registry.jinja2:4
 msgid "ClimMob - Registration"
