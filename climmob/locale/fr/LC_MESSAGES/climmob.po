@@ -2332,7 +2332,7 @@ msgstr "ClimMob | Bibliothèque de questions"
 
 #: climmob/templates/question/library.jinja2:34
 msgid "Questions library"
-msgstr "Questions library"
+msgstr "Bibliothèque de questions"
 
 #: climmob/templates/question/library.jinja2:48
 msgid "Questions available in the library by category"
