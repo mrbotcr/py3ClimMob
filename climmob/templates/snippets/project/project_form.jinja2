@@ -15,13 +15,13 @@
 
                 <div class="form-group">
                     <label class="col-sm-4 control-label">{{ _("Project Name") }}</label>
-                    <div class="col-sm-8"><input class="form-control" id="newproject_name" required oninvalid="this.setCustomValidity('{{ _("Write the project name.") }}')" onchange="this.setCustomValidity('')" name="project_name" value="{{ dataworking.project_name }}" maxlength="30"></div>
+                    <div class="col-sm-8"><input class="form-control" id="newproject_name" required oninvalid="this.setCustomValidity('{{ _("Write the project name.") }}')" onchange="this.setCustomValidity('')" {% if not permissionForChanges %} disabled {% endif %} name="project_name" value="{{ dataworking.project_name }}" maxlength="30"></div>
                 </div>
                 <div class="hr-line-dashed"></div>
 
                 <div class="form-group">
                     <label class="col-sm-4 control-label">{{ _("Description") }}</label>
-                    <div class="col-sm-8"><textarea class="form-control" name="project_abstract" required oninvalid="this.setCustomValidity('{{ _("Write the description.") }}')" onchange="this.setCustomValidity('')" id="newproject_description">{{ dataworking.project_abstract }}</textarea></div>
+                    <div class="col-sm-8"><textarea class="form-control" name="project_abstract" required oninvalid="this.setCustomValidity('{{ _("Write the description.") }}')" onchange="this.setCustomValidity('')" {% if not permissionForChanges %} disabled {% endif %} id="newproject_description">{{ dataworking.project_abstract }}</textarea></div>
                 </div>
 
                 <div class="hr-line-dashed"></div>
@@ -29,7 +29,7 @@
                 <div class="form-group">
                     <label class="col-sm-4 control-label">{{ _("Tags") }}</label>
                     <div class="col-sm-8">
-                        <input class="tagsinput form-control" name="project_tags" id="newproject_tag" type="text" data-role="tagsinput" value="{{ dataworking.project_tags }}"  oninvalid="this.setCustomValidity('{{ _("Write the tags.") }}')" onchange="this.setCustomValidity('')">
+                        <input class="tagsinput form-control" name="project_tags" id="newproject_tag" type="text" data-role="tagsinput" value="{{ dataworking.project_tags }}"  oninvalid="this.setCustomValidity('{{ _("Write the tags.") }}')" onchange="this.setCustomValidity('')" {% if not permissionForChanges %} disabled {% endif %}>
                         <span class="help-block m-b-none">{{ _("Press comma after every word to add the tag") }}.</span>
                     </div>
                 </div>
@@ -37,14 +37,15 @@
 
                 <div class="form-group">
                     <label class="col-sm-4 control-label">{{ _("Trial coordinator") }}</label>
-                    <div class="col-sm-8"><input class="form-control" id="newproject_principal_investigator" required oninvalid="this.setCustomValidity('{{ _("Write the principal investigator.") }}')" onchange="this.setCustomValidity('')" name="project_pi" value="{{ dataworking.project_pi }}"></div>
+                    <div class="col-sm-8"><input class="form-control" id="newproject_principal_investigator" required oninvalid="this.setCustomValidity('{{ _("Write the principal investigator.") }}')" onchange="this.setCustomValidity('')" {% if not permissionForChanges %} disabled {% endif %} name="project_pi" value="{{ dataworking.project_pi }}"></div>
                 </div>
                 <div class="hr-line-dashed"></div>
 
                 <div class="form-group">
                     <label class="col-sm-4 control-label">{{ _("Email address") }}</label>
-                    <div class="col-sm-8"><input type="email" class="form-control" id="newproject_mail_address" required oninvalid="this.setCustomValidity('{{ _("Write the email address.") }}')" onchange="this.setCustomValidity('')" name="project_piemail" value="{{ dataworking.project_piemail }}"></div>
+                    <div class="col-sm-8"><input type="email" class="form-control" id="newproject_mail_address" required oninvalid="this.setCustomValidity('{{ _("Write the email address.") }}')" onchange="this.setCustomValidity('')" {% if not permissionForChanges %} disabled {% endif %} name="project_piemail" value="{{ dataworking.project_piemail }}"></div>
                 </div>
+                <br>
             </div>
         </div>
     </div>
@@ -58,13 +59,13 @@
 
                 <div class="form-group">
                     <label class="col-sm-4 control-label">{{ _("Number of observers participating in the project") }}</label>
-                    <div class="col-sm-8"><input type="number" min="10" class="form-control" id="newproject_numobs" required="" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} name="project_numobs" value="{{ dataworking.project_numobs }}"></div>
+                    <div class="col-sm-8"><input type="number" min="10" class="form-control" id="newproject_numobs" required="" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} {% if not permissionForChanges %} disabled {% endif %} name="project_numobs" value="{{ dataworking.project_numobs }}"></div>
                 </div>
                 <div class="hr-line-dashed"></div>
 
                 <div class="form-group">
                     <label class="col-sm-4 control-label">{{ _("Number of items that each participant compares") }}</label>
-                    <div class="col-sm-8"><input type="number" class="form-control" id="newproject_numcom" required="" readonly {% if dataworking.project_regstatus != 0 %} disabled {% endif %} name="project_numcom" value="{{ dataworking.project_numcom }}"></div>
+                    <div class="col-sm-8"><input type="number" class="form-control" id="newproject_numcom" required="" readonly {% if dataworking.project_regstatus != 0 %} disabled {% endif %} {% if not permissionForChanges %} disabled {% endif %} name="project_numcom" value="{{ dataworking.project_numcom }}"></div>
                 </div>
             </div>
         </div>
@@ -81,7 +82,7 @@
                     <label class="col-sm-4 control-label">{{ _("Country") }}</label>
                     <div class="col-sm-8">
 
-                        <select id="project_cnty" name="project_cnty" class="form-control chosen-select" tabindex="2" required oninvalid="this.setCustomValidity('{{ _("Select one country.") }}')" onchange="this.setCustomValidity('')">
+                        <select id="project_cnty" name="project_cnty" class="form-control chosen-select" tabindex="2" required oninvalid="this.setCustomValidity('{{ _("Select one country.") }}')" onchange="this.setCustomValidity('')" {% if not permissionForChanges %} disabled {% endif %}>
                             <option value="">{{ _("Select one country") }}</option>
                             {% for country in countries %}
                                 <option value="{{ country.code }}" {% if country.code == dataworking.project_cnty %}selected{% endif %} >{{ country.name }}</option>
@@ -102,14 +103,38 @@
             <div class="ibox-content">
 
                 <div class="form-group" style="margin: 5px">
-                    <div class="i-checks" ><label style="font-weight: initial; font-size: 14px"> <input class="radiosRA" type="radio" name="project_registration_and_analysis" value="0" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} {% if dataworking["project_registration_and_analysis"] ==0 %}checked{% endif %}> <i></i> {{ _("Registration is done first, followed by one or more data collection moments (with different forms)") }} </label></div>
+                    <div class="i-checks" ><label style="font-weight: initial; font-size: 14px"> <input class="radiosRA" type="radio" name="project_registration_and_analysis" value="0" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} {% if dataworking["project_registration_and_analysis"] ==0 %}checked{% endif %} {% if not permissionForChanges %} disabled {% endif %}> <i></i> {{ _("Registration is done first, followed by one or more data collection moments (with different forms)") }} </label></div>
                     <br>
-                    <div class="i-checks"><label style="font-weight: initial; font-size: 14px"> <input class="radiosRA" type="radio" name="project_registration_and_analysis" value="1" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} {% if dataworking["project_registration_and_analysis"] ==1 %}checked{% endif %}> <i></i> {{ _("Requires registering participants and immediately asking questions to analyze the information") }} </label></div>
+                    <div class="i-checks"><label style="font-weight: initial; font-size: 14px"> <input class="radiosRA" type="radio" name="project_registration_and_analysis" value="1" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} {% if dataworking["project_registration_and_analysis"] ==1 %}checked{% endif %} {% if not permissionForChanges %} disabled {% endif %}> <i></i> {{ _("Requires registering participants and immediately asking questions to analyze the information") }} </label></div>
                 </div>
 
             </div>
         </div>
     </div>
+
+    {% if showSelectStructureToClone %}
+        <div class="col-md-6">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{{ _("5. Structure to be cloned") }}</h5>
+                </div>
+                <div class="ibox-content">
+
+                    <div class="form-group" style="margin: 5px">
+                        <input type="text" name="structureToBeCloned" id="structureToBeCloned" style="display: none">
+                        <div class="i-checksbox"><label style="font-weight: initial; font-size: 14px"> <input class="checksbox" type="checkbox" id="fieldagents" > <i></i>{{ _("Field agents") }} </label></div>
+                        <div class="i-checksbox"><label style="font-weight: initial; font-size: 14px"> <input class="checksbox" type="checkbox" id="technologies" > <i></i>{{ _("Technologies") }} </label></div>
+                        <div class="i-checksbox"><label style="font-weight: initial; font-size: 14px"> <input class="checksbox" type="checkbox" id="technologyoptions" > <i></i>{{ _("Technology options") }} </label></div>
+                        <div class="i-checksbox"><label style="font-weight: initial; font-size: 14px"> <input class="checksbox" type="checkbox" id="registry" > <i></i>{{ _("Registration form") }} </label></div>
+                        {% for assessment in assessments %}
+                            <div class="i-checksbox"><label style="font-weight: initial; font-size: 14px"> <input class="checksbox" type="checkbox" id="{{ assessment.ass_cod }}" > <i></i>{{ _("Assessment") }}: {{ assessment.ass_desc }} </label></div>
+                        {% endfor %}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    {% endif %}
 
 </div>
 
@@ -120,9 +145,7 @@
             threshold: 0,
             warningClass: "label label-primary",
             limitReachedClass: "label label-danger",
-            separator: ' {{ _("of") }} ',
-            preText: '{{ _("You have") }} ',
-            postText: ' {{ _("chars remaining") }}.',
+            message: ' {{ _("Used") }} %charsTyped% {{ _("of") }} %charsTotal% {{ _("chars") }}.',
             placement: "bottom"
         }
     )
@@ -133,9 +156,7 @@
             threshold: 0,
             warningClass: "label label-primary",
             limitReachedClass: "label label-danger",
-            separator: ' {{ _("of") }} ',
-            preText: '{{ _("You have") }} ',
-            postText: ' {{ _("chars remaining") }}.',
+            message: ' {{ _("Used") }} %charsTyped% {{ _("of") }} %charsTotal% {{ _("chars") }}.',
             placement: "bottom"
         }
     )

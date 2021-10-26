@@ -46,6 +46,13 @@ def __url_for_static(request, static_file, library="static"):
     return request.application_url + "/" + library + "/" + static_file
 
 
+main_policy_array = []
+
+
+def get_policy_array(request):
+    return main_policy_array
+
+
 class RequestResources(object):
     """
     This class handles the injection of resources in templates
@@ -80,7 +87,10 @@ def __helper(request):
     return h
 
 
-def load_environment(settings, config, apppath):
+def load_environment(settings, config, apppath, policy_array):
+
+    for policy in policy_array:
+        main_policy_array.append(policy)
 
     # Add the session factory to the confing
     config.set_session_factory(my_session_factory)
@@ -134,6 +144,8 @@ def load_environment(settings, config, apppath):
     # Add a series of helper functions to the request like pluralize
     helpers.load_plugin_helpers()
     config.add_request_method(__helper, "h", reify=True)
+
+    config.add_request_method(get_policy_array, "policies", reify=False)
 
     # Load any change in the configuration done by connected plugins
     for plugin in p.PluginImplementations(p.IConfig):

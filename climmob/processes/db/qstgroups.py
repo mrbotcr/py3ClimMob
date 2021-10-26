@@ -1,5 +1,5 @@
 from ...models import mapToSchema, mapFromSchema
-from ...models.climmobv4 import Question_group, Question
+from ...models.climmobv4 import Question_group, Question, userProject
 from sqlalchemy import or_
 
 __all__ = [
@@ -14,6 +14,7 @@ __all__ = [
     "getCategoriesParents",
     "getCategoryById",
     "categoryExistsById",
+    "getCategoriesFromUserCollaborators",
 ]
 
 
@@ -127,14 +128,7 @@ def getCategories(user, request):
     return data
 
 
-def getCategoriesParents(user, request):
-    # sql = (
-    #     "select qstgroups.user_name,qstgroups.qstgroups_id, qstgroups_name,(select count(question.question_id)from question where question.qstgroups_id = qstgroups.qstgroups_id "
-    #     "and question.qstgroups_user = qstgroups.user_name) as count "
-    #     "from qstgroups where (qstgroups.user_name = '"
-    #     + user
-    #     + "' or qstgroups.user_name = 'bioversity') and qstgroups_id not in (select distinct(group_id) from qstsubgroups where parent_username='bioversity')"
-    # )
+def getCategoriesParents(userRegular, userOwner, request):
 
     sql = (
         "SELECT "
@@ -146,8 +140,46 @@ def getCategoriesParents(user, request):
         "AND		  qstgroups.qstgroups_id = i.qstgroups_id "
         "AND       i.lang_code = '" + request.locale_name + "' "
         "WHERE "
-        "(qstgroups.user_name = '" + user + "' OR qstgroups.user_name = 'bioversity') "
+        "(qstgroups.user_name = '"
+        + userRegular
+        + "' OR qstgroups.user_name = 'bioversity' OR qstgroups.user_name ='"
+        + userOwner
+        + "') "
         "and qstgroups.qstgroups_id not in (select distinct(group_id) from qstsubgroups where parent_username='bioversity')"
+    )
+
+    data = request.dbsession.execute(sql).fetchall()
+
+    return data
+
+
+def getCategoriesFromUserCollaborators(projectId, request):
+
+    projectCollaborators = (
+        request.dbsession.query(userProject.user_name)
+        .filter(userProject.project_id == projectId)
+        .all()
+    )
+
+    stringForFilterCategoriesByCollaborators = "qstgroups.user_name = 'bioversity'"
+    if projectCollaborators:
+        for user in projectCollaborators:
+            stringForFilterCategoriesByCollaborators += (
+                " OR qstgroups.user_name='" + user[0] + "' "
+            )
+
+    sql = (
+        " SELECT "
+        " qstgroups.user_name, qstgroups.qstgroups_id, COALESCE(i.qstgroups_name, qstgroups.qstgroups_name) as qstgroups_name, "
+        " (select count(question.question_id)from question where question.qstgroups_id = qstgroups.qstgroups_id and question.qstgroups_user = qstgroups.user_name) as count "
+        " FROM qstgroups "
+        " LEFT JOIN i18n_qstgroups i "
+        " ON        qstgroups.user_name = i.user_name "
+        " AND		  qstgroups.qstgroups_id = i.qstgroups_id "
+        " AND       i.lang_code = '" + request.locale_name + "' "
+        " WHERE "
+        " (" + stringForFilterCategoriesByCollaborators + " ) "
+        " AND qstgroups.qstgroups_id not in (select distinct(group_id) from qstsubgroups where parent_username='bioversity')"
     )
 
     data = request.dbsession.execute(sql).fetchall()

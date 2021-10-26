@@ -6,8 +6,10 @@ from ...processes import (
     enumeratorExists,
     getUsableEnumerators,
     addEnumeratorToProject,
-    getEnumeratorData,
+    getTheProjectIdForOwner,
     removeEnumeratorFromProject,
+    getAccessTypeForProject,
+    theUserBelongsToTheProject,
 )
 from ...products.fieldagents.fieldagents import create_fieldagents_report
 from climmob.products import stopTasksByProcess
@@ -19,7 +21,7 @@ class addProjectEnumerator_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"enum_id"]
+            obligatory = [u"project_cod", u"user_owner", u"enum_id", u"enum_user_name"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -32,53 +34,87 @@ class addProjectEnumerator_view(apiView):
                 return response
 
             if sorted(obligatory) == sorted(dataworking.keys()):
+
                 exitsproject = projectExists(
-                    self.user.login, dataworking["project_cod"], self.request
+                    self.user.login,
+                    dataworking["user_owner"],
+                    dataworking["project_cod"],
+                    self.request,
                 )
                 if exitsproject:
-                    if enumeratorExists(
-                        self.user.login, dataworking["enum_id"], self.request
-                    ):
 
-                        if isEnumeratorAssigned(
-                            self.user.login,
-                            dataworking["project_cod"],
+                    activeProjectId = getTheProjectIdForOwner(
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
+                    )
+                    accessType = getAccessTypeForProject(
+                        self.user.login, activeProjectId, self.request
+                    )
+
+                    if accessType == 4:
+                        response = Response(
+                            status=401,
+                            body=self._(
+                                "The access assigned for this project does not allow you to add field agents."
+                            ),
+                        )
+                        return response
+
+                    if theUserBelongsToTheProject(
+                        dataworking["enum_user_name"], activeProjectId, self.request
+                    ):
+                        if enumeratorExists(
+                            dataworking["enum_user_name"],
                             dataworking["enum_id"],
                             self.request,
                         ):
-                            added, message = addEnumeratorToProject(
-                                self.user.login,
-                                dataworking["project_cod"],
+
+                            if isEnumeratorAssigned(
+                                dataworking["enum_user_name"],
+                                activeProjectId,
                                 dataworking["enum_id"],
                                 self.request,
-                            )
-                            if not added:
-                                response = Response(status=401, body=message)
-                                return response
-                            else:
-                                # EDITED FOR CREATE THE REPORT
-                                stopTasksByProcess(
+                            ):
+                                added, message = addEnumeratorToProject(
+                                    activeProjectId,
+                                    dataworking["enum_id"],
+                                    dataworking["enum_user_name"],
                                     self.request,
-                                    self.user.login,
-                                    dataworking["project_cod"],
-                                    "create_fieldagents",
                                 )
-                                locale = self.request.locale_name
-                                create_fieldagents_report(
-                                    locale,
-                                    self.request,
-                                    self.user.login,
-                                    dataworking["project_cod"],
-                                    getProjectEnumerators(
-                                        self.user.login,
-                                        dataworking["project_cod"],
+                                if not added:
+                                    response = Response(status=401, body=message)
+                                    return response
+                                else:
+                                    # EDITED FOR CREATE THE REPORT
+                                    stopTasksByProcess(
                                         self.request,
-                                    ),
-                                )
+                                        activeProjectId,
+                                        "create_fieldagents",
+                                    )
+                                    locale = self.request.locale_name
+                                    create_fieldagents_report(
+                                        locale,
+                                        self.request,
+                                        dataworking["user_owner"],
+                                        dataworking["project_cod"],
+                                        activeProjectId,
+                                        getProjectEnumerators(
+                                            activeProjectId, self.request,
+                                        ),
+                                    )
+                                    response = Response(
+                                        status=200,
+                                        body=self._(
+                                            "The field agent has been added to the project."
+                                        ),
+                                    )
+                                    return response
+                            else:
                                 response = Response(
-                                    status=200,
+                                    status=401,
                                     body=self._(
-                                        "The field agent has been added to the project."
+                                        "The field agent is inactive or is already assigned to the project."
                                     ),
                                 )
                                 return response
@@ -86,7 +122,7 @@ class addProjectEnumerator_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "The field agent is inactive or is already assigned to the project."
+                                    "There is not enumerator with that identifier."
                                 ),
                             )
                             return response
@@ -94,7 +130,7 @@ class addProjectEnumerator_view(apiView):
                         response = Response(
                             status=401,
                             body=self._(
-                                "There is not enumerator with that identifier."
+                                "You are trying to add a field agent from a user that does not belong to this project."
                             ),
                         )
                         return response
@@ -115,7 +151,7 @@ class readProjectEnumerators_view(apiView):
     def processView(self):
 
         if self.request.method == "GET":
-            obligatory = [u"project_cod"]
+            obligatory = [u"project_cod", u"user_owner"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -129,17 +165,23 @@ class readProjectEnumerators_view(apiView):
 
             if sorted(obligatory) == sorted(dataworking.keys()):
                 exitsproject = projectExists(
-                    self.user.login, dataworking["project_cod"], self.request
+                    self.user.login,
+                    dataworking["user_owner"],
+                    dataworking["project_cod"],
+                    self.request,
                 )
                 if exitsproject:
+
+                    activeProjectId = getTheProjectIdForOwner(
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
+                    )
+
                     response = Response(
                         status=200,
                         body=json.dumps(
-                            getProjectEnumerators(
-                                self.user.login,
-                                dataworking["project_cod"],
-                                self.request,
-                            )
+                            getProjectEnumerators(activeProjectId, self.request,)
                         ),
                     )
                     return response
@@ -160,7 +202,7 @@ class readPossibleProjectEnumerators_view(apiView):
     def processView(self):
 
         if self.request.method == "GET":
-            obligatory = [u"project_cod"]
+            obligatory = [u"project_cod", u"user_owner"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -174,17 +216,35 @@ class readPossibleProjectEnumerators_view(apiView):
 
             if sorted(obligatory) == sorted(dataworking.keys()):
                 exitsproject = projectExists(
-                    self.user.login, dataworking["project_cod"], self.request
+                    self.user.login,
+                    dataworking["user_owner"],
+                    dataworking["project_cod"],
+                    self.request,
                 )
                 if exitsproject:
+
+                    activeProjectId = getTheProjectIdForOwner(
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
+                    )
+                    accessType = getAccessTypeForProject(
+                        self.user.login, activeProjectId, self.request
+                    )
+
+                    if accessType in [4]:
+                        response = Response(
+                            status=401,
+                            body=self._(
+                                "The access assigned for this project does not allow you to make modifications."
+                            ),
+                        )
+                        return response
+
                     response = Response(
                         status=200,
                         body=json.dumps(
-                            getUsableEnumerators(
-                                self.user.login,
-                                dataworking["project_cod"],
-                                self.request,
-                            )
+                            getUsableEnumerators(activeProjectId, self.request,)
                         ),
                     )
                     return response
@@ -205,7 +265,7 @@ class deleteProjectEnumerator_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"enum_id"]
+            obligatory = [u"project_cod", u"user_owner", u"enum_id", u"enum_user_name"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -219,43 +279,60 @@ class deleteProjectEnumerator_view(apiView):
 
             if sorted(obligatory) == sorted(dataworking.keys()):
                 exitsproject = projectExists(
-                    self.user.login, dataworking["project_cod"], self.request
+                    self.user.login,
+                    dataworking["user_owner"],
+                    dataworking["project_cod"],
+                    self.request,
                 )
                 if exitsproject:
+
+                    activeProjectId = getTheProjectIdForOwner(
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
+                    )
+                    accessType = getAccessTypeForProject(
+                        self.user.login, activeProjectId, self.request
+                    )
+
+                    if accessType == 4:
+                        response = Response(
+                            status=401,
+                            body=self._(
+                                "The access assigned for this project does not allow you to delete field agents."
+                            ),
+                        )
+                        return response
+
                     if enumeratorExists(
-                        self.user.login, dataworking["enum_id"], self.request
+                        dataworking["enum_user_name"],
+                        dataworking["enum_id"],
+                        self.request,
                     ):
                         if not isEnumeratorAssigned(
-                            self.user.login,
-                            dataworking["project_cod"],
+                            dataworking["enum_user_name"],
+                            activeProjectId,
                             dataworking["enum_id"],
                             self.request,
                         ):
                             deleted, message = removeEnumeratorFromProject(
-                                self.user.login,
-                                dataworking["project_cod"],
-                                dataworking["enum_id"],
-                                self.request,
+                                activeProjectId, dataworking["enum_id"], self.request,
                             )
 
                             if deleted:
                                 # EDITED FOR CREATE THE REPORT
                                 stopTasksByProcess(
-                                    self.request,
-                                    self.user.login,
-                                    dataworking["project_cod"],
-                                    "create_fieldagents",
+                                    self.request, activeProjectId, "create_fieldagents",
                                 )
                                 locale = self.request.locale_name
                                 create_fieldagents_report(
                                     locale,
                                     self.request,
-                                    self.user.login,
+                                    dataworking["user_owner"],
                                     dataworking["project_cod"],
+                                    activeProjectId,
                                     getProjectEnumerators(
-                                        self.user.login,
-                                        dataworking["project_cod"],
-                                        self.request,
+                                        activeProjectId, self.request,
                                     ),
                                 )
                                 response = Response(
@@ -284,6 +361,7 @@ class deleteProjectEnumerator_view(apiView):
                             ),
                         )
                         return response
+
                 else:
                     response = Response(
                         status=401, body=self._("There is no project with that code."),

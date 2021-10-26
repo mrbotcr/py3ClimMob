@@ -262,7 +262,9 @@ class readGroupsOfQuestions_view(apiView):
 
         if self.request.method == "GET":
 
-            groups = getCategoriesParents(self.user.login, self.request)
+            groups = getCategoriesParents(
+                self.user.login, self.user.login, self.request
+            )
             listOfGroups = []
             for group in groups:
                 listOfGroups.append(

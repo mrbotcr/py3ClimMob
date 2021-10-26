@@ -11,10 +11,8 @@ from ...processes import (
     assessmentExists,
     generateStructureForInterfaceForms,
     isAssessmentOpen,
-    generateStructureForValidateJsonOdkAssessment,
     numberOfCombinationsForTheProject,
     setAssessmentIndividualStatus,
-    AsessmentStatus,
     getPackages,
     getJSONResult,
     getTheGroupOfThePackageCodeAssessment,
@@ -26,12 +24,13 @@ import os
 import uuid
 from xml.dom import minidom
 from ...processes.odk.api import storeJSONInMySQL
+from ...processes import getTheProjectIdForOwner, getAccessTypeForProject
 
 
 class createProjectAssessment_view(apiView):
     def processView(self):
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"ass_cod"]
+            obligatory = [u"project_cod", u"user_owner", u"ass_cod"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -44,66 +43,86 @@ class createProjectAssessment_view(apiView):
 
                 if dataInParams:
                     exitsproject = projectExists(
-                        self.user.login, dataworking["project_cod"], self.request
+                        self.user.login,
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
                     )
                     if exitsproject:
+
+                        activeProjectId = getTheProjectIdForOwner(
+                            dataworking["user_owner"],
+                            dataworking["project_cod"],
+                            self.request,
+                        )
+                        accessType = getAccessTypeForProject(
+                            self.user.login, activeProjectId, self.request
+                        )
+
+                        if accessType in [4]:
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "The access assigned for this project does not allow you to do this action."
+                                ),
+                            )
+                            return response
                         progress, pcompleted = getProjectProgress(
-                            self.user.login, dataworking["project_cod"], self.request
+                            dataworking["user_owner"],
+                            dataworking["project_cod"],
+                            activeProjectId,
+                            self.request,
                         )
                         if progress["regsubmissions"] == 2:
                             if projectAsessmentStatus(
-                                self.user.login,
-                                dataworking["project_cod"],
-                                dataworking["ass_cod"],
-                                self.request,
+                                activeProjectId, dataworking["ass_cod"], self.request,
                             ):
                                 if progress["assessment"] == True:
                                     checkPass, errors = checkAssessments(
-                                        self.user.login,
-                                        dataworking["project_cod"],
+                                        activeProjectId,
                                         dataworking["ass_cod"],
                                         self.request,
                                     )
                                     if checkPass:
                                         sectionOfThePackageCode = getTheGroupOfThePackageCodeAssessment(
-                                            self.user.login,
-                                            dataworking["project_cod"],
+                                            activeProjectId,
                                             dataworking["ass_cod"],
                                             self.request,
                                         )
                                         correct = generateAssessmentFiles(
-                                            self.user.login,
+                                            dataworking["user_owner"],
+                                            activeProjectId,
                                             dataworking["project_cod"],
                                             dataworking["ass_cod"],
                                             self.request,
                                             sectionOfThePackageCode,
                                         )
                                         if correct[0]["result"]:
-                                            # setAssessmentStatus(self.user.login, dataworking['project_cod'], 1, self.request)
                                             setAssessmentIndividualStatus(
-                                                self.user.login,
-                                                dataworking["project_cod"],
+                                                activeProjectId,
                                                 dataworking["ass_cod"],
                                                 1,
                                                 self.request,
                                             )
 
                                             ncombs, packages = getPackages(
-                                                self.user.login,
-                                                dataworking["project_cod"],
+                                                dataworking["user_owner"],
+                                                activeProjectId,
                                                 self.request,
                                             )
 
                                             data, finalCloseQst = getDataFormPreview(
                                                 self,
-                                                dataworking["project_cod"],
+                                                dataworking["user_owner"],
+                                                activeProjectId,
                                                 dataworking["ass_cod"],
                                             )
 
                                             create_document_form(
                                                 self.request,
                                                 self.request.locale_name,
-                                                self.user.login,
+                                                dataworking["user_owner"],
+                                                activeProjectId,
                                                 dataworking["project_cod"],
                                                 "Assessment",
                                                 dataworking["ass_cod"],
@@ -177,7 +196,7 @@ class createProjectAssessment_view(apiView):
 class cancelAssessmentApi_view(apiView):
     def processView(self):
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"ass_cod"]
+            obligatory = [u"project_cod", u"user_owner", u"ass_cod"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -190,24 +209,41 @@ class cancelAssessmentApi_view(apiView):
 
                 if dataInParams:
                     exitsproject = projectExists(
-                        self.user.login, dataworking["project_cod"], self.request
+                        self.user.login,
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
                     )
                     if exitsproject:
-                        if not AsessmentStatus(
-                            self.user.login,
+
+                        activeProjectId = getTheProjectIdForOwner(
+                            dataworking["user_owner"],
                             dataworking["project_cod"],
-                            dataworking["ass_cod"],
                             self.request,
+                        )
+                        accessType = getAccessTypeForProject(
+                            self.user.login, activeProjectId, self.request
+                        )
+
+                        if accessType in [4]:
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "The access assigned for this project does not allow you to cancel the assessment."
+                                ),
+                            )
+                            return response
+
+                        if not projectAsessmentStatus(
+                            activeProjectId, dataworking["ass_cod"], self.request,
                         ):
 
                             setAssessmentIndividualStatus(
-                                self.user.login,
-                                dataworking["project_cod"],
+                                activeProjectId,
                                 dataworking["ass_cod"],
                                 0,
                                 self.request,
                             )
-                            # setAssessmentStatus(self.user.login, dataworking['project_cod'], 0, self.request)
 
                             response = Response(
                                 status=200, body=self._("Cancel data collection")
@@ -244,7 +280,7 @@ class cancelAssessmentApi_view(apiView):
 class closeAssessmentApi_view(apiView):
     def processView(self):
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"ass_cod"]
+            obligatory = [u"project_cod", u"user_owner", u"ass_cod"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -257,25 +293,40 @@ class closeAssessmentApi_view(apiView):
 
                 if dataInParams:
                     exitsproject = projectExists(
-                        self.user.login, dataworking["project_cod"], self.request
+                        self.user.login,
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
                     )
                     if exitsproject:
-                        if not projectAsessmentStatus(
-                            self.user.login,
+
+                        activeProjectId = getTheProjectIdForOwner(
+                            dataworking["user_owner"],
                             dataworking["project_cod"],
-                            dataworking["ass_cod"],
                             self.request,
+                        )
+                        accessType = getAccessTypeForProject(
+                            self.user.login, activeProjectId, self.request
+                        )
+
+                        if accessType in [4]:
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "The access assigned for this project does not allow you to cancel the assessment."
+                                ),
+                            )
+                            return response
+
+                        if not projectAsessmentStatus(
+                            activeProjectId, dataworking["ass_cod"], self.request,
                         ):
                             if assessmentExists(
-                                self.user.login,
-                                dataworking["project_cod"],
-                                dataworking["ass_cod"],
-                                self.request,
+                                activeProjectId, dataworking["ass_cod"], self.request,
                             ):
 
                                 setAssessmentIndividualStatus(
-                                    self.user.login,
-                                    dataworking["project_cod"],
+                                    activeProjectId,
                                     dataworking["ass_cod"],
                                     2,
                                     self.request,
@@ -323,7 +374,7 @@ class closeAssessmentApi_view(apiView):
 class readAssessmentStructure_view(apiView):
     def processView(self):
         if self.request.method == "GET":
-            obligatory = [u"project_cod", u"ass_cod"]
+            obligatory = [u"project_cod", u"user_owner", u"ass_cod"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -346,26 +397,31 @@ class readAssessmentStructure_view(apiView):
 
                 if dataInParams:
                     exitsproject = projectExists(
-                        self.user.login, dataworking["project_cod"], self.request
+                        self.user.login,
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
                     )
                     if exitsproject:
-                        if not projectAsessmentStatus(
-                            self.user.login,
+
+                        activeProjectId = getTheProjectIdForOwner(
+                            dataworking["user_owner"],
                             dataworking["project_cod"],
-                            dataworking["ass_cod"],
                             self.request,
+                        )
+
+                        if not projectAsessmentStatus(
+                            activeProjectId, dataworking["ass_cod"], self.request,
                         ):
                             if assessmentExists(
-                                self.user.login,
-                                dataworking["project_cod"],
-                                dataworking["ass_cod"],
-                                self.request,
+                                activeProjectId, dataworking["ass_cod"], self.request,
                             ):
                                 response = Response(
                                     status=200,
                                     body=json.dumps(
                                         generateStructureForInterfaceForms(
-                                            self.user.login,
+                                            dataworking["user_owner"],
+                                            activeProjectId,
                                             dataworking["project_cod"],
                                             "assessment",
                                             self.request,
@@ -410,7 +466,7 @@ class readAssessmentStructure_view(apiView):
 class pushJsonToAssessment_view(apiView):
     def processView(self):
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"ass_cod", u"json"]
+            obligatory = [u"project_cod", u"user_owner", u"ass_cod", u"json"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -423,30 +479,45 @@ class pushJsonToAssessment_view(apiView):
 
                 if dataInParams:
                     exitsproject = projectExists(
-                        self.user.login, dataworking["project_cod"], self.request
+                        self.user.login,
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
                     )
                     if exitsproject:
 
-                        if assessmentExists(
-                            self.user.login,
+                        activeProjectId = getTheProjectIdForOwner(
+                            dataworking["user_owner"],
                             dataworking["project_cod"],
-                            dataworking["ass_cod"],
                             self.request,
+                        )
+                        accessType = getAccessTypeForProject(
+                            self.user.login, activeProjectId, self.request
+                        )
+
+                        if accessType in [4]:
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "The access assigned for this project does not allow you to push information."
+                                ),
+                            )
+                            return response
+
+                        if assessmentExists(
+                            activeProjectId, dataworking["ass_cod"], self.request,
                         ):
                             if not projectAsessmentStatus(
-                                self.user.login,
-                                dataworking["project_cod"],
-                                dataworking["ass_cod"],
-                                self.request,
+                                activeProjectId, dataworking["ass_cod"], self.request,
                             ):
                                 if isAssessmentOpen(
-                                    self.user.login,
-                                    dataworking["project_cod"],
+                                    activeProjectId,
                                     dataworking["ass_cod"],
                                     self.request,
                                 ):
                                     structure = generateStructureForInterfaceForms(
-                                        self.user.login,
+                                        dataworking["user_owner"],
+                                        activeProjectId,
                                         dataworking["project_cod"],
                                         "assessment",
                                         self.request,
@@ -454,9 +525,7 @@ class pushJsonToAssessment_view(apiView):
                                     )
                                     if structure:
                                         numComb = numberOfCombinationsForTheProject(
-                                            self.user.login,
-                                            dataworking["project_cod"],
-                                            self.request,
+                                            activeProjectId, self.request,
                                         )
                                         obligatoryQuestions = []
                                         possibleQuestions = []
@@ -579,7 +648,9 @@ class pushJsonToAssessment_view(apiView):
                                                                     "user.repository"
                                                                 ],
                                                                 *[
-                                                                    self.user.login,
+                                                                    dataworking[
+                                                                        "user_owner"
+                                                                    ],
                                                                     dataworking[
                                                                         "project_cod"
                                                                     ],
@@ -605,8 +676,11 @@ class pushJsonToAssessment_view(apiView):
                                                             f.close()
 
                                                             storeJSONInMySQL(
-                                                                "ASS",
                                                                 self.user.login,
+                                                                "ASS",
+                                                                dataworking[
+                                                                    "user_owner"
+                                                                ],
                                                                 None,
                                                                 dataworking[
                                                                     "project_cod"
@@ -614,6 +688,7 @@ class pushJsonToAssessment_view(apiView):
                                                                 dataworking["ass_cod"],
                                                                 pathfinal,
                                                                 self.request,
+                                                                activeProjectId,
                                                             )
 
                                                             logFile = pathfinal.replace(
@@ -739,7 +814,7 @@ class pushJsonToAssessment_view(apiView):
 class readAssessmentData_view(apiView):
     def processView(self):
         if self.request.method == "GET":
-            obligatory = [u"project_cod", u"ass_cod"]
+            obligatory = [u"project_cod", u"user_owner", u"ass_cod"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -762,23 +837,28 @@ class readAssessmentData_view(apiView):
 
                 if dataInParams:
                     exitsproject = projectExists(
-                        self.user.login, dataworking["project_cod"], self.request
+                        self.user.login,
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
                     )
                     if exitsproject:
-                        if not projectAsessmentStatus(
-                            self.user.login,
+
+                        activeProjectId = getTheProjectIdForOwner(
+                            dataworking["user_owner"],
                             dataworking["project_cod"],
-                            dataworking["ass_cod"],
                             self.request,
+                        )
+
+                        if not projectAsessmentStatus(
+                            activeProjectId, dataworking["ass_cod"], self.request,
                         ):
                             if assessmentExists(
-                                self.user.login,
-                                dataworking["project_cod"],
-                                dataworking["ass_cod"],
-                                self.request,
+                                activeProjectId, dataworking["ass_cod"], self.request,
                             ):
                                 info = getJSONResult(
-                                    self.user.login,
+                                    dataworking["user_owner"],
+                                    activeProjectId,
                                     dataworking["project_cod"],
                                     self.request,
                                     True,

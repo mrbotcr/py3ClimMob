@@ -10,16 +10,11 @@ from ..processes import (
     deleteProject,
     changeTheStateOfCreateComb,
     getCountryList,
+    getTheProjectIdForOwner,
     addToLog,
+    getActiveProject,
 )
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
-import json
-import qrcode
-import zlib
-import base64
-from pyramid.response import FileResponse
-import uuid
-import os
 import datetime
 
 
@@ -57,12 +52,16 @@ class newProject_view(privateView):
                     self.returnRawViewResult = True
                     return HTTPFound(
                         location=self.request.route_url(
-                            "dashboard", _query={"project": dataworking["project_cod"]},
+                            "dashboard",
+                            _query={
+                                "user": self.user.login,
+                                "project": dataworking["project_cod"],
+                            },
                         )
                     )
 
         return {
-            "activeUser": self.user,
+            "activeProject": getActiveProject(self.user.login, self.request),
             "indashboard": True,
             "dataworking": dataworking,
             "newproject": newproject,
@@ -123,13 +122,23 @@ def createProjectFunction(dataworking, error_summary, self):
 
 class modifyProject_view(privateView):
     def processView(self):
-        projectid = self.request.matchdict["projectid"]
-        if not projectExists(self.user.login, projectid, self.request):
+
+        activeProjectUser = self.request.matchdict["user"]
+        activeProjectCod = self.request.matchdict["project"]
+
+        if not projectExists(
+            self.user.login, activeProjectUser, activeProjectCod, self.request
+        ):
             raise HTTPNotFound()
+
+        activeProjectId = getTheProjectIdForOwner(
+            activeProjectUser, activeProjectCod, self.request
+        )
 
         newproject = False
         error_summary = {}
-        data = getProjectData(self.user.login, projectid, self.request)
+        data = getProjectData(activeProjectId, self.request)
+
         if int(data["project_localvariety"]) == 1:
             data["project_localvariety"] = "on"
         else:
@@ -138,10 +147,9 @@ class modifyProject_view(privateView):
         if self.request.method == "POST":
             if "btn_addNewProject" in self.request.POST:
                 # get the field value
-                cdata = getProjectData(self.user.login, projectid, self.request)
+                cdata = getProjectData(activeProjectId, self.request)
                 data = self.getPostDict()
-                data["user_name"] = self.user.login
-                data["project_cod"] = projectid
+
                 if cdata["project_regstatus"] != 0:
                     data["project_numobs"] = cdata["project_numobs"]
                     data["project_numcom"] = cdata["project_numcom"]
@@ -160,11 +168,9 @@ class modifyProject_view(privateView):
                     isNecessarygenerateCombinations = True
 
                 if isNecessarygenerateCombinations:
-                    changeTheStateOfCreateComb(self.user.login, projectid, self.request)
+                    changeTheStateOfCreateComb(activeProjectId, self.request)
 
-                modified, message = modifyProject(
-                    self.user.login, projectid, data, self.request
-                )
+                modified, message = modifyProject(activeProjectId, data, self.request)
                 if not modified:
                     error_summary = {"dberror": message}
                 else:
@@ -180,7 +186,7 @@ class modifyProject_view(privateView):
                     data["project_localvariety"] = "off"
 
         return {
-            "activeUser": self.user,
+            "activeProject": getActiveProject(self.user.login, self.request),
             "indashboard": True,
             "data": data,
             "newproject": newproject,
@@ -191,24 +197,32 @@ class modifyProject_view(privateView):
 
 class deleteProject_view(privateView):
     def processView(self):
-        projectid = self.request.matchdict["projectid"]
-        if not projectExists(self.user.login, projectid, self.request):
+        activeProjectUser = self.request.matchdict["user"]
+        activeProjectCod = self.request.matchdict["project"]
+
+        if not projectExists(
+            self.user.login, activeProjectUser, activeProjectCod, self.request
+        ):
             raise HTTPNotFound()
+
+        activeProjectId = getTheProjectIdForOwner(
+            activeProjectUser, activeProjectCod, self.request
+        )
         redirect = False
         error_summary = {}
-        data = getProjectData(self.user.login, projectid, self.request)
+        data = getProjectData(activeProjectId, self.request)
         if self.request.method == "POST":
-            deleted, message = deleteProject(self.user.login, projectid, self.request)
+            deleted, message = deleteProject(activeProjectId, self.request)
             if not deleted:
                 error_summary = {"dberror": message}
                 self.returnRawViewResult = True
                 return {"status": 400, "error": message}
             else:
                 self.returnRawViewResult = True
-                return {"status": 200}
                 self.request.session.flash(
                     self._("The project was deleted successfully")
                 )
+                return {"status": 200}
 
         return {
             "activeUser": self.user,
@@ -216,39 +230,3 @@ class deleteProject_view(privateView):
             "data": data,
             "error_summary": error_summary,
         }
-
-
-class ProjectQRView(privateView):
-    def processView(self):
-        project_id = self.request.matchdict["projectid"]
-
-        path = os.path.join(
-            self.request.registry.settings["user.repository"],
-            *[self.user.login, project_id, "tmp"]
-        )
-        url = self.request.application_url + "/" + self.user.login
-        odk_settings = {
-            "admin": {"change_server": True, "change_form_metadata": False},
-            "general": {
-                "change_server": True,
-                "navigation": "buttons",
-                "server_url": url,
-            },
-        }
-        qr_json = json.dumps(odk_settings).encode()
-        zip_json = zlib.compress(qr_json)
-        serialization = base64.b64encode(zip_json)
-        serialization = serialization.decode()
-        serialization = serialization.replace("\n", "")
-        img = qrcode.make(serialization)
-
-        unique_id = str(uuid.uuid4())
-        temp_path = os.path.join(path, *[unique_id])
-        os.makedirs(temp_path)
-
-        qr_file = os.path.join(temp_path, *[project_id + ".png"])
-        img.save(qr_file)
-        response = FileResponse(qr_file, request=self.request, content_type="image/png")
-        response.content_disposition = 'attachment; filename="' + project_id + '.png"'
-        self.returnRawViewResult = True
-        return response

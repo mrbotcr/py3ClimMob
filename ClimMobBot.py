@@ -46,6 +46,7 @@ def opMenuUsuario(message):
         if result:
             try:
                 send_message = bot.send_message(message.chat.id, "Reply sent")
+                print(send_message.message_id)
                 sql = "INSERT INTO chat(user_name,chat_id,chat_message,chat_send,chat_read,chat_tofrom,chat_date)VALUES(%s,%s,%s,%s,%s,%s,%s)"
                 data = (
                     str(result[0]),

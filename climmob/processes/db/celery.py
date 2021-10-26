@@ -12,25 +12,24 @@ def addTask(taskID, request):
         return False, str(e)
 
 
-def getRunningTasksByProcess(request, user, project, processName):
+def getRunningTasksByProcess(request, projectId, processName):
     if processName != "ALL":
         sql = (
-            "SELECT celery_taskid FROM products WHERE user_name='"
-            + user
-            + "' and project_cod = '"
-            + project
+            "SELECT celery_taskid FROM products WHERE "
+            + " project_id = '"
+            + projectId
             + "' and process_name = '"
             + processName
             + "' AND celery_taskid NOT IN (SELECT taskid FROM finishedtasks)"
         )
     else:
         sql = (
-            "SELECT celery_taskid FROM products WHERE user_name='"
-            + user
-            + "' and project_cod = '"
-            + project
+            "SELECT celery_taskid FROM products WHERE "
+            "project_id = '"
+            + projectId
             + "' AND celery_taskid NOT IN (SELECT taskid FROM finishedtasks)"
         )
+
     tasks = request.dbsession.execute(sql).fetchall()
     result = []
     for task in tasks:

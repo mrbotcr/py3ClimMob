@@ -5,9 +5,7 @@
 {% endblock title %}
 
 {% block topScripts %}
-    {% jsresource request,'coreresources','productsListaes' %}
-    {% jsresource request,'coreresources','productsList' %}
-    {% jsresource request,'coreresources','concurrent' %}
+    {% jsresource request,'coreresources','toastr' %}
 {% endblock topScripts %}
 
 {% block pageheading %}
@@ -37,7 +35,7 @@
             {% else %}
                 <div style="width: 100%; text-align: center">
                     <h3><b>{{ _("You haven't files to download.") }}</b></h3>
-                    <a href="{{ request.route_url('generateProduct', productid="generalreport", projectid=activeProject.project_cod, processname="generalreport") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create project summary") }}</a>
+                    <a href="{{ request.route_url('generateProduct', productid="generalreport", user=activeProject["owner"].user_name,project=activeProject.project_cod, processname="generalreport") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create project summary") }}</a>
                 </div>
             {% endif %}
 

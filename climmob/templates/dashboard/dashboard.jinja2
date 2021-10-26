@@ -88,12 +88,12 @@
                                     {% set idForProject = activeProject.project_cod%}
                                 {% endif %}
                                 <li>
-                                    <a href="{{ request.route_url('modifyproject',projectid=idForProject) }}"><i class="fa fa-list-alt"></i> {{ _("Project profile") }}</a>
+                                    <a href="{{ request.route_url('modifyproject',user=activeProject["owner"].user_name, project=activeProject.project_cod) }}"><i class="fa fa-list-alt"></i> {{ _("Project profile") }}</a>
                                 </li>
                             {% endif %}
                             <li class="active" style="border-left: initial;background: initial" id="nav_libraries">
                                 <a href="#"><i class="fa fa-book"></i> <span class="nav-label">{{ _("Library") }}</span><span class="fa arrow"></span></a>
-                                <ul class="nav nav-second-level collapse" style="border-left: initial;background: initial">
+                                <ul class="nav nav-second-level collapse " style="border-left: initial;background: initial">
                                     <li id="nav_enumerators"><a href="{{ request.route_url('enumerators') }}"><i class="fa fa-group"></i> <span class="nav-label">{{ _("Field agents") }}</span></a></li>
                                     <li id="nav_technology"><a href="{{ request.route_url('usertechnologies') }}"><i class="fa fa-flask"></i> <span class="nav-label">{{ _("Technology options") }}</span></a></li>
                                     <li id="nav_questions"><a href="{{ request.route_url('qlibrary',user_name =activeUser.login) }}"><i class="fa fa-comment"></i> <span class="nav-label">{{ _("Questions") }}</span></a></li>
@@ -204,7 +204,7 @@
                                     <div class="ibox-content">
                                         <div class="row">
                                             <div class="col-md-9">
-                                                <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" {% if progress.enumerators_by_user == 0 %} onclick="seeHelp()" {% else %} href="{{ request.route_url('prjenumerators',projectid=activeProject.project_cod) }}" {% endif %}><i class="fa fa-user-circle-o"></i> {{ _("Assign field agents") }}</a>
+                                                <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" {% if progress.enumerators_by_user == 0 %} onclick="seeHelp()" {% else %} href="{{ request.route_url('prjenumerators',user=activeProject["owner"].user_name, project=activeProject["project_cod"]) }}" {% endif %}><i class="fa fa-user-circle-o"></i> {{ _("Assign field agents") }}</a>
                                             </div>
                                             <div class="col-md-3">
                                                 <p style="margin-top: 8px; text-align: center"><span class="label {% if progress.enumerators %}label-success{% else %}label-danger{% endif %}">{% if progress.enumerators %}{{ _("Completed") }}{% else %}{{ _("Pending") }}{% endif %}</span></p>
@@ -212,11 +212,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-9">
-                                                {% if progress.regsubmissions == 0 %}
-                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('prjtechnologies',projectid=activeProject.project_cod) }}"><i class="fa fa-envira"></i> {{ _("Select technology options") }}</a>
-                                                {% else %}
-                                                    <a class="btn btn-default btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;"><i class="fa fa-lock"></i> {{ _("Select technology options") }}</a>
-                                                {% endif %}
+                                                <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('prjtechnologies', user=activeProject["owner"].user_name, project=activeProject["project_cod"]) }}"><i class="fa fa-envira"></i> {{ _("Select technology options") }}</a>
                                             </div>
                                             <div class="col-md-3">
                                                 <p style="margin-top: 8px; text-align: center">
@@ -234,11 +230,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-9">
-                                                {% if progress.regsubmissions == 0 %}
-                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('registry',projectid=activeProject.project_cod) }}"><i class="fa fa-address-card-o"></i> {{ _("Prepare registration form") }}</a>
-                                                {% else %}
-                                                    <a class="btn btn-default btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;"><i class="fa fa-lock"></i> {{ _("Prepare registration") }}</a>
-                                                {% endif %}
+                                                <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('registry', user=activeProject["owner"].user_name, project=activeProject.project_cod) }}"><i class="fa fa-address-card-o"></i> {{ _("Prepare registration form") }}</a>
                                             </div>
                                             <div class="col-md-3">
                                                 <p style="margin-top: 8px; text-align: center;">
@@ -254,7 +246,7 @@
                                             <div class="row">
                                                 <div class="col-md-9">
 
-                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('assessment',projectid=activeProject.project_cod) }}" ><i class="fa fa-balance-scale"></i> {{ _("Prepare data collection") }}</a>
+                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('assessment',user=activeProject["owner"].user_name, project=activeProject.project_cod) }}" ><i class="fa fa-balance-scale"></i> {{ _("Prepare data collection") }}</a>
 
                                                 </div>
                                                 <div class="col-md-3">
@@ -268,6 +260,17 @@
                                                 </div>
                                             </div>
                                         {% endif %}
+
+                                        {%  if activeProject["access_type"] in [1,2] %}
+                                            <div class="row">
+                                                <div class="col-md-9">
+                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('shareProject',user=activeProject["owner"].user_name, project=activeProject["project_cod"]) }}" ><i class="fa fa-group"></i> {{ _("Share project with other users") }}</a>
+                                                </div>
+                                                <div class="col-md-3">
+                                                </div>
+                                            </div>
+                                        {% endif %}
+
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <br>
@@ -277,17 +280,8 @@
                                                     <input readonly class=" form-control " style="margin-bottom: 5px; padding: 6px 12px; border-color: #1ab394; border-radius: 3px" type="text" id="aForCopy" value="{{ request.route_url("projectInformation", id = encrypted) }}" >
                                                     <button class="btn btn-default" onclick="copy()">{{ _("Copy to clipboard") }}</button>
                                                 </div>
-{#                                                <hr>#}
                                             </div>
                                         </div>
-{#                                        <div class="row">#}
-{#                                            <div class="col-md-6">#}
-{#                                                <a class="btn btn-warning btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('modifyproject',projectid=activeProject.project_cod) }}"><i class="fa fa-wrench"></i> {{ _("Update project settings") }}</a>#}
-{#                                            </div>#}
-{#                                            <div class="col-md-6">#}
-{#                                                <a class="btn btn-danger btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" onclick="showDelete('{{ request.route_url('deleteproject',projectid=activeProject.project_cod) }}','{{ _("Do you really want to remove this project?") }}','{{ request.session.get_csrf_token() }}','{{ request.route_url('dashboard') }}')"><i class="fa fa-trash"></i> {{ _("Delete project") }}</a>#}
-{#                                            </div>#}
-{#                                        </div>#}
                                     </div>
                                 </div>
 
@@ -318,11 +312,11 @@
                                                     <br>
                                                     {% if progress.usableAssessments|length > 0 %}
                                                         {% include 'snippets/error.jinja2' %}
-                                                        <form class="formElement" id="start_assessment"  role="form" method="post" action="{{ request.route_url("startassessments",projectid=activeProject.project_cod) }}">
+                                                        <form class="formElement" id="start_assessment"  role="form" method="post" action="{{ request.route_url("startassessments",user=activeProject["owner"].user_name, project=activeProject.project_cod) }}">
                                                             <div class="form-group">
                                                                 <label>{{ _("Select the assessment for start the data collection") }}</label>
                                                                 <select id="assessment_id" name="assessment_id" class="form-control">
-                                                                        {% for assessment in usable_assessments %}
+                                                                        {% for assessment in progress["usableAssessments"] %}
                                                                             <option value="{{ assessment.ass_cod }}">{{ assessment.ass_desc }}</option>>
                                                                         {% endfor %}
                                                                     </select>
@@ -330,7 +324,6 @@
                                                             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                                                             <button id="start_assessment_button" class="btn btn-primary btn-rounded btn-block" type="submit" name="start_assessment_button"> <i class="fa fa-play"></i> {{ _("Start an assessment") }}</button>
                                                         </form>
-                                                        {# <button onclick="location.href = '{{ request.route_url('startassessments',projectid=activeProject.project_cod) }}'" class="btn btn-primary btn-rounded btn-block" ><i class="fa fa-play"></i> {{ _("Start an assessment") }}</button> #}
                                                     {% endif %}
                                                 </div>
                                             {% else %}
@@ -394,7 +387,7 @@
                                             <div class="row">
                                                 {% if progress.enumerators == true and progress.technology == true and progress.techalias == true and progress.registry == true %}
                                                     <div class="col-md-12">
-                                                        <button class="btn btn-primary btn-rounded btn-block" onclick="location.href='{{ request.route_url('combinations',projectid=activeProject.project_cod,  _query={"stage": 2}) }}'"><i class="fa fa-play"></i> {{ _("Generate packages with technology options") }}<br/> {{ _("and open the registration of participants") }}</button>
+                                                        <button class="btn btn-primary btn-rounded btn-block" onclick="location.href='{{ request.route_url('combinations',user=activeProject["owner"].user_name, project=activeProject.project_cod,  _query={"stage": 2}) }}'"><i class="fa fa-play"></i> {{ _("Generate packages with technology options") }}<br/> {{ _("and open the registration of participants") }}</button>
                                                     </div>
                                                 {% else %}
                                                     <div class="col-md-12">
@@ -440,14 +433,14 @@
                                                         <tr>
                                                             <td colspan="2">
                                                                 {% if progress.regtotal > 0 %}
-                                                                    <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('EditDataRegistry',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-table"></i> {{ _("View data") }}</a>
+                                                                    <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('EditDataRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry') }}"><i class="fa fa-table"></i> {{ _("View data") }}</a>
 
-                                                                    <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataRegistry',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data") }}</a>
+                                                                    <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data") }}</a>
 
                                                                 {% endif %}
                                                                 {% if progress.regerrors > 0 and progress.regsubmissions == 1%}
-                                                                    <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;white-space: normal !important;word-wrap: break-word !important;" href="{{request.route_url('CleanErrorLogs',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-bug"></i> {{ _("Show submissions with conflicts") }}</a>
-                                                                    <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;white-space: normal !important;word-wrap: break-word !important;" href="{{request.route_url('downloadErrorLogDocumentRegistry',projectid=activeProject.project_cod,formid='registry') }}"><i class="fa fa-cloud-download"></i> {{ _("Download submissions with conflicts") }}</a>
+                                                                    <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;white-space: normal !important;word-wrap: break-word !important;" href="{{request.route_url('CleanErrorLogs',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry') }}"><i class="fa fa-bug"></i> {{ _("Show submissions with conflicts") }}</a>
+                                                                    <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;white-space: normal !important;word-wrap: break-word !important;" href="{{request.route_url('downloadErrorLogDocumentRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry') }}"><i class="fa fa-cloud-download"></i> {{ _("Download submissions with conflicts") }}</a>
                                                                 {% endif %}
                                                             </td>
                                                         </tr>
@@ -461,14 +454,14 @@
                                                 {% if progress.regsubmissions == 1 %}
                                                     {% if progress.regtotal > 0 %}
                                                         <div class="col-md-6">
-                                                            <button onclick="location.href ='{{ request.route_url('closeregistry',projectid=activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block" href="#"><i class="fa fa-stop"></i> {{ _("Finish registration") }}</button>
+                                                            <button onclick="location.href ='{{ request.route_url('closeregistry',user=activeProject["owner"].user_name, project=activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block" href="#"><i class="fa fa-stop"></i> {{ _("Finish registration") }}</button>
                                                         </div>
                                                         <div class="col-md-6">
-                                                            <button onclick="location.href ='{{ request.route_url('cancelregistry',projectid=activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block" href="#"><i class="fa fa-undo"></i> {{ _("Cancel registration") }}</button>
+                                                            <button onclick="location.href ='{{ request.route_url('cancelregistry',user=activeProject["owner"].user_name, project=activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block" href="#"><i class="fa fa-undo"></i> {{ _("Cancel registration") }}</button>
                                                         </div>
                                                     {% else %}
                                                         <div class="col-md-12">
-                                                            <button onclick="location.href = '{{ request.route_url('cancelregistry',projectid=activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block" href="#"><i class="fa fa-undo"></i> {{ _("Cancel registration") }}</button>
+                                                            <button onclick="location.href = '{{ request.route_url('cancelregistry', user=activeProject["owner"].user_name, project=activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block" href="#"><i class="fa fa-undo"></i> {{ _("Cancel registration") }}</button>
                                                         </div>
                                                     {% endif %}
                                                 {% endif %}
@@ -476,7 +469,7 @@
 
                                                     <div class="col-md-12">
                                                         {% if progress.assessments|length == 0 %}
-                                                            <button onclick="location.href = '{{ request.route_url('cancelregistry',projectid=activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block" href="#"><i class="fa fa-undo"></i> {{ _("Cancel registration") }}</button>
+                                                            <button onclick="location.href = '{{ request.route_url('cancelregistry',user=activeProject["owner"].user_name, project=activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block" href="#"><i class="fa fa-undo"></i> {{ _("Cancel registration") }}</button>
                                                         {% endif %}
                                                     </div>
                                                 {% endif %}
@@ -566,16 +559,15 @@
                                                                 <tr>
                                                                     <td colspan="2">
                                                                         {% if assessment.asstotal > 0 %}
-                                                                            <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('EditDataAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}" href="#"><i class="fa fa-table"></i> {{ _("View data") }}</a>
-                                                                            <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-cloud-download"></i> {{ _("Download data") }}</a>
+                                                                            <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('EditDataAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}" href="#"><i class="fa fa-table"></i> {{ _("View data") }}</a>
+                                                                            <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-cloud-download"></i> {{ _("Download data") }}</a>
 
                                                                             {% if assessment.ass_status == 1%}
-{#                                                                                <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{request.route_url('uploadDataAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-cloud-upload"></i> {{ _("Upload data") }}</a>#}
                                                                             {% endif %}
                                                                         {% endif %}
                                                                         {% if assessment.errors > 0 and assessment.ass_status == 1%}
-                                                                            <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;white-space: normal !important;word-wrap: break-word !important;" href="{{request.route_url('CleanErrorLogsAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-bug"></i> {{ _("Show submissions with conflicts") }}</a>
-                                                                            <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;white-space: normal !important;word-wrap: break-word !important;" href="{{request.route_url('downloadErrorLogDocumentAssessment',projectid=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-cloud-download"></i> {{ _("Download submissions with conflicts") }}</a>
+                                                                            <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;white-space: normal !important;word-wrap: break-word !important;" href="{{request.route_url('CleanErrorLogsAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-bug"></i> {{ _("Show submissions with conflicts") }}</a>
+                                                                            <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;white-space: normal !important;word-wrap: break-word !important;" href="{{request.route_url('downloadErrorLogDocumentAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-cloud-download"></i> {{ _("Download submissions with conflicts") }}</a>
                                                                         {% endif %}
                                                                     </td>
                                                                 </tr>
@@ -587,18 +579,18 @@
                                                     {% if assessment.asstotal > 0 %}
                                                         <div class="col-md-6">
                                                             {% if assessment.ass_status == 1 %}
-                                                                <a class="btn btn-danger btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" onclick="location.href = '{{ request.route_url('closeassessment',projectid=activeProject.project_cod,assessmentid=assessment.ass_cod) }}'"><i class="fa fa-stop"></i> {{ _("Finish") }} {{ assessment.ass_desc }}</a>
+                                                                <a class="btn btn-danger btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" onclick="location.href = '{{ request.route_url('closeassessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}'"><i class="fa fa-stop"></i> {{ _("Finish") }} {{ assessment.ass_desc }}</a>
                                                             {% endif %}
                                                         </div>
                                                         <div class="col-md-6">
                                                             {% if assessment.ass_status == 1 %}
-                                                                <a class="btn btn-danger btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" onclick="location.href = '{{ request.route_url('cancelassessment',projectid=activeProject.project_cod,assessmentid=assessment.ass_cod) }}'"><i class="fa fa-stop"></i> {{ _("Cancel") }} {{ assessment.ass_desc }}</a>
+                                                                <a class="btn btn-danger btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" onclick="location.href = '{{ request.route_url('cancelassessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}'"><i class="fa fa-stop"></i> {{ _("Cancel") }} {{ assessment.ass_desc }}</a>
                                                             {% endif %}
                                                         </div>
                                                     {% else %}
                                                         <div class="col-md-12">
                                                             {% if assessment.ass_status == 1 %}
-                                                                <a class="btn btn-danger btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" onclick="location.href = '{{ request.route_url('cancelassessment',projectid=activeProject.project_cod,assessmentid=assessment.ass_cod) }}'"><i class="fa fa-stop"></i> {{ _("Cancel") }} {{ assessment.ass_desc }}</a>
+                                                                <a class="btn btn-danger btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" onclick="location.href = '{{ request.route_url('cancelassessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}'"><i class="fa fa-stop"></i> {{ _("Cancel") }} {{ assessment.ass_desc }}</a>
                                                             {% endif %}
                                                         </div>
                                                     {% endif %}
@@ -611,17 +603,18 @@
 
 
 
-                                {% if total_ass_records > 0 or (activeProject.project_registration_and_analysis == 1 and progress.regtotal >=5)%}
-                                    <div class="ibox float-e-margins" >
-                                        <div class="ibox-title">
-                                            <h5>{{ _("Analysis") }}</h5>
+                                {% if total_ass_records > 5 or (activeProject.project_registration_and_analysis == 1 and progress.regtotal >=5)%}
+                                    {%  if activeProject["access_type"] not in [4] %}
+                                        <div class="ibox float-e-margins" >
+                                            <div class="ibox-title">
+                                                <h5>{{ _("Analysis") }}</h5>
+                                            </div>
+                                            <div class="ibox-content">
+                                                <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" onclick="location.href = '{{request.route_url('createAnalysis')}}' "><i class="fa fa-bar-chart-o"></i> {{ _("Start analysis") }}</a>
+                                                <br>
+                                            </div>
                                         </div>
-                                        <div class="ibox-content">
-                                            <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" onclick="location.href = '{{request.route_url('createAnalysis')}}' "><i class="fa fa-bar-chart-o"></i> {{ _("Start analysis") }}</a>
-                                            <br>
-                                        </div>
-
-                                    </div>
+                                    {% endif %}
                                 {% endif %}
 
                             </div>

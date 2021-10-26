@@ -1,5 +1,6 @@
 from ...models import Enumerator, mapToSchema, mapFromSchema, PrjEnumerator
 from climmob.config.encdecdata import encodeData, decodeData
+from sqlalchemy.exc import IntegrityError
 
 __all__ = [
     "searchEnumerator",
@@ -15,6 +16,7 @@ __all__ = [
     "isEnumeratorinProject",
     "isEnumeratorAssigned",
     "countEnumerators",
+    "getEnumeratorByProject",
 ]
 
 
@@ -76,32 +78,29 @@ def isEnumeratorActive(user, enumerator, request):
         return False
 
 
-def isEnumeratorinProject(user, project, enumerator, request):
+def isEnumeratorinProject(projectId, enumeratorId, request):
     result = (
         request.dbsession.query(Enumerator)
-        .filter(Enumerator.enum_id == enumerator)
-        .filter(Enumerator.user_name == user)
+        .filter(Enumerator.enum_id == enumeratorId)
         .filter(Enumerator.enum_active == 1)
         .first()
     )
     if result:
         result = (
             request.dbsession.query(PrjEnumerator)
-            .filter(PrjEnumerator.enum_id == enumerator)
-            .filter(PrjEnumerator.user_name == user)
-            .filter(PrjEnumerator.project_cod == project)
+            .filter(PrjEnumerator.enum_id == enumeratorId)
+            .filter(PrjEnumerator.project_id == projectId)
             .first()
         )
         if result:
             return True
         else:
             return False
-        return True
     else:
         return False
 
 
-def isEnumeratorAssigned(user, project, enumerator, request):
+def isEnumeratorAssigned(user, projectId, enumerator, request):
     result = (
         request.dbsession.query(Enumerator)
         .filter(Enumerator.enum_id == enumerator)
@@ -113,8 +112,7 @@ def isEnumeratorAssigned(user, project, enumerator, request):
         result = (
             request.dbsession.query(PrjEnumerator)
             .filter(PrjEnumerator.enum_id == enumerator)
-            .filter(PrjEnumerator.user_name == user)
-            .filter(PrjEnumerator.project_cod == project)
+            .filter(PrjEnumerator.project_id == projectId)
             .first()
         )
         if not result:
@@ -137,6 +135,19 @@ def getEnumeratorData(user, id, request):
         result["enum_password"] = decodeData(request, result["enum_password"]).decode(
             "utf-8"
         )
+    return result
+
+
+def getEnumeratorByProject(projectId, id, request):
+    res = (
+        request.dbsession.query(Enumerator)
+        .filter(PrjEnumerator.project_id == projectId)
+        .filter(Enumerator.user_name == PrjEnumerator.enum_user)
+        .filter(Enumerator.enum_id == id)
+        .first()
+    )
+    result = mapFromSchema(res)
+
     return result
 
 
@@ -180,6 +191,9 @@ def deleteEnumerator(user, enumerator, request):
             Enumerator.enum_id == enumerator
         ).delete()
         return True, ""
+    except IntegrityError as e:
+        print("capturado")
+        return False, e
     except Exception as e:
         # print(str(e))
         return False, e

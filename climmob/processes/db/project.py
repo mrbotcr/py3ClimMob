@@ -7,7 +7,6 @@ from ...models import (
     Regsection,
     Registry,
     Question,
-    Qstoption,
     AssDetail,
     Asssection,
     Assessment,
@@ -15,6 +14,7 @@ from ...models import (
     Prjalia,
     RegistryJsonLog,
     AssessmentJsonLog,
+    userProject,
 )
 from ..db.question import getQuestionOptions
 import datetime, os, glob
@@ -23,6 +23,7 @@ from .project_technologies import numberOfCombinationsForTheProject
 from .enumerator import countEnumerators
 from ago import human
 from climmob.models.repository import sql_fetch_all, sql_fetch_one
+import uuid
 
 __all__ = [
     "addProject",
@@ -48,41 +49,37 @@ def getProjectCount(request):
     return numProj
 
 
-def addQuestionsToAssessment(user, project, assessment, request):
+def addQuestionsToAssessment(userOwner, projectId, assessment, request):
     _ = request.translate
 
     data = {}
-    data["user_name"] = user
-    data["project_cod"] = project
     data["ass_cod"] = assessment
     data["section_id"] = 1
     data["section_name"] = _("Farmer selection")
     data["section_content"] = _("List of farmers included in the registration form")
     data["section_order"] = 1
     data["section_private"] = 1
+    data["project_id"] = projectId
     newAsssection = Asssection(**data)
     request.dbsession.add(newAsssection)
     data = {}
-    data["user_name"] = user
-    data["project_cod"] = project
     data["ass_cod"] = assessment
     data["question_id"] = 163
-    data["section_user"] = user
-    data["section_project"] = project
     data["section_assessment"] = assessment
     data["section_id"] = 1
     data["question_order"] = 1
+    data["project_id"] = projectId
+    data["section_project_id"] = projectId
     newAssQuestion = AssDetail(**data)
     request.dbsession.add(newAssQuestion)
     data = {}
-    data["user_name"] = user
-    data["project_cod"] = project
     data["ass_cod"] = assessment
     data["section_id"] = 2
     data["section_name"] = _("Main section")
     data["section_content"] = _("General data")
     data["section_order"] = 2
     data["section_private"] = 0
+    data["project_id"] = projectId
     newAsssection = Asssection(**data)
     try:
         request.dbsession.add(newAsssection)
@@ -107,15 +104,13 @@ def addQuestionsToAssessment(user, project, assessment, request):
 
             if addQuestion:
                 data = {}
-                data["user_name"] = user
-                data["project_cod"] = project
                 data["ass_cod"] = assessment
                 data["question_id"] = question.question_id
-                data["section_user"] = user
-                data["section_project"] = project
                 data["section_assessment"] = assessment
                 data["section_id"] = 2
                 data["question_order"] = order
+                data["project_id"] = projectId
+                data["section_project_id"] = projectId
                 order = order + 1
                 newAssQuestion = AssDetail(**data)
                 try:
@@ -126,7 +121,7 @@ def addQuestionsToAssessment(user, project, assessment, request):
         if good:
             questions = (
                 request.dbsession.query(Question)
-                .filter(Question.user_name == user)
+                .filter(Question.user_name == userOwner)
                 .filter(Question.question_alwaysinasse == 1)
                 .filter(Question.question_visible == 1)
                 .all()
@@ -141,15 +136,13 @@ def addQuestionsToAssessment(user, project, assessment, request):
 
                 if addQuestion:
                     data = {}
-                    data["user_name"] = user
-                    data["project_cod"] = project
                     data["ass_cod"] = assessment
                     data["question_id"] = question.question_id
-                    data["section_user"] = user
-                    data["section_project"] = project
                     data["section_assessment"] = assessment
                     data["section_id"] = 2
                     data["question_order"] = order
+                    data["project_id"] = projectId
+                    data["section_project_id"] = projectId
                     order = order + 1
                     newAssQuestion = AssDetail(**data)
                     try:
@@ -166,8 +159,6 @@ def addQuestionsToAssessment(user, project, assessment, request):
                                     request.dbsession.add(newAssQuestion)
                             else:
                                 request.dbsession.add(newAssQuestion)
-                        ##
-                        # request.dbsession.add(newAssQuestion)
                     except Exception as e:
                         good = False
                         errMsg = str(e)
@@ -178,16 +169,15 @@ def addQuestionsToAssessment(user, project, assessment, request):
         return False, str(e)
 
 
-def addRegistryQuestionsToProject(user, project, request):
+def addRegistryQuestionsToProject(userOwner, projectId, request):
     _ = request.translate
     data = {}
-    data["user_name"] = user
-    data["project_cod"] = project
     data["section_id"] = 1
     data["section_name"] = _("Main section")
     data["section_content"] = _("General data")
     data["section_order"] = 1
     data["section_private"] = 0
+    data["project_id"] = projectId
     newRegsection = Regsection(**data)
     try:
         request.dbsession.add(newRegsection)
@@ -211,13 +201,11 @@ def addRegistryQuestionsToProject(user, project, request):
 
             if addQuestion:
                 data = {}
-                data["user_name"] = user
-                data["project_cod"] = project
                 data["question_id"] = question.question_id
-                data["section_user"] = user
-                data["section_project"] = project
                 data["section_id"] = 1
                 data["question_order"] = order
+                data["project_id"] = projectId
+                data["section_project_id"] = projectId
                 order = order + 1
                 newRegQuestion = Registry(**data)
                 try:
@@ -228,7 +216,7 @@ def addRegistryQuestionsToProject(user, project, request):
         if good:
             questions = (
                 request.dbsession.query(Question)
-                .filter(Question.user_name == user)
+                .filter(Question.user_name == userOwner)
                 .filter(Question.question_alwaysinreg == 1)
                 .filter(Question.question_reqinreg == 0)
                 .filter(Question.question_visible == 1)
@@ -244,13 +232,12 @@ def addRegistryQuestionsToProject(user, project, request):
 
                 if addQuestion:
                     data = {}
-                    data["user_name"] = user
-                    data["project_cod"] = project
                     data["question_id"] = question.question_id
-                    data["section_user"] = user
-                    data["section_project"] = project
                     data["section_id"] = 1
                     data["question_order"] = order
+                    data["project_id"] = projectId
+                    data["section_project_id"] = projectId
+
                     order = order + 1
                     newRegQuestion = Registry(**data)
                     try:
@@ -269,129 +256,159 @@ def addProject(data, request):
     data["project_active"] = 1
     data["project_public"] = 0
     data["project_creationdate"] = datetime.datetime.now()
+
+    project_id = str(uuid.uuid4())[-12:]
+    data["project_id"] = project_id
+    newUserProject = userProject(
+        project_id=project_id,
+        user_name=data["user_name"],
+        access_type=1,
+        project_dashboard=1,
+    )
+    try:
+        mappedData = mapToSchema(Project, data)
+        newProject = Project(**mappedData)
+        try:
+            request.dbsession.add(newProject)
+            request.dbsession.add(newUserProject)
+            return True, ""
+        except Exception as e:
+            return False, str(e)
+
+    except Exception as e:
+        return False, str(e)
+
+
+def modifyProject(projectId, data, request):
     mappedData = mapToSchema(Project, data)
-    newProject = Project(**mappedData)
     try:
-        request.dbsession.add(newProject)
+        request.dbsession.query(Project).filter(Project.project_id == projectId).update(
+            mappedData
+        )
         return True, ""
     except Exception as e:
         return False, str(e)
 
 
-def modifyProject(user, project, data, request):
-    mappedData = mapToSchema(Project, data)
+def deleteProject(projectId, request):
     try:
-        request.dbsession.query(Project).filter(Project.user_name == user).filter(
-            Project.project_cod == project
-        ).update(mappedData)
+        request.dbsession.query(Project).filter(Project.project_id == projectId).update(
+            {"project_active": 0}
+        )
         return True, ""
     except Exception as e:
         return False, str(e)
 
 
-def deleteProject(user, project, request):
-    try:
-        request.dbsession.query(Project).filter(Project.user_name == user).filter(
-            Project.project_cod == project
-        ).update({"project_active": 0})
-        return True, ""
-    except Exception as e:
-        return False, str(e)
-
-
-def getProjectData(user, project, request):
+def getProjectData(projectId, request):
     mappedData = mapFromSchema(
-        request.dbsession.query(Project)
-        .filter(Project.user_name == user)
-        .filter(Project.project_cod == project)
-        .first()
+        request.dbsession.query(Project).filter(Project.project_id == projectId).first()
     )
     return mappedData
 
 
-def getProjectLocalVariety(user, project, request):
+def getProjectLocalVariety(projectId, request):
     result = (
         request.dbsession.query(Project.project_localvariety)
-        .filter(Project.user_name == user)
-        .filter(Project.project_cod == project)
+        .filter(Project.project_id == projectId)
         .first()
     )
     return result.project_localvariety
 
 
-def setActiveProject(user, project, request):
-    request.dbsession.query(Project).filter(Project.user_name == user).update(
-        {Project.project_dashboard: 0}
+def setActiveProject(userName, projectId, request):
+    request.dbsession.query(userProject).filter(
+        userProject.user_name == userName
+    ).update({userProject.project_dashboard: 0})
+    request.dbsession.query(userProject).filter(
+        userProject.user_name == userName
+    ).filter(userProject.project_id == projectId).update(
+        {userProject.project_dashboard: 1}
     )
-    request.dbsession.query(Project).filter(Project.user_name == user).filter(
-        Project.project_cod == project
-    ).update({Project.project_dashboard: 1})
     request.dbsession.flush()
 
 
-def getActiveProject(user, request):
+def getActiveProject(userName, request):
     activeProject = mapFromSchema(
-        request.dbsession.query(Project)
-        .filter(Project.user_name == user)
+        request.dbsession.query(userProject, Project)
+        .filter(userProject.project_id == Project.project_id)
+        .filter(userProject.user_name == userName)
         .filter(Project.project_active == 1)
-        .filter(Project.project_dashboard == 1)
+        .filter(userProject.project_dashboard == 1)
         .first()
     )
     if not activeProject:
-        project = (
-            request.dbsession.query(Project)
-            .filter(Project.user_name == user)
+        project = mapFromSchema(
+            request.dbsession.query(Project, userProject)
+            .filter(Project.project_id == userProject.project_id)
+            .filter(userProject.user_name == userName)
             .filter(Project.project_active == 1)
             .order_by(Project.project_creationdate.desc())
             .first()
         )
-        if project is not None:
-            setActiveProject(user, project.project_cod, request)
+        if project:
+            setActiveProject(userName, project["project_id"], request)
             activeProject = mapFromSchema(
-                request.dbsession.query(Project)
-                .filter(Project.user_name == user)
+                request.dbsession.query(Project, userProject)
+                .filter(userProject.project_id == Project.project_id)
+                .filter(userProject.user_name == userName)
                 .filter(Project.project_active == 1)
-                .filter(Project.project_dashboard == 1)
+                .filter(userProject.project_dashboard == 1)
                 .first()
             )
-            return activeProject
-        else:
-            return activeProject
+
+    if activeProject:
+        activeProject["owner"] = mapFromSchema(
+            request.dbsession.query(userProject)
+            .filter(userProject.project_id == activeProject["project_id"])
+            .filter(userProject.access_type == 1)
+            .one()
+        )
 
     return activeProject
 
 
-def getMD5Project(user, project, request):
+def getMD5Project(userName, projectId, projectCod, request):
 
     result = (
         request.dbsession.query(
-            func.md5(func.concat(Project.user_name, "#$%&", Project.project_cod))
+            func.md5(func.concat(userProject.user_name, "#$%&", userProject.project_id))
         )
-        .filter(Project.user_name == user)
-        .filter(Project.project_cod == project)
+        .filter(userProject.project_id == Project.project_id)
+        .filter(Project.project_cod == projectCod)
+        .filter(userProject.user_name == userName)
+        .filter(userProject.project_id == projectId)
         .first()
     )
     return result[0]
 
 
 def getUserProjects(user, request):
+
     projects = (
-        request.dbsession.query(Project)
-        .filter(Project.user_name == user)
+        request.dbsession.query(Project, userProject)
+        .filter(Project.project_id == userProject.project_id)
+        .filter(userProject.user_name == user)
         .filter(Project.project_active == 1)
-        .order_by(Project.project_dashboard.desc())
+        .order_by(userProject.project_dashboard.desc())
         .order_by(Project.project_creationdate.desc())
         .all()
     )
     mappedData = mapFromSchema(projects)
     for project in mappedData:
+        project["owner"] = mapFromSchema(
+            request.dbsession.query(userProject)
+            .filter(userProject.project_id == project["project_id"])
+            .filter(userProject.access_type == 1)
+            .one()
+        )
         project["progress"], project["perc"] = getProjectProgress(
-            user, project["project_cod"], request
+            project["user_name"], project["project_cod"], project["project_id"], request
         )
     return mappedData
 
 
-def getRegisteredFarmers(user, project, request):
+def getRegisteredFarmers(userOwner, projectId, projectCod, request):
     res = []
     qstfarmer = (
         request.dbsession.query(Question).filter(Question.question_fname == 1).first()
@@ -402,24 +419,21 @@ def getRegisteredFarmers(user, project, request):
     qstdistrict = (
         request.dbsession.query(Question)
         .filter(Question.question_id == Registry.question_id)
-        .filter(Registry.user_name == user)
-        .filter(Registry.project_cod == project)
+        .filter(Registry.project_id == projectId)
         .filter(Question.question_district == 1)
         .first()
     )
     qstvillage = (
         request.dbsession.query(Question)
         .filter(Question.question_id == Registry.question_id)
-        .filter(Registry.user_name == user)
-        .filter(Registry.project_cod == project)
+        .filter(Registry.project_id == projectId)
         .filter(Question.question_village == 1)
         .first()
     )
     qstfather = (
         request.dbsession.query(Question)
         .filter(Question.question_id == Registry.question_id)
-        .filter(Registry.user_name == user)
-        .filter(Registry.project_cod == project)
+        .filter(Registry.project_id == projectId)
         .filter(Question.question_father == 1)
         .first()
     )
@@ -444,9 +458,9 @@ def getRegisteredFarmers(user, project, request):
             + " as farmer_id,CONCAT("
             + ",".join(parts)
             + ") as farmer_name FROM "
-            + user
+            + userOwner
             + "_"
-            + project
+            + projectCod
             + ".REG_geninfo order by CAST("
             + qstregkey.question_code
             + " AS unsigned)"
@@ -455,7 +469,6 @@ def getRegisteredFarmers(user, project, request):
         # print(sql)
         # print("*****************44")
         try:
-            # farmers = request.repsession.execute(sql).fetchall()
             farmers = sql_fetch_all(sql)
             for farmer in farmers:
                 res.append(
@@ -471,11 +484,11 @@ def modification_date(filename):
     return datetime.datetime.fromtimestamp(t)
 
 
-def getLastRegistrySubmissionDate(user, project, request):
+def getLastRegistrySubmissionDate(userName, projectCode, request):
     _ = request.translate
     path = os.path.join(
         request.registry.settings["user.repository"],
-        *[user, project, "data", "reg", "*"]
+        *[userName, projectCode, "data", "reg", "*"]
     )
     files = glob.glob(path)
     if files:
@@ -485,11 +498,11 @@ def getLastRegistrySubmissionDate(user, project, request):
         return _("Without submissions")
 
 
-def getLastAssessmentSubmissionDate(user, project, assessment, request):
+def getLastAssessmentSubmissionDate(userName, projectCode, assessment, request):
     _ = request.translate
     path = os.path.join(
         request.registry.settings["user.repository"],
-        *[user, project, "data", "ass", assessment]
+        *[userName, projectCode, "data", "ass", assessment]
     )
     files = glob.glob(path)
     if files:
@@ -499,16 +512,15 @@ def getLastAssessmentSubmissionDate(user, project, assessment, request):
         return _("Without submissions")
 
 
-def getProjectProgress(user, project, request):
+def getProjectProgress(userName, projectCode, project, request):
     _ = request.translate
     result = {}
     perc = 0
-    result["enumerators_by_user"] = countEnumerators(user, request)
+    result["enumerators_by_user"] = countEnumerators(userName, request)
 
     if (
         request.dbsession.query(PrjEnumerator)
-        .filter(PrjEnumerator.user_name == user)
-        .filter(PrjEnumerator.project_cod == project)
+        .filter(PrjEnumerator.project_id == project)
         .first()
         is not None
     ):
@@ -518,55 +530,34 @@ def getProjectProgress(user, project, request):
         result["enumerators"] = False
 
     if (
-        request.dbsession.query(Prjtech)
-        .filter(Prjtech.user_name == user)
-        .filter(Prjtech.project_cod == project)
-        .first()
+        request.dbsession.query(Prjtech).filter(Prjtech.project_id == project).first()
         is not None
     ):
         result["technology"] = True
         perc = perc + 20
-        # If a technology does not have aliases
-        # Edit by Brandon
-        """
-        sql = "SELECT tech_id FROM prjtech WHERE user_name = '" + user + "' AND project_cod = '" + project + "' and " \
-              "tech_id NOT IN (SELECT distinct tech_id FROM prjalias WHERE user_name = '" + user + "' AND project_cod = '" + project + "')"
-        techaliases = request.dbsession.execute(sql).fetchone()
-        if techaliases is not None:
-            result["techalias"] = False
-        else:
-            perc = perc + 20
-            result["techalias"] = True
-        """
-        # Pruebas de lo que quiero hacer
-        # data = request.dbsession.query(Prjtech.tech_id,func.count(Prjalia.alias_id)).filter(Prjtech.user_name == user).filter(Prjtech.project_cod == project).filter(Prjtech.tech_id == Prjalia.tech_id).group_by(Prjtech.tech_id).all()
+
         data = (
             request.dbsession.query(
                 Prjtech.tech_id,
                 request.dbsession.query(func.count(Prjalia.alias_id))
-                .filter(Prjalia.user_name == user)
-                .filter(Prjalia.project_cod == project)
+                .filter(Prjalia.project_id == project)
                 .filter(Prjalia.tech_id == Prjtech.tech_id)
                 .label("count"),
             )
-            .filter(Prjtech.user_name == user)
-            .filter(Prjtech.project_cod == project)
+            .filter(Prjtech.project_id == project)
             .all()
         )
         total = 1
         for info in data:
             total = info[1] * total
 
-        # print total
-
-        necessary = numberOfCombinationsForTheProject(user, project, request)
+        necessary = numberOfCombinationsForTheProject(project, request)
         result["techalias"] = False
 
         if total >= necessary:
             perc = perc + 20
             result["techalias"] = True
 
-        # The edition ends
     else:
         result["technology"] = False
         result["techalias"] = False
@@ -575,8 +566,7 @@ def getProjectProgress(user, project, request):
 
     if (
         request.dbsession.query(Regsection)
-        .filter(Regsection.user_name == user)
-        .filter(Regsection.project_cod == project)
+        .filter(Regsection.project_id == project)
         .first()
         is not None
     ):
@@ -587,8 +577,7 @@ def getProjectProgress(user, project, request):
 
     if (
         request.dbsession.query(Asssection)
-        .filter(Asssection.user_name == user)
-        .filter(Asssection.project_cod == project)
+        .filter(Asssection.project_id == project)
         .first()
         is not None
     ):
@@ -599,10 +588,7 @@ def getProjectProgress(user, project, request):
 
     # Check the status of registry and assessment
     arstatus = (
-        request.dbsession.query(Project)
-        .filter(Project.user_name == user)
-        .filter(Project.project_cod == project)
-        .first()
+        request.dbsession.query(Project).filter(Project.project_id == project).first()
     )
     if arstatus.project_regstatus == 0:
         result["regsubmissions"] = 0
@@ -613,7 +599,13 @@ def getProjectProgress(user, project, request):
     else:
         totSubmissions = arstatus.project_numobs
         result["project_numobs"] = totSubmissions
-        sql = "SELECT COUNT(*) as total FROM " + user + "_" + project + ".REG_geninfo"
+        sql = (
+            "SELECT COUNT(*) as total FROM "
+            + userName
+            + "_"
+            + projectCode
+            + ".REG_geninfo"
+        )
         try:
             # res = request.repsession.execute(sql).fetchone()
             res = sql_fetch_one(sql)
@@ -623,13 +615,14 @@ def getProjectProgress(user, project, request):
 
         errorsCount = (
             request.dbsession.query(RegistryJsonLog)
-            .filter(RegistryJsonLog.user_name == user)
-            .filter(RegistryJsonLog.project_cod == project)
+            .filter(RegistryJsonLog.project_id == project)
             .filter(RegistryJsonLog.status == 1)
             .count()
         )
 
-        result["lastreg"] = getLastRegistrySubmissionDate(user, project, request)
+        result["lastreg"] = getLastRegistrySubmissionDate(
+            userName, projectCode, request
+        )
         result["regtotal"] = submissions
         result["regerrors"] = errorsCount
         result["regperc"] = (submissions * 100) / totSubmissions
@@ -642,8 +635,7 @@ def getProjectProgress(user, project, request):
     assessmentArray = []
     assessments = (
         request.dbsession.query(Assessment)
-        .filter(Assessment.user_name == user)
-        .filter(Assessment.project_cod == project)
+        .filter(Assessment.project_id == project)
         .all()
     )
     for assessment in assessments:
@@ -653,9 +645,9 @@ def getProjectProgress(user, project, request):
 
         sql = (
             "SELECT COUNT(*) as total FROM "
-            + user
+            + userName
             + "_"
-            + project
+            + projectCode
             + ".ASS"
             + assessment["ass_cod"]
             + "_geninfo"
@@ -669,7 +661,11 @@ def getProjectProgress(user, project, request):
 
         if totSubmissions > 0:
             sql = (
-                "SELECT COUNT(*) as total FROM " + user + "_" + project + ".REG_geninfo"
+                "SELECT COUNT(*) as total FROM "
+                + userName
+                + "_"
+                + projectCode
+                + ".REG_geninfo"
             )
             try:
                 # res = request.repsession.execute(sql).fetchone()
@@ -679,13 +675,12 @@ def getProjectProgress(user, project, request):
                 submissions = 0
 
             lastAss = getLastAssessmentSubmissionDate(
-                user, project, assessment["ass_cod"], request
+                userName, projectCode, assessment["ass_cod"], request
             )
 
             errorsCount = (
                 request.dbsession.query(AssessmentJsonLog)
-                .filter(AssessmentJsonLog.user_name == user)
-                .filter(AssessmentJsonLog.project_cod == project)
+                .filter(AssessmentJsonLog.project_id == project)
                 .filter(AssessmentJsonLog.ass_cod == assessment["ass_cod"])
                 .filter(AssessmentJsonLog.status == 1)
                 .count()
@@ -706,10 +701,13 @@ def getProjectProgress(user, project, request):
             )
         else:
             sql = (
-                "SELECT COUNT(*) as total FROM " + user + "_" + project + ".REG_geninfo"
+                "SELECT COUNT(*) as total FROM "
+                + userName
+                + "_"
+                + projectCode
+                + ".REG_geninfo"
             )
             try:
-                # res = request.repsession.execute(sql).fetchone()
                 res = sql_fetch_one(sql)
                 submissions = res["total"]
             except:
@@ -733,13 +731,12 @@ def getProjectProgress(user, project, request):
     return result, perc
 
 
-def getProductData(user, project, celery_taskid, product_id, request):
+def getProductData(projectId, celerytaskId, productId, request):
     mappedData = mapFromSchema(
         request.dbsession.query(Products)
-        .filter(Project.user_name == user)
-        .filter(Project.project_cod == project)
-        .filter(Products.celery_taskid == celery_taskid)
-        .filter(Products.product_id == product_id)
+        .filter(Products.project_id == projectId)
+        .filter(Products.celery_taskid == celerytaskId)
+        .filter(Products.product_id == productId)
         .first()
     )
     return mappedData

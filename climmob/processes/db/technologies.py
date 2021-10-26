@@ -48,10 +48,8 @@ def getUserTechs(user, request):
     for technology in result:
 
         res3 = (
-            request.dbsession.query(func.count(Prjtech.tech_id).label("found")).filter(
-                Prjtech.tech_id == technology[0].tech_id
-            )
-            # .filter(Prjtech.user_name == user)
+            request.dbsession.query(func.count(Prjtech.tech_id).label("found"))
+            .filter(Prjtech.tech_id == technology[0].tech_id)
             .one()
         )
 
@@ -72,7 +70,6 @@ def getUserTechs(user, request):
 
 def getUserTechById(tech_id, request):
 
-    res = []
     result = mapFromSchema(
         request.dbsession.query(
             Technology,
@@ -131,11 +128,11 @@ def getTechnology(data, request):
     )
 
 
-def technologyExist(data, request):
+def technologyExist(techId, user, request):
     result = (
         request.dbsession.query(Technology)
-        .filter(Technology.tech_id == data["tech_id"])
-        .filter(Technology.user_name == data["user_name"])
+        .filter(Technology.tech_id == techId)
+        .filter(Technology.user_name == user)
         .first()
     )
     if result:
@@ -143,7 +140,7 @@ def technologyExist(data, request):
     else:
         result = (
             request.dbsession.query(Technology)
-            .filter(Technology.tech_id == data["tech_id"])
+            .filter(Technology.tech_id == techId)
             .filter(Technology.user_name == "bioversity")
             .first()
         )
@@ -182,7 +179,6 @@ def getTechnologyAssigned(data, request):
     result = (
         request.dbsession.query(func.count(Prjtech.tech_id).label("found"))
         .filter(Prjtech.tech_id == data["tech_id"])
-        .filter(Prjtech.user_name == data["user_name"])
         .one()
     )
 
@@ -196,8 +192,7 @@ def isTechnologyAssigned(data, request):
     result = (
         request.dbsession.query(func.count(Prjtech.tech_id).label("found"))
         .filter(Prjtech.tech_id == data["tech_id"])
-        .filter(Prjtech.user_name == data["user_name"])
-        .filter(Prjtech.project_cod == data["project_cod"])
+        .filter(Prjtech.project_id == data["project_id"])
         .one()
     )
 

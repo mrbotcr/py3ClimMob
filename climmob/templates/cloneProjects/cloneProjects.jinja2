@@ -6,7 +6,7 @@
 
 {% block css %}
     {% cssresource request,'coreresources','jquerysteps' %}
-
+    {% cssresource request,'coreresources','icheck' %}
     {% cssresource request,'coreresources','style' %}
     {% cssresource request,'coreresources','chosen' %}
     {% cssresource request,'coreresources','jsTree' %}
@@ -19,7 +19,7 @@
 {% block topScripts %}
     {% jsresource request,'coreresources','chosen' %}
     {% jsresource request,'coreresources','jstree' %}
-
+    {% jsresource request,'coreresources','icheck' %}
     {% jsresource request,'coreresources','switch' %}
     {% jsresource request,'coreresources','addproject' %}
     {% jsresource request,'coreresources','bootstrapmaxlength' %}
@@ -123,7 +123,7 @@
                             <hr>
                             {% set action = request.path %}
                             {% if stage ==3 %}
-                                {% set action = request.route_url("cloneProject", _query={"stage":3, "projectid":dataworking["slt_project_cod"] }) %}
+                                {% set action = request.route_url("cloneProject", _query={"stage":3, "user": dataworking["slt_project_by_owner"].split("___")[0],"project":dataworking["slt_project_by_owner"].split("___")[1] }) %}
                             {% endif %}
                             <form method="post" class="form-horizontal" action="{{ action }}">
                                 <div id="content">
@@ -139,10 +139,10 @@
                                                                 <div class="form-group">
                                                                     <label class="col-sm-4 control-label">{{ _("Project") }}</label>
                                                                     <div class="col-sm-8">
-                                                                        <select id="slt_project_cod" name="slt_project_cod" class="form-control chosen-select" tabindex="2" required oninvalid="this.setCustomValidity('{{ _("Select one project.") }}')" onchange="this.setCustomValidity('')">
+                                                                        <select id="slt_project_by_owner" name="slt_project_by_owner" class="form-control chosen-select" tabindex="2" required oninvalid="this.setCustomValidity('{{ _("Select one project.") }}')" onchange="this.setCustomValidity('')">
                                                                             <option value="">{{ _("Select a project to clone") }}</option>
                                                                             {% for project in projects %}
-                                                                                <option value="{{ project.project_cod }}" {% if project.project_cod == dataworking.slt_project_cod %}selected{% endif %} >{{ project.project_cod }} - {{ project.project_name }}</option>
+                                                                                <option value="{{ project["owner"]["user_name"] }}___{{ project.project_cod }}" {% if project.project_cod == dataworking["slt_project_by_owner"].split("___")[1] and project["owner"]["user_name"] == dataworking["slt_project_by_owner"].split("___")[0] %}selected{% endif %} >{{ project["owner"]["user_name"] }} - {{ project.project_cod }} - {{ project.project_name }}</option>
                                                                             {% endfor %}
                                                                         </select>
                                                                     </div>
@@ -198,8 +198,8 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <button type="button" onclick="location.href='{{ request.route_url("cloneProject", _query={"stage":1, "projectid":dataworking["slt_project_cod"] }) }}'" class="btn btn-primary pull-left">{{ _("Previous") }}</button>
-                                        <button type="button" onclick="location.href='{{ request.route_url("cloneProject", _query={"stage":3, "projectid":dataworking["slt_project_cod"] }) }}'" class="btn btn-primary pull-right">{{ _("Next step") }}</button>
+                                        <button type="button" onclick="location.href='{{ request.route_url("cloneProject", _query={"stage":1, "user": dataworking["slt_project_by_owner"].split("___")[0],"project":dataworking["slt_project_by_owner"].split("___")[1] }) }}'" class="btn btn-primary pull-left">{{ _("Previous") }}</button>
+                                        <button type="button" onclick="location.href='{{ request.route_url("cloneProject", _query={"stage":3, "user": dataworking["slt_project_by_owner"].split("___")[0],"project":dataworking["slt_project_by_owner"].split("___")[1] }) }}'" class="btn btn-primary pull-right">{{ _("Next step") }}</button>
                                     {% endif %}
 
                                     {% if stage == 3 %}
@@ -212,13 +212,15 @@
                                                         <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                                                         {% block newprjform %}
                                                             {% set edit=False %}
+                                                            {% set showSelectStructureToClone = True %}
+                                                            {% set permissionForChanges=True %}
                                                             {% include 'snippets/project/project_form.jinja2' %}
                                                         {% endblock newprjform %}
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <button type="button" onclick="location.href='{{ request.route_url("cloneProject", _query={"stage":2, "projectid":dataworking["slt_project_cod"] }) }}'" class="btn btn-primary pull-left">{{ _("Previous") }}</button>
+                                        <button type="button" onclick="location.href='{{ request.route_url("cloneProject", _query={"stage":2, "user": dataworking["slt_project_by_owner"].split("___")[0],"project":dataworking["slt_project_by_owner"].split("___")[1] }) }}'" class="btn btn-primary pull-left">{{ _("Previous") }}</button>
                                         <button type="submit" name="btn_addNewProject" id="btn_addNewProject" class="btn btn-primary pull-right">{{ _("Create clone") }}</button>
                                     {% endif %}
 
@@ -296,7 +298,7 @@
                                             </div>
 
                                             <div class="col-lg-12 text-center">
-                                                <a type="submit" class="btn btn-primary" href="{{ request.route_url('dashboard', _query={"project": dataworking["project_cod"]}) }}">{{ _("Go to the new project") }}</a>
+                                                <a type="submit" class="btn btn-primary" href="{{ request.route_url('dashboard', _query={"user": dataworking["userInSetion"], "project": dataworking["project_cod"]}) }}">{{ _("Go to the new project") }}</a>
                                                 <br><br>
                                             </div>
                                         </div>
@@ -348,233 +350,37 @@
 
     <script>
 
-        $('.chosen-select').chosen({width: "100%"});
 
-        $('.i-checks').iCheck({
-            radioClass: 'iradio_square-green',
+
+        $(document).ready(function ()
+        {
+            $('.chosen-select').chosen({width: "100%"});
+
+            $('.i-checks').iCheck({
+                radioClass: 'iradio_square-green',
+                checkboxClass: 'icheckbox_square-green',
+            });
+
+            $('.i-checksbox').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+            });
+
+            $('.checksbox').on('ifChanged', function()
+            {
+
+                id = $(this).attr("id");
+                if ($(this).prop('checked')) {
+                    $('#structureToBeCloned').val($('#structureToBeCloned').val()+id+",");
+                } else {
+                    $('#structureToBeCloned').val($('#structureToBeCloned').val().replace(id+",",""));
+                }
+
+            });
+
+            $('.i-checksbox').iCheck('check');
         });
 
     </script>
-
-{#    {% if step == 1 %}#}
-{#        <form method="post" class="form-horizontal" action="{{ request.path }}">#}
-{#            <div class="row">#}
-{#                <div class="col-lg-12 ">#}
-{##}
-{#                    <div class="col-lg-4">#}
-{#                        <div class="col-lg-12 ">#}
-{#                            <div class="ibox float-e-margins">#}
-{#                                <div class="ibox-title">#}
-{#                                    <h5> {{ _("Project identification") }}</h5>#}
-{#                                </div>#}
-{#                                <div class="ibox-content" >#}
-{#                                    <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">#}
-{##}
-{#                                    <div class="form-group">#}
-{#                                        <label class="col-sm-4 control-label">{{ _("Project") }}</label>#}
-{#                                        <div class="col-sm-8">#}
-{#                                            <select id="slt_project_cod" name="slt_project_cod" class="form-control chosen-select" tabindex="2" required oninvalid="this.setCustomValidity('{{ _("Select one project.") }}')" onchange="this.setCustomValidity('')">#}
-{#                                                <option value="">{{ _("Select one project") }}</option>#}
-{#                                                {% for project in projects %}#}
-{#                                                    <option value="{{ project.project_cod }}" {% if project.project_cod == dataworking.slt_project_cod %}selected{% endif %} >{{ project.project_cod }} - {{ project.project_name }}</option>#}
-{#                                                {% endfor %}#}
-{#                                            </select>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                    <hr>#}
-{#                                    <button type="submit" name="btn_view_project" id="btn_view_project" class="btn btn-primary pull-right">{{ _("View project") }}</button>#}
-{#                                    <br><br>#}
-{##}
-{#                                </div>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </div>#}
-{##}
-{#                    {% if dataworking["projectBeingCloned"] %}#}
-{#                        <div class="col-lg-4 divOfDetails">#}
-{#                            {% set project = dataworking["projectBeingCloned"] %}#}
-{##}
-{#                            {% include 'snippets/cloneProjects/projectDetails.jinja2' %}#}
-{##}
-{#                            {% set project_fieldagents = project["project_fieldagents"] %}#}
-{#                            {% include 'snippets/cloneProjects/fieldAgents.jinja2' %}#}
-{##}
-{#                            {% set project_technologies= project["project_techs"] %}#}
-{#                            {% include 'snippets/cloneProjects/technologiesAndAlias.jinja2' %}#}
-{##}
-{#                        </div>#}
-{##}
-{#                        <div class="col-lg-4 divOfDetails">#}
-{##}
-{#                            {% set data=project["project_registry"] %}#}
-{#                            {% set jstreeName="jstree1" %}#}
-{#                            {% set formName = _("Registration form")  %}#}
-{#                            {% include 'snippets/cloneProjects/form.jinja2' %}#}
-{##}
-{#                            {% for assessment in project["project_assessment"] %}#}
-{##}
-{#                                {% set data=assessment.Questions  %}#}
-{#                                {% set jstreeName="jstree" + assessment.ass_cod %}#}
-{#                                {% set formName = _("Data collection moment") +" : "+ assessment.ass_desc %}#}
-{#                                {% include 'snippets/cloneProjects/form.jinja2' %}#}
-{##}
-{#                            {% endfor %}#}
-{##}
-{#                            </div>#}
-{#                    {% endif %}#}
-{#                </div>#}
-{##}
-{#            </div>#}
-{##}
-{#            {% if showForm %}#}
-{#                <div class="row divOfDetails">#}
-{#                    <div class="col-lg-12 ">#}
-{##}
-{#                        <div class="col-lg-4">#}
-{#                        </div>#}
-{##}
-{#                        <div class="col-lg-8" id="divOfForm">#}
-{#                            <div class="col-lg-12">#}
-{#                                <div class="ibox float-e-margins">#}
-{#                                    <div class="ibox-title">#}
-{#                                        <h5> {{ _("Definition of the new project") }}</h5>#}
-{#                                    </div>#}
-{#                                    <div class="ibox-content" style="background-color: #e4e4e5;">#}
-{#                                        {% include 'snippets/error.jinja2' %}#}
-{##}
-{#                                        <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">#}
-{#                                        {% block newprjform %}#}
-{#                                            {% set edit=False %}#}
-{#                                            {% include 'snippets/project/project_form.jinja2' %}#}
-{##}
-{#                                            <button type="submit" name="btn_addNewProject" id="btn_addNewProject" class="btn btn-primary pull-right">{{ _("Create clone") }}</button>#}
-{##}
-{#                                        {% endblock newprjform %}#}
-{##}
-{#                                        <br>#}
-{#                                        <br>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                            </div>#}
-{#                        </div>#}
-{##}
-{#                    </div>#}
-{#                </div>#}
-{#            {% endif %}#}
-{#        </form>#}
-{#    {% else %}#}
-{#        <div class="row">#}
-{#            <div style="width: 100%; text-align: center; margin: 40px">#}
-{#                <h2 >{{ _("The project was successfully cloned.") }}</h2>#}
-{#                <h2><b>{{ _("Please check that the information is correct and that the projects have the same structure.") }}</b></h2>#}
-{#            </div>#}
-{#            <div class="col-lg-6 ">#}
-{#                {% set project = dataworking["projectBeingCloned"] %}#}
-{##}
-{#                {% include 'snippets/cloneProjects/projectDetails.jinja2' %}#}
-{##}
-{#                {% set project_fieldagents = project["project_fieldagents"] %}#}
-{#                {% include 'snippets/cloneProjects/fieldAgents.jinja2' %}#}
-{##}
-{#                {% set project_technologies= project["project_techs"] %}#}
-{#                {% include 'snippets/cloneProjects/technologiesAndAlias.jinja2' %}#}
-{##}
-{#                {% set data=project["project_registry"] %}#}
-{#                {% set jstreeName="jstree1" %}#}
-{#                {% set formName = _("Registration form")  %}#}
-{#                {% include 'snippets/cloneProjects/form.jinja2' %}#}
-{##}
-{#                {% for assessment in project["project_assessment"] %}#}
-{##}
-{#                    {% set data=assessment.Questions  %}#}
-{#                    {% set jstreeName="jstree" + assessment.ass_cod %}#}
-{#                    {% set formName = _("Data collection moment") +" : "+ assessment.ass_desc %}#}
-{#                    {% include 'snippets/cloneProjects/form.jinja2' %}#}
-{##}
-{#                {% endfor %}#}
-{##}
-{#            </div>#}
-{##}
-{#            <div class="col-lg-6 ">#}
-{##}
-{#                {% set project = dataworking["clonedProject"] %}#}
-{##}
-{#                {% include 'snippets/cloneProjects/projectDetails.jinja2' %}#}
-{##}
-{#                {% set project_fieldagents = project["project_fieldagents"] %}#}
-{#                {% include 'snippets/cloneProjects/fieldAgents.jinja2' %}#}
-{##}
-{#                {% set project_technologies= project["project_techs"] %}#}
-{#                {% include 'snippets/cloneProjects/technologiesAndAlias.jinja2' %}#}
-{##}
-{#                {% set data=project["project_registry"] %}#}
-{#                {% set jstreeName="jstree12" %}#}
-{#                {% set formName = _("Registration form")  %}#}
-{#                {% include 'snippets/cloneProjects/form.jinja2' %}#}
-{##}
-{#                {% for assessment in project["project_assessment"] %}#}
-{##}
-{#                    {% set data=assessment.Questions  %}#}
-{#                    {% set jstreeName="jstree" + assessment.ass_cod+"2" %}#}
-{#                    {% set formName = _("Data collection moment") +" : "+ assessment.ass_desc %}#}
-{#                    {% include 'snippets/cloneProjects/form.jinja2' %}#}
-{##}
-{#                {% endfor %}#}
-{##}
-{#            </div>#}
-{##}
-{#            <div class="col-lg-12 text-center">#}
-{#                <a type="submit" class="btn btn-primary" href="{{ request.route_url('dashboard', _query={"project": dataworking["project_cod"]}) }}">{{ _("Go to the new project") }}</a>#}
-{#                <br><br>#}
-{#            </div>#}
-{#        </div>#}
-{#    {% endif %}#}
-{##}
-{#    <style>#}
-{#        .jstree-icon {#}
-{#            color: #000000;#}
-{#            font-size: 18px;#}
-{#        }#}
-{#        .jstree-anchor {#}
-{#            height:auto !important;#}
-{#            white-space:normal !important;#}
-{#        }#}
-{##}
-{#        .jstree-open newcategory {#}
-{#            color: #1E0FBE;#}
-{#            font-size: 18px;#}
-{#        }#}
-{##}
-{#        .jstree-usercategory{#}
-{#            color: #1ab394;#}
-{#        }#}
-{##}
-{#        .jstree-noeditable{#}
-{#            color: #ed5565;#}
-{#        }#}
-{##}
-{#        .jstree-user{#}
-{#            color: #1ab394;#}
-{#        }#}
-{##}
-{#    </style>#}
-{##}
-{#    <script>#}
-{#        {% if error_summary %}#}
-{#            $('html, body').animate({ scrollTop: $('#divOfForm').offset().top }, 'slow');#}
-{#        {% endif %}#}
-{##}
-{#        $('.chosen-select').chosen({width: "100%"});#}
-{##}
-{#        $('.i-checks').iCheck({#}
-{#            radioClass: 'iradio_square-green',#}
-{#        });#}
-{##}
-{#        $("#slt_project_cod").change(function ()#}
-{#        {#}
-{#           $(".divOfDetails").remove()#}
-{#        });#}
-{#    </script>#}
 
 
 

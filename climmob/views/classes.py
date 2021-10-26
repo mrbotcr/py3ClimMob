@@ -1,8 +1,5 @@
-from pyramid.security import authenticated_userid
 from ..config.auth import getUserData, getUserByApiKey
 from pyramid.httpexceptions import HTTPFound
-
-# import climmob.resources as r
 from pyramid.session import check_csrf_token
 from pyramid.httpexceptions import HTTPNotFound
 from formencode.variabledecode import variable_decode
@@ -180,38 +177,14 @@ class publicView(object):
         self._ = self.request.translate
 
     def __call__(self):
-        # self.injectResources()
         return self.processView()
 
-    """
-    def needCSS(self,name):
-        CSSToInject = r.getCSSResource(name)
-        CSSToInject.need()
-
-    def needJS(self,name):
-        JSToInject = r.getJSResource(name)
-        JSToInject.need()
-
-    def injectResources(self):
-        CSSToInject = r.getCSSResource('style')
-        CSSToInject.need()
-        JSToInject = r.getJSResource('bootstrap')
-        JSToInject.need()
-    """
-
     def processView(self):
-        # print("retorna")
         return {}
 
     def getPostDict(self):
         dct = variable_decode(self.request.POST)
-        """
-        for key,value in dct.items():
-            if isinstance(value, str):
-                dct[key] = value.encode("utf8")
-            if isinstance(value, str):
-                dct[key] = value.encode("utf8")
-        """
+
         return dct
 
     def decodeDict(self, dct):
@@ -249,7 +222,8 @@ class privateView(object):
         self.returnRawViewResult = False
 
     def __call__(self):
-        login = authenticated_userid(self.request)
+        policy = self.get_policy("main")
+        login = policy.authenticated_userid(self.request)
         self.user = getUserData(login, self.request)
         self.classResult["activeUser"] = self.user
 
@@ -263,7 +237,7 @@ class privateView(object):
         activeProjectData = getActiveProject(self.user.login, self.request)
         if activeProjectData:
             self.classResult["hasActiveProject"] = True
-            self.classResult["activeProject"] = activeProjectData["project_cod"]
+            self.classResult["activeProject"] = activeProjectData["project_id"]
         else:
             self.classResult["hasActiveProject"] = False
 
@@ -345,6 +319,13 @@ class privateView(object):
                 except:
                     pass
         return dct
+
+    def get_policy(self, policy_name):
+        policies = self.request.policies()
+        for policy in policies:
+            if policy["name"] == policy_name:
+                return policy["policy"]
+        return None
 
 
 class apiView(object):

@@ -69,8 +69,7 @@ def addMetadataToProduct(product, key, value):
 
 
 def registerProductInstance(
-    user,
-    project,
+    projectId,
     product,
     output,
     mimeType,
@@ -80,15 +79,7 @@ def registerProductInstance(
     newTask=True,
 ):
     p.registerProductInstance(
-        user,
-        project,
-        product,
-        output,
-        mimeType,
-        processName,
-        instanceID,
-        request,
-        newTask,
+        projectId, product, output, mimeType, processName, instanceID, request, newTask,
     )
 
 

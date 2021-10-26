@@ -8,12 +8,12 @@ from ..processes import (
     projectHasCombinations,
     projectHasPackages,
     setRegistryStatus,
-)
-from ..processes import (
     generateRegistry,
     numberOfCombinationsForTheProject,
     searchTechnologiesInProject,
     getTheGroupOfThePackageCode,
+    getTheProjectIdForOwner,
+    getActiveProject,
 )
 import climmob.plugins as p
 from ..products.qrpackages.qrpackages import create_qr_packages
@@ -21,19 +21,26 @@ from ..products.forms.form import create_document_form
 from ..products.packages.packages import create_packages_excell
 from ..products.colors.colors import create_colors_cards
 from ..products.fieldagents.fieldagents import create_fieldagents_report
-from ..products.stickers.stickers import create_stickers_document
 from .registry import getDataFormPreview
 import time
-
-import pprint
 
 
 class projectCombinations_view(privateView):
     def processView(self):
-        projectid = self.request.matchdict["projectid"]
-        if not projectExists(self.user.login, projectid, self.request):
+
+        activeProjectUser = self.request.matchdict["user"]
+        activeProjectCod = self.request.matchdict["project"]
+
+        if not projectExists(
+            self.user.login, activeProjectUser, activeProjectCod, self.request
+        ):
             raise HTTPNotFound()
         else:
+
+            activeProjectId = getTheProjectIdForOwner(
+                activeProjectUser, activeProjectCod, self.request
+            )
+
             if not "stage" in self.request.params.keys():
                 stage = 1
             else:
@@ -51,21 +58,17 @@ class projectCombinations_view(privateView):
                     for key in self.request.params.keys():
                         if key.find("remove") >= 0:
                             id = int(key.replace("remove", ""))
-                            setCombinationStatus(
-                                self.user.login, projectid, id, 0, self.request
-                            )
+                            setCombinationStatus(activeProjectId, id, 0, self.request)
                         if key.find("add") >= 0:
                             id = int(key.replace("add", ""))
-                            setCombinationStatus(
-                                self.user.login, projectid, id, 1, self.request
-                            )
+                            setCombinationStatus(activeProjectId, id, 1, self.request)
                     formdata = self.getPostDict()
                     scrollPos = int(formdata["scroll"])
 
-                createCombinations(self.user.login, projectid, self.request)
-                techs, ncombs, combs, = getCombinations(
-                    self.user.login, projectid, self.request
+                createCombinations(
+                    activeProjectUser, activeProjectId, activeProjectCod, self.request
                 )
+                techs, ncombs, combs, = getCombinations(activeProjectId, self.request)
 
                 pos = 1
                 elements = []
@@ -107,7 +110,7 @@ class projectCombinations_view(privateView):
 
                 return {
                     "activeUser": self.user,
-                    "projectid": projectid,
+                    "activeProject": getActiveProject(self.user.login, self.request),
                     "techs": techs,
                     "combArray": combArray,
                     "stage": stage,
@@ -116,19 +119,17 @@ class projectCombinations_view(privateView):
                     "registryCreated": False,
                 }
             if stage == 2:
-                # EDITED BY BRANDON
-                # if not projectHasCombinations(self.user.login, projectid, self.request):
-                # self.returnRawViewResult = True
-                # return HTTPFound(
-                #    location=self.request.route_url(
-                #        "combinations", _query={"stage": 1}, projectid=projectid
-                #    )
-                # )
 
-                createCombinations(self.user.login, projectid, self.request)
+                createCombinations(
+                    activeProjectUser, activeProjectId, activeProjectCod, self.request
+                )
 
-                create_packages_with_r(self.user.login, projectid, self.request)
-                ncombs, packages = getPackages(self.user.login, projectid, self.request)
+                create_packages_with_r(
+                    activeProjectUser, activeProjectId, activeProjectCod, self.request
+                )
+                ncombs, packages = getPackages(
+                    activeProjectUser, activeProjectId, self.request
+                )
 
                 # print "*******************************10"
                 # pprint.pprint(packages)
@@ -138,42 +139,50 @@ class projectCombinations_view(privateView):
                 combArray = []
                 for c in lcombs:
                     combArray.append(chr(65 + c))
-                # self.needCSS('datatables')
-                # self.needJS('prjcombinations')
 
                 return {
                     "activeUser": self.user,
-                    "projectid": projectid,
+                    "activeProject": getActiveProject(self.user.login, self.request),
                     "ncombs": combArray,
                     "packages": packages,
                     "stage": stage,
                     "registryCreated": False,
-                    "tech": getTech(self.user.login, projectid, self.request),
+                    "tech": getTech(activeProjectId, self.request),
                 }
             if stage == 3:
-                if not projectHasCombinations(self.user.login, projectid, self.request):
+                if not projectHasCombinations(activeProjectId, self.request):
                     self.returnRawViewResult = True
                     return HTTPFound(
                         location=self.request.route_url(
-                            "combinations", _query={"stage": 1}, projectid=projectid
+                            "combinations",
+                            _query={"stage": 1},
+                            project=activeProjectCod,
+                            user=activeProjectUser,
                         )
                     )
-                if not projectHasPackages(self.user.login, projectid, self.request):
+                if not projectHasPackages(activeProjectId, self.request):
                     self.returnRawViewResult = True
                     return HTTPFound(
                         location=self.request.route_url(
-                            "combinations", _query={"stage": 2}, projectid=projectid
+                            "combinations",
+                            _query={"stage": 2},
+                            project=activeProjectCod,
+                            user=activeProjectUser,
                         )
                     )
 
-                startIsOk, error = startTheRegistry(self, projectid)
+                startIsOk, error = startTheRegistry(
+                    self, activeProjectUser, activeProjectId, activeProjectCod
+                )
 
                 if startIsOk:
                     self.returnRawViewResult = True
                     return HTTPFound(location=self.request.route_url("dashboard"))
                 else:
                     return {
-                        "projectid": projectid,
+                        "activeProject": getActiveProject(
+                            self.user.login, self.request
+                        ),
                         "stage": stage,
                         "error_summary": {
                             "error": self._(
@@ -187,74 +196,71 @@ class projectCombinations_view(privateView):
                     }
 
 
-def startTheRegistry(self, projectid):
+def startTheRegistry(self, userOwner, projectId, projectCod):
     locale = self.request.locale_name
 
-    sectionOfThePackageCode = getTheGroupOfThePackageCode(
-        self.user.login, projectid, self.request
-    )
+    sectionOfThePackageCode = getTheGroupOfThePackageCode(projectId, self.request)
     correct, error = generateRegistry(
-        self.user.login, projectid, self.request, sectionOfThePackageCode
+        userOwner, projectId, projectCod, self.request, sectionOfThePackageCode
     )
 
     if correct:
 
-        setRegistryStatus(self.user.login, projectid, 1, self.request)
+        setRegistryStatus(userOwner, projectCod, projectId, 1, self.request)
 
-        ncombs, packages = getPackages(self.user.login, projectid, self.request)
+        ncombs, packages = getPackages(userOwner, projectId, self.request)
 
         create_qr_packages(
             self.request,
             self.request.locale_name,
-            self.user.login,
-            projectid,
+            userOwner,
+            projectId,
+            projectCod,
             ncombs,
             packages,
         )
         time.sleep(1)
 
-        data, finalCloseQst = getDataFormPreview(self, projectid)
+        data, finalCloseQst = getDataFormPreview(self, userOwner, projectId)
         create_document_form(
             self.request,
             locale,
-            self.user.login,
-            projectid,
+            userOwner,
+            projectId,
+            projectCod,
             "Registration",
             "",
             data,
             packages,
         )
-        # time.sleep(1)
-        # create_cards(self.request, self.user.login, projectid, packages)
-        # create_stickers_document(
-        #    self.request.locale_name, self.request, self.user.login, projectid, packages
-        # )
 
         time.sleep(1)
         create_packages_excell(
             self.request,
             self.request.locale_name,
-            self.user.login,
-            projectid,
+            userOwner,
+            projectId,
+            projectCod,
             packages,
-            getTech(self.user.login, projectid, self.request),
+            getTech(projectId, self.request),
         )
         time.sleep(1)
 
         create_fieldagents_report(
             locale,
             self.request,
-            self.user.login,
-            projectid,
-            getProjectEnumerators(self.user.login, projectid, self.request),
+            userOwner,
+            projectCod,
+            projectId,
+            getProjectEnumerators(projectId, self.request),
         )
 
         numberOfCombinations = numberOfCombinationsForTheProject(
-            self.user.login, projectid, self.request
+            projectId, self.request
         )
 
         if numberOfCombinations == 3:
-            tech = searchTechnologiesInProject(self.user.login, projectid, self.request)
+            tech = searchTechnologiesInProject(projectId, self.request)
             if len(tech) == 1:
                 if (
                     tech[0]["tech_name"] == "Colores"
@@ -262,20 +268,21 @@ def startTheRegistry(self, projectid):
                 ):
                     time.sleep(1)
                     create_colors_cards(
-                        self.request, self.user.login, projectid, packages
+                        self.request, userOwner, projectId, projectCod, packages
                     )
         # Call extenal plugins here
 
         for plugin in p.PluginImplementations(p.IForm):
             plugin.after_adding_form(
-                self.request, self.user.login, projectid, "registry", ""
+                self.request, userOwner, projectId, projectCod, "registry", ""
             )
 
         for plugin in p.PluginImplementations(p.IPackage):
             plugin.after_create_packages(
                 self.request,
-                self.user.login,
-                projectid,
+                userOwner,
+                projectId,
+                projectCod,
                 "create_packages",
                 ncombs,
                 packages,

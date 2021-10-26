@@ -8,15 +8,32 @@ from .celerytasks import createDocumentForm
 
 # This function has been declated in climmob.plugins.interfaces.IPackage#after_create_packages
 def create_document_form(
-    request, locale, user, project, form, code, formGroupAndQuestions, packages
+    request,
+    locale,
+    userOwner,
+    projectId,
+    projectCod,
+    form,
+    code,
+    formGroupAndQuestions,
+    packages,
 ):
     # We create the plugin directory if it does not exists and return it
     # The path user.repository in development.ini/user/project/products/product and
     # user.repository in development.ini/user/project/products/product/outputs
-    path = createProductDirectory(request, user, project, "documentform")
+    path = createProductDirectory(request, userOwner, projectCod, "documentform")
     # We call the Celery task that will generate the output packages.pdf
     task = createDocumentForm.apply_async(
-        (locale, user, path, project, formGroupAndQuestions, form, code, packages),
+        (
+            locale,
+            userOwner,
+            path,
+            projectCod,
+            formGroupAndQuestions,
+            form,
+            code,
+            packages,
+        ),
         queue="ClimMob",
     )
     # We register the instance of the output with the task ID of celery
@@ -27,10 +44,9 @@ def create_document_form(
         nameOutput += "_" + code
 
     registerProductInstance(
-        user,
-        project,
+        projectId,
         "documentform",
-        nameOutput + "_" + project + ".docx",
+        nameOutput + "_" + projectCod + ".docx",
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         "create_from_" + form + "_" + code,
         task.id,

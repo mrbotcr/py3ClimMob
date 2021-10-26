@@ -40,6 +40,7 @@
             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
             {% block newprjform %}
                 {% set edit=False %}
+                {% set permissionForChanges=True %}
                 {% include 'snippets/project/project_form.jinja2' %}
 
                 <button type="submit" name="btn_addNewProject" id="btn_addNewProject" class="btn btn-primary pull-right">{{ _("Create project") }}</button>

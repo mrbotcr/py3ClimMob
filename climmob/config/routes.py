@@ -22,7 +22,6 @@ from ..views.project import (
     newProject_view,
     modifyProject_view,
     deleteProject_view,
-    ProjectQRView,
 )
 
 from ..views.question import (
@@ -52,10 +51,7 @@ from ..views.assessment import (
     assessmentFormCreation_view,
     assessmentSectionActions_view,
 )
-from ..views.project_technologies import (
-    projectTecnologies_view,
-    prjTechAliasDelete_view,
-)
+from ..views.project_technologies import projectTecnologies_view
 from ..views.enumerator import (
     enumerators_view,
     deleteEnumerator_view,
@@ -91,7 +87,6 @@ from ..views.productsList import (
     productsView,
     generateProductView,
     downloadView,
-    downloadJsonView,
     dataView,
 )
 
@@ -99,6 +94,12 @@ from ..views.editData import (
     editDataView,
     downloadDataView,
     downloadErroLogDocument_view,
+)
+
+from ..views.Share.projectShare import (
+    projectShare_view,
+    API_users_view,
+    removeprojectShare_view,
 )
 
 # -------Api-------#
@@ -109,6 +110,9 @@ from ..views.Api.projectCreation import (
     updateProject_view,
     deleteProject_view_api,
     readListOfCountries_view,
+    readCollaborators_view,
+    addCollaborator_view,
+    deleteCollaborator_view,
 )
 from ..views.Api.enumerators import (
     createEnumerator_view,
@@ -358,7 +362,7 @@ def loadRoutes(config):
     routes.append(
         {
             "name": "modifyproject",
-            "path": "/project/{projectid}/edit",
+            "path": "/user/{user}/project/{project}/edit",
             "view": modifyProject_view,
             "renderer": "project/modifyproject.jinja2",
         }
@@ -366,17 +370,9 @@ def loadRoutes(config):
     routes.append(
         {
             "name": "deleteproject",
-            "path": "/project/{projectid}/delete",
+            "path": "/user/{user}/project/{project}/delete",
             "view": deleteProject_view,
             "renderer": "json",
-        }
-    )
-    routes.append(
-        {
-            "name": "projectqr",
-            "path": "/project/{projectid}/qr",
-            "view": ProjectQRView,
-            "renderer": None,
         }
     )
 
@@ -466,7 +462,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "prjenumerators",
-            "/project/{projectid}/enumerators",
+            "/user/{user}/project/{project}/enumerators",
             projectEnumerators_view,
             "project/enumerators/enumerators.jinja2",
         )
@@ -474,7 +470,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "removeprjenumerator",
-            "/project/{projectid}/enumerator/{enumeratorid}/remove",
+            "/user/{user}/project/{project}/enumerator/{enumeratorid}/remove",
             removeProjectEnumerators_view,
             "json",
         )
@@ -484,7 +480,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "registry",
-            "/project/{projectid}/registry",
+            "/user/{user}/project/{project}/registry",
             registry_view,
             "project/registry/registry.jinja2",
         )
@@ -492,7 +488,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "registrySaveChanges",
-            "/project/{projectid}/registry/savechanges",
+            "/user/{user}/project/{project}/registry/savechanges",
             registryFormCreation_view,
             "string",
         )
@@ -501,7 +497,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "deleteregistrygroup",
-            "project/{projectid}/registry/{groupid}/delete",
+            "/user/{user}/project/{project}/registry/{groupid}/delete",
             deleteRegistrySection_view,
             "json",
         )
@@ -509,7 +505,7 @@ def loadRoutes(config):
     routes.append(
         {
             "name": "registrySectionActions",
-            "path": "project/{projectid}/registrySectionActions",
+            "path": "/user/{user}/project/{project}/registrySectionActions",
             "view": registrySectionActions_view,
             "renderer": "json",
         }
@@ -517,7 +513,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "cancelregistry",
-            "/project/{projectid}/registry/cancel",
+            "/user/{user}/project/{project}/registry/cancel",
             cancelRegistry_view,
             "project/cancelregistry.jinja2",
         )
@@ -525,7 +521,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "closeregistry",
-            "/project/{projectid}/registry/close",
+            "/user/{user}/project/{project}/registry/close",
             closeRegistry_view,
             "project/closepregistry.jinja2",
         )
@@ -535,7 +531,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "assessment",
-            "/project/{projectid}/assessments",
+            "/user/{user}/project/{project}/assessments",
             assessmenthead_view,
             "project/assessment/assessment.jinja2",
         )
@@ -544,7 +540,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "startassessments",
-            "/project/{projectid}/assessments/start",
+            "/user/{user}/project/{project}/assessments/start",
             startAssessments_view,
             "project/startassessments.jinja2",
         )
@@ -552,7 +548,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "deleteassessment",
-            "/project/{projectid}/assessment/{assessmentid}/delete",
+            "/user/{user}/project/{project}/assessment/{assessmentid}/delete",
             deleteassessmenthead_view,
             "json",
         )
@@ -560,7 +556,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "closeassessment",
-            "/project/{projectid}/assessment/{assessmentid}/close",
+            "/user/{user}/project/{project}/assessment/{assessmentid}/close",
             closeAssessment_view,
             "project/closeassessment.jinja2",
         )
@@ -568,7 +564,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "cancelassessment",
-            "/project/{projectid}/assessment/{assessmentid}/cancel",
+            "/user/{user}/project/{project}/assessment/{assessmentid}/cancel",
             CancelAssessmentView,
             "project/cancelassessment.jinja2",
         )
@@ -577,7 +573,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "assessmentdetail",
-            "/project/{projectid}/assessment/{assessmentid}",
+            "/user/{user}/project/{project}/assessment/{assessmentid}",
             assessment_view,
             "project/assessment/assessmentdetail.jinja2",
         )
@@ -585,7 +581,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "assessmentdetailSaveChanges",
-            "/project/{projectid}/assessment/{assessmentid}/savechanges",
+            "/user/{user}/project/{project}/assessment/{assessmentid}/savechanges",
             assessmentFormCreation_view,
             "string",
         )
@@ -594,7 +590,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "deleteassessmentgroup",
-            "project/{projectid}/assessment/{assessmentid}/{groupid}/delete",
+            "/user/{user}/project/{project}/assessment/{assessmentid}/{groupid}/delete",
             deleteAssessmentSection_view,
             "json",
         )
@@ -602,7 +598,7 @@ def loadRoutes(config):
     routes.append(
         {
             "name": "assessmentSectionActions",
-            "path": "project/{projectid}/assessment/{assessmentid}/assessmenrSectionActions",
+            "path": "/user/{user}/project/{project}/assessment/{assessmentid}/assessmenrSectionActions",
             "view": assessmentSectionActions_view,
             "renderer": "json",
         }
@@ -611,17 +607,36 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "prjtechnologies",
-            "/project/{projectid}/technologies",
+            "/user/{user}/project/{project}/technologies",
             projectTecnologies_view,
             "project/technologies/technologies.jinja2",
         )
     )
 
+    # Project share
     routes.append(
         addRoute(
-            "deleteprjtechalias",
-            "/project/{projectid}/technology/{tech_id}/alias/{alias_id}/delete",
-            prjTechAliasDelete_view,
+            "shareProject",
+            "/user/{user}/project/{project}/share",
+            projectShare_view,
+            "project/share/share.jinja2",
+        )
+    )
+
+    routes.append(
+        addRoute(
+            "api_select2_users",
+            "/user/{user}/project/{project}/api/select2_user",
+            API_users_view,
+            "json",
+        )
+    )
+
+    routes.append(
+        addRoute(
+            "removeprjshare",
+            "/user/{user}/project/{project}/share/{collaborator}/remove",
+            removeprojectShare_view,
             "json",
         )
     )
@@ -630,7 +645,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "combinations",
-            "/project/{projectid}/combinations",
+            "/user/{user}/project/{project}/combinations",
             projectCombinations_view,
             "project/registry/create/createregistry.jinja2",
         )
@@ -648,7 +663,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "generateProduct",
-            "/generateProduct/{projectid}/{productid}/{processname}",
+            "/user/{user}/project/{project}/{productid}/{processname}/generateProduct",
             generateProductView,
             None,
         )
@@ -659,9 +674,7 @@ def loadRoutes(config):
             "download", "/download/{celery_taskid}/{product_id}", downloadView, None
         )
     )
-    routes.append(
-        addRoute("downloadJson", "/downloadJson/{product_id}", downloadJsonView, "json")
-    )
+
     routes.append(
         addRoute(
             "dataProductsList",
@@ -675,7 +688,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "EditDataRegistry",
-            "/project/{projectid}/form/{formid}/EditData",
+            "/user/{user}/project/{project}/form/{formid}/EditData",
             editDataView,
             "project/editData/editData.jinja2",
         )
@@ -683,7 +696,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "EditDataAssessment",
-            "/project/{projectid}/form/{formid}/{codeid}/EditData",
+            "/user/{user}/project/{project}/form/{formid}/{codeid}/EditData",
             editDataView,
             "project/editData/editData.jinja2",
         )
@@ -692,7 +705,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "downloadDataRegistry",
-            "/project/{projectid}/form/{formid}/Download",
+            "/user/{user}/project/{project}/form/{formid}/Download",
             downloadDataView,
             "json",
         )
@@ -700,7 +713,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "downloadDataAssessment",
-            "/project/{projectid}/form/{formid}/{codeid}/Download",
+            "/user/{user}/project/{project}/form/{formid}/{codeid}/Download",
             downloadDataView,
             "json",
         )
@@ -710,7 +723,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "CleanErrorLogs",
-            "/project/{projectid}/form/{formid}/CleanErrorLogs",
+            "/user/{user}/project/{project}/form/{formid}/CleanErrorLogs",
             cleanErrorLogs_view,
             "project/CleanErrors/clean.jinja2",
         )
@@ -719,7 +732,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "CleanErrorLogsDetails",
-            "/project/{projectid}/form/{formid}/logId/{logid}/CleanErrorLogs",
+            "/user/{user}/project/{project}/form/{formid}/logId/{logid}/CleanErrorLogs",
             cleanErrorLogs_view,
             "project/CleanErrors/clean.jinja2",
         )
@@ -728,7 +741,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "downloadErrorLogDocumentRegistry",
-            "/project/{projectid}/form/{formid}/DownloadErrorLogDocument",
+            "/user/{user}/project/{project}/form/{formid}/DownloadErrorLogDocument",
             downloadErroLogDocument_view,
             "json",
         )
@@ -737,7 +750,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "CleanErrorLogsAssessment",
-            "/project/{projectid}/form/{formid}/{codeid}/CleanErrorLogs",
+            "/user/{user}/project/{project}/form/{formid}/{codeid}/CleanErrorLogs",
             cleanErrorLogs_view,
             "project/CleanErrors/clean.jinja2",
         )
@@ -746,7 +759,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "CleanErrorLogsDetailsAssessment",
-            "/project/{projectid}/form/{formid}/{codeid}/logId/{logid}/CleanErrorLogs",
+            "/user/{user}/project/{project}/form/{formid}/{codeid}/logId/{logid}/CleanErrorLogs",
             cleanErrorLogs_view,
             "project/CleanErrors/clean.jinja2",
         )
@@ -755,7 +768,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "downloadErrorLogDocumentAssessment",
-            "/project/{projectid}/form/{formid}/{codeid}/DownloadErrorLogDocument",
+            "/user/{user}/project/{project}/form/{formid}/{codeid}/DownloadErrorLogDocument",
             downloadErroLogDocument_view,
             "json",
         )
@@ -777,15 +790,19 @@ def loadRoutes(config):
     )
     routes.append(addRoute("odkpush", "/{userid}/push", push_view, None))
     routes.append(
-        addRoute("odkxmlform", "/{userid}/{projectid}/xmlform", XMLForm_view, None)
+        addRoute(
+            "odkxmlform", "/{user}/{userowner}/{project}/xmlform", XMLForm_view, None
+        )
     )
     routes.append(
-        addRoute("odkmanifest", "/{userid}/{projectid}/manifest", manifest_view, None)
+        addRoute(
+            "odkmanifest", "/{user}/{userowner}/{project}/manifest", manifest_view, None
+        )
     )
     routes.append(
         addRoute(
             "odkmediafile",
-            "/{userid}/{projectid}/manifest/mediafile/{fileid}",
+            "/{user}/{userowner}/{project}/manifest/mediafile/{fileid}",
             mediaFile_view,
             None,
         )
@@ -794,7 +811,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "odkxmlformass",
-            "/{userid}/{projectid}/{assessmentid}/xmlform",
+            "/{user}/{userowner}/{project}/{assessmentid}/xmlform",
             assessmentXMLForm_view,
             None,
         )
@@ -802,7 +819,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "odkmanifestass",
-            "/{userid}/{projectid}/{assessmentid}/manifest",
+            "/{user}/{userowner}/{project}/{assessmentid}/manifest",
             assessmentManifest_view,
             None,
         )
@@ -810,7 +827,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "odkmediafileass",
-            "/{userid}/{projectid}/{assessmentid}/manifest/mediafile/{fileid}",
+            "/{user}/{userowner}/{project}/{assessmentid}/manifest/mediafile/{fileid}",
             assessmentMediaFile_view,
             None,
         )
@@ -877,6 +894,29 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "deleteproject_api", "/api/deleteProject", deleteProject_view_api, None
+        )
+    )
+
+    # Share project
+    routes.append(
+        addRoute(
+            "readcollaborators_api",
+            "/api/readCollaborators",
+            readCollaborators_view,
+            "json",
+        )
+    )
+    routes.append(
+        addRoute(
+            "addcollaborator_api", "/api/addCollaborator", addCollaborator_view, None
+        )
+    )
+    routes.append(
+        addRoute(
+            "deletecollaborator_api",
+            "/api/deleteCollaborator",
+            deleteCollaborator_view,
+            None,
         )
     )
 
@@ -1033,8 +1073,7 @@ def loadRoutes(config):
             None,
         )
     )
-    # routes.append(addRoute('readquestionperformance_api'      , '/api/readQuestionPerformance'      , readQuestionPerformance_view      , None))
-    # routes.append(addRoute('readquestioncharacteristics_api'  , '/api/readQuestionCharacteristic'   , readQuestionCharacteristic_view   , None))
+
     routes.append(
         addRoute(
             "updatequestionperformance_api",

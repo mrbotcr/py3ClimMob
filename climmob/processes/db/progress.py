@@ -1,17 +1,8 @@
 from sqlalchemy import func
-from climmob.models.schema import mapFromSchema, mapToSchema
-from ...models import Project, Assessment
+from climmob.models.schema import mapFromSchema
+from ...models import Project, Assessment, userProject
 from climmob.models.repository import sql_fetch_one
-from .project import (
-    addQuestionsToAssessment,
-    numberOfCombinationsForTheProject,
-    getProjectLocalVariety,
-)
-from ..odk.generator import getRegisteredFarmers
-import uuid, os
-from subprocess import Popen, PIPE
-import logging, shutil
-from jinja2 import Environment
+import logging
 
 __all__ = ["getProjectEncrypted", "getRegistryInformation", "AssessmentsInformation"]
 
@@ -19,14 +10,15 @@ log = logging.getLogger(__name__)
 
 
 def getProjectEncrypted(request, encrypted):
-    # sql ="SELECT * FROM project where MD5(concat(user_name,'#$%&',project_cod)) = '"+encrypted+"'"
-    # result = request.dbsession.execute(sql).fetchall()
+
     result = (
-        request.dbsession.query(Project)
+        request.dbsession.query(Project, userProject)
         .filter(
-            func.md5(func.concat(Project.user_name, "#$%&", Project.project_cod))
+            func.md5(func.concat(userProject.user_name, "#$%&", userProject.project_id))
             == encrypted
         )
+        .filter(userProject.project_id == Project.project_id)
+        .filter(userProject.access_type == 1)
         .first()
     )
     if result:
@@ -47,7 +39,6 @@ def getRegistryInformation(request, info):
         + ".REG_geninfo"
     )
     try:
-        # res = request.repsession.execute(sql).fetchone()
         res = sql_fetch_one(sql)
         submissions = res["total"]
 
@@ -65,8 +56,7 @@ def AssessmentsInformation(request, info, registered):
     assessmentArray = []
     assessments = (
         request.dbsession.query(Assessment)
-        .filter(Assessment.user_name == info["user_name"])
-        .filter(Assessment.project_cod == info["project_cod"])
+        .filter(Assessment.project_id == info["project_id"])
         .order_by(Assessment.ass_days)
         .all()
     )
@@ -83,7 +73,6 @@ def AssessmentsInformation(request, info, registered):
             + "_geninfo"
         )
         try:
-            # res = request.repsession.execute(sql).fetchone()
             res = sql_fetch_one(sql)
             submissions = res["total"]
         except:

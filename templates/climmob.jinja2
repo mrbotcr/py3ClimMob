@@ -19,8 +19,8 @@ fanstatic.debug = true
 fanstatic.publisher_signature = fanstatic
 fanstatic.use_application_uri = true
 
-sqlalchemy.url = mysql+mysqlconnector://{{ mysql_user_name }}:{{ mysql_user_password }}@{{ mysql_host }}/climmobv4?charset=utf8&ssl_disabled=True
-repository.url = mysql+mysqlconnector://{{ mysql_user_name }}:{{ mysql_user_password }}@{{ mysql_host }}/climmobv4?charset=utf8&ssl_disabled=True
+sqlalchemy.url = mysql+mysqlconnector://{{ mysql_user_name }}:{{ mysql_user_password }}@{{ mysql_host }}/climmobv4?charset=utf8mb4&ssl_disabled=True
+repository.url = mysql+mysqlconnector://{{ mysql_user_name }}:{{ mysql_user_password }}@{{ mysql_host }}/climmobv4?charset=utf8mb4&ssl_disabled=True
 schema.prefix = free
 
 celery.broker = redis://localhost:6379/5
@@ -45,6 +45,7 @@ odktools.mysql.host = {{ mysql_host }}
 odktools.mysql.port = {{ mysql_port }}
 odktools.mysql.user = {{ mysql_user_name }}
 odktools.mysql.password = {{ mysql_user_password }}
+odktools.mysql.db = climmobv4
 
 mysql.cnf = %(here)s/mysql.cnf
 r.scripts = %(here)s/r

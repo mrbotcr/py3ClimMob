@@ -5,7 +5,6 @@ from ...processes import (
     projectRegStatus,
     createCombinations,
     getCombinations,
-    projectHasCombinations,
     getCombinationStatus,
     setCombinationStatus,
     getProjectProgress,
@@ -15,10 +14,11 @@ from ...processes import (
     projectCreatePackages,
     setRegistryStatus,
     generateStructureForInterfaceForms,
-    generateStructureForValidateJsonOdk,
     isRegistryClose,
     getProjectNumobs,
     getJSONResult,
+    getTheProjectIdForOwner,
+    getAccessTypeForProject,
 )
 
 from climmob.products import stopTasksByProcess
@@ -32,14 +32,13 @@ import json
 import datetime
 import os
 import uuid
-import climmob.plugins as p
 
 
 class readProjectCombinations_view(apiView):
     def processView(self):
 
         if self.request.method == "GET":
-            obligatory = [u"project_cod"]
+            obligatory = [u"project_cod", u"user_owner"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -61,12 +60,24 @@ class readProjectCombinations_view(apiView):
 
                 if dataInParams:
                     exitsproject = projectExists(
-                        self.user.login, dataworking["project_cod"], self.request
+                        self.user.login,
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
                     )
                     if exitsproject:
-                        # if projectRegStatus(self.user.login, dataworking['project_cod'], self.request):
+
+                        activeProjectId = getTheProjectIdForOwner(
+                            dataworking["user_owner"],
+                            dataworking["project_cod"],
+                            self.request,
+                        )
+
                         progress, pcompleted = getProjectProgress(
-                            self.user.login, dataworking["project_cod"], self.request
+                            dataworking["user_owner"],
+                            dataworking["project_cod"],
+                            activeProjectId,
+                            self.request,
                         )
                         if (
                             progress["enumerators"] == True
@@ -76,14 +87,13 @@ class readProjectCombinations_view(apiView):
                         ):
 
                             createCombinations(
-                                self.user.login,
+                                dataworking["user_owner"],
+                                activeProjectId,
                                 dataworking["project_cod"],
                                 self.request,
                             )
                             techs, ncombs, combs, = getCombinations(
-                                self.user.login,
-                                dataworking["project_cod"],
-                                self.request,
+                                activeProjectId, self.request,
                             )
 
                             pos = 1
@@ -141,9 +151,6 @@ class readProjectCombinations_view(apiView):
                                 ),
                             )
                             return response
-                        # else:
-                        #    response = Response(status=401, body=self._("The registry is already started."))
-                        #    return response
                     else:
                         response = Response(
                             status=401,
@@ -167,7 +174,7 @@ class setUsableCombinations_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"ncomb", u"status"]
+            obligatory = [u"project_cod", u"user_owner", u"ncomb", u"status"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -180,15 +187,36 @@ class setUsableCombinations_view(apiView):
 
                 if dataInParams:
                     exitsproject = projectExists(
-                        self.user.login, dataworking["project_cod"], self.request
+                        self.user.login,
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
                     )
                     if exitsproject:
-                        if projectRegStatus(
-                            self.user.login, dataworking["project_cod"], self.request
-                        ):
+
+                        activeProjectId = getTheProjectIdForOwner(
+                            dataworking["user_owner"],
+                            dataworking["project_cod"],
+                            self.request,
+                        )
+                        accessType = getAccessTypeForProject(
+                            self.user.login, activeProjectId, self.request
+                        )
+
+                        if accessType in [4]:
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "The access assigned for this project does not allow you to set usable combinations."
+                                ),
+                            )
+                            return response
+
+                        if projectRegStatus(activeProjectId, self.request):
                             progress, pcompleted = getProjectProgress(
-                                self.user.login,
+                                dataworking["user_owner"],
                                 dataworking["project_cod"],
+                                activeProjectId,
                                 self.request,
                             )
                             if (
@@ -198,13 +226,10 @@ class setUsableCombinations_view(apiView):
                                 and progress["registry"] == True
                             ):
                                 if not projectCreateCombinations(
-                                    self.user.login,
-                                    dataworking["project_cod"],
-                                    self.request,
+                                    activeProjectId, self.request,
                                 ):
                                     exits, status = getCombinationStatus(
-                                        self.user.login,
-                                        dataworking["project_cod"],
+                                        activeProjectId,
                                         dataworking["ncomb"],
                                         self.request,
                                     )
@@ -217,8 +242,7 @@ class setUsableCombinations_view(apiView):
                                                 status
                                             ):
                                                 setCombinationStatus(
-                                                    self.user.login,
-                                                    dataworking["project_cod"],
+                                                    activeProjectId,
                                                     dataworking["ncomb"],
                                                     dataworking["status"],
                                                     self.request,
@@ -303,7 +327,7 @@ class createPackages_view(apiView):
                 return o.__str__()
 
         if self.request.method == "GET":
-            obligatory = [u"project_cod"]
+            obligatory = [u"project_cod", u"user_owner"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -325,11 +349,36 @@ class createPackages_view(apiView):
 
                 if dataInParams:
                     exitsproject = projectExists(
-                        self.user.login, dataworking["project_cod"], self.request
+                        self.user.login,
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
                     )
                     if exitsproject:
+
+                        activeProjectId = getTheProjectIdForOwner(
+                            dataworking["user_owner"],
+                            dataworking["project_cod"],
+                            self.request,
+                        )
+                        accessType = getAccessTypeForProject(
+                            self.user.login, activeProjectId, self.request
+                        )
+
+                        if accessType in [4]:
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "The access assigned for this project does not allow you to create packages."
+                                ),
+                            )
+                            return response
+
                         progress, pcompleted = getProjectProgress(
-                            self.user.login, dataworking["project_cod"], self.request
+                            dataworking["user_owner"],
+                            dataworking["project_cod"],
+                            activeProjectId,
+                            self.request,
                         )
                         if (
                             progress["enumerators"] == True
@@ -338,18 +387,17 @@ class createPackages_view(apiView):
                             and progress["registry"] == True
                         ):
                             if not projectCreateCombinations(
-                                self.user.login,
-                                dataworking["project_cod"],
-                                self.request,
+                                activeProjectId, self.request,
                             ):
                                 create_packages_with_r(
-                                    self.user.login,
+                                    dataworking["user_owner"],
+                                    activeProjectId,
                                     dataworking["project_cod"],
                                     self.request,
                                 )
                                 ncombs, packages = getPackages(
-                                    self.user.login,
-                                    dataworking["project_cod"],
+                                    dataworking["user_owner"],
+                                    activeProjectId,
                                     self.request,
                                 )
 
@@ -400,7 +448,7 @@ class createProjectRegistry_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u"project_cod"]
+            obligatory = [u"project_cod", u"user_owner"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -413,15 +461,36 @@ class createProjectRegistry_view(apiView):
 
                 if dataInParams:
                     exitsproject = projectExists(
-                        self.user.login, dataworking["project_cod"], self.request
+                        self.user.login,
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
                     )
                     if exitsproject:
-                        if projectRegStatus(
-                            self.user.login, dataworking["project_cod"], self.request
-                        ):
+
+                        activeProjectId = getTheProjectIdForOwner(
+                            dataworking["user_owner"],
+                            dataworking["project_cod"],
+                            self.request,
+                        )
+                        accessType = getAccessTypeForProject(
+                            self.user.login, activeProjectId, self.request
+                        )
+
+                        if accessType in [4]:
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "The access assigned for this project does not allow you to create the registry."
+                                ),
+                            )
+                            return response
+
+                        if projectRegStatus(activeProjectId, self.request):
                             progress, pcompleted = getProjectProgress(
-                                self.user.login,
+                                dataworking["user_owner"],
                                 dataworking["project_cod"],
+                                activeProjectId,
                                 self.request,
                             )
                             if (
@@ -431,18 +500,17 @@ class createProjectRegistry_view(apiView):
                                 and progress["registry"] == True
                             ):
                                 if not projectCreateCombinations(
-                                    self.user.login,
-                                    dataworking["project_cod"],
-                                    self.request,
+                                    activeProjectId, self.request,
                                 ):
                                     if not projectCreatePackages(
-                                        self.user.login,
-                                        dataworking["project_cod"],
-                                        self.request,
+                                        activeProjectId, self.request,
                                     ):
 
                                         startIsOk, error = startTheRegistry(
-                                            self, dataworking["project_cod"]
+                                            self,
+                                            dataworking["user_owner"],
+                                            activeProjectId,
+                                            dataworking["project_cod"],
                                         )
                                         if startIsOk:
                                             response = Response(
@@ -514,7 +582,7 @@ class cancelRegistryApi_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u"project_cod"]
+            obligatory = [u"project_cod", u"user_owner"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -527,22 +595,41 @@ class cancelRegistryApi_view(apiView):
 
                 if dataInParams:
                     exitsproject = projectExists(
-                        self.user.login, dataworking["project_cod"], self.request
+                        self.user.login,
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
                     )
                     if exitsproject:
-                        if not projectRegStatus(
-                            self.user.login, dataworking["project_cod"], self.request
-                        ):
+
+                        activeProjectId = getTheProjectIdForOwner(
+                            dataworking["user_owner"],
+                            dataworking["project_cod"],
+                            self.request,
+                        )
+                        accessType = getAccessTypeForProject(
+                            self.user.login, activeProjectId, self.request
+                        )
+
+                        if accessType in [4]:
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "The access assigned for this project does not allow you to cancel the registry."
+                                ),
+                            )
+                            return response
+
+                        if not projectRegStatus(activeProjectId, self.request):
                             setRegistryStatus(
-                                self.user.login,
+                                dataworking["user_owner"],
                                 dataworking["project_cod"],
+                                activeProjectId,
                                 0,
                                 self.request,
                             )
                             stopTasksByProcess(
-                                self.request,
-                                self.user.login,
-                                dataworking["project_cod"],
+                                self.request, activeProjectId,
                             )
 
                             response = Response(
@@ -580,7 +667,7 @@ class closeRegistryApi_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u"project_cod"]
+            obligatory = [u"project_cod", u"user_owner"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -593,22 +680,44 @@ class closeRegistryApi_view(apiView):
 
                 if dataInParams:
                     exitsproject = projectExists(
-                        self.user.login, dataworking["project_cod"], self.request
+                        self.user.login,
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
                     )
                     if exitsproject:
-                        if not projectRegStatus(
-                            self.user.login, dataworking["project_cod"], self.request
-                        ):
+
+                        activeProjectId = getTheProjectIdForOwner(
+                            dataworking["user_owner"],
+                            dataworking["project_cod"],
+                            self.request,
+                        )
+                        accessType = getAccessTypeForProject(
+                            self.user.login, activeProjectId, self.request
+                        )
+
+                        if accessType in [4]:
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "The access assigned for this project does not allow you to finish the registry."
+                                ),
+                            )
+                            return response
+
+                        if not projectRegStatus(activeProjectId, self.request):
 
                             progress, pcompleted = getProjectProgress(
-                                self.user.login,
+                                dataworking["user_owner"],
                                 dataworking["project_cod"],
+                                activeProjectId,
                                 self.request,
                             )
                             if progress["regtotal"] > 0:
                                 setRegistryStatus(
-                                    self.user.login,
+                                    dataworking["user_owner"],
                                     dataworking["project_cod"],
+                                    activeProjectId,
                                     2,
                                     self.request,
                                 )
@@ -655,7 +764,7 @@ class readRegistryStructure_view(apiView):
     def processView(self):
 
         if self.request.method == "GET":
-            obligatory = [u"project_cod"]
+            obligatory = [u"project_cod", u"user_owner"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -677,17 +786,26 @@ class readRegistryStructure_view(apiView):
 
                 if dataInParams:
                     exitsproject = projectExists(
-                        self.user.login, dataworking["project_cod"], self.request
+                        self.user.login,
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
                     )
                     if exitsproject:
-                        if not projectRegStatus(
-                            self.user.login, dataworking["project_cod"], self.request
-                        ):
+
+                        activeProjectId = getTheProjectIdForOwner(
+                            dataworking["user_owner"],
+                            dataworking["project_cod"],
+                            self.request,
+                        )
+
+                        if not projectRegStatus(activeProjectId, self.request):
                             response = Response(
                                 status=200,
                                 body=json.dumps(
                                     generateStructureForInterfaceForms(
-                                        self.user.login,
+                                        dataworking["user_owner"],
+                                        activeProjectId,
                                         dataworking["project_cod"],
                                         "registry",
                                         self.request,
@@ -723,7 +841,7 @@ class pushJsonToRegistry_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"json"]
+            obligatory = [u"project_cod", u"user_owner", u"json"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -736,19 +854,36 @@ class pushJsonToRegistry_view(apiView):
 
                 if dataInParams:
                     exitsproject = projectExists(
-                        self.user.login, dataworking["project_cod"], self.request
+                        self.user.login,
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
                     )
                     if exitsproject:
-                        if not projectRegStatus(
-                            self.user.login, dataworking["project_cod"], self.request
-                        ):
-                            if not isRegistryClose(
-                                self.user.login,
-                                dataworking["project_cod"],
-                                self.request,
-                            ):
+
+                        activeProjectId = getTheProjectIdForOwner(
+                            dataworking["user_owner"],
+                            dataworking["project_cod"],
+                            self.request,
+                        )
+                        accessType = getAccessTypeForProject(
+                            self.user.login, activeProjectId, self.request
+                        )
+
+                        if accessType in [4]:
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "The access assigned for this project does not allow you to push information to the project."
+                                ),
+                            )
+                            return response
+
+                        if not projectRegStatus(activeProjectId, self.request):
+                            if not isRegistryClose(activeProjectId, self.request,):
                                 structure = generateStructureForInterfaceForms(
-                                    self.user.login,
+                                    dataworking["user_owner"],
+                                    activeProjectId,
                                     dataworking["project_cod"],
                                     "registry",
                                     self.request,
@@ -801,8 +936,7 @@ class pushJsonToRegistry_view(apiView):
                                                         if int(
                                                             _json[searchQST162]
                                                         ) <= getProjectNumobs(
-                                                            self.user.login,
-                                                            dataworking["project_cod"],
+                                                            activeProjectId,
                                                             self.request,
                                                         ):
                                                             _json["clm_deviceimei"] = (
@@ -816,7 +950,9 @@ class pushJsonToRegistry_view(apiView):
                                                                     "user.repository"
                                                                 ],
                                                                 *[
-                                                                    self.user.login,
+                                                                    dataworking[
+                                                                        "user_owner"
+                                                                    ],
                                                                     dataworking[
                                                                         "project_cod"
                                                                     ],
@@ -838,8 +974,11 @@ class pushJsonToRegistry_view(apiView):
                                                             f.write(json.dumps(_json))
                                                             f.close()
                                                             storeJSONInMySQL(
-                                                                "REG",
                                                                 self.user.login,
+                                                                "REG",
+                                                                dataworking[
+                                                                    "user_owner"
+                                                                ],
                                                                 None,
                                                                 dataworking[
                                                                     "project_cod"
@@ -847,6 +986,7 @@ class pushJsonToRegistry_view(apiView):
                                                                 None,
                                                                 pathfinal,
                                                                 self.request,
+                                                                activeProjectId,
                                                             )
 
                                                             logFile = pathfinal.replace(
@@ -871,18 +1011,6 @@ class pushJsonToRegistry_view(apiView):
                                                                     ),
                                                                 )
                                                                 return response
-
-                                                            # for (
-                                                            #     plugin
-                                                            # ) in p.PluginImplementations(
-                                                            #     p.ISubmissionStorage
-                                                            # ):
-                                                            #     plugin.report_data_entry_to_a_project(
-                                                            #         self.request,
-                                                            #         self.user.login,
-                                                            #         "xxxx",
-                                                            #         "API user",
-                                                            #     )
 
                                                             response = Response(
                                                                 status=200,
@@ -987,7 +1115,7 @@ class readRegistryData_view(apiView):
     def processView(self):
 
         if self.request.method == "GET":
-            obligatory = [u"project_cod"]
+            obligatory = [u"project_cod", u"user_owner"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -1009,14 +1137,23 @@ class readRegistryData_view(apiView):
 
                 if dataInParams:
                     exitsproject = projectExists(
-                        self.user.login, dataworking["project_cod"], self.request
+                        self.user.login,
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
                     )
                     if exitsproject:
-                        if not projectRegStatus(
-                            self.user.login, dataworking["project_cod"], self.request
-                        ):
+
+                        activeProjectId = getTheProjectIdForOwner(
+                            dataworking["user_owner"],
+                            dataworking["project_cod"],
+                            self.request,
+                        )
+
+                        if not projectRegStatus(activeProjectId, self.request):
                             info = getJSONResult(
-                                self.user.login,
+                                dataworking["user_owner"],
+                                activeProjectId,
                                 dataworking["project_cod"],
                                 self.request,
                                 True,

@@ -5,6 +5,8 @@ from ...processes import (
     getQuestionsByType,
     getProjectProgress,
     getProjectData,
+    getTheProjectIdForOwner,
+    getAccessTypeForProject,
 )
 from ..project_analysis import processToGenerateTheReport
 from pyramid.response import Response
@@ -16,7 +18,7 @@ class readDataOfProjectView_api(apiView):
 
         if self.request.method == "GET":
 
-            obligatory = [u"project_cod"]
+            obligatory = [u"project_cod", u"user_owner"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -30,14 +32,26 @@ class readDataOfProjectView_api(apiView):
 
             if sorted(obligatory) == sorted(dataworking.keys()):
 
-                projectid = dataworking["project_cod"]
-                if projectExists(self.user.login, projectid, self.request):
+                exitsproject = projectExists(
+                    self.user.login,
+                    dataworking["user_owner"],
+                    dataworking["project_cod"],
+                    self.request,
+                )
+                if exitsproject:
+
+                    activeProjectId = getTheProjectIdForOwner(
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
+                    )
 
                     response = Response(
                         status=200,
                         body=json.dumps(
                             getJSONResult(
-                                self.user.login,
+                                dataworking["user_owner"],
+                                activeProjectId,
                                 dataworking["project_cod"],
                                 self.request,
                             )
@@ -62,7 +76,7 @@ class readVariablesForAnalysisView_api(apiView):
 
         if self.request.method == "GET":
 
-            obligatory = [u"project_cod"]
+            obligatory = [u"project_cod", u"user_owner"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -76,14 +90,38 @@ class readVariablesForAnalysisView_api(apiView):
 
             if sorted(obligatory) == sorted(dataworking.keys()):
 
-                projectid = dataworking["project_cod"]
-                if projectExists(self.user.login, projectid, self.request):
+                exitsproject = projectExists(
+                    self.user.login,
+                    dataworking["user_owner"],
+                    dataworking["project_cod"],
+                    self.request,
+                )
+                if exitsproject:
 
-                    infoProject = getProjectData(
-                        self.user.login, projectid, self.request
+                    activeProjectId = getTheProjectIdForOwner(
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
                     )
+                    accessType = getAccessTypeForProject(
+                        self.user.login, activeProjectId, self.request
+                    )
+
+                    if accessType in [4]:
+                        response = Response(
+                            status=401,
+                            body=self._(
+                                "The access assigned for this project does not allow you to create an analysis."
+                            ),
+                        )
+                        return response
+
+                    infoProject = getProjectData(activeProjectId, self.request)
                     progress, pcompleted = getProjectProgress(
-                        self.user.login, projectid, self.request
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        activeProjectId,
+                        self.request,
                     )
 
                     total_ass_records = 0
@@ -102,7 +140,7 @@ class readVariablesForAnalysisView_api(apiView):
                     ) or (total_ass_records > 0):
 
                         dataForAnalysis, assessmentsList = getQuestionsByType(
-                            self.user.login, projectid, self.request
+                            activeProjectId, self.request
                         )
 
                         response = Response(
@@ -141,7 +179,12 @@ class generateAnalysisByApiView_api(apiView):
 
         if self.request.method == "POST":
 
-            obligatory = [u"project_cod", "variables_to_analyze", "infosheets"]
+            obligatory = [
+                u"project_cod",
+                u"user_owner",
+                "variables_to_analyze",
+                "infosheets",
+            ]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -155,13 +198,38 @@ class generateAnalysisByApiView_api(apiView):
 
             if sorted(obligatory) == sorted(dataworking.keys()):
 
-                projectid = dataworking["project_cod"]
-                if projectExists(self.user.login, projectid, self.request):
-                    infoProject = getProjectData(
-                        self.user.login, projectid, self.request
+                exitsproject = projectExists(
+                    self.user.login,
+                    dataworking["user_owner"],
+                    dataworking["project_cod"],
+                    self.request,
+                )
+                if exitsproject:
+
+                    activeProjectId = getTheProjectIdForOwner(
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
                     )
+                    accessType = getAccessTypeForProject(
+                        self.user.login, activeProjectId, self.request
+                    )
+
+                    if accessType in [4]:
+                        response = Response(
+                            status=401,
+                            body=self._(
+                                "The access assigned for this project does not allow you to create an analysis."
+                            ),
+                        )
+                        return response
+
+                    infoProject = getProjectData(activeProjectId, self.request)
                     progress, pcompleted = getProjectProgress(
-                        self.user.login, projectid, self.request
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        activeProjectId,
+                        self.request,
                     )
 
                     total_ass_records = 0
@@ -183,7 +251,7 @@ class generateAnalysisByApiView_api(apiView):
                             variables = dataworking["variables_to_analyze"]
                             if type(variables) == list:
                                 dataForAnalysis, assessmentsList = getQuestionsByType(
-                                    self.user.login, projectid, self.request
+                                    activeProjectId, self.request
                                 )
                                 listOfAllowedVariables = []
                                 for _key in dataForAnalysis:
@@ -205,8 +273,12 @@ class generateAnalysisByApiView_api(apiView):
                                         else:
                                             infosheet = "FALSE"
 
+                                        dataworking["project_id"] = activeProjectId
+                                        dataworking["owner"] = {}
+                                        dataworking["owner"]["user_name"] = dataworking[
+                                            "user_owner"
+                                        ]
                                         pro = processToGenerateTheReport(
-                                            self.user.login,
                                             dataworking,
                                             self.request,
                                             variables,

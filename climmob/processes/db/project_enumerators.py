@@ -1,9 +1,9 @@
-from ...models import PrjEnumerator, Assessment
+from ...models import userProject, Assessment, User, Enumerator, PrjEnumerator
 from climmob.models.schema import mapFromSchema
-from ...models import Enumerator, PrjEnumerator
-from sqlalchemy import or_
+from sqlalchemy import or_, tuple_
 from climmob.config.encdecdata import decodeData
 from climmob.models.repository import sql_fetch_all
+from ..db.enumerator import getEnumeratorByProject
 
 __all__ = [
     "getProjectEnumerators",
@@ -12,64 +12,52 @@ __all__ = [
     "getUsableEnumerators",
     "seeProgress",
     "getAssessmenstByProject",
+    "thereIsAnEqualEnumIdInTheProject",
 ]
-from .enumerator import getEnumeratorData
 
 
-def getProjectEnumerators(user, project, request):
-    """
-    sql = "SELECT prjenumerator.enum_id,enumerator.enum_name,enumerator.enum_active " \
-          "FROM prjenumerator,enumerator " \
-          "WHERE prjenumerator.user_name = enumerator.user_name " \
-          "AND prjenumerator.enum_id = enumerator.enum_id " \
-          "AND prjenumerator.user_name = '" + user + "' " \
-          "AND prjenumerator.project_cod = '" + project + "'"
+def getProjectEnumerators(projectId, request):
 
-    assessments = request.dbsession.execute(sql).fetchall()
-    result = []
-    for qst in assessments:
-        dct = dict(qst)
-        for key, value in dct.iteritems():
-            if isinstance(value, str):
-                dct[key] = value.decode("utf8")
-        result.append(dct)
-    return result
-    """
     result = (
-        request.dbsession.query(Enumerator)
-        .filter(PrjEnumerator.user_name == Enumerator.user_name)
+        request.dbsession.query(Enumerator, User.user_fullname)
+        .filter(PrjEnumerator.enum_user == Enumerator.user_name)
         .filter(PrjEnumerator.enum_id == Enumerator.enum_id)
-        .filter(PrjEnumerator.user_name == user)
-        .filter(PrjEnumerator.project_cod == project)
+        .filter(PrjEnumerator.project_id == projectId)
+        .filter(PrjEnumerator.enum_user == User.user_name)
         .all()
     )
     res = mapFromSchema(result)
-    result = []
+    newFormat = {}
     for enum in res:
         enum["enum_password"] = decodeData(request, enum["enum_password"]).decode(
             "utf-8"
         )
-        result.append(enum)
-    return result
+
+        if enum["user_name"] not in newFormat.keys():
+            newFormat[enum["user_name"]] = []
+            newFormat[enum["user_name"]].append(enum)
+        else:
+            newFormat[enum["user_name"]].append(enum)
+
+    return newFormat
 
 
-def seeProgress(user, project, request):
+def seeProgress(userOwner, projectId, projectCod, request):
     all = {}
     try:
         sql = (
             "SELECT _submitted_by as user_name, count(*) as count FROM "
-            + user
+            + userOwner
             + "_"
-            + project
+            + projectCod
             + ".REG_geninfo group by _submitted_by"
         )
 
-        # counts = request.dbsession.execute(sql).fetchall()
         counts = sql_fetch_all(sql)
         result = []
 
         for qst in counts:
-            _user = getEnumeratorData(user, qst[0], request)
+            _user = getEnumeratorByProject(projectId, qst[0], request)
             if _user:
                 result.append({"User": _user["enum_name"], "Count": qst[1]})
             else:
@@ -88,14 +76,14 @@ def seeProgress(user, project, request):
 
     try:
         ass = []
-        assessments = getAssessmenstByProject(user, project, request)
+        assessments = getAssessmenstByProject(projectId, request)
         for assessment in assessments:
 
             sql = (
                 "SELECT _submitted_by as user_name, count(*) as count FROM "
-                + user
+                + userOwner
                 + "_"
-                + project
+                + projectCod
                 + ".ASS"
                 + assessment["ass_cod"]
                 + "_geninfo group by _submitted_by"
@@ -105,7 +93,7 @@ def seeProgress(user, project, request):
             counts = sql_fetch_all(sql)
             result = []
             for qst in counts:
-                _user = getEnumeratorData(user, qst[0], request)
+                _user = getEnumeratorByProject(projectId, qst[0], request)
                 if _user:
                     result.append({"User": _user["enum_name"], "Count": qst[1]})
                 else:
@@ -127,11 +115,10 @@ def seeProgress(user, project, request):
     return all
 
 
-def getAssessmenstByProject(user, project, request):
+def getAssessmenstByProject(projectId, request):
     res = (
         request.dbsession.query(Assessment)
-        .filter(Assessment.user_name == user)
-        .filter(Assessment.project_cod == project)
+        .filter(Assessment.project_id == projectId)
         .filter(or_(Assessment.ass_status == 1, Assessment.ass_status == 2))
         .order_by(Assessment.ass_days.asc())
         .all()
@@ -140,9 +127,22 @@ def getAssessmenstByProject(user, project, request):
     return res
 
 
-def addEnumeratorToProject(user, project, enumerator, request):
+def thereIsAnEqualEnumIdInTheProject(enumId, projectId, request):
+    res = (
+        request.dbsession.query(PrjEnumerator)
+        .filter(PrjEnumerator.project_id == projectId)
+        .filter(PrjEnumerator.enum_id == enumId)
+        .first()
+    )
+    if res:
+        return True
+
+    return False
+
+
+def addEnumeratorToProject(projectId, enumeratorId, userOwner, request):
     newEnumerator = PrjEnumerator(
-        user_name=user, project_cod=project, enum_user=user, enum_id=enumerator
+        project_id=projectId, enum_user=userOwner, enum_id=enumeratorId
     )
     try:
         request.dbsession.add(newEnumerator)
@@ -151,35 +151,42 @@ def addEnumeratorToProject(user, project, enumerator, request):
         return False, e
 
 
-def removeEnumeratorFromProject(user, project, enumerator, request):
+def removeEnumeratorFromProject(projectId, enumerator, request):
     try:
         request.dbsession.query(PrjEnumerator).filter(
-            PrjEnumerator.user_name == user
-        ).filter(PrjEnumerator.project_cod == project).filter(
-            PrjEnumerator.enum_id == enumerator
-        ).delete()
+            PrjEnumerator.project_id == projectId
+        ).filter(PrjEnumerator.enum_id == enumerator).delete()
         return True, ""
     except Exception as e:
         print(str(e))
         return False, e
 
 
-def getUsableEnumerators(user, project, request):
-    sql = (
-        "SELECT enum_id,enum_name FROM enumerator "
-        "WHERE enum_active = 1 AND user_name = '" + user + "' "
-        "AND enum_id NOT IN ("
-        "SELECT distinct enum_id FROM prjenumerator "
-        "WHERE user_name = '" + user + "' "
-        "AND project_cod = '" + project + "')"
+def getUsableEnumerators(projectId, request):
+
+    # get the user that are collaborators in the project
+    projectCollaborators = request.dbsession.query(userProject.user_name).filter(
+        userProject.project_id == projectId
     )
 
-    items = request.dbsession.execute(sql).fetchall()
-    result = []
-    for item in items:
-        dct = dict(item)
-        # for key, value in dct.items():
-        #    if isinstance(value, str):
-        #        dct[key] = value.decode("utf8")
-        result.append(dct)
-    return result
+    exclude = (
+        request.dbsession.query(PrjEnumerator.enum_id, PrjEnumerator.enum_user)
+        .distinct()
+        .filter(PrjEnumerator.project_id == projectId)
+    )
+
+    result = (
+        request.dbsession.query(
+            Enumerator.user_name,
+            Enumerator.enum_id,
+            Enumerator.enum_name,
+            User.user_fullname,
+        )
+        .filter(Enumerator.enum_active == 1)
+        .filter(Enumerator.user_name.in_(projectCollaborators))
+        .filter(User.user_name == Enumerator.user_name)
+        .filter(tuple_(Enumerator.enum_id, Enumerator.user_name).notin_(exclude))
+        .all()
+    )
+
+    return mapFromSchema(result)

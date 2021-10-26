@@ -6,6 +6,8 @@ from ...models import (
     Project,
     I18nTechnology,
     I18nTechalia,
+    userProject,
+    User,
 )
 from ...models.schema import mapToSchema, mapFromSchema
 from sqlalchemy import func, or_, and_
@@ -15,7 +17,6 @@ __all__ = [
     "searchTechnologiesInProject",
     "addTechnologyProject",
     "deleteTechnologyProject",
-    "numberOfTechnologies",
     "AliasSearchTechnology",
     "AliasSearchTechnologyInProject",
     "AliasExtraSearchTechnologyInProject",
@@ -27,17 +28,18 @@ __all__ = [
     "numberOfCombinationsForTheProject",
     "numberOfAliasesInTechnology",
     "changeTheStateOfCreateComb",
-    "getAliasExtra",
 ]
 
 
-def searchTechnologies(user, projectid, request):
+def searchTechnologies(projectId, request):
     res = []
 
-    subquery = (
-        request.dbsession.query(Prjtech.tech_id)
-        .filter(Prjtech.project_cod == projectid)
-        .filter(Prjtech.user_name == user)
+    userCollaborators = request.dbsession.query(userProject.user_name).filter(
+        userProject.project_id == projectId
+    )
+
+    subquery = request.dbsession.query(Prjtech.tech_id).filter(
+        Prjtech.project_id == projectId
     )
     result = (
         request.dbsession.query(
@@ -48,6 +50,7 @@ def searchTechnologies(user, projectid, request):
             func.coalesce(I18nTechnology.tech_name, Technology.tech_name).label(
                 "tech_name"
             ),
+            User.user_fullname,
         )
         .join(
             I18nTechnology,
@@ -57,8 +60,14 @@ def searchTechnologies(user, projectid, request):
             ),
             isouter=True,
         )
-        .filter(or_(Technology.user_name == user, Technology.user_name == "bioversity"))
+        .filter(
+            or_(
+                Technology.user_name.in_(userCollaborators),
+                Technology.user_name == "Bioversity",
+            )
+        )
         .filter(Technology.tech_id.notin_(subquery))
+        .filter(Technology.user_name == User.user_name)
         .order_by(Technology.tech_name)
         .all()
     )
@@ -66,33 +75,34 @@ def searchTechnologies(user, projectid, request):
         res.append(
             {
                 "tech_id": technology[0].tech_id,
-                # "tech_name": technology[0].tech_name,
                 "tech_name": technology[2],
                 "user_name": technology[0].user_name,
                 "quantity": 0,
                 "quantityAlias": technology.quantityAlias,
+                "user_fullname": technology[3],
             }
         )
 
     return res
 
 
-def searchTechnologiesInProject(user, project_id, request):
+def searchTechnologiesInProject(projectId, request):
 
     result = (
         request.dbsession.query(
             func.coalesce(I18nTechnology.tech_name, Technology.tech_name).label(
                 "tech_name"
             ),
+            Technology.user_name,
             Prjtech,
             request.dbsession.query(func.count(Prjalia.alias_id))
             .filter(Prjalia.tech_id == Prjtech.tech_id)
-            .filter(Prjalia.project_cod == project_id)
-            .filter(Prjalia.user_name == user)
+            .filter(Prjalia.project_id == projectId)
             .label("quantity"),
             request.dbsession.query(func.count(Techalia.tech_id))
             .filter(Techalia.tech_id == Prjtech.tech_id)
             .label("quantityAlias"),
+            User.user_fullname,
         )
         .join(
             I18nTechnology,
@@ -103,8 +113,8 @@ def searchTechnologiesInProject(user, project_id, request):
             isouter=True,
         )
         .filter(Prjtech.tech_id == Technology.tech_id)
-        .filter(Prjtech.user_name == user)
-        .filter(Prjtech.project_cod == project_id)
+        .filter(Prjtech.project_id == projectId)
+        .filter(Technology.user_name == User.user_name)
         .order_by(Technology.tech_name)
         .all()
     )
@@ -114,34 +124,33 @@ def searchTechnologiesInProject(user, project_id, request):
         res.append(
             {
                 "tech_name": technology.tech_name,
-                "user_name": technology[1].user_name,
-                "project_cod": technology[1].project_cod,
-                "tech_id": technology[1].tech_id,
+                "user_name": technology.user_name,
+                "project_id": technology[2].project_id,
+                "tech_id": technology[2].tech_id,
                 "quantity": technology.quantity,
                 "quantityAlias": technology.quantityAlias,
+                "user_fullname": technology[5],
             }
         )
 
     return res
 
 
-def changeTheStateOfCreateComb(user, projectid, request):
-    request.dbsession.query(Project).filter(Project.user_name == user).filter(
-        Project.project_cod == projectid
-    ).update({"project_createcomb": 1})
-
-
-def addTechnologyProject(user, projectid, tech_id, request):
-
-    newTechnologyProject = Prjtech(
-        user_name=user, project_cod=projectid, tech_id=tech_id
+def changeTheStateOfCreateComb(projectId, request):
+    request.dbsession.query(Project).filter(Project.project_id == projectId).update(
+        {"project_createcomb": 1}
     )
+
+
+def addTechnologyProject(projectId, techId, request):
+
+    newTechnologyProject = Prjtech(project_id=projectId, tech_id=techId)
     try:
         request.dbsession.add(newTechnologyProject)
 
-        request.dbsession.query(Project).filter(Project.user_name == user).filter(
-            Project.project_cod == projectid
-        ).update({"project_createcomb": 1})
+        request.dbsession.query(Project).filter(Project.project_id == projectId).update(
+            {"project_createcomb": 1}
+        )
 
         return True, ""
 
@@ -150,44 +159,32 @@ def addTechnologyProject(user, projectid, tech_id, request):
         return False, e
 
 
-def deleteTechnologyProject(user, projectid, tech_id, request):
+def deleteTechnologyProject(projectId, techId, request):
     try:
-        request.dbsession.query(Prjtech).filter(Prjtech.user_name == user).filter(
-            Prjtech.tech_id == tech_id
-        ).filter(Prjtech.project_cod == projectid).delete()
+        request.dbsession.query(Prjtech).filter(Prjtech.tech_id == techId).filter(
+            Prjtech.project_id == projectId
+        ).delete()
 
-        request.dbsession.query(Project).filter(Project.user_name == user).filter(
-            Project.project_cod == projectid
-        ).update({"project_createcomb": 1})
+        request.dbsession.query(Project).filter(Project.project_id == projectId).update(
+            {"project_createcomb": 1}
+        )
 
         return True, ""
 
     except Exception as e:
         print(str(e))
         return False, e
-
-
-def numberOfTechnologies(user, projectid, request):
-    result = (
-        request.dbsession.query(func.count(Prjtech.project_cod).label("number"))
-        .filter(Prjtech.user_name == user)
-        .filter(Prjtech.project_cod == projectid)
-        .one()
-    )
-
-    return result.number
 
 
 # -----------------------------------------Alises-------------------------------------------------------
 
 
-def AliasSearchTechnology(technology, user, projectid, request):
+def AliasSearchTechnology(technologyId, projectId, request):
     res = []
     subquery = (
         request.dbsession.query(Prjalia.alias_used)
-        .filter(Prjalia.user_name == user)
-        .filter(Prjalia.project_cod == projectid)
-        .filter(Prjalia.tech_id == technology)
+        .filter(Prjalia.project_id == projectId)
+        .filter(Prjalia.tech_id == technologyId)
         .filter(Prjalia.alias_name == "")
     )
     result = (
@@ -208,7 +205,7 @@ def AliasSearchTechnology(technology, user, projectid, request):
             isouter=True,
         )
         .filter(Techalia.tech_id == Technology.tech_id)
-        .filter(Technology.tech_id == technology)
+        .filter(Technology.tech_id == technologyId)
         .filter(Techalia.alias_id.notin_(subquery))
         .all()
     )
@@ -227,7 +224,7 @@ def AliasSearchTechnology(technology, user, projectid, request):
     return res
 
 
-def AliasSearchTechnologyInProject(technology, user, projectid, request):
+def AliasSearchTechnologyInProject(technologyId, projectId, request):
     res = []
     result = (
         request.dbsession.query(
@@ -246,17 +243,15 @@ def AliasSearchTechnologyInProject(technology, user, projectid, request):
             ),
             isouter=True,
         )
-        .filter(Prjalia.user_name == user)
-        .filter(Prjalia.project_cod == projectid)
-        .filter(Prjalia.tech_id == technology)
+        .filter(Prjalia.project_id == projectId)
+        .filter(Prjalia.tech_id == technologyId)
         .filter(Prjalia.alias_used == Techalia.alias_id)
         .filter(Prjalia.tech_used == Techalia.tech_id)
     )
     for technology in result:
         res.append(
             {
-                "user_name": technology[0].user_name,
-                "project_cod": technology[0].project_cod,
+                "project_id": technology[0].project_id,
                 "tech_idPrj": technology[0].tech_id,
                 "alias_id": technology[0].alias_id,
                 "alias_namePrj": technology[0].alias_name,
@@ -271,21 +266,19 @@ def AliasSearchTechnologyInProject(technology, user, projectid, request):
     return res
 
 
-def AliasExtraSearchTechnologyInProject(technology, user, projectid, request):
+def AliasExtraSearchTechnologyInProject(technologyId, projectId, request):
     res = []
     result = (
         request.dbsession.query(Prjalia)
-        .filter(Prjalia.user_name == user)
-        .filter(Prjalia.project_cod == projectid)
-        .filter(Prjalia.tech_id == technology)
+        .filter(Prjalia.project_id == projectId)
+        .filter(Prjalia.tech_id == technologyId)
         .filter(Prjalia.alias_name != "")
     )
 
     for alias in result:
         res.append(
             {
-                "user_name": alias.user_name,
-                "project_cod": alias.project_cod,
+                "project_id": alias.project_id,
                 "tech_id": alias.tech_id,
                 "alias_id": alias.alias_id,
                 "alias_name": alias.alias_name,
@@ -302,8 +295,7 @@ def AddAliasTechnology(data, request):
         func.ifnull(func.max(Prjalia.alias_id), 0).label("id_max")
     ).one()
     newAliasTechnology = Prjalia(
-        user_name=data["user_name"],
-        project_cod=data["project_cod"],
+        project_id=data["project_id"],
         tech_id=data["tech_id"],
         tech_used=data["tech_id"],
         alias_used=data["alias_id"],
@@ -314,19 +306,16 @@ def AddAliasTechnology(data, request):
     try:
         request.dbsession.add(newAliasTechnology)
         request.dbsession.flush()
-        request.dbsession.query(Project).filter(
-            Project.user_name == data["user_name"]
-        ).filter(Project.project_cod == data["project_cod"]).update(
-            {"project_createcomb": 1}
-        )
+        request.dbsession.query(Project).filter().filter(
+            Project.project_id == data["project_id"]
+        ).update({"project_createcomb": 1})
 
         return (
             True,
             mapFromSchema(
                 request.dbsession.query(Prjalia)
-                .filter(Prjalia.user_name == data["user_name"])
                 .filter(Prjalia.tech_id == data["tech_id"])
-                .filter(Prjalia.project_cod == data["project_cod"])
+                .filter(Prjalia.project_id == data["project_id"])
                 .filter(Prjalia.alias_id == newAliasTechnology.alias_id)
                 .one()
             ),
@@ -351,18 +340,15 @@ def addTechAliasExtra(data, request):
         request.dbsession.add(newAliasTechnology)
         request.dbsession.flush()
         request.dbsession.query(Project).filter(
-            Project.user_name == data["user_name"]
-        ).filter(Project.project_cod == data["project_cod"]).update(
-            {"project_createcomb": 1}
-        )
+            Project.project_id == data["project_id"]
+        ).update({"project_createcomb": 1})
 
         return (
             True,
             mapFromSchema(
                 request.dbsession.query(Prjalia)
-                .filter(Prjalia.user_name == data["user_name"])
                 .filter(Prjalia.tech_id == data["tech_id"])
-                .filter(Prjalia.project_cod == data["project_cod"])
+                .filter(Prjalia.project_id == data["project_id"])
                 .filter(Prjalia.alias_id == newAliasTechnology.alias_id)
                 .one()
             ),
@@ -376,9 +362,8 @@ def addTechAliasExtra(data, request):
 def findAssignedAlias(data, request):
     result = (
         request.dbsession.query(Prjalia)
-        .filter(Prjalia.user_name == data["user_name"])
         .filter(Prjalia.tech_id == data["tech_id"])
-        .filter(Prjalia.project_cod == data["project_cod"])
+        .filter(Prjalia.project_id == data["project_id"])
         .filter(Prjalia.alias_id == data["alias_id"])
         .all()
     )
@@ -388,16 +373,14 @@ def findAssignedAlias(data, request):
         return False
 
 
-def deleteAliasTechnology(user, projectid, techid, aliasid, request):
+def deleteAliasTechnology(projectId, techId, aliasId, request):
     try:
-        request.dbsession.query(Prjalia).filter(Prjalia.user_name == user).filter(
-            Prjalia.tech_id == techid
-        ).filter(Prjalia.project_cod == projectid).filter(
-            Prjalia.alias_id == aliasid
-        ).delete()
-        request.dbsession.query(Project).filter(Project.user_name == user).filter(
-            Project.project_cod == projectid
-        ).update({"project_createcomb": 1})
+        request.dbsession.query(Prjalia).filter(Prjalia.tech_id == techId).filter(
+            Prjalia.project_id == projectId
+        ).filter(Prjalia.alias_id == aliasId).delete()
+        request.dbsession.query(Project).filter(Project.project_id == projectId).update(
+            {"project_createcomb": 1}
+        )
 
         return True, ""
 
@@ -418,8 +401,7 @@ def findTechAlias(data, request):
     if not result:
         result = (
             request.dbsession.query(Prjalia)
-            .filter(Prjalia.user_name == data["user_name"])
-            .filter(Prjalia.project_cod == data["project_cod"])
+            .filter(Prjalia.project_id == data["project_id"])
             .filter(Prjalia.tech_id == data["tech_id"])
             .filter(Prjalia.alias_name == data["alias_name"])
             .all()
@@ -432,11 +414,10 @@ def findTechAlias(data, request):
         return result
 
 
-def numberOfCombinationsForTheProject(user, projectid, request):
+def numberOfCombinationsForTheProject(projectId, request):
     number = (
         request.dbsession.query(Project.project_numcom.label("numcom"))
-        .filter(Project.user_name == user)
-        .filter(Project.project_cod == projectid)
+        .filter(Project.project_id == projectId)
         .one()
     )
 
@@ -446,12 +427,11 @@ def numberOfCombinationsForTheProject(user, projectid, request):
         return number.numcom
 
 
-def numberOfAliasesInTechnology(user, projectid, technologyid, request):
+def numberOfAliasesInTechnology(projectId, technologyId, request):
     number = (
-        request.dbsession.query(func.count(Prjalia.user_name).label("count"))
-        .filter(Prjalia.user_name == user)
-        .filter(Prjalia.project_cod == projectid)
-        .filter(Prjalia.tech_id == technologyid)
+        request.dbsession.query(func.count(Prjalia.project_id).label("count"))
+        .filter(Prjalia.project_id == projectId)
+        .filter(Prjalia.tech_id == technologyId)
         .one()
     )
 
@@ -459,15 +439,3 @@ def numberOfAliasesInTechnology(user, projectid, technologyid, request):
         return False
     else:
         return number.count
-
-
-def getAliasExtra(technology, user, projectid, aliasid, request):
-    alias = (
-        request.dbsession.query(Prjalia)
-        .filter(Prjalia.user_name == user)
-        .filter(Prjalia.project_cod == projectid)
-        .filter(Prjalia.tech_id == technology)
-        .filter(Prjalia.alias_id == aliasid)
-        .one()
-    )
-    return alias

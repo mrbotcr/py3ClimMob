@@ -1,4 +1,4 @@
-from .classes import odkView, publicView
+from .classes import odkView
 from ..processes import (
     isEnumeratorActive,
     getEnumeratorPassword,
@@ -11,9 +11,9 @@ from ..processes import (
     getAssessmentXMLForm,
     getAssessmentManifest,
     getAssessmentMediaFile,
+    getTheProjectIdForOwner,
 )
 from pyramid.response import Response
-import climmob.plugins as p
 
 
 class formList_view(odkView):
@@ -100,11 +100,14 @@ class submission_view(odkView):
 
 class XMLForm_view(odkView):
     def processView(self):
-        projectid = self.request.matchdict["projectid"]
-        userid = self.request.matchdict["userid"]
-        if isEnumeratorinProject(userid, projectid, self.user, self.request):
-            if self.authorize(getEnumeratorPassword(userid, self.user, self.request)):
-                return getXMLForm(userid, projectid, self.request)
+        user = self.request.matchdict["user"]
+        projectUserOwner = self.request.matchdict["userowner"]
+        projectCod = self.request.matchdict["project"]
+        projectId = getTheProjectIdForOwner(projectUserOwner, projectCod, self.request)
+
+        if isEnumeratorinProject(projectId, self.user, self.request):
+            if self.authorize(getEnumeratorPassword(user, self.user, self.request)):
+                return getXMLForm(projectUserOwner, projectId, projectCod, self.request)
             else:
                 return self.askForCredentials()
         else:
@@ -113,13 +116,16 @@ class XMLForm_view(odkView):
 
 class assessmentXMLForm_view(odkView):
     def processView(self):
-        projectid = self.request.matchdict["projectid"]
-        userid = self.request.matchdict["userid"]
+        user = self.request.matchdict["user"]
+        projectUserOwner = self.request.matchdict["userowner"]
+        projectCod = self.request.matchdict["project"]
+        projectId = getTheProjectIdForOwner(projectUserOwner, projectCod, self.request)
         assessmentid = self.request.matchdict["assessmentid"]
-        if isEnumeratorinProject(userid, projectid, self.user, self.request):
-            if self.authorize(getEnumeratorPassword(userid, self.user, self.request)):
+
+        if isEnumeratorinProject(projectId, self.user, self.request):
+            if self.authorize(getEnumeratorPassword(user, self.user, self.request)):
                 return getAssessmentXMLForm(
-                    userid, projectid, assessmentid, self.request
+                    projectUserOwner, projectId, projectCod, assessmentid, self.request
                 )
             else:
                 return self.askForCredentials()
@@ -129,12 +135,17 @@ class assessmentXMLForm_view(odkView):
 
 class manifest_view(odkView):
     def processView(self):
-        projectid = self.request.matchdict["projectid"]
-        userid = self.request.matchdict["userid"]
-        if isEnumeratorinProject(userid, projectid, self.user, self.request):
-            if self.authorize(getEnumeratorPassword(userid, self.user, self.request)):
+        user = self.request.matchdict["user"]
+        projectUserOwner = self.request.matchdict["userowner"]
+        projectCod = self.request.matchdict["project"]
+        projectId = getTheProjectIdForOwner(projectUserOwner, projectCod, self.request)
+
+        if isEnumeratorinProject(projectId, self.user, self.request):
+            if self.authorize(getEnumeratorPassword(user, self.user, self.request)):
                 return self.createXMLResponse(
-                    getManifest(userid, projectid, self.request)
+                    getManifest(
+                        user, projectUserOwner, projectId, projectCod, self.request
+                    )
                 )
             else:
                 return self.askForCredentials()
@@ -144,13 +155,23 @@ class manifest_view(odkView):
 
 class assessmentManifest_view(odkView):
     def processView(self):
-        projectid = self.request.matchdict["projectid"]
-        userid = self.request.matchdict["userid"]
+        user = self.request.matchdict["user"]
+        projectUserOwner = self.request.matchdict["userowner"]
+        projectCod = self.request.matchdict["project"]
+        projectId = getTheProjectIdForOwner(projectUserOwner, projectCod, self.request)
         assessmentid = self.request.matchdict["assessmentid"]
-        if isEnumeratorinProject(userid, projectid, self.user, self.request):
-            if self.authorize(getEnumeratorPassword(userid, self.user, self.request)):
+
+        if isEnumeratorinProject(projectId, self.user, self.request):
+            if self.authorize(getEnumeratorPassword(user, self.user, self.request)):
                 return self.createXMLResponse(
-                    getAssessmentManifest(userid, projectid, assessmentid, self.request)
+                    getAssessmentManifest(
+                        user,
+                        projectUserOwner,
+                        projectId,
+                        projectCod,
+                        assessmentid,
+                        self.request,
+                    )
                 )
             else:
                 return self.askForCredentials()
@@ -160,12 +181,17 @@ class assessmentManifest_view(odkView):
 
 class mediaFile_view(odkView):
     def processView(self):
-        projectid = self.request.matchdict["projectid"]
-        userid = self.request.matchdict["userid"]
+        user = self.request.matchdict["user"]
+        projectUserOwner = self.request.matchdict["userowner"]
+        projectCod = self.request.matchdict["project"]
+        projectId = getTheProjectIdForOwner(projectUserOwner, projectCod, self.request)
         fileid = self.request.matchdict["fileid"]
-        if isEnumeratorActive(userid, self.user, self.request):
-            if self.authorize(getEnumeratorPassword(userid, self.user, self.request)):
-                return getMediaFile(userid, projectid, fileid, self.request)
+
+        if isEnumeratorinProject(projectId, self.user, self.request):
+            if self.authorize(getEnumeratorPassword(user, self.user, self.request)):
+                return getMediaFile(
+                    projectUserOwner, projectId, projectCod, fileid, self.request
+                )
             else:
                 return self.askForCredentials()
         else:
@@ -174,14 +200,22 @@ class mediaFile_view(odkView):
 
 class assessmentMediaFile_view(odkView):
     def processView(self):
-        projectid = self.request.matchdict["projectid"]
-        userid = self.request.matchdict["userid"]
+        user = self.request.matchdict["user"]
+        projectUserOwner = self.request.matchdict["userowner"]
+        projectCod = self.request.matchdict["project"]
+        projectId = getTheProjectIdForOwner(projectUserOwner, projectCod, self.request)
         fileid = self.request.matchdict["fileid"]
         assessmentid = self.request.matchdict["assessmentid"]
-        if isEnumeratorActive(userid, self.user, self.request):
-            if self.authorize(getEnumeratorPassword(userid, self.user, self.request)):
+
+        if isEnumeratorActive(projectId, self.user, self.request):
+            if self.authorize(getEnumeratorPassword(user, self.user, self.request)):
                 return getAssessmentMediaFile(
-                    userid, projectid, assessmentid, fileid, self.request
+                    projectUserOwner,
+                    projectId,
+                    projectCod,
+                    assessmentid,
+                    fileid,
+                    self.request,
                 )
             else:
                 return self.askForCredentials()

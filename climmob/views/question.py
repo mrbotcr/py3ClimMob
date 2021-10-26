@@ -6,10 +6,8 @@ from ..processes import (
     addOptionToQuestion,
     updateQuestion,
     deleteQuestion,
-    UserQuestion,
     UserQuestionMoreBioversity,
     deleteAllOptionsForQuestion,
-    QuestionsOptions,
     getQuestionData,
     getQuestionOptions,
     deleteOption,
@@ -23,6 +21,7 @@ from ..processes import (
     updateCategory,
     deleteCategory,
     getCategoriesParents,
+    getActiveProject,
 )
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 import re
@@ -144,7 +143,6 @@ class deleteQuestionValue_view(privateView):
             if deleted:
                 self.returnRawViewResult = True
                 return {"status": 200}
-                # return HTTPFound(location=self.request.route_url('questionvalues', qid=qid))
             else:
                 error_summary = {"dberror": msg}
                 self.returnRawViewResult = True
@@ -446,7 +444,9 @@ def actionsInquestion(self, formdata):
 
     formdata["question_dtype"] = int(formdata["question_dtype"])
     formdata["user_name"] = self.user.login
-    formdata["question_code"] = re.sub("[^A-Za-z0-9\-]+", "", formdata["question_code"])
+    formdata["question_code"] = re.sub(
+        "[^A-Za-z0-9_\-]+", "", formdata["question_code"]
+    )
 
     try:
         category = formdata["question_group"].split("[*$%&]")
@@ -474,8 +474,11 @@ def actionsInquestion(self, formdata):
         and formdata["question_desc"] != ""
         and formdata["question_dtype"] != ""
     ):
-        if not questionExists(self.user.login, formdata["question_code"], self.request):
-            if formdata["action"] == "insert":
+        if formdata["action"] == "insert":
+            formdata["question_code"] = "qst_" + formdata["question_code"]
+            if not questionExists(
+                self.user.login, formdata["question_code"], self.request
+            ):
                 add, idorerror = addQuestion(formdata, self.request)
                 if not add:
                     return {"result": "error", "error": idorerror}
@@ -499,8 +502,16 @@ def actionsInquestion(self, formdata):
                         "result": "success",
                         "success": self._("The question was successfully added"),
                     }
-        else:
-            if formdata["action"] == "update":
+            else:
+                return {
+                    "result": "error",
+                    "error": self._(
+                        "There is another question with the same variable code."
+                    ),
+                }
+
+        if formdata["action"] == "update":
+            if questionExists(self.user.login, formdata["question_code"], self.request):
                 updated, idorerror = updateQuestion(formdata, self.request)
                 if not updated:
                     return {"result": "error", "error": idorerror}
@@ -559,11 +570,11 @@ class qlibrary_view(privateView):
         regularDict = {
             "UserQuestion": UserQuestionMoreBioversity(user_name, self.request),
             "showing": user_name,
-            # "QuestionsOptions": QuestionsOptions(self.user.login, self.request),
-            # "ClimMobQuestionsOptions": QuestionsOptions("bioversity", self.request),
-            "Categories": getCategoriesParents(self.user.login, self.request),
-            # "editable": True,
+            "Categories": getCategoriesParents(
+                self.user.login, self.user.login, self.request
+            ),
             "allCategories": getCategories(user_name, self.request),
+            "activeProject": getActiveProject(self.user.login, self.request),
         }
 
         return regularDict

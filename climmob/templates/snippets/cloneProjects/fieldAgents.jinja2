@@ -6,19 +6,21 @@
         <div class="ibox-content" >
             {% if project_fieldagents %}
                 <table  class="table table-striped table-bordered">
-                    {% for fieldagent in project_fieldagents %}
-                        <tr>
-                            <td>
-                                {{ fieldagent.enum_name }}
-                            </td>
-                            <td>
-                                {% if fieldagent.enum_active == 1 %}
-                                    <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="#"><i class="fa fa-thumbs-o-up"></i> {{ _('Can submit data') }}</a>
-                                {% else %}
-                                    <a class="btn btn-danger btn-rounded btn-block btn-xs pull-left" href="#"><i class="fa fa-thumbs-o-down"></i> {{ _('Cannot submit data') }}</a>
-                                {% endif %}
-                            </td>
-                        </tr>
+                    {% for participant in project_fieldagents %}
+                        {% for fieldagent in project_fieldagents[participant] %}
+                            <tr>
+                                <td>
+                                    {{ fieldagent.enum_name }}
+                                </td>
+                                <td>
+                                    {% if fieldagent.enum_active == 1 %}
+                                        <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="#"><i class="fa fa-thumbs-o-up"></i> {{ _('Can submit data') }}</a>
+                                    {% else %}
+                                        <a class="btn btn-danger btn-rounded btn-block btn-xs pull-left" href="#"><i class="fa fa-thumbs-o-down"></i> {{ _('Cannot submit data') }}</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
                     {% endfor %}
                 </table>
             {% else %}

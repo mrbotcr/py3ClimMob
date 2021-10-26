@@ -55,10 +55,6 @@ class sendFeedbackToBot_view(apiView):
                         ),
                     )
                     return response
-                    # else:
-                    #    print(out)
-                    #    response = Response(status=401, body=self._("Feedback could not be sent."))
-                    #    return response
                 except:
                     response = Response(
                         status=401, body=self._("Feedback could not be sent.")

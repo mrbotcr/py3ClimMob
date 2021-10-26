@@ -19,7 +19,7 @@
 {% block topScripts %}
     {% jsresource request,'coreresources','qlibrary' %}
     {% jsresource request,'coreresources','sweet' %}
-    {#    {% jsresource request,'coreresources','delete' %}#}
+    {% jsresource request,'coreresources','bootstrapmaxlength' %}
     {% include 'snippets/delete.jinja2' %}
     {% jsresource request,'coreresources','switch' %}
     {% jsresource request,'coreresources','toastr' %}
@@ -55,6 +55,7 @@
                         {% set jstreeId="jstree1" %}
                         {% set eventClick=True %}
                         {% set classByUser=True %}
+                        {% set colorsUserCategories=True %}
                         {% include 'snippets/jstreeQuestions.jinja2' %}
                     </div>
                 </div>
@@ -177,6 +178,28 @@
 
         $(document).ready(function() {
 
+            $('input#question_code').maxlength(
+                {
+                    alwaysShow: true,
+                    threshold: 0,
+                    warningClass: "label label-primary",
+                    limitReachedClass: "label label-danger",
+                    message: ' {{ _("Used") }} %charsTyped% {{ _("of") }} %charsTotal% {{ _("chars") }}.',
+                    placement: "bottom"
+                }
+            )
+
+            $('input#question_name').maxlength(
+                {
+                    alwaysShow: true,
+                    threshold: 0,
+                    warningClass: "label label-primary",
+                    limitReachedClass: "label label-danger",
+                    message: ' {{ _("Used") }} %charsTyped% {{ _("of") }} %charsTotal% {{ _("chars") }}.',
+                    placement: "bottom"
+                }
+            )
+
             function isNumeric(value)
             {
                 return /^\d+$/.test(value);
@@ -191,7 +214,7 @@
                 }
                 else
                 {
-                    var value_without_space = value.replace(/[^a-z0-9]/gi,'')
+                    var value_without_space = value.replace(/[^a-z0-9_]/gi,'')
                     $(this).val(value_without_space);
                 }
             });

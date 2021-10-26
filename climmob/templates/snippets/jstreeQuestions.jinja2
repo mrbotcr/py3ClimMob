@@ -2,7 +2,7 @@
     <div id="{{ jstreeId }}">
         <ul>
             {% for category in Categories %}
-                <li class="jstree-open"  data-jstree='{"icon": "fa fa-folder  {% if activeUser.login == category.user_name %} jstree-usercategory {% endif %}"}'> <strong style="font-size: 16px; color: #000000;" {% if doActions %} {% if activeUser.login == category.user_name %}onclick="openCategories('{{ category.count }}','{{ category.qstgroups_id }}','{{ category.qstgroups_name.replace('"',"&quot;").replace("'","&#8242;") }}')" {% endif %}  {% endif %}>{{ category.qstgroups_name }}</strong>
+                <li class="jstree-open"  data-jstree='{"icon": "fa fa-folder  {% if colorsUserCategories %}{% if activeUser.login == category.user_name %} jstree-usercategory {% endif %}{% endif %}"}'> <strong style="font-size: 16px; color: #000000;" {% if doActions %} {% if activeUser.login == category.user_name %}onclick="openCategories('{{ category.count }}','{{ category.qstgroups_id }}','{{ category.qstgroups_name.replace('"',"&quot;").replace("'","&#8242;") }}')" {% endif %}  {% endif %}>{{ category.qstgroups_name }}</strong>
                     <ul>
                         {% for question in UserQuestion %}
                             {% if question.qstgroups_id == category.qstgroups_id %}

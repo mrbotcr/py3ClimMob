@@ -12,16 +12,14 @@ all = [
 ]
 
 
-def get_registry_logs(request, user_name, project_cod):
+def get_registry_logs(request, projectId):
 
     result = mapFromSchema(
         request.dbsession.query(RegistryJsonLog, Enumerator)
-        .filter(RegistryJsonLog.user_name == user_name)
-        .filter(RegistryJsonLog.project_cod == project_cod)
+        .filter(RegistryJsonLog.project_id == projectId)
         .filter(RegistryJsonLog.status == 1)
-        .filter(Enumerator.user_name == user_name)
         .filter(RegistryJsonLog.enum_id == Enumerator.enum_id)
-        .filter(RegistryJsonLog.enum_user == user_name)
+        .filter(RegistryJsonLog.enum_user == Enumerator.user_name)
         .order_by(RegistryJsonLog.log_dtime)
         .all()
     )
@@ -34,16 +32,14 @@ def get_registry_logs(request, user_name, project_cod):
     return result
 
 
-def get_registry_log_by_log(request, user_name, project_cod, log_id):
+def get_registry_log_by_log(request, projectId, log_id):
 
     result = (
         request.dbsession.query(RegistryJsonLog.json_file)
-        .filter(RegistryJsonLog.user_name == user_name)
-        .filter(RegistryJsonLog.project_cod == project_cod)
+        .filter(RegistryJsonLog.project_id == projectId)
         .filter(RegistryJsonLog.status == 1)
-        .filter(Enumerator.user_name == user_name)
+        .filter(RegistryJsonLog.enum_user == Enumerator.user_name)
         .filter(RegistryJsonLog.enum_id == Enumerator.enum_id)
-        .filter(RegistryJsonLog.enum_user == user_name)
         .filter(RegistryJsonLog.log_id == log_id)
         .first()
     )
@@ -52,17 +48,13 @@ def get_registry_log_by_log(request, user_name, project_cod, log_id):
         return True, result[0]
 
 
-def update_registry_status_log(request, user, project, logid, status):
+def update_registry_status_log(request, projectId, logid, status):
     data = {"status": status}
     mappedData = mapToSchema(RegistryJsonLog, data)
     try:
         request.dbsession.query(RegistryJsonLog).filter(
-            RegistryJsonLog.user_name == user
-        ).filter(RegistryJsonLog.project_cod == project).filter(
-            RegistryJsonLog.log_id == logid
-        ).update(
-            mappedData
-        )
+            RegistryJsonLog.project_id == projectId
+        ).filter(RegistryJsonLog.log_id == logid).update(mappedData)
         return True, ""
     except Exception as e:
         print(e)
@@ -81,11 +73,11 @@ def get_error_from_log(inputFileLog):
         return False
 
 
-def clean_registry_error_logs(request, projectid, user):
+def clean_registry_error_logs(request, projectId):
     try:
         request.dbsession.query(RegistryJsonLog).filter(
-            RegistryJsonLog.user_name == user
-        ).filter(RegistryJsonLog.project_cod == projectid).delete()
+            RegistryJsonLog.project_id == projectId
+        ).delete()
         return True, ""
     except Exception as e:
         return False, str(e)

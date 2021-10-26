@@ -39,7 +39,7 @@ def addQuestion(data, request):
     newQuestion = Question(**mappeData)
     try:
         request.dbsession.add(newQuestion)
-        request.dbsession.flush()  ##Flush the session so we can get the last id created
+        request.dbsession.flush()
         return True, newQuestion.question_id
     except Exception as e:
         return False, str(e)
@@ -214,11 +214,10 @@ def UserQuestionMoreBioversity(user, request):
     return result
 
 
-def QuestionsOptions(user, request):
-    res = []
+def QuestionsOptions(user, userOwner, request):
     subquery = (
         request.dbsession.query(Question.question_id)
-        .filter(Question.user_name == user)
+        .filter(or_(Question.user_name == user, Question.user_name == userOwner))
         .filter(Question.question_dtype.in_([5, 6]))
     )
     result = mapFromSchema(
@@ -227,26 +226,23 @@ def QuestionsOptions(user, request):
         .all()
     )
     return result
-    # for option in result:
-    #     res.append({"question_id":option.question_id,"value_code":option.value_code, "value_desc":option.value_desc.decode('utf8') })
-    # return res
 
 
-def getQuestionData(user, question, request):
+def getQuestionData(userOwner, questionId, request):
     questionData = mapFromSchema(
         request.dbsession.query(Question)
-        .filter(Question.user_name == user, Question.question_id == question)
+        .filter(Question.user_name == userOwner, Question.question_id == questionId)
         .first()
     )
     if questionData:
         registry = (
             request.dbsession.query(func.count(Registry.question_id).label("found"))
-            .filter(Registry.question_id == question)
+            .filter(Registry.question_id == questionId)
             .one()
         )
         assessment = (
             request.dbsession.query(func.count(AssDetail.question_id).label("found"))
-            .filter(AssDetail.question_id == question)
+            .filter(AssDetail.question_id == questionId)
             .one()
         )
         total = assessment.found + registry.found
@@ -260,7 +256,7 @@ def getQuestionData(user, question, request):
         questionData = mapFromSchema(
             request.dbsession.query(Question)
             .filter(
-                Question.user_name == "bioversity", Question.question_id == question
+                Question.user_name == "bioversity", Question.question_id == questionId
             )
             .first()
         )
@@ -301,15 +297,26 @@ def getQuestionOptions(question, request):
     )
 
 
-def getQuestionOptionsByQuestionCode(question_code, username, request):
-    return mapFromSchema(
-        request.dbsession.query(Qstoption)
-        .filter(Question.question_code == question_code)
-        .filter(Question.user_name == username)
-        .filter(Qstoption.question_id == Question.question_id)
-        .order_by(Qstoption.value_order)
-        .all()
+def getQuestionOptionsByQuestionCode(question_code, projectId, form, request):
+    print("_______________")
+    print(
+        "ESTE ESTA COMPLICADO PORQUE DIFERENTES USUARIOS PUEDEN TENER EL MISMO QUESTION_CODE"
     )
+    print("_______________")
+    print(question_code)
+    print(form)
+    print(projectId)
+    if form == "reg":
+
+        return mapFromSchema(
+            request.dbsession.query(Qstoption)
+            .filter(Question.question_code == question_code)
+            .filter(Qstoption.question_id == Question.question_id)
+            .filter(Question.question_id == Registry.question_id)
+            .filter(Registry.project_id == projectId)
+            .order_by(Qstoption.value_order)
+            .all()
+        )
 
 
 def optionExists(question, option, request):

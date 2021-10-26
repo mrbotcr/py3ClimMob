@@ -13,10 +13,9 @@ from ..processes import (
     getMD5Project,
     AssessmentsInformation,
     seeProgress,
-    counterChat,
+    getTheProjectIdForOwner,
 )
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
-from .assessment import startAssessments_view
 
 
 class dashboard_view(privateView):
@@ -24,26 +23,40 @@ class dashboard_view(privateView):
 
         if "project" in self.request.params.keys():
 
-            activeProject = self.request.params["project"]
-            if not projectExists(self.user.login, activeProject, self.request):
+            activeProjectUser = self.request.params["user"]
+            activeProjectCod = self.request.params["project"]
+
+            if not projectExists(
+                self.user.login, activeProjectUser, activeProjectCod, self.request
+            ):
                 raise HTTPNotFound()
             else:
 
-                session = self.request.session
-                session["activeProject"] = activeProject
-                setActiveProject(self.user.login, activeProject, self.request)
+                activeProjectId = getTheProjectIdForOwner(
+                    activeProjectUser, activeProjectCod, self.request
+                )
+
+                setActiveProject(self.user.login, activeProjectId, self.request)
+
                 activeProjectData = getActiveProject(self.user.login, self.request)
 
+                session = self.request.session
+                session["activeProject"] = activeProjectId
+
                 progress, pcompleted = getProjectProgress(
-                    self.user.login, activeProject, self.request
+                    activeProjectUser, activeProjectCod, activeProjectId, self.request
                 )
                 hasActiveProject = True
                 showAnalysis = False
                 progress["usableAssessments"] = get_usable_assessments(
-                    self.request, self.user.login, activeProject
+                    self.request, activeProjectId
                 )
                 progress["analysisControl"] = getAnalysisControl(
-                    self.request, self.user.login, activeProject
+                    self.request,
+                    self.user.login,
+                    activeProjectUser,
+                    activeProjectId,
+                    activeProjectCod,
                 )
                 total_ass_records = 0
                 all_ass_closed = True
@@ -67,23 +80,30 @@ class dashboard_view(privateView):
                     "total_ass_records": total_ass_records,
                     "allassclosed": all_ass_closed,
                     "encrypted": getMD5Project(
-                        self.user.login, activeProjectData["project_cod"], self.request
+                        activeProjectData["owner"]["user_name"],
+                        activeProjectData["project_id"],
+                        activeProjectData["project_cod"],
+                        self.request,
                     ),
                     "fieldagents": seeProgress(
-                        self.user.login, activeProjectData["project_cod"], self.request
-                    ),
-                    "usable_assessments": get_usable_assessments(
-                        self.request, self.user.login, activeProjectData["project_cod"]
+                        activeProjectUser,
+                        activeProjectId,
+                        activeProjectCod,
+                        self.request,
                     ),
                 }
         else:
             activeProjectData = getActiveProject(self.user.login, self.request)
+
             if activeProjectData:
                 self.returnRawViewResult = True
                 return HTTPFound(
                     location=self.request.route_url(
                         "dashboard",
-                        _query={"project": activeProjectData["project_cod"]},
+                        _query={
+                            "user": activeProjectData["owner"]["user_name"],
+                            "project": activeProjectData["project_cod"],
+                        },
                     )
                 )
             else:

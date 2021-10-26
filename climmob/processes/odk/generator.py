@@ -564,8 +564,9 @@ class ODKExcelFile(object):
 
 
 def generateODKFile(
-    user,
-    project,
+    userOwner,
+    projectId,
+    projectCod,
     xlsxFile,
     formID,
     formLabel,
@@ -596,14 +597,14 @@ def generateODKFile(
             "clc_before",
             "",
             28,
-            calculation="substring-before(${QST162},'-" + project + "~')",
+            calculation="substring-before(${QST162},'-" + projectCod + "~')",
             inGroup="grp_validation",
         )
         excelFile.addQuestion(
             "clc_after",
             "",
             28,
-            calculation="substring-after(${clc_before},'" + user + "-')",
+            calculation="substring-after(${clc_before},'" + userOwner + "-')",
             inGroup="grp_validation",
         )
         excelFile.addQuestion(
@@ -660,7 +661,7 @@ def generateODKFile(
                     )
                 else:
                     # print "EL PACKAGE CODE"
-                    lenuser = len(user) + 1
+                    lenuser = len(userOwner) + 1
                     excelFile.addQuestion(
                         question.question_code,
                         question.question_desc,
@@ -672,9 +673,9 @@ def generateODKFile(
                         "substr(${QST162}, 0, "
                         + str(lenuser)
                         + ") = '"
-                        + user
+                        + userOwner
                         + "-' and contains(.,'-"
-                        + project
+                        + projectCod
                         + "~')",
                     )
             else:
@@ -696,7 +697,9 @@ def generateODKFile(
                         question.question_requiredvalue,
                         "grp_" + str(question.section_id),
                     )
-                    farmers = getRegisteredFarmers(user, project, request)
+                    farmers = getRegisteredFarmers(
+                        userOwner, projectId, projectCod, request
+                    )
                     for farmer in farmers:
                         excelFile.addOption(
                             question.question_code,
@@ -969,13 +972,17 @@ def generateODKFile(
     excelFile.renderFile()
 
 
-def generateRegistry(user, projectid, request, sectionOfThePackageCode):
+def generateRegistry(
+    userOwner, projectId, projectCod, request, sectionOfThePackageCode
+):
     _ = request.translate
 
-    formID = "REG_" + user + "_" + projectid + "_" + datetime.now().strftime("%Y%m%d")
+    formID = (
+        "REG_" + userOwner + "_" + projectCod + "_" + datetime.now().strftime("%Y%m%d")
+    )
 
     path = os.path.join(
-        request.registry.settings["user.repository"], *[user, projectid]
+        request.registry.settings["user.repository"], *[userOwner, projectCod]
     )
     if not os.path.exists(path):
         os.makedirs(path)
@@ -998,7 +1005,7 @@ def generateRegistry(user, projectid, request, sectionOfThePackageCode):
     if not os.path.exists(os.path.join(path, *paths)):
         os.makedirs(os.path.join(path, *paths))
 
-    dataPath = os.path.join(request.registry.settings["user.repository"], user)
+    dataPath = os.path.join(request.registry.settings["user.repository"], userOwner)
     paths = ["data", "xml"]
     if not os.path.exists(os.path.join(dataPath, *paths)):
         os.makedirs(os.path.join(dataPath, *paths))
@@ -1019,13 +1026,11 @@ def generateRegistry(user, projectid, request, sectionOfThePackageCode):
     sections_id = (
         request.dbsession.query(Registry.section_id)
         .distinct()
-        .filter(Registry.user_name == user)
-        .filter(Registry.project_cod == projectid)
+        .filter(Registry.project_id == projectId)
     )
     groups = (
         request.dbsession.query(Regsection)
-        .filter(Regsection.user_name == user)
-        .filter(Regsection.project_cod == projectid)
+        .filter(Regsection.project_id == projectId)
         .filter(Regsection.section_id.in_(sections_id))
         .order_by(Regsection.section_order)
         .all()
@@ -1033,36 +1038,28 @@ def generateRegistry(user, projectid, request, sectionOfThePackageCode):
     # Terminan los cambios
 
     sql = (
-        # "SELECT question.question_code,question.question_desc,question.question_unit,question.question_dtype,question.question_twoitems,"
-        # "registry.section_id,question.question_posstm,question.question_negstm,question.question_moreitems,question.question_perfstmt,"
-        # "question.question_requiredvalue,registry.question_order,question.question_id,question.question_tied, question.question_notobserved, question.question_quantitative FROM question,registry "
-        # "WHERE question.question_id = registry.question_id "
-        # "AND registry.user_name = '" + user + "' "
-        # "AND registry.project_cod = '"
-        # + projectid
-        # + "' ORDER BY registry.question_order"
         "SELECT q.question_code,COALESCE(i.question_desc,q.question_desc) as question_desc,COALESCE(i.question_unit,q.question_unit) as question_unit, q.question_dtype, q.question_twoitems, "
         "r.section_id, COALESCE(i.question_posstm, q.question_posstm) as question_posstm, COALESCE(i.question_negstm ,q.question_negstm) as question_negstm, q.question_moreitems, COALESCE(i.question_perfstmt, q.question_perfstmt) as question_perfstmt, "
         "q.question_requiredvalue, r.question_order, q.question_id, q.question_tied, q.question_notobserved, q.question_quantitative "
         "FROM registry r,question q "
-        "LEFT JOIN i18n_question i "
-        "ON        q.question_id = i.question_id "
-        "AND       i.lang_code = '" + request.locale_name + "' "
-        "WHERE q.question_id = r.question_id "
-        "AND r.user_name = '" + user + "' "
-        "AND r.project_cod = '" + projectid + "'"
+        " LEFT JOIN i18n_question i "
+        " ON        q.question_id = i.question_id "
+        " AND       i.lang_code = '" + request.locale_name + "' "
+        " WHERE q.question_id = r.question_id "
+        " AND r.project_id = '" + projectId + "'"
         "ORDER BY r.question_order"
     )
 
     questions = request.dbsession.execute(sql).fetchall()
 
-    prjdata = getProjectData(user, projectid, request)
+    prjdata = getProjectData(projectId, request)
     label = _("Registration-") + prjdata["project_name"]
-    formInstance = "concat('" + projectid + "_Regis_',${farmername})"
+    formInstance = "concat('" + projectCod + "_Regis_',${farmername})"
 
     generateODKFile(
-        user,
-        projectid,
+        userOwner,
+        projectId,
+        projectCod,
         xlsxFile,
         formID,
         label,
@@ -1106,7 +1103,7 @@ def generateRegistry(user, projectid, request, sectionOfThePackageCode):
     state, error = createDatabase(
         xlsxFile,
         os.path.join(path, *paths),
-        user + "_" + projectid,
+        userOwner + "_" + projectCod,
         keyQuestion.question_code,
         "REG",
         True,
@@ -1117,7 +1114,7 @@ def generateRegistry(user, projectid, request, sectionOfThePackageCode):
 
 
 def generateAssessmentFiles(
-    user, projectid, assessment, request, sectionOfThePackageCode
+    userOwner, projectId, projectCod, assessment, request, sectionOfThePackageCode
 ):
     _ = request.translate
 
@@ -1127,24 +1124,23 @@ def generateAssessmentFiles(
     )
     assessments = (
         request.dbsession.query(Assessment)
-        .filter(Assessment.user_name == user)
-        .filter(Assessment.project_cod == projectid)
+        .filter(Assessment.project_id == projectId)
         .filter(Assessment.ass_cod == assessment)
         .all()
     )
     for assessment in assessments:
         formID = (
             "ASS_"
-            + user
+            + userOwner
             + "_"
-            + projectid
+            + projectCod
             + "_"
             + assessment.ass_cod
             + "_"
             + datetime.now().strftime("%Y%m%d")
         )
         path = os.path.join(
-            request.registry.settings["user.repository"], *[user, projectid]
+            request.registry.settings["user.repository"], *[userOwner, projectCod]
         )
         if not os.path.exists(path):
             os.makedirs(path)
@@ -1163,7 +1159,7 @@ def generateAssessmentFiles(
         if not os.path.exists(os.path.join(path, *paths)):
             os.makedirs(os.path.join(path, *paths))
 
-        dataPath = os.path.join(request.registry.settings["user.repository"], user)
+        dataPath = os.path.join(request.registry.settings["user.repository"], userOwner)
 
         paths = ["data", "xml"]
         if not os.path.exists(os.path.join(dataPath, *paths)):
@@ -1184,14 +1180,12 @@ def generateAssessmentFiles(
         sections_id = (
             request.dbsession.query(AssDetail.section_id)
             .distinct()
-            .filter(AssDetail.user_name == user)
-            .filter(AssDetail.project_cod == projectid)
+            .filter(AssDetail.project_id == projectId)
             .filter(AssDetail.ass_cod == assessment.ass_cod)
         )
         groups = (
             request.dbsession.query(Asssection)
-            .filter(Asssection.user_name == user)
-            .filter(Asssection.project_cod == projectid)
+            .filter(Asssection.project_id == projectId)
             .filter(Asssection.ass_cod == assessment.ass_cod)
             .filter(Asssection.section_id.in_(sections_id))
             .order_by(Asssection.section_order)
@@ -1200,42 +1194,33 @@ def generateAssessmentFiles(
         # End
 
         sql = (
-            # "SELECT question.question_code,question.question_desc,question.question_unit,question.question_dtype,question.question_twoitems,"
-            # "assdetail.section_id,question.question_posstm,question.question_negstm,question.question_moreitems,question.question_perfstmt,"
-            # "question.question_requiredvalue,question.question_id, question.question_tied, question.question_notobserved, question.question_quantitative "
-            # "FROM question,assdetail "
-            # "WHERE question.question_id = assdetail.question_id "
-            # "AND assdetail.user_name = '" + user + "' "
-            # "AND assdetail.project_cod = '" + projectid + "' "
-            # "AND assdetail.ass_cod = '"
-            # + assessment.ass_cod
-            # + "' order by assdetail.question_order"
-            "SELECT q.question_code, COALESCE(i.question_desc,q.question_desc) as question_desc,COALESCE(i.question_unit,q.question_unit) as question_unit, q.question_dtype, q.question_twoitems, "
-            "a.section_id, COALESCE(i.question_posstm, q.question_posstm) as question_posstm, COALESCE(i.question_negstm ,q.question_negstm) as question_negstm, q.question_moreitems, COALESCE(i.question_perfstmt, q.question_perfstmt) as question_perfstmt, "
-            "q.question_requiredvalue, q.question_id, q.question_tied, q.question_notobserved, q.question_quantitative "
-            "FROM assdetail a, question q "
-            "LEFT JOIN i18n_question i "
-            "ON        q.question_id = i.question_id "
-            "AND       i.lang_code = '" + request.locale_name + "' "
-            "WHERE q.question_id = a.question_id "
-            "AND a.user_name = '" + user + "' "
-            "AND a.project_cod = '" + projectid + "' "
-            "AND a.ass_cod = '" + assessment.ass_cod + "' "
-            "order by a.question_order "
+            " SELECT q.question_code, COALESCE(i.question_desc,q.question_desc) as question_desc,COALESCE(i.question_unit,q.question_unit) as question_unit, q.question_dtype, q.question_twoitems, "
+            " a.section_id, COALESCE(i.question_posstm, q.question_posstm) as question_posstm, COALESCE(i.question_negstm ,q.question_negstm) as question_negstm, q.question_moreitems, COALESCE(i.question_perfstmt, q.question_perfstmt) as question_perfstmt, "
+            " q.question_requiredvalue, q.question_id, q.question_tied, q.question_notobserved, q.question_quantitative "
+            " FROM assdetail a, question q "
+            " LEFT JOIN i18n_question i "
+            " ON        q.question_id = i.question_id "
+            " AND       i.lang_code = '" + request.locale_name + "' "
+            " WHERE q.question_id = a.question_id "
+            " AND a.project_id = '" + projectId + "' "
+            " AND a.ass_cod = '" + assessment.ass_cod + "' "
+            " order by a.question_order "
         )
+
         questions = request.dbsession.execute(sql).fetchall()
 
-        prjdata = getProjectData(user, projectid, request)
+        prjdata = getProjectData(projectId, request)
         label = (
             _("Data collection - ")
             + assessment.ass_desc
             + " - "
             + prjdata["project_name"]
         )
-        formInstance = "concat('" + projectid + "_Assess_',${cal_QST163})"
+        formInstance = "concat('" + projectCod + "_Assess_',${cal_QST163})"
         generateODKFile(
-            user,
-            projectid,
+            userOwner,
+            projectId,
+            projectCod,
             xlsxFile,
             formID,
             label,
@@ -1268,7 +1253,7 @@ def generateAssessmentFiles(
             state, error = createDatabase(
                 xlsxFile,
                 os.path.join(path, *paths),
-                user + "_" + projectid,
+                userOwner + "_" + projectCod,
                 keyQuestion.question_code,
                 "ASS" + assessment.ass_cod,
                 False,

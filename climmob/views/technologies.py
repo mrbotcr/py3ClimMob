@@ -9,6 +9,7 @@ from ..processes import (
     updateTechnology,
     deleteTechnology,
     getUserTechById,
+    getActiveProject,
 )
 
 from .techaliases import newalias_view, modifyalias_view
@@ -69,7 +70,7 @@ class technologies_view(privateView):
                 techSee = getUserTechById(dataworking["tech_id"], self.request)
 
         return {
-            "activeUser": self.user,
+            "activeProject": getActiveProject(self.user.login, self.request),
             "dataworking": dataworking,
             "error_summary_add": error_summary_add,
             "error_summary": error_summary,
@@ -124,9 +125,6 @@ class newtechnology_view(privateView):
                     error_summary = {
                         "nameempty": self._("You need to set values for the name")
                     }
-        # Descomentar si se quiere ver el mensaje cuando se crea
-        # if redirect:
-        #    self.request.session.flash(self._("The technology was added successfully"))
 
         return {
             "activeUser": self.user,
@@ -189,11 +187,6 @@ class modifytechnology_view(privateView):
                     error_summary = {
                         "nameempty": self._("You need to set values for the name")
                     }
-        # Descomentar si se quiere ver el menaje
-        # if redirect:
-        #    self.request.session.flash(
-        #        self._("The technology was modified successfully")
-        #    )
 
         return {
             "activeUser": self.user,

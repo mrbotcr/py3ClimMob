@@ -1,20 +1,15 @@
 import json
-import pprint
-import transaction
 import xml.etree.ElementTree as ET
-from zope.sqlalchemy import mark_changed
 from ..processes import getProjectData, getQuestionOptionsByQuestionCode
 from climmob.models.repository import sql_execute
 
 
-def get_FieldsByType(types, db, self, file, code):
-    return [
-        item[0] for item in getNamesEditByColums(db, file, code) if item[2] in types
-    ]
+def get_FieldsByType(types, file):
+    return [item[0] for item in getNamesEditByColums(file) if item[2] in types]
 
 
 def make_selOneOpt(
-    self, bd, form, rtable, lkp_field
+    self, userOwner, projectId, projectCod, form, rtable, lkp_field
 ):  # make value for select one and multiple in jqgrid
     vals = {}
     if rtable != "None":
@@ -23,7 +18,7 @@ def make_selOneOpt(
             % (
                 lkp_field,
                 lkp_field.replace("_cod", "_des"),
-                self.user.login + "_" + bd,
+                userOwner + "_" + projectCod,
                 rtable,
             )
         )
@@ -32,7 +27,7 @@ def make_selOneOpt(
             vals[str(res["qc"])] = res["qd"]
     else:
         options = getQuestionOptionsByQuestionCode(
-            lkp_field, self.user.login, self.request
+            lkp_field, projectId, form, self.request
         )
         for option in options:
             vals[str(option["value_code"])] = option["value_desc"]
@@ -41,7 +36,6 @@ def make_selOneOpt(
 
 
 def getRTable(field, name, table):
-    # print field
     loTiene = False
     tieneElSegundo = False
     for i, x in enumerate(table.findall("tables/table/table")):
@@ -54,11 +48,7 @@ def getRTable(field, name, table):
                     return v.attrib["rtable"], v.attrib["rfield"]
 
 
-def getNamesEditByColums(
-    db, file, code
-):  # create available list of columns for editing online
-    # request.registry.settings['odktools.path']
-    # try:
+def getNamesEditByColums(file):  # create available list of columns for editing online
 
     tree = ET.parse(file)
     columns = []  # var name, desc, type (rfield in selects)
@@ -66,8 +56,6 @@ def getNamesEditByColums(
     for i, x in enumerate(tree.find("tables/table")):
         row = []
         if "odktype" in x.attrib:
-            # print(x.attrib["odktype"])
-            # print(x.attrib["name"])
             if x.attrib["odktype"] not in [
                 "barcode",
                 "deviceid",
@@ -132,13 +120,15 @@ def getNamesEditByColums(
     #    return []
 
 
-def fillDataTable(self, db, form, columns, file, code, where=""):
+def fillDataTable(
+    self, userOwner, projectId, projectCod, form, columns, file, code, where=""
+):
     ret = {
         "colNames": [],
         "data": [],
         "colModel": [],
         "projectMeta": [
-            {"project_code": db, "form": form, "code": code, "user": self.user.login}
+            {"project_code": projectCod, "form": form, "code": code, "user": userOwner}
         ],
     }
     sql = "select "
@@ -164,7 +154,7 @@ def fillDataTable(self, db, form, columns, file, code, where=""):
         col = col.split("$%*")
         ret["colNames"].append(col[1])
         if col[0] == "surveyid" or col[0] == "qst162":
-            proData = getProjectData(self.user.login, db, self.request)
+            proData = getProjectData(projectId, self.request)
             packages = {}
             for y in range(1, proData["project_numobs"] + 1):
                 packages[y] = self._("Package") + " #" + str(y)
@@ -199,7 +189,15 @@ def fillDataTable(self, db, form, columns, file, code, where=""):
                         "validation": col[5],
                         "editoptions": {
                             "multiple": False,
-                            "value": make_selOneOpt(self, db, form, col[3], col[4]),
+                            "value": make_selOneOpt(
+                                self,
+                                userOwner,
+                                projectId,
+                                projectCod,
+                                form,
+                                col[3],
+                                col[4],
+                            ),
                         },
                     }
                 )
@@ -217,7 +215,15 @@ def fillDataTable(self, db, form, columns, file, code, where=""):
                             "edittype": "select",
                             "editoptions": {
                                 "multiple": True,
-                                "value": make_selOneOpt(self, db, form, col[3], col[4]),
+                                "value": make_selOneOpt(
+                                    self,
+                                    userOwner,
+                                    projectId,
+                                    projectCod,
+                                    form,
+                                    col[3],
+                                    col[4],
+                                ),
                             },
                         }
                     )
@@ -274,9 +280,9 @@ def fillDataTable(self, db, form, columns, file, code, where=""):
     sql = (
         sql[:-1]
         + " from "
-        + self.user.login
+        + userOwner
         + "_"
-        + db
+        + projectCod
         + "."
         + form.upper()
         + code
@@ -294,9 +300,7 @@ def fillDataTable(self, db, form, columns, file, code, where=""):
         rowx = {}
         rowx["flag_update"] = False
         for r in zip(result._metadata.keys, res):
-            if str(r[0]) in get_FieldsByType(
-                ["select12", "select"], db, self, file, code
-            ):
+            if str(r[0]) in get_FieldsByType(["select12", "select"], file):
                 rowx[str(r[0])] = list(map(str, str(r[1]).split(" ")))
             else:
                 rowx[str(r[0])] = str(r[1])
@@ -305,27 +309,27 @@ def fillDataTable(self, db, form, columns, file, code, where=""):
     return json.dumps(ret)
 
 
-def update_edited_data(self, db, form, data, file, code):
-    # mySession = self.request.dbsession
+def update_edited_data(userOwner, projectCod, form, data, file, code):
+
     data = json.loads(data[0])
 
     for row in data:
         if row["flag_update"]:
             query_update = "update %s.%s_geninfo set " % (
-                self.user.login + "_" + db,
+                userOwner + "_" + projectCod,
                 form.upper() + code,
             )
             del row["flag_update"]
             for key in row:
                 val = ""
                 addField = True
-                if key in get_FieldsByType(["int", "decimal"], db, self, file, code):
+                if key in get_FieldsByType(["int", "decimal"], file):
                     if row[key] and row[key] != "None":
                         val = str(row[key])
                     else:
                         val = "0"
                 else:
-                    if key in get_FieldsByType(["select1"], db, self, file, code):
+                    if key in get_FieldsByType(["select1"], file):
                         if row[key] and row[key] != "None":
                             val = (
                                 "'"
@@ -335,7 +339,7 @@ def update_edited_data(self, db, form, data, file, code):
                         else:
                             addField = False
                     else:
-                        if key in get_FieldsByType(["select"], db, self, file, code):
+                        if key in get_FieldsByType(["select"], file):
                             val = "'" + " ".join(row[key]) + "'"
                         else:
                             val = "'" + str(row[key]) + "'"

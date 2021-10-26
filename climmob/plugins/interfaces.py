@@ -334,7 +334,9 @@ class IForm(Interface):  # pragma: no cover
     Allows to hook into the processes that create, update and delete forms
     """
 
-    def after_adding_form(self, request, user_name, projectid, formId, ass_cod):
+    def after_adding_form(
+        self, request, userOwner, projectId, projectCod, formId, ass_cod
+    ):
         """
         Called by ClimMob so plugins can perform actions after FormShare deletes a form from the database
         :param request: ``pyramid.request`` object
@@ -345,7 +347,9 @@ class IForm(Interface):  # pragma: no cover
         :return: None
         """
 
-    def after_deleting_form(self, request, user_name, projectid, formId, ass_cod):
+    def after_deleting_form(
+        self, request, userOwner, projectId, projectCod, formId, ass_cod
+    ):
         """
         Called by ClimMob so plugins can perform actions after FormShare deletes a form from the database
         :param request: ``pyramid.request`` object

@@ -49,41 +49,45 @@ def createFieldAgentsReport(self, locale, url, user, path, projectid, fieldagent
         "cp -r '" + os.path.join(PATH, "template", "img") + "' '" + pathouttemp + "'"
     )
 
-    url = url + "/" + user
+    for userParticipant in fieldagents:
+        for fieldagent in fieldagents[userParticipant]:
 
-    for fieldagent in fieldagents:
+            if self.is_aborted():
+                sh.rmtree(path)
+                return ""
 
-        if self.is_aborted():
-            sh.rmtree(path)
-            return ""
+            odk_settings = {
+                "admin": {"change_server": True, "change_form_metadata": False},
+                "general": {
+                    "change_server": True,
+                    "navigation": "buttons",
+                    "server_url": url + "/" + fieldagent["user_name"],
+                    "username": fieldagent["enum_id"],
+                    "password": fieldagent["enum_password"],
+                },
+            }
 
-        odk_settings = {
-            "admin": {"change_server": True, "change_form_metadata": False},
-            "general": {
-                "change_server": True,
-                "navigation": "buttons",
-                "server_url": url,
-                "username": fieldagent["enum_id"],
-                "password": fieldagent["enum_password"],
-            },
-        }
+            qr_json = json.dumps(odk_settings).encode()
+            zip_json = zlib.compress(qr_json)
+            serialization = base64.b64encode(zip_json)
+            serialization = serialization.decode()
+            serialization = serialization.replace("\n", "")
+            img = qrcode.make(serialization)
 
-        qr_json = json.dumps(odk_settings).encode()
-        zip_json = zlib.compress(qr_json)
-        serialization = base64.b64encode(zip_json)
-        serialization = serialization.decode()
-        serialization = serialization.replace("\n", "")
-        img = qrcode.make(serialization)
+            qr_file = os.path.join(
+                pathouttemp + "/img",
+                *[
+                    str(fieldagent["enum_id"])
+                    + "_"
+                    + str(fieldagent["user_name"])
+                    + ".png"
+                ]
+            )
+            img.save(qr_file)
 
-        qr_file = os.path.join(
-            pathouttemp + "/img",
-            *[str(fieldagent["enum_id"]) + "_" + str(fieldagent["user_name"]) + ".png"]
-        )
-        img.save(qr_file)
-
-        if self.is_aborted():
-            sh.rmtree(path)
-            return ""
+            if self.is_aborted():
+                sh.rmtree(path)
+                return ""
 
     data = {
         "tittle": _("List of field agents for the project"),
@@ -94,12 +98,11 @@ def createFieldAgentsReport(self, locale, url, user, path, projectid, fieldagent
         "QR": _("QR"),
         "fieldagents": fieldagents,
         "URLInstruction1": _(
-            "To manually configure the ODK Collect server, use the following URL"
+            "To manually configure the ODK Collect server, use the URL of the user to which it belongs and use the corresponding field agent user and password."
         ),
         "URL": url,
-        "Instruction2": _(
-            "Use the respective username and password shown in the following table"
-        ),
+        "Instruction3": _("Server"),
+        "Instruction4": _("User-owned field agents"),
     }
 
     env = Environment(

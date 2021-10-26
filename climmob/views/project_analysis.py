@@ -18,19 +18,20 @@ class analysisDataView(privateView):
                 if dataworking["txt_included_in_analysis"] != "":
                     part = dataworking["txt_included_in_analysis"][:-1].split(",")
                     infosheet = dataworking["txt_infosheets"].upper()
-                    dataworking["project_cod"] = activeProjectData["project_cod"]
+                    dataworking["project_id"] = activeProjectData["project_id"]
                     pro = processToGenerateTheReport(
-                        self.user.login, dataworking, self.request, part, infosheet
+                        activeProjectData, self.request, part, infosheet
                     )
 
                 self.returnRawViewResult = True
                 return HTTPFound(location=self.request.route_url("productList"))
 
         dataForAnalysis, assessmentsList = getQuestionsByType(
-            self.user.login, activeProjectData["project_cod"], self.request
+            activeProjectData["project_id"], self.request
         )
 
         return {
+            "activeProject": getActiveProject(self.user.login, self.request),
             "activeUser": self.user,
             "dataForAnalysis": dataForAnalysis,
             "assessmentsList": assessmentsList,
@@ -38,9 +39,9 @@ class analysisDataView(privateView):
         }
 
 
-def processToGenerateTheReport(user, dataworking, request, variables, infosheet):
+def processToGenerateTheReport(activeProjectData, request, variables, infosheet):
 
-    data, _assessment = getQuestionsByType(user, dataworking["project_cod"], request)
+    data, _assessment = getQuestionsByType(activeProjectData["project_id"], request)
 
     dict = {}
     for element in variables:
@@ -64,12 +65,18 @@ def processToGenerateTheReport(user, dataworking, request, variables, infosheet)
                                 )
 
     locale = request.locale_name
-    info = getJSONResult(user, dataworking["project_cod"], request)
+    info = getJSONResult(
+        activeProjectData["owner"]["user_name"],
+        activeProjectData["project_id"],
+        activeProjectData["project_cod"],
+        request,
+    )
 
     create_analysis(
         locale,
-        user,
-        dataworking["project_cod"],
+        activeProjectData["owner"]["user_name"],
+        activeProjectData["project_id"],
+        activeProjectData["project_cod"],
         dict,
         info,
         infosheet,
@@ -78,7 +85,13 @@ def processToGenerateTheReport(user, dataworking, request, variables, infosheet)
     )
 
     create_datacsv(
-        user, dataworking["project_cod"], info, request, "Report", "",
+        activeProjectData["owner"]["user_name"],
+        activeProjectData["project_id"],
+        activeProjectData["project_cod"],
+        info,
+        request,
+        "Report",
+        "",
     )
 
     return True

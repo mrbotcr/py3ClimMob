@@ -18,6 +18,9 @@ from ...processes import (
     findTechAlias,
     addTechAliasExtra,
     projectRegStatus,
+    getTheProjectIdForOwner,
+    getAccessTypeForProject,
+    theUserBelongsToTheProject,
 )
 
 from pyramid.response import Response
@@ -28,7 +31,7 @@ class addProjectTechnology_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"tech_id"]
+            obligatory = [u"project_cod", u"user_owner", u"tech_id", u"tech_user_name"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -43,29 +46,63 @@ class addProjectTechnology_view(apiView):
             if sorted(obligatory) == sorted(dataworking.keys()):
                 dataworking["user_name"] = self.user.login
                 exitsproject = projectExists(
-                    self.user.login, dataworking["project_cod"], self.request
+                    self.user.login,
+                    dataworking["user_owner"],
+                    dataworking["project_cod"],
+                    self.request,
                 )
                 if exitsproject:
-                    if projectRegStatus(
-                        self.user.login, dataworking["project_cod"], self.request
-                    ):
-                        if technologyExist(dataworking, self.request):
 
-                            if not isTechnologyAssigned(dataworking, self.request):
-                                added, message = addTechnologyProject(
-                                    self.user.login,
-                                    dataworking["project_cod"],
-                                    dataworking["tech_id"],
-                                    self.request,
-                                )
-                                if not added:
-                                    response = Response(status=401, body=message)
-                                    return response
+                    activeProjectId = getTheProjectIdForOwner(
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
+                    )
+                    accessType = getAccessTypeForProject(
+                        self.user.login, activeProjectId, self.request
+                    )
+
+                    if accessType in [4]:
+                        response = Response(
+                            status=401,
+                            body=self._(
+                                "The access assigned for this project does not allow you to add technologies."
+                            ),
+                        )
+                        return response
+                    if theUserBelongsToTheProject(
+                        dataworking["tech_user_name"], activeProjectId, self.request
+                    ):
+
+                        if projectRegStatus(activeProjectId, self.request):
+                            if technologyExist(
+                                dataworking["tech_id"],
+                                dataworking["tech_user_name"],
+                                self.request,
+                            ):
+                                dataworking["project_id"] = activeProjectId
+                                if not isTechnologyAssigned(dataworking, self.request):
+                                    added, message = addTechnologyProject(
+                                        activeProjectId,
+                                        dataworking["tech_id"],
+                                        self.request,
+                                    )
+                                    if not added:
+                                        response = Response(status=401, body=message)
+                                        return response
+                                    else:
+                                        response = Response(
+                                            status=200,
+                                            body=self._(
+                                                "The technology was added correctly."
+                                            ),
+                                        )
+                                        return response
                                 else:
                                     response = Response(
-                                        status=200,
+                                        status=401,
                                         body=self._(
-                                            "The technology has already been assigned to the project."
+                                            "The technology is already assigned to the project."
                                         ),
                                     )
                                     return response
@@ -73,7 +110,7 @@ class addProjectTechnology_view(apiView):
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "The technology is already assigned to the project."
+                                        "There is no technology with that identifier."
                                     ),
                                 )
                                 return response
@@ -81,7 +118,7 @@ class addProjectTechnology_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "There is no technology with that identifier."
+                                    "You cannot add more technologies. You started the registry."
                                 ),
                             )
                             return response
@@ -89,7 +126,7 @@ class addProjectTechnology_view(apiView):
                         response = Response(
                             status=401,
                             body=self._(
-                                "You cannot add more technologies. You started the registry."
+                                "You are trying to add a tech from a user that does not belong to this project."
                             ),
                         )
                         return response
@@ -110,7 +147,7 @@ class readProjectTechnologies_view(apiView):
     def processView(self):
 
         if self.request.method == "GET":
-            obligatory = [u"project_cod"]
+            obligatory = [u"project_cod", u"user_owner"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -124,17 +161,23 @@ class readProjectTechnologies_view(apiView):
 
             if sorted(obligatory) == sorted(dataworking.keys()):
                 exitsproject = projectExists(
-                    self.user.login, dataworking["project_cod"], self.request
+                    self.user.login,
+                    dataworking["user_owner"],
+                    dataworking["project_cod"],
+                    self.request,
                 )
                 if exitsproject:
+
+                    activeProjectId = getTheProjectIdForOwner(
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
+                    )
+
                     response = Response(
                         status=200,
                         body=json.dumps(
-                            searchTechnologiesInProject(
-                                self.user.login,
-                                dataworking["project_cod"],
-                                self.request,
-                            )
+                            searchTechnologiesInProject(activeProjectId, self.request,)
                         ),
                     )
                     return response
@@ -155,7 +198,7 @@ class readPossibleProjectTechnologies_view(apiView):
     def processView(self):
 
         if self.request.method == "GET":
-            obligatory = [u"project_cod"]
+            obligatory = [u"project_cod", u"user_owner"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -169,17 +212,35 @@ class readPossibleProjectTechnologies_view(apiView):
 
             if sorted(obligatory) == sorted(dataworking.keys()):
                 exitsproject = projectExists(
-                    self.user.login, dataworking["project_cod"], self.request
+                    self.user.login,
+                    dataworking["user_owner"],
+                    dataworking["project_cod"],
+                    self.request,
                 )
                 if exitsproject:
+
+                    activeProjectId = getTheProjectIdForOwner(
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
+                    )
+                    accessType = getAccessTypeForProject(
+                        self.user.login, activeProjectId, self.request
+                    )
+
+                    if accessType in [4]:
+                        response = Response(
+                            status=401,
+                            body=self._(
+                                "The access assigned for this project does not allow you to get this information."
+                            ),
+                        )
+                        return response
+
                     response = Response(
                         status=200,
                         body=json.dumps(
-                            searchTechnologies(
-                                self.user.login,
-                                dataworking["project_cod"],
-                                self.request,
-                            )
+                            searchTechnologies(activeProjectId, self.request,)
                         ),
                     )
                     return response
@@ -200,7 +261,7 @@ class deleteProjectTechnology_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"tech_id"]
+            obligatory = [u"project_cod", u"user_owner", u"tech_id", u"tech_user_name"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -215,17 +276,41 @@ class deleteProjectTechnology_view(apiView):
             if sorted(obligatory) == sorted(dataworking.keys()):
                 dataworking["user_name"] = self.user.login
                 exitsproject = projectExists(
-                    self.user.login, dataworking["project_cod"], self.request
+                    self.user.login,
+                    dataworking["user_owner"],
+                    dataworking["project_cod"],
+                    self.request,
                 )
                 if exitsproject:
-                    if projectRegStatus(
-                        self.user.login, dataworking["project_cod"], self.request
-                    ):
-                        if technologyExist(dataworking, self.request):
+
+                    activeProjectId = getTheProjectIdForOwner(
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
+                    )
+                    accessType = getAccessTypeForProject(
+                        self.user.login, activeProjectId, self.request
+                    )
+
+                    if accessType in [4]:
+                        response = Response(
+                            status=401,
+                            body=self._(
+                                "The access assigned for this project does not allow you to delete technologies."
+                            ),
+                        )
+                        return response
+
+                    if projectRegStatus(activeProjectId, self.request):
+                        if technologyExist(
+                            dataworking["tech_id"],
+                            dataworking["tech_user_name"],
+                            self.request,
+                        ):
+                            dataworking["project_id"] = activeProjectId
                             if isTechnologyAssigned(dataworking, self.request):
                                 deleted, message = deleteTechnologyProject(
-                                    self.user.login,
-                                    dataworking["project_cod"],
+                                    activeProjectId,
                                     dataworking["tech_id"],
                                     self.request,
                                 )
@@ -283,40 +368,85 @@ class deleteProjectTechnology_view(apiView):
 class addProjectTechnologyAlias_view(apiView):
     def processView(self):
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"tech_id", u"alias_id"]
+            obligatory = [
+                u"project_cod",
+                u"user_owner",
+                u"tech_id",
+                u"tech_user_name",
+                u"alias_id",
+            ]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
                 dataworking["user_name"] = self.user.login
                 exitsproject = projectExists(
-                    self.user.login, dataworking["project_cod"], self.request
+                    self.user.login,
+                    dataworking["user_owner"],
+                    dataworking["project_cod"],
+                    self.request,
                 )
                 if exitsproject:
-                    if projectRegStatus(
-                        self.user.login, dataworking["project_cod"], self.request
+
+                    activeProjectId = getTheProjectIdForOwner(
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
+                    )
+                    accessType = getAccessTypeForProject(
+                        self.user.login, activeProjectId, self.request
+                    )
+
+                    if accessType in [4]:
+                        response = Response(
+                            status=401,
+                            body=self._(
+                                "The access assigned for this project does not allow you to add technology options."
+                            ),
+                        )
+                        return response
+
+                    if theUserBelongsToTheProject(
+                        dataworking["tech_user_name"], activeProjectId, self.request
                     ):
-                        if technologyExist(dataworking, self.request):
-                            if isTechnologyAssigned(dataworking, self.request):
-                                if existAlias(dataworking, self.request):
-                                    if not getAliasAssigned(dataworking, self.request):
-                                        add, message = AddAliasTechnology(
-                                            dataworking, self.request
-                                        )
-                                        if not add:
-                                            response = Response(
-                                                status=401, body=message
+
+                        if projectRegStatus(activeProjectId, self.request):
+                            if technologyExist(
+                                dataworking["tech_id"],
+                                dataworking["tech_user_name"],
+                                self.request,
+                            ):
+                                dataworking["project_id"] = activeProjectId
+                                if isTechnologyAssigned(dataworking, self.request):
+                                    if existAlias(dataworking, self.request):
+                                        if not getAliasAssigned(
+                                            dataworking, activeProjectId, self.request
+                                        ):
+                                            add, message = AddAliasTechnology(
+                                                dataworking, self.request
                                             )
-                                            return response
+                                            if not add:
+                                                response = Response(
+                                                    status=401, body=message
+                                                )
+                                                return response
+                                            else:
+                                                response = Response(
+                                                    status=200, body=json.dumps(message)
+                                                )
+                                                return response
                                         else:
                                             response = Response(
-                                                status=200, body=json.dumps(message)
+                                                status=401,
+                                                body=self._(
+                                                    "The technology option has not been assigned to the project."
+                                                ),
                                             )
                                             return response
                                     else:
                                         response = Response(
                                             status=401,
                                             body=self._(
-                                                "The technology option has not been assigned to the project."
+                                                "There is no technology option with that identifier for this technology."
                                             ),
                                         )
                                         return response
@@ -324,7 +454,7 @@ class addProjectTechnologyAlias_view(apiView):
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "There is no technology option with that identifier for this technology."
+                                            "The technology is not assigned to the project."
                                         ),
                                     )
                                     return response
@@ -332,7 +462,7 @@ class addProjectTechnologyAlias_view(apiView):
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "The technology is not assigned to the project."
+                                        "There is no technology with that identifier."
                                     ),
                                 )
                                 return response
@@ -340,7 +470,7 @@ class addProjectTechnologyAlias_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "There is no technology with that identifier."
+                                    "You can not add an technology option for technologies. You have already started registration."
                                 ),
                             )
                             return response
@@ -348,7 +478,7 @@ class addProjectTechnologyAlias_view(apiView):
                         response = Response(
                             status=401,
                             body=self._(
-                                "You can not add an technology option for technologies. You have already started registration."
+                                "You are trying to add a technology alias from a user that does not belong to this project."
                             ),
                         )
                         return response
@@ -368,37 +498,82 @@ class addProjectTechnologyAlias_view(apiView):
 class addProjectTechnologyAliasExtra_view(apiView):
     def processView(self):
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"tech_id", u"alias_name"]
+            obligatory = [
+                u"project_cod",
+                u"user_owner",
+                u"tech_id",
+                u"tech_user_name",
+                u"alias_name",
+            ]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
                 dataworking["user_name"] = self.user.login
                 exitsproject = projectExists(
-                    self.user.login, dataworking["project_cod"], self.request
+                    self.user.login,
+                    dataworking["user_owner"],
+                    dataworking["project_cod"],
+                    self.request,
                 )
                 if exitsproject:
-                    if projectRegStatus(
-                        self.user.login, dataworking["project_cod"], self.request
+
+                    activeProjectId = getTheProjectIdForOwner(
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
+                    )
+                    accessType = getAccessTypeForProject(
+                        self.user.login, activeProjectId, self.request
+                    )
+
+                    if accessType in [4]:
+                        response = Response(
+                            status=401,
+                            body=self._(
+                                "The access assigned for this project does not allow you to add technology options."
+                            ),
+                        )
+                        return response
+
+                    if theUserBelongsToTheProject(
+                        dataworking["tech_user_name"], activeProjectId, self.request
                     ):
-                        if technologyExist(dataworking, self.request):
-                            if isTechnologyAssigned(dataworking, self.request):
-                                if not findTechAlias(dataworking, self.request):
-                                    added, message = addTechAliasExtra(
-                                        dataworking, self.request
-                                    )
-                                    if not added:
-                                        response = Response(status=401, body=message)
-                                        return response
+
+                        if projectRegStatus(activeProjectId, self.request):
+                            if technologyExist(
+                                dataworking["tech_id"],
+                                dataworking["tech_user_name"],
+                                self.request,
+                            ):
+                                dataworking["project_id"] = activeProjectId
+                                if isTechnologyAssigned(dataworking, self.request):
+                                    if not findTechAlias(dataworking, self.request):
+                                        added, message = addTechAliasExtra(
+                                            dataworking, self.request
+                                        )
+                                        if not added:
+                                            response = Response(
+                                                status=401, body=message
+                                            )
+                                            return response
+                                        else:
+                                            response = Response(
+                                                status=200, body=json.dumps(message)
+                                            )
+                                            return response
                                     else:
                                         response = Response(
-                                            status=200, body=json.dumps(message)
+                                            status=401,
+                                            body=self._(
+                                                "This technology option already exists for the technology."
+                                            ),
                                         )
                                         return response
                                 else:
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "This technology option already exists for the technology."
+                                            "The technology is not assigned to the project."
                                         ),
                                     )
                                     return response
@@ -406,7 +581,7 @@ class addProjectTechnologyAliasExtra_view(apiView):
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "The technology is not assigned to the project."
+                                        "There is no technology with that identifier."
                                     ),
                                 )
                                 return response
@@ -414,7 +589,7 @@ class addProjectTechnologyAliasExtra_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "There is no technology with that identifier."
+                                    "You can not add technology option for technologies. You have already started registration."
                                 ),
                             )
                             return response
@@ -422,7 +597,7 @@ class addProjectTechnologyAliasExtra_view(apiView):
                         response = Response(
                             status=401,
                             body=self._(
-                                "You can not add technology option for technologies. You have already started registration."
+                                "You are trying to add a technology alias extra from a user that does not belong to this project."
                             ),
                         )
                         return response
@@ -443,7 +618,7 @@ class readProjectTechnologiesAlias_view(apiView):
     def processView(self):
 
         if self.request.method == "GET":
-            obligatory = [u"project_cod", u"tech_id"]
+            obligatory = [u"project_cod", u"user_owner", u"tech_id", u"tech_user_name"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -458,18 +633,32 @@ class readProjectTechnologiesAlias_view(apiView):
             if sorted(obligatory) == sorted(dataworking.keys()):
                 dataworking["user_name"] = self.user.login
                 exitsproject = projectExists(
-                    self.user.login, dataworking["project_cod"], self.request
+                    self.user.login,
+                    dataworking["user_owner"],
+                    dataworking["project_cod"],
+                    self.request,
                 )
                 if exitsproject:
-                    if technologyExist(dataworking, self.request):
+
+                    activeProjectId = getTheProjectIdForOwner(
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
+                    )
+
+                    if technologyExist(
+                        dataworking["tech_id"],
+                        dataworking["tech_user_name"],
+                        self.request,
+                    ):
+                        dataworking["project_id"] = activeProjectId
                         if isTechnologyAssigned(dataworking, self.request):
                             response = Response(
                                 status=200,
                                 body=json.dumps(
                                     AliasSearchTechnologyInProject(
                                         dataworking["tech_id"],
-                                        self.user.login,
-                                        dataworking["project_cod"],
+                                        activeProjectId,
                                         self.request,
                                     )
                                 ),
@@ -506,7 +695,7 @@ class readProjectTechnologiesAliasExtra_view(apiView):
     def processView(self):
 
         if self.request.method == "GET":
-            obligatory = [u"project_cod", u"tech_id"]
+            obligatory = [u"project_cod", u"user_owner", u"tech_id", u"tech_user_name"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -521,18 +710,32 @@ class readProjectTechnologiesAliasExtra_view(apiView):
             if sorted(obligatory) == sorted(dataworking.keys()):
                 dataworking["user_name"] = self.user.login
                 exitsproject = projectExists(
-                    self.user.login, dataworking["project_cod"], self.request
+                    self.user.login,
+                    dataworking["user_owner"],
+                    dataworking["project_cod"],
+                    self.request,
                 )
                 if exitsproject:
-                    if technologyExist(dataworking, self.request):
+
+                    activeProjectId = getTheProjectIdForOwner(
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
+                    )
+
+                    if technologyExist(
+                        dataworking["tech_id"],
+                        dataworking["tech_user_name"],
+                        self.request,
+                    ):
+                        dataworking["project_id"] = activeProjectId
                         if isTechnologyAssigned(dataworking, self.request):
                             response = Response(
                                 status=200,
                                 body=json.dumps(
                                     AliasExtraSearchTechnologyInProject(
                                         dataworking["tech_id"],
-                                        self.user.login,
-                                        dataworking["project_cod"],
+                                        activeProjectId,
                                         self.request,
                                     )
                                 ),
@@ -569,7 +772,7 @@ class readPossibleProjectTechnologiesAlias_view(apiView):
     def processView(self):
 
         if self.request.method == "GET":
-            obligatory = [u"project_cod", u"tech_id"]
+            obligatory = [u"project_cod", u"user_owner", u"tech_id", u"tech_user_name"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -584,18 +787,44 @@ class readPossibleProjectTechnologiesAlias_view(apiView):
             if sorted(obligatory) == sorted(dataworking.keys()):
                 dataworking["user_name"] = self.user.login
                 exitsproject = projectExists(
-                    self.user.login, dataworking["project_cod"], self.request
+                    self.user.login,
+                    dataworking["user_owner"],
+                    dataworking["project_cod"],
+                    self.request,
                 )
                 if exitsproject:
-                    if technologyExist(dataworking, self.request):
+
+                    activeProjectId = getTheProjectIdForOwner(
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
+                    )
+                    accessType = getAccessTypeForProject(
+                        self.user.login, activeProjectId, self.request
+                    )
+
+                    if accessType in [4]:
+                        response = Response(
+                            status=401,
+                            body=self._(
+                                "The access assigned for this project does not allow you to get this information."
+                            ),
+                        )
+                        return response
+
+                    if technologyExist(
+                        dataworking["tech_id"],
+                        dataworking["tech_user_name"],
+                        self.request,
+                    ):
+                        dataworking["project_id"] = activeProjectId
                         if isTechnologyAssigned(dataworking, self.request):
                             response = Response(
                                 status=200,
                                 body=json.dumps(
                                     AliasSearchTechnology(
                                         dataworking["tech_id"],
-                                        self.user.login,
-                                        dataworking["project_cod"],
+                                        activeProjectId,
                                         self.request,
                                     )
                                 ),
@@ -632,24 +861,54 @@ class deleteProjectTechnologyAlias_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"tech_id", u"alias_id"]
+            obligatory = [
+                u"project_cod",
+                u"user_owner",
+                u"tech_id",
+                u"tech_user_name",
+                u"alias_id",
+            ]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
                 dataworking["user_name"] = self.user.login
                 exitsproject = projectExists(
-                    self.user.login, dataworking["project_cod"], self.request
+                    self.user.login,
+                    dataworking["user_owner"],
+                    dataworking["project_cod"],
+                    self.request,
                 )
                 if exitsproject:
-                    if projectRegStatus(
-                        self.user.login, dataworking["project_cod"], self.request
-                    ):
-                        if technologyExist(dataworking, self.request):
+
+                    activeProjectId = getTheProjectIdForOwner(
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
+                    )
+                    accessType = getAccessTypeForProject(
+                        self.user.login, activeProjectId, self.request
+                    )
+
+                    if accessType in [4]:
+                        response = Response(
+                            status=401,
+                            body=self._(
+                                "The access assigned for this project does not allow you to delete technology options."
+                            ),
+                        )
+                        return response
+
+                    if projectRegStatus(activeProjectId, self.request):
+                        if technologyExist(
+                            dataworking["tech_id"],
+                            dataworking["tech_user_name"],
+                            self.request,
+                        ):
+                            dataworking["project_id"] = activeProjectId
                             if isTechnologyAssigned(dataworking, self.request):
                                 if findAssignedAlias(dataworking, self.request):
                                     delete, message = deleteAliasTechnology(
-                                        self.user.login,
-                                        dataworking["project_cod"],
+                                        activeProjectId,
                                         dataworking["tech_id"],
                                         dataworking["alias_id"],
                                         self.request,
