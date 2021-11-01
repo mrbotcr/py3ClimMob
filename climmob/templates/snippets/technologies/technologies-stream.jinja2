@@ -23,7 +23,7 @@
             {% endif %}
 
             {% if showCreator %}
-                <p class="pull-left" style="margin: 0px; color: #1ab394">&nbsp;{{ _("by") }} {{ technology.user_name }}</p>
+                <p class="pull-left" style="margin: 0px; color: #1ab394">&nbsp;{{ _("by") }} {{ technology.user_fullname[0:12] }}{% if technology.user_fullname|length > 12 %}...{% endif %}</p>
             {% endif %}
         </td>
         {% if not isAlias %}

@@ -253,6 +253,7 @@ def startTheRegistry(self, userOwner, projectId, projectCod):
             projectCod,
             projectId,
             getProjectEnumerators(projectId, self.request),
+            getActiveProject(self.user.login, self.request)
         )
 
         numberOfCombinations = numberOfCombinationsForTheProject(

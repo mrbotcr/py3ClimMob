@@ -59,7 +59,9 @@ from ..views.enumerator import (
 from ..views.project_combinations import projectCombinations_view
 from ..views.odk import (
     formList_view,
+    formListByProject_view,
     submission_view,
+    submissionByProject_view,
     XMLForm_view,
     manifest_view,
     mediaFile_view,
@@ -785,9 +787,17 @@ def loadRoutes(config):
 
     # ODK forms
     routes.append(addRoute("odkformlist", "/{userid}/formList", formList_view, None))
+
+    routes.append(addRoute("odkFormlistByProject", "/user/{user}/project/{project}/collaborator/{collaborator}/formList", formListByProject_view, None))
+
     routes.append(
         addRoute("odksubmission", "/{userid}/submission", submission_view, None)
     )
+
+    routes.append(
+        addRoute("odkSubmissionByProject", "/user/{user}/project/{project}/collaborator/{collaborator}/submission", submissionByProject_view, None)
+    )
+
     routes.append(addRoute("odkpush", "/{userid}/push", push_view, None))
     routes.append(
         addRoute(

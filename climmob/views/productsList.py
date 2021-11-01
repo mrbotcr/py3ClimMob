@@ -180,6 +180,7 @@ class generateProductView(privateView):
                 activeProjectData["project_cod"],
                 activeProjectData["project_id"],
                 getProjectEnumerators(activeProjectData["project_id"], self.request),
+                activeProjectData
             )
 
         if productid == "colors":

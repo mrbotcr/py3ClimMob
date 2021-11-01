@@ -15,7 +15,7 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 
 
 @celeryApp.task(bind=True, base=celeryTask, soft_time_limit=7200, time_limit=7200)
-def createFieldAgentsReport(self, locale, url, user, path, projectid, fieldagents):
+def createFieldAgentsReport(self, locale, url, userOwner, path, projectCod, fieldagents, project):
     parts = __file__.split("/products/")
     this_file_path = parts[0] + "/locale"
     try:
@@ -61,10 +61,15 @@ def createFieldAgentsReport(self, locale, url, user, path, projectid, fieldagent
                 "general": {
                     "change_server": True,
                     "navigation": "buttons",
-                    "server_url": url + "/" + fieldagent["user_name"],
+                    "server_url": url + "/user/"+ userOwner +"/project/"+projectCod+"/collaborator/"+fieldagent["user_name"],
                     "username": fieldagent["enum_id"],
                     "password": fieldagent["enum_password"],
                 },
+                "project": {
+                    "name": project["project_name"],
+                    "icon": "🌱",
+                    "color": "#ffffff",
+                }
             }
 
             qr_json = json.dumps(odk_settings).encode()
@@ -91,7 +96,7 @@ def createFieldAgentsReport(self, locale, url, user, path, projectid, fieldagent
 
     data = {
         "tittle": _("List of field agents for the project"),
-        "projectid": projectid,
+        "projectid": projectCod,
         "Name": _("Name"),
         "Username": _("Username"),
         "Password": _("Password"),
@@ -119,7 +124,7 @@ def createFieldAgentsReport(self, locale, url, user, path, projectid, fieldagent
     render_temp = template.render(data)
 
     with open(
-        pathouttemp + "/fieldagents_" + projectid + ".html", "w"
+        pathouttemp + "/fieldagents_" + projectCod + ".html", "w"
     ) as f:  # saves tex_code to outpout file
         f.write(render_temp)
 
@@ -127,8 +132,8 @@ def createFieldAgentsReport(self, locale, url, user, path, projectid, fieldagent
         sh.rmtree(path)
         return ""
 
-    html = HTML(filename=pathouttemp + "/fieldagents_" + projectid + ".html")
-    html.write_pdf(pathoutput + "/fieldagents_" + projectid + ".pdf")
+    html = HTML(filename=pathouttemp + "/fieldagents_" + projectCod + ".html")
+    html.write_pdf(pathoutput + "/fieldagents_" + projectCod + ".pdf")
 
     sh.rmtree(pathouttemp)
     return ""

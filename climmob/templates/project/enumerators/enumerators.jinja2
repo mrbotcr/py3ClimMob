@@ -67,7 +67,7 @@
                                             <td >
                                                 <div style="display: inline-block" title="{{ _("by") }} {{ enumerator.user_fullname }}" >
                                                     <p class="pull-left" style="margin: 0px">{{ enumerator.enum_name }}</p>
-                                                    <p class="pull-left" style="margin: 0px; color: #1ab394">&nbsp;{{ _("by") }} {{ enumerator.user_name }}</p>
+                                                    <p class="pull-left" style="margin: 0px; color: #1ab394">&nbsp;{{ _("by") }} {{ enumerator.user_fullname[0:12] }}{% if enumerator.user_fullname|length > 12 %}...{% endif %}</p>
                                                 </div>
                                             </td>
                                         </tr>
@@ -118,7 +118,7 @@
                                             <td style="vertical-align: middle;">
                                                 <div style="display: inline-block" title="{{ _("by") }} {{ enumerator.user_fullname }}" >
                                                     <p class="pull-left" style="margin: 0px">{{ enumerator.enum_name }}</p>
-                                                    <p class="pull-left" style="margin: 0px; color: #1ab394">&nbsp;{{ _("by") }} {{ enumerator.user_name }}</p>
+                                                    <p class="pull-left" style="margin: 0px; color: #1ab394">&nbsp;{{ _("by") }} {{ enumerator.user_fullname[0:12] }}{% if enumerator.user_fullname|length > 12 %}...{% endif %} </p>
                                                 </div>
                                                 {% if enumerator.enum_active != 1 %}
                                                     <span class="label label-danger">{{ _("Can not submit data") }}</span>

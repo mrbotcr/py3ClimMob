@@ -93,6 +93,7 @@ class addProjectEnumerators_view(privateView):
                         activeProjectCod,
                         activeProjectId,
                         getProjectEnumerators(activeProjectId, self.request),
+                        getActiveProject(self.user.login, self.request)
                     )
 
         return error_summary
@@ -134,6 +135,7 @@ class removeProjectEnumerators_view(privateView):
                         activeProjectCod,
                         activeProjectId,
                         getProjectEnumerators(activeProjectId, self.request),
+                        getActiveProject(self.user.login, self.request)
                     )
                     self.returnRawViewResult = True
                     return {"status": 200}

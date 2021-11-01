@@ -65,7 +65,7 @@ def generateManifest(mediaFileArray):
     return etree.tostring(root, encoding="utf-8")
 
 
-def getFormList(userid, enumerator, request):
+def getFormList(userid, enumerator, request, userOwner=None,projectCod=None):
     prjList = []
 
     sql = (
@@ -82,7 +82,9 @@ def getFormList(userid, enumerator, request):
         "enumerator.enum_id = '" + enumerator + "'"
     )
 
-    # print(sql)
+    if projectCod != None:
+        sql = sql +" AND project.project_cod='"+projectCod+"' and user_project.user_name='"+userOwner+"'"
+
 
     projects = request.dbsession.execute(sql).fetchall()
 
@@ -608,6 +610,8 @@ def storeSubmission(userid, userEnum, request):
             filePath = os.path.join(pathTemp, filename)
             tempFilePath = filePath + "~"
 
+            input_file.seek(0)
+
             with open(tempFilePath, "wb") as output_file:
                 shutil.copyfileobj(input_file, output_file)
 
@@ -620,7 +624,7 @@ def storeSubmission(userid, userEnum, request):
                 return False, 500
             # End changes by Brandon
 
-            input_file.seek(0)
+
             (
                 acceptSubmission,
                 error,

@@ -111,6 +111,7 @@ def isEnumeratorAssigned(user, projectId, enumerator, request):
     if result:
         result = (
             request.dbsession.query(PrjEnumerator)
+            .filter(PrjEnumerator.enum_user == user)
             .filter(PrjEnumerator.enum_id == enumerator)
             .filter(PrjEnumerator.project_id == projectId)
             .first()
