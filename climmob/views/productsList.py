@@ -138,6 +138,12 @@ class generateProductView(privateView):
         if not activeProjectData:
             raise HTTPNotFound()
 
+        listOfLabels = [
+            activeProjectData["project_label_a"],
+            activeProjectData["project_label_b"],
+            activeProjectData["project_label_c"],
+        ]
+
         if productid == "qrpackage":
 
             ncombs, packages = getPackages(
@@ -169,6 +175,7 @@ class generateProductView(privateView):
                 activeProjectData["project_cod"],
                 packages,
                 getTech(activeProjectData["project_id"], self.request),
+                listOfLabels,
             )
 
         if productid == "fieldagents":
@@ -180,7 +187,7 @@ class generateProductView(privateView):
                 activeProjectData["project_cod"],
                 activeProjectData["project_id"],
                 getProjectEnumerators(activeProjectData["project_id"], self.request),
-                activeProjectData
+                activeProjectData,
             )
 
         if productid == "colors":
@@ -205,9 +212,10 @@ class generateProductView(privateView):
                         create_colors_cards(
                             self.request,
                             activeProjectData["owner"]["user_name"],
-                            activeProjectData["project_cod"],
                             activeProjectData["project_id"],
+                            activeProjectData["project_cod"],
                             packages,
+                            listOfLabels,
                         )
 
         if productid == "datacsv":
@@ -270,6 +278,7 @@ class generateProductView(privateView):
                     "",
                     data,
                     packages,
+                    listOfLabels,
                 )
             else:
                 assessment_id = processname.split("_")[3]
@@ -289,6 +298,7 @@ class generateProductView(privateView):
                     assessment_id,
                     data,
                     packages,
+                    listOfLabels,
                 )
 
         if productid == "errorlogdocument":

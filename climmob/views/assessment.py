@@ -341,6 +341,8 @@ class assessmentFormCreation_view(privateView):
                     "img2": self.request.url_for_static("landing/odk2.png"),
                     "img3": self.request.url_for_static("landing/odk3.png"),
                     "data": data,
+                    "isOneProject": "True",
+                    "activeProject": getActiveProject(self.user.login, self.request),
                     "_": self._,
                     "showPhone": True,
                 }
@@ -385,6 +387,14 @@ class startAssessments_view(privateView):
                     sectionOfThePackageCode = getTheGroupOfThePackageCodeAssessment(
                         activeProjectId, assessment_id, self.request
                     )
+
+                    projectDetails = getActiveProject(self.user.login, self.request)
+                    listOfLabels = [
+                        projectDetails["project_label_a"],
+                        projectDetails["project_label_b"],
+                        projectDetails["project_label_c"],
+                    ]
+
                     correct = generateAssessmentFiles(
                         activeProjectUser,
                         activeProjectId,
@@ -392,6 +402,7 @@ class startAssessments_view(privateView):
                         assessment_id,
                         self.request,
                         sectionOfThePackageCode,
+                        listOfLabels,
                     )
 
                     # Edited by Brandon
@@ -420,6 +431,7 @@ class startAssessments_view(privateView):
                             assessment_id,
                             data,
                             packages,
+                            listOfLabels,
                         )
                         print("Returning")
 

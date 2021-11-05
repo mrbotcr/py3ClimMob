@@ -16,6 +16,7 @@ from ...processes import (
     getPackages,
     getJSONResult,
     getTheGroupOfThePackageCodeAssessment,
+    getProjectData,
 )
 
 from ..registry import getDataFormPreview
@@ -89,6 +90,15 @@ class createProjectAssessment_view(apiView):
                                             dataworking["ass_cod"],
                                             self.request,
                                         )
+                                        projectDetails = getProjectData(
+                                            activeProjectId, self.request
+                                        )
+                                        listOfLabels = [
+                                            projectDetails["project_label_a"],
+                                            projectDetails["project_label_b"],
+                                            projectDetails["project_label_c"],
+                                        ]
+
                                         correct = generateAssessmentFiles(
                                             dataworking["user_owner"],
                                             activeProjectId,
@@ -96,6 +106,7 @@ class createProjectAssessment_view(apiView):
                                             dataworking["ass_cod"],
                                             self.request,
                                             sectionOfThePackageCode,
+                                            listOfLabels,
                                         )
                                         if correct[0]["result"]:
                                             setAssessmentIndividualStatus(
@@ -128,6 +139,7 @@ class createProjectAssessment_view(apiView):
                                                 dataworking["ass_cod"],
                                                 data,
                                                 packages,
+                                                listOfLabels,
                                             )
 
                                             response = Response(

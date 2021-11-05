@@ -73,7 +73,11 @@ class projectHelp_view(privateView):
                             ncombs,
                             packages,
                         )
-
+                        listOfLabels = [
+                            dataworking["project_details"]["project_label_a"],
+                            dataworking["project_details"]["project_label_b"],
+                            dataworking["project_details"]["project_label_c"],
+                        ]
                         create_packages_excell(
                             self.request,
                             self.request.locale_name,
@@ -82,6 +86,7 @@ class projectHelp_view(privateView):
                             dataworking["project_cod"],
                             packages,
                             getTech(activeProjectId, self.request),
+                            listOfLabels,
                         )
 
                     else:

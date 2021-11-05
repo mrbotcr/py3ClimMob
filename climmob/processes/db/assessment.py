@@ -196,7 +196,9 @@ def checkAssessments(projectId, assessment, request):
         return True, errors
 
 
-def formattingQuestions(questions, request, onlyShowTheBasicQuestions=False):
+def formattingQuestions(
+    questions, request, projectLabels, onlyShowTheBasicQuestions=False
+):
     _ = request.translate
     result = []
     for qst in questions:
@@ -239,7 +241,7 @@ def formattingQuestions(questions, request, onlyShowTheBasicQuestions=False):
             if qst["question_quantitative"] == 1:
                 for questionNumber in range(0, 3):
                     newQuestion = dict(qst)
-                    descExtra = " - " + _("Option ") + chr(65 + questionNumber)
+                    descExtra = " - " + projectLabels[questionNumber]
                     newQuestion["question_desc"] = (
                         newQuestion["question_desc"] + descExtra
                     )
@@ -265,7 +267,7 @@ def formattingQuestions(questions, request, onlyShowTheBasicQuestions=False):
 
                     if isOther:
                         newQuestion = dict(qst)
-                        descExtra = " - " + _("Option ") + chr(65 + questionNumber)
+                        descExtra = " - " + projectLabels[questionNumber]
                         newQuestion["question_desc"] = (
                             newQuestion["question_desc"] + descExtra + _(" Other ")
                         )
@@ -681,7 +683,12 @@ def haveTheBasicStructureAssessment(userOwner, projectId, assessmentId, request)
 
 
 def getAssessmentQuestions(
-    userOwner, projectId, assessment, request, onlyShowTheBasicQuestions=False
+    userOwner,
+    projectId,
+    assessment,
+    request,
+    projectLabels,
+    onlyShowTheBasicQuestions=False,
 ):
     hasSections = (
         request.dbsession.query(Asssection)
@@ -711,7 +718,10 @@ def getAssessmentQuestions(
     questions = request.dbsession.execute(sql).fetchall()
 
     result = formattingQuestions(
-        questions, request, onlyShowTheBasicQuestions=onlyShowTheBasicQuestions
+        questions,
+        request,
+        projectLabels,
+        onlyShowTheBasicQuestions=onlyShowTheBasicQuestions,
     )
 
     return result

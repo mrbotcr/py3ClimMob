@@ -55,6 +55,9 @@ class createProject_view(apiView):
                 u"project_numobs",
                 u"project_cnty",
                 u"project_registration_and_analysis",
+                u"project_label_a",
+                u"project_label_b",
+                u"project_label_c",
             ]
 
             possibles = [
@@ -69,6 +72,9 @@ class createProject_view(apiView):
                 u"project_cnty",
                 u"project_registration_and_analysis",
                 u"project_clone",
+                u"project_label_a",
+                u"project_label_b",
+                u"project_label_c",
             ]
 
             dataworking = json.loads(self.body)
@@ -178,39 +184,59 @@ class createProject_view(apiView):
                                             )
                                             return response
 
-                                        added, message = addProject(
-                                            dataworking, self.request
-                                        )
+                                        if (
+                                            dataworking["project_label_a"]
+                                            != dataworking["project_label_b"]
+                                            and dataworking["project_label_a"]
+                                            != dataworking["project_label_c"]
+                                            and dataworking["project_label_b"]
+                                            != dataworking["project_label_c"]
+                                        ):
 
-                                        if added:
+                                            added, message = addProject(
+                                                dataworking, self.request
+                                            )
 
-                                            if "project_clone" in dataworking.keys():
-                                                dataworking[
-                                                    "slt_project_cod"
-                                                ] = dataworking["project_clone"]
+                                            if added:
 
-                                                ok = functionCreateClone(
-                                                    self, dataworking
+                                                if (
+                                                    "project_clone"
+                                                    in dataworking.keys()
+                                                ):
+                                                    dataworking[
+                                                        "slt_project_cod"
+                                                    ] = dataworking["project_clone"]
+
+                                                    ok = functionCreateClone(
+                                                        self, dataworking
+                                                    )
+
+                                                    response = Response(
+                                                        status=200,
+                                                        body=self._(
+                                                            "Project successfully cloned."
+                                                        ),
+                                                    )
+                                                    return response
+
+                                            if not added:
+                                                response = Response(
+                                                    status=401, body=message
                                                 )
-
+                                                return response
+                                            else:
                                                 response = Response(
                                                     status=200,
                                                     body=self._(
-                                                        "Project successfully cloned."
+                                                        "Project created successfully."
                                                     ),
                                                 )
                                                 return response
-
-                                        if not added:
-                                            response = Response(
-                                                status=401, body=message
-                                            )
-                                            return response
                                         else:
                                             response = Response(
-                                                status=200,
+                                                status=401,
                                                 body=self._(
-                                                    "Project created successfully."
+                                                    "The names that the items will receive should be different."
                                                 ),
                                             )
                                             return response
@@ -308,6 +334,9 @@ class updateProject_view(apiView):
                 u"project_registration_and_analysis",
                 u"user_name",
                 u"project_numcom",
+                u"project_label_a",
+                u"project_label_b",
+                u"project_label_c",
             ]
             obligatory = [u"project_cod", u"user_owner"]
 
@@ -425,18 +454,49 @@ class updateProject_view(apiView):
                                         ),
                                     )
                                     return response
+                            if not "project_label_a" in dataworking.keys():
+                                dataworking["project_label_a"] = cdata[
+                                    "project_label_a"
+                                ]
 
-                            modified, message = modifyProject(
-                                activeProjectId, dataworking, self.request,
-                            )
-                            if not modified:
-                                response = Response(status=401, body=message)
-                                return response
+                            if not "project_label_b" in dataworking.keys():
+                                dataworking["project_label_b"] = cdata[
+                                    "project_label_b"
+                                ]
+
+                            if not "project_label_c" in dataworking.keys():
+                                dataworking["project_label_c"] = cdata[
+                                    "project_label_c"
+                                ]
+
+                            if (
+                                dataworking["project_label_a"]
+                                != dataworking["project_label_b"]
+                                and dataworking["project_label_a"]
+                                != dataworking["project_label_c"]
+                                and dataworking["project_label_b"]
+                                != dataworking["project_label_c"]
+                            ):
+
+                                modified, message = modifyProject(
+                                    activeProjectId, dataworking, self.request,
+                                )
+                                if not modified:
+                                    response = Response(status=401, body=message)
+                                    return response
+                                else:
+                                    response = Response(
+                                        status=200,
+                                        body=self._(
+                                            "The project was modified successfully."
+                                        ),
+                                    )
+                                    return response
                             else:
                                 response = Response(
-                                    status=200,
+                                    status=401,
                                     body=self._(
-                                        "The project was modified successfully."
+                                        "The names that the items will receive should be different."
                                     ),
                                 )
                                 return response

@@ -65,7 +65,7 @@ def generateManifest(mediaFileArray):
     return etree.tostring(root, encoding="utf-8")
 
 
-def getFormList(userid, enumerator, request, userOwner=None,projectCod=None):
+def getFormList(userid, enumerator, request, userOwner=None, projectCod=None):
     prjList = []
 
     sql = (
@@ -83,8 +83,14 @@ def getFormList(userid, enumerator, request, userOwner=None,projectCod=None):
     )
 
     if projectCod != None:
-        sql = sql +" AND project.project_cod='"+projectCod+"' and user_project.user_name='"+userOwner+"'"
-
+        sql = (
+            sql
+            + " AND project.project_cod='"
+            + projectCod
+            + "' and user_project.user_name='"
+            + userOwner
+            + "'"
+        )
 
     projects = request.dbsession.execute(sql).fetchall()
 
@@ -623,7 +629,6 @@ def storeSubmission(userid, userEnum, request):
             if p.returncode != 0:
                 return False, 500
             # End changes by Brandon
-
 
             (
                 acceptSubmission,

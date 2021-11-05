@@ -788,14 +788,26 @@ def loadRoutes(config):
     # ODK forms
     routes.append(addRoute("odkformlist", "/{userid}/formList", formList_view, None))
 
-    routes.append(addRoute("odkFormlistByProject", "/user/{user}/project/{project}/collaborator/{collaborator}/formList", formListByProject_view, None))
+    routes.append(
+        addRoute(
+            "odkFormlistByProject",
+            "/user/{user}/project/{project}/collaborator/{collaborator}/formList",
+            formListByProject_view,
+            None,
+        )
+    )
 
     routes.append(
         addRoute("odksubmission", "/{userid}/submission", submission_view, None)
     )
 
     routes.append(
-        addRoute("odkSubmissionByProject", "/user/{user}/project/{project}/collaborator/{collaborator}/submission", submissionByProject_view, None)
+        addRoute(
+            "odkSubmissionByProject",
+            "/user/{user}/project/{project}/collaborator/{collaborator}/submission",
+            submissionByProject_view,
+            None,
+        )
     )
 
     routes.append(addRoute("odkpush", "/{userid}/push", push_view, None))

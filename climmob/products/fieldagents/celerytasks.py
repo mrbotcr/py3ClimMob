@@ -15,7 +15,9 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 
 
 @celeryApp.task(bind=True, base=celeryTask, soft_time_limit=7200, time_limit=7200)
-def createFieldAgentsReport(self, locale, url, userOwner, path, projectCod, fieldagents, project):
+def createFieldAgentsReport(
+    self, locale, url, userOwner, path, projectCod, fieldagents, project
+):
     parts = __file__.split("/products/")
     this_file_path = parts[0] + "/locale"
     try:
@@ -61,7 +63,13 @@ def createFieldAgentsReport(self, locale, url, userOwner, path, projectCod, fiel
                 "general": {
                     "change_server": True,
                     "navigation": "buttons",
-                    "server_url": url + "/user/"+ userOwner +"/project/"+projectCod+"/collaborator/"+fieldagent["user_name"],
+                    "server_url": url
+                    + "/user/"
+                    + userOwner
+                    + "/project/"
+                    + projectCod
+                    + "/collaborator/"
+                    + fieldagent["user_name"],
                     "username": fieldagent["enum_id"],
                     "password": fieldagent["enum_password"],
                 },
@@ -69,7 +77,7 @@ def createFieldAgentsReport(self, locale, url, userOwner, path, projectCod, fiel
                     "name": project["project_name"],
                     "icon": "🌱",
                     "color": "#ffffff",
-                }
+                },
             }
 
             qr_json = json.dumps(odk_settings).encode()

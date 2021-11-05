@@ -131,23 +131,20 @@ class projectCombinations_view(privateView):
                     activeProjectUser, activeProjectId, self.request
                 )
 
-                # print "*******************************10"
-                # pprint.pprint(packages)
-                # print "*******************************10"
-
-                lcombs = list(range(ncombs))
-                combArray = []
-                for c in lcombs:
-                    combArray.append(chr(65 + c))
-
+                projectDetails = getActiveProject(self.user.login, self.request)
+                listOfLabels = [
+                    projectDetails["project_label_a"],
+                    projectDetails["project_label_b"],
+                    projectDetails["project_label_c"],
+                ]
                 return {
                     "activeUser": self.user,
-                    "activeProject": getActiveProject(self.user.login, self.request),
-                    "ncombs": combArray,
+                    "activeProject": projectDetails,
                     "packages": packages,
                     "stage": stage,
                     "registryCreated": False,
                     "tech": getTech(activeProjectId, self.request),
+                    "listOfLabels": listOfLabels,
                 }
             if stage == 3:
                 if not projectHasCombinations(activeProjectId, self.request):
@@ -171,8 +168,18 @@ class projectCombinations_view(privateView):
                         )
                     )
 
+                projectDetails = getActiveProject(self.user.login, self.request)
+
                 startIsOk, error = startTheRegistry(
-                    self, activeProjectUser, activeProjectId, activeProjectCod
+                    self,
+                    activeProjectUser,
+                    activeProjectId,
+                    activeProjectCod,
+                    [
+                        projectDetails["project_label_a"],
+                        projectDetails["project_label_b"],
+                        projectDetails["project_label_c"],
+                    ],
                 )
 
                 if startIsOk:
@@ -196,12 +203,17 @@ class projectCombinations_view(privateView):
                     }
 
 
-def startTheRegistry(self, userOwner, projectId, projectCod):
+def startTheRegistry(self, userOwner, projectId, projectCod, listOfLabelsForPackages):
     locale = self.request.locale_name
 
     sectionOfThePackageCode = getTheGroupOfThePackageCode(projectId, self.request)
     correct, error = generateRegistry(
-        userOwner, projectId, projectCod, self.request, sectionOfThePackageCode
+        userOwner,
+        projectId,
+        projectCod,
+        self.request,
+        sectionOfThePackageCode,
+        listOfLabelsForPackages,
     )
 
     if correct:
@@ -232,6 +244,7 @@ def startTheRegistry(self, userOwner, projectId, projectCod):
             "",
             data,
             packages,
+            listOfLabelsForPackages,
         )
 
         time.sleep(1)
@@ -243,6 +256,7 @@ def startTheRegistry(self, userOwner, projectId, projectCod):
             projectCod,
             packages,
             getTech(projectId, self.request),
+            listOfLabelsForPackages,
         )
         time.sleep(1)
 
@@ -253,7 +267,7 @@ def startTheRegistry(self, userOwner, projectId, projectCod):
             projectCod,
             projectId,
             getProjectEnumerators(projectId, self.request),
-            getActiveProject(self.user.login, self.request)
+            getActiveProject(self.user.login, self.request),
         )
 
         numberOfCombinations = numberOfCombinationsForTheProject(
@@ -269,7 +283,12 @@ def startTheRegistry(self, userOwner, projectId, projectCod):
                 ):
                     time.sleep(1)
                     create_colors_cards(
-                        self.request, userOwner, projectId, projectCod, packages
+                        self.request,
+                        userOwner,
+                        projectId,
+                        projectCod,
+                        packages,
+                        listOfLabelsForPackages,
                     )
         # Call extenal plugins here
 

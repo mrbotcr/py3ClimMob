@@ -10,7 +10,16 @@ from ..qrpackages.celerytasks import create_qr
 
 @celeryApp.task(bind=True, base=celeryTask, soft_time_limit=7200, time_limit=7200)
 def createDocumentForm(
-    self, locale, user, path, projectid, formGroupsAndQuestions, form, code, packages,
+    self,
+    locale,
+    user,
+    path,
+    projectid,
+    formGroupsAndQuestions,
+    form,
+    code,
+    packages,
+    listOfLabels,
 ):
 
     # NO SE BORRA EL PATH PORQUE PUEDE TENER VARIOS ARCHIVOS
@@ -79,6 +88,7 @@ def createDocumentForm(
             doc, os.path.join(PATH2, "template/prueba.png"), width=Mm(100)
         ),
         "_": _,
+        "options": listOfLabels,
     }
 
     if self.is_aborted():

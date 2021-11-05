@@ -604,6 +604,15 @@ class Project(Base):
     project_localvariety = Column(Integer, server_default=text("'0'"))
     project_cnty = Column(ForeignKey(u"country.cnty_cod"), nullable=True, index=True)
     project_registration_and_analysis = Column(Integer, server_default=text("'0'"))
+    project_label_a = Column(
+        Unicode(120), nullable=False, server_default=text("'Option A'")
+    )
+    project_label_b = Column(
+        Unicode(120), nullable=False, server_default=text("'Option B'")
+    )
+    project_label_c = Column(
+        Unicode(120), nullable=False, server_default=text("'Option C'")
+    )
     extra = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
 
     country = relationship(u"Country")

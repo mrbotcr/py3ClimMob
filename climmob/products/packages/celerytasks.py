@@ -7,7 +7,9 @@ import gettext
 
 
 @celeryApp.task(bind=True, base=celeryTask, soft_time_limit=7200, time_limit=7200)
-def createPackages(self, locale, path, projectid, packages, techs):
+def createPackages(
+    self, locale, path, projectid, packages, techs, listOfLabelsForPackages
+):
 
     if os.path.exists(path):
         sh.rmtree(path)
@@ -83,7 +85,7 @@ def createPackages(self, locale, path, projectid, packages, techs):
                 return ""
 
             if len(techs) == 1:
-                firstRow.append(_("Option ") + alphabet[x])
+                firstRow.append(listOfLabelsForPackages[x])
                 SecondRow.append(techs[0]["tech_name"])
             else:
                 cont = 0

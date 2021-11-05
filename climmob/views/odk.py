@@ -12,7 +12,7 @@ from ..processes import (
     getAssessmentManifest,
     getAssessmentMediaFile,
     getTheProjectIdForOwner,
-    isEnumeratorAssigned
+    isEnumeratorAssigned,
 )
 from pyramid.response import Response
 
@@ -30,20 +30,30 @@ class formList_view(odkView):
         else:
             return self.askForCredentials()
 
+
 class formListByProject_view(odkView):
     def processView(self):
         userOwner = self.request.matchdict["user"]
         projectCod = self.request.matchdict["project"]
         userCollaborator = self.request.matchdict["collaborator"]
         if isEnumeratorActive(userCollaborator, self.user, self.request):
-            if self.authorize(getEnumeratorPassword(userCollaborator, self.user, self.request)):
+            if self.authorize(
+                getEnumeratorPassword(userCollaborator, self.user, self.request)
+            ):
                 return self.createXMLResponse(
-                    getFormList(userCollaborator, self.user, self.request, userOwner=userOwner, projectCod=projectCod)
+                    getFormList(
+                        userCollaborator,
+                        self.user,
+                        self.request,
+                        userOwner=userOwner,
+                        projectCod=projectCod,
+                    )
                 )
             else:
                 return self.askForCredentials()
         else:
             return self.askForCredentials()
+
 
 class push_view(odkView):
     def processView(self):
@@ -112,6 +122,7 @@ class submission_view(odkView):
                 response = Response(status=404)
                 return response
 
+
 class submissionByProject_view(odkView):
     def processView(self):
         userOwner = self.request.matchdict["user"]
@@ -123,9 +134,14 @@ class submissionByProject_view(odkView):
                 activeProjectId = getTheProjectIdForOwner(
                     userOwner, projectCod, self.request
                 )
-                if not isEnumeratorAssigned(userCollaborator, activeProjectId, self.user, self.request):
+                if not isEnumeratorAssigned(
+                    userCollaborator, activeProjectId, self.user, self.request
+                ):
                     headers = [
-                        ("Location", self.request.route_url("odkpush", userid=userCollaborator))
+                        (
+                            "Location",
+                            self.request.route_url("odkpush", userid=userCollaborator),
+                        )
                     ]
                     response = Response(headerlist=headers, status=204)
                     return response
@@ -136,6 +152,7 @@ class submissionByProject_view(odkView):
         else:
             response = Response(status=404)
             return response
+
 
 class XMLForm_view(odkView):
     def processView(self):

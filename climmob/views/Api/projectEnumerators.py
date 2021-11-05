@@ -10,7 +10,7 @@ from ...processes import (
     removeEnumeratorFromProject,
     getAccessTypeForProject,
     theUserBelongsToTheProject,
-    getProjectData
+    getProjectData,
 )
 from ...products.fieldagents.fieldagents import create_fieldagents_report
 from climmob.products import stopTasksByProcess
@@ -103,7 +103,7 @@ class addProjectEnumerator_view(apiView):
                                         getProjectEnumerators(
                                             activeProjectId, self.request,
                                         ),
-                                        getProjectData(activeProjectId, self.request)
+                                        getProjectData(activeProjectId, self.request),
                                     )
                                     response = Response(
                                         status=200,
@@ -336,7 +336,7 @@ class deleteProjectEnumerator_view(apiView):
                                     getProjectEnumerators(
                                         activeProjectId, self.request,
                                     ),
-                                    getProjectData(self.request)
+                                    getProjectData(self.request),
                                 )
                                 response = Response(
                                     status=200,

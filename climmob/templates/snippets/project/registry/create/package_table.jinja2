@@ -4,12 +4,12 @@
         <thead>
             <tr>
                 <th rowspan="2" style="border-left: 1px solid #1ab394;border-top: 1px solid #1ab394;">{{ _("Package code") }}</th>
-                {% for comb in ncombs %}
-                    <th class="text-center" style="border: 1px solid #1ab394;" colspan="{{ tech|length }}">{{ _("Option") }} {{ comb }}</th>
+                {% for comb in listOfLabels %}
+                    <th class="text-center" style="border: 1px solid #1ab394;" colspan="{{ tech|length }}">{{ comb }}</th>
                 {% endfor %}
             </tr>
             <tr>
-                {% for comb in ncombs %}
+                {% for comb in listOfLabels %}
                     {% for te in tech %}
                         <th class="text-center" style="{% if loop.index == 1 %} border-left: 1px solid #1ab394;{% endif %} {% if loop.index == tech|length %}border-right: 1px solid #1ab394{% endif %}">
                             {{ te.tech_name }}

@@ -214,6 +214,7 @@ def getRegistryQuestions(
     userOwner,
     projectId,
     request,
+    projectLabels,
     createAutoRegistry=True,
     onlyShowTheBasicQuestions=False,
 ):
@@ -246,7 +247,10 @@ def getRegistryQuestions(
     questions = request.dbsession.execute(sql).fetchall()
 
     result = formattingQuestions(
-        questions, request, onlyShowTheBasicQuestions=onlyShowTheBasicQuestions
+        questions,
+        request,
+        projectLabels,
+        onlyShowTheBasicQuestions=onlyShowTheBasicQuestions,
     )
 
     return result

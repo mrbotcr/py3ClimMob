@@ -36,6 +36,9 @@ class newProject_view(privateView):
         dataworking["project_localvariety"] = "on"
         dataworking["project_cnty"] = None
         dataworking["project_registration_and_analysis"] = 0
+        dataworking["project_label_a"] = self._("Option A")
+        dataworking["project_label_b"] = self._("Option B")
+        dataworking["project_label_c"] = self._("Option C")
 
         if self.request.method == "POST":
             if "btn_addNewProject" in self.request.POST:
@@ -85,25 +88,38 @@ def createProjectFunction(dataworking, error_summary, self):
 
     if int(dataworking["project_numobs"]) > 0:
         if dataworking["project_cod"] != "":
-            exitsproject = projectInDatabase(
-                self.user.login, dataworking["project_cod"], self.request
-            )
-            if not exitsproject:
-                added, message = addProject(dataworking, self.request)
-                if not added:
-                    error_summary = {"dberror": message}
-                else:
-                    addToLog(
-                        self.user.login,
-                        "PRF",
-                        "Created a new project",
-                        datetime.datetime.now(),
-                        self.request,
-                    )
+            if (
+                dataworking["project_label_a"] != dataworking["project_label_b"]
+                and dataworking["project_label_a"] != dataworking["project_label_c"]
+                and dataworking["project_label_b"] != dataworking["project_label_c"]
+            ):
+                exitsproject = projectInDatabase(
+                    self.user.login, dataworking["project_cod"], self.request
+                )
+                if not exitsproject:
+                    added, message = addProject(dataworking, self.request)
+                    if not added:
+                        error_summary = {"dberror": message}
+                    else:
+                        addToLog(
+                            self.user.login,
+                            "PRF",
+                            "Created a new project",
+                            datetime.datetime.now(),
+                            self.request,
+                        )
 
+                else:
+                    error_summary = {
+                        "exitsproject": self._(
+                            "A project already exists with this code."
+                        )
+                    }
             else:
                 error_summary = {
-                    "exitsproject": self._("A project already exists with this code.")
+                    "repeatitem": self._(
+                        "The names that the items will receive should be different."
+                    )
                 }
         else:
             error_summary = {"codempty": self._("The project code can't be empty")}

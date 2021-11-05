@@ -576,6 +576,7 @@ def generateODKFile(
     numComb,
     request,
     selectedPackageQuestionGroup,
+    listOfLabelsForPackages,
 ):
     _ = request.translate
 
@@ -643,7 +644,7 @@ def generateODKFile(
             descExtra = ""
             if question.question_quantitative == 1:
                 nameExtra = "_" + chr(65 + questionNumber).lower()
-                descExtra = " - " + _("Option ") + chr(65 + questionNumber)
+                descExtra = " - " + listOfLabelsForPackages[questionNumber]
 
             if (
                 question.question_dtype != 8
@@ -730,11 +731,10 @@ def generateODKFile(
                             "grp_" + str(question.section_id),
                         )
                         for opt in range(0, numComb):
-                            code = chr(65 + opt)
                             excelFile.addOption(
                                 "char_" + question.question_code,
                                 str(opt + 1),
-                                _("Option ") + code,
+                                listOfLabelsForPackages[opt],
                             )
 
                         if question.question_tied == 1:
@@ -796,17 +796,17 @@ def generateODKFile(
                             constraint=constraintGen,
                         )
                         for opt in range(0, numComb):
-                            code = chr(65 + opt)
                             excelFile.addOption(
                                 "char_" + question.question_code + "_pos",
                                 str(opt + 1),
-                                _("Option ") + code,
+                                listOfLabelsForPackages[opt],
                             )
                             excelFile.addOption(
                                 "char_" + question.question_code + "_neg",
                                 str(opt + 1),
-                                _("Option ") + code,
+                                listOfLabelsForPackages[opt],
                             )
+
                         # EDITED BY BRANDON
                         if question.question_tied == 1:
                             excelFile.addOption(
@@ -874,14 +874,13 @@ def generateODKFile(
                                     + "}"
                                 )
                             for opt2 in range(0, numComb):
-                                code = chr(65 + opt2)
                                 excelFile.addOption(
                                     "char_"
                                     + question.question_code
                                     + "_stmt_"
                                     + str(opt + 1),
                                     str(opt2 + 1),
-                                    _("Option ") + code,
+                                    listOfLabelsForPackages[opt2],
                                 )
 
                             if question.question_tied == 1:
@@ -906,11 +905,10 @@ def generateODKFile(
 
                 if question.question_dtype == 10:
                     for opt in range(0, numComb):
-                        code = chr(65 + opt)
                         renderedString = (
                             Environment()
                             .from_string(question.question_perfstmt)
-                            .render(option=code)
+                            .render(option=listOfLabelsForPackages[opt])
                         )
                         excelFile.addQuestion(
                             "perf_" + question.question_code + "_" + str(opt + 1),
@@ -973,7 +971,12 @@ def generateODKFile(
 
 
 def generateRegistry(
-    userOwner, projectId, projectCod, request, sectionOfThePackageCode
+    userOwner,
+    projectId,
+    projectCod,
+    request,
+    sectionOfThePackageCode,
+    listOfLabelsForPackages,
 ):
     _ = request.translate
 
@@ -1069,6 +1072,7 @@ def generateRegistry(
         prjdata["project_numcom"],
         request,
         sectionOfThePackageCode,
+        listOfLabelsForPackages,
     )
 
     print("****generateRegistry**Convert XLSX to XML******")
@@ -1114,7 +1118,13 @@ def generateRegistry(
 
 
 def generateAssessmentFiles(
-    userOwner, projectId, projectCod, assessment, request, sectionOfThePackageCode
+    userOwner,
+    projectId,
+    projectCod,
+    assessment,
+    request,
+    sectionOfThePackageCode,
+    listOfLabelsForPackages,
 ):
     _ = request.translate
 
@@ -1230,6 +1240,7 @@ def generateAssessmentFiles(
             prjdata["project_numcom"],
             request,
             sectionOfThePackageCode,
+            listOfLabelsForPackages,
         )
 
         try:

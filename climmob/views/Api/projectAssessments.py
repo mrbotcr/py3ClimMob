@@ -30,6 +30,7 @@ from ...processes import (
     getTheProjectIdForOwner,
     getAccessTypeForProject,
     theUserBelongsToTheProject,
+    getProjectData,
 )
 
 
@@ -423,11 +424,20 @@ class readProjectAssessmentStructure_view(apiView):
                         if assessmentExists(
                             activeProjectId, dataworking["ass_cod"], self.request,
                         ):
+                            projectDetails = getProjectData(
+                                activeProjectId, self.request
+                            )
+                            projectLabels = [
+                                projectDetails["project_label_a"],
+                                projectDetails["project_label_b"],
+                                projectDetails["project_label_c"],
+                            ]
                             data = getAssessmentQuestions(
                                 dataworking["user_owner"],
                                 activeProjectId,
                                 dataworking["ass_cod"],
                                 self.request,
+                                projectLabels,
                                 onlyShowTheBasicQuestions=True,
                             )
                             # The following is to help jinja2 to render the groups and questions

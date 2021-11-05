@@ -19,6 +19,7 @@ from ...processes import (
     getJSONResult,
     getTheProjectIdForOwner,
     getAccessTypeForProject,
+    getProjectData,
 )
 
 from climmob.products import stopTasksByProcess
@@ -505,12 +506,20 @@ class createProjectRegistry_view(apiView):
                                     if not projectCreatePackages(
                                         activeProjectId, self.request,
                                     ):
+                                        projectDetails = getProjectData(
+                                            activeProjectId, self.request
+                                        )
 
                                         startIsOk, error = startTheRegistry(
                                             self,
                                             dataworking["user_owner"],
                                             activeProjectId,
                                             dataworking["project_cod"],
+                                            [
+                                                projectDetails["project_label_a"],
+                                                projectDetails["project_label_b"],
+                                                projectDetails["project_label_c"],
+                                            ],
                                         )
                                         if startIsOk:
                                             response = Response(

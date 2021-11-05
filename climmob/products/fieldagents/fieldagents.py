@@ -14,7 +14,15 @@ def create_fieldagents_report(
     path = createProductDirectory(request, userOwner, projectCode, "fieldagents")
     # We call the Celery task that will generate the output packages.pdf
     task = createFieldAgentsReport.apply_async(
-        (locale, request.application_url, userOwner, path, projectCode, fieldagents, projectDetails),
+        (
+            locale,
+            request.application_url,
+            userOwner,
+            path,
+            projectCode,
+            fieldagents,
+            projectDetails,
+        ),
         queue="ClimMob",
     )
     # We register the instance of the output with the task ID of celery

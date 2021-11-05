@@ -17,6 +17,7 @@ from ..processes import (
     getAssessmentQuestions,
     getActiveProject,
     getTheProjectIdForOwner,
+    getProjectData,
 )
 from jinja2 import Environment, FileSystemLoader
 from climmob.products import stopTasksByProcess
@@ -306,6 +307,8 @@ class registryFormCreation_view(privateView):
                     "img2": self.request.url_for_static("landing/odk2.png"),
                     "img3": self.request.url_for_static("landing/odk3.png"),
                     "data": data,
+                    "isOneProject": "True",
+                    "activeProject": getActiveProject(self.user.login, self.request),
                     "_": self._,
                     "showPhone": True,
                 }
@@ -320,13 +323,20 @@ class registryFormCreation_view(privateView):
 def getDataFormPreview(
     self, userOwner, projectId, assessmentid=None, createAutoRegistry=True
 ):
-
+    projectDetails = getProjectData(projectId, self.request)
+    projectLabels = [
+        projectDetails["project_label_a"],
+        projectDetails["project_label_b"],
+        projectDetails["project_label_c"],
+    ]
     if not assessmentid:
         data = getRegistryQuestions(
-            userOwner, projectId, self.request, createAutoRegistry
+            userOwner, projectId, self.request, projectLabels, createAutoRegistry
         )
     else:
-        data = getAssessmentQuestions(userOwner, projectId, assessmentid, self.request)
+        data = getAssessmentQuestions(
+            userOwner, projectId, assessmentid, self.request, projectLabels
+        )
     # The following is to help jinja2 to render the groups and questions
     # This because the scope constraint makes it difficult to control
     sectionID = -99
