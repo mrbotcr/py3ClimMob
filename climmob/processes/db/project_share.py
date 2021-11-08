@@ -1,5 +1,6 @@
 from ...models import User, userProject
 from ...models.schema import mapToSchema, mapFromSchema
+from sqlalchemy import or_
 
 __all__ = [
     "query_for_users",
@@ -17,7 +18,7 @@ def query_for_users(request, q, query_from, query_size, projectId):
     )
     result = (
         request.dbsession.query(User)
-        .filter(User.user_name.ilike("%" + query + "%"))
+        .filter(or_(User.user_name.ilike("%" + query + "%"), User.user_fullname.ilike("%"+ query +"%")))
         .filter(User.user_name.notin_(subquery))
         .offset(query_from)
         .limit(query_size)
