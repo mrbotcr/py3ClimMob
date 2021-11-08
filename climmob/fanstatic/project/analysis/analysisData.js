@@ -34,6 +34,19 @@ jQuery(document).ready(function() {
 
     });
 
+    $('.explanatorySelect').on('ifChanged', function()
+    {
+        id = $(this).attr("variable")
+
+        if ($(this).prop('checked')) {
+
+            $('#txt_splits').val($('#txt_splits').val()+id+",");
+        } else {
+            $('#txt_splits').val($('#txt_splits').val().replace(id+",",""));
+        }
+
+    });
+
     $("[name='ckb_Infosheets']").bootstrapSwitch('state',true);
 
     $("#ckb_Infosheets").on('switchChange.bootstrapSwitch', function(event, state) {
@@ -44,6 +57,21 @@ jQuery(document).ready(function() {
         else{
             $("#txt_infosheets").val('false');
         }
+    });
+
+    $("[name='ckb_Splits']").bootstrapSwitch('state',true);
+
+    $("#ckb_Splits").on('switchChange.bootstrapSwitch', function(event, state) {
+
+        if($(this).is(':checked')) {
+            values = $("#txt_splits").val().substring(6);
+            $("#txt_splits").val('true,'+ values);
+        }
+        else{
+            values = $("#txt_splits").val().substring(5);
+            $("#txt_splits").val('false,'+values);
+        }
+
     });
 
 });

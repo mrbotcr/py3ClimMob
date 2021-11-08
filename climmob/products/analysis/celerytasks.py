@@ -13,7 +13,7 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 
 @celeryApp.task(base=climmobCeleryTask)
 def createReports(
-    locale, path, pathInfosheets, user, projectid, data, info, infosheet, pathScript
+    locale, path, pathInfosheets, user, projectid, data, info, infosheet, pathScript, variablesSplit
 ):
 
     if os.path.exists(path):
@@ -53,6 +53,9 @@ def createReports(
         )
         es.install()
         _ = es.gettext
+
+    if variablesSplit != "":
+        variablesSplit = "c(" + ", ".join(map(str, variablesSplit.split(","))) + ")"
 
     print(
         "Rscript "

@@ -283,6 +283,7 @@ class generateAnalysisByApiView_api(apiView):
                                             self.request,
                                             variables,
                                             infosheet,
+                                            ""
                                         )
 
                                         response = Response(

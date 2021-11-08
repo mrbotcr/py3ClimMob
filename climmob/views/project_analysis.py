@@ -14,13 +14,17 @@ class analysisDataView(privateView):
         if self.request.method == "POST":
             if "btn_createAnalysis" in self.request.POST:
                 dataworking = self.getPostDict()
+                variablesSplit =""
 
                 if dataworking["txt_included_in_analysis"] != "":
                     part = dataworking["txt_included_in_analysis"][:-1].split(",")
+                    if dataworking["txt_splits"][0:4] == "true":
+                        variablesSplit = dataworking["txt_splits"][5:-1]
+
                     infosheet = dataworking["txt_infosheets"].upper()
                     dataworking["project_id"] = activeProjectData["project_id"]
                     pro = processToGenerateTheReport(
-                        activeProjectData, self.request, part, infosheet
+                        activeProjectData, self.request, part, infosheet, variablesSplit
                     )
 
                 self.returnRawViewResult = True
@@ -39,7 +43,7 @@ class analysisDataView(privateView):
         }
 
 
-def processToGenerateTheReport(activeProjectData, request, variables, infosheet):
+def processToGenerateTheReport(activeProjectData, request, variables, infosheet, variablesSplit):
 
     data, _assessment = getQuestionsByType(activeProjectData["project_id"], request)
 
@@ -82,6 +86,7 @@ def processToGenerateTheReport(activeProjectData, request, variables, infosheet)
         infosheet,
         request,
         request.registry.settings["r.analysis.script"],
+        variablesSplit
     )
 
     create_datacsv(

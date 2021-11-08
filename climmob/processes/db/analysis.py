@@ -9,11 +9,9 @@ from climmob.models import (
     I18nQuestion,
 )
 from .question import opcionOtherInQuestion
-from climmob.processes.db.project import numberOfCombinationsForTheProject
+from climmob.processes.db.project import numberOfCombinationsForTheProject, getProjectLabels
 from sqlalchemy import or_, func, and_
 from jinja2 import Environment
-import json
-
 __all__ = ["getQuestionsByType", "getQuestionsStructure"]
 
 
@@ -26,6 +24,9 @@ def getQuestionsByType(projectId, request):
     dic["Performance"] = []
     dic["Explanatory"] = []
     dic["Quantitative"] = []
+    dic["linearRegression"] = []
+
+    projectLabels = getProjectLabels(projectId, request)
 
     numComb = numberOfCombinationsForTheProject(projectId, request)
 
@@ -74,7 +75,7 @@ def getQuestionsByType(projectId, request):
                 .first()
             )
 
-            dictName, dictQues = addQuestionToDictionary(questionData, numComb)
+            dictName, dictQues = addQuestionToDictionary(projectLabels, questionData, numComb)
 
             if dictName != "":
                 dic[dictName].append(dictQues)
@@ -141,7 +142,7 @@ def getQuestionsByType(projectId, request):
                 )
 
                 dictName, dictQues = addQuestionToDictionary(
-                    questionData, numComb, assessment
+                    projectLabels, questionData, numComb, assessment
                 )
 
                 if dictName != "":
@@ -150,7 +151,8 @@ def getQuestionsByType(projectId, request):
     return dic, _assessments
 
 
-def addQuestionToDictionary(questionData, numComb, assessment=None):
+def addQuestionToDictionary(projectLabels, questionData, numComb, assessment=None):
+
     questInfo = {}
 
     if assessment:
@@ -164,13 +166,19 @@ def addQuestionToDictionary(questionData, numComb, assessment=None):
 
     if questionData["question_quantitative"] == 1:
 
+        if questionData["question_dtype"] not in [2,3,4,5,6]:
+            return "",""
+
         questInfo["name"] = questionData["question_name"]
         questInfo["codeQst"] = questionData["question_code"]
         questInfo["id"] = questionData["question_id"]
         questInfo["vars"] = []
         questInfo["code"] = assessment
         questInfo["questionAsked"] = []
-        questInfo["type"] = "quantitative"
+        if questionData["question_dtype"] in [2, 3]:
+            questInfo["type"] = "linearregression"
+        else:
+            questInfo["type"] = "quantitative"
         options = {
             1: "text",
             2: "decimal",
@@ -207,7 +215,7 @@ def addQuestionToDictionary(questionData, numComb, assessment=None):
 
         for questionNumber in range(0, numComb):
             nameExtra = "_" + chr(65 + questionNumber).lower()
-            descExtra = " - Option " + chr(65 + questionNumber)
+            descExtra = " - " + projectLabels[questionNumber]
             questInfo["vars"].append(
                 code + "_" + questionData["question_code"] + nameExtra
             )
@@ -224,10 +232,13 @@ def addQuestionToDictionary(questionData, numComb, assessment=None):
             + "_add"
         )
 
-        return "Quantitative", questInfo
+        if questionData["question_dtype"] in [2,3]:
+            return "linearRegression", questInfo
+        else:
+            return "Quantitative", questInfo
 
     else:
-        if questionData["question_dtype"] == 5:
+        if questionData["question_dtype"] in [2,3,4,5,6]:
             questInfo["name"] = questionData["question_name"]
             questInfo["codeQst"] = questionData["question_code"]
             questInfo["questionAsked"] = questionData["question_desc"]

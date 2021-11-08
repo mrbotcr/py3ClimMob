@@ -28,6 +28,7 @@ import uuid
 __all__ = [
     "addProject",
     "getProjectData",
+    "getProjectLabels",
     "getActiveProject",
     "getProjectProgress",
     "setActiveProject",
@@ -305,6 +306,12 @@ def getProjectData(projectId, request):
         request.dbsession.query(Project).filter(Project.project_id == projectId).first()
     )
     return mappedData
+
+def getProjectLabels(projectId, request):
+    mappedData = mapFromSchema(
+        request.dbsession.query(Project.project_label_a,Project.project_label_b,Project.project_label_c).filter(Project.project_id == projectId).first()
+    )
+    return [mappedData["project_label_a"],mappedData["project_label_b"],mappedData["project_label_c"]]
 
 
 def getProjectLocalVariety(projectId, request):

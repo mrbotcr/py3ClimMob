@@ -17,7 +17,7 @@ from ..processes import (
     getAssessmentQuestions,
     getActiveProject,
     getTheProjectIdForOwner,
-    getProjectData,
+    getProjectLabels,
 )
 from jinja2 import Environment, FileSystemLoader
 from climmob.products import stopTasksByProcess
@@ -323,12 +323,8 @@ class registryFormCreation_view(privateView):
 def getDataFormPreview(
     self, userOwner, projectId, assessmentid=None, createAutoRegistry=True
 ):
-    projectDetails = getProjectData(projectId, self.request)
-    projectLabels = [
-        projectDetails["project_label_a"],
-        projectDetails["project_label_b"],
-        projectDetails["project_label_c"],
-    ]
+    projectLabels = getProjectLabels(projectId, self.request)
+
     if not assessmentid:
         data = getRegistryQuestions(
             userOwner, projectId, self.request, projectLabels, createAutoRegistry

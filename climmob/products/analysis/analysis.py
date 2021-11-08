@@ -6,7 +6,7 @@ from .celerytasks import createReports
 
 
 def create_analysis(
-    locale, userOwner, projectId, projectCod, data, info, infosheet, request, pathScript
+    locale, userOwner, projectId, projectCod, data, info, infosheet, request, pathScript, variablesSplit
 ):
     # We create the plugin directory if it does not exists and return it
     # The path user.repository in development.ini/user/project/products/product and
@@ -30,6 +30,7 @@ def create_analysis(
             info,
             infosheet,
             pathScript,
+            variablesSplit
         ),
         queue="ClimMob",
     )

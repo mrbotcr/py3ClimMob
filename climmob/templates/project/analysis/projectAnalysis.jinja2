@@ -35,6 +35,7 @@
                         <tr>
                             <th class="text-center" style="width: {{percentage}}% ">{{ _("Data collection moments") }}</th>
                             <th class="text-center" style="width: {{percentage}}% ">{{ _("Explanatory") }}</th>
+                            <th class="text-center" style="width: {{percentage}}% ">{{ _("Linear regression") }}</th>
 {#                            <th class="text-center" style="width: {{percentage}}% ">{{ _("Quantitative") }}</th>#}
                             <th class="text-center" style="width: {{percentage}}% ">{{ _("Ranking of options") }}</th>
                             <th class="text-center" style="width: {{percentage}}% ">{{ _("Comparison with check") }}</th>
@@ -42,6 +43,7 @@
                         <tr>
                             <td class="text-center" style="border-top-style: hidden;"></td>
                             <td class="text-center" style="border-top-style: hidden;"><label style="font-weight: inherit"> <input class="checkbox i-checksAll" type="checkbox" id="explanatorySelect"><i></i> {{ _("Select all") }}</label></td>
+                            <td class="text-center" style="border-top-style: hidden;"><label style="font-weight: inherit"> <input class="checkbox i-checksAll" type="checkbox" id="linearregressionSelect"><i></i> {{ _("Select all") }}</label></td>
 {#                            <td class="text-center" style="border-top-style: hidden;"><label style="font-weight: inherit"> <input class="checkbox i-checksAll" type="checkbox" id="quantitativeSelect"><i></i> {{ _("Select all") }}</label></td>#}
                             <td class="text-center" style="border-top-style: hidden;"><label style="font-weight: inherit"> <input class="checkbox i-checksAll" type="checkbox" id="rankingSelect"><i></i> {{ _("Select all") }}</label></td>
                             <td class="text-center" style="border-top-style: hidden;"><label style="font-weight: inherit"> <input class="checkbox i-checksAll" type="checkbox" id="comparisonSelect"><i></i> {{ _("Select all") }}</label></td>
@@ -52,7 +54,16 @@
                                 {% if dataForAnalysis.Explanatory %}
                                     {%for c in dataForAnalysis.Explanatory%}
                                         {% if c.code == None %}
-                                            <label style="font-weight: inherit"> <input class="checkbox i-checks explanatorySelect" type="checkbox" id="explanatory_REG__{{c.id}}_add"><i></i> {{ c.name }}</label><br>
+                                            <label style="font-weight: inherit"> <input class="checkbox i-checks explanatorySelect" type="checkbox" id="explanatory_REG__{{c.id}}_add" variable="{{ c.vars }}"><i></i> {{ c.name }}</label><br>
+                                        {% endif%}
+                                    {%endfor%}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if dataForAnalysis.linearRegression %}
+                                    {%for c in dataForAnalysis.linearRegression%}
+                                        {% if c.code == None %}
+                                            <label style="font-weight: inherit"> <input class="checkbox i-checks linearregressionSelect" type="checkbox" id="linearregression_REG__{{c.id}}_add"><i></i> {{ c.name }}</label><br>
                                         {% endif%}
                                     {%endfor%}
                                 {% endif %}
@@ -92,7 +103,16 @@
                                     {% if dataForAnalysis.Explanatory %}
                                         {%for c in dataForAnalysis.Explanatory%}
                                             {% if c.code.ass_cod == assess.ass_cod %}
-                                                <label style="font-weight: inherit"> <input class="checkbox i-checks explanatorySelect" type="checkbox" id="explanatory_ASS_{{ assess.ass_cod }}_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
+                                                <label style="font-weight: inherit"> <input class="checkbox i-checks explanatorySelect" type="checkbox" id="explanatory_ASS_{{ assess.ass_cod }}_{{c.id}}_add" variable="{{ c.vars }}"><i></i> {{ c.name }}</label><br>
+                                            {% endif%}
+                                        {%endfor%}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if dataForAnalysis.linearRegression %}
+                                        {%for c in dataForAnalysis.linearRegression%}
+                                            {% if c.code.ass_cod == assess.ass_cod %}
+                                                <label style="font-weight: inherit"> <input class="checkbox i-checks linearregressionSelect" type="checkbox" id="linearregression_ASS_{{ assess.ass_cod }}_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
                                             {% endif%}
                                         {%endfor%}
                                     {% endif %}
@@ -134,10 +154,23 @@
 
                     <br>
                     <div class="form-group">
+                        <b>{{ _("Splits") }}</b>
+                        <p>{{ _("Do you want to make an extra analysis, making a separation with each of the selected explanatory variables ?") }}</p>
+                        <p>{{ _("E.g.: Make a gender separation (male/female).") }}</p>
+                        <div class="col-lg-offset-2 col-lg-10">
+
+                            <div class="form-group">
+                                <input type="checkbox" id="ckb_Splits" name="ckb_Splits" data-on-color="success" data-off-color="danger" data-on-text="{{ _('Yes') }}" data-off-text="{{ _('No') }}" >
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="form-group">
                         <b>{{ _("Individual feedback reports for participants") }}</b>
                         <div class="col-lg-offset-2 col-lg-10">
 
                             <div class="form-group">
+                                <br>
                                 <input type="checkbox" id="ckb_Infosheets" name="ckb_Infosheets" data-on-color="success" data-off-color="danger" data-on-text="{{ _('Yes') }}" data-off-text="{{ _('No') }}" >
                             </div>
                         </div>
@@ -152,6 +185,7 @@
                             <input type="text" id="txt_included_in_analysis" name="txt_included_in_analysis" style="width: 100%;display:none">
                             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                             <input type="text" id="txt_infosheets" name="txt_infosheets" value="true" style="width: 100%;display:none">
+                            <input type="text" id="txt_splits" name="txt_splits" value="true," style="width: 100%;display:block">
                             <button type="submit" name="btn_createAnalysis" id="btn_createAnalysis" class="btn btn-primary clm-actions "> {{ _("Perform analysis") }}</button>
                         </form>
                     </div>

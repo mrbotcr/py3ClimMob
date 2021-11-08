@@ -703,7 +703,7 @@ def getAssessmentQuestions(
         "SELECT asssection.section_id,asssection.section_name,asssection.section_content,asssection.section_order,asssection.section_private,"
         "question.question_id,COALESCE(i18n_question.question_desc,question.question_desc) as question_desc,COALESCE(i18n_question.question_name, question.question_name) as question_name,question.question_notes,question.question_dtype, "
         " COALESCE(i18n_question.question_posstm, question.question_posstm) as question_posstm, COALESCE(i18n_question.question_negstm ,question.question_negstm) as question_negstm, COALESCE(i18n_question.question_perfstmt, question.question_perfstmt) as question_perfstmt,IFNULL(assdetail.question_order,0) as question_order,"
-        "question.question_reqinasses, question.question_tied, question.question_notobserved, question.question_requiredvalue, question.question_quantitative, question.user_name, user.user_fullname FROM user, asssection LEFT JOIN assdetail ON assdetail.section_project_id = asssection.project_id "
+        "question.question_reqinasses, question.question_tied, question.question_notobserved, question.question_requiredvalue, question.question_quantitative, question.user_name, (select user_fullname from user where user_name=question.user_name) as user_fullname FROM asssection LEFT JOIN assdetail ON assdetail.section_project_id = asssection.project_id "
         " AND assdetail.section_assessment = asssection.ass_cod AND assdetail.section_id = asssection.section_id "
         " LEFT JOIN i18n_question ON assdetail.question_id = i18n_question.question_id  AND i18n_question.lang_code = '"
         + request.locale_name
@@ -713,7 +713,7 @@ def getAssessmentQuestions(
         + projectId
         + "' AND asssection.ass_cod = '"
         + assessment
-        + "' and question.user_name = user.user_name ORDER BY section_order,question_order"
+        + "' ORDER BY section_order,question_order"
     )
     questions = request.dbsession.execute(sql).fetchall()
 
