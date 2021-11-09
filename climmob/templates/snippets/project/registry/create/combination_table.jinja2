@@ -6,6 +6,7 @@
             {% for tech in techs %}
                 <th>{{  tech.tech_name }}</th>
             {% endfor %}
+            <th width="178px">{{ _("How many packages can you create with this combination?") }}</th>
             <th>{{ _("Action") }}</th>
         </tr>
         </thead>
@@ -16,6 +17,14 @@
                 {% for element in comb.elements %}
                     <td>{{ element.alias_name }}</td>
                 {% endfor %}
+                <td >
+                    {% if comb.quantity_available  %}
+                        {% set quantity = comb.quantity_available %}
+                    {% else %}
+                        {% set quantity = activeProject.project_numobs %}
+                    {% endif %}
+                    <input type="number" min="1" max="{{ activeProject.project_numobs }}" class="form-control" id="quantitycombination_{{ comb.ncomb }}" name="quantitycombination_{{ comb.ncomb }}" required="" value="{{ quantity }}">
+                </td>
                 <td class="center text-center">
                     <form method="post" action="{{ request.url }}">
                         <input type="hidden" name="csrf_token" value="{{ csrf }}">

@@ -14,6 +14,7 @@ from ..processes import (
     getTheGroupOfThePackageCode,
     getTheProjectIdForOwner,
     getActiveProject,
+    setCombinationQuantityAvailable
 )
 import climmob.plugins as p
 from ..products.qrpackages.qrpackages import create_qr_packages
@@ -55,6 +56,7 @@ class projectCombinations_view(privateView):
             if stage == 1:
                 scrollPos = 0
                 if self.request.method == "POST":
+
                     for key in self.request.params.keys():
                         if key.find("remove") >= 0:
                             id = int(key.replace("remove", ""))
@@ -64,6 +66,23 @@ class projectCombinations_view(privateView):
                             setCombinationStatus(activeProjectId, id, 1, self.request)
                     formdata = self.getPostDict()
                     scrollPos = int(formdata["scroll"])
+
+                    if "btn_save_quantity" in self.request.POST:
+                        for key in self.request.params.keys():
+                            if key.find("quantitycombination_") > -1:
+                                comb_id = key.split("_")[1]
+                                setCombinationQuantityAvailable(activeProjectId, comb_id, int(formdata[key]), self.request)
+
+                        self.returnRawViewResult = True
+
+                        return HTTPFound(
+                            location=self.request.route_url(
+                                "combinations",
+                                _query={"stage": 2},
+                                project=activeProjectCod,
+                                user=activeProjectUser,
+                            )
+                        )
 
                 createCombinations(
                     activeProjectUser, activeProjectId, activeProjectCod, self.request
@@ -88,6 +107,7 @@ class projectCombinations_view(privateView):
                             {
                                 "ncomb": comb["comb_code"] - 1,
                                 "comb_usable": combs[pos2 - 1]["comb_usable"],
+                                "quantity_available": combs[pos2 - 1]["quantity_available"],
                                 "elements": list(elements),
                             }
                         )
@@ -104,6 +124,7 @@ class projectCombinations_view(privateView):
                     {
                         "ncomb": ncombs,
                         "comb_usable": combs[pos2 - 1]["comb_usable"],
+                        "quantity_available": combs[pos2 - 1]["quantity_available"],
                         "elements": list(elements),
                     }
                 )

@@ -12,6 +12,7 @@ __all__ = [
     "projectCreatePackages",
     "getTech",
     "getCombinationsUsableInProject",
+    "setCombinationQuantityAvailable"
 ]
 
 
@@ -59,6 +60,14 @@ def setCombinationStatus(projectId, id, status, request):
         {"project_createpkgs": 1}
     )
 
+def setCombinationQuantityAvailable(projectId, id, quantity, request):
+    request.dbsession.query(Prjcombination).filter(
+        Prjcombination.project_id == projectId
+    ).filter(Prjcombination.comb_code == id).update({"quantity_available": quantity})
+    request.dbsession.query(Project).filter(Project.project_id == projectId).update(
+        {"project_createpkgs": 1}
+    )
+
 
 def getTech(projectId, request):
     sql = (
@@ -101,7 +110,7 @@ def getCombinations(projectId, request):
     # Get the list of combinations
     sql = (
         " SELECT * FROM (("
-        " SELECT prjcombdet.comb_code,prjcombination.comb_usable,prjcombdet.tech_id,techalias.alias_id,"
+        " SELECT prjcombdet.comb_code,prjcombination.comb_usable,prjcombination.quantity_available,prjcombdet.tech_id,techalias.alias_id,"
         " COALESCE(i.alias_name,techalias.alias_name) as alias_name,prjcombdet.alias_order FROM "
         " prjcombdet,prjalias,prjcombination,techalias "
         " LEFT JOIN i18n_techalias i "
@@ -120,7 +129,7 @@ def getCombinations(projectId, request):
         " prjalias.tech_used IS NOT NULL "
         " ORDER BY prjcombdet.comb_code,prjcombdet.alias_order) "
         " UNION ("
-        " SELECT prjcombdet.comb_code,prjcombination.comb_usable,prjcombdet.tech_id,"
+        " SELECT prjcombdet.comb_code,prjcombination.comb_usable,prjcombination.quantity_available,prjcombdet.tech_id,"
         " concat('C',prjalias.alias_id) as alias_id,prjalias.alias_name,alias_order FROM "
         " prjcombdet,prjalias,prjcombination WHERE "
         " prjcombdet.project_id = prjalias.project_id AND "
@@ -246,7 +255,7 @@ def createCombinations(userOwner, projectId, projectCod, request):
                 combNumber = 1
                 for combination in combinations:
                     newCombination = Prjcombination(
-                        project_id=projectId, comb_code=combNumber, comb_usable=1,
+                        project_id=projectId, comb_code=combNumber, comb_usable=1, quantity_available= prjData.project_numobs
                     )
                     request.dbsession.add(newCombination)
                     aliasNumber = 1

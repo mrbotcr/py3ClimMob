@@ -535,6 +535,7 @@ class Prjcombination(Base):
     project_id = Column(Unicode(64), primary_key=True, nullable=False)
     comb_code = Column(Integer, primary_key=True, nullable=False)
     comb_usable = Column(Integer)
+    quantity_available = Column(Integer, nullable=True)
 
     project = relationship(u"Project")
 

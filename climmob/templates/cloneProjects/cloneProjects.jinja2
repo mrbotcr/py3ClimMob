@@ -367,7 +367,6 @@
 
             $('.checksbox').on('ifChanged', function()
             {
-
                 id = $(this).attr("id");
                 if ($(this).prop('checked')) {
                     $('#structureToBeCloned').val($('#structureToBeCloned').val()+id+",");
@@ -375,9 +374,30 @@
                     $('#structureToBeCloned').val($('#structureToBeCloned').val().replace(id+",",""));
                 }
 
+                if (id=="technologyoptions")
+                {
+                    if ($(this).prop('checked')) {
+                        $("#technologies").iCheck('check');
+                    }
+                }
+
+                if (id=="technologies")
+                {
+                    if (!$(this).prop('checked')) {
+                        $("#technologyoptions").iCheck('uncheck');
+                    }
+                }
+
             });
 
-            $('.i-checksbox').iCheck('check');
+            {% if dataworking["structureToBeCloned"] == "" %}
+                $('.i-checksbox').iCheck('check');
+            {% else %}
+                {% set structureBeCloned = dataworking["structureToBeCloned"].split(",")[:-1] %}
+                {% for elem in structureBeCloned %}
+                    $("#{{ elem }}").iCheck('check');
+                {% endfor %}
+            {% endif %}
         });
 
     </script>

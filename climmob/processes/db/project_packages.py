@@ -202,8 +202,10 @@ def create_packages_with_r(userOwner, projectId, projectCod, request):
         )
 
         combinations = []
+        availability = []
         for comb in combData:
             combinations.append(comb.comb_code)
+            availability.append(comb.quantity_available)
         if combinations:
 
             args = []
@@ -213,11 +215,11 @@ def create_packages_with_r(userOwner, projectId, projectCod, request):
             args.append(str(prjData.project_numobs))
             args.append(str(len(combinations)))
             args.append("inames=c(" + ", ".join(map(str, combinations)) + ")")
+            #args.append("iavailability=c(" + ", ".join(map(str, availability)) + ")")
             args.append(rout)
 
             # print(' '.join(map(str, args)))
             try:
-                check_call(args)
                 request.dbsession.query(Package).filter(
                     Package.project_id == projectId
                 ).delete()

@@ -387,7 +387,7 @@
                                             <div class="row">
                                                 {% if progress.enumerators == true and progress.technology == true and progress.techalias == true and progress.registry == true %}
                                                     <div class="col-md-12">
-                                                        <button class="btn btn-primary btn-rounded btn-block" onclick="location.href='{{ request.route_url('combinations',user=activeProject["owner"].user_name, project=activeProject.project_cod,  _query={"stage": 2}) }}'"><i class="fa fa-play"></i> {{ _("Generate packages with technology options") }}<br/> {{ _("and open the registration of participants") }}</button>
+                                                        <button class="btn btn-primary btn-rounded btn-block" onclick="location.href='{{ request.route_url('combinations',user=activeProject["owner"].user_name, project=activeProject.project_cod,  _query={"stage": 1}) }}'"><i class="fa fa-play"></i> {{ _("Generate packages with technology options") }}<br/> {{ _("and open the registration of participants") }}</button>
                                                     </div>
                                                 {% else %}
                                                     <div class="col-md-12">

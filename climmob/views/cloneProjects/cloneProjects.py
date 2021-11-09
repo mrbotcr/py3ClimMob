@@ -34,6 +34,7 @@ class cloneProjects_view(privateView):
     def processView(self):
 
         dataworking = {}
+        dataworking["structureToBeCloned"] = ""
         showForm = False
         error_summary = {}
         projectCod = ""
@@ -104,6 +105,9 @@ class cloneProjects_view(privateView):
         if stage == 3:
 
             dataworking["slt_project_by_owner"] = userOwner + "___" + projectCod
+            dataworking["project_label_a"] = self._("Option A")
+            dataworking["project_label_b"] = self._("Option B")
+            dataworking["project_label_c"] = self._("Option C")
 
             if self.request.method == "POST":
                 dataworking = self.getPostDict()
