@@ -211,56 +211,63 @@ def create_packages_with_r(userOwner, projectId, projectCod, request):
             args = []
             args.append("Rscript")
             args.append(request.registry.settings["r.random.script"])
-            args.append(str(prjData.project_numcom))
+            #args.append(str(prjData.project_numcom))
             args.append(str(prjData.project_numobs))
-            args.append(str(len(combinations)))
+            #args.append(str(len(combinations)))
             args.append("inames=c(" + ", ".join(map(str, combinations)) + ")")
-            #args.append("iavailability=c(" + ", ".join(map(str, availability)) + ")")
+            args.append("iavailability=c(" + ", ".join(map(str, availability)) + ")")
             args.append(rout)
 
-            # print(' '.join(map(str, args)))
             try:
+
                 request.dbsession.query(Package).filter(
                     Package.project_id == projectId
                 ).delete()
 
-                with open(rout) as fp:
-                    lines = fp.readlines()
-                    pkgid = 1
-                    for line in lines:
-                        newPackage = Package(
-                            project_id=projectId,
-                            package_id=pkgid,
-                            package_code=_("Package") + " #" + str(pkgid),
-                        )
-                        request.dbsession.add(newPackage)
+                check_call(args)
 
-                        a_package = line.replace('"', "")
-                        combs = a_package.split("\t")
-                        combid = 1
-                        for comb in combs:
-                            newPkgcomb = Pkgcomb(
+                if os.path.exists(rout):
+                    with open(rout) as fp:
+                        lines = fp.readlines()
+                        pkgid = 1
+                        for line in lines:
+                            newPackage = Package(
                                 project_id=projectId,
                                 package_id=pkgid,
-                                comb_project_id=projectId,
-                                comb_code=int(comb),
-                                comb_order=combid,
+                                package_code=_("Package") + " #" + str(pkgid),
                             )
-                            request.dbsession.add(newPkgcomb)
-                            combid = combid + 1
-                        pkgid = pkgid + 1
+                            request.dbsession.add(newPackage)
 
-                    request.dbsession.query(Project).filter(
-                        Project.project_id == projectId
-                    ).update({"project_createpkgs": 0})
+                            a_package = line.replace('"', "")
+                            combs = a_package.split("\t")
+                            combid = 1
+                            for comb in combs:
+                                newPkgcomb = Pkgcomb(
+                                    project_id=projectId,
+                                    package_id=pkgid,
+                                    comb_project_id=projectId,
+                                    comb_code=int(comb),
+                                    comb_order=combid,
+                                )
+                                request.dbsession.add(newPkgcomb)
+                                combid = combid + 1
+                            pkgid = pkgid + 1
 
-                    setRegistryStatus(userOwner, projectCod, projectId, 0, request)
+                        request.dbsession.query(Project).filter(
+                            Project.project_id == projectId
+                        ).update({"project_createpkgs": 0})
+
+                        setRegistryStatus(userOwner, projectCod, projectId, 0, request)
+
+                        return True
+                else:
+                    return False
 
             except CalledProcessError as e:
                 msg = "Error running R randomization file \n"
                 msg = msg + "Commang: " + " ".join(args) + "\n"
-                msg = msg + "Error: \n"
-                msg = msg + str(e)
+                #msg = msg + "Error: \n"
+                #msg = msg + str(e)
                 print(msg)
                 return False
 
@@ -283,16 +290,19 @@ def createExtraPackages(
     combData = getCombinationsUsableInProject(projectId, request)
 
     combinations = []
+    availability = []
     for comb in combData:
         combinations.append(comb.comb_code)
+        availability.append(comb.quantity_available)
     if combinations:
         args = []
         args.append("Rscript")
         args.append(request.registry.settings["r.random.script"])
-        args.append(str(numCom))
+        #args.append(str(numCom))
         args.append(str(numObsExtra))
-        args.append(str(len(combinations)))
+        #args.append(str(len(combinations)))
         args.append("inames=c(" + ", ".join(map(str, combinations)) + ")")
+        args.append("iavailability=c(" + ", ".join(map(str, availability)) + ")")
         args.append(rout)
 
         try:

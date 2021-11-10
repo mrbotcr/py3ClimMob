@@ -23,7 +23,7 @@
                     {% else %}
                         {% set quantity = activeProject.project_numobs %}
                     {% endif %}
-                    <input type="number" min="1" max="{{ activeProject.project_numobs }}" class="form-control" id="quantitycombination_{{ comb.ncomb }}" name="quantitycombination_{{ comb.ncomb }}" required="" value="{{ quantity }}">
+                    <input type="number" min="2" max="{{ activeProject.project_numobs }}" class="form-control" id="quantitycombination_{{ comb.ncomb }}" name="quantitycombination_{{ comb.ncomb }}" required="" value="{{ quantity }}">
                 </td>
                 <td class="center text-center">
                     <form method="post" action="{{ request.url }}">

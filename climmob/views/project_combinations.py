@@ -140,14 +140,20 @@ class projectCombinations_view(privateView):
                     "registryCreated": False,
                 }
             if stage == 2:
-
+                error_summary = {}
                 createCombinations(
                     activeProjectUser, activeProjectId, activeProjectCod, self.request
                 )
 
-                create_packages_with_r(
+                packagesCreated = create_packages_with_r(
                     activeProjectUser, activeProjectId, activeProjectCod, self.request
                 )
+
+                if not packagesCreated:
+                    error_summary["error"] = self._(
+                            "There was a problem with the creation of the packages please check the available quantity of each combination (Click on the 'Modify' button) and try to generate the packages again."
+                        )
+
                 ncombs, packages = getPackages(
                     activeProjectUser, activeProjectId, self.request
                 )
@@ -166,6 +172,7 @@ class projectCombinations_view(privateView):
                     "registryCreated": False,
                     "tech": getTech(activeProjectId, self.request),
                     "listOfLabels": listOfLabels,
+                    "error_summary": error_summary
                 }
             if stage == 3:
                 if not projectHasCombinations(activeProjectId, self.request):

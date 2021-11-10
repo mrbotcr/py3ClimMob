@@ -1,18 +1,18 @@
 if (!require("ClimMobTools"))
 {
-        install.packages("ClimMobTools",repos="http://cran.rstudio.com/")
+        install_github("agrdatasci/ClimMobTools", build_vignettes = TRUE)
 }
 
 library("ClimMobTools")
 
 args <- commandArgs(trailingOnly = TRUE)
-npackages <- as.integer(args[1])
+no <- as.integer(args[1])
 eval(parse(text=args[2]))
 eval(parse(text=args[3]))
 
-tableInfo <- randomise(npackages = npackages,
+tableInfo <- randomise(npackages = no,
           itemnames = inames,
-          availability = iavailability,)
+          availability = iavailability)
 
 write.table( tableInfo, file=args[4], sep = "\t", row.names = FALSE, col.names = FALSE)
 
