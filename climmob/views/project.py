@@ -163,44 +163,60 @@ class modifyProject_view(privateView):
         if self.request.method == "POST":
             if "btn_addNewProject" in self.request.POST:
                 # get the field value
+
                 cdata = getProjectData(activeProjectId, self.request)
                 data = self.getPostDict()
 
-                if cdata["project_regstatus"] != 0:
-                    data["project_numobs"] = cdata["project_numobs"]
-                    data["project_numcom"] = cdata["project_numcom"]
+                data["project_regstatus"] = cdata["project_regstatus"]
+
+                data["project_cod"] = activeProjectCod
 
                 data["project_registration_and_analysis"] = int(
                     data["project_registration_and_analysis"]
                 )
 
-                data["project_localvariety"] = 1
+                if (
+                    data["project_label_a"] != data["project_label_b"]
+                    and data["project_label_a"] != data["project_label_c"]
+                    and data["project_label_b"] != data["project_label_c"]
+                ):
 
-                isNecessarygenerateCombinations = False
-                if int(data["project_numobs"]) != int(cdata["project_numobs"]):
-                    isNecessarygenerateCombinations = True
+                    if cdata["project_regstatus"] != 0:
+                        data["project_numobs"] = cdata["project_numobs"]
+                        data["project_numcom"] = cdata["project_numcom"]
 
-                if int(data["project_numcom"]) != int(cdata["project_numcom"]):
-                    isNecessarygenerateCombinations = True
 
-                if isNecessarygenerateCombinations:
-                    changeTheStateOfCreateComb(activeProjectId, self.request)
 
-                modified, message = modifyProject(activeProjectId, data, self.request)
-                if not modified:
-                    error_summary = {"dberror": message}
+                    data["project_localvariety"] = 1
+
+                    isNecessarygenerateCombinations = False
+                    if int(data["project_numobs"]) != int(cdata["project_numobs"]):
+                        isNecessarygenerateCombinations = True
+
+                    if int(data["project_numcom"]) != int(cdata["project_numcom"]):
+                        isNecessarygenerateCombinations = True
+
+                    if isNecessarygenerateCombinations:
+                        changeTheStateOfCreateComb(activeProjectId, self.request)
+
+                    modified, message = modifyProject(activeProjectId, data, self.request)
+                    if not modified:
+                        error_summary = {"dberror": message}
+                    else:
+                        self.request.session.flash(
+                            self._("The project was modified successfully")
+                        )
+                        self.returnRawViewResult = True
+                        return HTTPFound(location=self.request.route_url("dashboard"))
+
+                    if int(data["project_localvariety"]) == 1:
+                        data["project_localvariety"] = "on"
+                    else:
+                        data["project_localvariety"] = "off"
                 else:
-                    self.request.session.flash(
-                        self._("The project was modified successfully")
-                    )
-                    self.returnRawViewResult = True
-                    return HTTPFound(location=self.request.route_url("dashboard"))
-
-                if int(data["project_localvariety"]) == 1:
-                    data["project_localvariety"] = "on"
-                else:
-                    data["project_localvariety"] = "off"
-
+                    error_summary = {"repeatitem": self._(
+                        "The names that the items will receive should be different."
+                    )}
         return {
             "activeProject": getActiveProject(self.user.login, self.request),
             "indashboard": True,

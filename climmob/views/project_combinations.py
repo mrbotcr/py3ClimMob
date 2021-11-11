@@ -337,3 +337,12 @@ def startTheRegistry(self, userOwner, projectId, projectCod, listOfLabelsForPack
             )
 
     return correct, str(error, "utf-8")
+
+def createSettings(request):
+
+    settings = {}
+    for key, value in request.registry.settings.items():
+        if isinstance(value, str):
+            settings[key] = value
+
+    return settings

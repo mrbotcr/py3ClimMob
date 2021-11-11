@@ -21,7 +21,7 @@
                     {% if comb.quantity_available  %}
                         {% set quantity = comb.quantity_available %}
                     {% else %}
-                        {% set quantity = activeProject.project_numobs %}
+                        {% set quantity = (((activeProject.project_numobs * activeProject.project_numcom) / combArray|length)|round(0, 'ceil'))|int %}
                     {% endif %}
                     <input type="number" min="2" max="{{ activeProject.project_numobs }}" class="form-control" id="quantitycombination_{{ comb.ncomb }}" name="quantitycombination_{{ comb.ncomb }}" required="" value="{{ quantity }}">
                 </td>

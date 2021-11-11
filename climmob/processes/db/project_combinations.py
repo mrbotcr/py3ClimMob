@@ -1,6 +1,7 @@
 import itertools
 from ...models import Prjcombination, Prjcombdet, Project
 from .registry import setRegistryStatus
+import math
 
 __all__ = [
     "createCombinations",
@@ -255,7 +256,7 @@ def createCombinations(userOwner, projectId, projectCod, request):
                 combNumber = 1
                 for combination in combinations:
                     newCombination = Prjcombination(
-                        project_id=projectId, comb_code=combNumber, comb_usable=1, quantity_available= prjData.project_numobs
+                        project_id=projectId, comb_code=combNumber, comb_usable=1, quantity_available= math.ceil((prjData.project_numobs*prjData.project_numcom)/len(combinations))
                     )
                     request.dbsession.add(newCombination)
                     aliasNumber = 1
@@ -284,7 +285,7 @@ def createCombinations(userOwner, projectId, projectCod, request):
 
                 return True, ""
             else:
-                # print "*******************11"
+                #print ("*******************11")
                 tech_array = tech_array[0]
                 # print tech_array
                 # print "*******************11"
@@ -294,7 +295,7 @@ def createCombinations(userOwner, projectId, projectCod, request):
                 aliasNumber = 1
                 for aAlias in tech_array:
                     newCombination = Prjcombination(
-                        project_id=projectId, comb_code=aliasNumber, comb_usable=1,
+                        project_id=projectId, comb_code=aliasNumber, comb_usable=1, quantity_available= math.ceil((prjData.project_numobs*prjData.project_numcom)/len(tech_array))
                     )
                     request.dbsession.add(newCombination)
                     newAliasUsed = Prjcombdet(
