@@ -270,4 +270,16 @@ def register_products(config):
     )
     products.append(multimediadownloads)
 
+    # MULTIMEDIA
+
+    randomization = addProduct(
+        "randomization", "Randomization for tricot project."
+    )
+    addMetadataToProduct(randomization, "author", "Brandon Madriz")
+    addMetadataToProduct(randomization, "version", "1.0")
+    addMetadataToProduct(
+        randomization, "Licence", "Copyright 2021, MrBot Software Solutions",
+    )
+    products.append(randomization)
+
     return products

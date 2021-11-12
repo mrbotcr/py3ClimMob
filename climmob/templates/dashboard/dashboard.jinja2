@@ -212,7 +212,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-9">
-                                                <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('prjtechnologies', user=activeProject["owner"].user_name, project=activeProject["project_cod"]) }}"><i class="fa fa-envira"></i> {{ _("Select technology options") }}</a>
+                                                <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" {% if activeProject["project_createpkgs"] ==2 %} disabled {% else %} href="{{ request.route_url('prjtechnologies', user=activeProject["owner"].user_name, project=activeProject["project_cod"]) }}" {% endif %}><i class="fa fa-envira"></i> {{ _("Select technology options") }}</a>
                                             </div>
                                             <div class="col-md-3">
                                                 <p style="margin-top: 8px; text-align: center">

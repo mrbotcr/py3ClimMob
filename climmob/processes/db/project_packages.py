@@ -12,8 +12,23 @@ __all__ = [
     "getPackages",
     "projectHasPackages",
     "createExtraPackages",
+    "deleteProjectPackages",
+    "updateCreatePackages"
 ]
 
+def deleteProjectPackages(projectId, request):
+    request.dbsession.query(Package).filter(
+        Package.project_id == projectId
+    ).delete()
+
+    return True
+
+def updateCreatePackages(projectId, status,request):
+    request.dbsession.query(Project).filter(
+        Project.project_id == projectId
+    ).update({"project_createpkgs": status })
+
+    return True
 
 def grouper(n, iterable, padvalue=None):
     return izip(*[chain(iterable, repeat(padvalue, n - 1))] * n)

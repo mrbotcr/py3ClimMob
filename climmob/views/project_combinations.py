@@ -14,9 +14,13 @@ from ..processes import (
     getTheGroupOfThePackageCode,
     getTheProjectIdForOwner,
     getActiveProject,
-    setCombinationQuantityAvailable
+    setCombinationQuantityAvailable,
+    getProjectData,
+    deleteProjectPackages,
+    updateCreatePackages
 )
 import climmob.plugins as p
+from ..products.randomization.randomization import create_randomization
 from ..products.qrpackages.qrpackages import create_qr_packages
 from ..products.forms.form import create_document_form
 from ..products.packages.packages import create_packages_excell
@@ -42,6 +46,7 @@ class projectCombinations_view(privateView):
                 activeProjectUser, activeProjectCod, self.request
             )
 
+
             if not "stage" in self.request.params.keys():
                 stage = 1
             else:
@@ -54,6 +59,21 @@ class projectCombinations_view(privateView):
                 raise HTTPNotFound()
 
             if stage == 1:
+
+                prjData = getProjectData(activeProjectId, self.request)
+                # Only create the packages if its needed
+                if prjData["project_createpkgs"] == 2:
+                    self.returnRawViewResult = True
+
+                    return HTTPFound(
+                        location=self.request.route_url(
+                            "combinations",
+                            _query={"stage": 2},
+                            project=activeProjectCod,
+                            user=activeProjectUser,
+                        )
+                    )
+
                 scrollPos = 0
                 if self.request.method == "POST":
 
@@ -141,13 +161,30 @@ class projectCombinations_view(privateView):
                 }
             if stage == 2:
                 error_summary = {}
+
                 createCombinations(
                     activeProjectUser, activeProjectId, activeProjectCod, self.request
                 )
 
-                packagesCreated = create_packages_with_r(
-                    activeProjectUser, activeProjectId, activeProjectCod, self.request
-                )
+                prjData = getProjectData(activeProjectId, self.request)
+                # Only create the packages if its needed
+                if prjData["project_createpkgs"] == 1:
+
+                    up = updateCreatePackages(activeProjectId, 2, self.request)
+
+                    dl = deleteProjectPackages(activeProjectId, self.request)
+
+                    settings = createSettings(self.request)
+                    create_randomization(self.request, self.request.locale_name, activeProjectUser, activeProjectId, activeProjectCod, settings )
+
+                # packagesCreated = create_packages_with_r(
+                #    activeProjectUser, activeProjectId, activeProjectCod, self.request
+                # )
+
+                packagesCreated =True
+
+                if prjData["project_createpkgs"] == 3:
+                    packagesCreated = False
 
                 if not packagesCreated:
                     error_summary["error"] = self._(

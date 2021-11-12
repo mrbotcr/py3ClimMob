@@ -62,12 +62,16 @@ def setCombinationStatus(projectId, id, status, request):
     )
 
 def setCombinationQuantityAvailable(projectId, id, quantity, request):
-    request.dbsession.query(Prjcombination).filter(
+    res = request.dbsession.query(Prjcombination).filter(
         Prjcombination.project_id == projectId
-    ).filter(Prjcombination.comb_code == id).update({"quantity_available": quantity})
-    request.dbsession.query(Project).filter(Project.project_id == projectId).update(
-        {"project_createpkgs": 1}
-    )
+    ).filter(Prjcombination.comb_code == id)\
+
+    if res.first().quantity_available != quantity:
+
+        res.update({"quantity_available": quantity})
+        request.dbsession.query(Project).filter(Project.project_id == projectId).update(
+            {"project_createpkgs": 1}
+        )
 
 
 def getTech(projectId, request):

@@ -1,5 +1,5 @@
 from .classes import privateView
-from pyramid.httpexceptions import HTTPNotFound
+from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 from ..processes import (
     projectExists,
     projectTechnologyExists,
@@ -20,6 +20,7 @@ from ..processes import (
     getTechnology,
     getActiveProject,
     getTheProjectIdForOwner,
+    getProjectData
 )
 
 
@@ -44,6 +45,15 @@ class projectTecnologies_view(privateView):
             activeProjectId = getTheProjectIdForOwner(
                 activeProjectUser, activeProjectCod, self.request
             )
+
+            prjData = getProjectData(activeProjectId, self.request)
+            # Only create the packages if its needed
+            if prjData["project_createpkgs"] == 2:
+                self.returnRawViewResult = True
+
+                return HTTPFound(
+                    location=self.request.route_url("dashboard")
+                )
 
             if self.request.method == "POST":
                 if "btn_save_technologies" in self.request.POST:
