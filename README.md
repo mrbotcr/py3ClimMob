@@ -9,7 +9,7 @@ ClimMob is software for agricultural citizen science with the following features
 - Get quick insights from extensive automatic reports.
 - Use a suite of open-source tools to gain in-depth understanding trends and patterns.
 
-For more information visit the https://climmob.net
+For more information visit https://climmob.net
 
 ## The tricot approach
 
