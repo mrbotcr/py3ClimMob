@@ -154,7 +154,8 @@ You basically can extend ClimMob to fit your needs.
 
 Some examples of plug-ins are:
 
-- [BreedBase](https://github.com/BioversityCostaRica/brapi_plugin). This plug-in will allows you to integrate ClimMob with [BreedBase](https://breedbase.org/) Servers by storing project information as studies.
+- [BreedBase](https://github.com/BioversityCostaRica/brapi_plugin). This plug-in allows you to integrate ClimMob with [BreedBase](https://breedbase.org/) Servers by storing project information as studies.
+- [Ontology](https://github.com/BioversityCostaRica/ontology_plugin). This plug-in allows you to integrate ClimMob with [CropOntology.org](https://cropontology.org/) by linking ranking questions with ontological variables.
 
 ### Localization
 
@@ -184,4 +185,4 @@ The development of ClimMob and the scientific research behind the tricot approac
 
 ## License and copyrights
 
-ClimMob is Copyright 2021, Alliance of Bioversity International and CIAT. The software is released in the terms of GNU Affero General Public License v3.0. The plug-in architecture of ClimMob is based on [PyUtilib Component Architecture](https://pypi.python.org/pypi/PyUtilib) (PCA) which is licensed and BSD, therefore the [code](https://github.com/BioversityCostaRica/py3ClimMob/tree/master/climmob/plugins) that loads and connects plug-ins is licensed under BSD.
+ClimMob is Copyright 2021, Alliance of Bioversity International and CIAT. The software is released in the terms of GNU Affero General Public License v3.0. The plug-in architecture of ClimMob is based on [PyUtilib Component Architecture](https://pypi.python.org/pypi/PyUtilib) (PCA) which is licensed under BSD, therefore the [code](https://github.com/BioversityCostaRica/py3ClimMob/tree/master/climmob/plugins) that loads and connects plug-ins is licensed under BSD.
