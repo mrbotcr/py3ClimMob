@@ -1,7 +1,7 @@
 """
 These series of functions help plugin developers 
 to manipulate the host behaviour without the trouble if dealing with it
-
+These code is licensed under BSD
 """
 
 import inspect

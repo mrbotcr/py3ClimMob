@@ -1,0 +1,1 @@
+sudo docker build --rm -t alliancecostarica/climmob_base_circleci:20211117 -f ./circleci.Dockerfile .

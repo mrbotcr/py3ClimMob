@@ -1,10 +1,6 @@
 """
-Provides plugin services to climmob
-
-This code is based on CKAN 
-:Copyright (C) 2007 Open Knowledge Foundation
-:license: AGPL V3, see LICENSE for more details.
-
+These code is based on  [PyUtilib Component Architecture](https://pypi.python.org/pypi/PyUtilib) (PCA)
+and it is licensed under BSD
 """
 
 from pkg_resources import iter_entry_points

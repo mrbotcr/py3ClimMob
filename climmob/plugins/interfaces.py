@@ -1,13 +1,8 @@
 """
-
-This file declares the PCA interfaces and their methods:
-
-This code is based on CKAN 
-:Copyright (C) 2007 Open Knowledge Foundation
-:license: AGPL V3, see LICENSE for more details.
-
+These are series of interfaces to extend ClimMob.
+These code is based on  [PyUtilib Component Architecture](https://pypi.python.org/pypi/PyUtilib) (PCA)
+and it is licensed under BSD
 """
-
 
 __all__ = [
     "Interface",
