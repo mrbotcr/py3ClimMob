@@ -32,7 +32,7 @@ Click [here](https://climmob.net/blog/wiki/about-tricot/) for more information a
 
 ## The software
 
-ClimMob is a Web-based App created using Python, MySQL, R and several other third-party tools. The best way to have a ClimMob server is by using Docker. See below. 
+ClimMob is a Web-based App created using Python, MySQL, [R](https://github.com/AgrDataSci/ClimMob-analysis), and several other third-party tools. The best way to have a ClimMob server is by using Docker. See below. 
 
 ### ScreenShot
 
