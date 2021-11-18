@@ -184,4 +184,4 @@ The development of ClimMob and the scientific research behind the tricot approac
 
 ## License and copyrights
 
-The ClimMob is Copyright 2021, Alliance of Bioversity International and CIAT. The software is released in the terms of GNU Affero General Public License v3.0. The plug-in architecture of ClimMob is based on [PyUtilib Component Architecture](https://pypi.python.org/pypi/PyUtilib) (PCA) which is licensed and BSD, therefore the [code](https://github.com/BioversityCostaRica/py3ClimMob/tree/master/climmob/plugins) that loads and connects plug-ins is licensed under BSD.
+ClimMob is Copyright 2021, Alliance of Bioversity International and CIAT. The software is released in the terms of GNU Affero General Public License v3.0. The plug-in architecture of ClimMob is based on [PyUtilib Component Architecture](https://pypi.python.org/pypi/PyUtilib) (PCA) which is licensed and BSD, therefore the [code](https://github.com/BioversityCostaRica/py3ClimMob/tree/master/climmob/plugins) that loads and connects plug-ins is licensed under BSD.
