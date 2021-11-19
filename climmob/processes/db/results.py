@@ -3,8 +3,9 @@ from lxml import etree
 from ...models import Assessment, Question, Project, mapFromSchema
 import datetime, decimal
 from climmob.models.repository import sql_fetch_all, sql_fetch_one
+from .project_combinations import getCombinations
 
-__all__ = ["getJSONResult"]
+__all__ = ["getJSONResult","getCombinationsData"]
 
 
 def getMiltiSelectLookUpTable(XMLFile, multiSelectTable):
@@ -605,6 +606,8 @@ def getJSONResult(
                 haveAssessments = True
             # Get the package information but only for registered farmers
             data["packages"] = getPackageData(userOwner, projectId, projectCod, request)
+            data["combination"] = getCombinationsData(projectId, request)
+
             if haveAssessments:
                 data["specialfields"] = getSpecialFields(
                     data["registry"], data["assessments"]
@@ -635,6 +638,7 @@ def getJSONResult(
             data["packages"] = []
             data["data"] = []
             data["importantfields"] = []
+            data["combinations"] = []
 
     else:
         data["specialfields"] = []
@@ -642,5 +646,52 @@ def getJSONResult(
         data["packages"] = []
         data["data"] = []
         data["importantfields"] = []
+        data["combinations"] = []
 
     return data
+
+def getCombinationsData(ProjectId, request):
+
+    techs, ncombs, combs = getCombinations(ProjectId, request)
+
+    pos = 1
+    elements = []
+    combArray = []
+    pos2 = 0
+    for comb in combs:
+        if pos <= len(techs):
+            elements.append(
+                {
+                    "technology_name": techs[pos-1]["tech_name"],
+                    "alias_name": comb["alias_name"],
+                }
+            )
+            pos += 1
+        else:
+            combArray.append(
+                {
+                    "combination_code": comb["comb_code"] - 1,
+                    "comb_usable": combs[pos2 - 1]["comb_usable"],
+                    "quantity_available": combs[pos2 - 1]["quantity_available"],
+                    "elements": list(elements),
+                }
+            )
+            elements = []
+            elements.append(
+                {
+                    "technology_name": techs[0]["tech_name"],
+                    "alias_name": comb["alias_name"],
+                }
+            )
+            pos = 2
+        pos2 += 1
+    combArray.append(
+        {
+            "combination_code": ncombs,
+            "comb_usable": combs[pos2 - 1]["comb_usable"],
+            "quantity_available": combs[pos2 - 1]["quantity_available"],
+            "elements": list(elements),
+        }
+    )
+
+    return combArray

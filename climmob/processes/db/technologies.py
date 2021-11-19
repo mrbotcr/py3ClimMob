@@ -22,7 +22,7 @@ __all__ = [
 def getUserTechs(user, request):
 
     res = []
-    result = (
+    result = mapFromSchema(
         request.dbsession.query(
             Technology,
             request.dbsession.query(func.count(Techalia.tech_id))
@@ -49,21 +49,14 @@ def getUserTechs(user, request):
 
         res3 = (
             request.dbsession.query(func.count(Prjtech.tech_id).label("found"))
-            .filter(Prjtech.tech_id == technology[0].tech_id)
+            .filter(Prjtech.tech_id == technology["tech_id"])
             .one()
         )
 
-        res.append(
-            {
-                "tech_id": technology[0].tech_id,
-                # "tech_name": technology[0].tech_name,
-                "tech_name": technology[2],
-                "user_name": technology[0].user_name,
-                "quantity": technology.quantity,
-                "tech_alias": getTechsAlias(technology[0].tech_id, request),
-                "found": res3.found,
-            }
-        )
+        technology["tech_alias"] = getTechsAlias(technology["tech_id"], request)
+        technology["found"] = res3.found
+        res.append(technology)
+
 
     return res
 

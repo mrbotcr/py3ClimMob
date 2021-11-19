@@ -181,7 +181,7 @@ def projectCreatePackages(projectId, request):
     prjData = (
         request.dbsession.query(Project).filter(Project.project_id == projectId).first()
     )
-    if prjData.project_createpkgs == 1:
+    if prjData.project_createpkgs != 0:
         return True
     else:
         return False

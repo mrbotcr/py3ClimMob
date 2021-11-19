@@ -34,6 +34,7 @@ class projectTecnologies_view(privateView):
         tech_id = ""
         dataworking = {}
         error_summary = {}
+        error_summary2 = {}
         dataworking["alias_name"] = ""
         techSee = {}
 
@@ -131,14 +132,22 @@ class projectTecnologies_view(privateView):
                     alias = prjTechAliases_view.processView(self)
                     techSee = getTechnology(postdata, self.request)
 
+            technologiesInProject = searchTechnologiesInProject(
+                activeProjectId, self.request
+            )
+            totalOfCombinations = 1
+            for tech in technologiesInProject:
+                totalOfCombinations = totalOfCombinations * tech["quantity"]
+
+            if totalOfCombinations > 50:
+                error_summary2["totalOfCombinations"] = self._("ClimMob has limited the number of possible combinations to 50, at the moment you are exceeding this number so you must remove technology options to be able to create the packages later.")
+
             return {
                 "activeUser": self.user,
                 "activeProject": getActiveProject(self.user.login, self.request),
                 "tech_id": tech_id,
                 "TechnologiesUser": searchTechnologies(activeProjectId, self.request),
-                "TechnologiesInProject": searchTechnologiesInProject(
-                    activeProjectId, self.request
-                ),
+                "TechnologiesInProject": technologiesInProject,
                 "project_numcom": numberOfCombinationsForTheProject(
                     activeProjectId, self.request
                 ),
@@ -146,6 +155,8 @@ class projectTecnologies_view(privateView):
                 "dataworking": dataworking,
                 "error_summary": error_summary,
                 "techSee": techSee,
+                "error_summary2":error_summary2,
+                "totalOfCombinations": totalOfCombinations
             }
 
 

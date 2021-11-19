@@ -39,6 +39,10 @@
                     </div>
                 </div>
                 <div class="ibox-content" >
+                    {% set auxError = error_summary %}
+                    {% set error_summary = error_summary2 %}
+                    {% include 'snippets/error.jinja2' %}
+                    {% set error_summary = auxError %}
                     <input type="text" class="form-control form-control-sm m-b-xs" id="filter" placeholder="{{ _("Search technology") }}">
                     <table class="footable  table table-stripped tableHover" data-page-size="50000" data-filter=#filter>
                         <thead>
@@ -66,6 +70,11 @@
                                 {% set showCreator=True %}
                                 {% include 'snippets/technologies/technologies-stream.jinja2' %}
                             {% endif %}
+                            <tr style="{% if totalOfCombinations > 50 %}color: red{% endif %}">
+                                <th colspan="2" >{{ _("Total of combinations") }}</th>
+                                <th class="text-center">{{ totalOfCombinations }}</th>
+                                <td></td>
+                            </tr>
                         </tbody>
                     </table>
                     <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}">

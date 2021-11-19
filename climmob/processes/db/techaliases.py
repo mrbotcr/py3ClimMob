@@ -17,7 +17,7 @@ __all__ = [
 
 def getTechsAlias(idtech, request):
     res = []
-    result = (
+    result = mapFromSchema(
         request.dbsession.query(
             Techalia,
             request.dbsession.query(func.count(Prjalia.alias_id))
@@ -41,17 +41,7 @@ def getTechsAlias(idtech, request):
         .all()
     )
 
-    for techalias in result:
-        res.append(
-            {
-                "tech_id": techalias[0].tech_id,
-                "alias_id": techalias[0].alias_id,
-                "alias_name": techalias[2],
-                "quantity": techalias.quantity,
-            }
-        )
-
-    return res
+    return result
 
 
 def findTechalias(data, request):

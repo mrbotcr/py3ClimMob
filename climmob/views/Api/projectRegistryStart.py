@@ -20,8 +20,12 @@ from ...processes import (
     getTheProjectIdForOwner,
     getAccessTypeForProject,
     getProjectData,
+    setCombinationQuantityAvailable,
+    updateCreatePackages,
+    deleteProjectPackages,
 )
-
+from ...products.randomization.randomization import create_randomization
+from ..project_combinations import createSettings
 from climmob.products import stopTasksByProcess
 from ...processes.odk.api import storeJSONInMySQL
 
@@ -114,9 +118,8 @@ class readProjectCombinations_view(apiView):
                                     combArray.append(
                                         {
                                             "ncomb": comb["comb_code"] - 1,
-                                            "comb_usable": combs[pos2 - 1][
-                                                "comb_usable"
-                                            ],
+                                            "comb_usable": combs[pos2 - 1]["comb_usable"],
+                                            "quantity_available": combs[pos2 - 1]["quantity_available"],
                                             "elements": list(elements),
                                         }
                                     )
@@ -133,6 +136,7 @@ class readProjectCombinations_view(apiView):
                                 {
                                     "ncomb": ncombs,
                                     "comb_usable": combs[pos2 - 1]["comb_usable"],
+                                    "quantity_available": combs[pos2 - 1]["quantity_available"],
                                     "elements": list(elements),
                                 }
                             )
@@ -320,6 +324,143 @@ class setUsableCombinations_view(apiView):
             response = Response(status=401, body=self._("Only accepts POST method."))
             return response
 
+class setAvailabilityCombination_view(apiView):
+    def processView(self):
+
+        if self.request.method == "POST":
+            obligatory = [u"project_cod", u"user_owner", u"ncomb", u"availability"]
+            dataworking = json.loads(self.body)
+
+            if sorted(obligatory) == sorted(dataworking.keys()):
+                dataworking["user_name"] = self.user.login
+
+                dataInParams = True
+                for key in dataworking.keys():
+                    if dataworking[key] == "":
+                        dataInParams = False
+
+                if dataInParams:
+                    exitsproject = projectExists(
+                        self.user.login,
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
+                    )
+                    if exitsproject:
+
+                        activeProjectId = getTheProjectIdForOwner(
+                            dataworking["user_owner"],
+                            dataworking["project_cod"],
+                            self.request,
+                        )
+                        accessType = getAccessTypeForProject(
+                            self.user.login, activeProjectId, self.request
+                        )
+
+                        if accessType in [4]:
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "The access assigned for this project does not allow you to set usable combinations."
+                                ),
+                            )
+                            return response
+
+                        if projectRegStatus(activeProjectId, self.request):
+                            progress, pcompleted = getProjectProgress(
+                                dataworking["user_owner"],
+                                dataworking["project_cod"],
+                                activeProjectId,
+                                self.request,
+                            )
+                            if (
+                                progress["enumerators"] == True
+                                and progress["technology"] == True
+                                and progress["techalias"] == True
+                                and progress["registry"] == True
+                            ):
+                                if not projectCreateCombinations(
+                                    activeProjectId, self.request,
+                                ):
+                                    exits, status = getCombinationStatus(
+                                        activeProjectId,
+                                        dataworking["ncomb"],
+                                        self.request,
+                                    )
+                                    if exits:
+                                        if (
+                                            dataworking["availability"].isnumeric()
+                                        ):
+
+                                            setCombinationQuantityAvailable(
+                                                activeProjectId,
+                                                dataworking["ncomb"],
+                                                dataworking["availability"],
+                                                self.request,
+                                            )
+
+                                            response = Response(
+                                                status=200,
+                                                body=self._(
+                                                    "The availability of the combination was changed."
+                                                ),
+                                            )
+                                            return response
+                                        else:
+                                            response = Response(
+                                                status=401,
+                                                body=self._(
+                                                    "The number of items available in the combination must be an integer."
+                                                ),
+                                            )
+                                            return response
+                                    else:
+                                        response = Response(
+                                            status=401,
+                                            body=self._(
+                                                "You do not have a combination with this ID."
+                                            ),
+                                        )
+                                        return response
+                                else:
+                                    response = Response(
+                                        status=401,
+                                        body=self._(
+                                            "The combinations have not been created."
+                                        ),
+                                    )
+                                    return response
+                            else:
+                                response = Response(
+                                    status=401,
+                                    body=self._(
+                                        "You must have the field agents, technology options and registration form ready."
+                                    ),
+                                )
+                                return response
+                        else:
+                            response = Response(
+                                status=401,
+                                body=self._("Registration has already started."),
+                            )
+                            return response
+                    else:
+                        response = Response(
+                            status=401,
+                            body=self._("There is no project with that code."),
+                        )
+                        return response
+                else:
+                    response = Response(
+                        status=401, body=self._("Not all parameters have data.")
+                    )
+                    return response
+            else:
+                response = Response(status=401, body=self._("Error in the JSON."))
+                return response
+        else:
+            response = Response(status=401, body=self._("Only accepts POST method."))
+            return response
 
 class createPackages_view(apiView):
     def processView(self):
@@ -390,26 +531,58 @@ class createPackages_view(apiView):
                             if not projectCreateCombinations(
                                 activeProjectId, self.request,
                             ):
-                                create_packages_with_r(
-                                    dataworking["user_owner"],
-                                    activeProjectId,
-                                    dataworking["project_cod"],
-                                    self.request,
-                                )
-                                ncombs, packages = getPackages(
-                                    dataworking["user_owner"],
-                                    activeProjectId,
-                                    self.request,
-                                )
+                                prjData = getProjectData(activeProjectId, self.request)
+                                # Only create the packages if its needed
+                                if prjData["project_createpkgs"] == 1:
 
-                                response = Response(
-                                    status=200,
-                                    body=json.dumps(
-                                        {"packages": packages, "combinations": ncombs},
-                                        default=myconverter,
-                                    ),
-                                )
-                                return response
+                                    up = updateCreatePackages(activeProjectId, 2, self.request)
+
+                                    dl = deleteProjectPackages(activeProjectId, self.request)
+
+                                    settings = createSettings(self.request)
+                                    create_randomization(self.request, self.request.locale_name, dataworking["user_owner"],activeProjectId, dataworking["project_cod"], settings)
+
+                                    response = Response(
+                                        status=200,
+                                        body=self._(
+                                            "ClimMob has started the package creation process, please check back in a moment to verify that the process has been completed."
+                                        ),
+                                    )
+                                    return response
+
+                                if prjData["project_createpkgs"] == 2:
+                                    response = Response(
+                                        status=200,
+                                        body=self._(
+                                            "ClimMob is still generating the packages, please try this request again in a moment."
+                                        ),
+                                    )
+                                    return response
+
+                                if prjData["project_createpkgs"] == 3:
+                                    response = Response(
+                                        status=401,
+                                        body=self._(
+                                            "There was a problem with the creation of the packages please check the available quantity of each combination."
+                                        ),
+                                    )
+                                    return response
+
+                                if prjData["project_createpkgs"] == 0:
+                                    ncombs, packages = getPackages(
+                                        dataworking["user_owner"],
+                                        activeProjectId,
+                                        self.request,
+                                    )
+
+                                    response = Response(
+                                        status=200,
+                                        body=json.dumps(
+                                            {"packages": packages, "combinations": ncombs},
+                                            default=myconverter,
+                                        ),
+                                    )
+                                    return response
                             else:
                                 response = Response(
                                     status=401,

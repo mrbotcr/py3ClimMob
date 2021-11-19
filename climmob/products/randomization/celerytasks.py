@@ -48,8 +48,8 @@ def createRandomization(self, locale, path, settings, projectId, userOwner, proj
         *[userOwner, projectCod, "r", "comb.txt"]
     )
     rout = os.path.join(
-        settings["user.repository"],
-        *[userOwner, projectCod, "r", "comb_2.txt"]
+        path,
+        "comb_2.txt"
     )
 
     #cnf_file = settings["mysql.cnf"]

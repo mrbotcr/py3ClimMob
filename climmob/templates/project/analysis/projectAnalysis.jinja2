@@ -7,6 +7,7 @@
 {% block css %}
     {% cssresource request,'coreresources','icheck' %}
     {% cssresource request,'coreresources','switch' %}
+    {% cssresource request,'coreresources','footable' %}
 {% endblock css %}
 
 {% block topScripts %}
@@ -14,6 +15,7 @@
     {% jsresource request,'coreresources','icheck' %}
     {% jsresource request,'coreresources','switch' %}
     {% jsresource request,'coreresources','analysisData' %}
+    {% jsresource request,'coreresources','footable' %}
 {% endblock topScripts %}
 
 {% block pageheading %}
@@ -155,14 +157,51 @@
                     <br>
                     <div class="form-group">
                         <b>{{ _("Splits") }}</b>
-                        <p>{{ _("Do you want to make an extra analysis, making a separation with each of the selected explanatory variables ?") }}</p>
-                        <p>{{ _("E.g.: Make a gender separation (male/female).") }}</p>
+                        <p>{{ _("Do you want to do an extra analysis, separating by the values of the selection questions?") }}</p>
+
                         <div class="col-lg-offset-2 col-lg-10">
 
                             <div class="form-group">
                                 <input type="checkbox" id="ckb_Splits" name="ckb_Splits" data-on-color="success" data-off-color="danger" data-on-text="{{ _('Yes') }}" data-off-text="{{ _('No') }}" >
                             </div>
                         </div>
+
+                        <table class="table table-bordered" id="tableOfSplits" style="width: 100%">
+                            <tbody>
+                                <tr>
+                                    <th class="text-center" style="width: {{percentage}}% ">{{ _("Data collection moments") }}</th>
+                                    <th class="text-center" style="width: {{percentage}}% ">{{ _("Make split by variable") }}</th>
+                                </tr>
+                                <tr>
+                                    <th style="vertical-align:middle"> {{ _("Registration") }}</th>
+                                    <td>
+                                        {% if dataForAnalysis.Explanatory %}
+                                            {%for c in dataForAnalysis.Explanatory%}
+                                                {% if c.dtype in [5,6] %}
+                                                    {% if c.code == None %}
+                                                        <label style="font-weight: inherit"> <input class="checkbox i-checks explanatorySplit" type="checkbox" id="explanatory_REG__{{c.id}}_add" variable="{{ c.vars }}"><i></i> {{ c.name }}</label><br>
+                                                    {% endif%}
+                                                {% endif%}
+                                            {%endfor%}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% for assess in assessmentsList%}
+                                    <tr>
+                                        <th style="vertical-align:middle">{{ assess.ass_desc}}</th>
+                                        <td>
+                                            {% if dataForAnalysis.Explanatory %}
+                                                {%for c in dataForAnalysis.Explanatory%}
+                                                    {% if c.code.ass_cod == assess.ass_cod %}
+                                                        <label style="font-weight: inherit"> <input class="checkbox i-checks explanatorySplit" type="checkbox" id="explanatory_ASS_{{ assess.ass_cod }}_{{c.id}}_add" variable="{{ c.vars }}"><i></i> {{ c.name }}</label><br>
+                                                    {% endif%}
+                                                {%endfor%}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
 
                     </div>
                     <div class="form-group">
@@ -186,14 +225,48 @@
                             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                             <input type="text" id="txt_infosheets" name="txt_infosheets" value="true" style="width: 100%;display:none">
                             <input type="text" id="txt_splits" name="txt_splits" value="true," style="width: 100%;display:none">
+                            <input type="text" id="txt_reference" name="txt_reference" style="display: none">
                             <button type="submit" name="btn_createAnalysis" id="btn_createAnalysis" class="btn btn-primary clm-actions "> {{ _("Perform analysis") }}</button>
                         </form>
                     </div>
                 </div>
-
             </div>
         </div>
+{#        <div class="col-md-4">#}
+{#            <div class="ibox float-e-margins">#}
+{#                <div class="ibox-title">#}
+{#                    <h5>{{ _("Select your reference combination") }}</h5>#}
+{#                </div>#}
+{#                <div class="ibox-content">#}
+{#                    <input type="text" class="form-control form-control-sm m-b-xs" id="filter" placeholder="{{ _("Search technology") }}">#}
+{#                    <table class="TableOfReference table table-bordered" >#}
+{#                        <tr>#}
+{#                            <th style="text-align: center">{{ _("Select") }}</th>#}
+{#                            <th colspan="2" style="text-align: center">{{ _("Combination") }}</th>#}
+{#                        </tr>#}
+{#                        {% for combination in combinations %}#}
+{#                            <tr  id="comb{{ combination.combination_code }}">#}
+{#                                <td style="vertical-align: middle; text-align: center;">#}
+{#                                    <div class="i-checks2"><label>#}
+{#                                        <input type="radio" name="radioReference"  value="{{ combination.combination_code }}">#}
+{#                                        <i></i></label>#}
+{#                                    </div>#}
+{#                                </td>#}
+{#                                <td>#}
+{#                                {% for element in combination.elements %}#}
+{#                                    {{ element.technology_name }}: {{ element.alias_name }}#}
+{#                                    <br>#}
+{#                                {% endfor %}#}
+{#                                </td>#}
+{#                            </tr>#}
+{#                        {% endfor %}#}
+{##}
+{#                    </table>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
     </div>
+
 
     {% include 'snippets/loading.jinja2' %}
 

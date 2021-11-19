@@ -3,7 +3,6 @@ from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 from ..processes import projectExists, getTech, getProjectEnumerators
 from ..processes import createCombinations, getCombinations, setCombinationStatus
 from ..processes import (
-    create_packages_with_r,
     getPackages,
     projectHasCombinations,
     projectHasPackages,
@@ -17,7 +16,8 @@ from ..processes import (
     setCombinationQuantityAvailable,
     getProjectData,
     deleteProjectPackages,
-    updateCreatePackages
+    updateCreatePackages,
+    getProjectProgress
 )
 import climmob.plugins as p
 from ..products.randomization.randomization import create_randomization
@@ -46,6 +46,17 @@ class projectCombinations_view(privateView):
                 activeProjectUser, activeProjectCod, self.request
             )
 
+            prjData = getProjectData(activeProjectId, self.request)
+
+            if prjData["project_regstatus"] != 0:
+                raise HTTPNotFound()
+
+            progress, pcompleted = getProjectProgress(
+                activeProjectUser, activeProjectCod, activeProjectId, self.request
+            )
+
+            if progress["enumerators"] != True or progress["technology"] != True or progress["techalias"] != True or progress["registry"] != True:
+                raise HTTPNotFound()
 
             if not "stage" in self.request.params.keys():
                 stage = 1
@@ -177,9 +188,6 @@ class projectCombinations_view(privateView):
                     settings = createSettings(self.request)
                     create_randomization(self.request, self.request.locale_name, activeProjectUser, activeProjectId, activeProjectCod, settings )
 
-                # packagesCreated = create_packages_with_r(
-                #    activeProjectUser, activeProjectId, activeProjectCod, self.request
-                # )
 
                 packagesCreated =True
 

@@ -34,7 +34,7 @@ jQuery(document).ready(function() {
 
     });
 
-    $('.explanatorySelect').on('ifChanged', function()
+    $('.explanatorySplit').on('ifChanged', function()
     {
         id = $(this).attr("variable")
 
@@ -66,14 +66,38 @@ jQuery(document).ready(function() {
         if($(this).is(':checked')) {
             values = $("#txt_splits").val().substring(6);
             $("#txt_splits").val('true,'+ values);
+            $("#tableOfSplits").css("display","inline-table");
         }
         else{
             values = $("#txt_splits").val().substring(5);
             $("#txt_splits").val('false,'+values);
+            $("#tableOfSplits").css("display","none");
         }
 
     });
 
+    $('.i-checks2').iCheck({
+        radioClass: 'iradio_square-green',
+    });
+
+    $('input[name="radioReference"]').on('ifClicked', function (event) {
+
+        $("#txt_reference").val(this.value);
+    });
+
+    $("#filter").keyup(function () {
+        var value = this.value.toLowerCase().trim();
+
+        $(".TableOfReference tr").each(function (index) {
+            if (!index) return;
+            $(this).each(function () {
+                var id = $(this).text().toLowerCase().trim();
+                var not_found = (id.indexOf(value) == -1);
+                $(this).closest('tr').toggle(!not_found);
+                return not_found;
+            });
+        });
+    });
 });
 
 

@@ -46,6 +46,7 @@ class dashboard_view(privateView):
                 progress, pcompleted = getProjectProgress(
                     activeProjectUser, activeProjectCod, activeProjectId, self.request
                 )
+
                 hasActiveProject = True
                 showAnalysis = False
                 progress["usableAssessments"] = get_usable_assessments(

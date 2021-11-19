@@ -1,8 +1,8 @@
 from .classes import privateView
-from ..processes import getActiveProject, getQuestionsByType, getJSONResult
+from ..processes import getActiveProject, getQuestionsByType, getJSONResult, getCombinationsData, getProjectProgress
 from ..products.analysis.analysis import create_analysis
 from ..products.analysisdata.analysisdata import create_datacsv
-from pyramid.httpexceptions import HTTPFound
+from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 
 
 class analysisDataView(privateView):
@@ -11,36 +11,50 @@ class analysisDataView(privateView):
         hasActiveProject = False
         activeProjectData = getActiveProject(self.user.login, self.request)
 
-        if self.request.method == "POST":
-            if "btn_createAnalysis" in self.request.POST:
-                dataworking = self.getPostDict()
-                variablesSplit =""
-
-                if dataworking["txt_included_in_analysis"] != "":
-                    part = dataworking["txt_included_in_analysis"][:-1].split(",")
-                    if dataworking["txt_splits"][0:4] == "true":
-                        variablesSplit = dataworking["txt_splits"][5:-1]
-
-                    infosheet = dataworking["txt_infosheets"].upper()
-                    dataworking["project_id"] = activeProjectData["project_id"]
-                    pro = processToGenerateTheReport(
-                        activeProjectData, self.request, part, infosheet, variablesSplit
-                    )
-
-                self.returnRawViewResult = True
-                return HTTPFound(location=self.request.route_url("productList"))
-
-        dataForAnalysis, assessmentsList = getQuestionsByType(
-            activeProjectData["project_id"], self.request
+        progress, pcompleted = getProjectProgress(
+            activeProjectData["owner"]["user_name"], activeProjectData["project_cod"], activeProjectData["project_id"], self.request
         )
 
-        return {
-            "activeProject": getActiveProject(self.user.login, self.request),
-            "activeUser": self.user,
-            "dataForAnalysis": dataForAnalysis,
-            "assessmentsList": assessmentsList,
-            "correct": False,
-        }
+        total_ass_records = 0
+        for assessment in progress["assessments"]:
+            if assessment["ass_status"] == 1 or assessment["ass_status"] == 2:
+                total_ass_records = total_ass_records + assessment["asstotal"]
+
+        if total_ass_records > 5 or (activeProjectData["project_registration_and_analysis"] == 1 and progress["regtotal"] >= 5):
+
+            if self.request.method == "POST":
+                if "btn_createAnalysis" in self.request.POST:
+                    dataworking = self.getPostDict()
+                    variablesSplit =""
+
+                    if dataworking["txt_included_in_analysis"] != "":
+                        part = dataworking["txt_included_in_analysis"][:-1].split(",")
+                        if dataworking["txt_splits"][0:4] == "true":
+                            variablesSplit = dataworking["txt_splits"][5:-1]
+
+                        infosheet = dataworking["txt_infosheets"].upper()
+                        dataworking["project_id"] = activeProjectData["project_id"]
+                        pro = processToGenerateTheReport(
+                            activeProjectData, self.request, part, infosheet, variablesSplit
+                        )
+
+                    self.returnRawViewResult = True
+                    return HTTPFound(location=self.request.route_url("productList"))
+
+            dataForAnalysis, assessmentsList = getQuestionsByType(
+                activeProjectData["project_id"], self.request
+            )
+
+            return {
+                "activeProject": getActiveProject(self.user.login, self.request),
+                "activeUser": self.user,
+                "dataForAnalysis": dataForAnalysis,
+                "assessmentsList": assessmentsList,
+                "correct": False,
+                "combinations": getCombinationsData(activeProjectData["project_id"], self.request)
+            }
+        else:
+            raise HTTPNotFound()
 
 
 def processToGenerateTheReport(activeProjectData, request, variables, infosheet, variablesSplit):

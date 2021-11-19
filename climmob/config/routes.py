@@ -79,6 +79,8 @@ from ..views.project_enumerators import (
 from ..views.technologies import (
     technologies_view,
     deletetechnology_view,
+    getUserTechnologyDetails_view,
+    getUserTechnologyAliasDetails_view
 )
 from ..views.techaliases import deletealias_view
 
@@ -184,6 +186,7 @@ from ..views.Api.projectRegistry import (
 from ..views.Api.projectRegistryStart import (
     readProjectCombinations_view,
     setUsableCombinations_view,
+    setAvailabilityCombination_view,
     createPackages_view,
     createProjectRegistry_view,
     cancelRegistryApi_view,
@@ -433,6 +436,24 @@ def loadRoutes(config):
     )
 
     # Tecnologies library
+    routes.append(
+        addRoute(
+            "getUserTechnologyDetails",
+            "/user/{user}/technology/{technologyid}",
+            getUserTechnologyDetails_view,
+            "json",
+        )
+    )
+
+    routes.append(
+        addRoute(
+            "getUserTechnologyAliasDetails",
+            "/user/{user}/technology/{technologyid}/alias/{aliasid}",
+            getUserTechnologyAliasDetails_view,
+            "json",
+        )
+    )
+
     routes.append(
         addRoute(
             "usertechnologies",
@@ -1310,6 +1331,16 @@ def loadRoutes(config):
             None,
         )
     )
+
+    routes.append(
+        addRoute(
+            "updateAvailabilityCombinations",
+            "/api/setAvailabilityCombination",
+            setAvailabilityCombination_view,
+            None,
+        )
+    )
+
     routes.append(
         addRoute(
             "readprojectpackages", "/api/readProjectPackages", createPackages_view, None

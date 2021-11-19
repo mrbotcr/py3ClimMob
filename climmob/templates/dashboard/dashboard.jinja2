@@ -216,14 +216,18 @@
                                             </div>
                                             <div class="col-md-3">
                                                 <p style="margin-top: 8px; text-align: center">
-                                                    {% if progress.technology and progress.techalias %}
-                                                        <span class="label label-success">{{ _("Completed") }}</span>
-                                                    {% endif %}
-                                                    {% if progress.technology and not progress.techalias %}
-                                                        <span class="label label-warning" title="There are assigned treatments but without levels">{{ _("Partial") }}</span>
-                                                    {% endif %}
-                                                    {% if not progress.technology and not progress.techalias %}
-                                                        <span class="label label-danger">{{ _("Pending") }}</span>
+                                                    {% if progress.numberOfCombinations > 50 %}
+                                                        <span class="label label-danger">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ _("Error") }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                                    {% else %}
+                                                        {% if progress.technology and progress.techalias %}
+                                                            <span class="label label-success">{{ _("Completed") }}</span>
+                                                        {% endif %}
+                                                        {% if progress.technology and not progress.techalias %}
+                                                            <span class="label label-warning" title="There are assigned treatments but without levels">{{ _("Partial") }}</span>
+                                                        {% endif %}
+                                                        {% if not progress.technology and not progress.techalias %}
+                                                            <span class="label label-danger">{{ _("Pending") }}</span>
+                                                        {% endif %}
                                                     {% endif %}
                                                 </p>
                                             </div>

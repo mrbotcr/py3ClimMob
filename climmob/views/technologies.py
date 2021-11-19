@@ -1,4 +1,4 @@
-from pyramid.httpexceptions import HTTPFound
+from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 from .classes import privateView
 
 from ..processes import (
@@ -10,10 +10,40 @@ from ..processes import (
     deleteTechnology,
     getUserTechById,
     getActiveProject,
+    getTechsAlias
 )
 
 from .techaliases import newalias_view, modifyalias_view
 
+
+class getUserTechnologyDetails_view(privateView):
+    def processView(self):
+
+        if self.request.method == "GET":
+            userOwner = self.request.matchdict["user"]
+            techId = self.request.matchdict["technologyid"]
+            technology = getUserTechById(techId, self.request)
+            self.returnRawViewResult = True
+
+            return technology
+
+        raise HTTPNotFound
+
+class getUserTechnologyAliasDetails_view(privateView):
+    def processView(self):
+
+        if self.request.method == "GET":
+            userOwner = self.request.matchdict["user"]
+            techId = self.request.matchdict["technologyid"]
+            aliasId = self.request.matchdict["aliasid"]
+            technology = getUserTechById(techId, self.request)
+            self.returnRawViewResult = True
+
+            for alias in technology["tech_alias"]:
+                if alias["alias_id"] == int(aliasId):
+                    return alias
+
+        raise HTTPNotFound
 
 class technologies_view(privateView):
     def processView(self):

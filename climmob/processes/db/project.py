@@ -557,17 +557,20 @@ def getProjectProgress(userName, projectCode, project, request):
         total = 1
         for info in data:
             total = info[1] * total
-
         necessary = numberOfCombinationsForTheProject(project, request)
         result["techalias"] = False
+        result["numberOfCombinations"] = total
 
-        if total >= necessary:
-            perc = perc + 20
-            result["techalias"] = True
+        if total <= 50:
+            if total >= necessary:
+                perc = perc + 20
+                result["techalias"] = True
+
 
     else:
         result["technology"] = False
         result["techalias"] = False
+        result["numberOfCombinations"] = 0
 
     # If the registry has not only required climmob questions
 

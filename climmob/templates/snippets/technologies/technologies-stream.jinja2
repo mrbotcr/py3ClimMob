@@ -1,6 +1,6 @@
 
 {% for technology in UserTechs %}
-    <tr id="tech{{ technology.tech_id}}" {% if not checkbox %}onclick='showVarietiesInTechnology({{ technology| tojson }})'{% else%}{%if not isAlias%}{% if checked%}onclick='showVarieties({{technology.tech_id}})'{% else %}onclick='showLibraryVarieties({{technology.tech_id}})'{%endif%}{%endif%}{% endif %} {% if showCreator %}title="{{ _("by") }} {{ technology.user_fullname }}" {% endif %}>
+    <tr id="tech{{ technology.tech_id}}" {% if not checkbox %}onclick='showVarietiesInTechnology("{{ technology.tech_id }}","{{ technology.user_name }}")'{% else%}{%if not isAlias%}{% if checked%}onclick='showVarieties({{technology.tech_id}})'{% else %}onclick='showLibraryVarieties({{technology.tech_id}})'{%endif%}{%endif%}{% endif %} {% if showCreator %}title="{{ _("by") }} {{ technology.user_fullname }}" {% endif %}>
         <td style="vertical-align: middle" >
             {% if isAlias %}
                 {% if checkbox %}
