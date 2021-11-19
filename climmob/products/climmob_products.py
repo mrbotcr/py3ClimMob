@@ -272,9 +272,7 @@ def register_products(config):
 
     # MULTIMEDIA
 
-    randomization = addProduct(
-        "randomization", "Randomization for tricot project."
-    )
+    randomization = addProduct("randomization", "Randomization for tricot project.")
     addMetadataToProduct(randomization, "author", "Brandon Madriz")
     addMetadataToProduct(randomization, "version", "1.0")
     addMetadataToProduct(

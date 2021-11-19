@@ -80,7 +80,7 @@ from ..views.technologies import (
     technologies_view,
     deletetechnology_view,
     getUserTechnologyDetails_view,
-    getUserTechnologyAliasDetails_view
+    getUserTechnologyAliasDetails_view,
 )
 from ..views.techaliases import deletealias_view
 

@@ -13,7 +13,7 @@ __all__ = [
     "projectCreatePackages",
     "getTech",
     "getCombinationsUsableInProject",
-    "setCombinationQuantityAvailable"
+    "setCombinationQuantityAvailable",
 ]
 
 
@@ -61,11 +61,13 @@ def setCombinationStatus(projectId, id, status, request):
         {"project_createpkgs": 1}
     )
 
-def setCombinationQuantityAvailable(projectId, id, quantity, request):
-    res = request.dbsession.query(Prjcombination).filter(
-        Prjcombination.project_id == projectId
-    ).filter(Prjcombination.comb_code == id)\
 
+def setCombinationQuantityAvailable(projectId, id, quantity, request):
+    res = (
+        request.dbsession.query(Prjcombination)
+        .filter(Prjcombination.project_id == projectId)
+        .filter(Prjcombination.comb_code == id)
+    )
     if res.first().quantity_available != quantity:
 
         res.update({"quantity_available": quantity})
@@ -260,7 +262,13 @@ def createCombinations(userOwner, projectId, projectCod, request):
                 combNumber = 1
                 for combination in combinations:
                     newCombination = Prjcombination(
-                        project_id=projectId, comb_code=combNumber, comb_usable=1, quantity_available= math.ceil((prjData.project_numobs*prjData.project_numcom)/len(combinations))
+                        project_id=projectId,
+                        comb_code=combNumber,
+                        comb_usable=1,
+                        quantity_available=math.ceil(
+                            (prjData.project_numobs * prjData.project_numcom)
+                            / len(combinations)
+                        ),
                     )
                     request.dbsession.add(newCombination)
                     aliasNumber = 1
@@ -289,7 +297,7 @@ def createCombinations(userOwner, projectId, projectCod, request):
 
                 return True, ""
             else:
-                #print ("*******************11")
+                # print ("*******************11")
                 tech_array = tech_array[0]
                 # print tech_array
                 # print "*******************11"
@@ -299,7 +307,13 @@ def createCombinations(userOwner, projectId, projectCod, request):
                 aliasNumber = 1
                 for aAlias in tech_array:
                     newCombination = Prjcombination(
-                        project_id=projectId, comb_code=aliasNumber, comb_usable=1, quantity_available= math.ceil((prjData.project_numobs*prjData.project_numcom)/len(tech_array))
+                        project_id=projectId,
+                        comb_code=aliasNumber,
+                        comb_usable=1,
+                        quantity_available=math.ceil(
+                            (prjData.project_numobs * prjData.project_numcom)
+                            / len(tech_array)
+                        ),
                     )
                     request.dbsession.add(newCombination)
                     newAliasUsed = Prjcombdet(

@@ -118,8 +118,12 @@ class readProjectCombinations_view(apiView):
                                     combArray.append(
                                         {
                                             "ncomb": comb["comb_code"] - 1,
-                                            "comb_usable": combs[pos2 - 1]["comb_usable"],
-                                            "quantity_available": combs[pos2 - 1]["quantity_available"],
+                                            "comb_usable": combs[pos2 - 1][
+                                                "comb_usable"
+                                            ],
+                                            "quantity_available": combs[pos2 - 1][
+                                                "quantity_available"
+                                            ],
                                             "elements": list(elements),
                                         }
                                     )
@@ -136,7 +140,9 @@ class readProjectCombinations_view(apiView):
                                 {
                                     "ncomb": ncombs,
                                     "comb_usable": combs[pos2 - 1]["comb_usable"],
-                                    "quantity_available": combs[pos2 - 1]["quantity_available"],
+                                    "quantity_available": combs[pos2 - 1][
+                                        "quantity_available"
+                                    ],
                                     "elements": list(elements),
                                 }
                             )
@@ -324,6 +330,7 @@ class setUsableCombinations_view(apiView):
             response = Response(status=401, body=self._("Only accepts POST method."))
             return response
 
+
 class setAvailabilityCombination_view(apiView):
     def processView(self):
 
@@ -388,9 +395,7 @@ class setAvailabilityCombination_view(apiView):
                                         self.request,
                                     )
                                     if exits:
-                                        if (
-                                            dataworking["availability"].isnumeric()
-                                        ):
+                                        if dataworking["availability"].isnumeric():
 
                                             setCombinationQuantityAvailable(
                                                 activeProjectId,
@@ -461,6 +466,7 @@ class setAvailabilityCombination_view(apiView):
         else:
             response = Response(status=401, body=self._("Only accepts POST method."))
             return response
+
 
 class createPackages_view(apiView):
     def processView(self):
@@ -535,12 +541,23 @@ class createPackages_view(apiView):
                                 # Only create the packages if its needed
                                 if prjData["project_createpkgs"] == 1:
 
-                                    up = updateCreatePackages(activeProjectId, 2, self.request)
+                                    up = updateCreatePackages(
+                                        activeProjectId, 2, self.request
+                                    )
 
-                                    dl = deleteProjectPackages(activeProjectId, self.request)
+                                    dl = deleteProjectPackages(
+                                        activeProjectId, self.request
+                                    )
 
                                     settings = createSettings(self.request)
-                                    create_randomization(self.request, self.request.locale_name, dataworking["user_owner"],activeProjectId, dataworking["project_cod"], settings)
+                                    create_randomization(
+                                        self.request,
+                                        self.request.locale_name,
+                                        dataworking["user_owner"],
+                                        activeProjectId,
+                                        dataworking["project_cod"],
+                                        settings,
+                                    )
 
                                     response = Response(
                                         status=200,
@@ -578,7 +595,10 @@ class createPackages_view(apiView):
                                     response = Response(
                                         status=200,
                                         body=json.dumps(
-                                            {"packages": packages, "combinations": ncombs},
+                                            {
+                                                "packages": packages,
+                                                "combinations": ncombs,
+                                            },
                                             default=myconverter,
                                         ),
                                     )

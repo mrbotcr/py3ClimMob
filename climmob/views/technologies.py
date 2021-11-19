@@ -10,7 +10,7 @@ from ..processes import (
     deleteTechnology,
     getUserTechById,
     getActiveProject,
-    getTechsAlias
+    getTechsAlias,
 )
 
 from .techaliases import newalias_view, modifyalias_view
@@ -29,6 +29,7 @@ class getUserTechnologyDetails_view(privateView):
 
         raise HTTPNotFound
 
+
 class getUserTechnologyAliasDetails_view(privateView):
     def processView(self):
 
@@ -44,6 +45,7 @@ class getUserTechnologyAliasDetails_view(privateView):
                     return alias
 
         raise HTTPNotFound
+
 
 class technologies_view(privateView):
     def processView(self):

@@ -18,7 +18,12 @@ def query_for_users(request, q, query_from, query_size, projectId):
     )
     result = (
         request.dbsession.query(User)
-        .filter(or_(User.user_name.ilike("%" + query + "%"), User.user_fullname.ilike("%"+ query +"%")))
+        .filter(
+            or_(
+                User.user_name.ilike("%" + query + "%"),
+                User.user_fullname.ilike("%" + query + "%"),
+            )
+        )
         .filter(User.user_name.notin_(subquery))
         .offset(query_from)
         .limit(query_size)

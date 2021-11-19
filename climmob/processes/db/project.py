@@ -307,11 +307,20 @@ def getProjectData(projectId, request):
     )
     return mappedData
 
+
 def getProjectLabels(projectId, request):
     mappedData = mapFromSchema(
-        request.dbsession.query(Project.project_label_a,Project.project_label_b,Project.project_label_c).filter(Project.project_id == projectId).first()
+        request.dbsession.query(
+            Project.project_label_a, Project.project_label_b, Project.project_label_c
+        )
+        .filter(Project.project_id == projectId)
+        .first()
     )
-    return [mappedData["project_label_a"],mappedData["project_label_b"],mappedData["project_label_c"]]
+    return [
+        mappedData["project_label_a"],
+        mappedData["project_label_b"],
+        mappedData["project_label_c"],
+    ]
 
 
 def getProjectLocalVariety(projectId, request):
@@ -565,7 +574,6 @@ def getProjectProgress(userName, projectCode, project, request):
             if total >= necessary:
                 perc = perc + 20
                 result["techalias"] = True
-
 
     else:
         result["technology"] = False

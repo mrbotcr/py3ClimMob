@@ -17,7 +17,7 @@ from ..processes import (
     getProjectData,
     deleteProjectPackages,
     updateCreatePackages,
-    getProjectProgress
+    getProjectProgress,
 )
 import climmob.plugins as p
 from ..products.randomization.randomization import create_randomization
@@ -55,7 +55,12 @@ class projectCombinations_view(privateView):
                 activeProjectUser, activeProjectCod, activeProjectId, self.request
             )
 
-            if progress["enumerators"] != True or progress["technology"] != True or progress["techalias"] != True or progress["registry"] != True:
+            if (
+                progress["enumerators"] != True
+                or progress["technology"] != True
+                or progress["techalias"] != True
+                or progress["registry"] != True
+            ):
                 raise HTTPNotFound()
 
             if not "stage" in self.request.params.keys():
@@ -102,7 +107,12 @@ class projectCombinations_view(privateView):
                         for key in self.request.params.keys():
                             if key.find("quantitycombination_") > -1:
                                 comb_id = key.split("_")[1]
-                                setCombinationQuantityAvailable(activeProjectId, comb_id, int(formdata[key]), self.request)
+                                setCombinationQuantityAvailable(
+                                    activeProjectId,
+                                    comb_id,
+                                    int(formdata[key]),
+                                    self.request,
+                                )
 
                         self.returnRawViewResult = True
 
@@ -138,7 +148,9 @@ class projectCombinations_view(privateView):
                             {
                                 "ncomb": comb["comb_code"] - 1,
                                 "comb_usable": combs[pos2 - 1]["comb_usable"],
-                                "quantity_available": combs[pos2 - 1]["quantity_available"],
+                                "quantity_available": combs[pos2 - 1][
+                                    "quantity_available"
+                                ],
                                 "elements": list(elements),
                             }
                         )
@@ -186,18 +198,24 @@ class projectCombinations_view(privateView):
                     dl = deleteProjectPackages(activeProjectId, self.request)
 
                     settings = createSettings(self.request)
-                    create_randomization(self.request, self.request.locale_name, activeProjectUser, activeProjectId, activeProjectCod, settings )
+                    create_randomization(
+                        self.request,
+                        self.request.locale_name,
+                        activeProjectUser,
+                        activeProjectId,
+                        activeProjectCod,
+                        settings,
+                    )
 
-
-                packagesCreated =True
+                packagesCreated = True
 
                 if prjData["project_createpkgs"] == 3:
                     packagesCreated = False
 
                 if not packagesCreated:
                     error_summary["error"] = self._(
-                            "There was a problem with the creation of the packages please check the available quantity of each combination (Click on the 'Modify' button) and try to generate the packages again."
-                        )
+                        "There was a problem with the creation of the packages please check the available quantity of each combination (Click on the 'Modify' button) and try to generate the packages again."
+                    )
 
                 ncombs, packages = getPackages(
                     activeProjectUser, activeProjectId, self.request
@@ -217,7 +235,7 @@ class projectCombinations_view(privateView):
                     "registryCreated": False,
                     "tech": getTech(activeProjectId, self.request),
                     "listOfLabels": listOfLabels,
-                    "error_summary": error_summary
+                    "error_summary": error_summary,
                 }
             if stage == 3:
                 if not projectHasCombinations(activeProjectId, self.request):
@@ -382,6 +400,7 @@ def startTheRegistry(self, userOwner, projectId, projectCod, listOfLabelsForPack
             )
 
     return correct, str(error, "utf-8")
+
 
 def createSettings(request):
 

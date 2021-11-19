@@ -16,7 +16,9 @@ def create_randomization(
     path = createProductDirectory(request, userOwner, projectCod, "randomization")
     # We call the Celery task that will generate the output packages.pdf
     print("*****create_randomization. Calling createRandomization.delay ")
-    task = createRandomization.apply_async((locale, path, settings, projectId, userOwner, projectCod), queue="ClimMob")
+    task = createRandomization.apply_async(
+        (locale, path, settings, projectId, userOwner, projectCod), queue="ClimMob"
+    )
     # We register the instance of the output with the task ID of celery
     # This will go to the products table that then you can monitor and use
     # in the nice product interface

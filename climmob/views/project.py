@@ -185,8 +185,6 @@ class modifyProject_view(privateView):
                         data["project_numobs"] = cdata["project_numobs"]
                         data["project_numcom"] = cdata["project_numcom"]
 
-
-
                     data["project_localvariety"] = 1
 
                     isNecessarygenerateCombinations = False
@@ -199,7 +197,9 @@ class modifyProject_view(privateView):
                     if isNecessarygenerateCombinations:
                         changeTheStateOfCreateComb(activeProjectId, self.request)
 
-                    modified, message = modifyProject(activeProjectId, data, self.request)
+                    modified, message = modifyProject(
+                        activeProjectId, data, self.request
+                    )
                     if not modified:
                         error_summary = {"dberror": message}
                     else:
@@ -214,9 +214,11 @@ class modifyProject_view(privateView):
                     else:
                         data["project_localvariety"] = "off"
                 else:
-                    error_summary = {"repeatitem": self._(
-                        "The names that the items will receive should be different."
-                    )}
+                    error_summary = {
+                        "repeatitem": self._(
+                            "The names that the items will receive should be different."
+                        )
+                    }
         return {
             "activeProject": getActiveProject(self.user.login, self.request),
             "indashboard": True,

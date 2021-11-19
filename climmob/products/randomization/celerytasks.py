@@ -11,12 +11,13 @@ from climmob.models import (
     Prjcombination,
     Package,
     Pkgcomb,
-    Assessment
+    Assessment,
 )
 import gettext
 import os
 import shutil as sh
 from subprocess import check_call, CalledProcessError
+
 
 @celeryApp.task(bind=True, base=celeryTask, soft_time_limit=7200, time_limit=7200)
 def createRandomization(self, locale, path, settings, projectId, userOwner, projectCod):
@@ -44,15 +45,11 @@ def createRandomization(self, locale, path, settings, projectId, userOwner, proj
     os.makedirs(path)
 
     rfile = os.path.join(
-        settings["user.repository"],
-        *[userOwner, projectCod, "r", "comb.txt"]
+        settings["user.repository"], *[userOwner, projectCod, "r", "comb.txt"]
     )
-    rout = os.path.join(
-        path,
-        "comb_2.txt"
-    )
+    rout = os.path.join(path, "comb_2.txt")
 
-    #cnf_file = settings["mysql.cnf"]
+    # cnf_file = settings["mysql.cnf"]
 
     engine = get_engine(settings)
     session_factory = get_session_factory(engine)
@@ -66,7 +63,7 @@ def createRandomization(self, locale, path, settings, projectId, userOwner, proj
             db_session.query(Project).filter(Project.project_id == projectId).first()
         )
         # Only create the packages if its needed
-        #if prjData.project_createpkgs == 2:
+        # if prjData.project_createpkgs == 2:
         combData = (
             db_session.query(Prjcombination)
             .filter(Prjcombination.project_id == projectId)
@@ -146,10 +143,16 @@ def createRandomization(self, locale, path, settings, projectId, userOwner, proj
                             Project.project_id == projectId
                         ).update({"project_createpkgs": 0})
 
-                        #setRegistryStatus(userOwner, projectCod, projectId, 0, request)
-                        db_session.query(Project).filter(Project.project_id == projectId).update({"project_regstatus": 0})
-                        db_session.query(Project).filter(Project.project_id == projectId).update({"project_assstatus": 0})
-                        db_session.query(Assessment).filter(Assessment.project_id == projectId).update({"ass_status": 0})
+                        # setRegistryStatus(userOwner, projectCod, projectId, 0, request)
+                        db_session.query(Project).filter(
+                            Project.project_id == projectId
+                        ).update({"project_regstatus": 0})
+                        db_session.query(Project).filter(
+                            Project.project_id == projectId
+                        ).update({"project_assstatus": 0})
+                        db_session.query(Assessment).filter(
+                            Assessment.project_id == projectId
+                        ).update({"ass_status": 0})
 
                         assessments = (
                             db_session.query(Assessment)
@@ -158,7 +161,16 @@ def createRandomization(self, locale, path, settings, projectId, userOwner, proj
                         )
                         for assessment in assessments:
                             try:
-                                path = os.path.join(settings["user.repository"],*[userOwner, projectCod, "data", "ass", assessment.ass_cod])
+                                path = os.path.join(
+                                    settings["user.repository"],
+                                    *[
+                                        userOwner,
+                                        projectCod,
+                                        "data",
+                                        "ass",
+                                        assessment.ass_cod,
+                                    ]
+                                )
                                 sh.rmtree(path)
                             except:
                                 pass
@@ -178,8 +190,7 @@ def createRandomization(self, locale, path, settings, projectId, userOwner, proj
                 # msg = msg + str(e)
                 print(msg)
                 return False
-        #else:
+        # else:
         #    print("No se deben de crear paquetes")
 
     engine.dispose()
-

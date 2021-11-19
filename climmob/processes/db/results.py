@@ -5,7 +5,7 @@ import datetime, decimal
 from climmob.models.repository import sql_fetch_all, sql_fetch_one
 from .project_combinations import getCombinations
 
-__all__ = ["getJSONResult","getCombinationsData"]
+__all__ = ["getJSONResult", "getCombinationsData"]
 
 
 def getMiltiSelectLookUpTable(XMLFile, multiSelectTable):
@@ -650,6 +650,7 @@ def getJSONResult(
 
     return data
 
+
 def getCombinationsData(ProjectId, request):
 
     techs, ncombs, combs = getCombinations(ProjectId, request)
@@ -662,7 +663,7 @@ def getCombinationsData(ProjectId, request):
         if pos <= len(techs):
             elements.append(
                 {
-                    "technology_name": techs[pos-1]["tech_name"],
+                    "technology_name": techs[pos - 1]["tech_name"],
                     "alias_name": comb["alias_name"],
                 }
             )

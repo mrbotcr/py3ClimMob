@@ -13,7 +13,16 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 
 @celeryApp.task(base=climmobCeleryTask)
 def createReports(
-    locale, path, pathInfosheets, user, projectid, data, info, infosheet, pathScript, variablesSplit
+    locale,
+    path,
+    pathInfosheets,
+    user,
+    projectid,
+    data,
+    info,
+    infosheet,
+    pathScript,
+    variablesSplit,
 ):
 
     if os.path.exists(path):

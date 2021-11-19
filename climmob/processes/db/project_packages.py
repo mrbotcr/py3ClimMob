@@ -13,22 +13,23 @@ __all__ = [
     "projectHasPackages",
     "createExtraPackages",
     "deleteProjectPackages",
-    "updateCreatePackages"
+    "updateCreatePackages",
 ]
 
+
 def deleteProjectPackages(projectId, request):
-    request.dbsession.query(Package).filter(
-        Package.project_id == projectId
-    ).delete()
+    request.dbsession.query(Package).filter(Package.project_id == projectId).delete()
 
     return True
 
-def updateCreatePackages(projectId, status,request):
-    request.dbsession.query(Project).filter(
-        Project.project_id == projectId
-    ).update({"project_createpkgs": status })
+
+def updateCreatePackages(projectId, status, request):
+    request.dbsession.query(Project).filter(Project.project_id == projectId).update(
+        {"project_createpkgs": status}
+    )
 
     return True
+
 
 def grouper(n, iterable, padvalue=None):
     return izip(*[chain(iterable, repeat(padvalue, n - 1))] * n)
@@ -226,9 +227,9 @@ def create_packages_with_r(userOwner, projectId, projectCod, request):
             args = []
             args.append("Rscript")
             args.append(request.registry.settings["r.random.script"])
-            #args.append(str(prjData.project_numcom))
+            # args.append(str(prjData.project_numcom))
             args.append(str(prjData.project_numobs))
-            #args.append(str(len(combinations)))
+            # args.append(str(len(combinations)))
             args.append("inames=c(" + ", ".join(map(str, combinations)) + ")")
             args.append("iavailability=c(" + ", ".join(map(str, availability)) + ")")
             args.append(rout)
@@ -281,8 +282,8 @@ def create_packages_with_r(userOwner, projectId, projectCod, request):
             except CalledProcessError as e:
                 msg = "Error running R randomization file \n"
                 msg = msg + "Commang: " + " ".join(args) + "\n"
-                #msg = msg + "Error: \n"
-                #msg = msg + str(e)
+                # msg = msg + "Error: \n"
+                # msg = msg + str(e)
                 print(msg)
                 return False
 
@@ -313,9 +314,9 @@ def createExtraPackages(
         args = []
         args.append("Rscript")
         args.append(request.registry.settings["r.random.script"])
-        #args.append(str(numCom))
+        # args.append(str(numCom))
         args.append(str(numObsExtra))
-        #args.append(str(len(combinations)))
+        # args.append(str(len(combinations)))
         args.append("inames=c(" + ", ".join(map(str, combinations)) + ")")
         args.append("iavailability=c(" + ", ".join(map(str, availability)) + ")")
         args.append(rout)

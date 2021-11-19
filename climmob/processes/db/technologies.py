@@ -57,7 +57,6 @@ def getUserTechs(user, request):
         technology["found"] = res3.found
         res.append(technology)
 
-
     return res
 
 

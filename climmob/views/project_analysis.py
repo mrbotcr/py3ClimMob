@@ -1,5 +1,11 @@
 from .classes import privateView
-from ..processes import getActiveProject, getQuestionsByType, getJSONResult, getCombinationsData, getProjectProgress
+from ..processes import (
+    getActiveProject,
+    getQuestionsByType,
+    getJSONResult,
+    getCombinationsData,
+    getProjectProgress,
+)
 from ..products.analysis.analysis import create_analysis
 from ..products.analysisdata.analysisdata import create_datacsv
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
@@ -12,7 +18,10 @@ class analysisDataView(privateView):
         activeProjectData = getActiveProject(self.user.login, self.request)
 
         progress, pcompleted = getProjectProgress(
-            activeProjectData["owner"]["user_name"], activeProjectData["project_cod"], activeProjectData["project_id"], self.request
+            activeProjectData["owner"]["user_name"],
+            activeProjectData["project_cod"],
+            activeProjectData["project_id"],
+            self.request,
         )
 
         total_ass_records = 0
@@ -20,12 +29,15 @@ class analysisDataView(privateView):
             if assessment["ass_status"] == 1 or assessment["ass_status"] == 2:
                 total_ass_records = total_ass_records + assessment["asstotal"]
 
-        if total_ass_records > 5 or (activeProjectData["project_registration_and_analysis"] == 1 and progress["regtotal"] >= 5):
+        if total_ass_records > 5 or (
+            activeProjectData["project_registration_and_analysis"] == 1
+            and progress["regtotal"] >= 5
+        ):
 
             if self.request.method == "POST":
                 if "btn_createAnalysis" in self.request.POST:
                     dataworking = self.getPostDict()
-                    variablesSplit =""
+                    variablesSplit = ""
 
                     if dataworking["txt_included_in_analysis"] != "":
                         part = dataworking["txt_included_in_analysis"][:-1].split(",")
@@ -35,7 +47,11 @@ class analysisDataView(privateView):
                         infosheet = dataworking["txt_infosheets"].upper()
                         dataworking["project_id"] = activeProjectData["project_id"]
                         pro = processToGenerateTheReport(
-                            activeProjectData, self.request, part, infosheet, variablesSplit
+                            activeProjectData,
+                            self.request,
+                            part,
+                            infosheet,
+                            variablesSplit,
                         )
 
                     self.returnRawViewResult = True
@@ -51,13 +67,17 @@ class analysisDataView(privateView):
                 "dataForAnalysis": dataForAnalysis,
                 "assessmentsList": assessmentsList,
                 "correct": False,
-                "combinations": getCombinationsData(activeProjectData["project_id"], self.request)
+                "combinations": getCombinationsData(
+                    activeProjectData["project_id"], self.request
+                ),
             }
         else:
             raise HTTPNotFound()
 
 
-def processToGenerateTheReport(activeProjectData, request, variables, infosheet, variablesSplit):
+def processToGenerateTheReport(
+    activeProjectData, request, variables, infosheet, variablesSplit
+):
 
     data, _assessment = getQuestionsByType(activeProjectData["project_id"], request)
 
@@ -100,7 +120,7 @@ def processToGenerateTheReport(activeProjectData, request, variables, infosheet,
         infosheet,
         request,
         request.registry.settings["r.analysis.script"],
-        variablesSplit
+        variablesSplit,
     )
 
     create_datacsv(

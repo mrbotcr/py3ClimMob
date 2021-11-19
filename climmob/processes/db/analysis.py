@@ -9,9 +9,13 @@ from climmob.models import (
     I18nQuestion,
 )
 from .question import opcionOtherInQuestion
-from climmob.processes.db.project import numberOfCombinationsForTheProject, getProjectLabels
+from climmob.processes.db.project import (
+    numberOfCombinationsForTheProject,
+    getProjectLabels,
+)
 from sqlalchemy import or_, func, and_
 from jinja2 import Environment
+
 __all__ = ["getQuestionsByType", "getQuestionsStructure"]
 
 
@@ -75,7 +79,9 @@ def getQuestionsByType(projectId, request):
                 .first()
             )
 
-            dictName, dictQues = addQuestionToDictionary(projectLabels, questionData, numComb)
+            dictName, dictQues = addQuestionToDictionary(
+                projectLabels, questionData, numComb
+            )
 
             if dictName != "":
                 dic[dictName].append(dictQues)
@@ -166,8 +172,8 @@ def addQuestionToDictionary(projectLabels, questionData, numComb, assessment=Non
 
     if questionData["question_quantitative"] == 1:
 
-        if questionData["question_dtype"] not in [2,3,4,5,6]:
-            return "",""
+        if questionData["question_dtype"] not in [2, 3, 4, 5, 6]:
+            return "", ""
 
         questInfo["name"] = questionData["question_name"]
         questInfo["codeQst"] = questionData["question_code"]
@@ -233,13 +239,13 @@ def addQuestionToDictionary(projectLabels, questionData, numComb, assessment=Non
             + "_add"
         )
 
-        if questionData["question_dtype"] in [2,3]:
+        if questionData["question_dtype"] in [2, 3]:
             return "linearRegression", questInfo
         else:
             return "Quantitative", questInfo
 
     else:
-        if questionData["question_dtype"] in [2,3,4,5,6]:
+        if questionData["question_dtype"] in [2, 3, 4, 5, 6]:
             questInfo["name"] = questionData["question_name"]
             questInfo["codeQst"] = questionData["question_code"]
             questInfo["questionAsked"] = questionData["question_desc"]

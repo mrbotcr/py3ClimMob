@@ -20,7 +20,7 @@ from ..processes import (
     getTechnology,
     getActiveProject,
     getTheProjectIdForOwner,
-    getProjectData
+    getProjectData,
 )
 
 
@@ -52,9 +52,7 @@ class projectTecnologies_view(privateView):
             if prjData["project_createpkgs"] == 2:
                 self.returnRawViewResult = True
 
-                return HTTPFound(
-                    location=self.request.route_url("dashboard")
-                )
+                return HTTPFound(location=self.request.route_url("dashboard"))
 
             if self.request.method == "POST":
                 if "btn_save_technologies" in self.request.POST:
@@ -140,7 +138,9 @@ class projectTecnologies_view(privateView):
                 totalOfCombinations = totalOfCombinations * tech["quantity"]
 
             if totalOfCombinations > 50:
-                error_summary2["totalOfCombinations"] = self._("ClimMob has limited the number of possible combinations to 50, at the moment you are exceeding this number so you must remove technology options to be able to create the packages later.")
+                error_summary2["totalOfCombinations"] = self._(
+                    "ClimMob has limited the number of possible combinations to 50, at the moment you are exceeding this number so you must remove technology options to be able to create the packages later."
+                )
 
             return {
                 "activeUser": self.user,
@@ -155,8 +155,8 @@ class projectTecnologies_view(privateView):
                 "dataworking": dataworking,
                 "error_summary": error_summary,
                 "techSee": techSee,
-                "error_summary2":error_summary2,
-                "totalOfCombinations": totalOfCombinations
+                "error_summary2": error_summary2,
+                "totalOfCombinations": totalOfCombinations,
             }
 
 
