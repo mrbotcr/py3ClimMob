@@ -31,6 +31,7 @@ import json
 import os
 from jinja2 import Environment, FileSystemLoader
 
+
 class deleteQuestion_view(privateView):
     def processView(self):
         qid = self.request.matchdict["qid"]
@@ -568,6 +569,7 @@ class questionsActions_view(privateView):
 
         return {}
 
+
 class getUserQuestionPreview_view(privateView):
     def processView(self):
         if self.request.method == "GET":
@@ -582,7 +584,9 @@ class getUserQuestionPreview_view(privateView):
                 for opt in range(0, 3):
                     aux = question.copy()
                     code = chr(65 + opt)
-                    aux["question_desc"] = aux["question_desc"] + " - " +self._("Option") + " "+ code
+                    aux["question_desc"] = (
+                        aux["question_desc"] + " - " + self._("Option") + " " + code
+                    )
                     listOfQuestions.append(aux)
             else:
                 listOfQuestions.append(question)
@@ -611,6 +615,7 @@ class getUserQuestionPreview_view(privateView):
 
             return render_temp
 
+
 class getUserQuestionDetails_view(privateView):
     def processView(self):
 
@@ -625,6 +630,7 @@ class getUserQuestionDetails_view(privateView):
 
         raise HTTPNotFound
 
+
 class getUserCategoryDetails_view(privateView):
     def processView(self):
 
@@ -632,13 +638,14 @@ class getUserCategoryDetails_view(privateView):
             self.returnRawViewResult = True
 
             userOwner = self.request.matchdict["user"]
-            categoryId= self.request.matchdict["categoryid"]
+            categoryId = self.request.matchdict["categoryid"]
 
-            category = getCategoryByIdAndUser(categoryId,userOwner, self.request)
+            category = getCategoryByIdAndUser(categoryId, userOwner, self.request)
 
             return category
 
-        raise  HTTPNotFound
+        raise HTTPNotFound
+
 
 class qlibrary_view(privateView):
     def processView(self):

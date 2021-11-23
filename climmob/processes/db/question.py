@@ -31,7 +31,7 @@ __all__ = [
     "optionExistsWithName",
     "opcionNAinQuestion",
     "opcionOtherInQuestion",
-    "userQuestionDetailsById"
+    "userQuestionDetailsById",
 ]
 
 
@@ -214,6 +214,7 @@ def UserQuestionMoreBioversity(user, request):
         result.append(data)
     return result
 
+
 def userQuestionDetailsById(userOwner, questionId, request):
     data = mapFromSchema(
         request.dbsession.query(
@@ -266,6 +267,7 @@ def userQuestionDetailsById(userOwner, questionId, request):
         data["question_options"] = options
 
     return data
+
 
 def QuestionsOptions(user, userOwner, request):
     subquery = (

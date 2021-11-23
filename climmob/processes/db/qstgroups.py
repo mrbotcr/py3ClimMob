@@ -15,7 +15,7 @@ __all__ = [
     "getCategoryById",
     "categoryExistsById",
     "getCategoriesFromUserCollaborators",
-    "getCategoryByIdAndUser"
+    "getCategoryByIdAndUser",
 ]
 
 
@@ -198,11 +198,17 @@ def getCategoryById(qstgroups_id, request):
 
     return result
 
+
 def getCategoryByIdAndUser(qstgroups_id, qstgroups_username, request):
 
-
     res = (
-        request.dbsession.query(Question_group, request.dbsession.query(func.count(Question.question_id)).filter(Question.qstgroups_id == Question_group.qstgroups_id).filter(Question.user_name == Question_group.user_name).label('count') )
+        request.dbsession.query(
+            Question_group,
+            request.dbsession.query(func.count(Question.question_id))
+            .filter(Question.qstgroups_id == Question_group.qstgroups_id)
+            .filter(Question.user_name == Question_group.user_name)
+            .label("count"),
+        )
         .filter(Question_group.qstgroups_id == qstgroups_id)
         .filter(Question_group.user_name == qstgroups_username)
         .first()
@@ -210,6 +216,7 @@ def getCategoryByIdAndUser(qstgroups_id, qstgroups_username, request):
     result = mapFromSchema(res)
 
     return result
+
 
 def updateCategory(user, data, request):
     mappedData = mapToSchema(Question_group, data)
