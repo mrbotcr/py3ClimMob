@@ -2,7 +2,7 @@
     <div class="form-group">
         <label class="col-sm-4 control-label">{{ _("Variable code") }}</label>
         <div class="col-sm-8">
-            <input style="display: none"  type="text" id="question_id" class="form-control" name="question_id" >
+            <input style="display: none"  type="text" id="question_id" class="form-control inputForQuestion" name="question_id" >
             <input style="max-width: 215px" maxlength="25" type="text" id="question_code" class="form-control inputForQuestion" name="question_code" required="" oninvalid="this.setCustomValidity('{{ _("Write the variable code.") }}')" onchange="this.setCustomValidity('')">
             <span class="help-block m-b-none text-left">{{ _("Column label for the database (without spaces or special characters), for example 'grainyield'") }}</span>
         </div>

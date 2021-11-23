@@ -22,11 +22,13 @@ from ..processes import (
     deleteCategory,
     getCategoriesParents,
     getActiveProject,
+    userQuestionDetailsById
 )
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 import re
 import json
-
+import os
+from jinja2 import Environment, FileSystemLoader
 
 class deleteQuestion_view(privateView):
     def processView(self):
@@ -499,6 +501,8 @@ def actionsInquestion(self, formdata):
                                 return {"result": "error", "error": resp}
 
                     return {
+                        "question_id": idorerror,
+                        "user_name": formdata["user_name"],
                         "result": "success",
                         "success": self._("The question was successfully added"),
                     }
@@ -531,6 +535,8 @@ def actionsInquestion(self, formdata):
                             if not addded:
                                 return {"result": "error", "error": resp}
                     return {
+                        "question_id": formdata["question_id"],
+                        "user_name": formdata["user_name"],
                         "result": "success",
                         "success": self._("The question was successfully modified"),
                     }
@@ -560,6 +566,63 @@ class questionsActions_view(privateView):
             return actionsInquestion(self, postdata)
 
         return {}
+
+class getUserQuestionPreview_view(privateView):
+    def processView(self):
+        if self.request.method == "GET":
+            self.returnRawViewResult = True
+
+            userOwner = self.request.matchdict["user"]
+            questionId = self.request.matchdict["questionid"]
+
+            question = userQuestionDetailsById(userOwner, questionId, self.request)
+            listOfQuestions = []
+            if question["question_quantitative"] == 1:
+                for opt in range(0, 3):
+                    aux = question.copy()
+                    code = chr(65 + opt)
+                    aux["question_desc"] = aux["question_desc"] + " - " +self._("Option") + " "+ code
+                    listOfQuestions.append(aux)
+            else:
+                listOfQuestions.append(question)
+
+            PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            env = Environment(
+                autoescape=False,
+                loader=FileSystemLoader(
+                    os.path.join(PATH, "templates", "snippets", "project")
+                ),
+                trim_blocks=False,
+            )
+            template = env.get_template("previewForm.jinja2")
+
+            info = {
+                "img1": self.request.url_for_static("landing/odk.png"),
+                "img2": self.request.url_for_static("landing/odk2.png"),
+                "img3": self.request.url_for_static("landing/odk3.png"),
+                "data": listOfQuestions,
+                "isOneProject": "True",
+                "activeProject": getActiveProject(self.user.login, self.request),
+                "_": self._,
+                "showPhone": True,
+            }
+            render_temp = template.render(info)
+
+            return render_temp
+
+class getUserQuestionDetails_view(privateView):
+    def processView(self):
+
+        if self.request.method == "GET":
+
+            userOwner = self.request.matchdict["user"]
+            questionId = self.request.matchdict["questionid"]
+            question = userQuestionDetailsById(userOwner, questionId, self.request)
+            self.returnRawViewResult = True
+
+            return question
+
+        raise HTTPNotFound
 
 
 class qlibrary_view(privateView):

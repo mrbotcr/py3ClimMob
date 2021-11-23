@@ -7,13 +7,12 @@
     {% endif %}
     <div style="padding: 10px; text-align: left; {% if showPhone %} display: inline-block; background-color: #fafafa; overflow-y: scroll; height: 500px; max-width: 320px; {% endif %}  ">
         {% for item in data %}
-
             {% if item.createGRP %}
                 <h3>{{ item.section_name }}</h3>
                 <br><br>
             {% endif %}
 
-            {% if item.question_quantitative == 0 or (item.question_quantitative ==1 and item.isParentQuestion ==0) %}
+            {% if item.question_quantitative == 0 or (item.question_quantitative == 1 and item.isParentQuestion ==0) or item.isIndividual == 1 %}
 
                 {% if item.question_dtype != 9 and item.question_dtype != 10  %}
                     <h3 style="font-family:sans-serif; color: #000000" >{% if item.question_reqinreg == 1 or item.question_requiredvalue ==1%}<strong style="color: red" class="preview_required">*</strong>{% endif %}<strong id="preview_text">{{ item.question_desc }}</strong></h3>

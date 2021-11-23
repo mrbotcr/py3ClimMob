@@ -26,6 +26,8 @@ from ..views.project import (
 
 from ..views.question import (
     qlibrary_view,
+    getUserQuestionDetails_view,
+    getUserQuestionPreview_view,
     categories_view,
     deleteQuestion_view,
     questionsActions_view,
@@ -382,6 +384,24 @@ def loadRoutes(config):
     )
 
     # Question library
+    routes.append(
+        addRoute(
+            "getUserQuestionDetails",
+            "/user/{user}/question/{questionid}",
+            getUserQuestionDetails_view,
+            "json",
+        )
+    )
+
+    routes.append(
+        addRoute(
+            "getUserQuestionPreview",
+            "/user/{user}/question/{questionid}/Preview",
+            getUserQuestionPreview_view,
+            "string",
+        )
+    )
+
     routes.append(
         {
             "name": "qlibrary",

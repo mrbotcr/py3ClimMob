@@ -31,6 +31,7 @@ __all__ = [
     "optionExistsWithName",
     "opcionNAinQuestion",
     "opcionOtherInQuestion",
+    "userQuestionDetailsById"
 ]
 
 
@@ -213,6 +214,58 @@ def UserQuestionMoreBioversity(user, request):
         result.append(data)
     return result
 
+def userQuestionDetailsById(userOwner, questionId, request):
+    data = mapFromSchema(
+        request.dbsession.query(
+            Question,
+            func.coalesce(I18nQuestion.question_desc, Question.question_desc).label(
+                "question_desc"
+            ),
+            func.coalesce(I18nQuestion.question_name, Question.question_name).label(
+                "question_name"
+            ),
+            func.coalesce(I18nQuestion.question_posstm, Question.question_posstm).label(
+                "question_posstm"
+            ),
+            func.coalesce(I18nQuestion.question_negstm, Question.question_negstm).label(
+                "question_negstm"
+            ),
+            func.coalesce(
+                I18nQuestion.question_perfstmt, Question.question_perfstmt
+            ).label("question_perfstmt"),
+        )
+        .join(
+            I18nQuestion,
+            and_(
+                Question.question_id == I18nQuestion.question_id,
+                I18nQuestion.lang_code == request.locale_name,
+            ),
+            isouter=True,
+        )
+        .filter(Question.user_name == userOwner)
+        .filter(Question.question_id == questionId)
+        .order_by(Question.user_name, Question.question_dtype)
+        .one()
+    )
+
+    registry = (
+        request.dbsession.query(func.count(Registry.question_id).label("found"))
+        .filter(Registry.question_id == data["question_id"])
+        .one()
+    )
+    assessment = (
+        request.dbsession.query(func.count(AssDetail.question_id).label("found"))
+        .filter(AssDetail.question_id == data["question_id"])
+        .one()
+    )
+    data["isIndividual"] = 1
+    data["assigned"] = assessment.found + registry.found
+    if data["question_dtype"] == 5 or data["question_dtype"] == 6:
+        options = getQuestionOptions(data["question_id"], request)
+        data["num_options"] = len(options)
+        data["question_options"] = options
+
+    return data
 
 def QuestionsOptions(user, userOwner, request):
     subquery = (

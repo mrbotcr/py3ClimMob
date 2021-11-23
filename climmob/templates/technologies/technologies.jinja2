@@ -268,10 +268,11 @@
         });
 
         function showVarietiesInTechnology(tech_id, user_name, closeError='yes') {
-
+            var URL= "{{ request.route_url('getUserTechnologyDetails',user="__user_name__", technologyid="__techid__") }}"
+            URL= URL.replace("__user_name__",user_name).replace("__techid__", tech_id)
             data = {};
 
-            $.get("{{ request.application_url }}/user/"+user_name+"/technology/"+tech_id, function(data, status){
+            $.get(URL, function(data, status){
                 var tech = data;
 
 
@@ -380,7 +381,10 @@
         var changeError=0
         function showAlias(user_name, tech_id, alias_id)
         {
-            $.get("{{ request.application_url }}/user/"+user_name+"/technology/"+tech_id+"/alias/"+alias_id, function(data, status){
+            var URL= "{{ request.route_url('getUserTechnologyDetails',user="__user_name__", technologyid="__techid__", aliasid="__aliasid__") }}"
+            URL= URL.replace("__user_name__",user_name).replace("__techid__", tech_id).replace("__aliasid__", aliasid)
+
+            $.get(URL, function(data, status){
                 var alias = data;
 
                 $("#option"+alias.alias_id).iCheck('check');
