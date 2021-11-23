@@ -1,6 +1,6 @@
 from ...models import mapToSchema, mapFromSchema
 from ...models.climmobv4 import Question_group, Question, userProject
-from sqlalchemy import or_
+from sqlalchemy import or_, func
 
 __all__ = [
     "categoryExists",
@@ -15,6 +15,7 @@ __all__ = [
     "getCategoryById",
     "categoryExistsById",
     "getCategoriesFromUserCollaborators",
+    "getCategoryByIdAndUser"
 ]
 
 
@@ -197,6 +198,18 @@ def getCategoryById(qstgroups_id, request):
 
     return result
 
+def getCategoryByIdAndUser(qstgroups_id, qstgroups_username, request):
+
+
+    res = (
+        request.dbsession.query(Question_group, request.dbsession.query(func.count(Question.question_id)).filter(Question.qstgroups_id == Question_group.qstgroups_id).filter(Question.user_name == Question_group.user_name).label('count') )
+        .filter(Question_group.qstgroups_id == qstgroups_id)
+        .filter(Question_group.user_name == qstgroups_username)
+        .first()
+    )
+    result = mapFromSchema(res)
+
+    return result
 
 def updateCategory(user, data, request):
     mappedData = mapToSchema(Question_group, data)

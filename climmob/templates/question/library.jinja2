@@ -598,27 +598,41 @@
             }
         }
 
-        function openCategories(count,id,value)
+        function createCategory()
+        {
+            $("#jstree1").jstree("close_all");
+            clean_extra_section();
+            clean_buttoms_category();
+            $("#qstgroups_name").val("")
+            $("#qstgroups_id").val("")
+            $("#btnNewCategory").css('display','initial')
+            $("#ibox_category").css('display','initial')
+            $("#qstgroups_name").focus()
+        }
+
+        function openCategories(categoryId, user_name, count)
         {
             $("#jstree1").jstree("close_all");
 
             clean_extra_section();
             clean_buttoms_category();
-            $("#qstgroups_name").val(value)
-            $("#qstgroups_id").val(id)
+            var URL = "{{ request.route_url('getUserCategoryDetails',user="__user_name__", categoryid="__categoryid__") }}"
+            URL = URL.replace("__user_name__", user_name).replace("__categoryid__", categoryId)
 
-            if(value == "")
-            {
-                $("#btnNewCategory").css('display','initial')
-            }else{
+            $.get(URL, function (dataJson, status) {
+
+                $("#qstgroups_name").val(dataJson["qstgroups_name"])
+                $("#qstgroups_id").val(dataJson["qstgroups_id"])
+
                 $("#btnUpdateCategory").css('display','initial')
-                if(count==0)
+                if(dataJson["count"]==0)
                     $("#btnDeleteCategory").css('display','initial')
-            }
 
-            $("#ibox_category").css('display','initial')
 
-            $("#qstgroups_name").focus()
+                $("#ibox_category").css('display','initial')
+
+                $("#qstgroups_name").focus()
+            })
         }
 
         function createQuestion(category)

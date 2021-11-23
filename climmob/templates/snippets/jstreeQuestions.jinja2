@@ -2,7 +2,8 @@
     <div id="{{ jstreeId }}">
         <ul>
             {% for category in Categories %}
-                <li class="jstree-open"  data-jstree='{"icon": "fa fa-folder  {% if colorsUserCategories %}{% if activeUser.login == category.user_name %} jstree-usercategory {% endif %}{% endif %}"}'> <strong style="font-size: 16px; color: #000000;" {% if doActions %} {% if activeUser.login == category.user_name %}onclick="openCategories('{{ category.count }}','{{ category.qstgroups_id }}','{{ category.qstgroups_name.replace('"',"&quot;").replace("'","&#8242;") }}')" {% endif %}  {% endif %}>{{ category.qstgroups_name }}</strong>
+
+                <li class="jstree-open"  data-jstree='{"icon": "fa fa-folder  {% if colorsUserCategories %}{% if activeUser.login == category.user_name %} jstree-usercategory {% endif %}{% endif %}"}'> <strong style="font-size: 16px; color: #000000;" {% if doActions %} {% if activeUser.login == category.user_name %}onclick="openCategories('{{ category.qstgroups_id }}','{{ category.user_name }}')" {% endif %}  {% endif %}>{{ category.qstgroups_name }}</strong>
                     <ul>
                         {% for question in UserQuestion %}
                             {% if question.qstgroups_id == category.qstgroups_id %}
@@ -13,7 +14,7 @@
                     </ul>
                 </li>
             {% endfor %}
-            {% if doActions %} <li data-jstree='{"icon": "fa fa-plus"}' onclick=" openCategories('','','')"> <strong class="label label-primary" style="font-size: 12px; background-color: #337ab7">{{ _("Create new category") }}</strong></li> {% endif %}
+            {% if doActions %} <li data-jstree='{"icon": "fa fa-plus"}' onclick="createCategory()"> <strong class="label label-primary" style="font-size: 12px; background-color: #337ab7">{{ _("Create new category") }}</strong></li> {% endif %}
 
         </ul>
     </div>

@@ -28,6 +28,7 @@ from ..views.question import (
     qlibrary_view,
     getUserQuestionDetails_view,
     getUserQuestionPreview_view,
+    getUserCategoryDetails_view,
     categories_view,
     deleteQuestion_view,
     questionsActions_view,
@@ -399,6 +400,15 @@ def loadRoutes(config):
             "/user/{user}/question/{questionid}/Preview",
             getUserQuestionPreview_view,
             "string",
+        )
+    )
+
+    routes.append(
+        addRoute(
+            "getUserCategoryDetails",
+            "/user/{user}/category/{categoryid}",
+            getUserCategoryDetails_view,
+            "json",
         )
     )
 

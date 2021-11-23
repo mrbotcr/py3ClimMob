@@ -22,7 +22,8 @@ from ..processes import (
     deleteCategory,
     getCategoriesParents,
     getActiveProject,
-    userQuestionDetailsById
+    userQuestionDetailsById,
+    getCategoryByIdAndUser,
 )
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 import re
@@ -624,6 +625,20 @@ class getUserQuestionDetails_view(privateView):
 
         raise HTTPNotFound
 
+class getUserCategoryDetails_view(privateView):
+    def processView(self):
+
+        if self.request.method == "GET":
+            self.returnRawViewResult = True
+
+            userOwner = self.request.matchdict["user"]
+            categoryId= self.request.matchdict["categoryid"]
+
+            category = getCategoryByIdAndUser(categoryId,userOwner, self.request)
+
+            return category
+
+        raise  HTTPNotFound
 
 class qlibrary_view(privateView):
     def processView(self):
