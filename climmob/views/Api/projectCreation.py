@@ -1,5 +1,5 @@
-from ..classes import apiView
-from ...processes import (
+from climmob.views.classes import apiView
+from climmob.processes import (
     projectInDatabase,
     addProject,
     projectExists,
@@ -18,7 +18,7 @@ from ...processes import (
     remove_collaborator,
     get_collaborators_in_project,
 )
-from ..cloneProjects.cloneProjects import functionCreateClone
+from climmob.views.project import functionCreateClone
 
 from pyramid.response import Response
 import json

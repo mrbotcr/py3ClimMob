@@ -51,6 +51,8 @@
                     {% set permissionForChanges=False%}
                 {% endif %}
                 {% set dataworking=data %}
+                {% set allowTemplate=True %}
+                {% set editTemplate=False %}
                 {% include 'snippets/project/project_form.jinja2' %}
 
                 {% if permissionForChanges %}
@@ -80,6 +82,14 @@
                     radioClass: 'iradio_square-green',
                 });
             })
+
+            var valueOfProjectTemplate = "{{ data["project_template"] }}"
+
+            if (valueOfProjectTemplate == "0") {
+                $("[name='project_template']").bootstrapSwitch('state', false);
+            }else {
+                $("[name='project_template']").bootstrapSwitch('state', true);
+            }
 
         $("#formModify").submit(function (e) {
             $(".radiosRA").prop('disabled', false);

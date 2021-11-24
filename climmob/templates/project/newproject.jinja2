@@ -41,6 +41,8 @@
             {% block newprjform %}
                 {% set edit=False %}
                 {% set permissionForChanges=True %}
+                {% set allowTemplate=True %}
+                {% set editTemplate=True %}
                 {% include 'snippets/project/project_form.jinja2' %}
 
                 <button type="submit" name="btn_addNewProject" id="btn_addNewProject" class="btn btn-primary pull-right">{{ _("Create project") }}</button>
@@ -58,6 +60,30 @@
                 $('.i-checks').iCheck({
                     radioClass: 'iradio_square-green',
                 });
+
+                $('input[name="project_registration_and_analysis"]').on('ifChecked', function(event){
+                    var URL = "{{ request.route_url('getTemplatesByTypeOfProject', typeid="__typeid__") }}"
+                    URL = URL.replace("__typeid__", this.value)
+
+                    $.get(URL, function (dataJson, status) {
+                        $("#usingTemplate").empty();
+                        $('#usingTemplate').trigger("chosen:updated");
+                        $("#usingTemplate").append("<option value=''>{{ _("Select a template") }}</option>");
+                        for (var i = 0; i < dataJson.length; i++){
+                            var info = dataJson[i]
+                            $("#usingTemplate").append("<option value='"+ info.project_id+"'>"+ info.project_name+"</option>");
+                        }
+                        $('#usingTemplate').trigger("chosen:updated");
+                    });
+                });
+
+                var valueOfProjectTemplate = "{{ dataworking["project_template"] }}"
+
+                if (valueOfProjectTemplate == "0") {
+                    $("[name='project_template']").bootstrapSwitch('state', false);
+                }else {
+                    $("[name='project_template']").bootstrapSwitch('state', true);
+                }
             })
         </script>
     {% endif %}

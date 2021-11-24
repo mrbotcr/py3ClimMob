@@ -614,6 +614,7 @@ class Project(Base):
     project_label_c = Column(
         Unicode(120), nullable=False, server_default=text("'Option C'")
     )
+    project_template = Column(Integer, server_default=text("'0'"))
     extra = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
 
     country = relationship(u"Country")

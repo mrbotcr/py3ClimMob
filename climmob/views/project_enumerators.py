@@ -1,5 +1,5 @@
 from .classes import privateView
-from pyramid.httpexceptions import HTTPNotFound
+from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 from ..processes import projectExists
 from ..processes import (
     getProjectEnumerators,
@@ -29,12 +29,26 @@ class projectEnumerators_view(privateView):
             activeProjectId = getTheProjectIdForOwner(
                 activeProjectUser, activeProjectCod, self.request
             )
+            activeProject = getActiveProject(self.user.login, self.request)
+
+            if activeProject["project_template"] == 1:
+
+                self.returnRawViewResult = True
+                return HTTPFound(
+                    location=self.request.route_url(
+                        "dashboard",
+                        _query={
+                            "user": activeProjectUser,
+                            "project": activeProjectCod,
+                        },
+                    )
+                )
 
             if self.request.method == "POST":
                 error_summary = addProjectEnumerators_view.processView(self)
             return {
                 "activeUser": self.user,
-                "activeProject": getActiveProject(self.user.login, self.request),
+                "activeProject": activeProject,
                 "enumeratorsInProject": getProjectEnumerators(
                     activeProjectId, self.request
                 ),

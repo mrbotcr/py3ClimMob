@@ -8,7 +8,7 @@ from ...processes import (
     get_collaborators_in_project,
     remove_collaborator,
 )
-from pyramid.httpexceptions import HTTPNotFound
+from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 import paginate
 import urllib
 import hashlib
@@ -30,6 +30,19 @@ class projectShare_view(privateView):
             activeProjectUser, activeProjectCod, self.request
         )
 
+        activeProject = getActiveProject(self.user.login, self.request)
+        if activeProject["project_template"] == 1:
+            self.returnRawViewResult = True
+            return HTTPFound(
+                location=self.request.route_url(
+                    "dashboard",
+                    _query={
+                        "user": activeProjectUser,
+                        "project": activeProjectCod,
+                    },
+                )
+            )
+
         if self.request.method == "POST":
             dataworking = self.getPostDict()
             dataworking["project_id"] = activeProjectId
@@ -48,7 +61,7 @@ class projectShare_view(privateView):
             "usersCollaborators": get_collaborators_in_project(
                 self.request, activeProjectId
             ),
-            "activeProject": getActiveProject(self.user.login, self.request),
+            "activeProject": activeProject,
             "error_summary": error_summary,
         }
 

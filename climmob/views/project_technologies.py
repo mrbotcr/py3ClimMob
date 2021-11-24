@@ -48,6 +48,19 @@ class projectTecnologies_view(privateView):
             )
 
             prjData = getProjectData(activeProjectId, self.request)
+
+            if prjData["project_template"] == 1:
+                self.returnRawViewResult = True
+                return HTTPFound(
+                    location=self.request.route_url(
+                        "dashboard",
+                        _query={
+                            "user": activeProjectUser,
+                            "project": activeProjectCod,
+                        },
+                    )
+                )
+
             # Only create the packages if its needed
             if prjData["project_createpkgs"] == 2:
                 self.returnRawViewResult = True

@@ -202,36 +202,40 @@
                                         </div>
                                     </div>
                                     <div class="ibox-content">
-                                        <div class="row">
-                                            <div class="col-md-9">
-                                                <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" {% if progress.enumerators_by_user == 0 %} onclick="seeHelp()" {% else %} href="{{ request.route_url('prjenumerators',user=activeProject["owner"].user_name, project=activeProject["project_cod"]) }}" {% endif %}><i class="fa fa-user-circle-o"></i> {{ _("Assign field agents") }}</a>
+                                        {% if activeProject["project_template"] != 1 %}
+                                            <div class="row">
+                                                <div class="col-md-9">
+                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" {% if progress.enumerators_by_user == 0 %} onclick="seeHelp()" {% else %} href="{{ request.route_url('prjenumerators',user=activeProject["owner"].user_name, project=activeProject["project_cod"]) }}" {% endif %}><i class="fa fa-user-circle-o"></i> {{ _("Assign field agents") }}</a>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <p style="margin-top: 8px; text-align: center"><span class="label {% if progress.enumerators %}label-success{% else %}label-danger{% endif %}">{% if progress.enumerators %}{{ _("Completed") }}{% else %}{{ _("Pending") }}{% endif %}</span></p>
+                                                </div>
                                             </div>
-                                            <div class="col-md-3">
-                                                <p style="margin-top: 8px; text-align: center"><span class="label {% if progress.enumerators %}label-success{% else %}label-danger{% endif %}">{% if progress.enumerators %}{{ _("Completed") }}{% else %}{{ _("Pending") }}{% endif %}</span></p>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-9">
-                                                <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" {% if activeProject["project_createpkgs"] ==2 %} disabled {% else %} href="{{ request.route_url('prjtechnologies', user=activeProject["owner"].user_name, project=activeProject["project_cod"]) }}" {% endif %}><i class="fa fa-envira"></i> {{ _("Select technology options") }}</a>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <p style="margin-top: 8px; text-align: center">
-                                                    {% if progress.numberOfCombinations > 50 %}
-                                                        <span class="label label-danger">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ _("Error") }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                                                    {% else %}
-                                                        {% if progress.technology and progress.techalias %}
-                                                            <span class="label label-success">{{ _("Completed") }}</span>
+                                        {% endif %}
+                                        {% if activeProject["project_template"] != 1 %}
+                                            <div class="row">
+                                                <div class="col-md-9">
+                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" {% if activeProject["project_createpkgs"] ==2 %} disabled {% else %} href="{{ request.route_url('prjtechnologies', user=activeProject["owner"].user_name, project=activeProject["project_cod"]) }}" {% endif %}><i class="fa fa-envira"></i> {{ _("Select technology options") }}</a>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <p style="margin-top: 8px; text-align: center">
+                                                        {% if progress.numberOfCombinations > 50 %}
+                                                            <span class="label label-danger">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ _("Error") }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                                        {% else %}
+                                                            {% if progress.technology and progress.techalias %}
+                                                                <span class="label label-success">{{ _("Completed") }}</span>
+                                                            {% endif %}
+                                                            {% if progress.technology and not progress.techalias %}
+                                                                <span class="label label-warning" title="There are assigned treatments but without levels">{{ _("Partial") }}</span>
+                                                            {% endif %}
+                                                            {% if not progress.technology and not progress.techalias %}
+                                                                <span class="label label-danger">{{ _("Pending") }}</span>
+                                                            {% endif %}
                                                         {% endif %}
-                                                        {% if progress.technology and not progress.techalias %}
-                                                            <span class="label label-warning" title="There are assigned treatments but without levels">{{ _("Partial") }}</span>
-                                                        {% endif %}
-                                                        {% if not progress.technology and not progress.techalias %}
-                                                            <span class="label label-danger">{{ _("Pending") }}</span>
-                                                        {% endif %}
-                                                    {% endif %}
-                                                </p>
+                                                    </p>
+                                                </div>
                                             </div>
-                                        </div>
+                                        {% endif %}
                                         <div class="row">
                                             <div class="col-md-9">
                                                 <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('registry', user=activeProject["owner"].user_name, project=activeProject.project_cod) }}"><i class="fa fa-address-card-o"></i> {{ _("Prepare registration form") }}</a>
@@ -265,222 +269,230 @@
                                             </div>
                                         {% endif %}
 
-                                        {%  if activeProject["access_type"] in [1,2] %}
-                                            <div class="row">
-                                                <div class="col-md-9">
-                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('shareProject',user=activeProject["owner"].user_name, project=activeProject["project_cod"]) }}" ><i class="fa fa-group"></i> {{ _("Share project with other users") }}</a>
+                                        {% if activeProject["project_template"] != 1 %}
+                                            {%  if activeProject["access_type"] in [1,2] %}
+                                                <div class="row">
+                                                    <div class="col-md-9">
+                                                        <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('shareProject',user=activeProject["owner"].user_name, project=activeProject["project_cod"]) }}" ><i class="fa fa-group"></i> {{ _("Share project with other users") }}</a>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                    </div>
                                                 </div>
-                                                <div class="col-md-3">
+                                            {% endif %}
+                                        {% endif %}
+
+                                        {% if activeProject["project_template"] != 1 %}
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <br>
+                                                    <div class="text-center">
+                                                        <h3>{{ _("Share this link to show trial progress") }}:</h3>
+                                                        <br>
+                                                        <input readonly class=" form-control " style="margin-bottom: 5px; padding: 6px 12px; border-color: #1ab394; border-radius: 3px" type="text" id="aForCopy" value="{{ request.route_url("projectInformation", id = encrypted) }}" >
+                                                        <button class="btn btn-default" onclick="copy()">{{ _("Copy to clipboard") }}</button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         {% endif %}
-
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <br>
-                                                <div class="text-center">
-                                                    <h3>{{ _("Share this link to show trial progress") }}:</h3>
-                                                    <br>
-                                                    <input readonly class=" form-control " style="margin-bottom: 5px; padding: 6px 12px; border-color: #1ab394; border-radius: 3px" type="text" id="aForCopy" value="{{ request.route_url("projectInformation", id = encrypted) }}" >
-                                                    <button class="btn btn-default" onclick="copy()">{{ _("Copy to clipboard") }}</button>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
 
-                                {% if activeProject.project_registration_and_analysis != 1 %}
-                                <div class="ibox float-e-margins">
-                                    <div class="ibox-title">
+                                {% if activeProject["project_template"] != 1 %}
+                                    {% if activeProject.project_registration_and_analysis != 1 %}
+                                    <div class="ibox float-e-margins">
+                                        <div class="ibox-title">
 
-                                        <div class="ibox-tools">
+                                            <div class="ibox-tools">
+                                                <div class="row">
+                                                    <div class="col-md-8">
+                                                        <h5>{{ _("Data Collection moments") }}</h5>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="ibox-content">
                                             <div class="row">
-                                                <div class="col-md-8">
-                                                    <h5>{{ _("Data Collection moments") }}</h5>
-                                                </div>
+                                                {% if pcompleted == 100 and progress.regsubmissions == 2  %}
+                                                    <div class="text-left" style="padding: 15px;">
+                                                        <p>{{ _("Please check the following types of questions are in the started assessments or include them in the next assessments:") }}</p>
+                                                        <span style="font-size: 16px;font-weight: 600;" title="{{ _("You have included ")}}{{ progress.analysisControl.Characteristics }}{{ _(" Ranking of options") }}"><i  class="fa {% if progress.analysisControl.Characteristics > 0 %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.Characteristics > 0 %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Ranking of options") }}</span><br>
+                                                        <span style="font-size: 16px;font-weight: 600;" title="{{ _("You have included ")}}{{ progress.analysisControl.Performance }}{{ _(" Comparison with check") }}"><i  class="fa {% if progress.analysisControl.Performance > 0 %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.Performance > 0 %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Comparison with check") }}</span><br>
+                                                        <span style="font-size: 16px;font-weight: 600;" title="{{ _("You have included ")}}{{ progress.analysisControl.Explanatory }}{{ _(" Explanatory variables") }}"><i  class="fa {% if progress.analysisControl.Explanatory > 0 %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.Explanatory > 0 %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Explanatory variables") }}</span><br>
+                                                        <span style="font-size: 16px;font-weight: 600;" {% if progress.analysisControl.overralCharacteristic !="" %}title="{{ _("You have included this question in the assessment") }}: '{{ progress.analysisControl.overralCharacteristic }}'" {% endif %}><i  class="fa {% if progress.analysisControl.overralCharacteristic !="" %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.overralCharacteristic != "" %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Overall ranking of options") }}</span><br>
+                                                        <span style="font-size: 16px;font-weight: 600;" {% if progress.analysisControl.overralPerformance !="" %}title="{{ _("You have included this question in the assessment") }}: '{{ progress.analysisControl.overralPerformance }}'" {% endif %}><i  class="fa {% if progress.analysisControl.overralPerformance !="" %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.overralPerformance != "" %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Overall comparison with check") }}</span>
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <br>
+                                                        {% if progress.usableAssessments|length > 0 %}
+                                                            {% include 'snippets/error.jinja2' %}
+                                                            <form class="formElement" id="start_assessment"  role="form" method="post" action="{{ request.route_url("startassessments",user=activeProject["owner"].user_name, project=activeProject.project_cod) }}">
+                                                                <div class="form-group">
+                                                                    <label>{{ _("Select the assessment for start the data collection") }}</label>
+                                                                    <select id="assessment_id" name="assessment_id" class="form-control">
+                                                                            {% for assessment in progress["usableAssessments"] %}
+                                                                                <option value="{{ assessment.ass_cod }}">{{ assessment.ass_desc }}</option>>
+                                                                            {% endfor %}
+                                                                        </select>
+                                                                </div>
+                                                                <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                                                                <button id="start_assessment_button" class="btn btn-primary btn-rounded btn-block" type="submit" name="start_assessment_button"> <i class="fa fa-play"></i> {{ _("Start an assessment") }}</button>
+                                                            </form>
+                                                        {% endif %}
+                                                    </div>
+                                                {% else %}
+                                                    <div class="col-md-12">
+                                                        <div class="text-center"><p>{{ _("You can start the data collection once the registration of participants is closed and the project definition is completed") }}</p></div>
+                                                    </div>
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="ibox-content">
-                                        <div class="row">
-                                            {% if pcompleted == 100 and progress.regsubmissions == 2  %}
-                                                <div class="text-left" style="padding: 15px;">
-                                                    <p>{{ _("Please check the following types of questions are in the started assessments or include them in the next assessments:") }}</p>
-                                                    <span style="font-size: 16px;font-weight: 600;" title="{{ _("You have included ")}}{{ progress.analysisControl.Characteristics }}{{ _(" Ranking of options") }}"><i  class="fa {% if progress.analysisControl.Characteristics > 0 %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.Characteristics > 0 %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Ranking of options") }}</span><br>
-                                                    <span style="font-size: 16px;font-weight: 600;" title="{{ _("You have included ")}}{{ progress.analysisControl.Performance }}{{ _(" Comparison with check") }}"><i  class="fa {% if progress.analysisControl.Performance > 0 %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.Performance > 0 %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Comparison with check") }}</span><br>
-                                                    <span style="font-size: 16px;font-weight: 600;" title="{{ _("You have included ")}}{{ progress.analysisControl.Explanatory }}{{ _(" Explanatory variables") }}"><i  class="fa {% if progress.analysisControl.Explanatory > 0 %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.Explanatory > 0 %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Explanatory variables") }}</span><br>
-                                                    <span style="font-size: 16px;font-weight: 600;" {% if progress.analysisControl.overralCharacteristic !="" %}title="{{ _("You have included this question in the assessment") }}: '{{ progress.analysisControl.overralCharacteristic }}'" {% endif %}><i  class="fa {% if progress.analysisControl.overralCharacteristic !="" %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.overralCharacteristic != "" %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Overall ranking of options") }}</span><br>
-                                                    <span style="font-size: 16px;font-weight: 600;" {% if progress.analysisControl.overralPerformance !="" %}title="{{ _("You have included this question in the assessment") }}: '{{ progress.analysisControl.overralPerformance }}'" {% endif %}><i  class="fa {% if progress.analysisControl.overralPerformance !="" %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.overralPerformance != "" %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Overall comparison with check") }}</span>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <br>
-                                                    {% if progress.usableAssessments|length > 0 %}
-                                                        {% include 'snippets/error.jinja2' %}
-                                                        <form class="formElement" id="start_assessment"  role="form" method="post" action="{{ request.route_url("startassessments",user=activeProject["owner"].user_name, project=activeProject.project_cod) }}">
-                                                            <div class="form-group">
-                                                                <label>{{ _("Select the assessment for start the data collection") }}</label>
-                                                                <select id="assessment_id" name="assessment_id" class="form-control">
-                                                                        {% for assessment in progress["usableAssessments"] %}
-                                                                            <option value="{{ assessment.ass_cod }}">{{ assessment.ass_desc }}</option>>
-                                                                        {% endfor %}
-                                                                    </select>
-                                                            </div>
-                                                            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
-                                                            <button id="start_assessment_button" class="btn btn-primary btn-rounded btn-block" type="submit" name="start_assessment_button"> <i class="fa fa-play"></i> {{ _("Start an assessment") }}</button>
-                                                        </form>
-                                                    {% endif %}
-                                                </div>
-                                            {% else %}
-                                                <div class="col-md-12">
-                                                    <div class="text-center"><p>{{ _("You can start the data collection once the registration of participants is closed and the project definition is completed") }}</p></div>
-                                                </div>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </div>
+                                    {% endif %}
                                 {% endif %}
 
                             </div>
                             <div class="col-md-6">
-                                <div class="ibox float-e-margins">
-                                    <div class="ibox-title">
+                                {% if activeProject["project_template"] != 1 %}
+                                    <div class="ibox float-e-margins">
+                                        <div class="ibox-title">
 
-                                        <div class="ibox-tools">
-                                            <div class="row" style="padding: 5px">
+                                            <div class="ibox-tools">
+                                                <div class="row" style="padding: 5px">
 
-                                                <table style="width: 100%">
-                                                    <tbody>
-                                                        <tr>
-                                                            <td style="vertical-align: middle; width: 50%;text-align: left;">
-                                                                <h5 style=" margin: initial">{{ _("Participant registration") }}</h5>
-                                                            </td>
-                                                            <td style="vertical-align: middle; text-align: center">
-                                                                {% set pbtype = "progress-bar-info" %}
-                                                                {% if progress.regsubmissions == 0 %}
-                                                                    <div class="small" style="text-align: left">{{ _("Not yet started") }}</div>
-                                                                {% endif %}
-                                                                {% if progress.regsubmissions == 1 %}
-                                                                    <div class="small" style="text-align: left">{{ _("On going") }}</div>
-                                                                {% endif %}
-                                                                {% if progress.regsubmissions == 2 %}
-                                                                    <div class="small" style="text-align: left">{{ _("Closed") }}</div>
-                                                                    {% if progress.regperc >= 100 %}
-                                                                        {% set pbtype = "progress-bar-success" %}
-                                                                    {% else %}
-                                                                        {% set pbtype = "progress-bar-warning" %}
-                                                                    {% endif %}
-                                                                {% endif %}
-                                                                <div class="progress progress-mini">
-                                                                    <div style="width: {{ progress.regperc }}%;" class="progress-bar {{ pbtype }}"></div>
-                                                                </div>
-                                                            </td>
-                                                            <td style="vertical-align: middle;text-align: center; width: 10%">
-                                                                <a class="collapse-link">
-                                                                    <i class="fa fa-chevron-{% if progress.regsubmissions == 2 %}down{% else %}up{% endif %}"></i>
-                                                                </a>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="ibox-content" {% if progress.regsubmissions == 2 %}style="display: none"{% endif %}>
-
-                                        {% if progress.regsubmissions == 0 %}
-                                            <div class="row">
-                                                {% if progress.enumerators == true and progress.technology == true and progress.techalias == true and progress.registry == true %}
-                                                    <div class="col-md-12">
-                                                        <button class="btn btn-primary btn-rounded btn-block" onclick="location.href='{{ request.route_url('combinations',user=activeProject["owner"].user_name, project=activeProject.project_cod,  _query={"stage": 1}) }}'"><i class="fa fa-play"></i> {{ _("Generate packages with technology options") }}<br/> {{ _("and open the registration of participants") }}</button>
-                                                    </div>
-                                                {% else %}
-                                                    <div class="col-md-12">
-                                                        <div class="text-center">{{ _("You can start the registration of participants once the project has field agents, technology options and a registration form") }}</div>
-                                                    </div>
-                                                {% endif %}
-                                            </div>
-                                        {% endif %}
-
-
-                                        {% if progress.regsubmissions == 1 or progress.regsubmissions == 2  %}
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <h3>{{ _("Statistics") }}</h3>
-                                                    <div id="pieRegistry" ></div>
-                                                    <table class="table table-striped">
+                                                    <table style="width: 100%">
                                                         <tbody>
-                                                        <tr>
-                                                            <td>{{ _("Total number of participants") }}: </td>
-                                                            <td>{{ activeProject.project_numobs }}</td>
-                                                        </tr>
-                                                        <tr >
-                                                            <td style="vertical-align: inherit">{{ _("Number of submissions") }}: </td>
-                                                            <td style="vertical-align: inherit">{{ progress.regtotal }} {% if progress.regtotal > 0 %}({{  ((progress.regtotal * 100)/activeProject.project_numobs)|round(1, 'floor') }}%){% endif %}</td>
-
-                                                        </tr>
-                                                        <tr>
-                                                            <td {% if progress.regerrors > 0 and progress.regsubmissions == 1%}style="color: #ed5565;" {% endif %}>{{ _("Submissions with conflicts") }}:</td>
-                                                            <td {% if progress.regerrors > 0 and progress.regsubmissions == 1%}style="color: #ed5565;" {% endif %}>{{ progress.regerrors }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td >{{ _("Last submission") }}</td>
-                                                            <td >{{ progress.lastreg }}</td>
-                                                        </tr>
-                                                        {% if progress.regsubmissions == 1 %}
-
-                                                            {% block enketo_information_registry %}
-
-                                                            {% endblock enketo_information_registry %}
-
-                                                        {% endif %}
-
-                                                        <tr>
-                                                            <td colspan="2">
-                                                                {% if progress.regtotal > 0 %}
-                                                                    <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('EditDataRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry') }}"><i class="fa fa-table"></i> {{ _("View data") }}</a>
-
-                                                                    <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data") }}</a>
-
-                                                                {% endif %}
-                                                                {% if progress.regerrors > 0 and progress.regsubmissions == 1%}
-                                                                    <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;white-space: normal !important;word-wrap: break-word !important;" href="{{request.route_url('CleanErrorLogs',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry') }}"><i class="fa fa-bug"></i> {{ _("Show submissions with conflicts") }}</a>
-                                                                    <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;white-space: normal !important;word-wrap: break-word !important;" href="{{request.route_url('downloadErrorLogDocumentRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry') }}"><i class="fa fa-cloud-download"></i> {{ _("Download submissions with conflicts") }}</a>
-                                                                {% endif %}
-                                                            </td>
-                                                        </tr>
+                                                            <tr>
+                                                                <td style="vertical-align: middle; width: 50%;text-align: left;">
+                                                                    <h5 style=" margin: initial">{{ _("Participant registration") }}</h5>
+                                                                </td>
+                                                                <td style="vertical-align: middle; text-align: center">
+                                                                    {% set pbtype = "progress-bar-info" %}
+                                                                    {% if progress.regsubmissions == 0 %}
+                                                                        <div class="small" style="text-align: left">{{ _("Not yet started") }}</div>
+                                                                    {% endif %}
+                                                                    {% if progress.regsubmissions == 1 %}
+                                                                        <div class="small" style="text-align: left">{{ _("On going") }}</div>
+                                                                    {% endif %}
+                                                                    {% if progress.regsubmissions == 2 %}
+                                                                        <div class="small" style="text-align: left">{{ _("Closed") }}</div>
+                                                                        {% if progress.regperc >= 100 %}
+                                                                            {% set pbtype = "progress-bar-success" %}
+                                                                        {% else %}
+                                                                            {% set pbtype = "progress-bar-warning" %}
+                                                                        {% endif %}
+                                                                    {% endif %}
+                                                                    <div class="progress progress-mini">
+                                                                        <div style="width: {{ progress.regperc }}%;" class="progress-bar {{ pbtype }}"></div>
+                                                                    </div>
+                                                                </td>
+                                                                <td style="vertical-align: middle;text-align: center; width: 10%">
+                                                                    <a class="collapse-link">
+                                                                        <i class="fa fa-chevron-{% if progress.regsubmissions == 2 %}down{% else %}up{% endif %}"></i>
+                                                                    </a>
+                                                                </td>
+                                                            </tr>
                                                         </tbody>
                                                     </table>
                                                 </div>
                                             </div>
-                                        {% endif %}
-                                        {% if progress.regsubmissions == 1  or progress.regsubmissions == 2 %}
-                                            <div class="row">
-                                                {% if progress.regsubmissions == 1 %}
-                                                    {% if progress.regtotal > 0 %}
-                                                        <div class="col-md-6">
-                                                            <button onclick="location.href ='{{ request.route_url('closeregistry',user=activeProject["owner"].user_name, project=activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block" href="#"><i class="fa fa-stop"></i> {{ _("Finish registration") }}</button>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <button onclick="location.href ='{{ request.route_url('cancelregistry',user=activeProject["owner"].user_name, project=activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block" href="#"><i class="fa fa-undo"></i> {{ _("Cancel registration") }}</button>
+                                        </div>
+                                        <div class="ibox-content" {% if progress.regsubmissions == 2 %}style="display: none"{% endif %}>
+
+                                            {% if progress.regsubmissions == 0 %}
+                                                <div class="row">
+                                                    {% if progress.enumerators == true and progress.technology == true and progress.techalias == true and progress.registry == true %}
+                                                        <div class="col-md-12">
+                                                            <button class="btn btn-primary btn-rounded btn-block" onclick="location.href='{{ request.route_url('combinations',user=activeProject["owner"].user_name, project=activeProject.project_cod,  _query={"stage": 1}) }}'"><i class="fa fa-play"></i> {{ _("Generate packages with technology options") }}<br/> {{ _("and open the registration of participants") }}</button>
                                                         </div>
                                                     {% else %}
                                                         <div class="col-md-12">
-                                                            <button onclick="location.href = '{{ request.route_url('cancelregistry', user=activeProject["owner"].user_name, project=activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block" href="#"><i class="fa fa-undo"></i> {{ _("Cancel registration") }}</button>
+                                                            <div class="text-center">{{ _("You can start the registration of participants once the project has field agents, technology options and a registration form") }}</div>
                                                         </div>
                                                     {% endif %}
-                                                {% endif %}
-                                                {% if progress.regsubmissions == 2 %}
+                                                </div>
+                                            {% endif %}
 
+
+                                            {% if progress.regsubmissions == 1 or progress.regsubmissions == 2  %}
+                                                <div class="row">
                                                     <div class="col-md-12">
-                                                        {% if progress.assessments|length == 0 %}
-                                                            <button onclick="location.href = '{{ request.route_url('cancelregistry',user=activeProject["owner"].user_name, project=activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block" href="#"><i class="fa fa-undo"></i> {{ _("Cancel registration") }}</button>
-                                                        {% endif %}
+                                                        <h3>{{ _("Statistics") }}</h3>
+                                                        <div id="pieRegistry" ></div>
+                                                        <table class="table table-striped">
+                                                            <tbody>
+                                                            <tr>
+                                                                <td>{{ _("Total number of participants") }}: </td>
+                                                                <td>{{ activeProject.project_numobs }}</td>
+                                                            </tr>
+                                                            <tr >
+                                                                <td style="vertical-align: inherit">{{ _("Number of submissions") }}: </td>
+                                                                <td style="vertical-align: inherit">{{ progress.regtotal }} {% if progress.regtotal > 0 %}({{  ((progress.regtotal * 100)/activeProject.project_numobs)|round(1, 'floor') }}%){% endif %}</td>
+
+                                                            </tr>
+                                                            <tr>
+                                                                <td {% if progress.regerrors > 0 and progress.regsubmissions == 1%}style="color: #ed5565;" {% endif %}>{{ _("Submissions with conflicts") }}:</td>
+                                                                <td {% if progress.regerrors > 0 and progress.regsubmissions == 1%}style="color: #ed5565;" {% endif %}>{{ progress.regerrors }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td >{{ _("Last submission") }}</td>
+                                                                <td >{{ progress.lastreg }}</td>
+                                                            </tr>
+                                                            {% if progress.regsubmissions == 1 %}
+
+                                                                {% block enketo_information_registry %}
+
+                                                                {% endblock enketo_information_registry %}
+
+                                                            {% endif %}
+
+                                                            <tr>
+                                                                <td colspan="2">
+                                                                    {% if progress.regtotal > 0 %}
+                                                                        <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('EditDataRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry') }}"><i class="fa fa-table"></i> {{ _("View data") }}</a>
+
+                                                                        <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data") }}</a>
+
+                                                                    {% endif %}
+                                                                    {% if progress.regerrors > 0 and progress.regsubmissions == 1%}
+                                                                        <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;white-space: normal !important;word-wrap: break-word !important;" href="{{request.route_url('CleanErrorLogs',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry') }}"><i class="fa fa-bug"></i> {{ _("Show submissions with conflicts") }}</a>
+                                                                        <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;white-space: normal !important;word-wrap: break-word !important;" href="{{request.route_url('downloadErrorLogDocumentRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry') }}"><i class="fa fa-cloud-download"></i> {{ _("Download submissions with conflicts") }}</a>
+                                                                    {% endif %}
+                                                                </td>
+                                                            </tr>
+                                                            </tbody>
+                                                        </table>
                                                     </div>
-                                                {% endif %}
-                                            </div>
-                                        {% endif %}
+                                                </div>
+                                            {% endif %}
+                                            {% if progress.regsubmissions == 1  or progress.regsubmissions == 2 %}
+                                                <div class="row">
+                                                    {% if progress.regsubmissions == 1 %}
+                                                        {% if progress.regtotal > 0 %}
+                                                            <div class="col-md-6">
+                                                                <button onclick="location.href ='{{ request.route_url('closeregistry',user=activeProject["owner"].user_name, project=activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block" href="#"><i class="fa fa-stop"></i> {{ _("Finish registration") }}</button>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <button onclick="location.href ='{{ request.route_url('cancelregistry',user=activeProject["owner"].user_name, project=activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block" href="#"><i class="fa fa-undo"></i> {{ _("Cancel registration") }}</button>
+                                                            </div>
+                                                        {% else %}
+                                                            <div class="col-md-12">
+                                                                <button onclick="location.href = '{{ request.route_url('cancelregistry', user=activeProject["owner"].user_name, project=activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block" href="#"><i class="fa fa-undo"></i> {{ _("Cancel registration") }}</button>
+                                                            </div>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                    {% if progress.regsubmissions == 2 %}
+
+                                                        <div class="col-md-12">
+                                                            {% if progress.assessments|length == 0 %}
+                                                                <button onclick="location.href = '{{ request.route_url('cancelregistry',user=activeProject["owner"].user_name, project=activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block" href="#"><i class="fa fa-undo"></i> {{ _("Cancel registration") }}</button>
+                                                            {% endif %}
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
                                     </div>
-                                </div>
+                                {% endif %}
 
 
                                 {% for assessment in progress.assessments %}

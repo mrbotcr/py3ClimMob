@@ -1,5 +1,5 @@
-from ..classes import privateView
-from ...processes import (
+from climmob.views.classes import privateView
+from climmob.processes import (
     getUserProjects,
     getProjectEnumerators,
     searchTechnologiesInProject,
@@ -7,27 +7,14 @@ from ...processes import (
     getProjectAssessments,
     getCountryList,
     AliasSearchTechnologyInProject,
-    addEnumeratorToProject,
-    addTechnologyProject,
-    AddAliasTechnology,
     AliasExtraSearchTechnologyInProject,
-    addTechAliasExtra,
-    getAllRegistryGroups,
-    addRegistryGroup,
-    getQuestionsByGroupInRegistry,
-    addRegistryQuestionToGroup,
-    getAllAssessmentGroups,
-    addProjectAssessmentClone,
-    addAssessmentGroup,
-    getQuestionsByGroupInAssessment,
-    addAssessmentQuestionToGroup,
     projectExists,
     getActiveProject,
     getTheProjectIdForOwner,
 )
-from ..project import createProjectFunction
+from climmob.views.project import createProjectFunction, functionCreateClone
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
-from ..registry import getDataFormPreview
+from climmob.views.registry import getDataFormPreview
 
 
 class cloneProjects_view(privateView):
@@ -195,103 +182,7 @@ class cloneProjects_view(privateView):
             }
 
 
-def functionCreateClone(self, projectId, newProjectId, structureToBeCloned):
 
-    if "fieldagents" in structureToBeCloned:
-        enumerators = getProjectEnumerators(projectId, self.request,)
-        for participant in enumerators:
-            for fieldAgent in enumerators[participant]:
-                addEnumeratorToProject(
-                    newProjectId, fieldAgent["enum_id"], participant, self.request
-                )
-
-    if (
-        "technologies" in structureToBeCloned
-        or "technologyoptions" in structureToBeCloned
-    ):
-        techInfo = searchTechnologiesInProject(projectId, self.request,)
-        for tech in techInfo:
-            added, message = addTechnologyProject(
-                newProjectId, tech["tech_id"], self.request,
-            )
-
-            if added:
-                if "technologyoptions" in structureToBeCloned:
-
-                    allAlias = AliasSearchTechnologyInProject(
-                        tech["tech_id"], projectId, self.request,
-                    )
-                    for alias in allAlias:
-                        data = {}
-                        data["project_id"] = newProjectId
-                        data["tech_id"] = tech["tech_id"]
-                        data["alias_id"] = alias["alias_idTec"]
-                        add, message = AddAliasTechnology(data, self.request)
-
-                    allAliasExtra = AliasExtraSearchTechnologyInProject(
-                        tech["tech_id"], projectId, self.request,
-                    )
-                    for alias in allAliasExtra:
-                        data = {}
-                        data["project_id"] = newProjectId
-                        data["tech_id"] = tech["tech_id"]
-                        data["alias_name"] = alias["alias_name"]
-                        add, message = addTechAliasExtra(data, self.request)
-
-    if "registry" in structureToBeCloned:
-        groupsInRegistry = getAllRegistryGroups(projectId, self.request,)
-        for group in groupsInRegistry:
-            group["project_id"] = newProjectId
-            addgroup, message = addRegistryGroup(group, self)
-
-            if addgroup:
-                questionsInRegistry = getQuestionsByGroupInRegistry(
-                    projectId, group["section_id"], self.request,
-                )
-                for question in questionsInRegistry:
-                    question["project_id"] = newProjectId
-                    question["section_project_id"] = projectId
-                    addq, message = addRegistryQuestionToGroup(question, self.request)
-
-    assessments = getProjectAssessments(projectId, self.request,)
-    for assessment in assessments:
-        if assessment["ass_cod"] in structureToBeCloned:
-            newAssessment = {}
-            newAssessment["ass_desc"] = assessment["ass_desc"]
-            newAssessment["ass_days"] = assessment["ass_days"]
-            newAssessment["ass_final"] = assessment["ass_final"]
-            newAssessment["project_id"] = newProjectId
-            newAssessment["ass_status"] = 0
-            added, msg = addProjectAssessmentClone(newAssessment, self.request)
-
-            if added:
-                newAssessment["ass_cod"] = msg
-                data = {}
-                data["project_id"] = projectId
-                data["ass_cod"] = assessment["ass_cod"]
-                groupsInAssessment = getAllAssessmentGroups(data, self.request)
-                for group in groupsInAssessment:
-                    group["project_id"] = newProjectId
-                    group["ass_cod"] = newAssessment["ass_cod"]
-                    addgroup, message = addAssessmentGroup(group, self)
-
-                    if addgroup:
-                        questionInAssessment = getQuestionsByGroupInAssessment(
-                            projectId,
-                            assessment["ass_cod"],
-                            group["section_id"],
-                            self.request,
-                        )
-                        for question in questionInAssessment:
-                            question["project_id"] = newProjectId
-                            question["ass_cod"] = newAssessment["ass_cod"]
-                            question["section_project_id"] = newProjectId
-                            question["section_assessment"] = newAssessment["ass_cod"]
-                            (addq, message,) = addAssessmentQuestionToGroup(
-                                question, self.request
-                            )
-
-    return ""
 
 
 def getAllInformationForProject(self, userOwner, projectId):

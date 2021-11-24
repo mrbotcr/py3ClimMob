@@ -20,6 +20,7 @@ from ..views.dashboard import dashboard_view, projectInformation_view
 from ..views.profile import profile_view, editProfile_view
 from ..views.project import (
     newProject_view,
+    getTemplatesByTypeOfProject_view,
     modifyProject_view,
     deleteProject_view,
 )
@@ -359,6 +360,15 @@ def loadRoutes(config):
     )
 
     # Project routes
+    routes.append(
+        addRoute(
+            "getTemplatesByTypeOfProject",
+            "/projectType/{typeid}",
+            getTemplatesByTypeOfProject_view,
+            "json",
+        )
+    )
+
     routes.append(
         {
             "name": "newproject",
