@@ -36,10 +36,7 @@ class projectShare_view(privateView):
             return HTTPFound(
                 location=self.request.route_url(
                     "dashboard",
-                    _query={
-                        "user": activeProjectUser,
-                        "project": activeProjectCod,
-                    },
+                    _query={"user": activeProjectUser, "project": activeProjectCod,},
                 )
             )
 

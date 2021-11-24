@@ -182,9 +182,6 @@ class cloneProjects_view(privateView):
             }
 
 
-
-
-
 def getAllInformationForProject(self, userOwner, projectId):
 
     dataworking = getProjectData(projectId, self.request)

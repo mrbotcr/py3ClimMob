@@ -31,13 +31,13 @@ from ..processes import (
     getProjectEnumerators,
     searchTechnologiesInProject,
     AliasSearchTechnologyInProject,
-    AliasExtraSearchTechnologyInProject
+    AliasExtraSearchTechnologyInProject,
 )
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 import datetime
 
-class getTemplatesByTypeOfProject_view(privateView):
 
+class getTemplatesByTypeOfProject_view(privateView):
     def processView(self):
         if self.request.method == "GET":
             typeId = self.request.matchdict["typeid"]
@@ -47,7 +47,6 @@ class getTemplatesByTypeOfProject_view(privateView):
             return templates
 
         raise HTTPNotFound
-
 
 
 class newProject_view(privateView):
@@ -103,7 +102,9 @@ class newProject_view(privateView):
             "newproject": newproject,
             "countries": getCountryList(self.request),
             "error_summary": error_summary,
-            "listOfTemplates": getProjectTemplates(self.request, dataworking["project_registration_and_analysis"])
+            "listOfTemplates": getProjectTemplates(
+                self.request, dataworking["project_registration_and_analysis"]
+            ),
         }
 
 
@@ -155,12 +156,16 @@ def createProjectFunction(dataworking, error_summary, self):
                             if dataworking["usingTemplate"] != "":
                                 listOfElementToInclude = ["registry"]
 
-                                assessments = getProjectAssessments(dataworking["usingTemplate"],self.request)
+                                assessments = getProjectAssessments(
+                                    dataworking["usingTemplate"], self.request
+                                )
                                 for assess in assessments:
                                     listOfElementToInclude.append(assess["ass_cod"])
 
                                 newProjectId = getTheProjectIdForOwner(
-                                    self.user.login, dataworking["project_cod"], self.request
+                                    self.user.login,
+                                    dataworking["project_cod"],
+                                    self.request,
                                 )
 
                                 functionCreateClone(
@@ -169,7 +174,6 @@ def createProjectFunction(dataworking, error_summary, self):
                                     newProjectId,
                                     listOfElementToInclude,
                                 )
-
 
                 else:
                     error_summary = {
@@ -295,6 +299,7 @@ def functionCreateClone(self, projectId, newProjectId, structureToBeCloned):
                             )
 
     return ""
+
 
 class modifyProject_view(privateView):
     def processView(self):
