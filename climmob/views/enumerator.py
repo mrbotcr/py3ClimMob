@@ -8,7 +8,24 @@ from climmob.processes import (
     deleteEnumerator,
     modifyEnumerator,
     getActiveProject,
+    getEnumeratorData,
 )
+from pyramid.httpexceptions import HTTPNotFound
+
+
+class getEnumeratorDetails_view(privateView):
+    def processView(self):
+
+        if self.request.method == "GET":
+
+            userOwner = self.request.matchdict["user"]
+            enumId = self.request.matchdict["enumid"]
+            enumerator = getEnumeratorData(userOwner, enumId, self.request)
+            self.returnRawViewResult = True
+
+            return enumerator
+
+        raise HTTPNotFound
 
 
 class enumerators_view(privateView):

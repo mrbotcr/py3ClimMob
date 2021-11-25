@@ -57,6 +57,7 @@ from climmob.views.assessment import (
 )
 from climmob.views.project_technologies import projectTecnologies_view
 from climmob.views.enumerator import (
+    getEnumeratorDetails_view,
     enumerators_view,
     deleteEnumerator_view,
 )
@@ -457,6 +458,15 @@ def loadRoutes(config):
     )
 
     # Enumerators
+    routes.append(
+        addRoute(
+            "getEnumeratorDetails",
+            "/user/{user}/enumerator/{enumid}",
+            getEnumeratorDetails_view,
+            "json",
+        )
+    )
+
     routes.append(
         addRoute(
             "enumerators",
