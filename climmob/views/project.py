@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from .classes import privateView
-from ..processes import (
+from climmob.views.classes import privateView
+from climmob.processes import (
     projectInDatabase,
     addProject,
     getProjectData,

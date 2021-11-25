@@ -1,6 +1,6 @@
-from .classes import privateView
+from climmob.views.classes import privateView
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
-from ..processes import (
+from climmob.processes import (
     projectExists,
     projectTechnologyExists,
     searchTechnologies,

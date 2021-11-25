@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from .classes import privateView
-from ..processes import (
+from climmob.views.classes import privateView
+from climmob.processes import (
     addQuestion,
     addOptionToQuestion,
     updateQuestion,
@@ -652,6 +652,12 @@ class qlibrary_view(privateView):
 
         user_name = self.request.matchdict["user_name"]
 
+        try:
+            questionId = int(self.request.params["questionId"])
+            seeQuestion = {"question_id": questionId, "user_name": user_name}
+        except:
+            seeQuestion = {}
+
         regularDict = {
             "UserQuestion": UserQuestionMoreBioversity(user_name, self.request),
             "showing": user_name,
@@ -660,6 +666,7 @@ class qlibrary_view(privateView):
             ),
             "allCategories": getCategories(user_name, self.request),
             "activeProject": getActiveProject(self.user.login, self.request),
+            "seeQuestion": seeQuestion,
         }
 
         return regularDict

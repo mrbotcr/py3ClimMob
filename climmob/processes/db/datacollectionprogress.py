@@ -1,7 +1,6 @@
-from ..db.project import getProjectData
-from ...models import Assessment, Registry, Question, AssDetail
+from climmob.models import Assessment, Registry, Question, AssDetail
 from climmob.models.repository import sql_execute
-from climmob.processes import getProjectEnumerators
+from climmob.processes import getProjectEnumerators, getProjectData
 
 __all__ = ["getInformationFromProject", "getInformationForMaps"]
 

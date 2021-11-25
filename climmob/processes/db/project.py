@@ -1,4 +1,4 @@
-from ...models import (
+from climmob.models import (
     Project,
     mapToSchema,
     mapFromSchema,
@@ -16,11 +16,11 @@ from ...models import (
     AssessmentJsonLog,
     userProject,
 )
-from ..db.question import getQuestionOptions
+from climmob.processes.db.question import getQuestionOptions
 import datetime, os, glob
 from sqlalchemy import func
-from .project_technologies import numberOfCombinationsForTheProject
-from .enumerator import countEnumerators
+from climmob.processes.db.project_technologies import numberOfCombinationsForTheProject
+from climmob.processes.db.enumerator import countEnumerators
 from ago import human
 from climmob.models.repository import sql_fetch_all, sql_fetch_one
 import uuid

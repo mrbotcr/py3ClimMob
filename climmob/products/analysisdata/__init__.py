@@ -1,1 +1,1 @@
-from .celerytasks import *
+from climmob.products.analysisdata.celerytasks import *

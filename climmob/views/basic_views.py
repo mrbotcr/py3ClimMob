@@ -1,9 +1,9 @@
 from pyramid.security import remember
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
-from ..config.auth import getUserData, getUserByEmail
-from .classes import publicView
-from ..utility import valideRegisterForm
-from ..processes import (
+from climmob.config.auth import getUserData, getUserByEmail
+from climmob.views.classes import publicView
+from climmob.utility import valideRegisterForm
+from climmob.processes import (
     addUser,
     addToLog,
     getCountryList,

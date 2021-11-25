@@ -1,7 +1,7 @@
-from .classes import privateView
+from climmob.views.classes import privateView
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
-from ..processes import projectExists
-from ..processes import (
+from climmob.processes import (
+    projectExists,
     getProjectEnumerators,
     getUsableEnumerators,
     addEnumeratorToProject,
@@ -10,7 +10,7 @@ from ..processes import (
     getActiveProject,
     getTheProjectIdForOwner,
 )
-from ..products.fieldagents.fieldagents import create_fieldagents_report
+from climmob.products.fieldagents.fieldagents import create_fieldagents_report
 from climmob.products import stopTasksByProcess
 
 

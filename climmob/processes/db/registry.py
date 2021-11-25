@@ -1,8 +1,8 @@
 from sqlalchemy import func
 from climmob.models.schema import mapFromSchema, mapToSchema
-from ...models import Regsection, Registry, Project, Question, userProject
-from .project import addRegistryQuestionsToProject
-from .assessment import setAssessmentStatus, formattingQuestions
+from climmob.models import Regsection, Registry, Project, Question, userProject
+from climmob.processes import addRegistryQuestionsToProject
+from climmob.processes.db.assessment import setAssessmentStatus, formattingQuestions
 import os, shutil
 
 __all__ = [

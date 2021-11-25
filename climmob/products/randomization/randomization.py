@@ -1,9 +1,5 @@
-from climmob.products.climmob_products import (
-    createProductDirectory,
-    registerProductInstance,
-)
-
-from .celerytasks import createRandomization
+from climmob.products.climmob_products import createProductDirectory
+from climmob.products.randomization.celerytasks import createRandomization
 
 
 # This function has been declated in climmob.plugins.interfaces.IPackage#after_create_packages

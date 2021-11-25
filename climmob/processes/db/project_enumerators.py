@@ -1,9 +1,9 @@
-from ...models import userProject, Assessment, User, Enumerator, PrjEnumerator
+from climmob.models import userProject, Assessment, User, Enumerator, PrjEnumerator
 from climmob.models.schema import mapFromSchema
 from sqlalchemy import or_, tuple_
 from climmob.config.encdecdata import decodeData
 from climmob.models.repository import sql_fetch_all
-from ..db.enumerator import getEnumeratorByProject
+from climmob.processes import getEnumeratorByProject
 
 __all__ = [
     "getProjectEnumerators",

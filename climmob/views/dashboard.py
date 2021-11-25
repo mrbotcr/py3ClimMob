@@ -1,5 +1,5 @@
-from .classes import privateView, publicView
-from ..processes import (
+from climmob.views.classes import privateView, publicView
+from climmob.processes import (
     getActiveProject,
     getProjectProgress,
     projectExists,

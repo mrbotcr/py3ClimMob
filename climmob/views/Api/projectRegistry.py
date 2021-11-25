@@ -1,6 +1,5 @@
-from ..classes import apiView
-
-from ...processes import (
+from climmob.views.classes import apiView
+from climmob.processes import (
     projectExists,
     getRegistryQuestions,
     availableRegistryQuestions,
@@ -26,7 +25,6 @@ from ...processes import (
     getAccessTypeForProject,
     theUserBelongsToTheProject,
 )
-
 from pyramid.response import Response
 import json
 

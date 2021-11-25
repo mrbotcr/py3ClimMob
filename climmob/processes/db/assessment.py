@@ -1,6 +1,6 @@
 from sqlalchemy import func
 from climmob.models.schema import mapFromSchema, mapToSchema
-from ...models import (
+from climmob.models import (
     AssDetail,
     Asssection,
     Assessment,
@@ -11,17 +11,17 @@ from ...models import (
     Registry,
     userProject,
 )
-from .project import (
+from climmob.processes.db.project import (
     addQuestionsToAssessment,
     numberOfCombinationsForTheProject,
     getProjectLocalVariety,
 )
-from ..odk.generator import getRegisteredFarmers
+from climmob.processes.odk.generator import getRegisteredFarmers
 import uuid, os
 from subprocess import Popen, PIPE
 import logging, shutil
 from jinja2 import Environment
-from ..db.question import getQuestionOptions
+from climmob.processes.db.question import getQuestionOptions
 from climmob.models.repository import sql_fetch_one
 
 __all__ = [

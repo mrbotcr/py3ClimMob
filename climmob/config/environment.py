@@ -9,10 +9,9 @@ This code is based on CKAN
 
 import os
 from pyramid.session import SignedCookieSessionFactory
-
 import climmob.plugins as p
-from .routes import loadRoutes
-from .jinja_extensions import (
+from climmob.config.routes import loadRoutes
+from climmob.config.jinja_extensions import (
     initialize,
     SnippetExtension,
     extendThis,
@@ -21,7 +20,7 @@ from .jinja_extensions import (
 )
 import climmob.resources as r
 import climmob.products as prd
-from .mainresources import createResources
+from climmob.config.mainresources import createResources
 from climmob.models import addColumnToSchema
 import climmob.utility.helpers as helpers
 from climmob.products.climmob_products import register_products

@@ -2,9 +2,7 @@ from climmob.products.climmob_products import (
     createProductDirectory,
     registerProductInstance,
 )
-
-# from views import myPublicView,myPrivateView
-from .celerytasks import createQR
+from climmob.products.qrpackages.celerytasks import createQR
 
 
 # This function has been declated in climmob.plugins.interfaces.IPackage#after_create_packages

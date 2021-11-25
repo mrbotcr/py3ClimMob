@@ -1,5 +1,5 @@
-from ..classes import apiView
-from ...processes import (
+from climmob.views.classes import apiView
+from climmob.processes import (
     getUserTechs,
     findTechInLibrary,
     addTechnology,
@@ -9,10 +9,8 @@ from ...processes import (
     deleteTechnology,
     getTechnologyByName,
 )
-
 from pyramid.response import Response
 import json
-from heapq import merge
 
 
 class createTechnology_view(apiView):

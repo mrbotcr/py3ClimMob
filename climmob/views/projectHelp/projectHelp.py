@@ -1,5 +1,5 @@
-from ..classes import privateView
-from ...processes import (
+from climmob.views.classes import privateView
+from climmob.processes import (
     getProjectData,
     searchTechnologiesInProject,
     getCombinations,
@@ -9,9 +9,9 @@ from ...processes import (
     getTheProjectIdForOwner,
     getTech,
 )
-from ...config.auth import getCountryName
-from ...products.qrpackages.qrpackages import create_qr_packages
-from ...products.packages.packages import create_packages_excell
+from climmob.config.auth import getCountryName
+from climmob.products.qrpackages.qrpackages import create_qr_packages
+from climmob.products.packages.packages import create_packages_excell
 
 
 class projectHelp_view(privateView):

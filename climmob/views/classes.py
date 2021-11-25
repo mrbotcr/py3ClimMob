@@ -1,4 +1,4 @@
-from ..config.auth import getUserData, getUserByApiKey
+from climmob.config.auth import getUserData, getUserByApiKey
 from pyramid.httpexceptions import HTTPFound
 from pyramid.session import check_csrf_token
 from pyramid.httpexceptions import HTTPNotFound
@@ -12,7 +12,7 @@ import json
 
 log = logging.getLogger(__name__)
 
-from ..processes import (
+from climmob.processes import (
     getUserProjects,
     getActiveProject,
     counterChat,

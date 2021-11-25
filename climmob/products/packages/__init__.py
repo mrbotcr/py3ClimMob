@@ -1,2 +1,2 @@
-from .celerytasks import *
-from .packages import *
+from climmob.products.packages.celerytasks import *
+from climmob.products.packages import *

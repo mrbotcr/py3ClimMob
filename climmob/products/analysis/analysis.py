@@ -2,7 +2,7 @@ from climmob.products.climmob_products import (
     createProductDirectory,
     registerProductInstance,
 )
-from .celerytasks import createReports
+from climmob.products.analysis.celerytasks import createReports
 
 
 def create_analysis(

@@ -1,8 +1,7 @@
-from ..classes import apiView
+from climmob.views.classes import apiView
 from pyramid.response import Response
 import json
-
-from ...processes import (
+from climmob.processes import (
     projectExists,
     getProjectAssessments,
     addProjectAssessment,

@@ -1,5 +1,5 @@
-from ...models import User, userProject
-from ...models.schema import mapToSchema, mapFromSchema
+from climmob.models import User, userProject
+from climmob.models.schema import mapToSchema, mapFromSchema
 from sqlalchemy import or_
 
 __all__ = [

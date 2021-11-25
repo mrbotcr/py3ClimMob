@@ -2,7 +2,7 @@ from climmob.products.climmob_products import (
     createProductDirectory,
     registerProductInstance,
 )
-from .celerytasks import createFieldAgentsReport
+from climmob.products.fieldagents.celerytasks import createFieldAgentsReport
 
 # This function has been declated in climmob.plugins.interfaces.IPackage#after_create_packages
 def create_fieldagents_report(

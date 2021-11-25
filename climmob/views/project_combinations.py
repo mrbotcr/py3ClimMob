@@ -1,8 +1,7 @@
-from .classes import privateView
+from climmob.views.classes import privateView
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
-from ..processes import projectExists, getTech, getProjectEnumerators
-from ..processes import createCombinations, getCombinations, setCombinationStatus
-from ..processes import (
+
+from climmob.processes import (
     getPackages,
     projectHasCombinations,
     projectHasPackages,
@@ -18,15 +17,21 @@ from ..processes import (
     deleteProjectPackages,
     updateCreatePackages,
     getProjectProgress,
+    createCombinations,
+    getCombinations,
+    setCombinationStatus,
+    projectExists,
+    getTech,
+    getProjectEnumerators,
 )
 import climmob.plugins as p
-from ..products.randomization.randomization import create_randomization
-from ..products.qrpackages.qrpackages import create_qr_packages
-from ..products.forms.form import create_document_form
-from ..products.packages.packages import create_packages_excell
-from ..products.colors.colors import create_colors_cards
-from ..products.fieldagents.fieldagents import create_fieldagents_report
-from .registry import getDataFormPreview
+from climmob.products.randomization.randomization import create_randomization
+from climmob.products.qrpackages.qrpackages import create_qr_packages
+from climmob.products.forms.form import create_document_form
+from climmob.products.packages.packages import create_packages_excell
+from climmob.products.colors.colors import create_colors_cards
+from climmob.products.fieldagents.fieldagents import create_fieldagents_report
+from climmob.views.registry import getDataFormPreview
 import time
 
 

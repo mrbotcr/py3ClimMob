@@ -1,4 +1,4 @@
-from ...models import (
+from climmob.models import (
     Question,
     Registry,
     mapToSchema,

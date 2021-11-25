@@ -1,9 +1,9 @@
 import os
 from lxml import etree
-from ...models import Assessment, Question, Project, mapFromSchema
+from climmob.models import Assessment, Question, Project, mapFromSchema
 import datetime, decimal
 from climmob.models.repository import sql_fetch_all, sql_fetch_one
-from .project_combinations import getCombinations
+from climmob.processes import getCombinations
 
 __all__ = ["getJSONResult", "getCombinationsData"]
 

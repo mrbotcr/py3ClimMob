@@ -1,8 +1,8 @@
-from ...plugins.utilities import getProductDirectory
-from ..classes import apiView
-from ...processes import projectExists, getProductData, getTheProjectIdForOwner
-from ..productsList import getDataProduct
-from ...products import product_found
+from climmob.plugins.utilities import getProductDirectory
+from climmob.views.classes import apiView
+from climmob.processes import projectExists, getProductData, getTheProjectIdForOwner
+from climmob.views.productsList import getDataProduct
+from climmob.products import product_found
 from pyramid.response import Response
 import json
 import datetime

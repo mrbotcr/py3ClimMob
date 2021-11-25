@@ -7,7 +7,6 @@ from docxtpl import DocxTemplate, InlineImage
 from docx.shared import Mm
 from datetime import datetime
 import folium
-import subprocess
 import glob
 
 

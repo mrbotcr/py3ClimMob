@@ -1,5 +1,5 @@
-from ..classes import apiView
-from ...processes import (
+from climmob.views.classes import apiView
+from climmob.processes import (
     addQuestion,
     addOptionToQuestion,
     updateQuestion,
@@ -17,7 +17,6 @@ from ...processes import (
     opcionNAinQuestion,
     opcionOtherInQuestion,
 )
-
 import json
 from pyramid.response import Response
 import re

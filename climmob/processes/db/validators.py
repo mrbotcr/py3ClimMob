@@ -1,4 +1,4 @@
-from ...models import User, Project, Prjtech, userProject
+from climmob.models import User, Project, Prjtech, userProject
 
 __all__ = [
     "userExists",

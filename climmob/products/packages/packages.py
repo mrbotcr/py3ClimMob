@@ -2,7 +2,7 @@ from climmob.products.climmob_products import (
     createProductDirectory,
     registerProductInstance,
 )
-from .celerytasks import createPackages
+from climmob.products.packages.celerytasks import createPackages
 
 # This function has been declated in climmob.plugins.interfaces.IPackage#after_create_packages
 def create_packages_excell(

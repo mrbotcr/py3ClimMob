@@ -1,8 +1,8 @@
-from .classes import privateView
+from climmob.views.classes import privateView
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 import json
-from ..processes import projectExists
-from ..processes import (
+from climmob.processes import (
+    projectExists,
     addAssessmentGroup,
     deleteAssessmentGroup,
     modifyAssessmentGroup,
@@ -26,9 +26,9 @@ from ..processes import (
     getTheProjectIdForOwner,
     getActiveProject,
 )
-from ..products.forms.form import create_document_form
+from climmob.products.forms.form import create_document_form
 from jinja2 import Environment, FileSystemLoader
-from .registry import getDataFormPreview
+from climmob.views.registry import getDataFormPreview
 import os
 import climmob.plugins as p
 

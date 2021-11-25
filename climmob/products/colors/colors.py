@@ -2,9 +2,7 @@ from climmob.products.climmob_products import (
     createProductDirectory,
     registerProductInstance,
 )
-
-# from views import myPublicView,myPrivateView
-from .celerytasks import createColors
+from climmob.products.colors.celerytasks import createColors
 
 
 # This function has been declated in climmob.plugins.interfaces.IPackage#after_create_packages

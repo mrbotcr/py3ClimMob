@@ -1,8 +1,5 @@
 import argparse
 from pyramid.paster import get_appsettings, setup_logging
-from climmob.models import get_engine, get_session_factory, get_tm_session
-from climmob.models.meta import Base
-import transaction
 import MySQLdb
 import os
 import sys

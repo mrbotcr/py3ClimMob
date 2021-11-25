@@ -4,7 +4,7 @@ These functions setup the routes for the host application and any plugins connec
 
 """
 
-from ..views.basic_views import (
+from climmob.views.basic_views import (
     home_view,
     HealthView,
     notfound_view,
@@ -16,16 +16,16 @@ from ..views.basic_views import (
     TermsView,
     PrivacyView,
 )
-from ..views.dashboard import dashboard_view, projectInformation_view
-from ..views.profile import profile_view, editProfile_view
-from ..views.project import (
+from climmob.views.dashboard import dashboard_view, projectInformation_view
+from climmob.views.profile import profile_view, editProfile_view
+from climmob.views.project import (
     newProject_view,
     getTemplatesByTypeOfProject_view,
     modifyProject_view,
     deleteProject_view,
 )
 
-from ..views.question import (
+from climmob.views.question import (
     qlibrary_view,
     getUserQuestionDetails_view,
     getUserQuestionPreview_view,
@@ -35,7 +35,7 @@ from ..views.question import (
     questionsActions_view,
 )
 
-from ..views.registry import (
+from climmob.views.registry import (
     registry_view,
     deleteRegistrySection_view,
     cancelRegistry_view,
@@ -44,7 +44,7 @@ from ..views.registry import (
     registrySectionActions_view,
 )
 
-from ..views.assessment import (
+from climmob.views.assessment import (
     assessment_view,
     deleteAssessmentSection_view,
     assessmenthead_view,
@@ -55,13 +55,13 @@ from ..views.assessment import (
     assessmentFormCreation_view,
     assessmentSectionActions_view,
 )
-from ..views.project_technologies import projectTecnologies_view
-from ..views.enumerator import (
+from climmob.views.project_technologies import projectTecnologies_view
+from climmob.views.enumerator import (
     enumerators_view,
     deleteEnumerator_view,
 )
-from ..views.project_combinations import projectCombinations_view
-from ..views.odk import (
+from climmob.views.project_combinations import projectCombinations_view
+from climmob.views.odk import (
     formList_view,
     formListByProject_view,
     submission_view,
@@ -75,36 +75,36 @@ from ..views.odk import (
     assessmentManifest_view,
 )
 
-from ..views.project_enumerators import (
+from climmob.views.project_enumerators import (
     projectEnumerators_view,
     removeProjectEnumerators_view,
 )
 
-from ..views.technologies import (
+from climmob.views.technologies import (
     technologies_view,
     deletetechnology_view,
     getUserTechnologyDetails_view,
     getUserTechnologyAliasDetails_view,
 )
-from ..views.techaliases import deletealias_view
+from climmob.views.techaliases import deletealias_view
 
-from ..views.cleanErrorLogs import cleanErrorLogs_view
-from ..views.test import test_view
+from climmob.views.cleanErrorLogs import cleanErrorLogs_view
+from climmob.views.test import test_view
 
-from ..views.productsList import (
+from climmob.views.productsList import (
     productsView,
     generateProductView,
     downloadView,
     dataView,
 )
 
-from ..views.editData import (
+from climmob.views.editData import (
     editDataView,
     downloadDataView,
     downloadErroLogDocument_view,
 )
 
-from ..views.Share.projectShare import (
+from climmob.views.Share.projectShare import (
     projectShare_view,
     API_users_view,
     removeprojectShare_view,
@@ -112,7 +112,7 @@ from ..views.Share.projectShare import (
 
 # -------Api-------#
 
-from ..views.Api.projectCreation import (
+from climmob.views.Api.projectCreation import (
     createProject_view,
     readProjects_view,
     updateProject_view,
@@ -122,26 +122,26 @@ from ..views.Api.projectCreation import (
     addCollaborator_view,
     deleteCollaborator_view,
 )
-from ..views.Api.enumerators import (
+from climmob.views.Api.enumerators import (
     createEnumerator_view,
     readEnumerators_view,
     updateEnumerator_view,
     updatePasswordEnumerator_view,
     apiDeleteEnumerator_view,
 )
-from ..views.Api.technologies import (
+from climmob.views.Api.technologies import (
     createTechnology_view,
     readTechnologies_view,
     updateTechnology_view,
     deletetechnologyView_api,
 )
-from ..views.Api.techaliases import (
+from climmob.views.Api.techaliases import (
     createAlias_view,
     readAlias_view,
     updateAlias_view,
     deleteAliasView_api,
 )
-from ..views.Api.questions import (
+from climmob.views.Api.questions import (
     createQuestion_view,
     readQuestions_view,
     readQuestionValues_view,
@@ -153,19 +153,19 @@ from ..views.Api.questions import (
     updateQuestion_view,
     deleteQuestion_viewApi,
 )
-from ..views.Api.questionsGroups import (
+from climmob.views.Api.questionsGroups import (
     readGroupsOfQuestions_view,
     createGroupOfQuestion_view,
     updateGroupOfQuestion_view,
     deleteGroupOfQuestion_view,
 )
-from ..views.Api.projectEnumerators import (
+from climmob.views.Api.projectEnumerators import (
     addProjectEnumerator_view,
     readProjectEnumerators_view,
     readPossibleProjectEnumerators_view,
     deleteProjectEnumerator_view,
 )
-from ..views.Api.projectTechnologies import (
+from climmob.views.Api.projectTechnologies import (
     addProjectTechnology_view,
     readProjectTechnologies_view,
     readPossibleProjectTechnologies_view,
@@ -177,7 +177,7 @@ from ..views.Api.projectTechnologies import (
     deleteProjectTechnologyAlias_view,
     addProjectTechnologyAliasExtra_view,
 )
-from ..views.Api.projectRegistry import (
+from climmob.views.Api.projectRegistry import (
     readProjectRegistry_view,
     readPossibleQuestionsForRegistryGroup_view,
     addRegistryGroup_view,
@@ -187,7 +187,7 @@ from ..views.Api.projectRegistry import (
     deleteQuestionFromGroupRegistry_view,
     orderRegistryQuestions_view,
 )
-from ..views.Api.projectRegistryStart import (
+from climmob.views.Api.projectRegistryStart import (
     readProjectCombinations_view,
     setUsableCombinations_view,
     setAvailabilityCombination_view,
@@ -199,8 +199,8 @@ from ..views.Api.projectRegistryStart import (
     pushJsonToRegistry_view,
     readRegistryData_view,
 )
-from ..views.Api.projectProducts import readProducts_view, downloadApi_view
-from ..views.Api.projectAssessments import (
+from climmob.views.Api.projectProducts import readProducts_view, downloadApi_view
+from climmob.views.Api.projectAssessments import (
     readProjectAssessments_view,
     addNewAssessment_view,
     updateProjectAssessment_view,
@@ -214,7 +214,7 @@ from ..views.Api.projectAssessments import (
     deleteQuestionFromGroupAssessment_view,
     orderAssessmentQuestions_view,
 )
-from ..views.Api.projectAssessmentStart import (
+from climmob.views.Api.projectAssessmentStart import (
     createProjectAssessment_view,
     cancelAssessmentApi_view,
     closeAssessmentApi_view,
@@ -222,21 +222,21 @@ from ..views.Api.projectAssessmentStart import (
     pushJsonToAssessment_view,
     readAssessmentData_view,
 )
-from ..views.projectHelp.projectHelp import projectHelp_view
-from ..views.cloneProjects.cloneProjects import cloneProjects_view
-from ..views.mapForProjectVisualization.mapForProjectVisualization import (
+from climmob.views.projectHelp.projectHelp import projectHelp_view
+from climmob.views.cloneProjects.cloneProjects import cloneProjects_view
+from climmob.views.mapForProjectVisualization.mapForProjectVisualization import (
     showMapForProjectVisualization_view,
 )
-from ..views.Api.project_analysis import (
+from climmob.views.Api.project_analysis import (
     readDataOfProjectView_api,
     readVariablesForAnalysisView_api,
     generateAnalysisByApiView_api,
 )
 
-from ..views.project_analysis import analysisDataView
+from climmob.views.project_analysis import analysisDataView
 
-from ..views.Bot.bot import sendFeedbackToBot_view, readFeedback_view
-from ..plugins.utilities import addRoute
+from climmob.views.Bot.bot import sendFeedbackToBot_view, readFeedback_view
+from climmob.plugins.utilities import addRoute
 import climmob.plugins as p
 
 route_list = []

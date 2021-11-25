@@ -1,8 +1,8 @@
-from .classes import privateView
+from climmob.views.classes import privateView
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 import json, os
-from ..processes import projectExists
-from ..processes import (
+from climmob.processes import (
+    projectExists,
     addRegistryGroup,
     deleteRegistryGroup,
     modifyRegistryGroup,

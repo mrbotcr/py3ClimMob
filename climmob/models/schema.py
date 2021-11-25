@@ -1,4 +1,4 @@
-from .meta import metadata
+from climmob.models.meta import metadata
 import json
 from sqlalchemy import inspect
 from future.utils import iteritems

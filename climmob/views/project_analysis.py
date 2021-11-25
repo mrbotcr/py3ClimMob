@@ -1,13 +1,13 @@
-from .classes import privateView
-from ..processes import (
+from climmob.views.classes import privateView
+from climmob.processes import (
     getActiveProject,
     getQuestionsByType,
     getJSONResult,
     getCombinationsData,
     getProjectProgress,
 )
-from ..products.analysis.analysis import create_analysis
-from ..products.analysisdata.analysisdata import create_datacsv
+from climmob.products.analysis.analysis import create_analysis
+from climmob.products.analysisdata.analysisdata import create_datacsv
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 
 

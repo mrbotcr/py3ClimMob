@@ -1,15 +1,13 @@
-from ..classes import apiView
-from ...processes import (
+from climmob.views.classes import apiView
+from climmob.processes import (
     searchEnumerator,
     enumeratorExists,
     addEnumerator,
     deleteEnumerator,
     isEnumeratorPassword,
     modifyEnumerator,
-    getEnumeratorData,
     modifyEnumeratorPassword,
 )
-
 from pyramid.response import Response
 import json
 

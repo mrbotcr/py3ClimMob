@@ -1,7 +1,7 @@
-from .classes import privateView
+from climmob.views.classes import privateView
 from climmob.processes import projectExists
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
-from ..processes import (
+from climmob.processes import (
     get_registry_logs,
     get_registry_log_by_log,
     get_assessment_logs,
@@ -12,13 +12,13 @@ from ..processes import (
     isAssessmentOpen,
     getTheProjectIdForOwner,
     getActiveProject,
+    getQuestionsStructure,
 )
 import os
-from .editDataDB import getNamesEditByColums, fillDataTable
-from climmob.processes import getQuestionsStructure
+from climmob.views.editDataDB import getNamesEditByColums, fillDataTable
 import json
 import xml.etree.ElementTree as ET
-from ..processes.odk.api import storeJSONInMySQL
+from climmob.processes.odk.api import storeJSONInMySQL
 from climmob.models.repository import sql_execute
 
 

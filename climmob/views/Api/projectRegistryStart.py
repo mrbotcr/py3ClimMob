@@ -1,6 +1,5 @@
-from ..classes import apiView
-
-from ...processes import (
+from climmob.views.classes import apiView
+from climmob.processes import (
     projectExists,
     projectRegStatus,
     createCombinations,
@@ -9,7 +8,6 @@ from ...processes import (
     setCombinationStatus,
     getProjectProgress,
     projectCreateCombinations,
-    create_packages_with_r,
     getPackages,
     projectCreatePackages,
     setRegistryStatus,
@@ -24,13 +22,11 @@ from ...processes import (
     updateCreatePackages,
     deleteProjectPackages,
 )
-from ...products.randomization.randomization import create_randomization
-from ..project_combinations import createSettings
+from climmob.products.randomization.randomization import create_randomization
+from climmob.views.project_combinations import createSettings
 from climmob.products import stopTasksByProcess
-from ...processes.odk.api import storeJSONInMySQL
-
-from ..project_combinations import startTheRegistry
-
+from climmob.processes.odk.api import storeJSONInMySQL
+from climmob.views.project_combinations import startTheRegistry
 from pyramid.response import Response
 from xml.dom import minidom
 import json

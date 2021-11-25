@@ -1,7 +1,6 @@
-from ..processes import (
+from climmob.processes import (
     addProductInstance,
     getRunningTasksByProcess,
-    cancelTask,
     deleteProducts,
 )
 from celery.contrib.abortable import AbortableAsyncResult

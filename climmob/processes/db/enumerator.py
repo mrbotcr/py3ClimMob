@@ -1,4 +1,4 @@
-from ...models import Enumerator, mapToSchema, mapFromSchema, PrjEnumerator
+from climmob.models import Enumerator, mapToSchema, mapFromSchema, PrjEnumerator
 from climmob.config.encdecdata import encodeData, decodeData
 from sqlalchemy.exc import IntegrityError
 

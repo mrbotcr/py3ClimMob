@@ -1,4 +1,11 @@
-from ...models import Regsection, Assessment, Asssection, Question, Registry, AssDetail
+from climmob.models import (
+    Regsection,
+    Assessment,
+    Asssection,
+    Question,
+    Registry,
+    AssDetail,
+)
 import xlsxwriter
 import os
 from pyxform import xls2xform
@@ -9,7 +16,7 @@ from datetime import datetime
 import json
 from hashlib import md5
 from lxml import etree
-from ..db.project import getProjectData, getRegisteredFarmers
+from climmob.processes import getProjectData, getRegisteredFarmers
 from jinja2 import Environment
 import glob
 

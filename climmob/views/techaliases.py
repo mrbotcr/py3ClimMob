@@ -1,6 +1,5 @@
-from .classes import privateView
-
-from ..processes import (
+from climmob.views.classes import privateView
+from climmob.processes import (
     getTechsAlias,
     findTechalias,
     addTechAlias,

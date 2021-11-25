@@ -1,6 +1,6 @@
 import itertools
-from ...models import Prjcombination, Prjcombdet, Project
-from .registry import setRegistryStatus
+from climmob.models import Prjcombination, Prjcombdet, Project
+from climmob.processes import setRegistryStatus
 import math
 
 __all__ = [

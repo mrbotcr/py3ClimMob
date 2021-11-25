@@ -2,9 +2,7 @@ from climmob.products.climmob_products import (
     createProductDirectory,
     registerProductInstance,
 )
-
-
-from .celerytasks import createErrorLogDocument
+from climmob.products.errorLogDocument.celerytasks import createErrorLogDocument
 
 # This function has been declated in climmob.plugins.interfaces.IPackage#after_create_packages
 def create_error_log_document(

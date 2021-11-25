@@ -1,9 +1,6 @@
 import shutil
 from climmob.config.celery_app import celeryApp
-import base64
 import os
-import bz2
-
 import uuid
 from jinja2 import Environment, FileSystemLoader
 from climmob.config.celery_class import celeryTask
@@ -15,7 +12,7 @@ TEMPLATE_ENVIRONMENT = Environment(
     loader=FileSystemLoader(os.path.join(PATH, "templates")),
     trim_blocks=False,
 )
-from ..qrpackages.celerytasks import create_qr
+from climmob.products.qrpackages.celerytasks import create_qr
 
 
 def render_template(template_filename, context):

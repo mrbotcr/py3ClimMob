@@ -4,7 +4,7 @@ from climmob.products.climmob_products import (
 )
 
 
-from .celerytasks import createDocumentForm
+from climmob.products.forms.celerytasks import createDocumentForm
 
 # This function has been declated in climmob.plugins.interfaces.IPackage#after_create_packages
 def create_document_form(

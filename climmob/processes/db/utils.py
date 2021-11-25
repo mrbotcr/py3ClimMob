@@ -1,5 +1,5 @@
-from ...models import Country, Sector, User
-from ...config.encdecdata import decodeData
+from climmob.models import Country, Sector, User
+from climmob.config.encdecdata import decodeData
 import arrow
 
 __all__ = [

@@ -1,9 +1,9 @@
-from ..classes import apiView
+from climmob.views.classes import apiView
 from pyramid.response import Response
 import json
 import telebot
 import datetime
-from ...processes import addChat, readChatByUser
+from climmob.processes import addChat, readChatByUser
 
 
 class sendFeedbackToBot_view(apiView):

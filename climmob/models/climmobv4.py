@@ -13,7 +13,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.mysql import MEDIUMTEXT
 import datetime
-from .meta import Base
+from climmob.models.meta import Base
 
 
 class Activitylog(Base):

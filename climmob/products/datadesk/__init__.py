@@ -1,2 +1,2 @@
-from .celerytasks import *
-from .datadesk import *
+from climmob.products.datadesk.celerytasks import *
+from climmob.products.datadesk.datadesk import *

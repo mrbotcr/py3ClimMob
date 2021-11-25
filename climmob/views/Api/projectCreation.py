@@ -19,7 +19,6 @@ from climmob.processes import (
     get_collaborators_in_project,
 )
 from climmob.views.project import functionCreateClone
-
 from pyramid.response import Response
 import json
 import datetime

@@ -1,4 +1,4 @@
-from ...models import (
+from climmob.models import (
     Prjtech,
     Technology,
     Prjalia,
@@ -9,7 +9,7 @@ from ...models import (
     userProject,
     User,
 )
-from ...models.schema import mapToSchema, mapFromSchema
+from climmob.models.schema import mapToSchema, mapFromSchema
 from sqlalchemy import func, or_, and_
 
 __all__ = [

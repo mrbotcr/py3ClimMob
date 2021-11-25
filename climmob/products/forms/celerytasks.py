@@ -5,7 +5,7 @@ from climmob.config.celery_class import celeryTask
 import gettext
 from docxtpl import DocxTemplate, InlineImage
 from docx.shared import Mm
-from ..qrpackages.celerytasks import create_qr
+from climmob.products.qrpackages.celerytasks import create_qr
 
 
 @celeryApp.task(bind=True, base=celeryTask, soft_time_limit=7200, time_limit=7200)

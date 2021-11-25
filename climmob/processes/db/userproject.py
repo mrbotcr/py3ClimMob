@@ -1,4 +1,4 @@
-from ...models import userProject, mapFromSchema
+from climmob.models import userProject, mapFromSchema
 
 __all__ = ["getAllProjectsByUser"]
 

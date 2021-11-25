@@ -1,12 +1,10 @@
-import shutil as sh
 from climmob.config.celery_app import celeryApp
 import os
 from climmob.config.celery_class import celeryTask
 import gettext
-import xlsxwriter
 import json
 import pandas as pd
-from ..analysisdata.exportToCsv import getRealData
+from climmob.products.analysisdata.exportToCsv import getRealData
 
 
 @celeryApp.task(base=celeryTask, soft_time_limit=7200, time_limit=7200)

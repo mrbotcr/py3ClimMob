@@ -3,7 +3,7 @@ from climmob.plugins.utilities import climmobCeleryTask
 import os
 import shutil as sh
 import json
-from .exportToCsv import createCSV
+from climmob.products.analysisdata.exportToCsv import createCSV
 
 
 @celeryApp.task(base=climmobCeleryTask)

@@ -2,7 +2,7 @@ from climmob.products.climmob_products import (
     createProductDirectory,
     registerProductInstance,
 )
-from .celerytasks import createStickerDocument
+from climmob.products.stickers.celerytasks import createStickerDocument
 
 # This function has been declated in climmob.plugins.interfaces.IPackage#after_create_packages
 def create_stickers_document(locale, request, user, project, packages):

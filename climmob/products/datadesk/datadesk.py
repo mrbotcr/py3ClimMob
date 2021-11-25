@@ -2,7 +2,7 @@ from climmob.products.climmob_products import (
     createProductDirectory,
     registerProductInstance,
 )
-from .celerytasks import createDataDesk
+from climmob.products.datadesk.celerytasks import createDataDesk
 
 # This function has been declated in climmob.plugins.interfaces.IPackage#after_create_packages
 def create_data_desk(request, user, project, data, name):

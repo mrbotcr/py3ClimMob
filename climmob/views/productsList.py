@@ -1,16 +1,15 @@
-from ..plugins.utilities import (
+from climmob.plugins.utilities import (
     climmobPrivateView,
     getProductDirectory,
     getProducts,
 )
-from .classes import privateView
-from ..products import product_found
+from climmob.views.classes import privateView
+from climmob.products import product_found
 from pyramid.response import FileResponse
 import os
 from pyramid.httpexceptions import HTTPNotFound
 from pyramid.httpexceptions import HTTPFound
-
-from ..processes import (
+from climmob.processes import (
     getActiveProject,
     getProductData,
     getPackages,
@@ -28,20 +27,19 @@ from ..processes import (
     get_registry_logs,
     get_assessment_logs,
 )
-from .projectHelp.projectHelp import getImportantInformation
-from .registry import getDataFormPreview
-
-from ..products.qrpackages.qrpackages import create_qr_packages
-from ..products.packages.packages import create_packages_excell
-from ..products.colors.colors import create_colors_cards
-from ..products.fieldagents.fieldagents import create_fieldagents_report
-from ..products.analysisdata.analysisdata import create_datacsv
-from ..products.forms.form import create_document_form
-from ..products.generalReport.generalReport import create_general_report
-from ..products.datacollectionprogress.dataCollectionProgress import (
+from climmob.views.projectHelp.projectHelp import getImportantInformation
+from climmob.views.registry import getDataFormPreview
+from climmob.products.qrpackages.qrpackages import create_qr_packages
+from climmob.products.packages.packages import create_packages_excell
+from climmob.products.colors.colors import create_colors_cards
+from climmob.products.fieldagents.fieldagents import create_fieldagents_report
+from climmob.products.analysisdata.analysisdata import create_datacsv
+from climmob.products.forms.form import create_document_form
+from climmob.products.generalReport.generalReport import create_general_report
+from climmob.products.datacollectionprogress.dataCollectionProgress import (
     create_data_collection_progress,
 )
-from ..products.errorLogDocument.errorLogDocument import create_error_log_document
+from climmob.products.errorLogDocument.errorLogDocument import create_error_log_document
 import climmob.plugins as p
 
 

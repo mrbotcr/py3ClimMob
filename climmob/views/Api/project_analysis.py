@@ -1,5 +1,5 @@
-from ..classes import apiView
-from ...processes import (
+from climmob.views.classes import apiView
+from climmob.processes import (
     projectExists,
     getJSONResult,
     getQuestionsByType,
@@ -8,7 +8,7 @@ from ...processes import (
     getTheProjectIdForOwner,
     getAccessTypeForProject,
 )
-from ..project_analysis import processToGenerateTheReport
+from climmob.views.project_analysis import processToGenerateTheReport
 from pyramid.response import Response
 import json
 

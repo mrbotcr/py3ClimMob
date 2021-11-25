@@ -1,7 +1,5 @@
-from ..classes import apiView
-from pyramid.httpexceptions import HTTPFound
-from ...processes import getTechnologyByUser
-from ...processes import (
+from climmob.views.classes import apiView
+from climmob.processes import (
     getTechsAlias,
     findTechalias,
     addTechAlias,
@@ -9,8 +7,8 @@ from ...processes import (
     removeAlias,
     existAlias,
     getAliasAssignedWithoutProjectCode,
+    getTechnologyByUser,
 )
-
 import json
 from pyramid.response import Response
 

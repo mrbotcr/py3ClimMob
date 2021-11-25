@@ -1,7 +1,7 @@
-from .classes import privateView
+from climmob.views.classes import privateView
 import re
 from climmob.config.encdecdata import encodeData, decodeData
-from ..processes import (
+from climmob.processes import (
     searchEnumerator,
     enumeratorExists,
     addEnumerator,

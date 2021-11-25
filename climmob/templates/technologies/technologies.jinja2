@@ -381,12 +381,12 @@
         var changeError=0
         function showAlias(user_name, tech_id, alias_id)
         {
-            var URL= "{{ request.route_url('getUserTechnologyDetails',user="__user_name__", technologyid="__techid__", aliasid="__aliasid__") }}"
-            URL= URL.replace("__user_name__",user_name).replace("__techid__", tech_id).replace("__aliasid__", aliasid)
+            var URL= "{{ request.route_url('getUserTechnologyAliasDetails',user="__user_name__", technologyid="__techid__", aliasid="__aliasid__") }}"
+            URL= URL.replace("__user_name__",user_name).replace("__techid__", tech_id).replace("__aliasid__", alias_id)
 
             $.get(URL, function(data, status){
                 var alias = data;
-
+                console.log(alias)
                 $("#option"+alias.alias_id).iCheck('check');
                 {% if not error_summary_options %}
                     if ($('.closeError').length) {

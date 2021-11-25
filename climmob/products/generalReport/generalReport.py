@@ -2,9 +2,7 @@ from climmob.products.climmob_products import (
     createProductDirectory,
     registerProductInstance,
 )
-
-
-from .celerytasks import createGeneralReport
+from climmob.products.generalReport.celerytasks import createGeneralReport
 
 # This function has been declated in climmob.plugins.interfaces.IPackage#after_create_packages
 def create_general_report(

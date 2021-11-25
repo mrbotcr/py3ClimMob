@@ -374,6 +374,10 @@
 
             $("#questionsTree").css('display','initial')
 
+            {% if seeQuestion %}
+                openQuestions("{{ seeQuestion["question_id"] }}", "{{ seeQuestion["user_name"] }}")
+            {% endif %}
+
         });
 
         toastr.options = {
@@ -485,9 +489,10 @@
                         $("#btn_update_question").prop('disabled', false);
                     }else{
                         console.log(respuesta)
-                        //toastr.success(respuesta['success']);
-                        //location.href = window.location.href;
-                        openQuestions(respuesta["question_id"], respuesta["user_name"])
+                        var URL = "{{ request.route_url("qlibrary", user_name=activeUser.login ,_query={ "questionId": "__questionId__"} ) }}"
+                        URL = URL.replace("__questionId__",respuesta["question_id"])
+                        console.log(URL)
+                        location.href = URL
                     }
                 },
                 error: function (respuesta) {
@@ -584,7 +589,7 @@
                             toastr.error(respuesta['error']);
                         }else{
                             //toastr.success(respuesta['success']);
-                            location.href = window.location.href;
+                            location.href = "{{ request.route_url("qlibrary", user_name=activeUser.login) }}";
                         }
                     },
                     error: function (respuesta) {

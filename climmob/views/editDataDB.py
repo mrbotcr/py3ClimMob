@@ -1,6 +1,6 @@
 import json
 import xml.etree.ElementTree as ET
-from ..processes import getProjectData, getQuestionOptionsByQuestionCode
+from climmob.processes import getProjectData, getQuestionOptionsByQuestionCode
 from climmob.models.repository import sql_execute
 
 

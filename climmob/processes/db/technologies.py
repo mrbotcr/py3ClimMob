@@ -1,7 +1,7 @@
 from climmob.models.climmobv4 import Technology, Techalia, Prjtech, I18nTechnology
-from ...models.schema import mapToSchema, mapFromSchema
+from climmob.models.schema import mapToSchema, mapFromSchema
 from sqlalchemy import func, and_
-from .techaliases import getTechsAlias
+from climmob.processes.db.techaliases import getTechsAlias
 
 __all__ = [
     "getUserTechs",

@@ -1,4 +1,4 @@
-from ...models import RegistryJsonLog, AssessmentJsonLog
+from climmob.models import RegistryJsonLog, AssessmentJsonLog
 import datetime
 from sqlalchemy.exc import IntegrityError
 

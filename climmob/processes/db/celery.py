@@ -1,4 +1,4 @@
-from ...models import Tasks, finishedTasks
+from climmob.models import Tasks, finishedTasks
 
 __all__ = ["addTask", "getRunningTasksByProcess", "cancelTask"]
 

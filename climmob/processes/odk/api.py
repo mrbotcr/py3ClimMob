@@ -6,8 +6,8 @@ import mimetypes
 from pyramid.httpexceptions import HTTPNotFound
 from hashlib import md5
 from uuid import uuid4
-from ...models import Project, storageErrors, Assessment
-from ...processes import (
+from climmob.models import Project, storageErrors, Assessment
+from climmob.processes import (
     isRegistryOpen,
     isAssessmentOpen,
     assessmentExists,
@@ -15,7 +15,7 @@ from ...processes import (
     packageExist,
     getTheProjectIdForOwner,
 )
-from ..db.json import addJsonLog
+from climmob.processes.db.json import addJsonLog
 from subprocess import check_call, CalledProcessError, Popen, PIPE
 import logging
 import datetime

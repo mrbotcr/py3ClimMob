@@ -1,10 +1,13 @@
-from .classes import privateView
-from .editDataDB import getNamesEditByColums, fillDataTable, update_edited_data
-from climmob.processes import projectExists, getJSONResult
+from climmob.views.classes import privateView
+from climmob.views.editDataDB import (
+    getNamesEditByColums,
+    fillDataTable,
+    update_edited_data,
+)
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 import os
-from ..products.analysisdata.analysisdata import create_datacsv
-from ..products.errorLogDocument.errorLogDocument import create_error_log_document
+from climmob.products.analysisdata.analysisdata import create_datacsv
+from climmob.products.errorLogDocument.errorLogDocument import create_error_log_document
 from climmob.processes import (
     getQuestionsStructure,
     generateStructureForInterfaceForms,
@@ -12,6 +15,8 @@ from climmob.processes import (
     get_assessment_logs,
     getTheProjectIdForOwner,
     getActiveProject,
+    projectExists,
+    getJSONResult,
 )
 
 

@@ -2,9 +2,9 @@ from climmob.products.climmob_products import (
     createProductDirectory,
     registerProductInstance,
 )
-from .celerytasks import create_CSV
+from climmob.products.analysisdata.celerytasks import create_CSV
 import climmob.plugins as p
-from ...processes import (
+from climmob.processes import (
     registryHaveQuestionOfMultimediaType,
     assessmentHaveQuestionOfMultimediaType,
 )

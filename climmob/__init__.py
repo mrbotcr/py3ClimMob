@@ -5,10 +5,9 @@ if sys.version_info[0] == 3 and sys.version_info[1] >= 6:
 
     gevent.monkey.patch_all()
 
-from .config.environment import load_environment
+from climmob.config.environment import load_environment
 from pyramid.config import Configurator
 import os
-
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid_authstack import AuthenticationStackPolicy

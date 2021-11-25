@@ -1,6 +1,5 @@
 from sqlalchemy import func
-from climmob.models.schema import mapFromSchema
-from ...models import Project, Assessment, userProject
+from climmob.models import Project, Assessment, userProject, mapFromSchema
 from climmob.models.repository import sql_fetch_one
 import logging
 

@@ -1,11 +1,10 @@
-from ...models import Project, Prjcombination, Package, Pkgcomb
+from climmob.models import Project, Prjcombination, Package, Pkgcomb
 import numpy as np
 from subprocess import check_call, CalledProcessError
 from itertools import zip_longest as izip, chain, repeat
 import pprint
-from .registry import setRegistryStatus
+from climmob.processes import setRegistryStatus, getCombinationsUsableInProject
 import os
-from .project_combinations import getCombinationsUsableInProject
 
 __all__ = [
     "create_packages_with_r",

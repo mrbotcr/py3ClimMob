@@ -2,9 +2,9 @@ from climmob.products.climmob_products import (
     createProductDirectory,
     registerProductInstance,
 )
-
-
-from .celerytasks import createDataCollectionProgress
+from climmob.products.datacollectionprogress.celerytasks import (
+    createDataCollectionProgress,
+)
 
 # This function has been declated in climmob.plugins.interfaces.IPackage#after_create_packages
 def create_data_collection_progress(

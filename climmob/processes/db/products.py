@@ -1,4 +1,4 @@
-from ...models import Products, Tasks, finishedTasks
+from climmob.models import Products, Tasks, finishedTasks
 import datetime
 
 __all__ = ["addProductInstance", "deleteProducts"]

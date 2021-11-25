@@ -1,6 +1,6 @@
 from climmob.models.climmobv4 import Techalia, Prjalia, I18nTechalia
 from sqlalchemy import func, and_
-from ...models.schema import mapFromSchema, mapToSchema
+from climmob.models.schema import mapFromSchema, mapToSchema
 
 __all__ = [
     "getTechsAlias",

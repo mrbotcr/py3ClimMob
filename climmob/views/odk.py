@@ -1,5 +1,5 @@
-from .classes import odkView
-from ..processes import (
+from climmob.views.classes import odkView
+from climmob.processes import (
     isEnumeratorActive,
     getEnumeratorPassword,
     getFormList,

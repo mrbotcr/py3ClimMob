@@ -1,4 +1,4 @@
-from climmob.models.schema import mapFromSchema, mapToSchema
+from climmob.models.schema import mapFromSchema
 from climmob.models import (
     AssDetail,
     Asssection,
@@ -8,10 +8,10 @@ from climmob.models import (
     Registry,
     I18nQuestion,
 )
-from .question import opcionOtherInQuestion
-from climmob.processes.db.project import (
+from climmob.processes import (
     numberOfCombinationsForTheProject,
     getProjectLabels,
+    opcionOtherInQuestion,
 )
 from sqlalchemy import or_, func, and_
 from jinja2 import Environment

@@ -1,5 +1,5 @@
-from ..classes import apiView
-from ...processes import (
+from climmob.views.classes import apiView
+from climmob.processes import (
     getCategoryById,
     categoryExistsWithDifferentId,
     categoryExistsByUserAndId,
@@ -10,7 +10,6 @@ from ...processes import (
     updateCategory,
     deleteCategory,
 )
-
 import json
 from pyramid.response import Response
 import uuid

@@ -1,6 +1,5 @@
-from ..models import User as userModel, Country, Sector
-from .encdecdata import decodeData
-from ..models import mapFromSchema
+from climmob.models import User as userModel, Country, Sector, mapFromSchema
+from climmob.config.encdecdata import decodeData
 
 import urllib, hashlib, arrow
 

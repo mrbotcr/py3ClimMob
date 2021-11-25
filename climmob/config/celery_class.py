@@ -1,4 +1,3 @@
-from celery import Task
 from sqlalchemy import create_engine
 from climmob.config.celery_app import get_ini_value
 from sqlalchemy.pool import NullPool

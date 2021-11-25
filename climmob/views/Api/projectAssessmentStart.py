@@ -1,8 +1,7 @@
-from ..classes import apiView
+from climmob.views.classes import apiView
 from pyramid.response import Response
 import json
-
-from ...processes import (
+from climmob.processes import (
     projectExists,
     projectAsessmentStatus,
     getProjectProgress,
@@ -17,15 +16,15 @@ from ...processes import (
     getJSONResult,
     getTheGroupOfThePackageCodeAssessment,
     getProjectData,
+    getTheProjectIdForOwner,
+    getAccessTypeForProject,
 )
-
-from ..registry import getDataFormPreview
-from ...products.forms.form import create_document_form
+from climmob.views.registry import getDataFormPreview
+from climmob.products.forms.form import create_document_form
 import os
 import uuid
 from xml.dom import minidom
-from ...processes.odk.api import storeJSONInMySQL
-from ...processes import getTheProjectIdForOwner, getAccessTypeForProject
+from climmob.processes.odk.api import storeJSONInMySQL
 
 
 class createProjectAssessment_view(apiView):
