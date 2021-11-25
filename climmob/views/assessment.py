@@ -145,6 +145,32 @@ class assessmentSectionActions_view(privateView):
         return {}
 
 
+class getAssessmentDetails_view(privateView):
+    def processView(self):
+        if self.request.method == "GET":
+            activeProjectUser = self.request.matchdict["user"]
+            activeProjectCod = self.request.matchdict["project"]
+            assessmentid = self.request.matchdict["assessmentid"]
+
+            if not projectExists(
+                self.user.login, activeProjectUser, activeProjectCod, self.request
+            ):
+                raise HTTPNotFound()
+            else:
+                activeProjectId = getTheProjectIdForOwner(
+                    activeProjectUser, activeProjectCod, self.request
+                )
+
+                assessment = getProjectAssessmentInfo(
+                    activeProjectId, assessmentid, self.request
+                )
+                self.returnRawViewResult = True
+
+                return assessment
+
+        raise HTTPNotFound()
+
+
 class assessmenthead_view(privateView):
     def processView(self):
 

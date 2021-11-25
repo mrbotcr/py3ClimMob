@@ -47,6 +47,7 @@ from climmob.views.registry import (
 from climmob.views.assessment import (
     assessment_view,
     deleteAssessmentSection_view,
+    getAssessmentDetails_view,
     assessmenthead_view,
     deleteassessmenthead_view,
     startAssessments_view,
@@ -603,13 +604,20 @@ def loadRoutes(config):
     # Assessment
     routes.append(
         addRoute(
+            "getAssessmentDetails",
+            "/user/{user}/project/{project}/assessment/{assessmentid}/details",
+            getAssessmentDetails_view,
+            "json",
+        )
+    )
+    routes.append(
+        addRoute(
             "assessment",
             "/user/{user}/project/{project}/assessments",
             assessmenthead_view,
             "project/assessment/assessment.jinja2",
         )
     )
-    """HAY QUE REVISAR"""
     routes.append(
         addRoute(
             "startassessments",

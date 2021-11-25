@@ -91,7 +91,7 @@
                                         <a class="btn btn-default btn-circle" href="{{ request.route_url('assessmentdetail', user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}" title="{{ _("See questions") }}"><i class="fa fa-list-ul"></i></a>
                                         {% if assessment.ass_status == 0 %}
                                             {% if not onlySee %}
-                                                <a class="btn btn-warning btn-circle" onclick='seeAssessment({{ assessment.ass_cod|tojson }},{{ assessment.ass_desc|tojson }},{{ assessment.ass_days }}, {{ assessment.ass_final }})' title="{{ _("Edit data collection") }}"><i class="fa fa-pencil"></i></a>
+                                                <a class="btn btn-warning btn-circle" onclick='seeAssessment("{{ assessment.ass_cod|string }}")' title="{{ _("Edit data collection") }}"><i class="fa fa-pencil"></i></a>
                                                 <button class="btn btn-danger btn-circle"  onclick="showDelete('{{ request.route_url('deleteassessment', user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}','{{ _("Do you really want to remove this data collection moment?") }}','{{ request.session.get_csrf_token() }}')" title="{{ _("Remove data collection")}}"><i class="fa fa-times"></i></button>
                                             {% endif %}
                                         {% else %}
@@ -135,18 +135,24 @@
             }
         });
 
-        function seeAssessment(code, desc, days, final) {
-            cleanButtons();
-            cleanInputs();
-            $("#ass_cod").val(code);
-            $("#ass_desc").val(desc);
-            $("#ass_days").val(days);
-            if(final == 1)
-            {
-                $("#ckb_final").bootstrapSwitch('state', true);
-                $("#check_for_final").css("display","block")
-            }
-            $("#btn_modify_ass").css("display","block")
+        //function seeAssessment(code, desc, days, final) {
+        function seeAssessment(code) {
+            var URL= "{{ request.route_url('getAssessmentDetails',user=activeProject["owner"].user_name, project=activeProject.project_cod, assessmentid="__assessmentid__") }}"
+            URL= URL.replace("__assessmentid__", code)
+            data = {};
+
+            $.get(URL, function(dataJson, status) {
+                cleanButtons();
+                cleanInputs();
+                $("#ass_cod").val(code);
+                $("#ass_desc").val(dataJson["ass_desc"]);
+                $("#ass_days").val(dataJson["ass_days"]);
+                if (dataJson["ass_final"] == 1) {
+                    $("#ckb_final").bootstrapSwitch('state', true);
+                    $("#check_for_final").css("display", "block")
+                }
+                $("#btn_modify_ass").css("display", "block")
+            })
         }
 
         $("#btn_cancel_assessment").click(function () {
