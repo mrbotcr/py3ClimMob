@@ -32,6 +32,8 @@ from climmob.processes import (
     searchTechnologiesInProject,
     AliasSearchTechnologyInProject,
     AliasExtraSearchTechnologyInProject,
+    deleteRegistryByProjectId,
+    deleteProjectAssessments,
 )
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 import datetime
@@ -376,6 +378,36 @@ class modifyProject_view(privateView):
                     if not modified:
                         error_summary = {"dberror": message}
                     else:
+                        if (
+                            cdata["project_registration_and_analysis"] == 1
+                            and data["project_registration_and_analysis"] == 0
+                        ):
+                            deleteRegistryByProjectId(activeProjectId, self.request)
+
+                        if "usingTemplate" in data.keys():
+                            if data["usingTemplate"] != "":
+                                deleteRegistryByProjectId(activeProjectId, self.request)
+                                deleteProjectAssessments(activeProjectId, self.request)
+
+                                listOfElementToInclude = ["registry"]
+
+                                assessments = getProjectAssessments(
+                                    data["usingTemplate"], self.request
+                                )
+                                for assess in assessments:
+                                    listOfElementToInclude.append(assess["ass_cod"])
+
+                                newProjectId = getTheProjectIdForOwner(
+                                    self.user.login, data["project_cod"], self.request,
+                                )
+
+                                functionCreateClone(
+                                    self,
+                                    data["usingTemplate"],
+                                    newProjectId,
+                                    listOfElementToInclude,
+                                )
+
                         self.request.session.flash(
                             self._("The project was modified successfully")
                         )
@@ -399,6 +431,9 @@ class modifyProject_view(privateView):
             "newproject": newproject,
             "countries": getCountryList(self.request),
             "error_summary": error_summary,
+            "listOfTemplates": getProjectTemplates(
+                self.request, data["project_registration_and_analysis"]
+            ),
         }
 
 

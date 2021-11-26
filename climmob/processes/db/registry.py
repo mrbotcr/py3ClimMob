@@ -33,7 +33,18 @@ __all__ = [
     "getQuestionsByGroupInRegistry",
     "getTheGroupOfThePackageCode",
     "registryHaveQuestionOfMultimediaType",
+    "deleteRegistryByProjectId",
 ]
+
+
+def deleteRegistryByProjectId(projectId, request):
+    try:
+        request.dbsession.query(Regsection).filter(
+            Regsection.project_id == projectId
+        ).delete()
+        return True, ""
+    except Exception as e:
+        return False, e
 
 
 def getTheGroupOfThePackageCode(projectId, request):

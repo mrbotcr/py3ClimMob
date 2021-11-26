@@ -65,9 +65,20 @@ __all__ = [
     "getTheGroupOfThePackageCodeAssessment",
     "formattingQuestions",
     "assessmentHaveQuestionOfMultimediaType",
+    "deleteProjectAssessments",
 ]
 
 log = logging.getLogger(__name__)
+
+
+def deleteProjectAssessments(projectId, request):
+    try:
+        request.dbsession.query(Assessment).filter(
+            Assessment.project_id == projectId
+        ).delete()
+        return True, ""
+    except Exception as e:
+        return False, e
 
 
 def getTheGroupOfThePackageCodeAssessment(projectId, ass_cod, request):

@@ -150,7 +150,7 @@
                             <div class="hr-line-dashed"></div>
 
                             <div class="form-group" style="margin: 5px">
-                                <label class="col-sm-4 control-label">{{ _("Do you want to use a template for the definition of your forms ?") }}</label>
+                                <label class="col-sm-4 control-label">{{ _("Do you want to create your project from a template ?") }}</label>
                                 <div class="col-sm-8">
                                     <select id="usingTemplate" name="usingTemplate" class="form-control chosen-select">
                                         <option value="">{{ _("Select a template") }}</option>
@@ -158,6 +158,11 @@
                                             <option value="{{ template.project_id }}" {% if dataworking["usingTemplate"] == template.project_id %}selected{% endif %}>{{ template.project_name }}</option>
                                         {% endfor %}
                                     </select>
+                                    {% if showNote %}
+                                        <br>
+                                        <br>
+                                        <p><b>{{ _("Note") }}: </b>{{ _("If you select a new template, your current forms will be replaced by the template forms.") }}</p>
+                                    {% endif %}
                                 </div>
                             </div>
                         {% endif %}

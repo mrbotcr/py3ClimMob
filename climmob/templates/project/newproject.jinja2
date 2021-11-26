@@ -61,29 +61,37 @@
                     radioClass: 'iradio_square-green',
                 });
 
-                $('input[name="project_registration_and_analysis"]').on('ifChecked', function(event){
-                    var URL = "{{ request.route_url('getTemplatesByTypeOfProject', typeid="__typeid__") }}"
-                    URL = URL.replace("__typeid__", this.value)
+                {% if activeUser.login == "bioversity" %}
 
-                    $.get(URL, function (dataJson, status) {
-                        $("#usingTemplate").empty();
-                        $('#usingTemplate').trigger("chosen:updated");
-                        $("#usingTemplate").append("<option value=''>{{ _("Select a template") }}</option>");
-                        for (var i = 0; i < dataJson.length; i++){
-                            var info = dataJson[i]
-                            $("#usingTemplate").append("<option value='"+ info.project_id+"'>"+ info.project_name+"</option>");
-                        }
-                        $('#usingTemplate').trigger("chosen:updated");
+                    var valueOfProjectTemplate = "{{ dataworking["project_template"] }}"
+
+                    if (valueOfProjectTemplate == "0") {
+                        $("[name='project_template']").bootstrapSwitch('state', false);
+                    }else {
+                        $("[name='project_template']").bootstrapSwitch('state', true);
+                    }
+
+                {% else %}
+
+                    $('input[name="project_registration_and_analysis"]').on('ifChecked', function(event){
+                        var URL = "{{ request.route_url('getTemplatesByTypeOfProject', typeid="__typeid__") }}"
+                        URL = URL.replace("__typeid__", this.value)
+
+                        $.get(URL, function (dataJson, status) {
+                            $("#usingTemplate").empty();
+                            $('#usingTemplate').trigger("chosen:updated");
+                            $("#usingTemplate").append("<option value=''>{{ _("Select a template") }}</option>");
+                            for (var i = 0; i < dataJson.length; i++){
+                                var info = dataJson[i]
+                                $("#usingTemplate").append("<option value='"+ info.project_id+"'>"+ info.project_name+"</option>");
+                            }
+                            $('#usingTemplate').trigger("chosen:updated");
+                        });
                     });
-                });
 
-                var valueOfProjectTemplate = "{{ dataworking["project_template"] }}"
+                {% endif %}
 
-                if (valueOfProjectTemplate == "0") {
-                    $("[name='project_template']").bootstrapSwitch('state', false);
-                }else {
-                    $("[name='project_template']").bootstrapSwitch('state', true);
-                }
+
             })
         </script>
     {% endif %}
