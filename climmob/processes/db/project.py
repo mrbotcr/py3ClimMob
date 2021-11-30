@@ -43,6 +43,7 @@ __all__ = [
     "getProjectLocalVariety",
     "getMD5Project",
     "getProjectTemplates",
+    "getProjectIsTemplate",
 ]
 
 
@@ -57,6 +58,19 @@ def getProjectTemplates(request, registrationAndAnalysis):
     )
 
     return listOfTemplates
+
+
+def getProjectIsTemplate(request, projectId):
+
+    res = mapFromSchema(
+        request.dbsession.query(Project)
+        .filter(Project.project_id == projectId)
+        .filter(Project.project_template == 1)
+        .filter(Project.project_active == 1)
+        .first()
+    )
+
+    return res
 
 
 def getProjectCount(request):

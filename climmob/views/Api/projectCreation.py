@@ -17,12 +17,58 @@ from climmob.processes import (
     getUserInfo,
     remove_collaborator,
     get_collaborators_in_project,
+    getProjectIsTemplate,
+    getProjectAssessments,
+    deleteRegistryByProjectId,
+    deleteProjectAssessments,
+    getProjectTemplates,
 )
 from climmob.views.project import functionCreateClone
 from pyramid.response import Response
 import json
 import datetime
 import re
+
+
+class readListOfTemplates_view(apiView):
+    def processView(self):
+        if self.request.method == "GET":
+
+            obligatory = [u"project_type"]
+
+            dataworking = json.loads(self.body)
+
+            if sorted(obligatory) == sorted(dataworking.keys()):
+
+                dataInParams = True
+                for key in dataworking.keys():
+                    if dataworking[key] == "":
+                        dataInParams = False
+
+                if dataInParams:
+
+                    response = Response(
+                        status=200,
+                        body=json.dumps(
+                            getProjectTemplates(
+                                self.request, dataworking["project_type"]
+                            )
+                        ),
+                    )
+                    return response
+
+                else:
+
+                    response = Response(
+                        status=401, body=self._("Not all parameters have data.")
+                    )
+                    return response
+            else:
+                response = Response(status=401, body=self._("Error in the JSON."))
+                return response
+        else:
+            response = Response(status=401, body=self._("Only accepts GET method."))
+            return response
 
 
 class readListOfCountries_view(apiView):
@@ -74,6 +120,7 @@ class createProject_view(apiView):
                 u"project_label_a",
                 u"project_label_b",
                 u"project_label_c",
+                u"project_template",
             ]
 
             dataworking = json.loads(self.body)
@@ -104,14 +151,56 @@ class createProject_view(apiView):
 
                     if dataInParams:
 
+                        if (
+                            "project_clone" in dataworking.keys()
+                            and "project_template" in dataworking.keys()
+                        ):
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "You cannot create a clone and use a template at the same time."
+                                ),
+                            )
+                            return response
+
+                        if "project_template" in dataworking.keys():
+                            existsTemplate = getProjectIsTemplate(
+                                self.request, dataworking["project_template"]
+                            )
+                            if existsTemplate:
+                                if str(
+                                    dataworking["project_registration_and_analysis"]
+                                ) == str(
+                                    existsTemplate["project_registration_and_analysis"]
+                                ):
+                                    dataworking["usingTemplate"] = dataworking[
+                                        "project_template"
+                                    ]
+                                    dataworking["project_template"] = 0
+                                else:
+                                    response = Response(
+                                        status=401,
+                                        body=self._(
+                                            "You are trying to use a template that does not correspond to the type of project you are creating."
+                                        ),
+                                    )
+                                    return response
+                            else:
+                                response = Response(
+                                    status=401,
+                                    body=self._(
+                                        "There is no template with this identifier."
+                                    ),
+                                )
+                                return response
+
                         if "project_clone" in dataworking.keys():
-                            print("Desea clonar un proyecto")
-                            exitsproject = projectInDatabase(
+                            existsproject = projectInDatabase(
                                 self.user.login,
                                 dataworking["project_clone"],
                                 self.request,
                             )
-                            if not exitsproject:
+                            if not existsproject:
                                 response = Response(
                                     status=401,
                                     body=self._(
@@ -217,6 +306,36 @@ class createProject_view(apiView):
                                                         ),
                                                     )
                                                     return response
+
+                                                if (
+                                                    "usingTemplate"
+                                                    in dataworking.keys()
+                                                ):
+                                                    listOfElementToInclude = [
+                                                        "registry"
+                                                    ]
+
+                                                    assessments = getProjectAssessments(
+                                                        dataworking["usingTemplate"],
+                                                        self.request,
+                                                    )
+                                                    for assess in assessments:
+                                                        listOfElementToInclude.append(
+                                                            assess["ass_cod"]
+                                                        )
+
+                                                    newProjectId = getTheProjectIdForOwner(
+                                                        self.user.login,
+                                                        dataworking["project_cod"],
+                                                        self.request,
+                                                    )
+
+                                                    functionCreateClone(
+                                                        self,
+                                                        dataworking["usingTemplate"],
+                                                        newProjectId,
+                                                        listOfElementToInclude,
+                                                    )
 
                                             if not added:
                                                 response = Response(
@@ -336,6 +455,7 @@ class updateProject_view(apiView):
                 u"project_label_a",
                 u"project_label_b",
                 u"project_label_c",
+                u"project_template",
             ]
             obligatory = [u"project_cod", u"user_owner"]
 
@@ -392,6 +512,65 @@ class updateProject_view(apiView):
                                 return response
 
                             cdata = getProjectData(activeProjectId, self.request)
+
+                            if "project_template" in dataworking.keys():
+                                existsTemplate = getProjectIsTemplate(
+                                    self.request, dataworking["project_template"]
+                                )
+                                if existsTemplate:
+                                    if (
+                                        "project_registration_and_analysis"
+                                        in dataworking.keys()
+                                    ):
+                                        if str(
+                                            dataworking[
+                                                "project_registration_and_analysis"
+                                            ]
+                                        ) == str(
+                                            existsTemplate[
+                                                "project_registration_and_analysis"
+                                            ]
+                                        ):
+                                            dataworking["usingTemplate"] = dataworking[
+                                                "project_template"
+                                            ]
+                                            dataworking["project_template"] = 0
+                                        else:
+                                            response = Response(
+                                                status=401,
+                                                body=self._(
+                                                    "You are trying to use a template that does not correspond to the type of project you are creating."
+                                                ),
+                                            )
+                                            return response
+                                    else:
+                                        if str(
+                                            cdata["project_registration_and_analysis"]
+                                        ) == str(
+                                            existsTemplate[
+                                                "project_registration_and_analysis"
+                                            ]
+                                        ):
+                                            dataworking["usingTemplate"] = dataworking[
+                                                "project_template"
+                                            ]
+                                            dataworking["project_template"] = 0
+                                        else:
+                                            response = Response(
+                                                status=401,
+                                                body=self._(
+                                                    "You are trying to use a template that does not correspond to the type of project you are creating."
+                                                ),
+                                            )
+                                            return response
+                                else:
+                                    response = Response(
+                                        status=401,
+                                        body=self._(
+                                            "There is no template with this identifier."
+                                        ),
+                                    )
+                                    return response
 
                             if cdata["project_regstatus"] != 0:
                                 dataworking["project_numobs"] = cdata["project_numobs"]
@@ -480,6 +659,53 @@ class updateProject_view(apiView):
                                 modified, message = modifyProject(
                                     activeProjectId, dataworking, self.request,
                                 )
+
+                                if modified:
+                                    if (
+                                        str(cdata["project_registration_and_analysis"])
+                                        == "1"
+                                        and str(
+                                            dataworking[
+                                                "project_registration_and_analysis"
+                                            ]
+                                        )
+                                        == "0"
+                                    ):
+                                        deleteRegistryByProjectId(
+                                            activeProjectId, self.request
+                                        )
+
+                                    if "usingTemplate" in dataworking.keys():
+                                        deleteRegistryByProjectId(
+                                            activeProjectId, self.request
+                                        )
+                                        deleteProjectAssessments(
+                                            activeProjectId, self.request
+                                        )
+
+                                        listOfElementToInclude = ["registry"]
+
+                                        assessments = getProjectAssessments(
+                                            dataworking["usingTemplate"], self.request
+                                        )
+                                        for assess in assessments:
+                                            listOfElementToInclude.append(
+                                                assess["ass_cod"]
+                                            )
+
+                                        newProjectId = getTheProjectIdForOwner(
+                                            self.user.login,
+                                            dataworking["project_cod"],
+                                            self.request,
+                                        )
+
+                                        functionCreateClone(
+                                            self,
+                                            dataworking["usingTemplate"],
+                                            newProjectId,
+                                            listOfElementToInclude,
+                                        )
+
                                 if not modified:
                                     response = Response(status=401, body=message)
                                     return response

@@ -120,6 +120,7 @@ from climmob.views.Api.projectCreation import (
     updateProject_view,
     deleteProject_view_api,
     readListOfCountries_view,
+    readListOfTemplates_view,
     readCollaborators_view,
     addCollaborator_view,
     deleteCollaborator_view,
@@ -980,6 +981,14 @@ def loadRoutes(config):
             "readListOfCountries",
             "/api/readListOfCountries",
             readListOfCountries_view,
+            None,
+        )
+    )
+    routes.append(
+        addRoute(
+            "readListOfTemplates",
+            "/api/readListOfTemplates",
+            readListOfTemplates_view,
             None,
         )
     )
