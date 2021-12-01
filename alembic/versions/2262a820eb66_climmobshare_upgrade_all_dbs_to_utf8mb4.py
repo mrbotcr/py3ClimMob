@@ -29,27 +29,37 @@ def upgrade():
     )
     conn = op.get_bind()
     for form in projects:
-        sql = "ALTER DATABASE {} CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci".format(
-            form.user_name + "_" + form.project_cod
+
+        queryForDatabase = (
+                "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '"
+                + form.user_name
+                + "_"
+                + form.project_cod
+                + "'"
         )
-        conn.execute(sql)
-        sql = (
-            "SELECT table_name FROM INFORMATION_SCHEMA.TABLES "
-            "WHERE TABLE_TYPE = 'BASE TABLE' and TABLE_SCHEMA = '{}'".format(
+        db = conn.execute(queryForDatabase).fetchone()
+        if db:
+            sql = "ALTER DATABASE {} CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci".format(
                 form.user_name + "_" + form.project_cod
             )
-        )
-        res = conn.execute(sql)
-        conn.execute("SET foreign_key_checks = 0")
-        for a_record in res:
+            conn.execute(sql)
             sql = (
-                "ALTER TABLE {}.{} CONVERT TO CHARACTER "
-                "SET utf8mb4 COLLATE utf8mb4_unicode_ci".format(
-                    form.user_name + "_" + form.project_cod, a_record[0]
+                "SELECT table_name FROM INFORMATION_SCHEMA.TABLES "
+                "WHERE TABLE_TYPE = 'BASE TABLE' and TABLE_SCHEMA = '{}'".format(
+                    form.user_name + "_" + form.project_cod
                 )
             )
-            conn.execute(sql)
-        conn.execute("SET foreign_key_checks = 1")
+            res = conn.execute(sql)
+            conn.execute("SET foreign_key_checks = 0")
+            for a_record in res:
+                sql = (
+                    "ALTER TABLE {}.{} CONVERT TO CHARACTER "
+                    "SET utf8mb4 COLLATE utf8mb4_unicode_ci".format(
+                        form.user_name + "_" + form.project_cod, a_record[0]
+                    )
+                )
+                conn.execute(sql)
+            conn.execute("SET foreign_key_checks = 1")
 
     session.commit()
     # ### end Alembic commands ###

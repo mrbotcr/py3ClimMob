@@ -28,7 +28,7 @@ def upgrade():
 
     session = Session(bind=op.get_bind())
     try:
-        projects = session.query(Project).all()
+        projects = session.execute("Select * from project")
         for project in projects:
             session.query(Prjcombdet).filter_by(project_id=project.project_id).update(
                 {"project_id_tech": project.project_id}
