@@ -198,11 +198,19 @@ class assessmenthead_view(privateView):
                         data["ass_final"] = 1
                     else:
                         data["ass_final"] = 0
+
+                    for plugin in p.PluginImplementations(p.ICheckBox):
+                        data = plugin.before_process_checkbox_data(data, "ass_rhomis")
+
                     added, msg = addProjectAssessment(data, self.request)
                     if data["ass_final"] == 1:
                         data["ass_final"] = "on"
                     else:
                         data["ass_final"] = "off"
+
+                    for plugin in p.PluginImplementations(p.ICheckBox):
+                        data = plugin.after_process_checkbox_data(data, "ass_rhomis")
+
                     if not added:
                         error_summary["addAssessment"] = msg
                     else:
@@ -215,11 +223,19 @@ class assessmenthead_view(privateView):
                             data["ass_final"] = 1
                         else:
                             data["ass_final"] = 0
+
+                        for plugin in p.PluginImplementations(p.ICheckBox):
+                            data = plugin.before_process_checkbox_data(data, "ass_rhomis")
+
                         error, msg = modifyProjectAssessment(data, self.request)
                         if data["ass_final"] == 1:
                             data["ass_final"] = "on"
                         else:
                             data["ass_final"] = "off"
+
+                        for plugin in p.PluginImplementations(p.ICheckBox):
+                            data = plugin.after_process_checkbox_data(data, "ass_rhomis")
+
                         if not error:
                             error_summary["modifyAssessment"] = msg
                         else:

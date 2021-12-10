@@ -25,6 +25,7 @@ __all__ = [
     "IDatabase",
     "IForm",
     "IMultimedia",
+    "ICheckBox"
 ]
 
 
@@ -372,4 +373,23 @@ class IMultimedia(Interface):
         :param formId: Form: assessment - registry
         :param ass_cod: Assessment ID - "" for registry
         :return: None
+        """
+
+class ICheckBox(Interface):  # pragma: no cover
+    """
+    Allows to hook into the processes that create, update and delete forms
+    """
+
+    def before_process_checkbox_data(
+        self, data, parameter_name
+    ):
+        """
+
+        """
+
+    def after_process_checkbox_data(
+        self, data, parameter_name
+    ):
+        """
+
         """

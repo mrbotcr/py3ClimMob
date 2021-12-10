@@ -126,6 +126,10 @@
             {% else %}
                 $("#ckb_final").bootstrapSwitch('state', false);
             {% endif %}
+
+            {% block rhomis_doument_ready %}
+
+            {% endblock rhomis_doument_ready %}
         });
 
         $(".formElement").bind("keypress", function(e) {
@@ -151,6 +155,11 @@
                     $("#ckb_final").bootstrapSwitch('state', true);
                     $("#check_for_final").css("display", "block")
                 }
+
+                {% block rhomis_seeAssessment %}
+
+                {% endblock rhomis_seeAssessment %}
+
                 $("#btn_modify_ass").css("display", "block")
             })
         }
@@ -169,12 +178,17 @@
             $("#ass_desc").val("")
             $("#ass_days").val("")
             $("#ckb_final").bootstrapSwitch('state',false);
+            {% block rhomis_cleanInputs %}
+
+            {% endblock rhomis_cleanInputs %}
 
             {% if not new_available %}
                 $("#check_for_final").css("display","none")
             {% else %}
                 $("#check_for_final").css("display","block")
             {% endif %}
+
+
         }
 
 
