@@ -487,6 +487,16 @@ class startAssessments_view(privateView):
                                 assessment_id,
                             )
 
+                        for plugin in p.PluginImplementations(p.IUpload):
+                            plugin.create_Excel_template_for_upload_data(
+                                self.request,
+                                activeProjectUser,
+                                activeProjectId,
+                                activeProjectCod,
+                                "assessment",
+                                assessment_id
+                            )
+
                         self.returnRawViewResult = True
                         return HTTPFound(location=self.request.route_url("dashboard"))
                     else:

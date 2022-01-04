@@ -84,7 +84,15 @@
                                                                         {% if product.product_id == "infosheets" %}
                                                                             {{ _("Individual feedback reports for participants") }}
                                                                         {% else %}
-                                                                            {{ product.product_id }}
+                                                                            {% if product.product_id == "uploaddata" %}
+                                                                                {% if product.process_name == "create_uploaddata_Registration_" %}
+                                                                                    {{ _("Excel template for uploading registration form data") }}
+                                                                                {% else %}
+                                                                                    {{ _("Excel template for uploading assessment form data") }}: {{ product.extraInformation.ass_desc }}
+                                                                                {% endif %}
+                                                                            {% else %}
+                                                                                {{ product.product_id }}
+                                                                            {% endif %}
                                                                         {% endif %}
                                                                     {% endif %}
                                                                 {% endif %}

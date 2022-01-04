@@ -7,6 +7,7 @@ from climmob.processes import (
     add_project_collaborator,
     get_collaborators_in_project,
     remove_collaborator,
+    getAccessTypeForProject
 )
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 import paginate
@@ -29,6 +30,13 @@ class projectShare_view(privateView):
         activeProjectId = getTheProjectIdForOwner(
             activeProjectUser, activeProjectCod, self.request
         )
+
+        accessType = getAccessTypeForProject(
+            self.user.login, activeProjectId, self.request
+        )
+
+        if accessType in [4]:
+            raise HTTPNotFound()
 
         activeProject = getActiveProject(self.user.login, self.request)
         if activeProject["project_template"] == 1:

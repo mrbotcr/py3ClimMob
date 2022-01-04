@@ -270,7 +270,7 @@ def register_products(config):
     )
     products.append(multimediadownloads)
 
-    # MULTIMEDIA
+    # RANDOMIZATION
 
     randomization = addProduct("randomization", "Randomization for tricot project.")
     addMetadataToProduct(randomization, "author", "Brandon Madriz")
@@ -279,5 +279,15 @@ def register_products(config):
         randomization, "Licence", "Copyright 2021, MrBot Software Solutions",
     )
     products.append(randomization)
+
+    # UPLOAD DATA
+
+    uploadData = addProduct("uploaddata", "Upload information to ClimMob, via Excel and API.")
+    addMetadataToProduct(uploadData, "author", "Brandon Madriz")
+    addMetadataToProduct(uploadData, "version", "1.0")
+    addMetadataToProduct(
+        uploadData, "Licence", "Copyright 2021, MrBot Software Solutions",
+    )
+    products.append(uploadData)
 
     return products

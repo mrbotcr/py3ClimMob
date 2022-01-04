@@ -15,6 +15,7 @@ from climmob.processes.db.project import (
     addQuestionsToAssessment,
     numberOfCombinationsForTheProject,
     getProjectLocalVariety,
+    getProjectData
 )
 from climmob.processes.odk.generator import getRegisteredFarmers
 import uuid, os
@@ -1009,6 +1010,16 @@ def generateStructureForInterfaceForms(
 ):
     _ = request.translate
 
+    projectDetails = getProjectData(projectId, request)
+
+    projectLabels = [
+        projectDetails["project_label_a"],
+        projectDetails["project_label_b"],
+        projectDetails["project_label_c"],
+    ]
+
+    #print(projectLabels)
+
     data = []
     if form == "assessment":
         sections = mapFromSchema(
@@ -1074,7 +1085,7 @@ def generateStructureForInterfaceForms(
                     descExtra = ""
                     if questionData["question_quantitative"] == 1:
                         nameExtra = "_" + chr(65 + questionNumber).lower()
-                        descExtra = " - " + _("Option ") + chr(65 + questionNumber)
+                        descExtra = " - " + projectLabels[questionNumber]
 
                     # create the question
                     dataQuestion = createQuestionForm(
@@ -1153,7 +1164,7 @@ def generateStructureForInterfaceForms(
                     for opt in range(0, numComb):
                         code = chr(65 + opt)
                         dataQuestionop = createOption(
-                            "Option " + code,
+                            projectLabels[opt],
                             0,
                             str(opt + 1),
                             0,
@@ -1264,7 +1275,7 @@ def generateStructureForInterfaceForms(
                         renderedString = (
                             Environment()
                             .from_string(questionData["question_perfstmt"])
-                            .render(option=code)
+                            .render(option=projectLabels[opt])
                         )
                         # create the question
                         dataQuestion = createQuestionForm(

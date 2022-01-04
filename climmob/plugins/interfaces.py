@@ -25,7 +25,8 @@ __all__ = [
     "IDatabase",
     "IForm",
     "IMultimedia",
-    "ICheckBox"
+    "ICheckBox",
+    "IUpload"
 ]
 
 
@@ -390,6 +391,14 @@ class ICheckBox(Interface):  # pragma: no cover
     def after_process_checkbox_data(
         self, data, parameter_name
     ):
+        """
+
+        """
+
+class IUpload(Interface):
+
+    def create_Excel_template_for_upload_data(self, request, userOwner, projectId, projectCod, assCod=None):
+
         """
 
         """

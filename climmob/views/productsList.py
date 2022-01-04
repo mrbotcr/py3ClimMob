@@ -105,6 +105,7 @@ class productsView(climmobPrivateView):
                         or product["product_id"] == "datacsv"
                         or product["product_id"] == "errorlogdocument"
                         or product["product_id"] == "multimediadownloads"
+                            or product["product_id"] == "uploaddata"
                     ):
                         product["extraInformation"] = getProjectAssessmentInfo(
                             activeProjectData["project_id"],
@@ -448,6 +449,27 @@ class generateProductView(privateView):
                         activeProjectData["project_id"],
                         activeProjectData["project_cod"],
                         "Assessment",
+                        assessment_id,
+                    )
+
+        if productid == "uploaddata":
+            for plugin in p.PluginImplementations(p.IUpload):
+                if processname == "create_uploaddata_Registration_":
+                    plugin.create_Excel_template_for_upload_data(
+                        self.request,
+                        activeProjectData["owner"]["user_name"],
+                        activeProjectData["project_id"],
+                        activeProjectData["project_cod"],
+                        "registry",
+                    )
+                else:
+                    assessment_id = processname.split("_")[3]
+                    plugin.create_Excel_template_for_upload_data(
+                        self.request,
+                        activeProjectData["owner"]["user_name"],
+                        activeProjectData["project_id"],
+                        activeProjectData["project_cod"],
+                        "assessment",
                         assessment_id,
                     )
 

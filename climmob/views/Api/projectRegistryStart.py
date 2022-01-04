@@ -1086,197 +1086,8 @@ class pushJsonToRegistry_view(apiView):
                                     "registry",
                                     self.request,
                                 )
-                                if structure:
-                                    obligatoryQuestions = [u"clm_start", u"clm_end"]
-                                    possibleQuestions = [u"clm_start", u"clm_end"]
-                                    searchQST162 = ""
-                                    for section in structure:
-                                        for question in section["section_questions"]:
 
-                                            possibleQuestions.append(
-                                                question["question_datafield"]
-                                            )
-
-                                            if question["question_code"] == "QST162":
-                                                searchQST162 = question[
-                                                    "question_datafield"
-                                                ]
-
-                                            if question["question_requiredvalue"] == 1:
-                                                obligatoryQuestions.append(
-                                                    question["question_datafield"]
-                                                )
-
-                                    try:
-                                        _json = json.loads(dataworking["json"])
-
-                                        permitedKeys = True
-                                        for key in _json.keys():
-                                            if key not in possibleQuestions:
-                                                permitedKeys = False
-
-                                        if permitedKeys:
-                                            obligatoryKeys = True
-                                            for key in obligatoryQuestions:
-                                                if key not in _json.keys():
-                                                    obligatoryKeys = False
-
-                                            if obligatoryKeys:
-
-                                                dataInParams = True
-                                                for key in obligatoryQuestions:
-                                                    if _json[key].strip(" ") == "":
-                                                        dataInParams = False
-
-                                                if dataInParams:
-
-                                                    if _json[searchQST162].isdigit():
-                                                        if int(
-                                                            _json[searchQST162]
-                                                        ) <= getProjectNumobs(
-                                                            activeProjectId,
-                                                            self.request,
-                                                        ):
-                                                            _json["clm_deviceimei"] = (
-                                                                "API_"
-                                                                + str(self.apiKey)
-                                                            )
-
-                                                            uniqueId = str(uuid.uuid1())
-                                                            path = os.path.join(
-                                                                self.request.registry.settings[
-                                                                    "user.repository"
-                                                                ],
-                                                                *[
-                                                                    dataworking[
-                                                                        "user_owner"
-                                                                    ],
-                                                                    dataworking[
-                                                                        "project_cod"
-                                                                    ],
-                                                                    "data",
-                                                                    "reg",
-                                                                    "json",
-                                                                    uniqueId,
-                                                                ]
-                                                            )
-
-                                                            if not os.path.exists(path):
-                                                                os.makedirs(path)
-
-                                                            pathfinal = os.path.join(
-                                                                path, uniqueId + ".json"
-                                                            )
-
-                                                            f = open(pathfinal, "w")
-                                                            f.write(json.dumps(_json))
-                                                            f.close()
-                                                            storeJSONInMySQL(
-                                                                self.user.login,
-                                                                "REG",
-                                                                dataworking[
-                                                                    "user_owner"
-                                                                ],
-                                                                None,
-                                                                dataworking[
-                                                                    "project_cod"
-                                                                ],
-                                                                None,
-                                                                pathfinal,
-                                                                self.request,
-                                                                activeProjectId,
-                                                            )
-
-                                                            logFile = pathfinal.replace(
-                                                                ".json", ".log"
-                                                            )
-                                                            if os.path.exists(logFile):
-                                                                doc = minidom.parse(
-                                                                    logFile
-                                                                )
-                                                                errors = doc.getElementsByTagName(
-                                                                    "error"
-                                                                )
-                                                                response = Response(
-                                                                    status=401,
-                                                                    body=self._(
-                                                                        "The data could not be registered. ERROR: "
-                                                                        + errors[
-                                                                            0
-                                                                        ].getAttribute(
-                                                                            "Error"
-                                                                        )
-                                                                    ),
-                                                                )
-                                                                return response
-
-                                                            response = Response(
-                                                                status=200,
-                                                                body=self._(
-                                                                    "Data registered."
-                                                                ),
-                                                            )
-                                                            return response
-                                                        else:
-                                                            response = Response(
-                                                                status=401,
-                                                                body=self._(
-                                                                    "ERROR: You do not have a package code with this ID."
-                                                                ),
-                                                            )
-                                                            return response
-                                                    else:
-                                                        response = Response(
-                                                            status=401,
-                                                            body=self._(
-                                                                "ERROR: The package code must be a number."
-                                                            ),
-                                                        )
-                                                        return response
-                                                else:
-                                                    response = Response(
-                                                        status=401,
-                                                        body=self._(
-                                                            "Error in the JSON. Not all parameters have data."
-                                                        ),
-                                                    )
-                                                    return response
-                                            else:
-                                                response = Response(
-                                                    status=401,
-                                                    body=self._(
-                                                        "Error in the JSON sent by parameter. Check the obligatory Keys: "
-                                                        + str(obligatoryQuestions)
-                                                    ),
-                                                )
-                                                return response
-                                        else:
-                                            # getWrongKeys(possibleQuestions,_json)
-                                            response = Response(
-                                                status=401,
-                                                body=self._(
-                                                    "Error in the JSON sent by parameter. Check the permited Keys: "
-                                                    + str(possibleQuestions)
-                                                ),
-                                            )
-                                            return response
-                                    except Exception as e:
-                                        response = Response(
-                                            status=401,
-                                            body=self._(
-                                                "Error in the JSON sent by parameter. "
-                                                + str(e)
-                                            ),
-                                        )
-                                        return response
-                                else:
-                                    response = Response(
-                                        status=401,
-                                        body=self._(
-                                            "This project do not have structure."
-                                        ),
-                                    )
-                                    return response
+                                return ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId)
                             else:
                                 response = Response(
                                     status=401,
@@ -1308,6 +1119,199 @@ class pushJsonToRegistry_view(apiView):
             response = Response(status=401, body=self._("Only accepts POST method."))
             return response
 
+
+def ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId):
+    if structure:
+        obligatoryQuestions = [u"clm_start", u"clm_end"]
+        possibleQuestions = [u"clm_start", u"clm_end"]
+        searchQST162 = ""
+        for section in structure:
+            for question in section["section_questions"]:
+
+                possibleQuestions.append(
+                    question["question_datafield"]
+                )
+
+                if question["question_code"] == "QST162":
+                    searchQST162 = question[
+                        "question_datafield"
+                    ]
+
+                if question["question_requiredvalue"] == 1:
+                    obligatoryQuestions.append(
+                        question["question_datafield"]
+                    )
+
+        try:
+            _json = json.loads(dataworking["json"])
+
+            permitedKeys = True
+            for key in _json.keys():
+                if key not in possibleQuestions:
+                    permitedKeys = False
+
+            if permitedKeys:
+                obligatoryKeys = True
+                for key in obligatoryQuestions:
+                    if key not in _json.keys():
+                        obligatoryKeys = False
+
+                if obligatoryKeys:
+
+                    dataInParams = True
+                    for key in obligatoryQuestions:
+                        if _json[key].strip(" ") == "":
+                            dataInParams = False
+
+                    if dataInParams:
+
+                        if _json[searchQST162].isdigit():
+                            if int(
+                                    _json[searchQST162]
+                            ) <= getProjectNumobs(
+                                activeProjectId,
+                                self.request,
+                            ):
+                                _json["clm_deviceimei"] = (
+                                        "API_"
+                                        + str(self.apiKey)
+                                )
+
+                                uniqueId = str(uuid.uuid1())
+                                path = os.path.join(
+                                    self.request.registry.settings[
+                                        "user.repository"
+                                    ],
+                                    *[
+                                        dataworking[
+                                            "user_owner"
+                                        ],
+                                        dataworking[
+                                            "project_cod"
+                                        ],
+                                        "data",
+                                        "reg",
+                                        "json",
+                                        uniqueId,
+                                    ]
+                                )
+
+                                if not os.path.exists(path):
+                                    os.makedirs(path)
+
+                                pathfinal = os.path.join(
+                                    path, uniqueId + ".json"
+                                )
+
+                                f = open(pathfinal, "w")
+                                f.write(json.dumps(_json))
+                                f.close()
+                                storeJSONInMySQL(
+                                    self.user.login,
+                                    "REG",
+                                    dataworking[
+                                        "user_owner"
+                                    ],
+                                    None,
+                                    dataworking[
+                                        "project_cod"
+                                    ],
+                                    None,
+                                    pathfinal,
+                                    self.request,
+                                    activeProjectId,
+                                )
+
+                                logFile = pathfinal.replace(
+                                    ".json", ".log"
+                                )
+                                if os.path.exists(logFile):
+                                    doc = minidom.parse(
+                                        logFile
+                                    )
+                                    errors = doc.getElementsByTagName(
+                                        "error"
+                                    )
+                                    response = Response(
+                                        status=401,
+                                        body=self._(
+                                            "The data could not be registered. ERROR: "
+                                            + errors[
+                                                0
+                                            ].getAttribute(
+                                                "Error"
+                                            )
+                                        ),
+                                    )
+                                    return response
+
+                                response = Response(
+                                    status=200,
+                                    body=self._(
+                                        "Data registered."
+                                    ),
+                                )
+                                return response
+                            else:
+                                response = Response(
+                                    status=401,
+                                    body=self._(
+                                        "ERROR: You do not have a package code with this ID."
+                                    ),
+                                )
+                                return response
+                        else:
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "ERROR: The package code must be a number."
+                                ),
+                            )
+                            return response
+                    else:
+                        response = Response(
+                            status=401,
+                            body=self._(
+                                "Error in the JSON. Not all parameters have data."
+                            ),
+                        )
+                        return response
+                else:
+                    response = Response(
+                        status=401,
+                        body=self._(
+                            "Error in the JSON sent by parameter. Check the obligatory Keys: "
+                            + str(obligatoryQuestions)
+                        ),
+                    )
+                    return response
+            else:
+                # getWrongKeys(possibleQuestions,_json)
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "Error in the JSON sent by parameter. Check the permited Keys: "
+                        + str(possibleQuestions)
+                    ),
+                )
+                return response
+        except Exception as e:
+            response = Response(
+                status=401,
+                body=self._(
+                    "Error in the JSON sent by parameter. "
+                    + str(e)
+                ),
+            )
+            return response
+    else:
+        response = Response(
+            status=401,
+            body=self._(
+                "This project do not have structure."
+            ),
+        )
+        return response
 
 class readRegistryData_view(apiView):
     def processView(self):

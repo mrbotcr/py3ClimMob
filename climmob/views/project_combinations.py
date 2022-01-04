@@ -404,6 +404,15 @@ def startTheRegistry(self, userOwner, projectId, projectCod, listOfLabelsForPack
                 packages,
             )
 
+        for plugin in p.PluginImplementations(p.IUpload):
+            plugin.create_Excel_template_for_upload_data(
+                self.request,
+                userOwner,
+                projectId,
+                projectCod,
+                "registry"
+            )
+
     return correct, str(error, "utf-8")
 
 

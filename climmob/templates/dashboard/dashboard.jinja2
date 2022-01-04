@@ -439,6 +439,10 @@
                                                             </tr>
                                                             {% if progress.regsubmissions == 1 %}
 
+                                                                {% block upload_data_registry %}
+
+                                                                {% endblock upload_data_registry %}
+
                                                                 {% block enketo_information_registry %}
 
                                                                 {% endblock enketo_information_registry %}
@@ -565,6 +569,10 @@
                                                                 </tr>
 
                                                                 {% if assessment.ass_status == 1 %}
+
+                                                                    {% block upload_data_assessment scoped%}
+
+                                                                    {% endblock upload_data_assessment %}
 
                                                                     {% block enketo_information_assessment scoped%}
 
