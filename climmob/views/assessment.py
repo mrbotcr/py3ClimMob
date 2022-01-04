@@ -225,7 +225,9 @@ class assessmenthead_view(privateView):
                             data["ass_final"] = 0
 
                         for plugin in p.PluginImplementations(p.ICheckBox):
-                            data = plugin.before_process_checkbox_data(data, "ass_rhomis")
+                            data = plugin.before_process_checkbox_data(
+                                data, "ass_rhomis"
+                            )
 
                         error, msg = modifyProjectAssessment(data, self.request)
                         if data["ass_final"] == 1:
@@ -234,7 +236,9 @@ class assessmenthead_view(privateView):
                             data["ass_final"] = "off"
 
                         for plugin in p.PluginImplementations(p.ICheckBox):
-                            data = plugin.after_process_checkbox_data(data, "ass_rhomis")
+                            data = plugin.after_process_checkbox_data(
+                                data, "ass_rhomis"
+                            )
 
                         if not error:
                             error_summary["modifyAssessment"] = msg
@@ -494,7 +498,7 @@ class startAssessments_view(privateView):
                                 activeProjectId,
                                 activeProjectCod,
                                 "assessment",
-                                assessment_id
+                                assessment_id,
                             )
 
                         self.returnRawViewResult = True

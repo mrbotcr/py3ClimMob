@@ -105,7 +105,7 @@ class productsView(climmobPrivateView):
                         or product["product_id"] == "datacsv"
                         or product["product_id"] == "errorlogdocument"
                         or product["product_id"] == "multimediadownloads"
-                            or product["product_id"] == "uploaddata"
+                        or product["product_id"] == "uploaddata"
                     ):
                         product["extraInformation"] = getProjectAssessmentInfo(
                             activeProjectData["project_id"],

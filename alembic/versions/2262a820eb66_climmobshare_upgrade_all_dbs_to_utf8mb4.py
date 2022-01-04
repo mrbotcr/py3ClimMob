@@ -31,11 +31,11 @@ def upgrade():
     for form in projects:
 
         queryForDatabase = (
-                "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '"
-                + form.user_name
-                + "_"
-                + form.project_cod
-                + "'"
+            "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '"
+            + form.user_name
+            + "_"
+            + form.project_cod
+            + "'"
         )
         db = conn.execute(queryForDatabase).fetchone()
         if db:

@@ -26,7 +26,7 @@ __all__ = [
     "IForm",
     "IMultimedia",
     "ICheckBox",
-    "IUpload"
+    "IUpload",
 ]
 
 
@@ -376,28 +376,27 @@ class IMultimedia(Interface):
         :return: None
         """
 
+
 class ICheckBox(Interface):  # pragma: no cover
     """
     Allows to hook into the processes that create, update and delete forms
     """
 
-    def before_process_checkbox_data(
-        self, data, parameter_name
-    ):
+    def before_process_checkbox_data(self, data, parameter_name):
         """
 
         """
 
-    def after_process_checkbox_data(
-        self, data, parameter_name
-    ):
+    def after_process_checkbox_data(self, data, parameter_name):
         """
 
         """
+
 
 class IUpload(Interface):
-
-    def create_Excel_template_for_upload_data(self, request, userOwner, projectId, projectCod, assCod=None):
+    def create_Excel_template_for_upload_data(
+        self, request, userOwner, projectId, projectCod, assCod=None
+    ):
 
         """
 

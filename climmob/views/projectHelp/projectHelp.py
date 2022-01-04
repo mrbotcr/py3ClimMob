@@ -8,7 +8,7 @@ from climmob.processes import (
     AliasSearchTechnologyInProject,
     getTheProjectIdForOwner,
     getTech,
-    getActiveProject
+    getActiveProject,
 )
 from climmob.config.auth import getCountryName
 from climmob.products.qrpackages.qrpackages import create_qr_packages
@@ -96,7 +96,10 @@ class projectHelp_view(privateView):
                 dataworking["result_negative"] = self._(
                     "We haven't found a project that matches what was specified"
                 )
-        return {"dataworking": dataworking,"activeProject": getActiveProject(self.user.login, self.request)}
+        return {
+            "dataworking": dataworking,
+            "activeProject": getActiveProject(self.user.login, self.request),
+        }
 
 
 def getImportantInformation(dataworking, request):

@@ -282,7 +282,9 @@ def register_products(config):
 
     # UPLOAD DATA
 
-    uploadData = addProduct("uploaddata", "Upload information to ClimMob, via Excel and API.")
+    uploadData = addProduct(
+        "uploaddata", "Upload information to ClimMob, via Excel and API."
+    )
     addMetadataToProduct(uploadData, "author", "Brandon Madriz")
     addMetadataToProduct(uploadData, "version", "1.0")
     addMetadataToProduct(

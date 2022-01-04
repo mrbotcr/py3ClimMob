@@ -15,7 +15,7 @@ from climmob.processes.db.project import (
     addQuestionsToAssessment,
     numberOfCombinationsForTheProject,
     getProjectLocalVariety,
-    getProjectData
+    getProjectData,
 )
 from climmob.processes.odk.generator import getRegisteredFarmers
 import uuid, os
@@ -1018,7 +1018,7 @@ def generateStructureForInterfaceForms(
         projectDetails["project_label_c"],
     ]
 
-    #print(projectLabels)
+    # print(projectLabels)
 
     data = []
     if form == "assessment":

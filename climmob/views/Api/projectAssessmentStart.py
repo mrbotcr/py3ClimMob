@@ -535,7 +535,9 @@ class pushJsonToAssessment_view(apiView):
                                         ass_cod=dataworking["ass_cod"],
                                     )
 
-                                    return ApiAssessmentPushProcess(self, structure, dataworking, activeProjectId)
+                                    return ApiAssessmentPushProcess(
+                                        self, structure, dataworking, activeProjectId
+                                    )
 
                                 else:
                                     response = Response(
@@ -577,54 +579,32 @@ class pushJsonToAssessment_view(apiView):
             response = Response(status=401, body=self._("Only accepts POST method."))
             return response
 
+
 def ApiAssessmentPushProcess(self, structure, dataworking, activeProjectId):
     if structure:
-        numComb = numberOfCombinationsForTheProject(
-            activeProjectId, self.request,
-        )
+        numComb = numberOfCombinationsForTheProject(activeProjectId, self.request,)
         obligatoryQuestions = []
         possibleQuestions = []
         searchQST163 = ""
         groupsForValidation = {}
         for section in structure:
-            for question in section[
-                "section_questions"
-            ]:
+            for question in section["section_questions"]:
 
-                possibleQuestions.append(
-                    question["question_datafield"]
-                )
+                possibleQuestions.append(question["question_datafield"])
 
-                if (
-                        question["question_requiredvalue"]
-                        == 1
-                ):
-                    obligatoryQuestions.append(
-                        question["question_datafield"]
-                    )
+                if question["question_requiredvalue"] == 1:
+                    obligatoryQuestions.append(question["question_datafield"])
 
                 if question["question_dtype2"] == 9:
-                    if (
-                            question["question_code"]
-                            not in groupsForValidation.keys()
-                    ):
-                        groupsForValidation[
-                            question["question_code"]
-                        ] = []
+                    if question["question_code"] not in groupsForValidation.keys():
+                        groupsForValidation[question["question_code"]] = []
 
-                    groupsForValidation[
-                        question["question_code"]
-                    ].append(
+                    groupsForValidation[question["question_code"]].append(
                         question["question_datafield"]
                     )
 
-                if (
-                        question["question_code"]
-                        == "QST163"
-                ):
-                    searchQST163 = question[
-                        "question_datafield"
-                    ]
+                if question["question_code"] == "QST163":
+                    searchQST163 = question["question_datafield"]
 
         try:
             _json = json.loads(dataworking["json"])
@@ -648,39 +628,18 @@ def ApiAssessmentPushProcess(self, structure, dataworking, activeProjectId):
                             dataInParams = False
 
                     if dataInParams:
-                        if _json[
-                            searchQST163
-                        ].isdigit():
+                        if _json[searchQST163].isdigit():
                             # Validation for repeat response
-                            for (
-                                    _group
-                            ) in groupsForValidation:
+                            for _group in groupsForValidation:
                                 letter = []
-                                for (
-                                        _var
-                                ) in groupsForValidation[
-                                    _group
-                                ]:
+                                for _var in groupsForValidation[_group]:
 
                                     if (
-                                            (
-                                                    not _json[
-                                                            _var
-                                                        ]
-                                                        in letter
-                                            )
-                                            or str(
-                                        _json[_var]
-                                    )
-                                            == "98"
-                                            or str(
-                                        _json[_var]
-                                    )
-                                            == "99"
+                                        (not _json[_var] in letter)
+                                        or str(_json[_var]) == "98"
+                                        or str(_json[_var]) == "99"
                                     ):
-                                        letter.append(
-                                            _json[_var]
-                                        )
+                                        letter.append(_json[_var])
                                     else:
                                         response = Response(
                                             status=401,
@@ -693,27 +652,16 @@ def ApiAssessmentPushProcess(self, structure, dataworking, activeProjectId):
                                         return response
 
                             # I don't validate el identify of the farmer because the ODK return error if not exist
-                            _json["clm_deviceimei"] = (
-                                    "API_"
-                                    + str(self.apiKey)
-                            )
+                            _json["clm_deviceimei"] = "API_" + str(self.apiKey)
                             uniqueId = str(uuid.uuid1())
                             path = os.path.join(
-                                self.request.registry.settings[
-                                    "user.repository"
-                                ],
+                                self.request.registry.settings["user.repository"],
                                 *[
-                                    dataworking[
-                                        "user_owner"
-                                    ],
-                                    dataworking[
-                                        "project_cod"
-                                    ],
+                                    dataworking["user_owner"],
+                                    dataworking["project_cod"],
                                     "data",
                                     "ass",
-                                    dataworking[
-                                        "ass_cod"
-                                    ],
+                                    dataworking["ass_cod"],
                                     "json",
                                     uniqueId,
                                 ]
@@ -722,9 +670,7 @@ def ApiAssessmentPushProcess(self, structure, dataworking, activeProjectId):
                             if not os.path.exists(path):
                                 os.makedirs(path)
 
-                            pathfinal = os.path.join(
-                                path, uniqueId + ".json"
-                            )
+                            pathfinal = os.path.join(path, uniqueId + ".json")
 
                             f = open(pathfinal, "w")
                             f.write(json.dumps(_json))
@@ -733,56 +679,37 @@ def ApiAssessmentPushProcess(self, structure, dataworking, activeProjectId):
                             storeJSONInMySQL(
                                 self.user.login,
                                 "ASS",
-                                dataworking[
-                                    "user_owner"
-                                ],
+                                dataworking["user_owner"],
                                 None,
-                                dataworking[
-                                    "project_cod"
-                                ],
+                                dataworking["project_cod"],
                                 dataworking["ass_cod"],
                                 pathfinal,
                                 self.request,
                                 activeProjectId,
                             )
 
-                            logFile = pathfinal.replace(
-                                ".json", ".log"
-                            )
+                            logFile = pathfinal.replace(".json", ".log")
                             if os.path.exists(logFile):
-                                doc = minidom.parse(
-                                    logFile
-                                )
-                                errors = doc.getElementsByTagName(
-                                    "error"
-                                )
+                                doc = minidom.parse(logFile)
+                                errors = doc.getElementsByTagName("error")
                                 response = Response(
                                     status=401,
                                     body=self._(
                                         "The data could not be saved. ERROR: "
-                                        + errors[
-                                            0
-                                        ].getAttribute(
-                                            "Error"
-                                        )
+                                        + errors[0].getAttribute("Error")
                                     ),
                                 )
                                 return response
 
                             response = Response(
-                                status=200,
-                                body=self._(
-                                    "Data registered."
-                                ),
+                                status=200, body=self._("Data registered."),
                             )
                             return response
 
                         else:
                             response = Response(
                                 status=401,
-                                body=self._(
-                                    "ERROR: The farmer code must be a number."
-                                ),
+                                body=self._("ERROR: The farmer code must be a number."),
                             )
                             return response
                     else:
@@ -811,20 +738,13 @@ def ApiAssessmentPushProcess(self, structure, dataworking, activeProjectId):
                 return response
         except:
             response = Response(
-                status=401,
-                body=self._(
-                    "Error in the JSON sent by parameter."
-                ),
+                status=401, body=self._("Error in the JSON sent by parameter."),
             )
             return response
     else:
-        response = Response(
-            status=401,
-            body=self._(
-                "The data do not have structure."
-            ),
-        )
+        response = Response(status=401, body=self._("The data do not have structure."),)
         return response
+
 
 class readAssessmentData_view(apiView):
     def processView(self):

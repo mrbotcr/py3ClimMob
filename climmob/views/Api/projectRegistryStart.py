@@ -1087,7 +1087,9 @@ class pushJsonToRegistry_view(apiView):
                                     self.request,
                                 )
 
-                                return ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId)
+                                return ApiRegistrationPushProcess(
+                                    self, structure, dataworking, activeProjectId
+                                )
                             else:
                                 response = Response(
                                     status=401,
@@ -1128,19 +1130,13 @@ def ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId):
         for section in structure:
             for question in section["section_questions"]:
 
-                possibleQuestions.append(
-                    question["question_datafield"]
-                )
+                possibleQuestions.append(question["question_datafield"])
 
                 if question["question_code"] == "QST162":
-                    searchQST162 = question[
-                        "question_datafield"
-                    ]
+                    searchQST162 = question["question_datafield"]
 
                 if question["question_requiredvalue"] == 1:
-                    obligatoryQuestions.append(
-                        question["question_datafield"]
-                    )
+                    obligatoryQuestions.append(question["question_datafield"])
 
         try:
             _json = json.loads(dataworking["json"])
@@ -1166,29 +1162,17 @@ def ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId):
                     if dataInParams:
 
                         if _json[searchQST162].isdigit():
-                            if int(
-                                    _json[searchQST162]
-                            ) <= getProjectNumobs(
-                                activeProjectId,
-                                self.request,
+                            if int(_json[searchQST162]) <= getProjectNumobs(
+                                activeProjectId, self.request,
                             ):
-                                _json["clm_deviceimei"] = (
-                                        "API_"
-                                        + str(self.apiKey)
-                                )
+                                _json["clm_deviceimei"] = "API_" + str(self.apiKey)
 
                                 uniqueId = str(uuid.uuid1())
                                 path = os.path.join(
-                                    self.request.registry.settings[
-                                        "user.repository"
-                                    ],
+                                    self.request.registry.settings["user.repository"],
                                     *[
-                                        dataworking[
-                                            "user_owner"
-                                        ],
-                                        dataworking[
-                                            "project_cod"
-                                        ],
+                                        dataworking["user_owner"],
+                                        dataworking["project_cod"],
                                         "data",
                                         "reg",
                                         "json",
@@ -1199,9 +1183,7 @@ def ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId):
                                 if not os.path.exists(path):
                                     os.makedirs(path)
 
-                                pathfinal = os.path.join(
-                                    path, uniqueId + ".json"
-                                )
+                                pathfinal = os.path.join(path, uniqueId + ".json")
 
                                 f = open(pathfinal, "w")
                                 f.write(json.dumps(_json))
@@ -1209,47 +1191,30 @@ def ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId):
                                 storeJSONInMySQL(
                                     self.user.login,
                                     "REG",
-                                    dataworking[
-                                        "user_owner"
-                                    ],
+                                    dataworking["user_owner"],
                                     None,
-                                    dataworking[
-                                        "project_cod"
-                                    ],
+                                    dataworking["project_cod"],
                                     None,
                                     pathfinal,
                                     self.request,
                                     activeProjectId,
                                 )
 
-                                logFile = pathfinal.replace(
-                                    ".json", ".log"
-                                )
+                                logFile = pathfinal.replace(".json", ".log")
                                 if os.path.exists(logFile):
-                                    doc = minidom.parse(
-                                        logFile
-                                    )
-                                    errors = doc.getElementsByTagName(
-                                        "error"
-                                    )
+                                    doc = minidom.parse(logFile)
+                                    errors = doc.getElementsByTagName("error")
                                     response = Response(
                                         status=401,
                                         body=self._(
                                             "The data could not be registered. ERROR: "
-                                            + errors[
-                                                0
-                                            ].getAttribute(
-                                                "Error"
-                                            )
+                                            + errors[0].getAttribute("Error")
                                         ),
                                     )
                                     return response
 
                                 response = Response(
-                                    status=200,
-                                    body=self._(
-                                        "Data registered."
-                                    ),
+                                    status=200, body=self._("Data registered."),
                                 )
                                 return response
                             else:
@@ -1298,20 +1263,15 @@ def ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId):
         except Exception as e:
             response = Response(
                 status=401,
-                body=self._(
-                    "Error in the JSON sent by parameter. "
-                    + str(e)
-                ),
+                body=self._("Error in the JSON sent by parameter. " + str(e)),
             )
             return response
     else:
         response = Response(
-            status=401,
-            body=self._(
-                "This project do not have structure."
-            ),
+            status=401, body=self._("This project do not have structure."),
         )
         return response
+
 
 class readRegistryData_view(apiView):
     def processView(self):

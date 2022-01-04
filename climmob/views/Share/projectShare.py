@@ -7,7 +7,7 @@ from climmob.processes import (
     add_project_collaborator,
     get_collaborators_in_project,
     remove_collaborator,
-    getAccessTypeForProject
+    getAccessTypeForProject,
 )
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 import paginate
