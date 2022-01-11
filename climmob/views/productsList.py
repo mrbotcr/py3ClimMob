@@ -414,19 +414,19 @@ class generateProductView(privateView):
             )
             for plugin in p.PluginImplementations(p.IDataColletionProgress):
                 plugin.create_data_collection_progress(
-                self.request,
-                self.request.locale_name,
-                activeProjectData["owner"]["user_name"],
-                activeProjectData["project_id"],
-                activeProjectData["project_cod"],
-                getInformationFromProject(
                     self.request,
+                    self.request.locale_name,
                     activeProjectData["owner"]["user_name"],
                     activeProjectData["project_id"],
                     activeProjectData["project_cod"],
-                ),
-                geoInformation,
-            )
+                    getInformationFromProject(
+                        self.request,
+                        activeProjectData["owner"]["user_name"],
+                        activeProjectData["project_id"],
+                        activeProjectData["project_cod"],
+                    ),
+                    geoInformation,
+                )
 
         if productid == "multimediadownloads":
             for plugin in p.PluginImplementations(p.IMultimedia):

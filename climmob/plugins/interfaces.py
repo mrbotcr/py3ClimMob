@@ -27,7 +27,7 @@ __all__ = [
     "IMultimedia",
     "ICheckBox",
     "IUpload",
-    "IDataColletionProgress"
+    "IDataColletionProgress",
 ]
 
 
@@ -377,13 +377,21 @@ class IMultimedia(Interface):
         :return: None
         """
 
+
 class IDataColletionProgress(Interface):
     def create_data_collection_progress(
-            request, locale, userOwner, projectId, projectCod, projectDetails, geoInformation
+        request,
+        locale,
+        userOwner,
+        projectId,
+        projectCod,
+        projectDetails,
+        geoInformation,
     ):
         """
 
         """
+
 
 class ICheckBox(Interface):  # pragma: no cover
     """
