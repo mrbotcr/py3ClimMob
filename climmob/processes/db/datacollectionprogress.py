@@ -210,7 +210,10 @@ def createListOfFieldAgents(request, projectId, result, colors):
             if enumerator:
                 dictOfFieldAgent["Name"] = enumerator["enum_name"]
             else:
-                dictOfFieldAgent["Name"] = "Other - " + res[0]
+                if res[0] != None:
+                    dictOfFieldAgent["Name"] = "Other - " + res[0]
+                else:
+                    dictOfFieldAgent["Name"] = "Unknown"
 
             dictOfFieldAgent["Color"] = colors[count]
             dictOfFieldAgent["Points"] = []

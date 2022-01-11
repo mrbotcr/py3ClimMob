@@ -36,9 +36,6 @@ from climmob.products.fieldagents.fieldagents import create_fieldagents_report
 from climmob.products.analysisdata.analysisdata import create_datacsv
 from climmob.products.forms.form import create_document_form
 from climmob.products.generalReport.generalReport import create_general_report
-from climmob.products.datacollectionprogress.dataCollectionProgress import (
-    create_data_collection_progress,
-)
 from climmob.products.errorLogDocument.errorLogDocument import create_error_log_document
 import climmob.plugins as p
 
@@ -415,7 +412,8 @@ class generateProductView(privateView):
                 activeProjectData["project_id"],
                 projectCod,
             )
-            create_data_collection_progress(
+            for plugin in p.PluginImplementations(p.IDataColletionProgress):
+                plugin.create_data_collection_progress(
                 self.request,
                 self.request.locale_name,
                 activeProjectData["owner"]["user_name"],
