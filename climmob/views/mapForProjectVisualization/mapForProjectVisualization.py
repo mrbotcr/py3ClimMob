@@ -1,4 +1,4 @@
-from ..classes import publicView
+from climmob.views.classes import publicView
 import os
 import json
 

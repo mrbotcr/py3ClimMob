@@ -1,6 +1,7 @@
 import itertools
-from ...models import Prjcombination, Prjcombdet, Project, mapFromSchema
-from .registry import setRegistryStatus
+from climmob.models import Prjcombination, Prjcombdet, Project
+from climmob.processes import setRegistryStatus
+import math
 
 __all__ = [
     "createCombinations",
@@ -12,25 +13,24 @@ __all__ = [
     "projectCreatePackages",
     "getTech",
     "getCombinationsUsableInProject",
+    "setCombinationQuantityAvailable",
 ]
 
 
-def getCombinationsUsableInProject(user, project, request):
+def getCombinationsUsableInProject(projectId, request):
     data = (
         request.dbsession.query(Prjcombination)
-        .filter(Prjcombination.user_name == user)
-        .filter(Prjcombination.project_cod == project)
+        .filter(Prjcombination.project_id == projectId)
         .filter(Prjcombination.comb_usable == 1)
         .all()
     )
     return data
 
 
-def projectHasCombinations(user, project, request):
+def projectHasCombinations(projectId, request):
     data = (
         request.dbsession.query(Prjcombination)
-        .filter(Prjcombination.user_name == user)
-        .filter(Prjcombination.project_cod == project)
+        .filter(Prjcombination.project_id == projectId)
         .first()
     )
     if data is not None:
@@ -39,11 +39,10 @@ def projectHasCombinations(user, project, request):
         return False
 
 
-def getCombinationStatus(user, project, comb_code, request):
+def getCombinationStatus(projectId, comb_code, request):
     result = (
         request.dbsession.query(Prjcombination)
-        .filter(Prjcombination.user_name == user)
-        .filter(Prjcombination.project_cod == project)
+        .filter(Prjcombination.project_id == projectId)
         .filter(Prjcombination.comb_code == comb_code)
         .first()
     )
@@ -54,20 +53,30 @@ def getCombinationStatus(user, project, comb_code, request):
         return False, ""
 
 
-def setCombinationStatus(user, project, id, status, request):
+def setCombinationStatus(projectId, id, status, request):
     request.dbsession.query(Prjcombination).filter(
-        Prjcombination.user_name == user
-    ).filter(Prjcombination.project_cod == project).filter(
-        Prjcombination.comb_code == id
-    ).update(
-        {"comb_usable": status}
+        Prjcombination.project_id == projectId
+    ).filter(Prjcombination.comb_code == id).update({"comb_usable": status})
+    request.dbsession.query(Project).filter(Project.project_id == projectId).update(
+        {"project_createpkgs": 1}
     )
-    request.dbsession.query(Project).filter(Project.user_name == user).filter(
-        Project.project_cod == project
-    ).update({"project_createpkgs": 1})
 
 
-def getTech(user, project, request):
+def setCombinationQuantityAvailable(projectId, id, quantity, request):
+    res = (
+        request.dbsession.query(Prjcombination)
+        .filter(Prjcombination.project_id == projectId)
+        .filter(Prjcombination.comb_code == id)
+    )
+    if res.first().quantity_available != quantity:
+
+        res.update({"quantity_available": quantity})
+        request.dbsession.query(Project).filter(Project.project_id == projectId).update(
+            {"project_createpkgs": 1}
+        )
+
+
+def getTech(projectId, request):
     sql = (
         "SELECT prjcombdet.tech_id,COALESCE(i.tech_name,technology.tech_name) as tech_name FROM "
         "prjcombdet,technology "
@@ -76,8 +85,7 @@ def getTech(user, project, request):
         " AND       i.lang_code = '" + request.locale_name + "' "
         " WHERE "
         "prjcombdet.tech_id = technology.tech_id AND "
-        "prjcombdet.prjcomb_user = '" + user + "' AND "
-        "prjcombdet.prjcomb_project = '" + project + "' AND "
+        "prjcombdet.project_id_tech = '" + projectId + "' AND "
         "comb_code = 1 ORDER BY alias_order"
     )
     ttechs = request.dbsession.execute(sql).fetchall()
@@ -88,7 +96,7 @@ def getTech(user, project, request):
     return techs
 
 
-def getCombinations(user, project, request):
+def getCombinations(projectId, request):
     # Get the tehcnologies used
     sql = (
         "SELECT prjcombdet.tech_id,COALESCE(i.tech_name,technology.tech_name) as tech_name FROM "
@@ -98,8 +106,7 @@ def getCombinations(user, project, request):
         " AND       i.lang_code = '" + request.locale_name + "' "
         " WHERE "
         " prjcombdet.tech_id = technology.tech_id AND "
-        " prjcombdet.prjcomb_user = '" + user + "' AND "
-        " prjcombdet.prjcomb_project = '" + project + "' AND "
+        " prjcombdet.project_id_tech = '" + projectId + "' AND "
         " comb_code = 1 ORDER BY alias_order"
     )
     ttechs = request.dbsession.execute(sql).fetchall()
@@ -109,45 +116,39 @@ def getCombinations(user, project, request):
 
     # Get the list of combinations
     sql = (
-        "SELECT * FROM (("
-        "SELECT prjcombdet.comb_code,prjcombination.comb_usable,prjcombdet.tech_id,techalias.alias_id,"
-        "COALESCE(i.alias_name,techalias.alias_name) as alias_name,prjcombdet.alias_order FROM "
-        "prjcombdet,prjalias,prjcombination,techalias "
-        "LEFT JOIN i18n_techalias i "
-        "ON        techalias.tech_id = i.tech_id "
-        "AND       techalias.alias_id = i.alias_id "
-        "AND       i.lang_code = '" + request.locale_name + "'"
-        "WHERE "
-        "prjcombdet.user_name = prjalias.user_name AND "
-        "prjcombdet.project_cod = prjalias.project_cod AND "
-        "prjcombdet.tech_id = prjalias.tech_id AND "
-        "prjcombdet.alias_id = prjalias.alias_id AND "
-        "prjalias.tech_used = techalias.tech_id AND "
-        "prjalias.alias_used = techalias.alias_id AND "
-        "prjcombdet.prjcomb_user = prjcombination.user_name AND "
-        "prjcombdet.prjcomb_project = prjcombination.project_cod AND "
-        "prjcombdet.comb_code = prjcombination.comb_code AND "
-        "prjcombdet.prjcomb_user = '" + user + "' AND "
-        "prjcombdet.prjcomb_project = '" + project + "' AND "
-        "prjalias.tech_used IS NOT NULL "
-        "ORDER BY prjcombdet.comb_code,prjcombdet.alias_order) "
-        "UNION ("
-        "SELECT prjcombdet.comb_code,prjcombination.comb_usable,prjcombdet.tech_id,"
-        "concat('C',prjalias.alias_id) as alias_id,prjalias.alias_name,alias_order FROM "
-        "prjcombdet,prjalias,prjcombination WHERE "
-        "prjcombdet.user_name = prjalias.user_name AND "
-        "prjcombdet.project_cod = prjalias.project_cod AND "
-        "prjcombdet.tech_id = prjalias.tech_id AND "
-        "prjcombdet.alias_id = prjalias.alias_id AND "
-        "prjcombdet.prjcomb_user = prjcombination.user_name AND "
-        "prjcombdet.prjcomb_project = prjcombination.project_cod AND "
-        "prjcombdet.comb_code = prjcombination.comb_code AND "
-        "prjcombdet.prjcomb_user = '" + user + "' AND "
-        "prjcombdet.prjcomb_project = '" + project + "' AND "
-        "prjalias.tech_used IS NULL "
-        "ORDER BY prjcombdet.comb_code,prjcombdet.alias_order)) "
-        "as T "
-        "ORDER BY T.comb_code,T.alias_order"
+        " SELECT * FROM (("
+        " SELECT prjcombdet.comb_code,prjcombination.comb_usable,prjcombination.quantity_available,prjcombdet.tech_id,techalias.alias_id,"
+        " COALESCE(i.alias_name,techalias.alias_name) as alias_name,prjcombdet.alias_order FROM "
+        " prjcombdet,prjalias,prjcombination,techalias "
+        " LEFT JOIN i18n_techalias i "
+        " ON        techalias.tech_id = i.tech_id "
+        " AND       techalias.alias_id = i.alias_id "
+        " AND       i.lang_code = '" + request.locale_name + "'"
+        " WHERE "
+        " prjcombdet.project_id = prjalias.project_id AND "
+        " prjcombdet.tech_id = prjalias.tech_id AND "
+        " prjcombdet.alias_id = prjalias.alias_id AND "
+        " prjalias.tech_used = techalias.tech_id AND "
+        " prjalias.alias_used = techalias.alias_id AND "
+        " prjcombdet.project_id_tech = prjcombination.project_id AND "
+        " prjcombdet.comb_code = prjcombination.comb_code AND "
+        " prjcombdet.project_id_tech = '" + projectId + "' AND "
+        " prjalias.tech_used IS NOT NULL "
+        " ORDER BY prjcombdet.comb_code,prjcombdet.alias_order) "
+        " UNION ("
+        " SELECT prjcombdet.comb_code,prjcombination.comb_usable,prjcombination.quantity_available,prjcombdet.tech_id,"
+        " concat('C',prjalias.alias_id) as alias_id,prjalias.alias_name,alias_order FROM "
+        " prjcombdet,prjalias,prjcombination WHERE "
+        " prjcombdet.project_id = prjalias.project_id AND "
+        " prjcombdet.tech_id = prjalias.tech_id AND "
+        " prjcombdet.alias_id = prjalias.alias_id AND "
+        " prjcombdet.project_id_tech = prjcombination.project_id AND "
+        " prjcombdet.comb_code = prjcombination.comb_code AND "
+        " prjcombdet.project_id_tech = '" + projectId + "' AND "
+        " prjalias.tech_used IS NULL "
+        " ORDER BY prjcombdet.comb_code,prjcombdet.alias_order)) "
+        " as T "
+        " ORDER BY T.comb_code,T.alias_order"
     )
 
     tcombs = request.dbsession.execute(sql).fetchall()
@@ -155,16 +156,12 @@ def getCombinations(user, project, request):
     combs = []
     for item in tcombs:
         dct = dict(item)
-        # for key, value in dct.iteritems():
-        #    if isinstance(value, str):
-        #        dct[key] = value
         combs.append(dct)
 
     sql = (
         "select max(comb_code) as maxcomb FROM "
         "prjcombination WHERE "
-        "user_name = '" + user + "' AND "
-        "project_cod = '" + project + "'"
+        "project_id = '" + projectId + "'"
     )
 
     ncombs = request.dbsession.execute(sql).fetchone()
@@ -172,12 +169,9 @@ def getCombinations(user, project, request):
     return techs, ncombs.maxcomb, combs
 
 
-def projectCreateCombinations(user, project, request):
+def projectCreateCombinations(projectId, request):
     prjData = (
-        request.dbsession.query(Project)
-        .filter(Project.user_name == user)
-        .filter(Project.project_cod == project)
-        .first()
+        request.dbsession.query(Project).filter(Project.project_id == projectId).first()
     )
     if prjData.project_createcomb == 1:
         return True
@@ -185,25 +179,21 @@ def projectCreateCombinations(user, project, request):
         return False
 
 
-def projectCreatePackages(user, project, request):
+def projectCreatePackages(projectId, request):
     prjData = (
-        request.dbsession.query(Project)
-        .filter(Project.user_name == user)
-        .filter(Project.project_cod == project)
-        .first()
+        request.dbsession.query(Project).filter(Project.project_id == projectId).first()
     )
-    if prjData.project_createpkgs == 1:
+    if prjData.project_createpkgs != 0:
         return True
     else:
         return False
 
 
-def createCombinations(user, project, request):
+def createCombinations(userOwner, projectId, projectCod, request):
     try:
         prjData = (
             request.dbsession.query(Project)
-            .filter(Project.user_name == user)
-            .filter(Project.project_cod == project)
+            .filter(Project.project_id == projectId)
             .first()
         )
         # Only create the combinations if its needed
@@ -214,10 +204,8 @@ def createCombinations(user, project, request):
                 "LEFT JOIN i18n_technology "
                 "ON        i18n_technology.tech_id = technology.tech_id "
                 "AND       i18n_technology.lang_code = '" + request.locale_name + "' "
-                "WHERE prjalias.tech_id = technology.tech_id AND prjalias.user_name = '"
-                + user
-                + "' AND prjalias.project_cod = '"
-                + project
+                "WHERE prjalias.tech_id = technology.tech_id AND prjalias.project_id = '"
+                + projectId
                 + "' ORDER BY prjalias.tech_id "
             )
 
@@ -235,13 +223,12 @@ def createCombinations(user, project, request):
                     "AND       i18n_techalias.lang_code = '" + request.locale_name + "'"
                     "WHERE prjalias.tech_used = techalias.tech_id AND "
                     "prjalias.alias_used = techalias.alias_id AND "
-                    "prjalias.user_name = '" + user + "' AND "
-                    "prjalias.project_cod = '" + project + "' AND "
+                    "prjalias.project_id = '" + projectId + "' AND "
                     "prjalias.tech_id = " + str(tech_id) + " AND "
                     "prjalias.tech_used IS NOT NULL "
                     "UNION SELECT alias_id,CONCAT('C',alias_id) AS alias_used,alias_name FROM prjalias "
-                    "WHERE user_name = '" + user + "' AND "
-                    "project_cod = '" + project + "' AND "
+                    "WHERE  "
+                    "project_id = '" + projectId + "' AND "
                     "tech_id = " + str(tech_id) + " AND "
                     "tech_used IS NULL"
                 )
@@ -270,25 +257,26 @@ def createCombinations(user, project, request):
 
                 # Delete all combinations
                 request.dbsession.query(Prjcombination).filter(
-                    Prjcombination.user_name == user
-                ).filter(Prjcombination.project_cod == project).delete()
+                    Prjcombination.project_id == projectId
+                ).delete()
                 combNumber = 1
                 for combination in combinations:
                     newCombination = Prjcombination(
-                        user_name=user,
-                        project_cod=project,
+                        project_id=projectId,
                         comb_code=combNumber,
                         comb_usable=1,
+                        quantity_available=math.ceil(
+                            (prjData.project_numobs * prjData.project_numcom)
+                            / len(combinations)
+                        ),
                     )
                     request.dbsession.add(newCombination)
                     aliasNumber = 1
                     for aAlias in combination:
                         newAliasUsed = Prjcombdet(
-                            prjcomb_user=user,
-                            prjcomb_project=project,
+                            project_id=projectId,
                             comb_code=combNumber,
-                            user_name=user,
-                            project_cod=project,
+                            project_id_tech=projectId,
                             tech_id=aAlias["tech_id"],
                             alias_id=aAlias["alias_id"],
                             alias_order=aliasNumber,
@@ -298,43 +286,40 @@ def createCombinations(user, project, request):
                     combNumber += 1
 
                 request.dbsession.query(Project).filter(
-                    Project.user_name == user
-                ).filter(Project.project_cod == project).update(
-                    {"project_createcomb": 0}
-                )
+                    Project.project_id == projectId
+                ).update({"project_createcomb": 0})
 
                 request.dbsession.query(Project).filter(
-                    Project.user_name == user
-                ).filter(Project.project_cod == project).update(
-                    {"project_createpkgs": 1}
-                )
+                    Project.project_id == projectId
+                ).update({"project_createpkgs": 1})
 
-                setRegistryStatus(user, project, 0, request)
+                setRegistryStatus(userOwner, projectCod, projectId, 0, request)
 
                 return True, ""
             else:
-                # print "*******************11"
+                # print ("*******************11")
                 tech_array = tech_array[0]
                 # print tech_array
                 # print "*******************11"
                 request.dbsession.query(Prjcombination).filter(
-                    Prjcombination.user_name == user
-                ).filter(Prjcombination.project_cod == project).delete()
+                    Prjcombination.project_id == projectId
+                ).delete()
                 aliasNumber = 1
                 for aAlias in tech_array:
                     newCombination = Prjcombination(
-                        user_name=user,
-                        project_cod=project,
+                        project_id=projectId,
                         comb_code=aliasNumber,
                         comb_usable=1,
+                        quantity_available=math.ceil(
+                            (prjData.project_numobs * prjData.project_numcom)
+                            / len(tech_array)
+                        ),
                     )
                     request.dbsession.add(newCombination)
                     newAliasUsed = Prjcombdet(
-                        prjcomb_user=user,
-                        prjcomb_project=project,
+                        project_id_tech=projectId,
                         comb_code=aliasNumber,
-                        user_name=user,
-                        project_cod=project,
+                        project_id=projectId,
                         tech_id=aAlias["tech_id"],
                         alias_id=aAlias["alias_id"],
                         alias_order=aliasNumber,
@@ -342,18 +327,14 @@ def createCombinations(user, project, request):
                     request.dbsession.add(newAliasUsed)
                     aliasNumber += 1
                 request.dbsession.query(Project).filter(
-                    Project.user_name == user
-                ).filter(Project.project_cod == project).update(
-                    {"project_createcomb": 0}
-                )
+                    Project.project_id == projectId
+                ).update({"project_createcomb": 0})
 
                 request.dbsession.query(Project).filter(
-                    Project.user_name == user
-                ).filter(Project.project_cod == project).update(
-                    {"project_createpkgs": 1}
-                )
+                    Project.project_id == projectId
+                ).update({"project_createpkgs": 1})
 
-                setRegistryStatus(user, project, 0, request)
+                setRegistryStatus(userOwner, projectCod, projectId, 0, request)
 
                 return True, ""
         else:

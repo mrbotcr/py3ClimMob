@@ -1,13 +1,11 @@
-from .classes import privateView
+from climmob.views.classes import privateView
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 import json, os
-from ..processes import QuestionsOptions, projectExists, getCategories
-from ..processes import (
+from climmob.processes import (
+    projectExists,
     addRegistryGroup,
-    addRegistryQuestionToGroup,
     deleteRegistryGroup,
     modifyRegistryGroup,
-    getRegistryGroupData,
     getRegistryQuestions,
     saveRegistryOrder,
     getRegistryGroupInformation,
@@ -15,169 +13,50 @@ from ..processes import (
     setRegistryStatus,
     getProjectProgress,
     clean_registry_error_logs,
-    getCategoriesParents,
+    getCategoriesFromUserCollaborators,
     getAssessmentQuestions,
     getActiveProject,
+    getTheProjectIdForOwner,
+    getProjectLabels,
 )
 from jinja2 import Environment, FileSystemLoader
 from climmob.products import stopTasksByProcess
-from pyramid.response import FileResponse
 import climmob.plugins as p
-import mimetypes
-
-
-class modifyRegistrySection_view(privateView):
-    def processView(self):
-        projectid = self.request.matchdict["projectid"]
-        groupid = self.request.matchdict["groupid"]
-        if not projectExists(self.user.login, projectid, self.request):
-            raise HTTPNotFound()
-        else:
-            error_summary = {}
-            data = {}
-            data["project_cod"] = projectid
-            data["group_cod"] = groupid
-            data["user_name"] = self.user.login
-
-            if self.request.method == "POST":
-                if "btn_modify_group" in self.request.POST:
-                    tdata = self.getPostDict()
-                    data["section_name"] = tdata["section_name"]
-                    data["section_content"] = tdata["section_content"]
-
-                    if data["section_name"] != "":
-                        if data["section_content"] != "":
-
-                            mdf, message = modifyRegistryGroup(data, self)
-                            if not mdf:
-                                if message == "repeated":
-                                    error_summary = {
-                                        "repeated": self._(
-                                            "There is already a group with this name."
-                                        )
-                                    }
-                                else:
-                                    error_summary = {"dberror": message}
-                            else:
-                                self.returnRawViewResult = True
-                                return HTTPFound(
-                                    location=self.request.route_url(
-                                        "registry", projectid=projectid
-                                    )
-                                )
-                        else:
-                            error_summary = {
-                                "sectiondescription": self._(
-                                    "The description of the group cannot be empty."
-                                )
-                            }
-                    else:
-                        error_summary = {
-                            "sectionname": self._(
-                                "The name of the group cannot be empty."
-                            )
-                        }
-            else:
-                groupData = getRegistryGroupData(data, self)
-                data["section_name"] = groupData["section_name"]
-                data["section_content"] = groupData["section_content"]
-            return {
-                "activeUser": self.user,
-                "projectid": projectid,
-                "data": self.decodeDict(data),
-                "error_summary": error_summary,
-            }
 
 
 class deleteRegistrySection_view(privateView):
     def processView(self):
-        projectid = self.request.matchdict["projectid"]
-        groupid = self.request.matchdict["groupid"]
-        error_summary = {}
-        data = projectExists(self.user.login, projectid, self.request)
 
-        if not data:
+        activeProjectUser = self.request.matchdict["user"]
+        activeProjectCod = self.request.matchdict["project"]
+        groupid = self.request.matchdict["groupid"]
+
+        if not projectExists(
+            self.user.login, activeProjectUser, activeProjectCod, self.request
+        ):
             raise HTTPNotFound()
-        else:
-            data = getRegistryGroupInformation(
-                self.user.login, projectid, groupid, self.request
+
+        activeProjectId = getTheProjectIdForOwner(
+            activeProjectUser, activeProjectCod, self.request
+        )
+
+        data = getRegistryGroupInformation(activeProjectId, groupid, self.request)
+        if self.request.method == "POST":
+            deleted, message = deleteRegistryGroup(
+                activeProjectId, groupid, self.request
             )
-            if self.request.method == "POST":
-                deleted, message = deleteRegistryGroup(
-                    self.user.login, projectid, groupid, self.request
-                )
-                if not deleted:
-                    error_summary = {"dberror": message}
-                    self.returnRawViewResult = True
-                    return {"status": 400, "error": message}
-                else:
-                    self.returnRawViewResult = True
-                    return {"status": 200}
+            if not deleted:
+                self.returnRawViewResult = True
+                return {"status": 400, "error": message}
+            else:
+                self.returnRawViewResult = True
+                return {"status": 200}
 
         return {
             "activeUser": self.user,
-            "projectid": projectid,
             "data": data,
-            "error_summary": error_summary,
             "groupid": groupid,
         }
-
-
-class newRegistrySection_view(privateView):
-    def processView(self):
-        projectid = self.request.matchdict["projectid"]
-        error_summary = {}
-        if not projectExists(self.user.login, projectid, self.request):
-            raise HTTPNotFound()
-        else:
-            data = {}
-            data["user_name"] = self.user.login
-            data["project_cod"] = projectid
-            if self.request.method == "POST":
-                if "btn_add_group" in self.request.POST:
-                    tdata = self.getPostDict()
-                    data["section_name"] = tdata["section_name"]
-                    data["section_content"] = tdata["section_content"]
-                    data["section_private"] = None
-                    if data["section_name"] != "":
-                        if data["section_content"] != "":
-                            addgroup, message = addRegistryGroup(data, self)
-
-                            if not addgroup:
-                                if message == "repeated":
-                                    error_summary = {
-                                        "repeated": self._(
-                                            "There is already a group with this name."
-                                        )
-                                    }
-                                else:
-                                    error_summary = {"dberror": message}
-                            else:
-                                self.returnRawViewResult = True
-                                return HTTPFound(
-                                    location=self.request.route_url(
-                                        "registry", projectid=projectid
-                                    )
-                                )
-                        else:
-                            error_summary = {
-                                "sectiondescription": self._(
-                                    "The description of the group cannot be empty."
-                                )
-                            }
-                    else:
-                        error_summary = {
-                            "sectionname": self._(
-                                "The name of the group cannot be empty."
-                            )
-                        }
-
-            return {
-                "activeUser": self.user,
-                "projectid": projectid,
-                "data": self.decodeDict(data),
-                "error_summary": error_summary,
-            }
 
 
 def actionsInSections(self, postdata):
@@ -217,133 +96,147 @@ def actionsInSections(self, postdata):
 
 class registrySectionActions_view(privateView):
     def processView(self):
-        projectid = self.request.matchdict["projectid"]
-        if not projectExists(self.user.login, projectid, self.request):
+        activeProjectUser = self.request.matchdict["user"]
+        activeProjectCod = self.request.matchdict["project"]
+
+        if not projectExists(
+            self.user.login, activeProjectUser, activeProjectCod, self.request
+        ):
             raise HTTPNotFound()
-        else:
-            if self.request.method == "POST":
-                postdata = self.getPostDict()
-                postdata["user_name"] = self.user.login
-                postdata["project_cod"] = projectid
-                self.returnRawViewResult = True
 
-                if postdata["action"] == "btnNewSection":
-                    del postdata["group_cod"]
-                    postdata["action"] = "insert"
+        activeProjectId = getTheProjectIdForOwner(
+            activeProjectUser, activeProjectCod, self.request
+        )
 
-                if postdata["action"] == "btnUpdateSection":
-                    postdata["action"] = "update"
+        if self.request.method == "POST":
+            postdata = self.getPostDict()
+            postdata["project_id"] = activeProjectId
+            self.returnRawViewResult = True
 
-                return actionsInSections(self, postdata)
-        return {}
+            if postdata["action"] == "btnNewSection":
+                del postdata["group_cod"]
+                postdata["action"] = "insert"
 
+            if postdata["action"] == "btnUpdateSection":
+                postdata["action"] = "update"
 
-class newRegistryQuestion_view(privateView):
-    def processView(self):
-
-        projectid = self.request.matchdict["projectid"]
-        groupid = self.request.matchdict["groupid"]
-
-        data = {}
-        data["project_cod"] = projectid
-        data["section_id"] = groupid
-        data["group_cod"] = groupid
-        data["user_name"] = self.user.login
-
-        if not projectExists(self.user.login, projectid, self.request):
-            raise HTTPNotFound()
-        else:
-            if self.request.method == "POST":
-                if "btn_add_question_to_group" in self.request.POST:
-
-                    postdata = self.getPostDict()
-                    error = False
-                    for key in postdata.keys():
-                        if key.find("CHK") >= 0:
-                            qid = key.replace("CHK", "")
-                            data["question_id"] = qid
-                            addq, message = addRegistryQuestionToGroup(
-                                data, self.request
-                            )
-                            if not addq:
-                                error = True
-                    if not error:
-                        self.returnRawViewResult = True
-                        return HTTPFound(
-                            location=self.request.route_url(
-                                "registry", projectid=projectid
-                            )
-                        )
-
-            return {
-                "activeUser": self.user,
-                "UserQuestion": availableRegistryQuestions(
-                    self.user.login, projectid, self.request
-                ),
-                "QuestionsOptions": QuestionsOptions(self.user.login, self.request),
-                "projectid": projectid,
-                "groupInfo": getRegistryGroupData(data, self),
-                "Categories": getCategories(self.user.login, self.request),
-            }
+            return actionsInSections(self, postdata)
 
 
 class cancelRegistry_view(privateView):
     def processView(self):
-        projectid = self.request.matchdict["projectid"]
-        if not projectExists(self.user.login, projectid, self.request):
+        activeProjectUser = self.request.matchdict["user"]
+        activeProjectCod = self.request.matchdict["project"]
+
+        if not projectExists(
+            self.user.login, activeProjectUser, activeProjectCod, self.request
+        ):
             raise HTTPNotFound()
+
+        activeProjectId = getTheProjectIdForOwner(
+            activeProjectUser, activeProjectCod, self.request
+        )
+
         redirect = False
         if self.request.method == "POST":
             if "cancelRegistry" in self.request.params.keys():
-                setRegistryStatus(self.user.login, projectid, 0, self.request)
-                clean_registry_error_logs(self.request, projectid, self.user.login)
+                setRegistryStatus(
+                    activeProjectUser,
+                    activeProjectCod,
+                    activeProjectId,
+                    0,
+                    self.request,
+                )
+                clean_registry_error_logs(self.request, activeProjectId)
 
-                stopTasksByProcess(self.request, self.user.login, projectid)
+                stopTasksByProcess(self.request, activeProjectId)
 
                 for plugin in p.PluginImplementations(p.IForm):
                     plugin.after_deleting_form(
-                        self.request, self.user.login, projectid, "registry", ""
+                        self.request,
+                        activeProjectUser,
+                        activeProjectId,
+                        activeProjectCod,
+                        "registry",
+                        "",
                     )
 
                 self.returnRawViewResult = True
                 return HTTPFound(location=self.request.route_url("dashboard"))
 
-        return {"activeUser": self.user, "redirect": redirect}
+        return {
+            "activeUser": self.user,
+            "redirect": redirect,
+            "activeProject": getActiveProject(self.user.login, self.request),
+        }
 
 
 class closeRegistry_view(privateView):
     def processView(self):
-        projectid = self.request.matchdict["projectid"]
-        if not projectExists(self.user.login, projectid, self.request):
+        activeProjectUser = self.request.matchdict["user"]
+        activeProjectCod = self.request.matchdict["project"]
+
+        if not projectExists(
+            self.user.login, activeProjectUser, activeProjectCod, self.request
+        ):
             raise HTTPNotFound()
+
+        activeProjectId = getTheProjectIdForOwner(
+            activeProjectUser, activeProjectCod, self.request
+        )
+
         redirect = False
+
         progress, pcompleted = getProjectProgress(
-            self.user.login, projectid, self.request
+            activeProjectUser, activeProjectCod, activeProjectId, self.request
         )
         if self.request.method == "POST":
             if "closeRegistry" in self.request.params.keys():
-                setRegistryStatus(self.user.login, projectid, 2, self.request)
-
+                setRegistryStatus(
+                    activeProjectUser,
+                    activeProjectCod,
+                    activeProjectId,
+                    2,
+                    self.request,
+                )
                 for plugin in p.PluginImplementations(p.IForm):
                     plugin.after_deleting_form(
-                        self.request, self.user.login, projectid, "registry", ""
+                        self.request,
+                        activeProjectUser,
+                        activeProjectId,
+                        activeProjectCod,
+                        "registry",
+                        "",
                     )
 
                 self.returnRawViewResult = True
                 return HTTPFound(location=self.request.route_url("dashboard"))
 
-        return {"activeUser": self.user, "redirect": redirect, "progress": progress}
+        return {
+            "activeUser": self.user,
+            "redirect": redirect,
+            "progress": progress,
+            "activeProject": getActiveProject(self.user.login, self.request),
+        }
 
 
 class registry_view(privateView):
     def processView(self):
+        activeProjectUser = self.request.matchdict["user"]
+        activeProjectCod = self.request.matchdict["project"]
 
-        projectid = self.request.matchdict["projectid"]
-
-        if not projectExists(self.user.login, projectid, self.request):
+        if not projectExists(
+            self.user.login, activeProjectUser, activeProjectCod, self.request
+        ):
             raise HTTPNotFound()
 
-        data, finalCloseQst = getDataFormPreview(self, projectid)
+        activeProjectId = getTheProjectIdForOwner(
+            activeProjectUser, activeProjectCod, self.request
+        )
+
+        data, finalCloseQst = getDataFormPreview(
+            self, activeProjectUser, activeProjectId
+        )
 
         activeProjectData = getActiveProject(self.user.login, self.request)
 
@@ -351,26 +244,33 @@ class registry_view(privateView):
             "activeUser": self.user,
             "data": data,
             "finalCloseQst": finalCloseQst,
-            "projectid": projectid,
+            "activeProject": activeProjectData,
             "UserQuestion": availableRegistryQuestions(
-                self.user.login,
-                projectid,
+                activeProjectId,
                 self.request,
                 activeProjectData["project_registration_and_analysis"],
             ),
-            "Categories": getCategoriesParents(self.user.login, self.request),
+            "Categories": getCategoriesFromUserCollaborators(
+                activeProjectId, self.request
+            ),
         }
-        # return {'finalCloseQst':finalCloseQst,'found':False,'activeUser':self.user,'Project':projectid, 'error_summary':error_summary,'saveordergroup':saveordergroup,'saveorderquestions':saveorderquestions, 'UserGroups':UserGroups(self.user.login,projectid,self), 'Prj_UserQuestion':Prj_UserQuestion(self.user.login, projectid,self), 'accordion_open':accordion_open, 'data':data, 'archive':projectid.replace(" ", "_")+"_"+self._("registry")+".xml"}
 
 
 class registryFormCreation_view(privateView):
     def processView(self):
-        projectid = self.request.matchdict["projectid"]
+        activeProjectUser = self.request.matchdict["user"]
+        activeProjectCod = self.request.matchdict["project"]
         error_summary = {}
 
-        if not projectExists(self.user.login, projectid, self.request):
+        if not projectExists(
+            self.user.login, activeProjectUser, activeProjectCod, self.request
+        ):
             raise HTTPNotFound()
         else:
+            activeProjectId = getTheProjectIdForOwner(
+                activeProjectUser, activeProjectCod, self.request
+            )
+
             if self.request.method == "POST":
                 # if "saveorder" in self.request.POST:
                 newOrder = json.loads(self.request.POST.get("neworder", "{}"))
@@ -381,7 +281,7 @@ class registryFormCreation_view(privateView):
 
                 if not questionWithoutGroup:
                     modified, error = saveRegistryOrder(
-                        self.user.login, projectid, newOrder, self.request
+                        activeProjectId, newOrder, self.request
                     )
                 else:
                     error_summary["questionWithoutGroup"] = self._(
@@ -398,13 +298,17 @@ class registryFormCreation_view(privateView):
                 )
                 template = env.get_template("previewForm.jinja2")
 
-                data, finalCloseQst = getDataFormPreview(self, projectid)
+                data, finalCloseQst = getDataFormPreview(
+                    self, activeProjectUser, activeProjectId
+                )
 
                 info = {
                     "img1": self.request.url_for_static("landing/odk.png"),
                     "img2": self.request.url_for_static("landing/odk2.png"),
                     "img3": self.request.url_for_static("landing/odk3.png"),
                     "data": data,
+                    "isOneProject": "True",
+                    "activeProject": getActiveProject(self.user.login, self.request),
                     "_": self._,
                     "showPhone": True,
                 }
@@ -416,15 +320,18 @@ class registryFormCreation_view(privateView):
         return ""
 
 
-def getDataFormPreview(self, projectid, assessmentid=None, createAutoRegistry=True):
+def getDataFormPreview(
+    self, userOwner, projectId, assessmentid=None, createAutoRegistry=True
+):
+    projectLabels = getProjectLabels(projectId, self.request)
 
     if not assessmentid:
         data = getRegistryQuestions(
-            self.user.login, projectid, self.request, createAutoRegistry
+            userOwner, projectId, self.request, projectLabels, createAutoRegistry
         )
     else:
         data = getAssessmentQuestions(
-            self.user.login, projectid, assessmentid, self.request
+            userOwner, projectId, assessmentid, self.request, projectLabels
         )
     # The following is to help jinja2 to render the groups and questions
     # This because the scope constraint makes it difficult to control

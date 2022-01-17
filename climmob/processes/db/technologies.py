@@ -1,7 +1,7 @@
 from climmob.models.climmobv4 import Technology, Techalia, Prjtech, I18nTechnology
-from ...models.schema import mapToSchema, mapFromSchema
+from climmob.models.schema import mapToSchema, mapFromSchema
 from sqlalchemy import func, and_
-from .techaliases import getTechsAlias
+from climmob.processes.db.techaliases import getTechsAlias
 
 __all__ = [
     "getUserTechs",
@@ -22,7 +22,7 @@ __all__ = [
 def getUserTechs(user, request):
 
     res = []
-    result = (
+    result = mapFromSchema(
         request.dbsession.query(
             Technology,
             request.dbsession.query(func.count(Techalia.tech_id))
@@ -48,31 +48,20 @@ def getUserTechs(user, request):
     for technology in result:
 
         res3 = (
-            request.dbsession.query(func.count(Prjtech.tech_id).label("found")).filter(
-                Prjtech.tech_id == technology[0].tech_id
-            )
-            # .filter(Prjtech.user_name == user)
+            request.dbsession.query(func.count(Prjtech.tech_id).label("found"))
+            .filter(Prjtech.tech_id == technology["tech_id"])
             .one()
         )
 
-        res.append(
-            {
-                "tech_id": technology[0].tech_id,
-                # "tech_name": technology[0].tech_name,
-                "tech_name": technology[2],
-                "user_name": technology[0].user_name,
-                "quantity": technology.quantity,
-                "tech_alias": getTechsAlias(technology[0].tech_id, request),
-                "found": res3.found,
-            }
-        )
+        technology["tech_alias"] = getTechsAlias(technology["tech_id"], request)
+        technology["found"] = res3.found
+        res.append(technology)
 
     return res
 
 
 def getUserTechById(tech_id, request):
 
-    res = []
     result = mapFromSchema(
         request.dbsession.query(
             Technology,
@@ -131,11 +120,11 @@ def getTechnology(data, request):
     )
 
 
-def technologyExist(data, request):
+def technologyExist(techId, user, request):
     result = (
         request.dbsession.query(Technology)
-        .filter(Technology.tech_id == data["tech_id"])
-        .filter(Technology.user_name == data["user_name"])
+        .filter(Technology.tech_id == techId)
+        .filter(Technology.user_name == user)
         .first()
     )
     if result:
@@ -143,7 +132,7 @@ def technologyExist(data, request):
     else:
         result = (
             request.dbsession.query(Technology)
-            .filter(Technology.tech_id == data["tech_id"])
+            .filter(Technology.tech_id == techId)
             .filter(Technology.user_name == "bioversity")
             .first()
         )
@@ -182,7 +171,6 @@ def getTechnologyAssigned(data, request):
     result = (
         request.dbsession.query(func.count(Prjtech.tech_id).label("found"))
         .filter(Prjtech.tech_id == data["tech_id"])
-        .filter(Prjtech.user_name == data["user_name"])
         .one()
     )
 
@@ -196,8 +184,7 @@ def isTechnologyAssigned(data, request):
     result = (
         request.dbsession.query(func.count(Prjtech.tech_id).label("found"))
         .filter(Prjtech.tech_id == data["tech_id"])
-        .filter(Prjtech.user_name == data["user_name"])
-        .filter(Prjtech.project_cod == data["project_cod"])
+        .filter(Prjtech.project_id == data["project_id"])
         .one()
     )
 

@@ -1,9 +1,6 @@
 import shutil
 from climmob.config.celery_app import celeryApp
-import base64
 import os
-import bz2
-
 import uuid
 from jinja2 import Environment, FileSystemLoader
 from climmob.config.celery_class import celeryTask
@@ -15,23 +12,27 @@ TEMPLATE_ENVIRONMENT = Environment(
     loader=FileSystemLoader(os.path.join(PATH, "templates")),
     trim_blocks=False,
 )
-from ..qrpackages.celerytasks import create_qr
+from climmob.products.qrpackages.celerytasks import create_qr
 
 
 def render_template(template_filename, context):
     return TEMPLATE_ENVIRONMENT.get_template(template_filename).render(context)
 
 
-def create_index_html(svg, packageid, letterA, letterB, letterC, qr):
+def create_index_html(
+    svg, packageid, letterA, letterB, letterC, qr, labelA, labelB, labelC
+):
 
     context = {
         "climmob": os.path.join(PATH, "images/icon.png"),
-        # "bioversity": os.path.join(PATH, "images/bioversity.png"),
         "packageid": packageid,
         "letterA": letterA,
         "letterB": letterB,
         "letterC": letterC,
         "bioversity": qr,
+        "labelA": labelA,
+        "labelB": labelB,
+        "labelC": labelC,
     }
 
     with open(svg, "w") as f:
@@ -41,7 +42,7 @@ def create_index_html(svg, packageid, letterA, letterB, letterC, qr):
 
 
 @celeryApp.task(bind=True, base=celeryTask, soft_time_limit=7200, time_limit=7200)
-def createColors(self, path, projectid, packages):
+def createColors(self, path, projectid, packages, listOfLabels):
     if os.path.exists(path):
         shutil.rmtree(path)
 
@@ -118,6 +119,9 @@ def createColors(self, path, projectid, packages):
             colors[_two],
             colors[_three],
             qr,
+            listOfLabels[0],
+            listOfLabels[1],
+            listOfLabels[2],
         )
         # PDF
         # Changed by Carlos

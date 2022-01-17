@@ -1,6 +1,6 @@
 from climmob.models.climmobv4 import Techalia, Prjalia, I18nTechalia
 from sqlalchemy import func, and_
-from ...models.schema import mapFromSchema, mapToSchema
+from climmob.models.schema import mapFromSchema, mapToSchema
 
 __all__ = [
     "getTechsAlias",
@@ -17,7 +17,7 @@ __all__ = [
 
 def getTechsAlias(idtech, request):
     res = []
-    result = (
+    result = mapFromSchema(
         request.dbsession.query(
             Techalia,
             request.dbsession.query(func.count(Prjalia.alias_id))
@@ -41,18 +41,7 @@ def getTechsAlias(idtech, request):
         .all()
     )
 
-    for techalias in result:
-        res.append(
-            {
-                "tech_id": techalias[0].tech_id,
-                "alias_id": techalias[0].alias_id,
-                # "alias_name": techalias[0].alias_name,
-                "alias_name": techalias[2],
-                "quantity": techalias.quantity,
-            }
-        )
-
-    return res
+    return result
 
 
 def findTechalias(data, request):
@@ -108,18 +97,15 @@ def getAlias(data, request):
     )
 
 
-def getAliasAssigned(data, request):
+def getAliasAssigned(data, projectId, request):
     result = (
         request.dbsession.query(func.count(Prjalia.alias_id).label("quantity"))
-        .filter(Prjalia.project_cod == data["project_cod"])
-        .filter(Prjalia.user_name == data["user_name"])
+        .filter(Prjalia.project_id == projectId)
         .filter(Prjalia.alias_used == data["alias_id"])
         .filter(Prjalia.tech_used == data["tech_id"])
         .one()
     )
-    # print "_____________________________________________________44"
-    # print result
-    # print "_____________________________________________________44"
+
     if result.quantity == 0:
         return False
     else:
@@ -129,14 +115,11 @@ def getAliasAssigned(data, request):
 def getAliasAssignedWithoutProjectCode(data, request):
     result = (
         request.dbsession.query(func.count(Prjalia.alias_id).label("quantity"))
-        .filter(Prjalia.user_name == data["user_name"])
         .filter(Prjalia.alias_used == data["alias_id"])
         .filter(Prjalia.tech_used == data["tech_id"])
         .one()
     )
-    # print "_____________________________________________________44"
-    # print result
-    # print "_____________________________________________________44"
+
     if result.quantity == 0:
         return False
     else:

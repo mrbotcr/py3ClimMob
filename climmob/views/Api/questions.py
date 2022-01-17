@@ -1,12 +1,10 @@
-from ..classes import apiView
-from pyramid.httpexceptions import HTTPFound
-from ...processes import (
+from climmob.views.classes import apiView
+from climmob.processes import (
     addQuestion,
     addOptionToQuestion,
     updateQuestion,
     deleteQuestion,
     UserQuestion,
-    QuestionsOptions,
     getQuestionData,
     getQuestionOptions,
     deleteOption,
@@ -19,9 +17,7 @@ from ...processes import (
     opcionNAinQuestion,
     opcionOtherInQuestion,
 )
-
 import json
-from heapq import merge
 from pyramid.response import Response
 import re
 
@@ -185,7 +181,6 @@ class createQuestion_view(apiView):
                                             str(dataworking["question_dtype"]) == "5"
                                             or str(dataworking["question_dtype"]) == "6"
                                         ):
-                                            # response = Response(status=200, body=self._("The question was successfully added. Add new values now."))
                                             response = Response(
                                                 status=200,
                                                 body=json.dumps(
@@ -210,7 +205,6 @@ class createQuestion_view(apiView):
                                                 )
                                                 return response
                                             else:
-                                                # response = Response(status=200,body=self._("The question was successfully added. Configure the performance statement now."))
                                                 response = Response(
                                                     status=200,
                                                     body=json.dumps(
@@ -223,7 +217,6 @@ class createQuestion_view(apiView):
                                                 )
                                                 return response
                                     else:
-                                        # response = Response(status=200, body=self._("The question was successfully added."))
                                         response = Response(
                                             status=200,
                                             body=json.dumps(

@@ -1,5 +1,5 @@
-from ...models import Country, Sector, User
-from ...config.encdecdata import decodeData
+from climmob.models import Country, Sector, User
+from climmob.config.encdecdata import decodeData
 import arrow
 
 __all__ = [
@@ -17,8 +17,6 @@ def getCountryList(request):
     results = request.dbsession.query(Country).order_by(Country.cnty_name).all()
     for result in results:
         try:
-            # name = unicode(result.cnty_name.decode('cp1252').encode('utf-8'))
-            # name = str(result.cnty_name.decode('cp1252').encode('utf-8'),"utf-8")
             name = str(result.cnty_name)
             countries.append({"code": result.cnty_cod, "name": name})
         except:
@@ -104,11 +102,13 @@ def getUserLog(user, request, limit=True):
 def getUserStats(user, request):
     _ = request.translate
 
-    sql = "SELECT count(project_cod) FROM project WHERE user_name = '" + user + "'"
+    sql = "SELECT count(project_id) FROM user_project WHERE user_name = '" + user + "'"
     projects = request.dbsession.execute(sql).first()
 
     sql = (
-        "SELECT max(project_creationdate) FROM project WHERE user_name = '" + user + "'"
+        "SELECT max(project_creationdate) FROM project, user_project WHERE project.project_id = user_project.project_id and user_name = '"
+        + user
+        + "'"
     )
 
     lastProject = request.dbsession.execute(sql).first()

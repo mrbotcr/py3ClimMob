@@ -1,7 +1,5 @@
-from ..classes import apiView
-
-from ...processes import projectExists, getProjectProgress, getProjectData
-
+from climmob.views.classes import apiView
+from climmob.processes import projectExists, getProjectProgress, getProjectData
 from pyramid.response import Response
 import json
 import datetime

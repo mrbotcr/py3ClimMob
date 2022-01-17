@@ -1,4 +1,4 @@
-from .meta import metadata
+from climmob.models.meta import metadata
 import json
 from sqlalchemy import inspect
 from future.utils import iteritems
@@ -116,7 +116,7 @@ def mapFromSchema(data):
     if type(data) is not list:
         mapped_data = {}
         if data is not None:
-            if data.__class__.__name__ != "result":
+            if data.__class__.__name__ != "Row":
                 for c in inspect(data).mapper.column_attrs:
                     if c.key != "extra":
                         mapped_data[c.key] = getattr(data, c.key)
@@ -148,7 +148,7 @@ def mapFromSchema(data):
         mapped_data = []
         for row in data:
             temp = {}
-            if row.__class__.__name__ != "result":
+            if row.__class__.__name__ != "Row":
                 for c in inspect(row).mapper.column_attrs:
                     if c.key != "extra":
                         temp[c.key] = getattr(row, c.key)

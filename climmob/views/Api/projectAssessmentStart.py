@@ -1,8 +1,7 @@
-from ..classes import apiView
+from climmob.views.classes import apiView
 from pyramid.response import Response
 import json
-
-from ...processes import (
+from climmob.processes import (
     projectExists,
     projectAsessmentStatus,
     getProjectProgress,
@@ -11,27 +10,27 @@ from ...processes import (
     assessmentExists,
     generateStructureForInterfaceForms,
     isAssessmentOpen,
-    generateStructureForValidateJsonOdkAssessment,
     numberOfCombinationsForTheProject,
     setAssessmentIndividualStatus,
-    AsessmentStatus,
     getPackages,
     getJSONResult,
     getTheGroupOfThePackageCodeAssessment,
+    getProjectData,
+    getTheProjectIdForOwner,
+    getAccessTypeForProject,
 )
-
-from ..registry import getDataFormPreview
-from ...products.forms.form import create_document_form
+from climmob.views.registry import getDataFormPreview
+from climmob.products.forms.form import create_document_form
 import os
 import uuid
 from xml.dom import minidom
-from ...processes.odk.api import storeJSONInMySQL
+from climmob.processes.odk.api import storeJSONInMySQL
 
 
 class createProjectAssessment_view(apiView):
     def processView(self):
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"ass_cod"]
+            obligatory = [u"project_cod", u"user_owner", u"ass_cod"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -44,71 +43,102 @@ class createProjectAssessment_view(apiView):
 
                 if dataInParams:
                     exitsproject = projectExists(
-                        self.user.login, dataworking["project_cod"], self.request
+                        self.user.login,
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
                     )
                     if exitsproject:
+
+                        activeProjectId = getTheProjectIdForOwner(
+                            dataworking["user_owner"],
+                            dataworking["project_cod"],
+                            self.request,
+                        )
+                        accessType = getAccessTypeForProject(
+                            self.user.login, activeProjectId, self.request
+                        )
+
+                        if accessType in [4]:
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "The access assigned for this project does not allow you to do this action."
+                                ),
+                            )
+                            return response
                         progress, pcompleted = getProjectProgress(
-                            self.user.login, dataworking["project_cod"], self.request
+                            dataworking["user_owner"],
+                            dataworking["project_cod"],
+                            activeProjectId,
+                            self.request,
                         )
                         if progress["regsubmissions"] == 2:
                             if projectAsessmentStatus(
-                                self.user.login,
-                                dataworking["project_cod"],
-                                dataworking["ass_cod"],
-                                self.request,
+                                activeProjectId, dataworking["ass_cod"], self.request,
                             ):
                                 if progress["assessment"] == True:
                                     checkPass, errors = checkAssessments(
-                                        self.user.login,
-                                        dataworking["project_cod"],
+                                        activeProjectId,
                                         dataworking["ass_cod"],
                                         self.request,
                                     )
                                     if checkPass:
                                         sectionOfThePackageCode = getTheGroupOfThePackageCodeAssessment(
-                                            self.user.login,
-                                            dataworking["project_cod"],
+                                            activeProjectId,
                                             dataworking["ass_cod"],
                                             self.request,
                                         )
+                                        projectDetails = getProjectData(
+                                            activeProjectId, self.request
+                                        )
+                                        listOfLabels = [
+                                            projectDetails["project_label_a"],
+                                            projectDetails["project_label_b"],
+                                            projectDetails["project_label_c"],
+                                        ]
+
                                         correct = generateAssessmentFiles(
-                                            self.user.login,
+                                            dataworking["user_owner"],
+                                            activeProjectId,
                                             dataworking["project_cod"],
                                             dataworking["ass_cod"],
                                             self.request,
                                             sectionOfThePackageCode,
+                                            listOfLabels,
                                         )
                                         if correct[0]["result"]:
-                                            # setAssessmentStatus(self.user.login, dataworking['project_cod'], 1, self.request)
                                             setAssessmentIndividualStatus(
-                                                self.user.login,
-                                                dataworking["project_cod"],
+                                                activeProjectId,
                                                 dataworking["ass_cod"],
                                                 1,
                                                 self.request,
                                             )
 
                                             ncombs, packages = getPackages(
-                                                self.user.login,
-                                                dataworking["project_cod"],
+                                                dataworking["user_owner"],
+                                                activeProjectId,
                                                 self.request,
                                             )
 
                                             data, finalCloseQst = getDataFormPreview(
                                                 self,
-                                                dataworking["project_cod"],
+                                                dataworking["user_owner"],
+                                                activeProjectId,
                                                 dataworking["ass_cod"],
                                             )
 
                                             create_document_form(
                                                 self.request,
                                                 self.request.locale_name,
-                                                self.user.login,
+                                                dataworking["user_owner"],
+                                                activeProjectId,
                                                 dataworking["project_cod"],
                                                 "Assessment",
                                                 dataworking["ass_cod"],
                                                 data,
                                                 packages,
+                                                listOfLabels,
                                             )
 
                                             response = Response(
@@ -177,7 +207,7 @@ class createProjectAssessment_view(apiView):
 class cancelAssessmentApi_view(apiView):
     def processView(self):
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"ass_cod"]
+            obligatory = [u"project_cod", u"user_owner", u"ass_cod"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -190,24 +220,41 @@ class cancelAssessmentApi_view(apiView):
 
                 if dataInParams:
                     exitsproject = projectExists(
-                        self.user.login, dataworking["project_cod"], self.request
+                        self.user.login,
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
                     )
                     if exitsproject:
-                        if not AsessmentStatus(
-                            self.user.login,
+
+                        activeProjectId = getTheProjectIdForOwner(
+                            dataworking["user_owner"],
                             dataworking["project_cod"],
-                            dataworking["ass_cod"],
                             self.request,
+                        )
+                        accessType = getAccessTypeForProject(
+                            self.user.login, activeProjectId, self.request
+                        )
+
+                        if accessType in [4]:
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "The access assigned for this project does not allow you to cancel the assessment."
+                                ),
+                            )
+                            return response
+
+                        if not projectAsessmentStatus(
+                            activeProjectId, dataworking["ass_cod"], self.request,
                         ):
 
                             setAssessmentIndividualStatus(
-                                self.user.login,
-                                dataworking["project_cod"],
+                                activeProjectId,
                                 dataworking["ass_cod"],
                                 0,
                                 self.request,
                             )
-                            # setAssessmentStatus(self.user.login, dataworking['project_cod'], 0, self.request)
 
                             response = Response(
                                 status=200, body=self._("Cancel data collection")
@@ -244,7 +291,7 @@ class cancelAssessmentApi_view(apiView):
 class closeAssessmentApi_view(apiView):
     def processView(self):
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"ass_cod"]
+            obligatory = [u"project_cod", u"user_owner", u"ass_cod"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -257,25 +304,40 @@ class closeAssessmentApi_view(apiView):
 
                 if dataInParams:
                     exitsproject = projectExists(
-                        self.user.login, dataworking["project_cod"], self.request
+                        self.user.login,
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
                     )
                     if exitsproject:
-                        if not projectAsessmentStatus(
-                            self.user.login,
+
+                        activeProjectId = getTheProjectIdForOwner(
+                            dataworking["user_owner"],
                             dataworking["project_cod"],
-                            dataworking["ass_cod"],
                             self.request,
+                        )
+                        accessType = getAccessTypeForProject(
+                            self.user.login, activeProjectId, self.request
+                        )
+
+                        if accessType in [4]:
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "The access assigned for this project does not allow you to cancel the assessment."
+                                ),
+                            )
+                            return response
+
+                        if not projectAsessmentStatus(
+                            activeProjectId, dataworking["ass_cod"], self.request,
                         ):
                             if assessmentExists(
-                                self.user.login,
-                                dataworking["project_cod"],
-                                dataworking["ass_cod"],
-                                self.request,
+                                activeProjectId, dataworking["ass_cod"], self.request,
                             ):
 
                                 setAssessmentIndividualStatus(
-                                    self.user.login,
-                                    dataworking["project_cod"],
+                                    activeProjectId,
                                     dataworking["ass_cod"],
                                     2,
                                     self.request,
@@ -323,7 +385,7 @@ class closeAssessmentApi_view(apiView):
 class readAssessmentStructure_view(apiView):
     def processView(self):
         if self.request.method == "GET":
-            obligatory = [u"project_cod", u"ass_cod"]
+            obligatory = [u"project_cod", u"user_owner", u"ass_cod"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -346,26 +408,31 @@ class readAssessmentStructure_view(apiView):
 
                 if dataInParams:
                     exitsproject = projectExists(
-                        self.user.login, dataworking["project_cod"], self.request
+                        self.user.login,
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
                     )
                     if exitsproject:
-                        if not projectAsessmentStatus(
-                            self.user.login,
+
+                        activeProjectId = getTheProjectIdForOwner(
+                            dataworking["user_owner"],
                             dataworking["project_cod"],
-                            dataworking["ass_cod"],
                             self.request,
+                        )
+
+                        if not projectAsessmentStatus(
+                            activeProjectId, dataworking["ass_cod"], self.request,
                         ):
                             if assessmentExists(
-                                self.user.login,
-                                dataworking["project_cod"],
-                                dataworking["ass_cod"],
-                                self.request,
+                                activeProjectId, dataworking["ass_cod"], self.request,
                             ):
                                 response = Response(
                                     status=200,
                                     body=json.dumps(
                                         generateStructureForInterfaceForms(
-                                            self.user.login,
+                                            dataworking["user_owner"],
+                                            activeProjectId,
                                             dataworking["project_cod"],
                                             "assessment",
                                             self.request,
@@ -410,7 +477,7 @@ class readAssessmentStructure_view(apiView):
 class pushJsonToAssessment_view(apiView):
     def processView(self):
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"ass_cod", u"json"]
+            obligatory = [u"project_cod", u"user_owner", u"ass_cod", u"json"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -423,278 +490,55 @@ class pushJsonToAssessment_view(apiView):
 
                 if dataInParams:
                     exitsproject = projectExists(
-                        self.user.login, dataworking["project_cod"], self.request
+                        self.user.login,
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
                     )
                     if exitsproject:
 
-                        if assessmentExists(
-                            self.user.login,
+                        activeProjectId = getTheProjectIdForOwner(
+                            dataworking["user_owner"],
                             dataworking["project_cod"],
-                            dataworking["ass_cod"],
                             self.request,
+                        )
+                        accessType = getAccessTypeForProject(
+                            self.user.login, activeProjectId, self.request
+                        )
+
+                        if accessType in [4]:
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "The access assigned for this project does not allow you to push information."
+                                ),
+                            )
+                            return response
+
+                        if assessmentExists(
+                            activeProjectId, dataworking["ass_cod"], self.request,
                         ):
                             if not projectAsessmentStatus(
-                                self.user.login,
-                                dataworking["project_cod"],
-                                dataworking["ass_cod"],
-                                self.request,
+                                activeProjectId, dataworking["ass_cod"], self.request,
                             ):
                                 if isAssessmentOpen(
-                                    self.user.login,
-                                    dataworking["project_cod"],
+                                    activeProjectId,
                                     dataworking["ass_cod"],
                                     self.request,
                                 ):
                                     structure = generateStructureForInterfaceForms(
-                                        self.user.login,
+                                        dataworking["user_owner"],
+                                        activeProjectId,
                                         dataworking["project_cod"],
                                         "assessment",
                                         self.request,
                                         ass_cod=dataworking["ass_cod"],
                                     )
-                                    if structure:
-                                        numComb = numberOfCombinationsForTheProject(
-                                            self.user.login,
-                                            dataworking["project_cod"],
-                                            self.request,
-                                        )
-                                        obligatoryQuestions = []
-                                        possibleQuestions = []
-                                        searchQST163 = ""
-                                        groupsForValidation = {}
-                                        for section in structure:
-                                            for question in section[
-                                                "section_questions"
-                                            ]:
 
-                                                possibleQuestions.append(
-                                                    question["question_datafield"]
-                                                )
+                                    return ApiAssessmentPushProcess(
+                                        self, structure, dataworking, activeProjectId
+                                    )
 
-                                                if (
-                                                    question["question_requiredvalue"]
-                                                    == 1
-                                                ):
-                                                    obligatoryQuestions.append(
-                                                        question["question_datafield"]
-                                                    )
-
-                                                if question["question_dtype2"] == 9:
-                                                    if (
-                                                        question["question_code"]
-                                                        not in groupsForValidation.keys()
-                                                    ):
-                                                        groupsForValidation[
-                                                            question["question_code"]
-                                                        ] = []
-
-                                                    groupsForValidation[
-                                                        question["question_code"]
-                                                    ].append(
-                                                        question["question_datafield"]
-                                                    )
-
-                                                if (
-                                                    question["question_code"]
-                                                    == "QST163"
-                                                ):
-                                                    searchQST163 = question[
-                                                        "question_datafield"
-                                                    ]
-
-                                        try:
-                                            _json = json.loads(dataworking["json"])
-
-                                            permitedKeys = True
-                                            for key in _json.keys():
-                                                if key not in possibleQuestions:
-                                                    permitedKeys = False
-
-                                            if permitedKeys:
-                                                obligatoryKeys = True
-                                                for key in obligatoryQuestions:
-                                                    if key not in _json.keys():
-                                                        obligatoryKeys = False
-
-                                                if obligatoryKeys:
-
-                                                    dataInParams = True
-                                                    for key in obligatoryQuestions:
-                                                        if _json[key].strip(" ") == "":
-                                                            dataInParams = False
-
-                                                    if dataInParams:
-                                                        if _json[
-                                                            searchQST163
-                                                        ].isdigit():
-                                                            # Validation for repeat response
-                                                            for (
-                                                                _group
-                                                            ) in groupsForValidation:
-                                                                letter = []
-                                                                for (
-                                                                    _var
-                                                                ) in groupsForValidation[
-                                                                    _group
-                                                                ]:
-
-                                                                    if (
-                                                                        (
-                                                                            not _json[
-                                                                                _var
-                                                                            ]
-                                                                            in letter
-                                                                        )
-                                                                        or str(
-                                                                            _json[_var]
-                                                                        )
-                                                                        == "98"
-                                                                        or str(
-                                                                            _json[_var]
-                                                                        )
-                                                                        == "99"
-                                                                    ):
-                                                                        letter.append(
-                                                                            _json[_var]
-                                                                        )
-                                                                    else:
-                                                                        response = Response(
-                                                                            status=401,
-                                                                            body=self._(
-                                                                                "You have repeated data in the next column: "
-                                                                                + _var
-                                                                                + ". Remember that the options can not be repeated."
-                                                                            ),
-                                                                        )
-                                                                        return response
-
-                                                            # I don't validate el identify of the farmer because the ODK return error if not exist
-                                                            _json["clm_deviceimei"] = (
-                                                                "API_"
-                                                                + str(self.apiKey)
-                                                            )
-                                                            uniqueId = str(uuid.uuid1())
-                                                            path = os.path.join(
-                                                                self.request.registry.settings[
-                                                                    "user.repository"
-                                                                ],
-                                                                *[
-                                                                    self.user.login,
-                                                                    dataworking[
-                                                                        "project_cod"
-                                                                    ],
-                                                                    "data",
-                                                                    "ass",
-                                                                    dataworking[
-                                                                        "ass_cod"
-                                                                    ],
-                                                                    "json",
-                                                                    uniqueId,
-                                                                ]
-                                                            )
-
-                                                            if not os.path.exists(path):
-                                                                os.makedirs(path)
-
-                                                            pathfinal = os.path.join(
-                                                                path, uniqueId + ".json"
-                                                            )
-
-                                                            f = open(pathfinal, "w")
-                                                            f.write(json.dumps(_json))
-                                                            f.close()
-
-                                                            storeJSONInMySQL(
-                                                                "ASS",
-                                                                self.user.login,
-                                                                None,
-                                                                dataworking[
-                                                                    "project_cod"
-                                                                ],
-                                                                dataworking["ass_cod"],
-                                                                pathfinal,
-                                                                self.request,
-                                                            )
-
-                                                            logFile = pathfinal.replace(
-                                                                ".json", ".log"
-                                                            )
-                                                            if os.path.exists(logFile):
-                                                                doc = minidom.parse(
-                                                                    logFile
-                                                                )
-                                                                errors = doc.getElementsByTagName(
-                                                                    "error"
-                                                                )
-                                                                response = Response(
-                                                                    status=401,
-                                                                    body=self._(
-                                                                        "The data could not be saved. ERROR: "
-                                                                        + errors[
-                                                                            0
-                                                                        ].getAttribute(
-                                                                            "Error"
-                                                                        )
-                                                                    ),
-                                                                )
-                                                                return response
-
-                                                            response = Response(
-                                                                status=200,
-                                                                body=self._(
-                                                                    "Data registered."
-                                                                ),
-                                                            )
-                                                            return response
-
-                                                        else:
-                                                            response = Response(
-                                                                status=401,
-                                                                body=self._(
-                                                                    "ERROR: The farmer code must be a number."
-                                                                ),
-                                                            )
-                                                            return response
-                                                    else:
-                                                        response = Response(
-                                                            status=401,
-                                                            body=self._(
-                                                                "Error in the JSON. Not all parameters have data."
-                                                            ),
-                                                        )
-                                                        return response
-                                                else:
-                                                    response = Response(
-                                                        status=401,
-                                                        body=self._(
-                                                            "Error in the JSON sent by parameter. Check the obligatory Keys."
-                                                        ),
-                                                    )
-                                                    return response
-                                            else:
-                                                response = Response(
-                                                    status=401,
-                                                    body=self._(
-                                                        "Error in the JSON sent by parameter. Check the permitted Keys."
-                                                    ),
-                                                )
-                                                return response
-                                        except:
-                                            response = Response(
-                                                status=401,
-                                                body=self._(
-                                                    "Error in the JSON sent by parameter."
-                                                ),
-                                            )
-                                            return response
-                                    else:
-                                        response = Response(
-                                            status=401,
-                                            body=self._(
-                                                "The data do not have structure."
-                                            ),
-                                        )
-                                        return response
                                 else:
                                     response = Response(
                                         status=401,
@@ -736,10 +580,176 @@ class pushJsonToAssessment_view(apiView):
             return response
 
 
+def ApiAssessmentPushProcess(self, structure, dataworking, activeProjectId):
+    if structure:
+        numComb = numberOfCombinationsForTheProject(activeProjectId, self.request,)
+        obligatoryQuestions = []
+        possibleQuestions = []
+        searchQST163 = ""
+        groupsForValidation = {}
+        for section in structure:
+            for question in section["section_questions"]:
+
+                possibleQuestions.append(question["question_datafield"])
+
+                if question["question_requiredvalue"] == 1:
+                    obligatoryQuestions.append(question["question_datafield"])
+
+                if question["question_dtype2"] == 9:
+                    if question["question_code"] not in groupsForValidation.keys():
+                        groupsForValidation[question["question_code"]] = []
+
+                    groupsForValidation[question["question_code"]].append(
+                        question["question_datafield"]
+                    )
+
+                if question["question_code"] == "QST163":
+                    searchQST163 = question["question_datafield"]
+
+        try:
+            _json = json.loads(dataworking["json"])
+
+            permitedKeys = True
+            for key in _json.keys():
+                if key not in possibleQuestions:
+                    permitedKeys = False
+
+            if permitedKeys:
+                obligatoryKeys = True
+                for key in obligatoryQuestions:
+                    if key not in _json.keys():
+                        obligatoryKeys = False
+
+                if obligatoryKeys:
+
+                    dataInParams = True
+                    for key in obligatoryQuestions:
+                        if _json[key].strip(" ") == "":
+                            dataInParams = False
+
+                    if dataInParams:
+                        if _json[searchQST163].isdigit():
+                            # Validation for repeat response
+                            for _group in groupsForValidation:
+                                letter = []
+                                for _var in groupsForValidation[_group]:
+
+                                    if (
+                                        (not _json[_var] in letter)
+                                        or str(_json[_var]) == "98"
+                                        or str(_json[_var]) == "99"
+                                    ):
+                                        letter.append(_json[_var])
+                                    else:
+                                        response = Response(
+                                            status=401,
+                                            body=self._(
+                                                "You have repeated data in the next column: "
+                                                + _var
+                                                + ". Remember that the options can not be repeated."
+                                            ),
+                                        )
+                                        return response
+
+                            # I don't validate el identify of the farmer because the ODK return error if not exist
+                            _json["clm_deviceimei"] = "API_" + str(self.apiKey)
+                            uniqueId = str(uuid.uuid1())
+                            path = os.path.join(
+                                self.request.registry.settings["user.repository"],
+                                *[
+                                    dataworking["user_owner"],
+                                    dataworking["project_cod"],
+                                    "data",
+                                    "ass",
+                                    dataworking["ass_cod"],
+                                    "json",
+                                    uniqueId,
+                                ]
+                            )
+
+                            if not os.path.exists(path):
+                                os.makedirs(path)
+
+                            pathfinal = os.path.join(path, uniqueId + ".json")
+
+                            f = open(pathfinal, "w")
+                            f.write(json.dumps(_json))
+                            f.close()
+
+                            storeJSONInMySQL(
+                                self.user.login,
+                                "ASS",
+                                dataworking["user_owner"],
+                                None,
+                                dataworking["project_cod"],
+                                dataworking["ass_cod"],
+                                pathfinal,
+                                self.request,
+                                activeProjectId,
+                            )
+
+                            logFile = pathfinal.replace(".json", ".log")
+                            if os.path.exists(logFile):
+                                doc = minidom.parse(logFile)
+                                errors = doc.getElementsByTagName("error")
+                                response = Response(
+                                    status=401,
+                                    body=self._(
+                                        "The data could not be saved. ERROR: "
+                                        + errors[0].getAttribute("Error")
+                                    ),
+                                )
+                                return response
+
+                            response = Response(
+                                status=200, body=self._("Data registered."),
+                            )
+                            return response
+
+                        else:
+                            response = Response(
+                                status=401,
+                                body=self._("ERROR: The farmer code must be a number."),
+                            )
+                            return response
+                    else:
+                        response = Response(
+                            status=401,
+                            body=self._(
+                                "Error in the JSON. Not all parameters have data."
+                            ),
+                        )
+                        return response
+                else:
+                    response = Response(
+                        status=401,
+                        body=self._(
+                            "Error in the JSON sent by parameter. Check the obligatory Keys."
+                        ),
+                    )
+                    return response
+            else:
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "Error in the JSON sent by parameter. Check the permitted Keys."
+                    ),
+                )
+                return response
+        except:
+            response = Response(
+                status=401, body=self._("Error in the JSON sent by parameter."),
+            )
+            return response
+    else:
+        response = Response(status=401, body=self._("The data do not have structure."),)
+        return response
+
+
 class readAssessmentData_view(apiView):
     def processView(self):
         if self.request.method == "GET":
-            obligatory = [u"project_cod", u"ass_cod"]
+            obligatory = [u"project_cod", u"user_owner", u"ass_cod"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -762,23 +772,28 @@ class readAssessmentData_view(apiView):
 
                 if dataInParams:
                     exitsproject = projectExists(
-                        self.user.login, dataworking["project_cod"], self.request
+                        self.user.login,
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
                     )
                     if exitsproject:
-                        if not projectAsessmentStatus(
-                            self.user.login,
+
+                        activeProjectId = getTheProjectIdForOwner(
+                            dataworking["user_owner"],
                             dataworking["project_cod"],
-                            dataworking["ass_cod"],
                             self.request,
+                        )
+
+                        if not projectAsessmentStatus(
+                            activeProjectId, dataworking["ass_cod"], self.request,
                         ):
                             if assessmentExists(
-                                self.user.login,
-                                dataworking["project_cod"],
-                                dataworking["ass_cod"],
-                                self.request,
+                                activeProjectId, dataworking["ass_cod"], self.request,
                             ):
                                 info = getJSONResult(
-                                    self.user.login,
+                                    dataworking["user_owner"],
+                                    activeProjectId,
                                     dataworking["project_cod"],
                                     self.request,
                                     True,

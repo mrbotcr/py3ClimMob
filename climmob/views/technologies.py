@@ -1,7 +1,6 @@
-from pyramid.httpexceptions import HTTPFound
-from .classes import privateView
-
-from ..processes import (
+from pyramid.httpexceptions import HTTPFound, HTTPNotFound
+from climmob.views.classes import privateView
+from climmob.processes import (
     getUserTechs,
     findTechInLibrary,
     addTechnology,
@@ -9,9 +8,40 @@ from ..processes import (
     updateTechnology,
     deleteTechnology,
     getUserTechById,
+    getActiveProject,
 )
+from climmob.views.techaliases import newalias_view, modifyalias_view
 
-from .techaliases import newalias_view, modifyalias_view
+
+class getUserTechnologyDetails_view(privateView):
+    def processView(self):
+
+        if self.request.method == "GET":
+            userOwner = self.request.matchdict["user"]
+            techId = self.request.matchdict["technologyid"]
+            technology = getUserTechById(techId, self.request)
+            self.returnRawViewResult = True
+
+            return technology
+
+        raise HTTPNotFound
+
+
+class getUserTechnologyAliasDetails_view(privateView):
+    def processView(self):
+
+        if self.request.method == "GET":
+            userOwner = self.request.matchdict["user"]
+            techId = self.request.matchdict["technologyid"]
+            aliasId = self.request.matchdict["aliasid"]
+            technology = getUserTechById(techId, self.request)
+            self.returnRawViewResult = True
+
+            for alias in technology["tech_alias"]:
+                if alias["alias_id"] == int(aliasId):
+                    return alias
+
+        raise HTTPNotFound
 
 
 class technologies_view(privateView):
@@ -69,7 +99,7 @@ class technologies_view(privateView):
                 techSee = getUserTechById(dataworking["tech_id"], self.request)
 
         return {
-            "activeUser": self.user,
+            "activeProject": getActiveProject(self.user.login, self.request),
             "dataworking": dataworking,
             "error_summary_add": error_summary_add,
             "error_summary": error_summary,
@@ -124,9 +154,6 @@ class newtechnology_view(privateView):
                     error_summary = {
                         "nameempty": self._("You need to set values for the name")
                     }
-        # Descomentar si se quiere ver el mensaje cuando se crea
-        # if redirect:
-        #    self.request.session.flash(self._("The technology was added successfully"))
 
         return {
             "activeUser": self.user,
@@ -189,11 +216,6 @@ class modifytechnology_view(privateView):
                     error_summary = {
                         "nameempty": self._("You need to set values for the name")
                     }
-        # Descomentar si se quiere ver el menaje
-        # if redirect:
-        #    self.request.session.flash(
-        #        self._("The technology was modified successfully")
-        #    )
 
         return {
             "activeUser": self.user,

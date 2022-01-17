@@ -1,7 +1,5 @@
-from .classes import privateView
-from pyramid.httpexceptions import HTTPFound
-
-from ..processes import (
+from climmob.views.classes import privateView
+from climmob.processes import (
     getTechsAlias,
     findTechalias,
     addTechAlias,
@@ -148,12 +146,6 @@ class modifyalias_view(privateView):
                             error_summary = {"dberror": message}
                         else:
                             redirect = True
-                            # self.returnRawViewResult = True
-                            # return HTTPFound(
-                            #     location=self.request.route_url(
-                            #         "useralias", technologyid=formdata["tech_id"]
-                            #     )
-                            # )
                     else:
                         error_summary = {
                             "exists": self._(

@@ -14,7 +14,6 @@
 {% block topScripts %}
     {% jsresource request,'coreresources','sweet' %}
     {% jsresource request,'coreresources','jstree' %}
-    {#    {% jsresource request,'coreresources','delete' %}#}
     {% jsresource request,'coreresources','toastr' %}
     {% include 'snippets/delete.jinja2' %}
     {% jsresource request,'coreresources','tour' %}
@@ -23,36 +22,47 @@
 {% block pageheading %}
     {% set _title= _("Form editor")%}
     {% set _linkWiki="https://climmob.net/blog/wiki/prepare-forms-for-data-collection/"%}
-    {% set extra=[[_("Prepare data collection"),request.route_url('assessment',projectid=projectid)]] %}
+    {% set extra=[[_("Prepare data collection"),request.route_url('assessment', user=activeProject["owner"].user_name,project=activeProject["project_cod"])]] %}
     {% set otherTitle=_("Data collection moment")+" : "+assinfo.ass_desc %}
     {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
 
 {% block pagecontent %}
 
+    {% set onlySee = False %}
+
+    {% if activeProject["access_type"] in [4] or assinfo["ass_status"] > 0 %}
+        {% set onlySee = True %}
+    {% endif %}
+
     <div class="row">
-        <div class="col-md-8" style="padding-right: 5px; padding-left: 5px">
+        <div class="col-md-{% if onlySee %}6{% else %}8{% endif %}" style="padding-right: 5px; padding-left: 5px">
             <div style="display:flex;">
-                <div style="width: 49%; ">
-                    <div class="col-md-12" style="padding-right: 5px; padding-left: 5px">
-                        <div class="ibox">
-                            <div class="ibox-title" >
-                                <h5>{{ _("Available questions from library") }}</h5>
-                                <div class="ibox-tools">
+                {% if not onlySee %}
+                    <div style="width: 49%; ">
+                        <div class="col-md-12" style="padding-right: 5px; padding-left: 5px">
+                            <div class="ibox">
+                                <div class="ibox-title" >
+                                    <h5>{{ _("Available questions from library") }}</h5>
+                                    <div class="ibox-tools">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="ibox-content" style="min-height: 400px" id="div_availables">
-                                {% set doActions=False %}
-                                {% set jstreeId="jstree2" %}
-                                {% set eventClick=False %}
-                                {% set classByUser=False %}
-                                {% set classByRegRequired=True %}
-                                {% include 'snippets/jstreeQuestions.jinja2' %}
+                                <div class="ibox-content" style="min-height: 400px" id="div_availables">
+                                    {% set doActions=False %}
+                                    {% set jstreeId="jstree2" %}
+                                    {% set eventClick=False %}
+                                    {% set classByUser=False %}
+                                    {% set classByRegRequired=False %}
+                                    {% set showCreator=True %}
+                                    {% set colorsUserCategories=False %}
+                                    {% include 'snippets/jstreeQuestions.jinja2' %}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div style="width: 49%;">
+                {% endif %}
+
+                <div style="width: {% if onlySee %}100{% else %}49{% endif %}%;">
                     <div class="col-md-12" style="padding-right: 5px; padding-left: 5px">
                         <div class="col-lg-12" id="form_questions" style="padding-right: 0px; padding-left: 0px">
                             <div class="ibox float-e-margins">
@@ -70,6 +80,8 @@
                                     {% set classByAssesRequired=True %}
                                     {% set createSection=True %}
                                     {% set jstreeName="jstree1" %}
+                                    {% set showCreator=True %}
+                                    {% set colorsUserCategories=False %}
                                     {% include 'snippets/jstreeForm.jinja2'  %}
                                     <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}" id="formFoSendInformation" style="display: none">
                                         <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
@@ -107,12 +119,9 @@
                     </div>
                 </div>
             </div>
-
-
-
         </div>
 
-        <div class="col-md-4">
+        <div class="col-md-{% if onlySee %}6{% else %}4{% endif %}">
             <div class="ibox">
                 <div class="ibox-title" >
                     <h5>{{ _("Preview") }}</h5>
@@ -125,6 +134,7 @@
                         {% set img1=request.url_for_static('landing/odk.png') %}
                         {% set img2=request.url_for_static('landing/odk2.png') %}
                         {% set img3=request.url_for_static('landing/odk3.png') %}
+                        {% set isOneProject=True %}
                         {% include 'snippets/project/previewForm.jinja2' %}
                     </div>
                 </div>
@@ -171,6 +181,10 @@
             $('#jstree1').jstree({
                 'core': {
                     'check_callback': function(operation, node, node_parent, node_position, more) {
+
+                        {% if onlySee %}
+                            return false
+                        {% endif %}
 
                         if(node.parent =="#"){
                             if(node.id.substring(0,2)=="j2")
@@ -294,7 +308,7 @@
             function refreshTheQuestions() {
 
                 $.ajax({
-                    url: '{{ request.route_url('assessmentdetailSaveChanges', projectid=activeProject, assessmentid=assessmentid) }}',
+                    url: '{{ request.route_url('assessmentdetailSaveChanges', user=activeProject["owner"].user_name, project=activeProject.project_cod, assessmentid=assessmentid) }}',
                     datatype: "json",
                     type: "POST",
                     data: {
@@ -418,14 +432,14 @@
 
         function showDeleteSection()
         {
-            var urlAction = '{{ request.application_url }}/project/{{projectid}}/assessment/{{assessmentid}}/'+$("#txt_section_id").val()+'/delete'
+            var urlAction = '{{ request.application_url }}/user/{{ activeProject["owner"].user_name }}/project/{{activeProject.project_cod}}/assessment/{{assessmentid}}/'+$("#txt_section_id").val()+'/delete'
             showDelete(urlAction,'{{ _("Do you really want to remove this section?") }}','{{ request.session.get_csrf_token() }}')
         }
 
         function actionSection(action)
         {
             $.ajax({
-                url: '{{ request.route_url('assessmentSectionActions',projectid=projectid, assessmentid=assessmentid) }}',
+                url: '{{ request.route_url('assessmentSectionActions',user=activeProject["owner"].user_name, project=activeProject.project_cod, assessmentid=assessmentid) }}',
                 datatype: "json",
                 type: "POST",
                 data: {

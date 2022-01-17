@@ -22,6 +22,12 @@
 {% endblock %}
 
 {% block pagecontent %}
+    {% set onlySee = False %}
+
+    {% if activeProject["access_type"] in [4] or activeProject["project_regstatus"] > 0 %}
+        {% set onlySee = True %}
+    {% endif %}
+
     <div class="row">
 
         <div class="col-lg-4 " >
@@ -33,6 +39,10 @@
                     </div>
                 </div>
                 <div class="ibox-content" >
+                    {% set auxError = error_summary %}
+                    {% set error_summary = error_summary2 %}
+                    {% include 'snippets/error.jinja2' %}
+                    {% set error_summary = auxError %}
                     <input type="text" class="form-control form-control-sm m-b-xs" id="filter" placeholder="{{ _("Search technology") }}">
                     <table class="footable  table table-stripped tableHover" data-page-size="50000" data-filter=#filter>
                         <thead>
@@ -49,13 +59,22 @@
                             {% set checked=True %}
                             {% set color="#000000" %}
                             {% set showBold=True %}
+                            {% set showCreator=True %}
                             {% include 'snippets/technologies/technologies-stream.jinja2' %}
-                            {% set UserTechs=TechnologiesUser %}
-                            {% set checkbox=True %}
-                            {% set checked=False %}
-                            {% set color="#000000" %}
-                            {% set showBold=False %}
-                            {% include 'snippets/technologies/technologies-stream.jinja2' %}
+                            {% if onlySee == False %}
+                                {% set UserTechs=TechnologiesUser %}
+                                {% set checkbox=True %}
+                                {% set checked=False %}
+                                {% set color="#000000" %}
+                                {% set showBold=False %}
+                                {% set showCreator=True %}
+                                {% include 'snippets/technologies/technologies-stream.jinja2' %}
+                            {% endif %}
+                            <tr style="{% if totalOfCombinations > 50 %}color: red{% endif %}">
+                                <th colspan="2" >{{ _("Total of combinations") }}</th>
+                                <th class="text-center">{{ totalOfCombinations }}</th>
+                                <td></td>
+                            </tr>
                         </tbody>
                     </table>
                     <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}">
@@ -69,7 +88,6 @@
                             </div>
                         </div>
                     </form>
-
                     <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}" style="display:none">
                         <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                         <input type="text" class="tech_id" name="tech_id" style="width: 100%;display:none">
@@ -86,6 +104,7 @@
         </div>
 
         {% if alias %}
+
             <div class="col-lg-4 " id="alias_in_project">
                 <div class="ibox float-e-margins" >
                     <div class="ibox-title">
@@ -97,10 +116,12 @@
                     <div class="ibox-content animated fadeInRightBig" >
                         <table class="footable table table-stripped" data-page-size="50000" data-filter=#filter>
                             <tbody>
+
                                 {% set UserTechs=alias.AliasTechnologyInProject %}
                                 {% set checkbox=True %}
                                 {% set checked=True %}
                                 {% set isAlias=True %}
+                                {% set showCreator=False %}
                                 {% include 'snippets/technologies/technologies-stream.jinja2' %}
                                 {% set UserTechs=alias.AliasExtraTechnologyInProject %}
                                 {% set extra=True %}
@@ -108,37 +129,42 @@
                                 {% set checked=True %}
                                 {% set isAlias=True %}
                                 {% include 'snippets/technologies/technologies-stream.jinja2' %}
-                                {% set UserTechs=alias.AliasTechnology %}
-                                {% set checkbox=True %}
-                                {% set checked=False %}
-                                {% set isAlias=True %}
-                                {% set extra=False %}
-                                {% include 'snippets/technologies/technologies-stream.jinja2' %}
+
+                                {% if onlySee == False %}
+                                    {% set UserTechs=alias.AliasTechnology %}
+                                    {% set checkbox=True %}
+                                    {% set checked=False %}
+                                    {% set isAlias=True %}
+                                    {% set extra=False %}
+                                    {% include 'snippets/technologies/technologies-stream.jinja2' %}
+                                {% endif %}
                             </tbody>
                         </table>
-                        <div class="stream" style="padding: 4px 0" onclick="showCreateTechnology()">
-                            <div class="stream-badge">
-                                <i class="fa fa-plus" style="color:#000000"></i>
-                            </div>
-                            <div class="stream-panel" style="margin-top: 4px">
-                                <div class="stream-info">
-                                    <strong class="label label-primary" style="font-size: 12px; background-color: #3c763d">{{ _("Create new technology option") }}</strong>
-                                </div>
-                            </div>
-                        </div>
 
-                        <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}">
-                            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
-                            <input type="text" class="tech_id" name="tech_id" style="width: 100%;display:none" value="{{ tech_id }}">
-                            <input type="text" id="txt_technologies_alias_included" name="txt_technologies_included" style="width: 100%;display:none">
-                            <input type="text" id="txt_technologies_alias_excluded" name="txt_technologies_excluded" style="width: 100%; display:none">
-                            <div class="row" style="padding-top: 10px; height: 50px">
-                                <div class="col-md-12">
-                                    <button class="btn btn-primary pull-right clm-actions" name="btn_save_technologies_alias" type="submit" id="btn_save_technologies_alias">{{ _("Save") }}</button>
+                        {% if not onlySee %}
+                            <div class="stream" style="padding: 4px 0" onclick="showCreateTechnology()">
+                                <div class="stream-badge">
+                                    <i class="fa fa-plus" style="color:#000000"></i>
+                                </div>
+                                <div class="stream-panel" style="margin-top: 4px">
+                                    <div class="stream-info">
+                                        <strong class="label label-primary" style="font-size: 12px; background-color: #3c763d">{{ _("Create new technology option") }}</strong>
+                                    </div>
                                 </div>
                             </div>
 
-                        </form>
+                            <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}">
+                                <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                                <input type="text" class="tech_id" name="tech_id" style="width: 100%;display:none" value="{{ tech_id }}">
+                                <input type="text" id="txt_technologies_alias_included" name="txt_technologies_included" style="width: 100%;display:none">
+                                <input type="text" id="txt_technologies_alias_excluded" name="txt_technologies_excluded" style="width: 100%; display:none">
+                                <div class="row" style="padding-top: 10px; height: 50px">
+                                    <div class="col-md-12">
+                                        <button class="btn btn-primary pull-right clm-actions" name="btn_save_technologies_alias" type="submit" id="btn_save_technologies_alias">{{ _("Save") }}</button>
+                                    </div>
+                                </div>
+                            </form>
+                        {% endif %}
                     </div>
                 </div>
             </div>

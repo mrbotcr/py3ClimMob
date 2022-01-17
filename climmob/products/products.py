@@ -1,7 +1,6 @@
-from ..processes import (
+from climmob.processes import (
     addProductInstance,
     getRunningTasksByProcess,
-    cancelTask,
     deleteProducts,
 )
 from celery.contrib.abortable import AbortableAsyncResult
@@ -44,8 +43,7 @@ def addProduct(product):
 
 
 def registerProductInstance(
-    user,
-    project,
+    projectId,
     product,
     output,
     mimeType,
@@ -56,8 +54,7 @@ def registerProductInstance(
 ):
     if product_found(product):
         addProductInstance(
-            user,
-            project,
+            projectId,
             product,
             output,
             mimeType,
@@ -72,8 +69,8 @@ def getProducts():
     return list(_PRODUCTS)
 
 
-def stopTasksByProcess(request, user, project, processName="ALL"):
-    tasks = getRunningTasksByProcess(request, user, project, processName)
+def stopTasksByProcess(request, projectId, processName="ALL"):
+    tasks = getRunningTasksByProcess(request, projectId, processName)
     for task in tasks:
         print("*****stopTasksByProcess. Revoking task " + task)
         result = AbortableAsyncResult(task)
@@ -82,4 +79,4 @@ def stopTasksByProcess(request, user, project, processName="ALL"):
         print("*****stopTasksByProcess. Cancelling task from database " + task)
         # cancelTask(request, task)
 
-    deleteProducts(request, user, project, processName)
+    deleteProducts(request, projectId, processName)

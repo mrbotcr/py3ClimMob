@@ -1,4 +1,4 @@
-from climmob.models.schema import mapFromSchema, mapToSchema
+from climmob.models.schema import mapFromSchema
 from climmob.models import (
     AssDetail,
     Asssection,
@@ -8,16 +8,18 @@ from climmob.models import (
     Registry,
     I18nQuestion,
 )
-from .question import opcionOtherInQuestion
-from climmob.processes.db.project import numberOfCombinationsForTheProject
+from climmob.processes import (
+    numberOfCombinationsForTheProject,
+    getProjectLabels,
+    opcionOtherInQuestion,
+)
 from sqlalchemy import or_, func, and_
 from jinja2 import Environment
-import json
 
 __all__ = ["getQuestionsByType", "getQuestionsStructure"]
 
 
-def getQuestionsByType(user, project, request):
+def getQuestionsByType(projectId, request):
     data = []
 
     dic = {}
@@ -26,26 +28,26 @@ def getQuestionsByType(user, project, request):
     dic["Performance"] = []
     dic["Explanatory"] = []
     dic["Quantitative"] = []
+    dic["linearRegression"] = []
 
-    numComb = numberOfCombinationsForTheProject(user, project, request)
+    projectLabels = getProjectLabels(projectId, request)
+
+    numComb = numberOfCombinationsForTheProject(projectId, request)
 
     sections = mapFromSchema(
         request.dbsession.query(Regsection)
-        .filter(Regsection.user_name == user)
-        .filter(Regsection.project_cod == project)
+        .filter(Regsection.project_id == projectId)
         .all()
     )
     for section in sections:
 
         questions = mapFromSchema(
             request.dbsession.query(Registry)
-            .filter(Registry.user_name == user)
-            .filter(Registry.project_cod == project)
+            .filter(Registry.project_id == projectId)
             .filter(Registry.section_id == section["section_id"])
             .all()
         )
         for question in questions:
-            questInfo = {}
             questionData = mapFromSchema(
                 request.dbsession.query(
                     Question,
@@ -77,7 +79,9 @@ def getQuestionsByType(user, project, request):
                 .first()
             )
 
-            dictName, dictQues = addQuestionToDictionary(questionData, numComb)
+            dictName, dictQues = addQuestionToDictionary(
+                projectLabels, questionData, numComb
+            )
 
             if dictName != "":
                 dic[dictName].append(dictQues)
@@ -85,8 +89,7 @@ def getQuestionsByType(user, project, request):
     # ASSESSMENTS
     assessments = mapFromSchema(
         request.dbsession.query(Assessment)
-        .filter(Assessment.user_name == user)
-        .filter(Assessment.project_cod == project)
+        .filter(Assessment.project_id == projectId)
         .filter(or_(Assessment.ass_status == 1, Assessment.ass_status == 2))
         .order_by(Assessment.ass_days)
         .all()
@@ -95,8 +98,7 @@ def getQuestionsByType(user, project, request):
         _assessments.append(assessment)
         sections = mapFromSchema(
             request.dbsession.query(Asssection)
-            .filter(Asssection.user_name == user)
-            .filter(Asssection.project_cod == project)
+            .filter(Asssection.project_id == projectId)
             .filter(Asssection.ass_cod == assessment["ass_cod"])
             .order_by(Asssection.section_order)
             .all()
@@ -106,8 +108,7 @@ def getQuestionsByType(user, project, request):
 
             questions = mapFromSchema(
                 request.dbsession.query(AssDetail)
-                .filter(AssDetail.user_name == user)
-                .filter(AssDetail.project_cod == project)
+                .filter(AssDetail.project_id == projectId)
                 .filter(AssDetail.ass_cod == assessment["ass_cod"])
                 .filter(AssDetail.section_id == section["section_id"])
                 .order_by(AssDetail.question_order)
@@ -147,7 +148,7 @@ def getQuestionsByType(user, project, request):
                 )
 
                 dictName, dictQues = addQuestionToDictionary(
-                    questionData, numComb, assessment
+                    projectLabels, questionData, numComb, assessment
                 )
 
                 if dictName != "":
@@ -156,7 +157,8 @@ def getQuestionsByType(user, project, request):
     return dic, _assessments
 
 
-def addQuestionToDictionary(questionData, numComb, assessment=None):
+def addQuestionToDictionary(projectLabels, questionData, numComb, assessment=None):
+
     questInfo = {}
 
     if assessment:
@@ -170,13 +172,20 @@ def addQuestionToDictionary(questionData, numComb, assessment=None):
 
     if questionData["question_quantitative"] == 1:
 
+        if questionData["question_dtype"] not in [2, 3, 4, 5, 6]:
+            return "", ""
+
         questInfo["name"] = questionData["question_name"]
         questInfo["codeQst"] = questionData["question_code"]
         questInfo["id"] = questionData["question_id"]
+        questInfo["dtype"] = questionData["question_dtype"]
         questInfo["vars"] = []
         questInfo["code"] = assessment
         questInfo["questionAsked"] = []
-        questInfo["type"] = "quantitative"
+        if questionData["question_dtype"] in [2, 3]:
+            questInfo["type"] = "linearregression"
+        else:
+            questInfo["type"] = "quantitative"
         options = {
             1: "text",
             2: "decimal",
@@ -213,7 +222,7 @@ def addQuestionToDictionary(questionData, numComb, assessment=None):
 
         for questionNumber in range(0, numComb):
             nameExtra = "_" + chr(65 + questionNumber).lower()
-            descExtra = " - Option " + chr(65 + questionNumber)
+            descExtra = " - " + projectLabels[questionNumber]
             questInfo["vars"].append(
                 code + "_" + questionData["question_code"] + nameExtra
             )
@@ -230,14 +239,18 @@ def addQuestionToDictionary(questionData, numComb, assessment=None):
             + "_add"
         )
 
-        return "Quantitative", questInfo
+        if questionData["question_dtype"] in [2, 3]:
+            return "linearRegression", questInfo
+        else:
+            return "Quantitative", questInfo
 
     else:
-        if questionData["question_dtype"] == 5:
+        if questionData["question_dtype"] in [2, 3, 4, 5, 6]:
             questInfo["name"] = questionData["question_name"]
             questInfo["codeQst"] = questionData["question_code"]
             questInfo["questionAsked"] = questionData["question_desc"]
             questInfo["id"] = questionData["question_id"]
+            questInfo["dtype"] = questionData["question_dtype"]
             questInfo["vars"] = code + "_" + questionData["question_code"].lower()
             questInfo["code"] = assessment
             questInfo["type"] = "explanatory"
@@ -356,35 +369,32 @@ def addQuestionToDictionary(questionData, numComb, assessment=None):
     return "", ""
 
 
-def getQuestionsStructure(user, project, ass_cod, request):
+def getQuestionsStructure(projectId, ass_cod, request):
     data = []
 
     dic = []
     if ass_cod == "":
         sections = mapFromSchema(
             request.dbsession.query(Regsection)
-            .filter(Regsection.user_name == user)
-            .filter(Regsection.project_cod == project)
+            .filter(Regsection.project_id == projectId)
             .order_by(Regsection.section_order)
             .all()
         )
     else:
         sections = mapFromSchema(
             request.dbsession.query(Asssection)
-            .filter(Asssection.user_name == user)
-            .filter(Asssection.project_cod == project)
+            .filter(Asssection.project_id == projectId)
             .filter(Asssection.ass_cod == ass_cod)
             .order_by(Asssection.section_order)
             .all()
         )
-    numComb = numberOfCombinationsForTheProject(user, project, request)
+    numComb = numberOfCombinationsForTheProject(projectId, request)
 
     for section in sections:
         if ass_cod == "":
             questions = mapFromSchema(
                 request.dbsession.query(Registry)
-                .filter(Registry.user_name == user)
-                .filter(Registry.project_cod == project)
+                .filter(Registry.project_id == projectId)
                 .filter(Registry.section_id == section["section_id"])
                 .order_by(Registry.question_order)
                 .all()
@@ -392,8 +402,7 @@ def getQuestionsStructure(user, project, ass_cod, request):
         else:
             questions = mapFromSchema(
                 request.dbsession.query(AssDetail)
-                .filter(AssDetail.user_name == user)
-                .filter(AssDetail.project_cod == project)
+                .filter(AssDetail.project_id == projectId)
                 .filter(AssDetail.ass_cod == ass_cod)
                 .filter(AssDetail.section_id == section["section_id"])
                 .order_by(AssDetail.question_order)

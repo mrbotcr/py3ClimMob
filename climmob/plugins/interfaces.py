@@ -20,6 +20,9 @@ __all__ = [
     "IDatabase",
     "IForm",
     "IMultimedia",
+    "ICheckBox",
+    "IUpload",
+    "IDataColletionProgress",
 ]
 
 
@@ -329,7 +332,9 @@ class IForm(Interface):  # pragma: no cover
     Allows to hook into the processes that create, update and delete forms
     """
 
-    def after_adding_form(self, request, user_name, projectid, formId, ass_cod):
+    def after_adding_form(
+        self, request, userOwner, projectId, projectCod, formId, ass_cod
+    ):
         """
         Called by ClimMob so plugins can perform actions after FormShare deletes a form from the database
         :param request: ``pyramid.request`` object
@@ -340,7 +345,9 @@ class IForm(Interface):  # pragma: no cover
         :return: None
         """
 
-    def after_deleting_form(self, request, user_name, projectid, formId, ass_cod):
+    def after_deleting_form(
+        self, request, userOwner, projectId, projectCod, formId, ass_cod
+    ):
         """
         Called by ClimMob so plugins can perform actions after FormShare deletes a form from the database
         :param request: ``pyramid.request`` object
@@ -363,4 +370,45 @@ class IMultimedia(Interface):
         :param formId: Form: assessment - registry
         :param ass_cod: Assessment ID - "" for registry
         :return: None
+        """
+
+
+class IDataColletionProgress(Interface):
+    def create_data_collection_progress(
+        request,
+        locale,
+        userOwner,
+        projectId,
+        projectCod,
+        projectDetails,
+        geoInformation,
+    ):
+        """
+
+        """
+
+
+class ICheckBox(Interface):  # pragma: no cover
+    """
+    Allows to hook into the processes that create, update and delete forms
+    """
+
+    def before_process_checkbox_data(self, data, parameter_name):
+        """
+
+        """
+
+    def after_process_checkbox_data(self, data, parameter_name):
+        """
+
+        """
+
+
+class IUpload(Interface):
+    def create_Excel_template_for_upload_data(
+        self, request, userOwner, projectId, projectCod, assCod=None
+    ):
+
+        """
+
         """

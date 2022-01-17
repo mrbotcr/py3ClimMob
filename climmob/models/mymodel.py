@@ -5,7 +5,7 @@ from sqlalchemy import (
     Text,
 )
 
-from .meta import Base
+from climmob.models.meta import Base
 
 
 class MyModel(Base):

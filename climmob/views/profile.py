@@ -1,5 +1,5 @@
-from .classes import privateView
-from ..processes import (
+from climmob.views.classes import privateView
+from climmob.processes import (
     getUserLog,
     getUserStats,
     getCountryList,
@@ -7,11 +7,11 @@ from ..processes import (
     otherUserHasEmail,
     updateProfile,
     addToLog,
-    getUserPassword,
+    getActiveProject,
     changeUserPassword,
 )
 import datetime
-from ..config.auth import getUserData
+from climmob.config.auth import getUserData
 
 
 class profile_view(privateView):
@@ -23,7 +23,7 @@ class profile_view(privateView):
         activities = getUserLog(self.user.login, self.request, limit)
         userstats = getUserStats(self.user.login, self.request)
         return {
-            "activeUser": self.user,
+            "activeProject": getActiveProject(self.user.login, self.request),
             "activities": activities,
             "userstats": userstats,
         }
@@ -126,7 +126,7 @@ class editProfile_view(privateView):
         # self.needJS('editprofile')
         # self.needCSS('select2')
         return {
-            "activeUser": self.user,
+            "activeProject": getActiveProject(self.user.login, self.request),
             "userstats": userstats,
             "data": self.decodeDict(self.user.userData),
             "error_summary": error_summary,

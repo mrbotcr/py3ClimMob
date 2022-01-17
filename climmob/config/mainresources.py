@@ -153,6 +153,7 @@ def createResources(apppath, config):
     r.add_css_resource("map", "style", "style.css")
     r.add_css_resource("map", "normalize", "normalize.min.css")
     r.add_css_resource("map", "leaflet", "leaflet.css")
+
     # ----------------------------------------------------------------------------------------------------------
 
     # Add core JS
@@ -314,18 +315,18 @@ def createResources(apppath, config):
     r.add_js_resource("coreresources", "alias", "technologies/alias.js", "pace")
 
     # ProductsList
-    r.add_js_resource(
-        "coreresources",
-        "concurrent",
-        "project/productsList/Concurrent.Thread.js",
-        "pace",
-    )
-    r.add_js_resource(
-        "coreresources", "productsList", "project/productsList/productsList.js", "pace"
-    )
-    r.add_js_resource(
-        "coreresources", "productsListaes", "project/productsList/aes.js", "pace"
-    )
+    # r.add_js_resource(
+    #     "coreresources",
+    #     "concurrent",
+    #     "project/productsList/Concurrent.Thread.js",
+    #     "pace",
+    # )
+    # r.add_js_resource(
+    #     "coreresources", "productsList", "project/productsList/productsList.js", "pace"
+    # )
+    # r.add_js_resource(
+    #     "coreresources", "productsListaes", "project/productsList/aes.js", "pace"
+    # )
 
     # EditData
     r.add_js_resource(

@@ -1,19 +1,18 @@
-from ..db.project import getProjectData
-from ..db.enumerator import searchEnumerator
-from ...models import Assessment, Registry, Question, AssDetail
+from climmob.models import Assessment, Registry, Question, AssDetail
 from climmob.models.repository import sql_execute
+from climmob.processes import getProjectEnumerators, getProjectData
 
 __all__ = ["getInformationFromProject", "getInformationForMaps"]
 
 
-def getInformationFromProject(request, user, projectid):
+def getInformationFromProject(request, userOwner, projectId, projectCod):
 
     sql = (
         "select farmername, clm_start, qst162"
         + " from "
-        + user
+        + userOwner
         + "_"
-        + projectid
+        + projectCod
         + ".REG_geninfo "
         + " order by qst162 +0"
     )
@@ -22,8 +21,7 @@ def getInformationFromProject(request, user, projectid):
 
     assessments = (
         request.dbsession.query(Assessment)
-        .filter(Assessment.user_name == user)
-        .filter(Assessment.project_cod == projectid)
+        .filter(Assessment.project_id == projectId)
         .filter(Assessment.ass_status > 0)
         .order_by(Assessment.ass_days)
         .all()
@@ -48,9 +46,9 @@ def getInformationFromProject(request, user, projectid):
         sql = (
             "select qst163,clm_start"
             + " from "
-            + user
+            + userOwner
             + "_"
-            + projectid
+            + projectCod
             + ".ASS"
             + assessment.ass_cod
             + "_geninfo "
@@ -69,13 +67,13 @@ def getInformationFromProject(request, user, projectid):
         assessmentsInformation.append(assessmentDetails)
 
     return {
-        "projectInfo": getProjectData(user, projectid, request),
+        "projectInfo": getProjectData(projectId, request),
         "packagesRegistryInfo": packagesInformation,
         "assessmentsDetails": assessmentsInformation,
     }
 
 
-def getInformationForMaps(request, user, projectid):
+def getInformationForMaps(request, userOwner, projectId, projectCod):
     geoInformation = []
     colors = [
         "#1ab394",
@@ -99,8 +97,7 @@ def getInformationForMaps(request, user, projectid):
     registryHaveGeolocation = (
         request.dbsession.query(Question.question_code)
         .filter(Question.question_id == Registry.question_id)
-        .filter(Registry.user_name == user)
-        .filter(Registry.project_cod == projectid)
+        .filter(Registry.project_id == projectId)
         .filter(Question.question_dtype == 4)
         .first()
     )
@@ -112,9 +109,9 @@ def getInformationForMaps(request, user, projectid):
             "select _submitted_by,"
             + registryHaveGeolocation[0]
             + " from "
-            + user
+            + userOwner
             + "_"
-            + projectid
+            + projectCod
             + ".REG_geninfo "
             + " order by qst162 +0"
         )
@@ -125,19 +122,17 @@ def getInformationForMaps(request, user, projectid):
             result = sql_execute(sql.replace("_submitted_by", "'Username is missing'"))
 
         geoInformationDict["fieldAgents"] = createListOfFieldAgents(
-            request, user, result, colors
+            request, projectId, result, colors
         )
 
         if len(geoInformationDict["fieldAgents"]) > 0:
             geoInformation.append(geoInformationDict)
-
     # else:
     #    print("No tiene gps")
 
     assessments = (
         request.dbsession.query(Assessment)
-        .filter(Assessment.user_name == user)
-        .filter(Assessment.project_cod == projectid)
+        .filter(Assessment.project_id == projectId)
         .filter(Assessment.ass_status > 0)
         .order_by(Assessment.ass_days)
         .all()
@@ -147,8 +142,7 @@ def getInformationForMaps(request, user, projectid):
         assessmentHaveGeolocation = (
             request.dbsession.query(Question.question_code)
             .filter(Question.question_id == AssDetail.question_id)
-            .filter(AssDetail.user_name == user)
-            .filter(AssDetail.project_cod == projectid)
+            .filter(AssDetail.project_id == projectId)
             .filter(AssDetail.ass_cod == assessment.ass_cod)
             .filter(Question.question_dtype == 4)
             .first()
@@ -164,14 +158,13 @@ def getInformationForMaps(request, user, projectid):
                 "select _submitted_by,"
                 + assessmentHaveGeolocation[0]
                 + " from "
-                + user
+                + userOwner
                 + "_"
-                + projectid
+                + projectCod
                 + ".ASS"
                 + assessment.ass_cod
                 + "_geninfo "
             )
-            # mySession = request.dbsession
             try:
                 result = sql_execute(sql)
             except:
@@ -180,7 +173,7 @@ def getInformationForMaps(request, user, projectid):
                 )
 
             geoInformationDict["fieldAgents"] = createListOfFieldAgents(
-                request, user, result, colors
+                request, projectId, result, colors
             )
 
             if len(geoInformationDict["fieldAgents"]) > 0:
@@ -191,10 +184,10 @@ def getInformationForMaps(request, user, projectid):
     return geoInformation
 
 
-def createListOfFieldAgents(request, user, result, colors):
+def createListOfFieldAgents(request, projectId, result, colors):
     listOfFieldAgents = []
     count = 0
-    enumeratorByUser = searchEnumerator(user, request)
+    enumeratorByUser = getProjectEnumerators(projectId, request)
     for res in result:
         exits = False
         for index, element in enumerate(listOfFieldAgents):
@@ -206,12 +199,21 @@ def createListOfFieldAgents(request, user, result, colors):
             dictOfFieldAgent = {}
             dictOfFieldAgent["username"] = res[0]
             enumerator = next(
-                (item for item in enumeratorByUser if item["enum_id"] == res[0]), False
+                (
+                    item
+                    for participant in enumeratorByUser
+                    for item in enumeratorByUser[participant]
+                    if item["enum_id"] == res[0]
+                ),
+                False,
             )
             if enumerator:
                 dictOfFieldAgent["Name"] = enumerator["enum_name"]
             else:
-                dictOfFieldAgent["Name"] = "Other - " + res[0]
+                if res[0] != None:
+                    dictOfFieldAgent["Name"] = "Other - " + res[0]
+                else:
+                    dictOfFieldAgent["Name"] = "Unknown"
 
             dictOfFieldAgent["Color"] = colors[count]
             dictOfFieldAgent["Points"] = []

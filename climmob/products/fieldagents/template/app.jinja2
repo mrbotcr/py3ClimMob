@@ -17,29 +17,32 @@
                         
                     </div>
                     <div class="ibox-content" style="border-color: #ffffff">
-                        <h3 style="font-weight: initial">{{ URLInstruction1 }}: <span style="color: #009551">{{ URL }}</span>.</h3>
-                        <h3 style="font-weight: initial">{{ Instruction2 }}: </h3>
-                        <table class="table table-bordered">
-                            <thead>
-                            <tr>
-                                <th class="text-center">{{ Name }}</th>
-                                <th class="text-center">{{ Username }}</th>
-                                <th class="text-center">{{ Password }}</th>
-                                <th class="text-center">{{ QR }}</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                                {% for fieldagent in fieldagents %}
-                                    <tr>
-                                        <td style="vertical-align: middle;">{{ fieldagent.enum_name }}</td>
-                                        <td style="vertical-align: middle;">{{ fieldagent.enum_id }}</td>
-                                        <td style="vertical-align: middle;">{{ fieldagent.enum_password }}</td>
-                                        <td class="text-center"><img src="img/{{ fieldagent.enum_id }}_{{ fieldagent.user_name }}.png" style="width: 100px"></td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-
+                        <h3 style="font-weight: initial">{{ URLInstruction1 }}</h3>
+                        <br>
+                        {% for userParticipant in fieldagents %}
+                            <h3 style="font-weight: initial">{{ Instruction4 }}: <b>{{ userParticipant }}</b> </h3>
+{#                            <h3 style="font-weight: initial">{{ Instruction3 }}: <span style="color: #009551">{{ URL }}/{{ userParticipant }}</span></h3>#}
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th class="text-center">{{ Name }}</th>
+                                    <th class="text-center">{{ Username }}</th>
+                                    <th class="text-center">{{ Password }}</th>
+                                    <th class="text-center">{{ QR }}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    {% for fieldagent in fieldagents[userParticipant] %}
+                                        <tr>
+                                            <td style="vertical-align: middle;">{{ fieldagent.enum_name }}</td>
+                                            <td style="vertical-align: middle;">{{ fieldagent.enum_id }}</td>
+                                            <td style="vertical-align: middle;">{{ fieldagent.enum_password }}</td>
+                                            <td class="text-center"><img src="img/{{ fieldagent.enum_id }}_{{ fieldagent.user_name }}.png" style="width: 100px"></td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endfor %}
                     </div>
                 </div>
             </div>

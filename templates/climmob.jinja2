@@ -11,16 +11,15 @@ pyramid.debug_authorization = false
 pyramid.debug_notfound = false
 pyramid.debug_routematch = false
 pyramid.default_locale_name = en
-pyramid.includes =
-    pyramid_debugtoolbar
+pyramid.includes = pyramid_debugtoolbar
 
 fanstatic.bottom = true
 fanstatic.debug = true
 fanstatic.publisher_signature = fanstatic
 fanstatic.use_application_uri = true
 
-sqlalchemy.url = mysql+mysqlconnector://{{ mysql_user_name }}:{{ mysql_user_password }}@{{ mysql_host }}/climmobv4?charset=utf8&ssl_disabled=True
-repository.url = mysql+mysqlconnector://{{ mysql_user_name }}:{{ mysql_user_password }}@{{ mysql_host }}/climmobv4?charset=utf8&ssl_disabled=True
+sqlalchemy.url = mysql+mysqlconnector://{{ mysql_user_name }}:{{ mysql_user_password }}@{{ mysql_host }}/climmobv4?charset=utf8mb4&ssl_disabled=True
+repository.url = mysql+mysqlconnector://{{ mysql_user_name }}:{{ mysql_user_password }}@{{ mysql_host }}/climmobv4?charset=utf8mb4&ssl_disabled=True
 schema.prefix = free
 
 celery.broker = redis://localhost:6379/5
@@ -32,6 +31,7 @@ celery.taskname = clmtask
 
 #This is used by the authoization framework module to encrypt comunications
 auth.secret = {{ auth_secret }}
+auth.secret.cookie = climmob_main_auth_tkt
 #Opaque is a permanet key passes thorugh a Digest Authorization
 auth.opaque = {{ auth_opaque }}
 aes.key = {{ aes_key }}
@@ -45,10 +45,11 @@ odktools.mysql.host = {{ mysql_host }}
 odktools.mysql.port = {{ mysql_port }}
 odktools.mysql.user = {{ mysql_user_name }}
 odktools.mysql.password = {{ mysql_user_password }}
+odktools.mysql.db = climmobv4
 
 mysql.cnf = %(here)s/mysql.cnf
 r.scripts = %(here)s/r
-r.random.script = %(here)s/r/Random.R
+r.random.script = %(here)s/r/RandomV2.R
 r.analysis.script = /opt/new_r_code
 
 # email.server = smtp.gmail.com

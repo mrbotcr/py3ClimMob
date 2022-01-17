@@ -6,21 +6,21 @@ import mimetypes
 from pyramid.httpexceptions import HTTPNotFound
 from hashlib import md5
 from uuid import uuid4
-from ...models import Project, storageErrors, Assessment
-from ...processes import (
+from climmob.models import Project, storageErrors, Assessment
+from climmob.processes import (
     isRegistryOpen,
     isAssessmentOpen,
     assessmentExists,
     projectExists,
     packageExist,
+    getTheProjectIdForOwner,
 )
-from ..db.json import addJsonLog
-from pyramid.response import Response
+from climmob.processes.db.json import addJsonLog
 from subprocess import check_call, CalledProcessError, Popen, PIPE
 import logging
-import climmob.plugins as p
 import datetime
 import io
+import shutil as sh
 
 log = logging.getLogger(__name__)
 
@@ -65,22 +65,33 @@ def generateManifest(mediaFileArray):
     return etree.tostring(root, encoding="utf-8")
 
 
-def getFormList(userid, enumerator, request):
+def getFormList(userid, enumerator, request, userOwner=None, projectCod=None):
     prjList = []
 
     sql = (
-        "SELECT prjenumerator.project_cod,project.project_regstatus,project.project_assstatus FROM "
-        "prjenumerator,enumerator,project WHERE "
+        "SELECT user_project.user_name,project.project_id,project.project_cod,project.project_regstatus,project.project_assstatus FROM "
+        "prjenumerator,enumerator,project, user_project WHERE "
+        "user_project.project_id = prjenumerator.project_id AND "
+        "user_project.access_type = 1 AND "
         "prjenumerator.enum_user = enumerator.user_name AND "
         "prjenumerator.enum_id = enumerator.enum_id AND "
-        "prjenumerator.user_name = project.user_name AND "
-        "prjenumerator.project_cod = project.project_cod AND "
+        "prjenumerator.project_id = project.project_id AND "
         "enumerator.enum_active = 1 AND "
         "(project.project_regstatus != 0) AND "
         "enumerator.user_name = '" + userid + "' AND "
         "enumerator.enum_id = '" + enumerator + "'"
     )
-    # print(sql)
+
+    if projectCod != None:
+        sql = (
+            sql
+            + " AND project.project_cod='"
+            + projectCod
+            + "' and user_project.user_name='"
+            + userOwner
+            + "'"
+        )
+
     projects = request.dbsession.execute(sql).fetchall()
 
     for project in projects:
@@ -88,24 +99,29 @@ def getFormList(userid, enumerator, request):
         if project.project_regstatus == 1:
             path = os.path.join(
                 request.registry.settings["user.repository"],
-                *[userid, project.project_cod, "odk", "reg", "*.json"]
+                *[project.user_name, project.project_cod, "odk", "reg", "*.json"]
             )
             files = glob.glob(path)
             if files:
                 with io.open(files[0], encoding="utf8") as data_file:
                     data = json.load(data_file)
                     data["downloadUrl"] = request.route_url(
-                        "odkxmlform", userid=userid, projectid=project.project_cod
+                        "odkxmlform",
+                        user=userid,
+                        userowner=project.user_name,
+                        project=project.project_cod,
                     )
                     data["manifestUrl"] = request.route_url(
-                        "odkmanifest", userid=userid, projectid=project.project_cod
+                        "odkmanifest",
+                        user=userid,
+                        userowner=project.user_name,
+                        project=project.project_cod,
                     )
                 prjList.append(data)
 
         assessments = (
             request.dbsession.query(Assessment)
-            .filter(Assessment.user_name == userid)
-            .filter(Assessment.project_cod == project.project_cod)
+            .filter(Assessment.project_id == project.project_id)
             .filter(Assessment.ass_status == 1)
             .all()
         )
@@ -114,7 +130,7 @@ def getFormList(userid, enumerator, request):
             path = os.path.join(
                 request.registry.settings["user.repository"],
                 *[
-                    userid,
+                    project.user_name,
                     project.project_cod,
                     "odk",
                     "ass",
@@ -128,14 +144,16 @@ def getFormList(userid, enumerator, request):
                     data = json.load(data_file, encoding="utf8")
                     data["downloadUrl"] = request.route_url(
                         "odkxmlformass",
-                        userid=userid,
-                        projectid=project.project_cod,
+                        user=userid,
+                        userowner=project.user_name,
+                        project=project.project_cod,
                         assessmentid=assessment.ass_cod,
                     )
                     data["manifestUrl"] = request.route_url(
                         "odkmanifestass",
-                        userid=userid,
-                        projectid=project.project_cod,
+                        user=userid,
+                        userowner=project.user_name,
+                        project=project.project_cod,
                         assessmentid=assessment.ass_cod,
                     )
                     prjList.append(data)
@@ -143,17 +161,14 @@ def getFormList(userid, enumerator, request):
     return generateFormList(prjList)
 
 
-def getManifest(userid, projectid, request):
+def getManifest(user, userOwner, projectId, projectCod, request):
     prjdat = (
-        request.dbsession.query(Project)
-        .filter(Project.user_name == userid)
-        .filter(Project.project_cod == projectid)
-        .first()
+        request.dbsession.query(Project).filter(Project.project_id == projectId).first()
     )
     if prjdat.project_regstatus == 1:
         path = os.path.join(
             request.registry.settings["user.repository"],
-            *[userid, projectid, "odk", "reg", "media", "*.*"]
+            *[userOwner, projectCod, "odk", "reg", "media", "*.*"]
         )
 
     files = glob.glob(path)
@@ -167,8 +182,9 @@ def getManifest(userid, projectid, request):
                     "hash": "md5:" + md5(open(file, "rb").read()).hexdigest(),
                     "downloadUrl": request.route_url(
                         "odkmediafile",
-                        userid=userid,
-                        projectid=projectid,
+                        user=user,
+                        userowner=userOwner,
+                        project=projectCod,
                         fileid=fileName,
                     ),
                 }
@@ -178,18 +194,19 @@ def getManifest(userid, projectid, request):
         return generateManifest([])
 
 
-def getAssessmentManifest(userid, projectid, assessmentid, request):
+def getAssessmentManifest(
+    user, userOwner, projectId, projectCod, assessmentid, request
+):
     prjdat = (
         request.dbsession.query(Assessment)
-        .filter(Assessment.user_name == userid)
-        .filter(Assessment.project_cod == projectid)
+        .filter(Assessment.project_id == projectId)
         .filter(Assessment.ass_cod == assessmentid)
         .first()
     )
     if prjdat.ass_status == 1:
         path = os.path.join(
             request.registry.settings["user.repository"],
-            *[userid, projectid, "odk", "ass", assessmentid, "media", "*.*"]
+            *[userOwner, projectCod, "odk", "ass", assessmentid, "media", "*.*"]
         )
     else:
         raise HTTPNotFound()
@@ -205,8 +222,9 @@ def getAssessmentManifest(userid, projectid, assessmentid, request):
                     "hash": "md5:" + md5(open(file, "rb").read()).hexdigest(),
                     "downloadUrl": request.route_url(
                         "odkmediafileass",
-                        userid=userid,
-                        projectid=projectid,
+                        user=user,
+                        userowner=userOwner,
+                        project=projectCod,
                         assessmentid=assessmentid,
                         fileid=fileName,
                     ),
@@ -217,17 +235,14 @@ def getAssessmentManifest(userid, projectid, assessmentid, request):
         return generateManifest([])
 
 
-def getXMLForm(userid, projectid, request):
+def getXMLForm(userOwner, projectId, projectCod, request):
     prjdat = (
-        request.dbsession.query(Project)
-        .filter(Project.user_name == userid)
-        .filter(Project.project_cod == projectid)
-        .first()
+        request.dbsession.query(Project).filter(Project.project_id == projectId).first()
     )
     if prjdat.project_regstatus == 1:
         path = os.path.join(
             request.registry.settings["user.repository"],
-            *[userid, projectid, "odk", "reg", "*.xml"]
+            *[userOwner, projectCod, "odk", "reg", "*.xml"]
         )
 
     files = glob.glob(path)
@@ -241,18 +256,17 @@ def getXMLForm(userid, projectid, request):
         raise HTTPNotFound()
 
 
-def getAssessmentXMLForm(userid, projectid, assessmentid, request):
+def getAssessmentXMLForm(userOwner, projectId, projectCod, assessmentid, request):
     prjdat = (
         request.dbsession.query(Assessment)
-        .filter(Assessment.user_name == userid)
-        .filter(Assessment.project_cod == projectid)
+        .filter(Assessment.project_id == projectId)
         .filter(Assessment.ass_cod == assessmentid)
         .first()
     )
     if prjdat.ass_status == 1:
         path = os.path.join(
             request.registry.settings["user.repository"],
-            *[userid, projectid, "odk", "ass", assessmentid, "*.xml"]
+            *[userOwner, projectCod, "odk", "ass", assessmentid, "*.xml"]
         )
     else:
         raise HTTPNotFound()
@@ -267,17 +281,14 @@ def getAssessmentXMLForm(userid, projectid, assessmentid, request):
         raise HTTPNotFound()
 
 
-def getMediaFile(userid, projectid, fileid, request):
+def getMediaFile(userOwner, projectId, projectCod, fileid, request):
     prjdat = (
-        request.dbsession.query(Project)
-        .filter(Project.user_name == userid)
-        .filter(Project.project_cod == projectid)
-        .first()
+        request.dbsession.query(Project).filter(Project.project_id == projectId).first()
     )
     if prjdat.project_regstatus == 1:
         path = os.path.join(
             request.registry.settings["user.repository"],
-            *[userid, projectid, "odk", "reg", "media", fileid]
+            *[userOwner, projectCod, "odk", "reg", "media", fileid]
         )
     else:
         raise HTTPNotFound()
@@ -291,18 +302,19 @@ def getMediaFile(userid, projectid, fileid, request):
         raise HTTPNotFound()
 
 
-def getAssessmentMediaFile(userid, projectid, assessmentid, fileid, request):
+def getAssessmentMediaFile(
+    userOwner, projectId, projectCod, assessmentid, fileid, request
+):
     prjdat = (
         request.dbsession.query(Assessment)
-        .filter(Assessment.user_name == userid)
-        .filter(Assessment.project_cod == projectid)
+        .filter(Assessment.project_id == projectId)
         .filter(Assessment.ass_cod == assessmentid)
         .first()
     )
     if prjdat.ass_status == 1:
         path = os.path.join(
             request.registry.settings["user.repository"],
-            *[userid, projectid, "odk", "ass", assessmentid, "media", fileid]
+            *[userOwner, projectCod, "odk", "ass", assessmentid, "media", fileid]
         )
     else:
         raise HTTPNotFound()
@@ -361,23 +373,31 @@ def storeError(
 
 
 def storeJSONInMySQL(
-    type, userid, userEnum, projectid, assessmentid, JSONFile, request
+    userid,
+    type,
+    userOwner,
+    userEnum,
+    projectCod,
+    assessmentid,
+    JSONFile,
+    request,
+    projectId,
 ):
-    schema = userid + "_" + projectid
+    schema = userOwner + "_" + projectCod
     if type == "REG":
         manifestFile = os.path.join(
             request.registry.settings["user.repository"],
-            *[userid, projectid, "db", "reg", "manifest.xml"]
+            *[userOwner, projectCod, "db", "reg", "manifest.xml"]
         )
         jsFile = os.path.join(
             request.registry.settings["user.repository"],
-            *[userid, projectid, "db", "reg", "custom.js"]
+            *[userOwner, projectCod, "db", "reg", "custom.js"]
         )
 
     else:
         manifestFile = os.path.join(
             request.registry.settings["user.repository"],
-            *[userid, projectid, "db", "ass", assessmentid, "manifest.xml"]
+            *[userOwner, projectCod, "db", "ass", assessmentid, "manifest.xml"]
         )
         jsFile = ""
 
@@ -424,29 +444,18 @@ def storeJSONInMySQL(
         print("*********************666")
         print(" ".join(args))
         print("*********************666")
-        """storeError(
-            fileuid,
-            type,
-            userid,
-            projectid,
-            assessmentid,
-            p.returncode,
-            stdout,
-            " ".join(args),
-            request,
-        )"""
-        print(userEnum)
+
         if userEnum != None:
             addJsonLog(
                 request,
                 type,
                 userid,
                 userEnum,
-                projectid,
                 assessmentid,
                 fileuid,
                 JSONFile,
                 logFile,
+                projectId,
             )
 
     return True
@@ -454,23 +463,25 @@ def storeJSONInMySQL(
 
 def convertXMLToJSON(
     userid,
+    userOwner,
     userEnum,
     XMLFile,
     JSONFile,
-    projectID,
+    projectCod,
     submissionType,
     assessmentID,
     request,
+    projectId,
 ):
     if submissionType == "REG":
         path = os.path.join(
             request.registry.settings["user.repository"],
-            *[userid, projectID, "odk", "reg", "*.xml"]
+            *[userOwner, projectCod, "odk", "reg", "*.xml"]
         )
     if submissionType == "ASS":
         path = os.path.join(
             request.registry.settings["user.repository"],
-            *[userid, projectID, "odk", "ass", assessmentID, "*.xml"]
+            *[userOwner, projectCod, "odk", "ass", assessmentID, "*.xml"]
         )
 
     files = glob.glob(path)
@@ -500,13 +511,15 @@ def convertXMLToJSON(
                 outfile.write(jsonString)
             # Now we store the data in MySQL
             storeJSONInMySQL(
-                submissionType,
                 userid,
+                submissionType,
+                userOwner,
                 userEnum,
-                projectID,
+                projectCod,
                 assessmentID,
                 JSONFile,
                 request,
+                projectId,
             )
         except CalledProcessError as e:
             print("1")
@@ -533,81 +546,130 @@ def checkSubmission(userInRequest, file, request):
             if xFormIDParts[0] == "REG":
                 user = xFormIDParts[1]
                 project = xFormIDParts[2]
-                if user == userInRequest:
-                    if projectExists(user, project, request):
-                        if isRegistryOpen(user, project, request):
-                            if packageExist(root, user, project, request):
-                                return True, 201, project, "REG", None
-                            else:
-                                return False, 404, None, None, None
+                if projectExists(userInRequest, user, project, request):
+                    projectId = getTheProjectIdForOwner(user, project, request)
+                    if isRegistryOpen(projectId, request):
+                        if packageExist(root, projectId, request):
+                            return True, 201, project, "REG", None, user, projectId
                         else:
-                            return False, 403, None, None, None
+                            return False, 404, None, None, None, None, None
                     else:
-                        return False, 404, None, None, None
+                        return False, 403, None, None, None, None, None
                 else:
-                    return False, 403, None, None, None
+                    return False, 404, None, None, None, None, None
+
             if xFormIDParts[0] == "ASS":
                 user = xFormIDParts[1]
                 project = xFormIDParts[2]
                 assessment = xFormIDParts[3]
-                if user == userInRequest:
-                    if projectExists(user, project, request):
-                        if isAssessmentOpen(user, project, assessment, request):
-                            if assessmentExists(user, project, assessment, request):
-                                return True, 201, project, "ASS", assessment
-                            else:
-                                return False, 404, None, None, None
+                if projectExists(userInRequest, user, project, request):
+
+                    projectId = getTheProjectIdForOwner(user, project, request)
+
+                    if isAssessmentOpen(projectId, assessment, request):
+                        if assessmentExists(projectId, assessment, request):
+                            return (
+                                True,
+                                201,
+                                project,
+                                "ASS",
+                                assessment,
+                                user,
+                                projectId,
+                            )
                         else:
-                            return False, 403, None, None, None
+                            return False, 404, None, None, None, None, None
                     else:
-                        return False, 404, None, None, None
+                        return False, 403, None, None, None, None, None
                 else:
-                    return False, 403, None, None, None
+                    return False, 404, None, None, None, None, None
         else:
-            return False, 404, None, None, None
+            return False, 404, None, None, None, None, None
     else:
-        return False, 404, None, None, None
+        return False, 404, None, None, None, None, None
 
 
 def storeSubmission(userid, userEnum, request):
     # try:
     acceptSubmission = False
-    projectID = None
+    projectCod = None
     submissionType = None
     assessmentID = None
+    userOwner = None
+    projectId = None
     error = 404
     for key in request.POST.keys():
         filename = request.POST[key].filename
         if filename.upper().find(".XML") >= 0 or filename == "xml_submission_file":
             input_file = request.POST[key].file
+
+            # Change by Brandon
+            iniqueIDTemp = uuid4()
+
+            pathTemp = os.path.join(
+                request.registry.settings["user.repository"],
+                *[userid, "data", "xml", str(iniqueIDTemp)]
+            )
+
+            os.makedirs(pathTemp)
+
+            filePath = os.path.join(pathTemp, filename)
+            tempFilePath = filePath + "~"
+
             input_file.seek(0)
+
+            with open(tempFilePath, "wb") as output_file:
+                shutil.copyfileobj(input_file, output_file)
+
+            final = open(filePath, "w")
+            args = ["tidy", "-xml", tempFilePath]
+            p = Popen(args, stdout=final, stderr=PIPE)
+            stdout, stderr = p.communicate()
+            final.close()
+            if p.returncode != 0:
+                return False, 500
+            # End changes by Brandon
+
             (
                 acceptSubmission,
                 error,
-                projectID,
+                projectCod,
                 submissionType,
                 assessmentID,
-            ) = checkSubmission(userid, input_file, request)
+                userOwner,
+                projectId,
+            ) = checkSubmission(userid, filePath, request)
+
+            sh.rmtree(pathTemp)
+
     if acceptSubmission:
         iniqueID = uuid4()
         if submissionType == "REG":
             path = os.path.join(
                 request.registry.settings["user.repository"],
-                *[userid, projectID, "data", "reg", "xml", str(iniqueID)]
+                *[userOwner, projectCod, "data", "reg", "xml", str(iniqueID)]
             )
             if not os.path.exists(path):
                 os.makedirs(path)
                 os.makedirs(
                     os.path.join(
                         request.registry.settings["user.repository"],
-                        *[userid, projectID, "data", "reg", "json", str(iniqueID)]
+                        *[userOwner, projectCod, "data", "reg", "json", str(iniqueID)]
                     )
                 )
 
         else:
             path = os.path.join(
                 request.registry.settings["user.repository"],
-                *[userid, projectID, "data", "ass", assessmentID, "xml", str(iniqueID)]
+                *[
+                    userOwner,
+                    projectCod,
+                    "data",
+                    "ass",
+                    assessmentID,
+                    "xml",
+                    str(iniqueID),
+                ]
             )
             if not os.path.exists(path):
                 os.makedirs(path)
@@ -615,8 +677,8 @@ def storeSubmission(userid, userEnum, request):
                     os.path.join(
                         request.registry.settings["user.repository"],
                         *[
-                            userid,
-                            projectID,
+                            userOwner,
+                            projectCod,
                             "data",
                             "ass",
                             assessmentID,
@@ -628,7 +690,6 @@ def storeSubmission(userid, userEnum, request):
 
         XMLFile = ""
         for key in request.POST.keys():
-            print(key)
             filename = request.POST[key].filename
             input_file = request.POST[key].file
             file_path = os.path.join(path, filename)
@@ -655,13 +716,15 @@ def storeSubmission(userid, userEnum, request):
             JSONFile = XMLFile.replace("xml", "json")
             convertXMLToJSON(
                 userid,
+                userOwner,
                 userEnum,
                 XMLFile,
                 JSONFile,
-                projectID,
+                projectCod,
                 submissionType,
                 assessmentID,
                 request,
+                projectId,
             )
             return True, 201
         else:

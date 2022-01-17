@@ -1,15 +1,18 @@
-from ..classes import privateView
-from ...models import Prjcombination
-from ...processes import (
+from climmob.views.classes import privateView
+from climmob.processes import (
     getProjectData,
     searchTechnologiesInProject,
     getCombinations,
     createExtraPackages,
     getPackages,
     AliasSearchTechnologyInProject,
+    getTheProjectIdForOwner,
+    getTech,
+    getActiveProject,
 )
-from ...config.auth import getCountryName
-from ...products.qrpackages.qrpackages import create_qr_packages
+from climmob.config.auth import getCountryName
+from climmob.products.qrpackages.qrpackages import create_qr_packages
+from climmob.products.packages.packages import create_packages_excell
 
 
 class projectHelp_view(privateView):
@@ -21,10 +24,15 @@ class projectHelp_view(privateView):
         if self.request.method == "POST":
 
             dataworking = self.getPostDict()
-            dataworking["project_details"] = getProjectData(
+
+            activeProjectId = getTheProjectIdForOwner(
                 dataworking["project_username"],
                 dataworking["project_cod"],
                 self.request,
+            )
+
+            dataworking["project_details"] = getProjectData(
+                activeProjectId, self.request,
             )
 
             if dataworking["project_details"]:
@@ -36,6 +44,7 @@ class projectHelp_view(privateView):
 
                     status, message = createExtraPackages(
                         dataworking["project_username"],
+                        activeProjectId,
                         dataworking["project_cod"],
                         self.request,
                         dataworking["project_details"]["project_numcom"],
@@ -44,9 +53,7 @@ class projectHelp_view(privateView):
                     )
                     if status:
                         dataworking["project_details"] = getProjectData(
-                            dataworking["project_username"],
-                            dataworking["project_cod"],
-                            self.request,
+                            activeProjectId, self.request,
                         )
                         dataworking["result_positive"] = self._(
                             "The number of participants was successfully increased"
@@ -55,24 +62,44 @@ class projectHelp_view(privateView):
 
                         ncombs, packages = getPackages(
                             dataworking["project_username"],
-                            dataworking["project_cod"],
+                            activeProjectId,
                             self.request,
                         )
                         create_qr_packages(
                             self.request,
                             self.request.locale_name,
                             dataworking["project_username"],
+                            activeProjectId,
                             dataworking["project_cod"],
                             ncombs,
                             packages,
                         )
+                        listOfLabels = [
+                            dataworking["project_details"]["project_label_a"],
+                            dataworking["project_details"]["project_label_b"],
+                            dataworking["project_details"]["project_label_c"],
+                        ]
+                        create_packages_excell(
+                            self.request,
+                            self.request.locale_name,
+                            dataworking["project_username"],
+                            activeProjectId,
+                            dataworking["project_cod"],
+                            packages,
+                            getTech(activeProjectId, self.request),
+                            listOfLabels,
+                        )
+
                     else:
                         dataworking["result_negative"] = message
             else:
                 dataworking["result_negative"] = self._(
                     "We haven't found a project that matches what was specified"
                 )
-        return {"dataworking": dataworking}
+        return {
+            "dataworking": dataworking,
+            "activeProject": getActiveProject(self.user.login, self.request),
+        }
 
 
 def getImportantInformation(dataworking, request):
@@ -81,17 +108,14 @@ def getImportantInformation(dataworking, request):
         dataworking["project_details"]["project_cnty"], request
     )
     techs, ncombs, combs, = getCombinations(
-        dataworking["project_username"], dataworking["project_cod"], request
+        dataworking["project_details"]["project_id"], request
     )
     techInfo = searchTechnologiesInProject(
-        dataworking["project_username"], dataworking["project_cod"], request
+        dataworking["project_details"]["project_id"], request
     )
     for tech in techInfo:
         tech["alias"] = AliasSearchTechnologyInProject(
-            tech["tech_id"],
-            dataworking["project_username"],
-            dataworking["project_cod"],
-            request,
+            tech["tech_id"], dataworking["project_details"]["project_id"], request,
         )
     dataworking["project_details"]["techs"] = techInfo
     dataworking["project_details"]["ncombs"] = ncombs

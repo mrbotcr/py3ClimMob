@@ -1,9 +1,9 @@
 from pyramid.security import remember
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
-from ..config.auth import getUserData, getUserByEmail
-from .classes import publicView
-from ..utility import valideRegisterForm
-from ..processes import (
+from climmob.config.auth import getUserData, getUserByEmail
+from climmob.views.classes import publicView
+from climmob.utility import valideRegisterForm
+from climmob.processes import (
     addUser,
     addToLog,
     getCountryList,
@@ -11,7 +11,6 @@ from ..processes import (
     getUserCount,
     getProjectCount,
 )
-from pyramid.security import authenticated_userid
 from pyramid.security import forget
 import re
 from email.mime.text import MIMEText
@@ -84,11 +83,26 @@ class StoreCookieView(publicView):
             return response
 
 
+def get_policy(request, policy_name):
+    policies = request.policies()
+    for policy in policies:
+        if policy["name"] == policy_name:
+            return policy["policy"]
+    return None
+
+
 class login_view(publicView):
     def processView(self):
 
+        cookies = self.request.cookies
+        if "climmob_cookie_question" in cookies.keys():
+            ask_for_cookies = False
+        else:
+            ask_for_cookies = True
+
         # If we logged in then go to dashboard
-        login = authenticated_userid(self.request)
+        policy = get_policy(self.request, "main")
+        login = policy.authenticated_userid(self.request)
         currentUser = getUserData(login, self.request)
         if currentUser is not None:
             self.returnRawViewResult = True
@@ -107,7 +121,12 @@ class login_view(publicView):
                 return response
             did_fail = True
 
-        return {"login": login, "failed_attempt": did_fail, "next": next}
+        return {
+            "login": login,
+            "failed_attempt": did_fail,
+            "next": next,
+            "ask_for_cookies": ask_for_cookies,
+        }
 
 
 class RecoverPasswordView(publicView):
@@ -142,7 +161,8 @@ class RecoverPasswordView(publicView):
     def processView(self):
 
         # If we logged in then go to dashboard
-        login = authenticated_userid(self.request)
+        policy = get_policy(self.request, "main")
+        login = policy.authenticated_userid(self.request)
         currentUser = getUserData(login, self.request)
         if currentUser is not None:
             raise HTTPNotFound()
@@ -187,7 +207,8 @@ class register_view(publicView):
     def processView(self):
 
         # If we logged in then go to dashboard
-        login = authenticated_userid(self.request)
+        policy = get_policy(self.request, "main")
+        login = policy.authenticated_userid(self.request)
         currentUser = getUserData(login, self.request)
         if currentUser is not None:
             self.returnRawViewResult = True

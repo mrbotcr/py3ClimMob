@@ -1,5 +1,5 @@
 import os
-from subprocess import check_call, CalledProcessError
+from subprocess import check_call
 import logging
 
 log = logging.getLogger(__name__)

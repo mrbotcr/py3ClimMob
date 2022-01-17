@@ -41,9 +41,9 @@
                                 <td>
                                     {% if log.detail %}
                                         {% if formId == "registry" %}
-                                            <a class="btn btn-primary btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('CleanErrorLogsDetails',projectid=log.project_cod,formid='registry',logid=log.log_id) }}">{{ _("Show conflict") }}</a>
+                                            <a class="btn btn-primary btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('CleanErrorLogsDetails',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry',logid=log.log_id) }}">{{ _("Show conflict") }}</a>
                                         {% else %}
-                                            <a class="btn btn-primary btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('CleanErrorLogsDetailsAssessment',projectid=log.project_cod,formid='assessment',codeid=codeid,logid=log.log_id) }}">{{ _("Show conflict") }}</a>
+                                            <a class="btn btn-primary btn-rounded btn-block btn-xs pull-left" href="{{request.route_url('CleanErrorLogsDetailsAssessment',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='assessment',codeid=codeid,logid=log.log_id) }}">{{ _("Show conflict") }}</a>
                                         {% endif %}
                                     {% endif %}
                                 </td>

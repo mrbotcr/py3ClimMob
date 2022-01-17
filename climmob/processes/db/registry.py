@@ -1,13 +1,9 @@
 from sqlalchemy import func
 from climmob.models.schema import mapFromSchema, mapToSchema
-from ...models import Regsection, Registry, Project, Question, Qstoption
-from .project import addRegistryQuestionsToProject
-from .assessment import setAssessmentStatus, formattingQuestions
-from ..db.question import getQuestionOptions
+from climmob.models import Regsection, Registry, Project, Question, userProject
+from climmob.processes import addRegistryQuestionsToProject
+from climmob.processes.db.assessment import setAssessmentStatus, formattingQuestions
 import os, shutil
-import json
-from .project import numberOfCombinationsForTheProject
-from jinja2 import Environment
 
 __all__ = [
     "availableRegistryQuestions",
@@ -28,49 +24,57 @@ __all__ = [
     "deleteRegistryQuestionFromGroup",
     "exitsQuestionInGroup",
     "haveTheBasicStructure",
-    # "generateStructureForInterface",
     "haveTheBasic",
     "getRegistryGroup",
     "getRegistryQuestionsApi",
-    "generateStructureForValidateJsonOdk",
     "isRegistryClose",
     "getProjectNumobs",
     "getAllRegistryGroups",
     "getQuestionsByGroupInRegistry",
     "getTheGroupOfThePackageCode",
     "registryHaveQuestionOfMultimediaType",
+    "deleteRegistryByProjectId",
 ]
 
 
-def getTheGroupOfThePackageCode(user, project, request):
+def deleteRegistryByProjectId(projectId, request):
+    try:
+        request.dbsession.query(Regsection).filter(
+            Regsection.project_id == projectId
+        ).delete()
+        return True, ""
+    except Exception as e:
+        return False, e
+
+
+def getTheGroupOfThePackageCode(projectId, request):
 
     data = (
         request.dbsession.query(Registry.section_id)
-        .filter(Registry.user_name == user)
-        .filter(Registry.project_cod == project)
+        .filter(Registry.project_id == projectId)
         .filter(Registry.question_id == 162)
         .first()
     )
     return data[0]
 
 
-def setRegistryStatus(user, project, status, request):
-    request.dbsession.query(Project).filter(Project.user_name == user).filter(
-        Project.project_cod == project
-    ).update({"project_regstatus": status})
+def setRegistryStatus(userOwner, projectCod, projectId, status, request):
+    request.dbsession.query(Project).filter(Project.project_id == projectId).update(
+        {"project_regstatus": status}
+    )
     if status == 0:
-        setAssessmentStatus(user, project, status, request)
+        setAssessmentStatus(userOwner, projectCod, projectId, status, request)
         try:
             path = os.path.join(
                 request.registry.settings["user.repository"],
-                *[user, project, "data", "reg"]
+                *[userOwner, projectCod, "data", "reg"]
             )
             shutil.rmtree(path)
         except:
             pass
 
 
-def packageExist(XMLDataRoot, user, project, request):
+def packageExist(XMLDataRoot, projectId, request):
     qstPackage = (
         request.dbsession.query(Question).filter(Question.question_regkey == 1).first()
     )
@@ -89,8 +93,7 @@ def packageExist(XMLDataRoot, user, project, request):
             incomingPackage = -999
         prjData = (
             request.dbsession.query(Project)
-            .filter(Project.user_name == user)
-            .filter(Project.project_cod == project)
+            .filter(Project.project_id == projectId)
             .one()
         )
         if 1 <= incomingPackage <= prjData.project_numobs:
@@ -101,12 +104,9 @@ def packageExist(XMLDataRoot, user, project, request):
         return False
 
 
-def isRegistryOpen(user, project, request):
+def isRegistryOpen(projectId, request):
     res = (
-        request.dbsession.query(Project)
-        .filter(Project.user_name == user)
-        .filter(Project.project_cod == project)
-        .first()
+        request.dbsession.query(Project).filter(Project.project_id == projectId).first()
     )
     if res is not None:
         if res.project_regstatus == 1:
@@ -117,22 +117,14 @@ def isRegistryOpen(user, project, request):
         return False
 
 
-def getProjectNumobs(user, project, request):
-    res = (
-        request.dbsession.query(Project)
-        .filter(Project.user_name == user)
-        .filter(Project.project_cod == project)
-        .one()
-    )
+def getProjectNumobs(projectId, request):
+    res = request.dbsession.query(Project).filter(Project.project_id == projectId).one()
     return int(res.project_numobs)
 
 
-def isRegistryClose(user, project, request):
+def isRegistryClose(projectId, request):
     res = (
-        request.dbsession.query(Project)
-        .filter(Project.user_name == user)
-        .filter(Project.project_cod == project)
-        .first()
+        request.dbsession.query(Project).filter(Project.project_id == projectId).first()
     )
     if res is not None:
         if res.project_regstatus == 2:
@@ -143,30 +135,39 @@ def isRegistryClose(user, project, request):
         return False
 
 
-def availableRegistryQuestions(user, project, request, registration_and_analysis):
-    # sql = "SELECT * FROM question WHERE (user_name = '" + user + "' OR user_name = 'bioversity') AND " \
-    #      "question.question_reqinasses = 0 AND question.question_alwaysinasse = 0 AND question_id NOT IN (SELECT distinct question_id FROM registry WHERE user_name = '" + user + "' AND project_cod = '" + project  + "')"
+def availableRegistryQuestions(projectId, request, registration_and_analysis):
+    projectCollaborators = (
+        request.dbsession.query(userProject.user_name)
+        .filter(userProject.project_id == projectId)
+        .all()
+    )
+
+    stringForFilterQuestionByCollaborators = "question.user_name = 'bioversity'"
+    if projectCollaborators:
+        for user in projectCollaborators:
+            stringForFilterQuestionByCollaborators += (
+                " OR question.user_name='" + user[0] + "' "
+            )
+
     if registration_and_analysis == 1:
-        startWith = "SELECT question.*, COALESCE(i18n_question.question_name, question.question_name) as question_name FROM (select * from question where (question_dtype!=5 and question_dtype!=6) UNION "
+        startWith = "SELECT question.*, user.user_fullname, COALESCE(i18n_question.question_name, question.question_name) as question_name FROM user, (select * from question where (question_dtype!=5 and question_dtype!=6) UNION "
     else:
-        startWith = "SELECT question.*, COALESCE(i18n_question.question_name, question.question_name) as question_name FROM (select * from question where (question_dtype!=5 and question_dtype!=6 and question_dtype!= 9 and question_dtype != 10) UNION "
+        startWith = "SELECT question.*, user.user_fullname, COALESCE(i18n_question.question_name, question.question_name) as question_name FROM user, (select * from question where (question_dtype!=5 and question_dtype!=6 and question_dtype!= 9 and question_dtype != 10) UNION "
     sql = (
         startWith
         + "SELECT * FROM question WHERE (question_dtype=5 or question_dtype=6) AND question_id in (SELECT DISTINCT(question_id) FROM qstoption)) AS question "
         "LEFT JOIN i18n_question ON question.question_id = i18n_question.question_id AND       i18n_question.lang_code = '"
         + request.locale_name
         + "'"
-        "WHERE (user_name = '" + user + "' OR user_name = 'bioversity') AND "
+        " WHERE (" + stringForFilterQuestionByCollaborators + ") AND "
         "question_reqinasses = 0 AND "
         "question_alwaysinasse = 0 AND "
         "question_visible = 1 AND "
-        "question.question_id NOT IN (SELECT distinct question_id FROM registry WHERE user_name = '"
-        + user
-        + "' AND project_cod = '"
-        + project
-        + "')"
+        "question.question_id NOT IN (SELECT distinct question_id FROM registry WHERE project_id = '"
+        + projectId
+        + "') AND"
+        " question.user_name = user.user_name"
     )
-
     questions = request.dbsession.execute(sql).fetchall()
 
     result = []
@@ -178,22 +179,19 @@ def availableRegistryQuestions(user, project, request, registration_and_analysis
     return result
 
 
-def canUseTheQuestion(user, project, question_id, request):
+def canUseTheQuestion(userOwner, projectId, questionId, request):
     sql = (
         "SELECT * FROM question WHERE question_id = "
-        + question_id
+        + questionId
         + " AND question_id IN (SELECT question_id from (SELECT * FROM (select * from question where (question_dtype!=5 and question_dtype!=6 and question_dtype!= 9 and question_dtype != 10) UNION "
         "SELECT * FROM question WHERE (question_dtype=5 or question_dtype=6) AND question_id in (SELECT DISTINCT(question_id) FROM qstoption)) AS question "
-        "WHERE (user_name = '" + user + "' OR user_name = 'bioversity') AND "
+        "WHERE (user_name = '" + userOwner + "' OR user_name = 'bioversity') AND "
         "question_reqinasses = 0 AND "
         "question_alwaysinasse = 0 AND "
-        "question_id NOT IN (SELECT distinct question_id FROM registry WHERE user_name = '"
-        + user
-        + "' AND project_cod = '"
-        + project
+        "question_id NOT IN (SELECT distinct question_id FROM registry WHERE project_id = '"
+        + projectId
         + "')) as Preguntas)"
     )
-
     result = request.dbsession.execute(sql).first()
     if result:
         return True
@@ -201,22 +199,20 @@ def canUseTheQuestion(user, project, question_id, request):
         return False
 
 
-def haveTheBasicStructure(user, project, request):
+def haveTheBasicStructure(userOwner, projectId, request):
     hasSections = (
         request.dbsession.query(Regsection)
-        .filter(Regsection.user_name == user)
-        .filter(Regsection.project_cod == project)
+        .filter(Regsection.project_id == projectId)
         .first()
     )
     if hasSections is None:
-        addRegistryQuestionsToProject(user, project, request)
+        addRegistryQuestionsToProject(userOwner, projectId, request)
 
 
-def haveTheBasic(user, project, request):
+def haveTheBasic(projectId, request):
     hasSections = (
         request.dbsession.query(Regsection)
-        .filter(Regsection.user_name == user)
-        .filter(Regsection.project_cod == project)
+        .filter(Regsection.project_id == projectId)
         .first()
     )
     if hasSections:
@@ -225,393 +221,23 @@ def haveTheBasic(user, project, request):
         return False
 
 
-def generateStructureForValidateJsonOdk(user, project, request):
-    result = (
-        request.dbsession.query(
-            Regsection.section_id,
-            Question.question_code,
-            Question.question_requiredvalue,
-            Question.question_dtype,
-        )
-        .filter(Regsection.user_name == user)
-        .filter(Regsection.project_cod == project)
-        .filter(Registry.user_name == user)
-        .filter(Registry.project_cod == project)
-        .filter(Regsection.section_id == Registry.section_id)
-        .filter(Registry.question_id == Question.question_id)
-        .all()
-    )
-
-    if result:
-        return result
-    else:
-        return False
-
-
-"""
-def generateStructureForInterface(user, project, request):
-
-    data = []
-    sections = mapFromSchema(
-        request.dbsession.query(Regsection)
-        .filter(Regsection.user_name == user)
-        .filter(Regsection.project_cod == project)
-        .order_by(Regsection.section_order)
-        .all()
-    )
-    numComb = numberOfCombinationsForTheProject(user, project, request)
-
-    for section in sections:
-
-        dataSection = {}
-        dataSection["section_name"] = section["section_name"]
-        dataSection["section_content"] = section["section_content"]
-        dataSection["section_id"] = section["section_id"]
-        dataSection["section_questions"] = []
-
-        questions = mapFromSchema(
-            request.dbsession.query(Registry)
-            .filter(Registry.user_name == user)
-            .filter(Registry.project_cod == project)
-            .filter(Registry.section_id == section["section_id"])
-            .order_by(Registry.question_order)
-            .all()
-        )
-        for question in questions:
-            questionData = mapFromSchema(
-                request.dbsession.query(Question)
-                .filter(Question.question_id == question["question_id"])
-                .first()
-            )
-            dataQuestion = {}
-            if (
-                questionData["question_dtype"] != 9
-                and questionData["question_dtype"] != 10
-            ):
-                # create the question
-                dataQuestion = createQuestionRegistry(
-                    questionData["question_id"],
-                    questionData["question_desc"],
-                    questionData["question_dtype"],
-                    questionData["question_notes"],
-                    questionData["question_unit"],
-                    questionData["question_requiredvalue"],
-                    questionData["question_code"],
-                    "grp_"
-                    + str(section["section_id"])
-                    + "/"
-                    + questionData["question_code"],
-                )
-
-                if (
-                    questionData["question_dtype"] == 5
-                    or questionData["question_dtype"] == 6
-                ):
-                    options = mapFromSchema(
-                        request.dbsession.query(Qstoption)
-                        .filter(Qstoption.question_id == question["question_id"])
-                        .all()
-                    )
-
-                    for option in options:
-                        dataQuestion["question_options"].append(option)
-                        if option["value_isother"] == 1:
-                            dataQuestion2 = createQuestionRegistry("-3", request.translate("Other"), 1, "", "", 0,
-                                                              questionData["question_code"] + "_oth", "grp_"
-                                                              + str(section["section_id"])
-                                                              + "/"
-                                                              + questionData["question_code"] + "_oth")
-                            dataSection["section_questions"].append(dataQuestion2)
-
-                print(dataQuestion["question_code"])
-                dataSection["section_questions"].append(dataQuestion)
-            else:
-
-                if questionData["question_dtype"] == 9:
-
-                    optionsReq = []
-                    for opt in range(0, numComb):
-                        code = chr(65 + opt)
-                        dataQuestionop = createOption(
-                            "Option " + code,
-                            0,
-                            str(opt + 1),
-                            0,
-                            str(opt + 1),
-                            questionData["question_id"],
-                        )
-                        optionsReq.append(dataQuestionop)
-
-                    if questionData["question_tied"] ==1:
-                        dataQuestionop = createOption(
-                            "Tied",
-                            0,
-                            98,
-                            0,
-                            98,
-                            questionData["question_id"],
-                        )
-                        optionsReq.append(dataQuestionop)
-
-                    if questionData["question_notobserved"] ==1:
-                        dataQuestionop = createOption(
-                            "Not observed",
-                            0,
-                            99,
-                            0,
-                            99,
-                            questionData["question_id"],
-                        )
-                        optionsReq.append(dataQuestionop)
-
-                    if numComb == 2:
-                        # the unique question
-                        dataQuestion = createQuestionRegistry(
-                            questionData["question_id"],
-                            questionData["question_twoitems"],
-                            5,
-                            questionData["question_notes"],
-                            questionData["question_unit"],
-                            questionData["question_requiredvalue"],
-                            questionData["question_code"],
-                            "grp_"
-                            + str(section["section_id"])
-                            + "/char_"
-                            + questionData["question_code"],
-                        )
-                        dataQuestion["question_options"] = optionsReq
-                        dataSection["section_questions"].append(dataQuestion)
-
-                    if numComb == 3:
-                        # The possitive
-                        dataQuestion = createQuestionRegistry(
-                            questionData["question_id"],
-                            questionData["question_posstm"],
-                            5,
-                            questionData["question_notes"],
-                            questionData["question_unit"],
-                            questionData["question_requiredvalue"],
-                            questionData["question_code"],
-                            "grp_"
-                            + str(section["section_id"])
-                            + "/char_"
-                            + questionData["question_code"]
-                            + "_pos",
-                        )
-                        dataQuestion["question_options"] = optionsReq
-                        dataSection["section_questions"].append(dataQuestion)
-                        # The negative
-                        dataQuestion = createQuestionRegistry(
-                            questionData["question_id"],
-                            questionData["question_negstm"],
-                            5,
-                            questionData["question_notes"],
-                            questionData["question_unit"],
-                            questionData["question_requiredvalue"],
-                            questionData["question_code"],
-                            "grp_"
-                            + str(section["section_id"])
-                            + "/char_"
-                            + questionData["question_code"]
-                            + "_neg",
-                        )
-                        dataQuestion["question_options"] = optionsReq
-                        dataSection["section_questions"].append(dataQuestion)
-
-                    if numComb >= 4:
-
-                        for opt in range(0, numComb):
-                            renderedString = (
-                                Environment()
-                                .from_string(questionData["question_moreitems"])
-                                .render(pos=opt + 1)
-                            )
-                            dataQuestion = createQuestionRegistry(
-                                questionData["question_id"],
-                                renderedString,
-                                5,
-                                questionData["question_notes"],
-                                questionData["question_unit"],
-                                questionData["question_requiredvalue"],
-                                questionData["question_code"],
-                                "grp_"
-                                + str(section["section_id"])
-                                + "/char_"
-                                + questionData["question_code"]
-                                + "_stmt_"
-                                + str(opt + 1),
-                            )
-                            dataQuestion["question_options"] = optionsReq
-                            dataSection["section_questions"].append(dataQuestion)
-
-                if questionData["question_dtype"] == 10:
-                    for opt in range(0, numComb):
-                        code = chr(65 + opt)
-                        renderedString = (
-                            Environment()
-                            .from_string(questionData["question_perfstmt"])
-                            .render(option=code)
-                        )
-                        # create the question
-                        dataQuestion = createQuestionRegistry(
-                            questionData["question_id"],
-                            renderedString,
-                            5,
-                            questionData["question_notes"],
-                            questionData["question_unit"],
-                            questionData["question_requiredvalue"],
-                            questionData["question_code"],
-                            "grp_"
-                            + str(section["section_id"])
-                            + "/perf_"
-                            + questionData["question_code"]
-                            + "_"
-                            + str(opt + 1),
-                        )
-                        # the best option
-                        dataQuestionop = createOption(
-                            request.translate("Better"),
-                            0,
-                            1,
-                            0,
-                            1,
-                            questionData["question_id"],
-                        )
-                        dataQuestion["question_options"].append(dataQuestionop)
-                        # the worst option
-                        dataQuestionop = createOption(
-                            request.translate("Worse"),
-                            0,
-                            2,
-                            0,
-                            2,
-                            questionData["question_id"],
-                        )
-                        dataQuestion["question_options"].append(dataQuestionop)
-                        # add to the section
-                        dataSection["section_questions"].append(dataQuestion)
-
-        data.append(dataSection)
-
-    # Extra section for necessary questions in the json
-    necessarySection = {}
-    necessarySection["section_name"] = "Extra Field"
-    necessarySection["section_content"] = request.translate(
-        "Have necessary questions for documentation."
-    )
-    necessarySection["section_id"] = "None"
-    necessarySection["section_questions"] = []
-    # Start survey
-    dataQuestion = createQuestionRegistry(
-        "-1",
-        request.translate("Start of survey"),
-        15,
-        request.translate("Start of survey"),
-        "",
-        1,
-        "__CLMQST1__",
-        "clm_start",
-    )
-    necessarySection["section_questions"].append(dataQuestion)
-    # End survey
-    dataQuestion = createQuestionRegistry(
-        "-2",
-        request.translate("End of survey"),
-        15,
-        request.translate("End of survey"),
-        "",
-        1,
-        "__CLMQST2__",
-        "clm_end",
-    )
-    necessarySection["section_questions"].append(dataQuestion)
-    data.append(necessarySection)
-
-    return data
-
-
-def createQuestionRegistry(
-    question_id,
-    question_desc,
-    question_dtype,
-    question_notes,
-    question_unit,
-    question_requiredvalue,
-    question_code,
-    question_datafield,
-):
-    options = {
-        1: "text",
-        2: "decimal",
-        3: "integer",
-        4: "geopoint",
-        5: "select_one",
-        6: "select_multiple",
-        7: "barcode",
-        8: "select_one",
-        9: "select_one",
-        10: "select_one",
-        11: "geotrace",
-        12: "geoshape",
-        13: "date",
-        14: "time",
-        15: "dateTime",
-        16: "image",
-        17: "audio",
-        18: "video",
-        19: "barcode",
-        20: "start",
-        21: "end",
-        22: "today",
-        23: "deviceid",
-        24: "subscriberid",
-        25: "simserial",
-        26: "phonenumber",
-    }
-    ODKType = options[question_dtype]
-    dataQuestion = {}
-    dataQuestion["question_id"] = question_id
-    dataQuestion["question_desc"] = question_desc
-    dataQuestion["question_dtype"] = ODKType
-    dataQuestion["question_notes"] = question_notes
-    dataQuestion["question_unit"] = question_unit
-    dataQuestion["question_requiredvalue"] = question_requiredvalue
-    dataQuestion["question_code"] = question_code
-    dataQuestion["question_datafield"] = question_datafield
-    if ODKType == "select_one" or ODKType == "select_multiple":
-        dataQuestion["question_options"] = []
-
-    return dataQuestion
-
-
-def createOption(
-    value_desc, value_isother, value_code, value_isna, value_order, question_id
-):
-    dataQuestionop = {}
-    dataQuestionop["value_desc"] = value_desc
-    dataQuestionop["value_isother"] = value_isother
-    dataQuestionop["value_code"] = value_code
-    dataQuestionop["value_isna"] = value_isna
-    dataQuestionop["value_order"] = value_order
-    dataQuestionop["question_id"] = question_id
-
-    return dataQuestionop
-"""
-
-
 def getRegistryQuestions(
-    user, project, request, createAutoRegistry=True, onlyShowTheBasicQuestions=False
+    userOwner,
+    projectId,
+    request,
+    projectLabels,
+    createAutoRegistry=True,
+    onlyShowTheBasicQuestions=False,
 ):
 
     hasSections = (
         request.dbsession.query(Regsection)
-        .filter(Regsection.user_name == user)
-        .filter(Regsection.project_cod == project)
+        .filter(Regsection.project_id == projectId)
         .first()
     )
     if hasSections is None:
         if createAutoRegistry:
-            addRegistryQuestionsToProject(user, project, request)
+            addRegistryQuestionsToProject(userOwner, projectId, request)
         else:
             return []
 
@@ -619,64 +245,53 @@ def getRegistryQuestions(
         " SELECT regsection.section_id,regsection.section_name,regsection.section_content,regsection.section_order,regsection.section_private,"
         " question.question_id,COALESCE(i18n_question.question_desc,question.question_desc) as question_desc, COALESCE(i18n_question.question_name, question.question_name) as question_name,question.question_notes,question.question_dtype, "
         " COALESCE(i18n_question.question_posstm, question.question_posstm) as question_posstm, COALESCE(i18n_question.question_negstm ,question.question_negstm) as question_negstm, COALESCE(i18n_question.question_perfstmt, question.question_perfstmt) as question_perfstmt,IFNULL(registry.question_order,0) as question_order,"
-        " question.question_reqinreg,question.question_tied, question.question_notobserved, question.question_requiredvalue, question.question_quantitative FROM regsection "
-        " LEFT JOIN registry ON registry.section_user = regsection.user_name AND registry.section_project = regsection.project_cod AND registry.section_id = regsection.section_id "
+        " question.question_reqinreg,question.question_tied, question.question_notobserved, question.question_requiredvalue, question.question_quantitative, question.user_name, (select user_fullname from user where user_name=question.user_name) as user_fullname FROM regsection "
+        " LEFT JOIN registry ON  registry.section_project_id = regsection.project_id AND registry.section_id = regsection.section_id "
         " LEFT JOIN i18n_question ON registry.question_id = i18n_question.question_id  AND i18n_question.lang_code = '"
         + request.locale_name
         + "'"
         " LEFT JOIN question ON registry.question_id = question.question_id WHERE "
-        " regsection.user_name = '"
-        + user
-        + "' AND regsection.project_cod = '"
-        + project
+        " regsection.project_id = '"
+        + projectId
         + "' ORDER BY section_order,question_order"
     )
-
     questions = request.dbsession.execute(sql).fetchall()
 
-    """result = []
-    for qst in questions:
-        dct = dict(qst)
-        if dct["question_dtype"] == 5 or dct["question_dtype"] == 6:
-            options = getQuestionOptions(dct["question_id"], request)
-            dct["question_options"] = options
-        result.append(dct)"""
-
     result = formattingQuestions(
-        questions, request, onlyShowTheBasicQuestions=onlyShowTheBasicQuestions
+        questions,
+        request,
+        projectLabels,
+        onlyShowTheBasicQuestions=onlyShowTheBasicQuestions,
     )
 
     return result
 
 
-def getRegistryGroupInformation(user, project, section, request):
+def getRegistryGroupInformation(projectId, section, request):
     data = (
         request.dbsession.query(Regsection)
-        .filter(Regsection.user_name == user)
-        .filter(Regsection.project_cod == project)
+        .filter(Regsection.project_id == projectId)
         .filter(Regsection.section_id == section)
         .first()
     )
     return mapFromSchema(data)
 
 
-def getAllRegistryGroups(user, project, request):
+def getAllRegistryGroups(projectId, request):
     data = (
         request.dbsession.query(Regsection)
-        .filter(Regsection.user_name == user)
-        .filter(Regsection.project_cod == project)
+        .filter(Regsection.project_id == projectId)
         .order_by(Regsection.section_id)
         .all()
     )
     return mapFromSchema(data)
 
 
-def getQuestionsByGroupInRegistry(user, project, section_id, request):
+def getQuestionsByGroupInRegistry(projectId, section_id, request):
 
     data = (
         request.dbsession.query(Registry)
-        .filter(Registry.user_name == user)
-        .filter(Registry.project_cod == project)
+        .filter(Registry.project_id == projectId)
         .filter(Registry.section_id == section_id)
         .order_by(Registry.question_order)
         .all()
@@ -684,21 +299,17 @@ def getQuestionsByGroupInRegistry(user, project, section_id, request):
     return mapFromSchema(data)
 
 
-def saveRegistryOrder(user, project, order, request):
+def saveRegistryOrder(projectId, order, request):
     # Delete all questions in the registry
-    request.dbsession.query(Registry).filter(Registry.user_name == user).filter(
-        Registry.project_cod == project
-    ).delete()
+    request.dbsession.query(Registry).filter(Registry.project_id == projectId).delete()
     # Update the group order
     pos = 0
     for item in order:
         if item["type"] == "group":
             pos = pos + 1
             request.dbsession.query(Regsection).filter(
-                Regsection.user_name == user
-            ).filter(Regsection.project_cod == project).filter(
-                Regsection.section_id == item["id"].replace("GRP", "")
-            ).update(
+                Regsection.project_id == projectId
+            ).filter(Regsection.section_id == item["id"].replace("GRP", "")).update(
                 {"section_order": pos}
             )
     # Add question to the registry
@@ -709,35 +320,27 @@ def saveRegistryOrder(user, project, order, request):
                 for child in item["children"]:
                     pos = pos + 1
                     newQuestion = Registry(
-                        user_name=user,
-                        project_cod=project,
                         question_id=child["id"].replace("QST", ""),
-                        section_user=user,
-                        section_project=project,
                         section_id=item["id"].replace("GRP", ""),
                         question_order=pos,
+                        project_id=projectId,
+                        section_project_id=projectId,
                     )
                     request.dbsession.add(newQuestion)
         if item["type"] == "question":
             newQuestion = Registry(
-                user_name=user,
-                project_cod=project,
-                question_id=item["id"],
-                question_order=pos,
+                project_id=projectId, question_id=item["id"], question_order=pos,
             )
             request.dbsession.add(newQuestion)
     request.dbsession.flush()
     return True, ""
-    # except Exception, e:
-    #     return False,str(e)
 
 
 def addRegistryGroup(data, self, _from=""):
     _ = self.request.translate
     result = (
         self.request.dbsession.query(func.count(Regsection.section_id).label("total"))
-        .filter(Regsection.project_cod == data["project_cod"])
-        .filter(Regsection.user_name == data["user_name"])
+        .filter(Regsection.project_id == data["project_id"])
         .filter(Regsection.section_name == data["section_name"])
         .one()
     )
@@ -746,15 +349,14 @@ def addRegistryGroup(data, self, _from=""):
             self.request.dbsession.query(
                 func.ifnull(func.max(Regsection.section_id), 0).label("id_max")
             )
-            .filter(Regsection.project_cod == data["project_cod"])
+            .filter(Regsection.project_id == data["project_id"])
             .one()
         )
         max_order = (
             self.request.dbsession.query(
                 func.ifnull(func.max(Regsection.section_order), 0).label("id_max")
             )
-            .filter(Regsection.user_name == data["user_name"])
-            .filter(Regsection.project_cod == data["project_cod"])
+            .filter(Regsection.project_id == data["project_id"])
             .one()
         )
         mappedData = mapToSchema(Regsection, data)
@@ -780,8 +382,7 @@ def modifyRegistryGroup(data, self):
 
     result = (
         self.request.dbsession.query(func.count(Regsection.section_id).label("total"))
-        .filter(Regsection.project_cod == data["project_cod"])
-        .filter(Regsection.user_name == data["user_name"])
+        .filter(Regsection.project_id == data["project_id"])
         .filter(Regsection.section_id != data["group_cod"])
         .filter(Regsection.section_name == data["section_name"])
         .one()
@@ -790,12 +391,8 @@ def modifyRegistryGroup(data, self):
         try:
             mappedData = mapToSchema(Regsection, data)
             self.request.dbsession.query(Regsection).filter(
-                Regsection.user_name == data["user_name"]
-            ).filter(Regsection.project_cod == data["project_cod"]).filter(
-                Regsection.section_id == data["group_cod"]
-            ).update(
-                mappedData
-            )
+                Regsection.project_id == data["project_id"]
+            ).filter(Regsection.section_id == data["group_cod"]).update(mappedData)
             return True, ""
         except Exception as e:
             return False, e
@@ -807,8 +404,7 @@ def getRegistryGroupData(data, self):
     mySession = self.request.dbsession
     result = (
         mySession.query(Regsection)
-        .filter(Regsection.user_name == data["user_name"])
-        .filter(Regsection.project_cod == data["project_cod"])
+        .filter(Regsection.project_id == data["project_id"])
         .filter(Regsection.section_id == data["group_cod"])
         .one()
     )
@@ -820,8 +416,7 @@ def exitsRegistryGroup(data, self):
     mySession = self.request.dbsession
     result = (
         mySession.query(Regsection)
-        .filter(Regsection.user_name == data["user_name"])
-        .filter(Regsection.project_cod == data["project_cod"])
+        .filter(Regsection.project_id == data["project_id"])
         .filter(Regsection.section_id == data["group_cod"])
         .first()
     )
@@ -836,8 +431,7 @@ def getRegistryGroup(data, self):
     mySession = self.request.dbsession
     result = (
         mySession.query(Regsection.section_id)
-        .filter(Regsection.user_name == data["user_name"])
-        .filter(Regsection.project_cod == data["project_cod"])
+        .filter(Regsection.project_id == data["project_id"])
         .all()
     )
     res = []
@@ -852,8 +446,7 @@ def getRegistryQuestionsApi(data, self):
     mySession = self.request.dbsession
     result = (
         mySession.query(Registry.question_id)
-        .filter(Registry.user_name == data["user_name"])
-        .filter(Registry.project_cod == data["project_cod"])
+        .filter(Registry.project_id == data["project_id"])
         .all()
     )
     res = []
@@ -869,17 +462,14 @@ def addRegistryQuestionToGroup(data, request):
         request.dbsession.query(
             func.ifnull(func.max(Registry.question_order), 0).label("id_max")
         )
-        .filter(Registry.user_name == data["user_name"])
-        .filter(Registry.project_cod == data["project_cod"])
+        .filter(Registry.project_id == data["project_id"])
         .filter(Registry.section_id == data["section_id"])
         .one()
     )
     newQuestion = Registry(
-        user_name=data["user_name"],
-        project_cod=data["project_cod"],
+        project_id=data["project_id"],
         question_id=data["question_id"],
-        section_user=data["user_name"],
-        section_project=data["project_cod"],
+        section_project_id=data["project_id"],
         section_id=data["section_id"],
         question_order=max_order.id_max + 1,
     )
@@ -894,10 +484,8 @@ def addRegistryQuestionToGroup(data, request):
 def deleteRegistryQuestionFromGroup(data, request):
     try:
         request.dbsession.query(Registry).filter(
-            Registry.user_name == data["user_name"]
-        ).filter(Registry.project_cod == data["project_cod"]).filter(
-            Registry.question_id == data["question_id"]
-        ).filter(
+            Registry.project_id == data["project_id"]
+        ).filter(Registry.question_id == data["question_id"]).filter(
             Registry.section_id == data["group_cod"]
         ).delete()
         return True, ""
@@ -908,8 +496,7 @@ def deleteRegistryQuestionFromGroup(data, request):
 def exitsQuestionInGroup(data, request):
     result = (
         request.dbsession.query(Registry)
-        .filter(Registry.user_name == data["user_name"])
-        .filter(Registry.project_cod == data["project_cod"])
+        .filter(Registry.project_id == data["project_id"])
         .filter(Registry.question_id == data["question_id"])
         .filter(Registry.section_id == data["group_cod"])
         .first()
@@ -921,11 +508,11 @@ def exitsQuestionInGroup(data, request):
         return False
 
 
-def deleteRegistryGroup(user, projectid, sectionid, request):
+def deleteRegistryGroup(projectId, sectionId, request):
     try:
-        request.dbsession.query(Regsection).filter(Regsection.user_name == user).filter(
-            Regsection.project_cod == projectid
-        ).filter(Regsection.section_id == sectionid).delete()
+        request.dbsession.query(Regsection).filter(
+            Regsection.project_id == projectId
+        ).filter(Regsection.section_id == sectionId).delete()
         return True, ""
     except Exception as e:
         print(str(e))
@@ -934,10 +521,8 @@ def deleteRegistryGroup(user, projectid, sectionid, request):
 
 def canDeleteTheGroup(data, request):
     sql = (
-        "select * from registry r, question q where r.user_name = '"
-        + data["user_name"]
-        + "' and r.project_cod='"
-        + data["project_cod"]
+        "select * from registry r, question q where r.project_id='"
+        + data["project_id"]
         + "' and r.section_id = "
         + data["group_cod"]
         + " and r.question_id = q.question_id and q.question_reqinreg = 1;"
@@ -950,12 +535,11 @@ def canDeleteTheGroup(data, request):
         return False
 
 
-def registryHaveQuestionOfMultimediaType(request, user, project):
+def registryHaveQuestionOfMultimediaType(request, projectId):
 
     result = (
         request.dbsession.query(func.count(Registry.question_id).label("count"))
-        .filter(Registry.user_name == user)
-        .filter(Registry.project_cod == project)
+        .filter(Registry.project_id == projectId)
         .filter(Registry.question_id == Question.question_id)
         .filter(Question.question_dtype.in_([16, 17, 18]))
         .one()

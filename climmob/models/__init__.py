@@ -2,12 +2,11 @@ from sqlalchemy import engine_from_config
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import configure_mappers
 import zope.sqlalchemy
-from .schema import *
-from sqlalchemy.pool import NullPool
+from climmob.models.schema import *
 
 # import or define all models here to ensure they are attached to the
 # Base.metadata prior to any initialization routines
-from .climmobv4 import (
+from climmob.models.climmobv4 import (
     Base,
     Activitylog,
     Apilog,
@@ -51,6 +50,7 @@ from .climmobv4 import (
     AssessmentJsonLog,
     storageErrors,
     Chat,
+    userProject,
 )
 
 #

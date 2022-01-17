@@ -1,8 +1,8 @@
-from ...plugins.utilities import getProductDirectory
-from ..classes import apiView
-from ...processes import projectExists, getProductData
-from ..productsList import getDataProduct
-from ...products import product_found
+from climmob.plugins.utilities import getProductDirectory
+from climmob.views.classes import apiView
+from climmob.processes import projectExists, getProductData, getTheProjectIdForOwner
+from climmob.views.productsList import getDataProduct
+from climmob.products import product_found
 from pyramid.response import Response
 import json
 import datetime
@@ -16,7 +16,7 @@ class readProducts_view(apiView):
                 return o.__str__()
 
         if self.request.method == "GET":
-            obligatory = [u"project_cod"]
+            obligatory = [u"project_cod", u"user_owner"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -28,8 +28,6 @@ class readProducts_view(apiView):
                 )
                 return response
 
-            print(obligatory)
-            print(dataworking.keys())
             if sorted(obligatory) == sorted(dataworking.keys()):
                 dataworking["user_name"] = self.user.login
 
@@ -40,16 +38,20 @@ class readProducts_view(apiView):
 
                 if dataInParams:
                     exitsproject = projectExists(
-                        self.user.login, dataworking["project_cod"], self.request
+                        self.user.login,
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
                     )
                     if exitsproject:
-                        products = getDataProduct(
-                            self.user.login, dataworking["project_cod"], self.request
+
+                        activeProjectId = getTheProjectIdForOwner(
+                            dataworking["user_owner"],
+                            dataworking["project_cod"],
+                            self.request,
                         )
 
-                        # for index in range(0,len(products)):
-                        #    if products[index]["state"] == "Success":
-                        #        products[index]["Url"] = self.request.route_url('download',product_id=products[index]["celery_taskid"])
+                        products = getDataProduct(activeProjectId, self.request)
 
                         response = Response(
                             status=200, body=json.dumps(products, default=myconverter)
@@ -78,7 +80,12 @@ class downloadApi_view(apiView):
     def processView(self):
 
         if self.request.method == "GET":
-            obligatory = [u"project_cod", u"celery_taskid", u"product_id"]
+            obligatory = [
+                u"project_cod",
+                u"user_owner",
+                u"celery_taskid",
+                u"product_id",
+            ]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -100,17 +107,27 @@ class downloadApi_view(apiView):
 
                 if dataInParams:
                     exitsproject = projectExists(
-                        self.user.login, dataworking["project_cod"], self.request
+                        self.user.login,
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
                     )
                     if exitsproject:
+
+                        activeProjectId = getTheProjectIdForOwner(
+                            dataworking["user_owner"],
+                            dataworking["project_cod"],
+                            self.request,
+                        )
+
                         # Here start the code for the download
                         productData = getProductData(
-                            self.user.login,
-                            dataworking["project_cod"],
+                            activeProjectId,
                             dataworking["celery_taskid"],
                             dataworking["product_id"],
                             self.request,
                         )
+
                         if productData:
                             product_id = productData["product_id"]
 
@@ -119,7 +136,7 @@ class downloadApi_view(apiView):
                                 filename = productData["output_id"]
                                 path = getProductDirectory(
                                     self.request,
-                                    self.user.login,
+                                    dataworking["user_owner"],
                                     dataworking["project_cod"],
                                     product_id,
                                 )
@@ -137,7 +154,7 @@ class downloadApi_view(apiView):
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "There is no product with that celery_taskid."
+                                        "There is no product with that product_id."
                                     ),
                                 )
                                 return response
@@ -145,7 +162,7 @@ class downloadApi_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "There is no product with that celery_taskid."
+                                    "There is no product with that celery_taskid or product_id."
                                 ),
                             )
                             return response

@@ -15,7 +15,9 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 
 
 @celeryApp.task(bind=True, base=celeryTask, soft_time_limit=7200, time_limit=7200)
-def createFieldAgentsReport(self, locale, url, user, path, projectid, fieldagents):
+def createFieldAgentsReport(
+    self, locale, url, userOwner, path, projectCod, fieldagents, project
+):
     parts = __file__.split("/products/")
     this_file_path = parts[0] + "/locale"
     try:
@@ -49,57 +51,71 @@ def createFieldAgentsReport(self, locale, url, user, path, projectid, fieldagent
         "cp -r '" + os.path.join(PATH, "template", "img") + "' '" + pathouttemp + "'"
     )
 
-    url = url + "/" + user
+    for userParticipant in fieldagents:
+        for fieldagent in fieldagents[userParticipant]:
 
-    for fieldagent in fieldagents:
+            if self.is_aborted():
+                sh.rmtree(path)
+                return ""
 
-        if self.is_aborted():
-            sh.rmtree(path)
-            return ""
+            odk_settings = {
+                "admin": {"change_server": True, "change_form_metadata": False},
+                "general": {
+                    "change_server": True,
+                    "navigation": "buttons",
+                    "server_url": url
+                    + "/user/"
+                    + userOwner
+                    + "/project/"
+                    + projectCod
+                    + "/collaborator/"
+                    + fieldagent["user_name"],
+                    "username": fieldagent["enum_id"],
+                    "password": fieldagent["enum_password"],
+                },
+                "project": {
+                    "name": project["project_name"],
+                    "icon": "🌱",
+                    "color": "#ffffff",
+                },
+            }
 
-        odk_settings = {
-            "admin": {"change_server": True, "change_form_metadata": False},
-            "general": {
-                "change_server": True,
-                "navigation": "buttons",
-                "server_url": url,
-                "username": fieldagent["enum_id"],
-                "password": fieldagent["enum_password"],
-            },
-        }
+            qr_json = json.dumps(odk_settings).encode()
+            zip_json = zlib.compress(qr_json)
+            serialization = base64.b64encode(zip_json)
+            serialization = serialization.decode()
+            serialization = serialization.replace("\n", "")
+            img = qrcode.make(serialization)
 
-        qr_json = json.dumps(odk_settings).encode()
-        zip_json = zlib.compress(qr_json)
-        serialization = base64.b64encode(zip_json)
-        serialization = serialization.decode()
-        serialization = serialization.replace("\n", "")
-        img = qrcode.make(serialization)
+            qr_file = os.path.join(
+                pathouttemp + "/img",
+                *[
+                    str(fieldagent["enum_id"])
+                    + "_"
+                    + str(fieldagent["user_name"])
+                    + ".png"
+                ]
+            )
+            img.save(qr_file)
 
-        qr_file = os.path.join(
-            pathouttemp + "/img",
-            *[str(fieldagent["enum_id"]) + "_" + str(fieldagent["user_name"]) + ".png"]
-        )
-        img.save(qr_file)
-
-        if self.is_aborted():
-            sh.rmtree(path)
-            return ""
+            if self.is_aborted():
+                sh.rmtree(path)
+                return ""
 
     data = {
         "tittle": _("List of field agents for the project"),
-        "projectid": projectid,
+        "projectid": projectCod,
         "Name": _("Name"),
         "Username": _("Username"),
         "Password": _("Password"),
         "QR": _("QR"),
         "fieldagents": fieldagents,
         "URLInstruction1": _(
-            "To manually configure the ODK Collect server, use the following URL"
+            "To manually configure the ODK Collect server, use the URL of the user to which it belongs and use the corresponding field agent user and password."
         ),
         "URL": url,
-        "Instruction2": _(
-            "Use the respective username and password shown in the following table"
-        ),
+        "Instruction3": _("Server"),
+        "Instruction4": _("User-owned field agents"),
     }
 
     env = Environment(
@@ -116,7 +132,7 @@ def createFieldAgentsReport(self, locale, url, user, path, projectid, fieldagent
     render_temp = template.render(data)
 
     with open(
-        pathouttemp + "/fieldagents_" + projectid + ".html", "w"
+        pathouttemp + "/fieldagents_" + projectCod + ".html", "w"
     ) as f:  # saves tex_code to outpout file
         f.write(render_temp)
 
@@ -124,8 +140,8 @@ def createFieldAgentsReport(self, locale, url, user, path, projectid, fieldagent
         sh.rmtree(path)
         return ""
 
-    html = HTML(filename=pathouttemp + "/fieldagents_" + projectid + ".html")
-    html.write_pdf(pathoutput + "/fieldagents_" + projectid + ".pdf")
+    html = HTML(filename=pathouttemp + "/fieldagents_" + projectCod + ".html")
+    html.write_pdf(pathoutput + "/fieldagents_" + projectCod + ".pdf")
 
     sh.rmtree(pathouttemp)
     return ""

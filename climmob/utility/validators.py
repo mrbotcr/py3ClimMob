@@ -1,4 +1,4 @@
-from ..processes import userExists, emailExists
+from climmob.processes import userExists, emailExists
 
 # Form validation
 

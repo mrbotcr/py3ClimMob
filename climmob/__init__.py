@@ -5,25 +5,33 @@ if sys.version_info[0] == 3 and sys.version_info[1] >= 6:
 
     gevent.monkey.patch_all()
 
-from .config.environment import load_environment
+from climmob.config.environment import load_environment
 from pyramid.config import Configurator
 import os
-
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
+from pyramid_authstack import AuthenticationStackPolicy
 
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
+    auth_policy = AuthenticationStackPolicy()
+    policy_array = []
 
-    authn_policy = AuthTktAuthenticationPolicy(settings["auth.secret"],)
+    main_policy = AuthTktAuthenticationPolicy(
+        settings["auth.secret"],
+        timeout=settings.get("auth.secret.cookie.timeout", 7200),
+        cookie_name=settings["auth.secret.cookie"],
+    )
+    auth_policy.add_policy("main", main_policy)
+    policy_array.append({"name": "main", "policy": main_policy})
 
     authz_policy = ACLAuthorizationPolicy()
 
     config = Configurator(
         settings=settings,
-        authentication_policy=authn_policy,
+        authentication_policy=auth_policy,
         authorization_policy=authz_policy,
     )
 
@@ -31,6 +39,6 @@ def main(global_config, **settings):
 
     config.include(".models")
     # Load and configure the host application
-    load_environment(settings, config, apppath)
+    load_environment(settings, config, apppath, policy_array)
 
     return config.make_wsgi_app()

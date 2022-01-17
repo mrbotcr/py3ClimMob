@@ -7,13 +7,13 @@
     {% endif %}
     <div style="padding: 10px; text-align: left; {% if showPhone %} display: inline-block; background-color: #fafafa; overflow-y: scroll; height: 500px; max-width: 320px; {% endif %}  ">
         {% for item in data %}
-
             {% if item.createGRP %}
                 <h3>{{ item.section_name }}</h3>
                 <br><br>
             {% endif %}
 
-            {% if item.question_quantitative == 0 or (item.question_quantitative ==1 and item.isParentQuestion ==0) %}
+            {% if item.question_quantitative == 0 or (item.question_quantitative == 1 and item.isParentQuestion ==0) or item.isIndividual == 1 %}
+
                 {% if item.question_dtype != 9 and item.question_dtype != 10  %}
                     <h3 style="font-family:sans-serif; color: #000000" >{% if item.question_reqinreg == 1 or item.question_requiredvalue ==1%}<strong style="color: red" class="preview_required">*</strong>{% endif %}<strong id="preview_text">{{ item.question_desc }}</strong></h3>
                 {% endif %}
@@ -71,9 +71,9 @@
                 {% if item.question_dtype == 9  %}
                     <div class="previewElement" >
                         <h3 style='font-family:sans-serif; color: #000000'>{% if item.question_reqinreg == 1 or item.question_requiredvalue ==1%}<strong style="color: red" class="preview_required">*</strong>{% endif %} <strong>{{ item.question_posstm }}</strong></h3>
-                        <label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm{{ item.question_id }}' value='1'> {{ _("Option") }} A<hr style='margin: 10px 0px 10px 0px'></label><br>
-                        <label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm{{ item.question_id }}' value='2'> {{ _("Option") }} B<hr style='margin: 10px 0px 10px 0px'></label><br>
-                        <label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm{{ item.question_id }}' value='3'> {{ _("Option") }} C<hr style='margin: 10px 0px 10px 0px'></label><br>
+                        <label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm{{ item.question_id }}' value='1'> {% if isOneProject %} {{ activeProject["project_label_a"] }}{% else %}{{ _("Option") }} A {% endif %}<hr style='margin: 10px 0px 10px 0px'></label><br>
+                        <label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm{{ item.question_id }}' value='2'> {% if isOneProject %} {{ activeProject["project_label_b"] }}{% else %}{{ _("Option") }} B {% endif %}<hr style='margin: 10px 0px 10px 0px'></label><br>
+                        <label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm{{ item.question_id }}' value='3'> {% if isOneProject %} {{ activeProject["project_label_c"] }}{% else %}{{ _("Option") }} C {% endif %}<hr style='margin: 10px 0px 10px 0px'></label><br>
                         {% if item.question_tied == 1%}
                             <label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm{{ item.question_id }}' value='4'> {{ _("Tied") }}<hr style='margin: 10px 0px 10px 0px'></label><br>
                         {% endif %}
@@ -82,9 +82,9 @@
                         {% endif %}
                         <hr style='margin: 10px 0px 10px 0px'>
                         <h3 style='font-family:sans-serif; color: #000000'>{% if item.question_reqinreg == 1 or item.question_requiredvalue ==1%}<strong style="color: red" class="preview_required">*</strong>{% endif %}<strong>{{ item.question_negstm }}</strong></h3>
-                        <label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm{{ item.question_id }}' value='1'> {{ _("Option") }} A<hr style='margin: 10px 0px 10px 0px'></label><br>
-                        <label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm{{ item.question_id }}' value='2'> {{ _("Option") }} B<hr style='margin: 10px 0px 10px 0px'></label><br>
-                        <label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm{{ item.question_id }}' value='3'> {{ _("Option") }} C<hr style='margin: 10px 0px 10px 0px'></label><br>
+                        <label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm{{ item.question_id }}' value='1'> {% if isOneProject %} {{ activeProject["project_label_a"] }}{% else %}{{ _("Option") }} A {% endif %}<hr style='margin: 10px 0px 10px 0px'></label><br>
+                        <label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm{{ item.question_id }}' value='2'> {% if isOneProject %} {{ activeProject["project_label_b"] }}{% else %}{{ _("Option") }} B {% endif %}<hr style='margin: 10px 0px 10px 0px'></label><br>
+                        <label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm{{ item.question_id }}' value='3'> {% if isOneProject %} {{ activeProject["project_label_c"] }}{% else %}{{ _("Option") }} C {% endif %}<hr style='margin: 10px 0px 10px 0px'></label><br>
                         {% if item.question_tied == 1%}
                             <label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm{{ item.question_id }}' value='4'> {{ _("Tied") }}<hr style='margin: 10px 0px 10px 0px'></label><br>
                         {% endif %}
@@ -97,7 +97,11 @@
 
                 {% if item.question_dtype == 10 %}
                     <div class="previewElement" >
-                        {% set letters = ["A","B","C"] %}
+                        {% if  isOneProject%}
+                            {% set letters = [activeProject["project_label_a"],activeProject["project_label_b"],activeProject["project_label_c"]] %}
+                        {% else %}
+                            {% set letters = ["A","B","C"] %}
+                        {% endif %}
                         {% for letter in letters %}
                             <h3 style='font-family:sans-serif; color: #000000'>{% if item.question_reqinreg == 1 or item.question_requiredvalue ==1%}<strong style="color: red" class="preview_required">*</strong>{% endif %} <strong>{{ item.question_perfstmt.replace("{{option}}", letter) }}</strong></h3>
                             <label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='perfstmt' value='1'>{{ _("Better") }}<hr style='margin: 10px 0px 10px 0px'></label><br>

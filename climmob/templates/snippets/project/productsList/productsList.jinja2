@@ -9,8 +9,7 @@
             <th class="text-center">{{ _('Action') }}</th>
             <th></th>
         </tr>
-        {% set changes = {'projectSummary': true, 'DataCollectionProgress': false, 'projectDataCollected': true} %}
-
+        {% set changes = {'projectSummary': true, 'DataCollectionProgress': false, 'projectDataCollected': false} %}
         {% if activeProject.project_regstatus > 0 %}
             {% if changes.update({'DataCollectionProgress': true }) %} {% endif %}
         {% endif %}
@@ -85,7 +84,15 @@
                                                                         {% if product.product_id == "infosheets" %}
                                                                             {{ _("Individual feedback reports for participants") }}
                                                                         {% else %}
-                                                                            {{ product.product_id }}
+                                                                            {% if product.product_id == "uploaddata" %}
+                                                                                {% if product.process_name == "create_uploaddata_Registration_" %}
+                                                                                    {{ _("Excel template for uploading registration form data") }}
+                                                                                {% else %}
+                                                                                    {{ _("Excel template for uploading assessment form data") }}: {{ product.extraInformation.ass_desc }}
+                                                                                {% endif %}
+                                                                            {% else %}
+                                                                                {{ product.product_id }}
+                                                                            {% endif %}
                                                                         {% endif %}
                                                                     {% endif %}
                                                                 {% endif %}
@@ -140,7 +147,7 @@
                                 <a href="{{ request.route_url('createAnalysis') }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
                             {% else %}
                                 {% if  product.product_id != "datadesk" and product.product_id != "cards"%}
-                                    <a href="{{ request.route_url('generateProduct', productid=product.product_id, projectid=activeProject.project_cod, processname=product.process_name) }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
+                                    <a href="{{ request.route_url('generateProduct', productid=product.product_id, user=activeProject["owner"].user_name,project=activeProject.project_cod, processname=product.process_name) }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
                                 {% endif %}
                             {% endif %}
 
@@ -155,7 +162,7 @@
                                 <a href="{{ request.route_url('createAnalysis') }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
                             {% else %}
                                 {% if  product.product_id != "datadesk" and product.product_id != "cards"%}
-                                    <a href="{{ request.route_url('generateProduct', productid=product.product_id, projectid=activeProject.project_cod, processname=product.process_name) }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
+                                    <a href="{{ request.route_url('generateProduct', productid=product.product_id, user=activeProject["owner"].user_name,project=activeProject.project_cod, processname=product.process_name) }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
                                 {% endif %}
                             {% endif %}
                             <p style="color:#ed5565"><i class="fa fa-info-circle"></i> {{ _("There was a problem creating the product.") }}</p>
@@ -166,28 +173,30 @@
                     {% if product.state == "Success"%}
                         {% if product.exists == "correct" %}
                             {% if product.product_id == "datacsv" and product.process_name == "create_data_Report_" %}
-                                <a href="{{ request.route_url('generateProduct', productid="datacsv", projectid=activeProject.project_cod, processname="create_data_Report_") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Update") }}</a>
+                                <a href="{{ request.route_url('generateProduct', productid="datacsv", user=activeProject["owner"].user_name,project=activeProject.project_cod, processname="create_data_Report_") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Update") }}</a>
                             {% endif %}
 
                             {% if product.product_id == "generalreport" %}
-                                <a href="{{ request.route_url('generateProduct', productid="generalreport", projectid=activeProject.project_cod, processname="generalreport") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Update") }}</a>
+                                <a href="{{ request.route_url('generateProduct', productid="generalreport", user=activeProject["owner"].user_name,project=activeProject.project_cod, processname="generalreport") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Update") }}</a>
                             {% endif %}
 
-                            {% if product.product_id == "datacollectionprogress" %}
-                                <a href="{{ request.route_url('generateProduct', productid="datacollectionprogress", projectid=activeProject.project_cod, processname="datacollectionprogress") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Update") }}</a>
-                            {% endif %}
+                            {% block data_collection_progress_update scoped%}
+
+                            {% endblock data_collection_progress_update %}
+
                         {% endif %}
                     {% endif %}
                 </td>
             </tr>
         {% endfor %}
+
         {% if changes.projectDataCollected %}
             <tr>
                 <td>{{ _("Information collected in all the project") }}</td>
                 <td></td>
                 <td></td>
                 <td class="text-center">
-                    <a href="{{ request.route_url('generateProduct', productid="datacsv", projectid=activeProject.project_cod, processname="create_data_Report_") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
+                    <a href="{{ request.route_url('generateProduct', productid="datacsv", user=activeProject["owner"].user_name,project=activeProject.project_cod, processname="create_data_Report_") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
                 </td>
                 <td></td>
             </tr>
@@ -198,21 +207,15 @@
                 <td></td>
                 <td></td>
                 <td class="text-center">
-                    <a href="{{ request.route_url('generateProduct', productid="generalreport", projectid=activeProject.project_cod, processname="generalreport") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
+                    <a href="{{ request.route_url('generateProduct', productid="generalreport", user=activeProject["owner"].user_name,project=activeProject.project_cod, processname="generalreport") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
                 </td>
                 <td></td>
             </tr>
         {% endif %}
         {% if changes.DataCollectionProgress %}
-            <tr>
-                <td>{{ _("Progress report on data collection") }}</td>
-                <td></td>
-                <td></td>
-                <td class="text-center">
-                    <a href="{{ request.route_url('generateProduct', productid="datacollectionprogress", projectid=activeProject.project_cod, processname="datacollectionprogress") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
-                </td>
-                <td></td>
-            </tr>
+            {% block data_collection_progress_create scoped%}
+
+            {% endblock data_collection_progress_create %}
         {% endif %}
     </tbody>
 </table>

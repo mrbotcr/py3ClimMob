@@ -3,13 +3,9 @@ from climmob.config.celery_class import celeryTask
 from jinja2 import Environment, FileSystemLoader
 import os
 import shutil as sh
-import json
-import zlib
-import base64
-import qrcode
 import gettext
 from weasyprint import HTML
-from ..qrpackages.celerytasks import create_qr
+from climmob.products.qrpackages.celerytasks import create_qr
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 

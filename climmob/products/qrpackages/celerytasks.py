@@ -4,8 +4,6 @@ import base64
 import os
 import bz2
 import gettext
-
-# from qrtools import QR
 import qrcode
 import uuid
 from jinja2 import Environment, FileSystemLoader
@@ -16,7 +14,6 @@ import imgkit
 # sudo apt-get install wkhtmltopdf
 
 PATH = os.path.dirname(os.path.abspath(__file__))
-# PATH = os.path.abspath('climmob/products/qrpackages')
 
 TEMPLATE_ENVIRONMENT = Environment(
     autoescape=False,

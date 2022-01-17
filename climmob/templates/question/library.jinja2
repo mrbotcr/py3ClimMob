@@ -19,7 +19,7 @@
 {% block topScripts %}
     {% jsresource request,'coreresources','qlibrary' %}
     {% jsresource request,'coreresources','sweet' %}
-    {#    {% jsresource request,'coreresources','delete' %}#}
+    {% jsresource request,'coreresources','bootstrapmaxlength' %}
     {% include 'snippets/delete.jinja2' %}
     {% jsresource request,'coreresources','switch' %}
     {% jsresource request,'coreresources','toastr' %}
@@ -55,6 +55,7 @@
                         {% set jstreeId="jstree1" %}
                         {% set eventClick=True %}
                         {% set classByUser=True %}
+                        {% set colorsUserCategories=True %}
                         {% include 'snippets/jstreeQuestions.jinja2' %}
                     </div>
                 </div>
@@ -126,17 +127,7 @@
                     <h5>{{ _("Preview") }}</h5>
                 </div>
                 <div class="ibox-content " >
-                    <div  class="text-center">
-                        <img style="width: 100%; max-width: 320px" src="{{ request.url_for_static('landing/odk.png') }}" alt="info"/>
-                        <div style="padding: 10px; overflow-y: scroll; height: 500px; max-width: 320px; background-color: #fafafa; display: inline-block; text-align: left ">
-                            <div style="width: 100%" id="divForPreview">
-
-                            </div>
-
-                            <img style="width: 100%; max-width: 320px" src="{{ request.url_for_static('landing/odk3.png') }}" alt="info"/>
-                        </div>
-                        <img style="width: 100%; max-width: 320px" src="{{ request.url_for_static('landing/odk2.png') }}" alt="info"/>
-                    </div>
+                    <div  class="text-center" id="divForPreview"></div>
                 </div>
             </div>
         </div>
@@ -177,6 +168,28 @@
 
         $(document).ready(function() {
 
+            $('input#question_code').maxlength(
+                {
+                    alwaysShow: true,
+                    threshold: 0,
+                    warningClass: "label label-primary",
+                    limitReachedClass: "label label-danger",
+                    message: ' {{ _("Used") }} %charsTyped% {{ _("of") }} %charsTotal% {{ _("chars") }}.',
+                    placement: "bottom"
+                }
+            )
+
+            $('input#question_name').maxlength(
+                {
+                    alwaysShow: true,
+                    threshold: 0,
+                    warningClass: "label label-primary",
+                    limitReachedClass: "label label-danger",
+                    message: ' {{ _("Used") }} %charsTyped% {{ _("of") }} %charsTotal% {{ _("chars") }}.',
+                    placement: "bottom"
+                }
+            )
+
             function isNumeric(value)
             {
                 return /^\d+$/.test(value);
@@ -191,7 +204,7 @@
                 }
                 else
                 {
-                    var value_without_space = value.replace(/[^a-z0-9]/gi,'')
+                    var value_without_space = value.replace(/[^a-z0-9_]/gi,'')
                     $(this).val(value_without_space);
                 }
             });
@@ -361,6 +374,10 @@
 
             $("#questionsTree").css('display','initial')
 
+            {% if seeQuestion %}
+                openQuestions("{{ seeQuestion["question_id"] }}", "{{ seeQuestion["user_name"] }}")
+            {% endif %}
+
         });
 
         toastr.options = {
@@ -385,7 +402,7 @@
 
         function showDeleteQuestion() {
             var urlAction = '{{ request.application_url }}/question/'+$('#question_id').val()+'/delete'
-            showDelete(urlAction,'{{ _("Do you really want to remove this question ?") }}','{{ request.session.get_csrf_token() }}')
+            showDelete(urlAction,'{{ _("Do you really want to remove this question ?") }}','{{ request.session.get_csrf_token() }}',"{{ request.route_url("qlibrary", user_name=activeUser.login) }}")
             $(this).parent().parent().remove();
         }
 
@@ -435,6 +452,10 @@
             if ($("#ckb_tricot_quantitative").is(':checked'))
                 question_quantitative = 1;
 
+            {% block dataprivacy_ajax_post_prepare %}
+
+            {% endblock dataprivacy_ajax_post_prepare %}
+
             optionsValues = prepareOptionsValues()
 
             $.ajax({
@@ -459,6 +480,10 @@
                     "question_notobserved": question_notobserved,
                     "question_quantitative":question_quantitative,
                     "optionsValues":  JSON.stringify(optionsValues),
+                    {% block dataprivacy_ajax_post %}
+
+                    {% endblock dataprivacy_ajax_post %}
+
                     {% block ajax_post_extra %}
 
                     {% endblock ajax_post_extra %}
@@ -471,8 +496,11 @@
                         $("#btn_add_question").prop('disabled', false);
                         $("#btn_update_question").prop('disabled', false);
                     }else{
-                        //toastr.success(respuesta['success']);
-                        location.href = window.location.href;
+                        console.log(respuesta)
+                        var URL = "{{ request.route_url("qlibrary", user_name=activeUser.login ,_query={ "questionId": "__questionId__"} ) }}"
+                        URL = URL.replace("__questionId__",respuesta["question_id"])
+                        console.log(URL)
+                        location.href = URL
                     }
                 },
                 error: function (respuesta) {
@@ -569,7 +597,7 @@
                             toastr.error(respuesta['error']);
                         }else{
                             //toastr.success(respuesta['success']);
-                            location.href = window.location.href;
+                            location.href = "{{ request.route_url("qlibrary", user_name=activeUser.login) }}";
                         }
                     },
                     error: function (respuesta) {
@@ -583,169 +611,238 @@
             }
         }
 
-        function openCategories(count,id,value)
+        function createCategory()
+        {
+            $("#jstree1").jstree("close_all");
+            clean_extra_section();
+            clean_buttoms_category();
+            $("#qstgroups_name").val("")
+            $("#qstgroups_id").val("")
+            $("#btnNewCategory").css('display','initial')
+            $("#ibox_category").css('display','initial')
+            $("#qstgroups_name").focus()
+        }
+
+        function openCategories(categoryId, user_name, count)
         {
             $("#jstree1").jstree("close_all");
 
             clean_extra_section();
             clean_buttoms_category();
-            $("#qstgroups_name").val(value)
-            $("#qstgroups_id").val(id)
+            var URL = "{{ request.route_url('getUserCategoryDetails',user="__user_name__", categoryid="__categoryid__") }}"
+            URL = URL.replace("__user_name__", user_name).replace("__categoryid__", categoryId)
 
-            if(value == "")
-            {
-                $("#btnNewCategory").css('display','initial')
-            }else{
+            $.get(URL, function (dataJson, status) {
+
+                $("#qstgroups_name").val(dataJson["qstgroups_name"])
+                $("#qstgroups_id").val(dataJson["qstgroups_id"])
+
                 $("#btnUpdateCategory").css('display','initial')
-                if(count==0)
+                if(dataJson["count"]==0)
                     $("#btnDeleteCategory").css('display','initial')
-            }
 
-            $("#ibox_category").css('display','initial')
 
-            $("#qstgroups_name").focus()
+                $("#ibox_category").css('display','initial')
+
+                $("#qstgroups_name").focus()
+            })
         }
 
-        function openQuestions(question_id,isnew,owner,question_name,question_code, question_desc, question_group, question_dtype, question_unit, question_requiredvalue, question_posstm, question_negstm, question_perfstmt, assigned, options, question_tied, question_notobserved, question_quantitative {% block library_function_open_questions_extra %} {% endblock library_function_open_questions_extra %})
+        function createQuestion(category)
         {
-            showOther = true
-            showNa = true
             clean_extra_fields();
             clean_extra_section();
             clean_buttoms_question();
-            $("#question_id").val(question_id)
-            $("#question_code").val(question_code)
-            $("#question_name").val(question_name)
-            $("#question_desc").val(question_desc)
-            $("#question_unit").val(question_unit)
-            $("#question_posstm").val(question_posstm)
-            $("#question_negstm").val(question_negstm)
-            $("#question_perfstmt").val(question_perfstmt)
-            $("#question_group").val(question_group)
-            $('#question_group').trigger("change.select2");
-            $("#question_dtype").val(question_dtype)
-            $('#question_dtype').trigger('change.select2');
-            {% block function_open_questions_extra_field %}
 
-            {% endblock function_open_questions_extra_field %}
+            $(".inputForQuestion").val("")
+            $("#question_group").val(category);
+            $('#question_group').trigger("change.select2");
+            $("#question_dtype").val("1")
+            $('#question_dtype').trigger('change.select2');
 
             $(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
 
+            $("#ckb_required_value").bootstrapSwitch('state',true);
+            $("#ckb_tricot_quantitative").bootstrapSwitch('state',false);
+            $("#ckb_answer_tied").bootstrapSwitch('state',false);
+            $("#ckb_answer_notobserved").bootstrapSwitch('state',false);
+            {% block dataprivacy_function_create_question %}
 
-            if (question_requiredvalue == 1)
-                $("#ckb_required_value").bootstrapSwitch('state',true);
-            else
-                $("#ckb_required_value").bootstrapSwitch('state',false);
+            {% endblock dataprivacy_function_create_question %}
 
-            if (question_tied == 1)
-                $("#ckb_answer_tied").bootstrapSwitch('state',true);
-            else
-                $("#ckb_answer_tied").bootstrapSwitch('state',false);
-
-            if (question_notobserved == 1)
-                $("#ckb_answer_notobserved").bootstrapSwitch('state',true);
-            else
-                $("#ckb_answer_notobserved").bootstrapSwitch('state',false);
-
-            if (question_quantitative == 1)
-                $("#ckb_tricot_quantitative").bootstrapSwitch('state',true);
-            else
-                $("#ckb_tricot_quantitative").bootstrapSwitch('state',false);
-
-
-            if(question_dtype == '2' || question_dtype == '3')
-            {
-                $('#div_unit').css('display', 'block');
-            }else{
-                $('#div_unit').css('display', 'none');
-            }
-
-            if (question_dtype != "9" && question_dtype != "10") {
-                    $("#extraQuantitative").css("display","block")
-                    $("#form_simple_question").css('display', 'initial')
-                }
-
-            if(question_dtype == "9" )
-            {
-                $("#form_characteristics").css("display",'initial')
-                $("#extraForCharacteristics").css("display","initial")
-                $(".inputForQuestionChar").prop('disabled',false);
-                $("#question_desc").val("-")
-            }
-
-            if(question_dtype == "10")
-            {
-                $("#form_performance").css("display","initial")
-                $(".inputForQuestionPerf").prop('disabled',false);
-                $("#question_desc").val("-")
-            }
-
-            if(question_dtype == '5' || question_dtype == '6')
-            {
-                $("#form_options").css('display','initial');
-                $("#tableForOptions").html("")
-
-                for (var i = 0; i < options.length; i+=1) {
-                    isother = false
-                    isna = false
-                    detail = "<tr>" +
-                    "<td class='text-center' style='padding: 10px; width:60%'><input type='text' class='form-control inputForOption' id='inputOptions"+(i+1)+"' placeholder='{{ _("Option") }}' required oninvalid=\"this.setCustomValidity('{{ _("Write the option value.") }}')\" onchange=\"this.setCustomValidity('')\"  value='"+options[i].value_desc+"'/></td>" +
-                    "<td class='text-center' style='width:30%'>"
-
-                    if(options[i].value_isother == 1)
-                    {
-                        detail += "<div class='bg-success p-xs b-r-sm'> {{ _("Other") }}</div><div style='display:none'><label class='control-label'>{{ _("Value is other") }}</label><br><input type='checkbox' class='inputForQuestionCheck' disabled id='checkOtherOptions"+(i+1)+"' data-on-color='success' data-off-color='danger' data-on-text='Yes' data-off-text='No' checked=''><br></div>"
-                        showOther = false
-                        isother = true
-                    }
-
-                    if(options[i].value_isna == 1)
-                    {
-                        detail += "<div class='bg-info p-xs b-r-sm'> {{ _("Not applicable") }}</div><div style='display:none'><label class='control-label'>{{ _("Value is not applicable") }}</label><br><input type='checkbox' class='inputForQuestionCheck' disabled id='checkNaOptions"+(i+1)+"' data-on-color='success' data-off-color='danger' data-on-text='Yes' data-off-text='No' checked=''><br></div>"
-                        showNa = false
-                        isna = true
-                    }
-
-                    detail += "</td>"
-
-                    detail += "<td class='text-center'> "
-                    if(i !=0 )
-                        detail += "<a class='btn_delete_option btn btn-danger btnsQuestion' id='"+isother+"{--}"+isna+"' style='margin: 5px'> <i id='"+isother+"{--}"+isna+"' class='fa fa-trash'></i></a>"
-                        //detail += "<a class='btn_delete_option btn btn-danger btnsQuestion' id='idOption_"+options[i].value_code+"{--}"+options[i].question_id+"' style='margin: 5px'> <i id='idOption_"+options[i].value_code+"{--}"+options[i].question_id+"' class='fa fa-trash'></i></a>"
-
-                    detail+= "<br></td>" +
-                    "</tr>"
-
-                    $("#tableForOptions").append(detail)
-                }
-
-                $(".btn_delete_option").click(function (event) {
-                    //id= event.target.id.replace('idOption_','').split('{--}')
-                    id= event.target.id.split('{--}')
-                    if (id[0] == 'true')
-                        $("#btn_add_option_other").prop('disabled', false);
-
-                    if (id[1] == 'true')
-                        $("#btn_add_option_na").prop('disabled', false);
-                    //showDeleteOption('{{ request.application_url }}/question/'+id[1]+'/value/'+id[0]+'/delete','{{ _("Do you really want to remove this option?") }}','{{ request.session.get_csrf_token() }}','noRedirect')
-                    $(this).parent().parent().remove();
-                });
-
-            }
+                $("#extraQuantitative").css("display","block")
+            $("#form_simple_question").css('display', 'initial')
 
             clean_buttoms_question();
 
-            if(owner == 'yes' && assigned == 0)
-            {
-                $(".inputForQuestion").attr('readonly', false);
-                $(".inputForOption").attr('readonly', false);
-                $(".inputForQuestionSelect").select2({disabled:false});
+            $(".inputForQuestion").attr('readonly', false);
+            $(".inputForOption").attr('readonly', false);
+            $(".inputForQuestionSelect").select2({disabled:false});
+            $(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
+
+            $("#btn_add_question").prop('disabled', false);
+            $("#btn_add_question").css('display','initial')
+
+            $(".inputForQuestionSelect").select2({ width: '100%' });
+            $("#ibox_question").css('display','initial');
+
+            $("#question_code").focus();
+
+
+        }
+
+        function openQuestions(question_id, user_name)
+        {
+
+            var showOther = true
+            var showNa = true
+            clean_extra_fields();
+            clean_extra_section();
+            clean_buttoms_question();
+            var userInSession = "{{ activeUser.login }}"
+
+            var URL = "{{ request.route_url('getUserQuestionDetails',user="__user_name__", questionid="__questionid__") }}"
+            URL = URL.replace("__user_name__", user_name).replace("__questionid__", question_id)
+
+            $.get(URL, function (dataJson, status) {
+
+                $("#question_id").val(dataJson["question_id"])
+                $("#question_code").val(dataJson["question_code"])
+                $("#question_name").val(dataJson["question_name"])
+                $("#question_desc").val(dataJson["question_desc"])
+                $("#question_unit").val(dataJson["question_unit"])
+                $("#question_posstm").val(dataJson["question_posstm"])
+                $("#question_negstm").val(dataJson["question_negstm"])
+                $("#question_perfstmt").val(dataJson["question_perfstmt"])
+                $("#question_group").val(dataJson["qstgroups_id"] +"[*$%&]"+dataJson["qstgroups_user"])
+                $('#question_group').trigger("change.select2");
+                $("#question_dtype").val(dataJson["question_dtype"])
+                $('#question_dtype').trigger('change.select2');
+
+                {% block function_open_questions_extra_field %}
+
+                {% endblock function_open_questions_extra_field %}
+
                 $(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
 
-                if (isnew == 'no')
+
+                if (dataJson["question_requiredvalue"] == 1)
+                    $("#ckb_required_value").bootstrapSwitch('state',true);
+                else
+                    $("#ckb_required_value").bootstrapSwitch('state',false);
+
+                if (dataJson["question_tied"] == 1)
+                    $("#ckb_answer_tied").bootstrapSwitch('state',true);
+                else
+                    $("#ckb_answer_tied").bootstrapSwitch('state',false);
+
+                if (dataJson["question_notobserved"] == 1)
+                    $("#ckb_answer_notobserved").bootstrapSwitch('state',true);
+                else
+                    $("#ckb_answer_notobserved").bootstrapSwitch('state',false);
+
+                if (dataJson["question_quantitative"] == 1)
+                    $("#ckb_tricot_quantitative").bootstrapSwitch('state',true);
+                else
+                    $("#ckb_tricot_quantitative").bootstrapSwitch('state',false);
+
+                {% block dataprivacy_function_open_questions %}
+
+                {% endblock dataprivacy_function_open_questions %}
+
+                if(dataJson["question_dtype"] == '2' || dataJson["question_dtype"] == '3')
                 {
+                    $('#div_unit').css('display', 'block');
+                }else{
+                    $('#div_unit').css('display', 'none');
+                }
+
+                if (dataJson["question_dtype"] != "9" && dataJson["question_dtype"] != "10") {
+                        $("#extraQuantitative").css("display","block")
+                        $("#form_simple_question").css('display', 'initial')
+                    }
+
+                if(dataJson["question_dtype"] == "9" )
+                {
+                    $("#form_characteristics").css("display",'initial')
+                    $("#extraForCharacteristics").css("display","initial")
+                    $(".inputForQuestionChar").prop('disabled',false);
+                    $("#question_desc").val("-")
+                }
+
+                if(dataJson["question_dtype"] == "10")
+                {
+                    $("#form_performance").css("display","initial")
+                    $(".inputForQuestionPerf").prop('disabled',false);
+                    $("#question_desc").val("-")
+                }
+
+                if(dataJson["question_dtype"] == '5' || dataJson["question_dtype"] == '6')
+                {
+                    $("#form_options").css('display','initial');
+                    $("#tableForOptions").html("")
+
+                    var options = dataJson["question_options"];
+
+                    for (var i = 0; i < options.length; i+=1) {
+                        isother = false
+                        isna = false
+                        detail = "<tr>" +
+                        "<td class='text-center' style='padding: 10px; width:60%'><input type='text' class='form-control inputForOption' id='inputOptions"+(i+1)+"' placeholder='{{ _("Option") }}' required oninvalid=\"this.setCustomValidity('{{ _("Write the option value.") }}')\" onchange=\"this.setCustomValidity('')\"  value='"+options[i].value_desc+"'/></td>" +
+                        "<td class='text-center' style='width:30%'>"
+
+                        if(options[i].value_isother == 1)
+                        {
+                            detail += "<div class='bg-success p-xs b-r-sm'> {{ _("Other") }}</div><div style='display:none'><label class='control-label'>{{ _("Value is other") }}</label><br><input type='checkbox' class='inputForQuestionCheck' disabled id='checkOtherOptions"+(i+1)+"' data-on-color='success' data-off-color='danger' data-on-text='Yes' data-off-text='No' checked=''><br></div>"
+                            showOther = false
+                            isother = true
+                        }
+
+                        if(options[i].value_isna == 1)
+                        {
+                            detail += "<div class='bg-info p-xs b-r-sm'> {{ _("Not applicable") }}</div><div style='display:none'><label class='control-label'>{{ _("Value is not applicable") }}</label><br><input type='checkbox' class='inputForQuestionCheck' disabled id='checkNaOptions"+(i+1)+"' data-on-color='success' data-off-color='danger' data-on-text='Yes' data-off-text='No' checked=''><br></div>"
+                            showNa = false
+                            isna = true
+                        }
+
+                        detail += "</td>"
+
+                        detail += "<td class='text-center'> "
+                        if(i !=0 )
+                            detail += "<a class='btn_delete_option btn btn-danger btnsQuestion' id='"+isother+"{--}"+isna+"' style='margin: 5px'> <i id='"+isother+"{--}"+isna+"' class='fa fa-trash'></i></a>"
+                            //detail += "<a class='btn_delete_option btn btn-danger btnsQuestion' id='idOption_"+options[i].value_code+"{--}"+options[i].question_id+"' style='margin: 5px'> <i id='idOption_"+options[i].value_code+"{--}"+options[i].question_id+"' class='fa fa-trash'></i></a>"
+
+                        detail+= "<br></td>" +
+                        "</tr>"
+
+                        $("#tableForOptions").append(detail)
+                    }
+
+                    $(".btn_delete_option").click(function (event) {
+                        id= event.target.id.split('{--}')
+                        if (id[0] == 'true')
+                            $("#btn_add_option_other").prop('disabled', false);
+
+                        if (id[1] == 'true')
+                            $("#btn_add_option_na").prop('disabled', false);
+                        $(this).parent().parent().remove();
+                    });
+
+                }
+
+                clean_buttoms_question();
+
+                if(userInSession == dataJson["user_name"] && dataJson["assigned"] == 0)
+                {
+                    $(".inputForQuestion").attr('readonly', false);
+                    $(".inputForOption").attr('readonly', false);
+                    $(".inputForQuestionSelect").select2({disabled:false});
+                    $(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
+
+
                     $("#question_code").attr('readonly',true)
                     $("#btn_add_option").css('display','initial')
+                    $("#btn_update_question").prop('disabled', false);
                     $("#btn_update_question").css('display','initial')
                     $("#btn_delete_question").css('display','initial')
                     $(".btn_delete_option").css('display','initial')
@@ -764,27 +861,35 @@
                         $("#btn_add_option_other").prop('disabled', true);
                     }
 
+
+
                 }else{
-                    $("#btn_add_question").css('display','initial')
+                    $(".inputForQuestion").attr('readonly', true);
+                    $(".inputForOption").attr('readonly', true);
+                    $(".inputForQuestionSelect").select2({disabled:'readonly'});
+                    $(".inputForQuestionCheck").bootstrapSwitch('readonly', true);
                 }
 
-            }else{
-                $(".inputForQuestion").attr('readonly', true);
-                $(".inputForOption").attr('readonly', true);
-                $(".inputForQuestionSelect").select2({disabled:'readonly'});
-                $(".inputForQuestionCheck").bootstrapSwitch('readonly', true);
-            }
+                $(".inputForQuestionSelect").select2({ width: '100%' });
 
-            $(".inputForQuestionSelect").select2({ width: '100%' });
+                $("#ibox_question").css('display','initial');
 
-            $("#ibox_question").css('display','initial');
+                showPreview(user_name, question_id);
 
-            if(isnew == 'no') {
-                clean_all_preview_elements()
-                showPreview(question_dtype, question_desc, question_requiredvalue, question_posstm, question_negstm, question_perfstmt, options, question_tied, question_notobserved, question_quantitative)
-            }
+                $("#question_code").focus()
+            });
 
-            $("#question_code").focus()
+        }
+
+        function showPreview(user_name, question_id)
+        {
+            var URL = "{{ request.route_url('getUserQuestionPreview',user="__user_name__", questionid="__questionid__") }}"
+            URL = URL.replace("__user_name__", user_name).replace("__questionid__", question_id)
+
+            $.get(URL, function (data, status) {
+                $("#divForPreview").html(data);
+                $("#ibox_preview").css('display','initial');
+            })
         }
 
         function clean_extra_fields()
@@ -815,197 +920,6 @@
         function clean_buttoms_question()
         {
             $(".btnsQuestion").css('display','none')
-        }
-
-        function showPreview(question_dtype, question_desc, question_required, question_posstm, question_negstm, question_perfstmt, options, question_tied, question_notobserved, question_quantitative) {
-            $("#preview_question").css("display","initial");
-            var letters = ["A", "B", "C"]
-
-            $("#divForPreview").html("");
-            var quantitative = 0;
-            if (question_quantitative == 1)
-            {
-                quantitative = 2;
-            }
-
-            for(var repQuestion=0; repQuestion <= quantitative; repQuestion++) {
-
-                var nameExtra = ""
-                if (question_quantitative == 1) {
-                    nameExtra = " - Option "+letters[repQuestion]
-                }
-
-                if (question_dtype != 9 & question_dtype != 10) {
-                    var questionHTML = '<h3 style="font-family:sans-serif; color: #000000" id="preview_question">';
-                    if(question_required == 1)
-                    {
-                        questionHTML += '<strong style="color: red" class="preview_required">*</strong> ';
-                    }
-                    questionHTML += '<strong id="preview_text">'+ question_desc+ nameExtra +'</strong></h3>';
-                    $("#divForPreview").append(questionHTML+'<br>');
-
-                    if(question_dtype == 1)
-                    {
-                        $("#divForPreview").append('<input class="previewElement preview_1" data-role="keypad" data-keys="q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,ñ,z,x,c,v,b,n,m"  data-open="false" data-position="bottom" style="font-family:sans-serif; font-size: 16px;width: 100%; border: none; border-bottom: 2px solid black;">');
-                    }
-
-                    if(question_dtype == 2)
-                    {
-                        $("#divForPreview").append('<input class="previewElement preview_2" id="preview_2" data-role="keypad" data-open="false" data-position="bottom" data-on-change="$(this).val(arguments[0]+\'.0\')" style="font-family:sans-serif; font-size: 16px;width: 100%; border: none; border-bottom: 2px solid black;">')
-                    }
-                    if(question_dtype ==3)
-                    {
-                        $("#divForPreview").append('<input class="previewElement preview_3" data-role="keypad" data-open="false" data-position="bottom" style="font-family:sans-serif; font-size: 16px;width: 100%; border: none; border-bottom: 2px solid black;">')
-                    }
-
-                    if(question_dtype ==4 || question_dtype == 11 || question_dtype == 12)
-                    {
-                        $("#divForPreview").append('<button type="submit" class="previewElement preview_4 preview_11 preview_12 preview_27"  style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Get GPS point") }}</button>')
-                    }
-
-                    if(question_dtype ==5)
-                    {
-                        var isOther = false;
-                        for (var i = 0; i < options.length; i += 1) {
-                            if(options[i].value_isother == 1)
-                            {
-                                isOther = true;
-                            }
-                            $("#divForPreview").append("<label class='radio-inline  control-label' for='radio' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='radio' value='" + options[i].value_code + "'> " + options[i].value_desc + "<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                        }
-                        if (isOther)
-                        {
-                            var questionHTML = '<h3 style="font-family:sans-serif; color: #000000" id="preview_question">';
-                            questionHTML += '<strong id="preview_text">'+ question_desc+ nameExtra + ' {{ _("Other") }}</strong></h3>';
-                            $("#divForPreview").append(questionHTML+'<br>');
-                            $("#divForPreview").append('<input class="previewElement preview_1" data-role="keypad" data-keys="q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,ñ,z,x,c,v,b,n,m"  data-open="false" data-position="bottom" style="font-family:sans-serif; font-size: 16px;width: 100%; border: none; border-bottom: 2px solid black;">');
-                        }
-
-                    }
-                    if(question_dtype ==6)
-                    {
-                        var isOther = false;
-                        for (var i = 0; i < options.length; i += 1) {
-                            if(options[i].value_isother == 1)
-                            {
-                                isOther = true;
-                            }
-                            $("#divForPreview").append("<label class='checkbox-inline  control-label' for='check' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='checkbox' name='check' value='" + options[i].value_code + "'> " + options[i].value_desc + "<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                        }
-                        if (isOther)
-                        {
-                            var questionHTML = '<h3 style="font-family:sans-serif; color: #000000" id="preview_question">';
-                            questionHTML += '<strong id="preview_text">'+ question_desc+ nameExtra + ' {{ _("Other") }}</strong></h3>';
-                            $("#divForPreview").append(questionHTML+'<br>');
-                            $("#divForPreview").append('<input class="previewElement preview_1" data-role="keypad" data-keys="q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,ñ,z,x,c,v,b,n,m"  data-open="false" data-position="bottom" style="font-family:sans-serif; font-size: 16px;width: 100%; border: none; border-bottom: 2px solid black;">');
-                        }
-                    }
-                    if(question_dtype ==7 || question_dtype == 19)
-                    {
-                        $("#divForPreview").append('<button type="submit" class="previewElement preview_7  preview_19"  style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Get Barcode") }}</button>')
-                    }
-                    if(question_dtype ==8)
-                    {
-                        $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='observer' value='1'> Juan Mora Brenes<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                        $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='observer' value='2'> María Rojas Fonseca<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                        $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='observer' value='3'> Tom Castro Durán<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                    }
-                    if(question_dtype ==13 || question_dtype ==15)
-                    {
-                        $("#divForPreview").append('<button id="btn_date13" type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Select date") }}</button><br>');
-                        $("#divForPreview").append('<label id="txt_date13" style="font-family:sans-serif; font-size: 16px;font-weight: initial; width: 100%; color:#000000;">{{ _("No date selected") }}</label>')
-                    }
-                    if(question_dtype ==14 || question_dtype ==15)
-                    {
-                        $("#divForPreview").append('<button id="btn_time14" type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Select time") }}</button>');
-                        $("#divForPreview").append('<label id="txt_time14" style="font-family:sans-serif; font-size: 16px;font-weight: initial; width: 100%; color:#000000;">{{ _("No time selected") }}</label>');
-                    }
-                    if(question_dtype ==16)
-                    {
-                        $("#divForPreview").append('<button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Take Picture") }}</button>');
-                        $("#divForPreview").append('<br><br>');
-                        $("#divForPreview").append('<button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Choose Image") }}</button>')
-                    }
-                    if(question_dtype ==17)
-                    {
-                        $("#divForPreview").append('<button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Record Sound") }}</button>');
-                        $("#divForPreview").append('<br><br>');
-                        $("#divForPreview").append('<button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Choose Sound") }}</button>');
-                        $("#divForPreview").append('<br><br>');
-                        $("#divForPreview").append('<button disabled type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Play Sound") }}</button>')
-                    }
-                    if(question_dtype ==18)
-                    {
-                        $("#divForPreview").append('<button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Record Video") }}</button>');
-                        $("#divForPreview").append('<br><br>');
-                        $("#divForPreview").append('<button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Choose Video") }}</button>');
-                        $("#divForPreview").append('<br><br>');
-                        $("#divForPreview").append('<button disabled type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Play Video") }}</button>')
-                    }
-
-                }else{
-                    if (question_dtype == 9) {
-                        var questionHTML = '<h3 style="font-family:sans-serif; color: #000000" id="preview_question">';
-                        if(question_required == 1)
-                        {
-                            questionHTML += '<strong style="color: red" class="preview_required">*</strong> ';
-                        }
-                        questionHTML += '<strong id="preview_text">'+ question_posstm +'</strong></h3>';
-                        $("#divForPreview").append(questionHTML+'<br>');
-                        $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='1'> {{ _("Option") }} A<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                        $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='2'> {{ _("Option") }} B<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                        $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='3'> {{ _("Option") }} C<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                        if (question_tied == 1) {
-                            $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='4'> {{ _("Tied") }}<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                        }
-                        if (question_notobserved == 1) {
-                            $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='3'> {{ _("Not observed") }}<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                        }
-                        $("#divForPreview").append("<hr style='margin: 10px 0px 10px 0px'>")
-                        var questionHTML = '<h3 style="font-family:sans-serif; color: #000000" id="preview_question">';
-                        if(question_required == 1)
-                        {
-                            questionHTML += '<strong style="color: red" class="preview_required">*</strong> ';
-                        }
-                        questionHTML += '<strong id="preview_text">'+ question_negstm +'</strong></h3>';
-                        $("#divForPreview").append(questionHTML+'<br>');
-                        $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm' value='1'> {{ _("Option") }} A<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                        $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm' value='2'> {{ _("Option") }} B<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                        $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm' value='3'> {{ _("Option") }} C<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                        if (question_tied == 1) {
-                            $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='4'> {{ _("Tied") }}<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                        }
-                        if (question_notobserved == 1) {
-                            $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm' value='3'> {{ _("Not observed") }}<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                        }
-                    }
-
-                    if (question_dtype == 10) {
-
-                        for (x = 0; x <= 2; x++) {
-                            var questionHTML = '<h3 style="font-family:sans-serif; color: #000000" id="preview_question">';
-                            if(question_required == 1)
-                            {
-                                questionHTML += '<strong style="color: red" class="preview_required">*</strong> ';
-                            }
-                            questionHTML += '<strong id="preview_text">'+ question_perfstmt.replace("{ {option}}".replace(" ", ""), letters[x]) +'</strong></h3>';
-                            $("#divForPreview").append(questionHTML+'<br>');
-                            $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='perfstmt" + x + " value='1'> {{ _("Better") }}<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                            $("#divForPreview").append("<label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='perfstmt" + x + "' value='2'> {{ _("Worse") }}<hr style='margin: 10px 0px 10px 0px'></label><br>")
-                            if (x != 2)
-                                $("#divForPreview").append("<hr style='margin: 10px 0px 10px 0px'>")
-                        }
-                    }
-                }
-                $("#divForPreview").append('<hr>');
-            }
-
-            $("#ibox_preview").css('display','initial');
-        }
-
-        function clean_all_preview_elements()
-        {
-            $(".previewElement").css('display','none')
         }
 
     </script>

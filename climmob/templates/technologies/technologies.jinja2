@@ -18,7 +18,6 @@
     {% jsresource request,'coreresources','technologies' %}
     {% jsresource request,'coreresources','datatables' %}
     {% jsresource request,'coreresources','sweet' %}
-    {#    {% jsresource request,'coreresources','delete' %}#}
     {% jsresource request,'coreresources','toastr' %}
     {% include 'snippets/delete.jinja2' %}
     {% jsresource request,'coreresources','tour' %}
@@ -213,7 +212,7 @@
             });
 
             {% if techSee %}
-                showVarietiesInTechnology({{ techSee|tojson }}, closeError='no')
+                showVarietiesInTechnology("{{ techSee.tech_id }}","{{ techSee.user_name }}", closeError='no')
                 {% if error_summary_options %}
                     {% if "btn_add_alias" in dataworking %}
                         $("#alias_name").prop('required',false);
@@ -268,93 +267,97 @@
             $("#alias_name_insert").val("")
         });
 
-        function showVarietiesInTechnology(tech, closeError='yes') {
-            $("#tech"+tech.tech_id).addClass('tableHover2');
-            if (!$("#radio"+tech.tech_id).prop('checked')) {
-                $("#radio"+tech.tech_id).iCheck('check');
-            }
+        function showVarietiesInTechnology(tech_id, user_name, closeError='yes') {
+            var URL= "{{ request.route_url('getUserTechnologyDetails',user="__user_name__", technologyid="__techid__") }}"
+            URL= URL.replace("__user_name__",user_name).replace("__techid__", tech_id)
+            data = {};
 
-            if(closeError == 'yes')
-            {
-                if ($('.closeError').length) {
-                    $(".closeError").click()
+            $.get(URL, function(data, status){
+                var tech = data;
+
+
+                $("#tech"+tech.tech_id).addClass('tableHover2');
+                if (!$("#radio"+tech.tech_id).prop('checked')) {
+                    $("#radio"+tech.tech_id).iCheck('check');
                 }
 
-                $("#div_create_technology_option").css("display","none")
-            }
+                if(closeError == 'yes')
+                {
+                    if ($('.closeError').length) {
+                        $(".closeError").click()
+                    }
 
-            cleanBtsTechnology()
-            $(".tech_id").val(tech.tech_id)
-            $("#tech_name").val(tech.tech_name)
+                    $("#div_create_technology_option").css("display","none")
+                }
 
-            allHTML = "<h4>{{ _("List of technology options:") }}</h4>"
-            for(var i=0; i<tech.tech_alias.length; i++)
-            {
-                var arrayForAlias = JSON.stringify(tech.tech_alias[i]).replace(/(')/g, "\\u0027");
-                if(tech.tech_alias[i].quantity == 0 & tech.user_name == "{{ activeUser.login }}"){
-                    allHTML +="<div class='stream' style='padding:4px 0' onclick='showAlias("+arrayForAlias+")' id='option"+tech.tech_alias[i].alias_id+"'>"
+                cleanBtsTechnology()
+                $(".tech_id").val(tech.tech_id)
+                $("#tech_name").val(tech.tech_name)
+
+                allHTML = "<h4>{{ _("List of technology options:") }}</h4>"
+                for(var i=0; i<tech.tech_alias.length; i++)
+                {
+                    var arrayForAlias = JSON.stringify(tech.tech_alias[i]).replace(/(')/g, "\\u0027");
+                    if(tech.tech_alias[i].quantity == 0 & tech.user_name == "{{ activeUser.login }}"){
+                        allHTML +="<div class='stream' style='padding:4px 0' onclick='showAlias(\""+tech.user_name+"\",\""+tech.tech_id+"\",\""+tech.tech_alias[i].alias_id+"\")' id='option"+tech.tech_alias[i].alias_id+"'>"
+                        allHTML +="<div class='stream-badge'>"
+                        /*allHTML +="<i class='fa fa-thumb-tack' style='color:#1ab394'></i>"*/
+                        /*allHTML +="<i class='fa fa-thumb-tack' style='color:#1ab394'></i>"*/
+                        allHTML +="<i style='border-color:#1ab394; padding: initial;'><input type='radio' class='i-checkOption i-checks-Green1' name='technologyoptions' id='radioOption"+tech.tech_alias[i].alias_id+"'></i>"
+                    }else{
+                        allHTML +="<div class='stream' style='padding:4px 0' >"
+                        allHTML +="<div class='stream-badge'>"
+                        /*allHTML +="<i class='fa fa-thumb-tack' style='color:#000000'></i>"*/
+                        //allHTML +="<i style='border-color:#000000; padding: initial;'><input type='radio' class='i-checkOption i-checks-Black1' disabled='' name='technologyoptions' id='radioOption"+tech.tech_alias[i].alias_id+"'></i>"
+                    }
+                    allHTML +="</div>"
+                    allHTML +="<div class='stream-panel' style='margin-top:4px'>"
+                    allHTML +="<div class='stream-info'>"
+                    allHTML +="<p style='font-size:14px; margin:initial'>"+tech.tech_alias[i].alias_name+"</p>"
+                    allHTML +="</div>"
+                    allHTML +="</div>"
+                    allHTML +="</div>"
+                }
+                if(tech.user_name == "{{ activeUser.login }}"){
+                    allHTML +="<div class='stream' style='padding:4px 0' onclick='showCreateAlias()'>"
                     allHTML +="<div class='stream-badge'>"
-                    /*allHTML +="<i class='fa fa-thumb-tack' style='color:#1ab394'></i>"*/
-                    /*allHTML +="<i class='fa fa-thumb-tack' style='color:#1ab394'></i>"*/
-                    allHTML +="<i style='border-color:#1ab394; padding: initial;'><input type='radio' class='i-checkOption i-checks-Green1' name='technologyoptions' id='radioOption"+tech.tech_alias[i].alias_id+"'></i>"
+                    allHTML +="<i class='fa fa-plus' style='color:#000000'></i>"
+                    allHTML +="</div>"
+                    allHTML +="<div class='stream-panel' style='margin-top:4px'>"
+                    allHTML +="<div class='stream-info'>"
+                    allHTML +="<strong class='label label-primary' style='font-size: 12px; background-color: #3c763d'>{{ _("Create new technology option") }}</strong>"
+                    allHTML +="</div>"
+                    allHTML +="</div>"
+                    allHTML +="</div>"
+                }
+
+                $("#div_show_alias").html(allHTML)
+
+                $('.i-checks-Black1').iCheck({
+                    radioClass: 'iradio_square-black',
+                });
+
+                $('.i-checks-Green1').iCheck({
+                    radioClass: 'iradio_square-green',
+                });
+
+                $(document).on('ifChecked', '.i-checkOption', function(event) {
+                    id = $(this).attr("id")
+                    $("#option"+id.replace("radioOption","")).click()
+                });
+
+                if(tech.found == 0 & tech.user_name == "{{ activeUser.login }}"){
+                    //$("#btn_modify_technology").css('display','initial')
+                    $("#btn_delete_technology").css('display','initial')
+                    $("#tech_name").prop('readonly',false)
                 }else{
-                    allHTML +="<div class='stream' style='padding:4px 0' >"
-                    allHTML +="<div class='stream-badge'>"
-                    /*allHTML +="<i class='fa fa-thumb-tack' style='color:#000000'></i>"*/
-                    //allHTML +="<i style='border-color:#000000; padding: initial;'><input type='radio' class='i-checkOption i-checks-Black1' disabled='' name='technologyoptions' id='radioOption"+tech.tech_alias[i].alias_id+"'></i>"
+                    $("#tech_name").prop('readonly',true)
                 }
-                allHTML +="</div>"
-                allHTML +="<div class='stream-panel' style='margin-top:4px'>"
-                allHTML +="<div class='stream-info'>"
-                allHTML +="<p style='font-size:14px; margin:initial'>"+tech.tech_alias[i].alias_name+"</p>"
-                allHTML +="</div>"
-                allHTML +="</div>"
-                allHTML +="</div>"
-            }
-            if(tech.user_name == "{{ activeUser.login }}"){
-                allHTML +="<div class='stream' style='padding:4px 0' onclick='showCreateAlias()'>"
-                allHTML +="<div class='stream-badge'>"
-                allHTML +="<i class='fa fa-plus' style='color:#000000'></i>"
-                allHTML +="</div>"
-                allHTML +="<div class='stream-panel' style='margin-top:4px'>"
-                allHTML +="<div class='stream-info'>"
-                allHTML +="<strong class='label label-primary' style='font-size: 12px; background-color: #3c763d'>{{ _("Create new technology option") }}</strong>"
-                allHTML +="</div>"
-                allHTML +="</div>"
-                allHTML +="</div>"
-            }
 
-            $("#div_show_alias").html(allHTML)
+                $("#div_create_technology").css('display','initial')
+                $("#div_show_alias").css('display','initial')
 
-            $('.i-checks-Black1').iCheck({
-                radioClass: 'iradio_square-black',
             });
-
-            $('.i-checks-Green1').iCheck({
-                radioClass: 'iradio_square-green',
-            });
-
-            /*$('.i-checkOption').on('ifChanged', function()
-            {
-                id = $(this).attr("id")
-                $("#option"+id.replace("radioOption","")).click()
-            });*/
-
-            $(document).on('ifChecked', '.i-checkOption', function(event) {
-                id = $(this).attr("id")
-                $("#option"+id.replace("radioOption","")).click()
-            });
-
-            if(tech.found == 0 & tech.user_name == "{{ activeUser.login }}"){
-                //$("#btn_modify_technology").css('display','initial')
-                $("#btn_delete_technology").css('display','initial')
-                $("#tech_name").prop('readonly',false)
-            }else{
-                $("#tech_name").prop('readonly',true)
-            }
-
-            $("#div_create_technology").css('display','initial')
-            $("#div_show_alias").css('display','initial')
         }
 
         function showCreateAlias(){
@@ -376,33 +379,40 @@
         }
 
         var changeError=0
-        function showAlias(alias)
+        function showAlias(user_name, tech_id, alias_id)
         {
-            $("#option"+alias.alias_id).iCheck('check');
-            {% if not error_summary_options %}
-                if ($('.closeError').length) {
-                    $(".closeError").click()
-                }
-            {% else %}
-                if (changeError > 0)
-                {
+            var URL= "{{ request.route_url('getUserTechnologyAliasDetails',user="__user_name__", technologyid="__techid__", aliasid="__aliasid__") }}"
+            URL= URL.replace("__user_name__",user_name).replace("__techid__", tech_id).replace("__aliasid__", alias_id)
+
+            $.get(URL, function(data, status){
+                var alias = data;
+                console.log(alias)
+                $("#option"+alias.alias_id).iCheck('check');
+                {% if not error_summary_options %}
                     if ($('.closeError').length) {
                         $(".closeError").click()
                     }
-                }
-                changeError =changeError + 1
-            {% endif %}
+                {% else %}
+                    if (changeError > 0)
+                    {
+                        if ($('.closeError').length) {
+                            $(".closeError").click()
+                        }
+                    }
+                    changeError =changeError + 1
+                {% endif %}
 
-            $("#alias_name").prop('required',true);
-            $("#alias_name_insert").prop('required',false);
-            cleanSectionsOptions()
-            cleanBtsTechnologyOptions()
-            $("#alias_name").val(alias.alias_name)
-            $("#alias_id").val(alias.alias_id)
-            $("#btn_delete_technology_option").css('display','initial')
-            $("#btn_modify_alias").css('display','initial')
-            $("#div_update_option").css('display','initial')
-            $("#div_create_technology_option").css('display','initial')
+                $("#alias_name").prop('required',true);
+                $("#alias_name_insert").prop('required',false);
+                cleanSectionsOptions()
+                cleanBtsTechnologyOptions()
+                $("#alias_name").val(alias.alias_name)
+                $("#alias_id").val(alias.alias_id)
+                $("#btn_delete_technology_option").css('display','initial')
+                $("#btn_modify_alias").css('display','initial')
+                $("#div_update_option").css('display','initial')
+                $("#div_create_technology_option").css('display','initial')
+            });
         }
 
         function deleteTechnology() {

@@ -1,2 +1,2 @@
-from .celerytasks import *
-from .generalReport import *
+from climmob.products.generalReport.celerytasks import *
+from climmob.products.generalReport.generalReport import *

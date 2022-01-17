@@ -1,6 +1,6 @@
-from ...models import mapToSchema, mapFromSchema
-from ...models.climmobv4 import Question_group, Question
-from sqlalchemy import or_
+from climmob.models import mapToSchema, mapFromSchema
+from climmob.models.climmobv4 import Question_group, Question, userProject
+from sqlalchemy import or_, func
 
 __all__ = [
     "categoryExists",
@@ -14,6 +14,8 @@ __all__ = [
     "getCategoriesParents",
     "getCategoryById",
     "categoryExistsById",
+    "getCategoriesFromUserCollaborators",
+    "getCategoryByIdAndUser",
 ]
 
 
@@ -127,14 +129,7 @@ def getCategories(user, request):
     return data
 
 
-def getCategoriesParents(user, request):
-    # sql = (
-    #     "select qstgroups.user_name,qstgroups.qstgroups_id, qstgroups_name,(select count(question.question_id)from question where question.qstgroups_id = qstgroups.qstgroups_id "
-    #     "and question.qstgroups_user = qstgroups.user_name) as count "
-    #     "from qstgroups where (qstgroups.user_name = '"
-    #     + user
-    #     + "' or qstgroups.user_name = 'bioversity') and qstgroups_id not in (select distinct(group_id) from qstsubgroups where parent_username='bioversity')"
-    # )
+def getCategoriesParents(userRegular, userOwner, request):
 
     sql = (
         "SELECT "
@@ -146,8 +141,46 @@ def getCategoriesParents(user, request):
         "AND		  qstgroups.qstgroups_id = i.qstgroups_id "
         "AND       i.lang_code = '" + request.locale_name + "' "
         "WHERE "
-        "(qstgroups.user_name = '" + user + "' OR qstgroups.user_name = 'bioversity') "
+        "(qstgroups.user_name = '"
+        + userRegular
+        + "' OR qstgroups.user_name = 'bioversity' OR qstgroups.user_name ='"
+        + userOwner
+        + "') "
         "and qstgroups.qstgroups_id not in (select distinct(group_id) from qstsubgroups where parent_username='bioversity')"
+    )
+
+    data = request.dbsession.execute(sql).fetchall()
+
+    return data
+
+
+def getCategoriesFromUserCollaborators(projectId, request):
+
+    projectCollaborators = (
+        request.dbsession.query(userProject.user_name)
+        .filter(userProject.project_id == projectId)
+        .all()
+    )
+
+    stringForFilterCategoriesByCollaborators = "qstgroups.user_name = 'bioversity'"
+    if projectCollaborators:
+        for user in projectCollaborators:
+            stringForFilterCategoriesByCollaborators += (
+                " OR qstgroups.user_name='" + user[0] + "' "
+            )
+
+    sql = (
+        " SELECT "
+        " qstgroups.user_name, qstgroups.qstgroups_id, COALESCE(i.qstgroups_name, qstgroups.qstgroups_name) as qstgroups_name, "
+        " (select count(question.question_id)from question where question.qstgroups_id = qstgroups.qstgroups_id and question.qstgroups_user = qstgroups.user_name) as count "
+        " FROM qstgroups "
+        " LEFT JOIN i18n_qstgroups i "
+        " ON        qstgroups.user_name = i.user_name "
+        " AND		  qstgroups.qstgroups_id = i.qstgroups_id "
+        " AND       i.lang_code = '" + request.locale_name + "' "
+        " WHERE "
+        " (" + stringForFilterCategoriesByCollaborators + " ) "
+        " AND qstgroups.qstgroups_id not in (select distinct(group_id) from qstsubgroups where parent_username='bioversity')"
     )
 
     data = request.dbsession.execute(sql).fetchall()
@@ -160,6 +193,25 @@ def getCategoryById(qstgroups_id, request):
         request.dbsession.query(Question_group)
         .filter(Question_group.qstgroups_id == qstgroups_id)
         .all()
+    )
+    result = mapFromSchema(res)
+
+    return result
+
+
+def getCategoryByIdAndUser(qstgroups_id, qstgroups_username, request):
+
+    res = (
+        request.dbsession.query(
+            Question_group,
+            request.dbsession.query(func.count(Question.question_id))
+            .filter(Question.qstgroups_id == Question_group.qstgroups_id)
+            .filter(Question.user_name == Question_group.user_name)
+            .label("count"),
+        )
+        .filter(Question_group.qstgroups_id == qstgroups_id)
+        .filter(Question_group.user_name == qstgroups_username)
+        .first()
     )
     result = mapFromSchema(res)
 

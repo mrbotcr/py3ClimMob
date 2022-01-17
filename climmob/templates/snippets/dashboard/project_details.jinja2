@@ -1,58 +1,9 @@
-{#<li>#}
-{#    <a href="{{ request.route_url('dashboard', _query={'project':project.project_cod}) }}">#}
-{#        <h4>{{ project.project_name|truncate(35) }}</h4>#}
-{#        <p>{{ project.project_abstract|truncate(110) }}</p>#}
-{##}
-{#        <div class="small">{{ _("Setup") }} {{ project.perc }}% {{ _("completed") }}</div>#}
-{#        <div class="progress progress-mini">#}
-{#            <div style="width: {{ project.perc }}%;" class="progress-bar progress-bar-success"></div>#}
-{#        </div>#}
-{#        {% set pbtype = "progress-bar-info" %}#}
-{#        {% if project.progress.regsubmissions == 0 %}#}
-{#            <div class="small">{{ _("Registration: Not yet started") }}</div>#}
-{#        {% endif %}#}
-{#        {% if project.progress.regsubmissions == 1 %}#}
-{#            <div class="small" title="{{ _("Out of a sample of") }} {{ project.project_numobs }} {{ _("observations") }}">{{ _("Registration: On going with") }} {{ project.progress.regtotal }} {{ request.h.pluralize(_("submission"),project.progress.regtotal) }}</div>#}
-{#        {% endif %}#}
-{#        {% if project.progress.regsubmissions == 2 %}#}
-{#            <div class="small" title="{{ _("Out of a sample of") }} {{ project.project_numobs }} {{ _("observations") }}">{{ _("Registration: Closed with") }} {{ project.progress.regtotal }} {{ request.h.pluralize(_("submission"),project.progress.regtotal) }}</div>#}
-{#            {% if project.progress.regperc >= 100 %}#}
-{#                {% set pbtype = "progress-bar-success" %}#}
-{#            {% else %}#}
-{#                {% set pbtype = "progress-bar-warning" %}#}
-{#            {% endif %}#}
-{#        {% endif %}#}
-{#        <div class="progress progress-mini">#}
-{#            <div style="width: {{ project.progress.regperc }}%;" class="progress-bar {{ pbtype }}"></div>#}
-{#        </div>#}
-{#        {% if project.progress.asssubmissions == 0 %}#}
-{#                <div class="small">{{ _("Assessments not yet started") }}</div>#}
-{#        {% endif %}#}
-{#        {% for assessment in project.progress.assessments %}#}
-{#            {% set pbtype = "progress-bar-info" %}#}
-{#            {% if assessment.ass_status == 1 %}#}
-{#                <div class="small">{{ _("Assessment") }} "{{ assessment.ass_desc }}". {{ _("On going with") }} {{ assessment.asstotal }} {{ request.h.pluralize(_("submission"),assessment.asstotal) }}</div>#}
-{#            {% endif %}#}
-{#            {% if assessment.ass_status == 2 %}#}
-{#                <div class="small">{{ _("Assessment") }} "{{ assessment.ass_desc }}". {{ _("Closed with") }} {{ assessment.asstotal }} {{ request.h.pluralize(_("submission"),assessment.asstotal) }}</div>#}
-{#                {% if assessment.assperc >= 100 %}#}
-{#                    {% set pbtype = "progress-bar-success" %}#}
-{#                {% else %}#}
-{#                    {% set pbtype = "progress-bar-warning" %}#}
-{#                {% endif %}#}
-{#            {% endif %}#}
-{#            <div class="progress progress-mini">#}
-{#                <div style="width: {{ assessment.assperc }}%;" class="progress-bar {{ pbtype }}"></div>#}
-{#            </div>#}
-{#        {% endfor %}#}
-{##}
-{#        <div class="small text-muted m-t-xs" title="{{ request.h.readble_date(project.project_creationdate) }}">{{ _("Project created") }}: {{ request.h.humanize_date(project.project_creationdate) }}</div>#}
-{#    </a>#}
-{#</li>#}
+
 
 
 <li style="padding: 4px 20px">
-    <a href="{{ request.route_url('dashboard', _query={'project':project.project_cod}) }}">
+    <a href="{{ request.route_url('dashboard', _query={'user':project["owner"].user_name, "project": project.project_cod}) }}">
+
         <h4>{{ project.project_name|truncate(35) }}</h4>
 
         {% if project.progress.regsubmissions == 0 %}
@@ -66,75 +17,10 @@
                         <div class="small">{{ _("Registration closed") }}</div>
                     {% else %}
                         <div class="small">{{ _("Data collection / analysis ongoing") }}</div>
-{#                        {% set values = {"started":0, "finished":0, "notyetstarted":0 } %}#}
-{#                        {% set notyetstarted=0 %}#}
-{#                        {% set started=0 %}#}
-{#                        {% set finished=0 %}#}
-{#                        {% for assessment in project.progress.assessments %}#}
-{#                            {% if assessment.ass_status == 0 %}{% set notyetstarted = notyetstarted + 1 %} {% if values.update({'notyetstarted':notyetstarted}) %} {% endif %} {% endif %}#}
-{#                            {% if assessment.ass_status == 1 %}{% set started = started + 1 %} {% if values.update({'started':started})  %}{% endif %} {% endif %}#}
-{#                            {% if assessment.ass_status == 2 %}{% set finished = finished + 1  %} {% if values.update({'finished':finished}) %}{% endif %}{% endif %}#}
-{#                        {% endfor %}#}
-{#                        <table style="width: 100%">#}
-{#                            <tr><th>{{ _("Data collections:") }}</th></tr>#}
-{#                            {% if values.notyetstarted > 0%}#}
-{#                                <tr><td>{{ _("Not yet started") }}: {{ values.notyetstarted }}</td></tr>#}
-{#                            {% endif %}#}
-{#                            {% if values.started > 0%}#}
-{#                                <tr><td>{{ _("Started") }}: {{ values.started }}</td></tr>#}
-{#                            {% endif %}#}
-{#                            {% if values.finished > 0 %}#}
-{#                                <tr><td>{{ _("Finished") }}: {{ values.finished }}</td></tr>#}
-{#                            {% endif %}#}
-{#                        </table>#}
                     {% endif %}
                 {% endif %}
             {% endif %}
         {% endif %}
-{#        <p>{{ project.project_abstract|truncate(110) }}</p>#}
-{##}
-{#        <div class="small">{{ _("Setup") }} {{ project.perc }}% {{ _("completed") }}</div>#}
-{#        <div class="progress progress-mini">#}
-{#            <div style="width: {{ project.perc }}%;" class="progress-bar progress-bar-success"></div>#}
-{#        </div>#}
-{#        {% set pbtype = "progress-bar-info" %}#}
-{#        {% if project.progress.regsubmissions == 0 %}#}
-{#            <div class="small">{{ _("Registration: Not yet started") }}</div>#}
-{#        {% endif %}#}
-{#        {% if project.progress.regsubmissions == 1 %}#}
-{#            <div class="small" title="{{ _("Out of a sample of") }} {{ project.project_numobs }} {{ _("observations") }}">{{ _("Registration: On going with") }} {{ project.progress.regtotal }} {{ request.h.pluralize(_("submission"),project.progress.regtotal) }}</div>#}
-{#        {% endif %}#}
-{#        {% if project.progress.regsubmissions == 2 %}#}
-{#            <div class="small" title="{{ _("Out of a sample of") }} {{ project.project_numobs }} {{ _("observations") }}">{{ _("Registration: Closed with") }} {{ project.progress.regtotal }} {{ request.h.pluralize(_("submission"),project.progress.regtotal) }}</div>#}
-{#            {% if project.progress.regperc >= 100 %}#}
-{#                {% set pbtype = "progress-bar-success" %}#}
-{#            {% else %}#}
-{#                {% set pbtype = "progress-bar-warning" %}#}
-{#            {% endif %}#}
-{#        {% endif %}#}
-{#        <div class="progress progress-mini">#}
-{#            <div style="width: {{ project.progress.regperc }}%;" class="progress-bar {{ pbtype }}"></div>#}
-{#        </div>#}
-{#        {% if project.progress.asssubmissions == 0 %}#}
-{#                <div class="small">{{ _("Assessments not yet started") }}</div>#}
-{#        {% endif %}#}
-{#        {% for assessment in project.progress.assessments %}#}
-{#            {% set pbtype = "progress-bar-info" %}#}
-{#            {% if assessment.ass_status == 1 %}#}
-{#                <div class="small">{{ _("Assessment") }} "{{ assessment.ass_desc }}". {{ _("On going with") }} {{ assessment.asstotal }} {{ request.h.pluralize(_("submission"),assessment.asstotal) }}</div>#}
-{#            {% endif %}#}
-{#            {% if assessment.ass_status == 2 %}#}
-{#                <div class="small">{{ _("Assessment") }} "{{ assessment.ass_desc }}". {{ _("Closed with") }} {{ assessment.asstotal }} {{ request.h.pluralize(_("submission"),assessment.asstotal) }}</div>#}
-{#                {% if assessment.assperc >= 100 %}#}
-{#                    {% set pbtype = "progress-bar-success" %}#}
-{#                {% else %}#}
-{#                    {% set pbtype = "progress-bar-warning" %}#}
-{#                {% endif %}#}
-{#            {% endif %}#}
-{#            <div class="progress progress-mini">#}
-{#                <div style="width: {{ assessment.assperc }}%;" class="progress-bar {{ pbtype }}"></div>#}
-{#            </div>#}
-{#        {% endfor %}#}
 
         <div class="small" title="{{ request.h.readble_date(project.project_creationdate) }}">{{ _("Project created") }}: {{ request.h.humanize_date(project.project_creationdate) }}</div>
     </a>

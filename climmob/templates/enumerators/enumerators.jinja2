@@ -14,7 +14,6 @@
     {% jsresource request,'coreresources','switch' %}
     {% jsresource request,'coreresources','sweet' %}
 
-    {#    {% jsresource request,'coreresources','delete' %}#}
     {% jsresource request,'coreresources','toastr' %}
     {% include 'snippets/delete.jinja2' %}
 {% endblock topScripts %}
@@ -97,7 +96,7 @@
 
                                     </td>
                                     <td class="text-center" style="vertical-align: middle;">
-                                        <button class="btn btn-warning btn-circle" onclick='seeEnumerator({{ enumerator.enum_name| tojson }},{{ enumerator.enum_id| tojson }},{{ enumerator.enum_password| tojson }},{{ enumerator.enum_active }})'  title="{{ _("Edit field agent") }}"><i class="fa fa-pencil"></i></button>
+                                        <button class="btn btn-warning btn-circle" onclick='seeEnumerator("{{ enumerator.enum_id }}","{{ enumerator.user_name }}")'  title="{{ _("Edit field agent") }}"><i class="fa fa-pencil"></i></button>
                                         <button class="btn btn-danger btn-circle" onclick="showDelete('{{ request.route_url('deleteenumerator',enumeratorid = enumerator.enum_id)}}','{{ _("Do you really want to remove this field agent?") }}','{{ request.session.get_csrf_token() }}')" type="button" title="{{ _("Remove field agent") }}"><i class="fa fa-times"></i></button>
                                     </td>
                                 </tr>
@@ -121,7 +120,18 @@
 
     $(document).ready(function () {
 
+        $('#enum_id').on('input',function()
+        {
+            console.log("aquiii")
+            var value = $(this).val();
+            
+                var value_without_space = value.replace(/[^a-z0-9_]/gi,'')
+                $(this).val(value_without_space);
+
+        });
     });
+
+
 
     $(".formElement").bind("keypress", function(e) {
         if (e.keyCode == 13) {
@@ -137,22 +147,28 @@
         $("#div_submit_data").css("display",'none')
     })
 
-    function seeEnumerator(name, id, password, check) {
-        cleanButtons()
-        cleanInputs()
+    function seeEnumerator(enumId, user_name) {
+        var URL= "{{ request.route_url('getEnumeratorDetails',user="__user_name__", enumid="__enumid__") }}"
+        URL= URL.replace("__user_name__",user_name).replace("__enumid__", enumId)
+        data = {};
 
-        if (check == 1)
-            $("[name='ckb_modify_status']").bootstrapSwitch('state',true);
-        else
-            $("[name='ckb_modify_status']").bootstrapSwitch('state',false);
+        $.get(URL, function(dataJson, status) {
+            cleanButtons()
+            cleanInputs()
 
-        $("#enum_name").val(name)
-        $("#enum_id").val(id)
-        $("#enum_password").val(password)
-        $("#enum_id").attr('readonly', true);
+            if (dataJson["enum_active"] == 1)
+                $("[name='ckb_modify_status']").bootstrapSwitch('state', true);
+            else
+                $("[name='ckb_modify_status']").bootstrapSwitch('state', false);
 
-        $("#btn_modify_enumerator").css('display','initial')
-        $("#div_submit_data").css("display",'initial')
+            $("#enum_name").val(dataJson["enum_name"])
+            $("#enum_id").val(dataJson["enum_id"])
+            $("#enum_password").val(dataJson["enum_password"])
+            $("#enum_id").attr('readonly', true);
+
+            $("#btn_modify_enumerator").css('display', 'initial')
+            $("#div_submit_data").css("display", 'initial')
+        });
     }
 
     function cleanButtons()

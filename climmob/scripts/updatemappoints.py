@@ -10,6 +10,7 @@ from climmob.models import (
     Assessment,
     User,
     Prjtech,
+    userProject,
 )
 import os
 import json
@@ -23,15 +24,17 @@ import numpy as np
 def getProjectWithGeoPointInRegistry(dbsession):
 
     result = (
-        dbsession.query(Project, User.user_fullname, User.user_organization)
-        .filter(Project.user_name == Registry.user_name)
-        .filter(Project.project_cod == Registry.project_cod)
-        .filter(Project.user_name == User.user_name)
+        dbsession.query(
+            Project, User.user_fullname, User.user_organization, User.user_name
+        )
+        .filter(Project.project_id == Registry.project_id)
+        .filter(userProject.project_id == Project.project_id)
+        .filter(userProject.access_type == 1)
+        .filter(userProject.user_name == User.user_name)
         .filter(Registry.question_id == Question.question_id)
         .filter(Question.question_dtype == 4)
         .filter(Project.project_regstatus > 0)
-        .filter(Prjtech.user_name == Project.user_name)
-        .filter(Prjtech.project_cod == Project.project_cod)
+        .filter(Prjtech.project_id == Project.project_id)
         .filter(Prjtech.tech_id != 76)
         .filter(Prjtech.tech_id != 78)
         .all()
@@ -43,31 +46,32 @@ def getProjectWithGeoPointInRegistry(dbsession):
 def getProjectWithGeoPointInAssessment(dbsession):
 
     subquery = (
-        dbsession.query(Project.project_cod, Project.user_name)
-        .filter(Project.user_name == Registry.user_name)
-        .filter(Project.project_cod == Registry.project_cod)
+        dbsession.query(Project.project_cod, userProject.user_name)
+        .filter(Project.project_id == Registry.project_id)
+        .filter(userProject.project_id == Project.project_id)
+        .filter(userProject.access_type == 1)
         .filter(Registry.question_id == Question.question_id)
         .filter(Question.question_dtype == 4)
         .filter(Project.project_regstatus > 0)
-        .filter(Prjtech.user_name == Project.user_name)
-        .filter(Prjtech.project_cod == Project.project_cod)
+        .filter(Prjtech.project_id == Project.project_id)
         .filter(Prjtech.tech_id != 76)
         .filter(Prjtech.tech_id != 78)
     )
     result = (
-        dbsession.query(Project, User.user_fullname, User.user_organization)
-        .filter(tuple_(Project.project_cod, Project.user_name).notin_(subquery))
-        .filter(Project.user_name == Assessment.user_name)
-        .filter(Project.project_cod == Assessment.project_cod)
-        .filter(Project.user_name == User.user_name)
+        dbsession.query(
+            Project, User.user_fullname, User.user_organization, User.user_name
+        )
+        .filter(tuple_(Project.project_cod, userProject.user_name).notin_(subquery))
+        .filter(Project.project_id == Assessment.project_id)
+        .filter(userProject.project_id == Project.project_id)
+        .filter(userProject.access_type == 1)
+        .filter(userProject.user_name == User.user_name)
         .filter(Assessment.ass_cod == AssDetail.ass_cod)
-        .filter(Assessment.user_name == AssDetail.user_name)
-        .filter(Assessment.project_cod == AssDetail.project_cod)
+        .filter(Assessment.project_id == AssDetail.project_id)
         .filter(Assessment.ass_status > 0)
         .filter(AssDetail.question_id == Question.question_id)
         .filter(Question.question_dtype == 4)
-        .filter(Prjtech.user_name == Project.user_name)
-        .filter(Prjtech.project_cod == Project.project_cod)
+        .filter(Prjtech.project_id == Project.project_id)
         .filter(Prjtech.tech_id != 76)
         .filter(Prjtech.tech_id != 78)
         .all()
@@ -76,12 +80,11 @@ def getProjectWithGeoPointInAssessment(dbsession):
     return mapFromSchema(result)
 
 
-def getTheFirstGeoPointQuestionCodeInRegistry(user, projectid, dbsession):
+def getTheFirstGeoPointQuestionCodeInRegistry(projectId, user, projectCod, dbsession):
     registryHaveGeolocation = (
         dbsession.query(Question.question_code)
         .filter(Question.question_id == Registry.question_id)
-        .filter(Registry.user_name == user)
-        .filter(Registry.project_cod == projectid)
+        .filter(Registry.project_id == projectId)
         .filter(Question.question_dtype == 4)
         .first()
     )
@@ -94,7 +97,7 @@ def getTheFirstGeoPointQuestionCodeInRegistry(user, projectid, dbsession):
             + ", ' ', 2), ' ', -1) AS Longitude FROM "
             + user
             + "_"
-            + projectid
+            + projectCod
             + ".REG_geninfo "
         )
 
@@ -107,11 +110,10 @@ def getTheFirstGeoPointQuestionCodeInRegistry(user, projectid, dbsession):
     return False, {}
 
 
-def getTheFirstGeoPointQuestionCodeInAssessment(user, projectid, dbsession):
+def getTheFirstGeoPointQuestionCodeInAssessment(projectId, user, projectCod, dbsession):
     assessments = (
         dbsession.query(Assessment)
-        .filter(Assessment.user_name == user)
-        .filter(Assessment.project_cod == projectid)
+        .filter(Assessment.project_id == projectId)
         .filter(Assessment.ass_status > 0)
         .order_by(Assessment.ass_days)
         .all()
@@ -122,8 +124,7 @@ def getTheFirstGeoPointQuestionCodeInAssessment(user, projectid, dbsession):
         assessmentHaveGeolocation = (
             dbsession.query(Question.question_code)
             .filter(Question.question_id == AssDetail.question_id)
-            .filter(AssDetail.user_name == user)
-            .filter(AssDetail.project_cod == projectid)
+            .filter(AssDetail.project_id == projectId)
             .filter(AssDetail.ass_cod == assessment.ass_cod)
             .filter(Question.question_dtype == 4)
             .first()
@@ -138,7 +139,7 @@ def getTheFirstGeoPointQuestionCodeInAssessment(user, projectid, dbsession):
                 + ", ' ', 2), ' ', -1) AS Longitude FROM "
                 + user
                 + "_"
-                + projectid
+                + projectCod
                 + ".ASS"
                 + assessment.ass_cod
                 + "_geninfo "
@@ -227,7 +228,10 @@ def main(raw_args=None):
             # print(len(getProjectWithGeoPointInRegistry(dbsession)))
             for project in getProjectWithGeoPointInRegistry(dbsession):
                 info, infoInTheProject = getTheFirstGeoPointQuestionCodeInRegistry(
-                    project["user_name"], project["project_cod"], dbsession
+                    project["project_id"],
+                    project["user_name"],
+                    project["project_cod"],
+                    dbsession,
                 )
                 if info:
                     result = processTheProject(project, infoInTheProject)
@@ -237,7 +241,10 @@ def main(raw_args=None):
             # print(len(getProjectWithGeoPointInAssessment(dbsession)))
             for project in getProjectWithGeoPointInAssessment(dbsession):
                 info, infoInTheProject = getTheFirstGeoPointQuestionCodeInAssessment(
-                    project["user_name"], project["project_cod"], dbsession
+                    project["project_id"],
+                    project["user_name"],
+                    project["project_cod"],
+                    dbsession,
                 )
                 if info:
                     result = processTheProject(project, infoInTheProject)

@@ -1,1 +1,1 @@
-from .products import *
+from climmob.products.products import *

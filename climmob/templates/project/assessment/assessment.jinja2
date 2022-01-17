@@ -11,7 +11,6 @@
 
 {% block topScripts %}
     {% jsresource request,'coreresources','sweet' %}
-    {#    {% jsresource request,'coreresources','delete' %}#}
     {% jsresource request,'coreresources','toastr' %}
     {% include 'snippets/delete.jinja2' %}
     {% jsresource request,'coreresources','switch' %}
@@ -25,33 +24,43 @@
 {% endblock %}
 
 {% block pagecontent %}
+
+    {% set onlySee = False %}
+
+    {% if activeProject["access_type"] in [4] %}
+        {% set onlySee = True %}
+    {% endif %}
+
     <div class="row">
-        <div class="col-lg-6 ">
-            <div class="ibox float-e-margins">
-                <div class="ibox-title">
-                    <h5>{{ _("Data collection moment details") }}</h5>
-                    <div class="ibox-tools">
-                        <button id="btn_cancel_assessment"  class="btn btn-xs btn-default pull-right " ><i class="fa fa-close" style="color: black"></i> </button>
+        {% if not onlySee %}
+
+            <div class="col-lg-6 ">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>{{ _("Data collection moment details") }}</h5>
+                        <div class="ibox-tools">
+                            <button id="btn_cancel_assessment"  class="btn btn-xs btn-default pull-right " ><i class="fa fa-close" style="color: black"></i> </button>
+                        </div>
                     </div>
-                </div>
-                <div class="ibox-content">
+                    <div class="ibox-content">
 
-                    {% include 'snippets/error.jinja2' %}
+                        {% include 'snippets/error.jinja2' %}
 
-                    <div class="error-desc">
-                        <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}">
-                            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
-                            {% set final_visible=new_available %}
-                            {% include 'snippets/project/assessment/assessmentform.jinja2' %}
-                            <button class="btn btn-primary pull-right btnsAssesment" type="submit" name="btn_add_ass" id="btn_add_ass"> {{ _('Add') }}</button>
-                            <button class="btn btn-primary pull-right btnsAssesment" type="submit" name="btn_modify_ass" id="btn_modify_ass" style="display: none"> {{ _('Save') }}</button>
-                        </form>
-                        <br>
-                        <br>
+                        <div class="error-desc">
+                            <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}">
+                                <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                                {% set final_visible=new_available %}
+                                {% include 'snippets/project/assessment/assessmentform.jinja2' %}
+                                <button class="btn btn-primary pull-right btnsAssesment" type="submit" name="btn_add_ass" id="btn_add_ass"> {{ _('Add') }}</button>
+                                <button class="btn btn-primary pull-right btnsAssesment" type="submit" name="btn_modify_ass" id="btn_modify_ass" style="display: none"> {{ _('Save') }}</button>
+                            </form>
+                            <br>
+                            <br>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        {% endif %}
         <div class="col-lg-6">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
@@ -79,10 +88,12 @@
                                     {% endif %}
                                     <td class="text-center"> {{ assessment.ass_days }}</td>
                                     <td class="text-center">
+                                        <a class="btn btn-default btn-circle" href="{{ request.route_url('assessmentdetail', user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}" title="{{ _("See questions") }}"><i class="fa fa-list-ul"></i></a>
                                         {% if assessment.ass_status == 0 %}
-                                            <a class="btn btn-default btn-circle" href="{{ request.route_url('assessmentdetail', projectid=projectid,assessmentid=assessment.ass_cod) }}" title="{{ _("Set questions") }}"><i class="fa fa-list-ul"></i></a>
-                                            <a class="btn btn-warning btn-circle" onclick='seeAssessment({{ assessment.ass_cod|tojson }},{{ assessment.ass_desc|tojson }},{{ assessment.ass_days }}, {{ assessment.ass_final }})' title="{{ _("Edit data collection") }}"><i class="fa fa-pencil"></i></a>
-                                            <button class="btn btn-danger btn-circle"  onclick="showDelete('{{ request.route_url('deleteassessment', projectid=projectid,assessmentid=assessment.ass_cod) }}','{{ _("Do you really want to remove this data collection moment?") }}','{{ request.session.get_csrf_token() }}')" title="{{ _("Remove data collection")}}"><i class="fa fa-times"></i></button>
+                                            {% if not onlySee %}
+                                                <a class="btn btn-warning btn-circle" onclick='seeAssessment("{{ assessment.ass_cod|string }}")' title="{{ _("Edit data collection") }}"><i class="fa fa-pencil"></i></a>
+                                                <button class="btn btn-danger btn-circle"  onclick="showDelete('{{ request.route_url('deleteassessment', user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}','{{ _("Do you really want to remove this data collection moment?") }}','{{ request.session.get_csrf_token() }}')" title="{{ _("Remove data collection")}}"><i class="fa fa-times"></i></button>
+                                            {% endif %}
                                         {% else %}
                                             {% if assessment.ass_status == 1 %}
                                                 {{ _('On going') }}
@@ -115,6 +126,10 @@
             {% else %}
                 $("#ckb_final").bootstrapSwitch('state', false);
             {% endif %}
+
+            {% block rhomis_doument_ready %}
+
+            {% endblock rhomis_doument_ready %}
         });
 
         $(".formElement").bind("keypress", function(e) {
@@ -124,18 +139,29 @@
             }
         });
 
-        function seeAssessment(code, desc, days, final) {
-            cleanButtons();
-            cleanInputs();
-            $("#ass_cod").val(code);
-            $("#ass_desc").val(desc);
-            $("#ass_days").val(days);
-            if(final == 1)
-            {
-                $("#ckb_final").bootstrapSwitch('state', true);
-                $("#check_for_final").css("display","block")
-            }
-            $("#btn_modify_ass").css("display","block")
+        //function seeAssessment(code, desc, days, final) {
+        function seeAssessment(code) {
+            var URL= "{{ request.route_url('getAssessmentDetails',user=activeProject["owner"].user_name, project=activeProject.project_cod, assessmentid="__assessmentid__") }}"
+            URL= URL.replace("__assessmentid__", code)
+            data = {};
+
+            $.get(URL, function(dataJson, status) {
+                cleanButtons();
+                cleanInputs();
+                $("#ass_cod").val(code);
+                $("#ass_desc").val(dataJson["ass_desc"]);
+                $("#ass_days").val(dataJson["ass_days"]);
+                if (dataJson["ass_final"] == 1) {
+                    $("#ckb_final").bootstrapSwitch('state', true);
+                    $("#check_for_final").css("display", "block")
+                }
+
+                {% block rhomis_seeAssessment %}
+
+                {% endblock rhomis_seeAssessment %}
+
+                $("#btn_modify_ass").css("display", "block")
+            })
         }
 
         $("#btn_cancel_assessment").click(function () {
@@ -152,12 +178,17 @@
             $("#ass_desc").val("")
             $("#ass_days").val("")
             $("#ckb_final").bootstrapSwitch('state',false);
+            {% block rhomis_cleanInputs %}
+
+            {% endblock rhomis_cleanInputs %}
 
             {% if not new_available %}
                 $("#check_for_final").css("display","none")
             {% else %}
                 $("#check_for_final").css("display","block")
             {% endif %}
+
+
         }
 
 

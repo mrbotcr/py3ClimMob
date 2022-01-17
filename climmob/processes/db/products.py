@@ -1,12 +1,11 @@
-from ...models import Products, Tasks, finishedTasks
+from climmob.models import Products, Tasks, finishedTasks
 import datetime
 
 __all__ = ["addProductInstance", "deleteProducts"]
 
 
 def addProductInstance(
-    user,
-    project,
+    projectId,
     product,
     output,
     mimeType,
@@ -16,8 +15,7 @@ def addProductInstance(
     newTask=True,
 ):
     newInstance = Products(
-        user_name=user,
-        project_cod=project,
+        project_id=projectId,
         product_id=product,
         output_id=output,
         output_mimetype=mimeType,
@@ -35,20 +33,18 @@ def addProductInstance(
         return False, str(e)
 
 
-def deleteProducts(request, user, project, processName="ALL"):
+def deleteProducts(request, projectId, processName="ALL"):
 
     if processName == "ALL":
         result = (
             request.dbsession.query(Products)
-            .filter(Products.user_name == user)
-            .filter(Products.project_cod == project)
+            .filter(Products.project_id == projectId)
             .all()
         )
     else:
         result = (
             request.dbsession.query(Products)
-            .filter(Products.user_name == user)
-            .filter(Products.project_cod == project)
+            .filter(Products.project_id == projectId)
             .filter(Products.process_name == processName)
             .all()
         )
@@ -59,10 +55,10 @@ def deleteProducts(request, user, project, processName="ALL"):
         ).delete()
 
     if processName == "ALL":
-        request.dbsession.query(Products).filter(Products.user_name == user).filter(
-            Products.project_cod == project
+        request.dbsession.query(Products).filter(
+            Products.project_id == projectId
         ).delete()
     else:
-        request.dbsession.query(Products).filter(Products.user_name == user).filter(
-            Products.project_cod == project
+        request.dbsession.query(Products).filter(
+            Products.project_id == projectId
         ).filter(Products.process_name == processName).delete()

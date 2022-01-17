@@ -69,8 +69,7 @@ def addMetadataToProduct(product, key, value):
 
 
 def registerProductInstance(
-    user,
-    project,
+    projectId,
     product,
     output,
     mimeType,
@@ -80,15 +79,7 @@ def registerProductInstance(
     newTask=True,
 ):
     p.registerProductInstance(
-        user,
-        project,
-        product,
-        output,
-        mimeType,
-        processName,
-        instanceID,
-        request,
-        newTask,
+        projectId, product, output, mimeType, processName, instanceID, request, newTask,
     )
 
 
@@ -278,5 +269,27 @@ def register_products(config):
         multimediadownloads, "Licence", "Copyright 2021, MrBot Software Solutions",
     )
     products.append(multimediadownloads)
+
+    # RANDOMIZATION
+
+    randomization = addProduct("randomization", "Randomization for tricot project.")
+    addMetadataToProduct(randomization, "author", "Brandon Madriz")
+    addMetadataToProduct(randomization, "version", "1.0")
+    addMetadataToProduct(
+        randomization, "Licence", "Copyright 2021, MrBot Software Solutions",
+    )
+    products.append(randomization)
+
+    # UPLOAD DATA
+
+    uploadData = addProduct(
+        "uploaddata", "Upload information to ClimMob, via Excel and API."
+    )
+    addMetadataToProduct(uploadData, "author", "Brandon Madriz")
+    addMetadataToProduct(uploadData, "version", "1.0")
+    addMetadataToProduct(
+        uploadData, "Licence", "Copyright 2021, MrBot Software Solutions",
+    )
+    products.append(uploadData)
 
     return products

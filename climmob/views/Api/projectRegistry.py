@@ -1,6 +1,5 @@
-from ..classes import apiView
-
-from ...processes import (
+from climmob.views.classes import apiView
+from climmob.processes import (
     projectExists,
     getRegistryQuestions,
     availableRegistryQuestions,
@@ -22,18 +21,19 @@ from ...processes import (
     getRegistryQuestionsApi,
     saveRegistryOrder,
     getProjectData,
+    getTheProjectIdForOwner,
+    getAccessTypeForProject,
+    theUserBelongsToTheProject,
 )
-
 from pyramid.response import Response
 import json
-import datetime
 
 
 class readProjectRegistry_view(apiView):
     def processView(self):
 
         if self.request.method == "GET":
-            obligatory = [u"project_cod"]
+            obligatory = [u"project_cod", u"user_owner"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -47,13 +47,30 @@ class readProjectRegistry_view(apiView):
 
             if sorted(obligatory) == sorted(dataworking.keys()):
                 exitsproject = projectExists(
-                    self.user.login, dataworking["project_cod"], self.request
+                    self.user.login,
+                    dataworking["user_owner"],
+                    dataworking["project_cod"],
+                    self.request,
                 )
                 if exitsproject:
-                    data = getRegistryQuestions(
-                        self.user.login,
+
+                    activeProjectId = getTheProjectIdForOwner(
+                        dataworking["user_owner"],
                         dataworking["project_cod"],
                         self.request,
+                    )
+
+                    projectDetails = getProjectData(activeProjectId, self.request)
+                    projectLabels = [
+                        projectDetails["project_label_a"],
+                        projectDetails["project_label_b"],
+                        projectDetails["project_label_c"],
+                    ]
+                    data = getRegistryQuestions(
+                        dataworking["user_owner"],
+                        activeProjectId,
+                        self.request,
+                        projectLabels,
                         onlyShowTheBasicQuestions=True,
                     )
                     # The following is to help jinja2 to render the groups and questions
@@ -111,7 +128,7 @@ class readPossibleQuestionsForRegistryGroup_view(apiView):
     def processView(self):
 
         if self.request.method == "GET":
-            obligatory = [u"project_cod"]
+            obligatory = [u"project_cod", u"user_owner"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -125,24 +142,45 @@ class readPossibleQuestionsForRegistryGroup_view(apiView):
 
             if sorted(obligatory) == sorted(dataworking.keys()):
                 exitsproject = projectExists(
-                    self.user.login, dataworking["project_cod"], self.request
+                    self.user.login,
+                    dataworking["user_owner"],
+                    dataworking["project_cod"],
+                    self.request,
                 )
                 if exitsproject:
-                    pro = getProjectData(
-                        self.user.login, dataworking["project_cod"], self.request
+
+                    activeProjectId = getTheProjectIdForOwner(
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
                     )
+                    accessType = getAccessTypeForProject(
+                        self.user.login, activeProjectId, self.request
+                    )
+
+                    if accessType in [4]:
+                        response = Response(
+                            status=401,
+                            body=self._(
+                                "The access assigned for this project does not allow you to get this information."
+                            ),
+                        )
+                        return response
+
+                    pro = getProjectData(activeProjectId, self.request)
                     response = Response(
                         status=200,
                         body=json.dumps(
                             {
                                 "Questions": availableRegistryQuestions(
-                                    self.user.login,
-                                    dataworking["project_cod"],
+                                    activeProjectId,
                                     self.request,
                                     pro["project_registration_and_analysis"],
                                 ),
                                 "QuestionsOptions": QuestionsOptions(
-                                    self.user.login, self.request
+                                    self.user.login,
+                                    dataworking["user_owner"],
+                                    self.request,
                                 ),
                             }
                         ),
@@ -165,7 +203,12 @@ class addRegistryGroup_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"section_name", u"section_content"]
+            obligatory = [
+                u"project_cod",
+                u"user_owner",
+                u"section_name",
+                u"section_content",
+            ]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -179,19 +222,40 @@ class addRegistryGroup_view(apiView):
 
                 if dataInParams:
                     exitsproject = projectExists(
-                        self.user.login, dataworking["project_cod"], self.request
+                        self.user.login,
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
                     )
                     if exitsproject:
-                        if projectRegStatus(
-                            self.user.login, dataworking["project_cod"], self.request
-                        ):
+
+                        activeProjectId = getTheProjectIdForOwner(
+                            dataworking["user_owner"],
+                            dataworking["project_cod"],
+                            self.request,
+                        )
+                        accessType = getAccessTypeForProject(
+                            self.user.login, activeProjectId, self.request
+                        )
+
+                        if accessType in [4]:
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "The access assigned for this project does not allow you to add groups."
+                                ),
+                            )
+                            return response
+
+                        if projectRegStatus(activeProjectId, self.request):
 
                             haveTheBasicStructure(
-                                self.user.login,
-                                dataworking["project_cod"],
+                                dataworking["user_owner"],
+                                activeProjectId,
                                 self.request,
                             )
 
+                            dataworking["project_id"] = activeProjectId
                             addgroup, message = addRegistryGroup(
                                 dataworking, self, "API"
                             )
@@ -236,6 +300,7 @@ class updateRegistryGroup_view(apiView):
         if self.request.method == "POST":
             obligatory = [
                 u"project_cod",
+                u"user_owner",
                 u"group_cod",
                 u"section_name",
                 u"section_content",
@@ -253,12 +318,33 @@ class updateRegistryGroup_view(apiView):
 
                 if dataInParams:
                     exitsproject = projectExists(
-                        self.user.login, dataworking["project_cod"], self.request
+                        self.user.login,
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
                     )
                     if exitsproject:
-                        if projectRegStatus(
-                            self.user.login, dataworking["project_cod"], self.request
-                        ):
+
+                        activeProjectId = getTheProjectIdForOwner(
+                            dataworking["user_owner"],
+                            dataworking["project_cod"],
+                            self.request,
+                        )
+                        accessType = getAccessTypeForProject(
+                            self.user.login, activeProjectId, self.request
+                        )
+
+                        if accessType in [4]:
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "The access assigned for this project does not allow you to update groups."
+                                ),
+                            )
+                            return response
+
+                        if projectRegStatus(activeProjectId, self.request):
+                            dataworking["project_id"] = activeProjectId
                             exitsGroup = exitsRegistryGroup(dataworking, self)
                             if exitsGroup:
                                 mdf, message = modifyRegistryGroup(dataworking, self)
@@ -308,7 +394,7 @@ class deleteRegistryGroup_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"group_cod"]
+            obligatory = [u"project_cod", u"user_owner", u"group_cod"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -322,19 +408,39 @@ class deleteRegistryGroup_view(apiView):
 
                 if dataInParams:
                     exitsproject = projectExists(
-                        self.user.login, dataworking["project_cod"], self.request
+                        self.user.login,
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
                     )
                     if exitsproject:
-                        if projectRegStatus(
-                            self.user.login, dataworking["project_cod"], self.request
-                        ):
+
+                        activeProjectId = getTheProjectIdForOwner(
+                            dataworking["user_owner"],
+                            dataworking["project_cod"],
+                            self.request,
+                        )
+                        accessType = getAccessTypeForProject(
+                            self.user.login, activeProjectId, self.request
+                        )
+
+                        if accessType in [4]:
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "The access assigned for this project does not allow you to delete groups."
+                                ),
+                            )
+                            return response
+
+                        if projectRegStatus(activeProjectId, self.request):
+                            dataworking["project_id"] = activeProjectId
                             exitsGroup = exitsRegistryGroup(dataworking, self)
                             if exitsGroup:
                                 candelete = canDeleteTheGroup(dataworking, self.request)
                                 if candelete:
                                     deleted, message = deleteRegistryGroup(
-                                        self.user.login,
-                                        dataworking["project_cod"],
+                                        activeProjectId,
                                         dataworking["group_cod"],
                                         self.request,
                                     )
@@ -392,7 +498,13 @@ class addQuestionToGroupRegistry_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"group_cod", u"question_id"]
+            obligatory = [
+                u"project_cod",
+                u"user_owner",
+                u"group_cod",
+                u"question_id",
+                u"question_user_name",
+            ]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -405,42 +517,77 @@ class addQuestionToGroupRegistry_view(apiView):
 
                 if dataInParams:
                     exitsproject = projectExists(
-                        self.user.login, dataworking["project_cod"], self.request
+                        self.user.login,
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
                     )
                     if exitsproject:
-                        if projectRegStatus(
-                            self.user.login, dataworking["project_cod"], self.request
+
+                        activeProjectId = getTheProjectIdForOwner(
+                            dataworking["user_owner"],
+                            dataworking["project_cod"],
+                            self.request,
+                        )
+                        accessType = getAccessTypeForProject(
+                            self.user.login, activeProjectId, self.request
+                        )
+
+                        if accessType in [4]:
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "The access assigned for this project does not allow you to add questions."
+                                ),
+                            )
+                            return response
+
+                        if theUserBelongsToTheProject(
+                            dataworking["question_user_name"],
+                            activeProjectId,
+                            self.request,
                         ):
-                            exitsGroup = exitsRegistryGroup(dataworking, self)
-                            if exitsGroup:
-                                data, editable = getQuestionData(
-                                    self.user.login,
-                                    dataworking["question_id"],
-                                    self.request,
-                                )
-                                if data:
-                                    if canUseTheQuestion(
-                                        self.user.login,
-                                        dataworking["project_cod"],
+
+                            if projectRegStatus(activeProjectId, self.request):
+                                dataworking["project_id"] = activeProjectId
+                                exitsGroup = exitsRegistryGroup(dataworking, self)
+                                if exitsGroup:
+                                    data, editable = getQuestionData(
+                                        dataworking["question_user_name"],
                                         dataworking["question_id"],
                                         self.request,
-                                    ):
-                                        dataworking["section_id"] = dataworking[
-                                            "group_cod"
-                                        ]
-                                        addq, message = addRegistryQuestionToGroup(
-                                            dataworking, self.request
-                                        )
-                                        if not addq:
-                                            response = Response(
-                                                status=401, body=message
+                                    )
+                                    if data:
+                                        if canUseTheQuestion(
+                                            dataworking["question_user_name"],
+                                            dataworking["project_id"],
+                                            dataworking["question_id"],
+                                            self.request,
+                                        ):
+                                            dataworking["section_id"] = dataworking[
+                                                "group_cod"
+                                            ]
+                                            addq, message = addRegistryQuestionToGroup(
+                                                dataworking, self.request
                                             )
-                                            return response
+                                            if not addq:
+                                                response = Response(
+                                                    status=401, body=message
+                                                )
+                                                return response
+                                            else:
+                                                response = Response(
+                                                    status=200,
+                                                    body=self._(
+                                                        "The question was added to the project"
+                                                    ),
+                                                )
+                                                return response
                                         else:
                                             response = Response(
-                                                status=200,
+                                                status=401,
                                                 body=self._(
-                                                    "The question was added to the project"
+                                                    "The question has already been assigned to the registration or cannot be used in this section."
                                                 ),
                                             )
                                             return response
@@ -448,7 +595,7 @@ class addQuestionToGroupRegistry_view(apiView):
                                         response = Response(
                                             status=401,
                                             body=self._(
-                                                "The question has already been assigned to the registration or cannot be used in this section."
+                                                "You do not have a question with this ID."
                                             ),
                                         )
                                         return response
@@ -456,21 +603,23 @@ class addQuestionToGroupRegistry_view(apiView):
                                     response = Response(
                                         status=401,
                                         body=self._(
-                                            "You do not have a question with this ID."
+                                            "There is not a group with that code."
                                         ),
                                     )
                                     return response
                             else:
                                 response = Response(
                                     status=401,
-                                    body=self._("There is not a group with that code."),
+                                    body=self._(
+                                        "You cannot add questions. You started registration."
+                                    ),
                                 )
                                 return response
                         else:
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "You cannot add questions. You started registration."
+                                    "You are trying to add a question from a user that does not belong to this project."
                                 ),
                             )
                             return response
@@ -497,7 +646,13 @@ class deleteQuestionFromGroupRegistry_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"group_cod", u"question_id"]
+            obligatory = [
+                u"project_cod",
+                u"user_owner",
+                u"group_cod",
+                u"question_id",
+                u"question_user_name",
+            ]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -510,16 +665,37 @@ class deleteQuestionFromGroupRegistry_view(apiView):
 
                 if dataInParams:
                     exitsproject = projectExists(
-                        self.user.login, dataworking["project_cod"], self.request
+                        self.user.login,
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
                     )
                     if exitsproject:
-                        if projectRegStatus(
-                            self.user.login, dataworking["project_cod"], self.request
-                        ):
+
+                        activeProjectId = getTheProjectIdForOwner(
+                            dataworking["user_owner"],
+                            dataworking["project_cod"],
+                            self.request,
+                        )
+                        accessType = getAccessTypeForProject(
+                            self.user.login, activeProjectId, self.request
+                        )
+
+                        if accessType in [4]:
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "The access assigned for this project does not allow you to delete questions."
+                                ),
+                            )
+                            return response
+
+                        if projectRegStatus(activeProjectId, self.request):
+                            dataworking["project_id"] = activeProjectId
                             exitsGroup = exitsRegistryGroup(dataworking, self)
                             if exitsGroup:
                                 data, editable = getQuestionData(
-                                    self.user.login,
+                                    dataworking["question_user_name"],
                                     dataworking["question_id"],
                                     self.request,
                                 )
@@ -586,6 +762,7 @@ class deleteQuestionFromGroupRegistry_view(apiView):
                                 ),
                             )
                             return response
+
                     else:
                         response = Response(
                             status=401,
@@ -609,7 +786,7 @@ class orderRegistryQuestions_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"order"]
+            obligatory = [u"project_cod", u"user_owner", u"order"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -622,17 +799,34 @@ class orderRegistryQuestions_view(apiView):
 
                 if dataInParams:
                     exitsproject = projectExists(
-                        self.user.login, dataworking["project_cod"], self.request
+                        self.user.login,
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
                     )
                     if exitsproject:
-                        if projectRegStatus(
-                            self.user.login, dataworking["project_cod"], self.request
-                        ):
-                            if haveTheBasic(
-                                self.user.login,
-                                dataworking["project_cod"],
-                                self.request,
-                            ):
+
+                        activeProjectId = getTheProjectIdForOwner(
+                            dataworking["user_owner"],
+                            dataworking["project_cod"],
+                            self.request,
+                        )
+                        accessType = getAccessTypeForProject(
+                            self.user.login, activeProjectId, self.request
+                        )
+
+                        if accessType in [4]:
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "The access assigned for this project does not allow you to do this action."
+                                ),
+                            )
+                            return response
+
+                        dataworking["project_id"] = activeProjectId
+                        if projectRegStatus(activeProjectId, self.request):
+                            if haveTheBasic(activeProjectId, self.request,):
                                 try:
                                     originalData = json.loads(dataworking["order"])
 
@@ -669,8 +863,7 @@ class orderRegistryQuestions_view(apiView):
                                                 questions
                                             ):
                                                 modified, error = saveRegistryOrder(
-                                                    self.user.login,
-                                                    dataworking["project_cod"],
+                                                    activeProjectId,
                                                     originalData,
                                                     self.request,
                                                 )
@@ -685,7 +878,7 @@ class orderRegistryQuestions_view(apiView):
                                                 response = Response(
                                                     status=401,
                                                     body=self._(
-                                                        "You are ordering questions that are not part of the form."
+                                                        "You are ordering questions that are not part of the form or you are forgetting to order some questions that belong to the form."
                                                     ),
                                                 )
                                                 return response
@@ -693,7 +886,7 @@ class orderRegistryQuestions_view(apiView):
                                             response = Response(
                                                 status=401,
                                                 body=self._(
-                                                    "You are ordering groups that are not part of the form."
+                                                    "You are ordering groups that are not part of the form or you are forgetting to order some groups that belong to the form."
                                                 ),
                                             )
                                             return response

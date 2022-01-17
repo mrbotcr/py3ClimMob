@@ -10,7 +10,7 @@ from pyutilib.component.core import SingletonPlugin as _pca_SingletonPlugin
 from pyutilib.component.core import Plugin as _pca_Plugin
 
 
-from .interfaces import IPluginObserver
+from climmob.plugins.interfaces import IPluginObserver
 
 __all__ = [
     "PluginImplementations",

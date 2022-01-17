@@ -1,10 +1,11 @@
 import os
 from lxml import etree
-from ...models import Assessment, Question, Project, mapFromSchema
+from climmob.models import Assessment, Question, Project, mapFromSchema
 import datetime, decimal
 from climmob.models.repository import sql_fetch_all, sql_fetch_one
+from climmob.processes import getCombinations
 
-__all__ = ["getJSONResult"]
+__all__ = ["getJSONResult", "getCombinationsData"]
 
 
 def getMiltiSelectLookUpTable(XMLFile, multiSelectTable):
@@ -51,7 +52,7 @@ def getFields(XMLFile, table):
     return fields
 
 
-def getLookups(XMLFile, user, project, request):
+def getLookups(XMLFile, userOwner, projectCod, request):
     lktables = []
     tree = etree.parse(XMLFile)
     root = tree.getroot()
@@ -79,13 +80,12 @@ def getLookups(XMLFile, user, project, request):
                     "SELECT "
                     + ",".join(fieldArray)
                     + " FROM "
-                    + user
+                    + userOwner
                     + "_"
-                    + project
+                    + projectCod
                     + "."
                     + atable["name"]
                 )
-                # lkpvalues = request.repsession.execute(sql).fetchall()
                 lkpvalues = sql_fetch_all(sql)
                 for value in lkpvalues:
                     avalue = {}
@@ -96,7 +96,7 @@ def getLookups(XMLFile, user, project, request):
     return lktables
 
 
-def getPackageData(user, project, request):
+def getPackageData(userOwner, projectId, projectCod, request):
     data = (
         request.dbsession.query(Question).filter(Question.question_regkey == 1).first()
     )
@@ -109,14 +109,11 @@ def getPackageData(user, project, request):
     sql = (
         "SELECT project.project_cod,project.project_numcom,count(prjtech.tech_id) as ttech FROM "
         "project,prjtech WHERE "
-        "project.user_name = prjtech.user_name AND "
-        "project.project_cod = prjtech.project_cod AND "
-        "project.user_name = '" + user + "' AND "
-        "project.project_cod = '" + project + "' "
-        "GROUP BY project.project_cod"
+        "project.project_id = prjtech.project_id AND "
+        "project.project_id = '" + projectId + "' "
+        "GROUP BY project.project_id"
     )
 
-    # pkgdetails = request.dbsession.execute(sql).fetchone()
     pkgdetails = sql_fetch_one(sql)
     ncombs = pkgdetails.project_numcom
 
@@ -126,16 +123,16 @@ def getPackageData(user, project, request):
         "project.project_numobs,project.project_lat,project.project_lon,project.project_creationdate,"
         "project.project_numcom, pkgcomb.package_id,package.package_code, COALESCE(t.tech_name,technology.tech_name) as tech_name,COALESCE(i.alias_name,techalias.alias_name) as alias_name,"
         "pkgcomb.comb_order,"
-        + user
+        + userOwner
         + "_"
-        + project
+        + projectCod
         + ".REG_geninfo."
         + qstFarmer
         + " "
         + "FROM pkgcomb,package,prjcombination,prjcombdet,prjalias,user,project,"
-        + user
+        + userOwner
         + "_"
-        + project
+        + projectCod
         + ".REG_geninfo,technology, techalias"
         "          LEFT JOIN i18n_techalias i "
         "          ON        techalias.tech_id = i.tech_id "
@@ -144,75 +141,70 @@ def getPackageData(user, project, request):
         "          LEFT JOIN i18n_technology t "
         "          ON        techalias.tech_id = t.tech_id "
         "          AND       t.lang_code = '" + request.locale_name + "' "
-        "WHERE pkgcomb.user_name = user.user_name "
-        "AND pkgcomb.project_cod = project.project_cod "
-        "AND pkgcomb.user_name = package.user_name "
-        "AND pkgcomb.project_cod = package.project_cod "
-        "AND pkgcomb.package_id = package.package_id "
-        "AND pkgcomb.comb_user = prjcombination.user_name "
-        "AND pkgcomb.comb_project = prjcombination.project_cod "
-        "AND pkgcomb.comb_code = prjcombination.comb_code "
-        "AND prjcombination.user_name = prjcombdet.prjcomb_user "
-        "AND prjcombination.project_cod = prjcombdet.prjcomb_project "
-        "AND prjcombination.comb_code = prjcombdet.comb_code "
-        "AND prjcombdet.user_name = prjalias.user_name "
-        "AND prjcombdet.project_cod = prjalias.project_cod "
-        "AND prjcombdet.tech_id = prjalias.tech_id "
-        "AND prjcombdet.alias_id = prjalias.alias_id "
-        "AND prjalias.tech_used = techalias.tech_id "
-        "AND prjalias.alias_used = techalias.alias_id "
-        "AND techalias.tech_id = technology.tech_id "
-        "AND prjalias.tech_used IS NOT NULL "
-        "AND pkgcomb.user_name = '" + user + "' "
-        "AND pkgcomb.project_cod = '" + project + "' "
-        "AND pkgcomb.package_id = "
-        + user
+        " WHERE  user.user_name= '" + userOwner + "' "
+        " AND pkgcomb.project_id = project.project_id "
+        " AND pkgcomb.project_id = package.project_id "
+        " AND pkgcomb.package_id = package.package_id "
+        " AND pkgcomb.comb_project_id = prjcombination.project_id "
+        " AND pkgcomb.comb_code = prjcombination.comb_code "
+        " AND prjcombination.project_id = prjcombdet.project_id "
+        " AND prjcombination.comb_code = prjcombdet.comb_code "
+        " AND prjcombdet.project_id_tech = prjalias.project_id "
+        " AND prjcombdet.tech_id = prjalias.tech_id "
+        " AND prjcombdet.alias_id = prjalias.alias_id "
+        " AND prjalias.tech_used = techalias.tech_id "
+        " AND prjalias.alias_used = techalias.alias_id "
+        " AND techalias.tech_id = technology.tech_id "
+        " AND prjalias.tech_used IS NOT NULL "
+        " AND pkgcomb.project_id = '" + projectId + "' "
+        " AND pkgcomb.package_id = "
+        + userOwner
         + "_"
-        + project
+        + projectCod
         + ".REG_geninfo."
         + qstPackage
         + " "
-        "ORDER BY pkgcomb.package_id,pkgcomb.comb_order) "
-        "UNION ( "
-        "SELECT user.user_name,user.user_fullname, project.project_name,project.project_pi,project.project_piemail,"
-        "project.project_numobs,project.project_lat,project.project_lon,project.project_creationdate, "
-        "project.project_numcom, pkgcomb.package_id,package.package_code, technology.tech_name,prjalias.alias_name,"
-        "pkgcomb.comb_order," + user + "_" + project + ".REG_geninfo." + qstFarmer + " "
-        "FROM pkgcomb,package,prjcombination,prjcombdet,prjalias, technology,user,project,"
-        + user
+        " ORDER BY pkgcomb.package_id,pkgcomb.comb_order) "
+        " UNION ( "
+        " SELECT user.user_name,user.user_fullname, project.project_name,project.project_pi,project.project_piemail,"
+        " project.project_numobs,project.project_lat,project.project_lon,project.project_creationdate, "
+        " project.project_numcom, pkgcomb.package_id,package.package_code, technology.tech_name,prjalias.alias_name,"
+        " pkgcomb.comb_order,"
+        + userOwner
         + "_"
-        + project
+        + projectCod
+        + ".REG_geninfo."
+        + qstFarmer
+        + " "
+        " FROM pkgcomb,package,prjcombination,prjcombdet,prjalias, technology,user,project,"
+        + userOwner
+        + "_"
+        + projectCod
         + ".REG_geninfo "
-        "WHERE pkgcomb.user_name = user.user_name "
-        "AND pkgcomb.project_cod = project.project_cod "
-        "AND pkgcomb.user_name = package.user_name "
-        "AND pkgcomb.project_cod = package.project_cod "
-        "AND pkgcomb.package_id = package.package_id "
-        "AND pkgcomb.comb_user = prjcombination.user_name "
-        "AND pkgcomb.comb_project = prjcombination.project_cod "
-        "AND pkgcomb.comb_code = prjcombination.comb_code "
-        "AND prjcombination.user_name = prjcombdet.prjcomb_user "
-        "AND prjcombination.project_cod = prjcombdet.prjcomb_project "
-        "AND prjcombination.comb_code = prjcombdet.comb_code "
-        "AND prjcombdet.user_name = prjalias.user_name "
-        "AND prjcombdet.project_cod = prjalias.project_cod "
-        "AND prjcombdet.tech_id = prjalias.tech_id "
-        "AND prjcombdet.alias_id = prjalias.alias_id "
-        "AND prjcombdet.tech_id = technology.tech_id "
-        "AND prjalias.tech_used IS NULL "
-        "AND pkgcomb.user_name = '" + user + "' "
-        "AND pkgcomb.project_cod = '" + project + "' "
-        "AND pkgcomb.package_id = "
-        + user
+        " WHERE user.user_name= '" + userOwner + "' "
+        " AND pkgcomb.project_id = project.project_id "
+        " AND pkgcomb.project_id = package.project_id "
+        " AND pkgcomb.package_id = package.package_id "
+        " AND pkgcomb.comb_project_id = prjcombination.project_id "
+        " AND pkgcomb.comb_code = prjcombination.comb_code "
+        " AND prjcombination.project_id = prjcombdet.project_id "
+        " AND prjcombination.comb_code = prjcombdet.comb_code "
+        " AND prjcombdet.project_id_tech = prjalias.project_id "
+        " AND prjcombdet.tech_id = prjalias.tech_id "
+        " AND prjcombdet.alias_id = prjalias.alias_id "
+        " AND prjcombdet.tech_id = technology.tech_id "
+        " AND prjalias.tech_used IS NULL "
+        " AND pkgcomb.project_id = '" + projectId + "' "
+        " AND pkgcomb.package_id = "
+        + userOwner
         + "_"
-        + project
+        + projectCod
         + ".REG_geninfo."
         + qstPackage
         + " "
         "ORDER BY pkgcomb.package_id,pkgcomb.comb_order)) AS T ORDER BY T.package_id,T.comb_order,T.tech_name"
     )
 
-    # pkgdetails = request.dbsession.execute(sql).fetchall()
     pkgdetails = sql_fetch_all(sql)
     packages = []
     pkgcode = -999
@@ -250,7 +242,7 @@ def getPackageData(user, project, request):
     return packages
 
 
-def getData(user, project, registry, assessments, request):
+def getData(userOwner, projectCod, registry, assessments, request):
     data = (
         request.dbsession.query(Question).filter(Question.question_regkey == 1).first()
     )
@@ -263,9 +255,9 @@ def getData(user, project, registry, assessments, request):
     fields = []
     for field in registry["fields"]:
         fields.append(
-            user
+            userOwner
             + "_"
-            + project
+            + projectCod
             + ".REG_geninfo."
             + field["name"]
             + " AS "
@@ -275,9 +267,9 @@ def getData(user, project, registry, assessments, request):
     for assessment in assessments:
         for field in assessment["fields"]:
             fields.append(
-                user
+                userOwner
                 + "_"
-                + project
+                + projectCod
                 + ".ASS"
                 + assessment["code"]
                 + "_geninfo."
@@ -290,30 +282,36 @@ def getData(user, project, registry, assessments, request):
             )
 
     sql = (
-        "SELECT " + ",".join(fields) + " FROM " + user + "_" + project + ".REG_geninfo "
+        "SELECT "
+        + ",".join(fields)
+        + " FROM "
+        + userOwner
+        + "_"
+        + projectCod
+        + ".REG_geninfo "
     )
     for assessment in assessments:
         sql = (
             sql
             + " LEFT JOIN "
-            + user
+            + userOwner
             + "_"
-            + project
+            + projectCod
             + ".ASS"
             + assessment["code"]
             + "_geninfo ON "
         )
         sql = (
             sql
-            + user
+            + userOwner
             + "_"
-            + project
+            + projectCod
             + ".REG_geninfo."
             + registryKey
             + " = "
-            + user
+            + userOwner
             + "_"
-            + project
+            + projectCod
             + ".ASS"
             + assessment["code"]
             + "_geninfo."
@@ -322,15 +320,14 @@ def getData(user, project, registry, assessments, request):
     sql = (
         sql
         + " ORDER BY cast("
-        + user
+        + userOwner
         + "_"
-        + project
+        + projectCod
         + ".REG_geninfo."
         + registryKey
         + " AS unsigned)"
     )
 
-    # data = request.dbsession.execute(sql).fetchall()
     data = sql_fetch_all(sql)
 
     result = []
@@ -351,14 +348,11 @@ def getData(user, project, registry, assessments, request):
     return result
 
 
-def getImportantFields(user, project, request):
+def getImportantFields(projectId, request):
     result = []
 
     prjData = (
-        request.dbsession.query(Project)
-        .filter(Project.user_name == user)
-        .filter(Project.project_cod == project)
-        .first()
+        request.dbsession.query(Project).filter(Project.project_id == projectId).first()
     )
 
     data = (
@@ -381,14 +375,13 @@ def getImportantFields(user, project, request):
     )
 
     sql = (
-        "SELECT '' as ass_cod,question_code,question_overall,question_overallperf "
-        "FROM question,registry "
-        "WHERE question.question_id = registry.question_id "
-        "AND registry.user_name = '" + user + "' "
-        "AND registry.project_cod = '" + project + "' "
-        "AND (question_overall = 1 or question_overallperf = 1)"
+        " SELECT '' as ass_cod,question_code,question_overall,question_overallperf "
+        " FROM question,registry "
+        " WHERE question.question_id = registry.question_id "
+        " AND registry.project_id = '" + projectId + "' "
+        " AND (question_overall = 1 or question_overallperf = 1)"
     )
-    # data = request.dbsession.execute(sql).fetchall()
+
     data = sql_fetch_all(sql)
     result = getImportantFieldSameFunction(data, prjData, result, "REG")
 
@@ -396,12 +389,10 @@ def getImportantFields(user, project, request):
         "SELECT assdetail.ass_cod,question_code,question_overall,question_overallperf "
         "FROM question,assdetail "
         "WHERE question.question_id = assdetail.question_id "
-        "AND assdetail.user_name = '" + user + "' "
-        "AND assdetail.project_cod = '" + project + "' "
+        "AND assdetail.project_id = '" + projectId + "' "
         "AND (question_overall = 1 or question_overallperf = 1)"
     )
 
-    # data = request.dbsession.execute(sql).fetchall()
     data = sql_fetch_all(sql)
 
     result = getImportantFieldSameFunction(data, prjData, result, "ASS")
@@ -524,8 +515,9 @@ def getSpecialFields(registry, assessments):
 
 
 def getJSONResult(
-    user,
-    project,
+    userOwner,
+    projectId,
+    projectCod,
     request,
     includeRegistry=True,
     includeAssessment=True,
@@ -533,13 +525,10 @@ def getJSONResult(
 ):
     data = {}
     res = (
-        request.dbsession.query(Project)
-        .filter(Project.user_name == user)
-        .filter(Project.project_cod == project)
-        .first()
+        request.dbsession.query(Project).filter(Project.project_id == projectId).first()
     )
     if res is not None:
-        # print(res.project_registration_and_analysis)
+
         if res.project_regstatus == 1 or res.project_regstatus == 2:
             mappedData = mapFromSchema(res)
             for key, value in mappedData.items():
@@ -558,11 +547,13 @@ def getJSONResult(
             if includeRegistry:
                 registryXML = os.path.join(
                     request.registry.settings["user.repository"],
-                    *[user, project, "db", "reg", "create.xml"]
+                    *[userOwner, projectCod, "db", "reg", "create.xml"]
                 )
                 if os.path.exists(registryXML):
                     data["registry"] = {
-                        "lkptables": getLookups(registryXML, user, project, request),
+                        "lkptables": getLookups(
+                            registryXML, userOwner, projectCod, request
+                        ),
                         "fields": getFields(registryXML, "REG_geninfo"),
                     }
             else:
@@ -574,8 +565,7 @@ def getJSONResult(
             if includeAssessment:
                 assessments = (
                     request.dbsession.query(Assessment)
-                    .filter(Assessment.user_name == user)
-                    .filter(Assessment.project_cod == project)
+                    .filter(Assessment.project_id == projectId)
                     .all()
                 )
 
@@ -586,8 +576,8 @@ def getJSONResult(
                             assessmentXML = os.path.join(
                                 request.registry.settings["user.repository"],
                                 *[
-                                    user,
-                                    project,
+                                    userOwner,
+                                    projectCod,
                                     "db",
                                     "ass",
                                     assessment.ass_cod,
@@ -600,7 +590,10 @@ def getJSONResult(
                                         "code": assessment.ass_cod,
                                         "desc": assessment.ass_desc,
                                         "lkptables": getLookups(
-                                            assessmentXML, user, project, request
+                                            assessmentXML,
+                                            userOwner,
+                                            projectCod,
+                                            request,
                                         ),
                                         "fields": getFields(
                                             assessmentXML,
@@ -608,24 +601,34 @@ def getJSONResult(
                                         ),
                                     }
                                 )
-            # EDITED BY BRANDON#
+
             if res.project_registration_and_analysis == 1:
                 haveAssessments = True
             # Get the package information but only for registered farmers
-            data["packages"] = getPackageData(user, project, request)
+            data["packages"] = getPackageData(userOwner, projectId, projectCod, request)
+            data["combination"] = getCombinationsData(projectId, request)
+
             if haveAssessments:
                 data["specialfields"] = getSpecialFields(
                     data["registry"], data["assessments"]
                 )
                 data["data"] = getData(
-                    user, project, data["registry"], data["assessments"], request
+                    userOwner,
+                    projectCod,
+                    data["registry"],
+                    data["assessments"],
+                    request,
                 )
-                data["importantfields"] = getImportantFields(user, project, request)
+                data["importantfields"] = getImportantFields(projectId, request)
 
             else:
                 data["specialfields"] = []
                 data["data"] = getData(
-                    user, project, data["registry"], data["assessments"], request
+                    userOwner,
+                    projectCod,
+                    data["registry"],
+                    data["assessments"],
+                    request,
                 )
                 data["importantfields"] = []
 
@@ -635,6 +638,7 @@ def getJSONResult(
             data["packages"] = []
             data["data"] = []
             data["importantfields"] = []
+            data["combinations"] = []
 
     else:
         data["specialfields"] = []
@@ -642,18 +646,53 @@ def getJSONResult(
         data["packages"] = []
         data["data"] = []
         data["importantfields"] = []
-
-    # with open("/home/bmadriz/temp/climmobv4_metadata.json", "w") as outfile:
-    #     jsonString = json.dumps(data, indent=4, ensure_ascii=False).encode("utf8")
-    #     outfile.write(jsonString)
-
-    # metadata = []
-    # metadata.append({'code':"OUT001",'desc':"Report by farmer",'mime':"application/pdf","path":"/home/cquiros/outs/report.pdf"})
-    # metadata.append({'code': "OUT002", 'desc': "A bar chart", 'mime': "image/png",
-    #                  "path": "/home/cquiros/outs/chart1.png"})
-    #
-    # with open("/home/bmadriz/temp/climmobv4_metadata.json", "w") as outfile:
-    #     jsonString = json.dumps(metadata, indent=4, ensure_ascii=False).encode("utf8")
-    #     outfile.write(jsonString)
+        data["combinations"] = []
 
     return data
+
+
+def getCombinationsData(ProjectId, request):
+
+    techs, ncombs, combs = getCombinations(ProjectId, request)
+
+    pos = 1
+    elements = []
+    combArray = []
+    pos2 = 0
+    for comb in combs:
+        if pos <= len(techs):
+            elements.append(
+                {
+                    "technology_name": techs[pos - 1]["tech_name"],
+                    "alias_name": comb["alias_name"],
+                }
+            )
+            pos += 1
+        else:
+            combArray.append(
+                {
+                    "combination_code": comb["comb_code"] - 1,
+                    "comb_usable": combs[pos2 - 1]["comb_usable"],
+                    "quantity_available": combs[pos2 - 1]["quantity_available"],
+                    "elements": list(elements),
+                }
+            )
+            elements = []
+            elements.append(
+                {
+                    "technology_name": techs[0]["tech_name"],
+                    "alias_name": comb["alias_name"],
+                }
+            )
+            pos = 2
+        pos2 += 1
+    combArray.append(
+        {
+            "combination_code": ncombs,
+            "comb_usable": combs[pos2 - 1]["comb_usable"],
+            "quantity_available": combs[pos2 - 1]["quantity_available"],
+            "elements": list(elements),
+        }
+    )
+
+    return combArray

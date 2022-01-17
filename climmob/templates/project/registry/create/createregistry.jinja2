@@ -80,33 +80,77 @@
                                 <input type="hidden" id="stage" value="{{ stage }}">
 
                             </div>
-                            <div class="row">
-                                <div id="content">
-                                    {% if stage == 1 %}
-                                        <input type="hidden" id="numelements" value="{{ combArray|length  }}">
-                                        <input type="hidden" id="elemsperpage" value="{{ combArray|length / techs|length  }}">
-                                        <div class="col-md-12">
-                                            {% include 'snippets/project/registry/create/combination_table.jinja2' %}
-                                        </div>
-                                    {% endif %}
-                                    {% if stage == 2 %}
-                                        <div class="col-md-12">
-                                            {% include 'snippets/project/registry/create/package_table.jinja2' %}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            <div class="row" id="footer">
-                                <div class="col-md-12">
+                            <form method="post" action="{{ request.url }}">
+                                <div class="row">
+                                    <div id="content">
                                         {% if stage == 1 %}
-                                            <button type="button" style="margin-left: 10px" onclick="this.disabled=true; this.innerText='Creating packages. Please wait…'; location.href='{{ request.route_url("combinations", projectid=projectid, _query={"stage":2})}}'"  class="btn btn-primary pull-right">{{ _("Continue") }}</button>
+                                            <input type="hidden" id="numelements" value="{{ combArray|length  }}">
+                                            <input type="hidden" id="elemsperpage" value="{{ combArray|length / techs|length  }}">
+                                            <div class="col-md-12">
+                                                {% include 'snippets/project/registry/create/combination_table.jinja2' %}
+                                            </div>
                                         {% endif %}
                                         {% if stage == 2 %}
-                                            <button type="button" style="margin-left: 10px" onclick="this.disabled=true; this.innerText='Opening the registration of participants. Please wait…'; location.href='{{ request.route_url("combinations", projectid=projectid, _query={"stage":3})}}'" class="btn btn-success pull-right">{{ _("Confirm") }}</button>
-                                            <button type="button" onclick="location.href='{{ request.route_url("combinations", projectid=projectid, _query={"stage":1})}}'" class="btn  btn-primary pull-right">{{ _("Modify") }}</button>
+                                            <div class="col-md-12">
+                                                {% if activeProject.project_createpkgs == 2 %}
+                                                    <div class="widget navy-bg p-lg text-center">
+                                                        <div class="m-b-md">
+                                                            <i class="fa fa-bell fa-4x"></i>
+                                                            <h1 class="m-xs">{{ _("ClimMob is generating the randomization of your packages.") }}</h1>
+                                                            <br>
+                                                            <h3>
+                                                                {{ _("This process may take some time but no more than two minutes.") }}
+                                                            </h3>
+                                                            <br>
+                                                            <h3 >
+                                                                {{ _("Please wait and refresh the screen from time to time to verify that your packages are already available.") }}
+                                                            </h3>
+                                                        </div>
+                                                    </div>
+                                                    <div style="width: 100%; text-align: center">
+                                                        <a class="btn btn-primary " onclick=" location.reload(); "><i class="fa fa-refresh"></i> {{ _("Refresh") }}</a>
+                                                        <br><br>
+                                                    </div>
+                                                {% else %}
+
+                                                    {% if error_summary %}
+                                                        <br>
+                                                        <br>
+                                                        {% for key, error in error_summary.items() %}
+                                                            <div class="alert alert-danger alert-dismissable">
+                                                                <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                                                                {{ error }}
+                                                            </div>
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        {% include 'snippets/project/registry/create/package_table.jinja2' %}
+                                                    {% endif %}
+
+                                                {% endif %}
+
+                                            </div>
                                         {% endif %}
+                                    </div>
                                 </div>
-                            </div>
+                                <div class="row" id="footer">
+                                    <div class="col-md-12">
+                                            {% if stage == 1 %}
+{#                                              <button type="button" style="margin-left: 10px" onclick="this.disabled=true; this.innerText='Creating packages. Please wait…'; location.href='{{ request.route_url("combinations", user=activeProject["owner"].user_name, project=activeProject.project_cod, _query={"stage":2})}}'"  class="btn btn-primary pull-right">{{ _("Continue") }}</button>#}
+                                                <button type="submit" name="btn_save_quantity" id="btn_save_quantity" style="margin-left: 10px" onclick="this.innerText='Creating packages. Please wait…'; "  class="btn btn-primary pull-right">{{ _("Continue") }}</button>
+                                            {% endif %}
+                                            {% if stage == 2 %}
+                                                {% if activeProject.project_createpkgs != 2 %}
+
+                                                    {% if not error_summary %}
+                                                        <button type="button" style="margin-left: 10px" onclick="this.disabled=true; this.innerText='Opening the registration of participants. Please wait…'; location.href='{{ request.route_url("combinations", user=activeProject["owner"].user_name, project=activeProject.project_cod, _query={"stage":3})}}'" class="btn btn-success pull-right">{{ _("Confirm") }}</button>
+                                                    {% endif %}
+                                                    <button type="button" onclick="location.href='{{ request.route_url("combinations", user=activeProject["owner"].user_name, project=activeProject.project_cod, _query={"stage":1})}}'" class="btn  btn-primary pull-right">{{ _("Modify") }}</button>
+
+                                                {% endif %}
+                                            {% endif %}
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     {% else %}
                         <div style="width: 100%; text-align: center; display: flex">

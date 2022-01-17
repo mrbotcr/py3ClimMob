@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from .classes import privateView
-from ..processes import (
+from climmob.views.classes import privateView
+from climmob.processes import (
     addQuestion,
     addOptionToQuestion,
     updateQuestion,
     deleteQuestion,
-    UserQuestion,
     UserQuestionMoreBioversity,
     deleteAllOptionsForQuestion,
-    QuestionsOptions,
     getQuestionData,
     getQuestionOptions,
     deleteOption,
@@ -23,10 +21,15 @@ from ..processes import (
     updateCategory,
     deleteCategory,
     getCategoriesParents,
+    getActiveProject,
+    userQuestionDetailsById,
+    getCategoryByIdAndUser,
 )
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 import re
 import json
+import os
+from jinja2 import Environment, FileSystemLoader
 
 
 class deleteQuestion_view(privateView):
@@ -144,7 +147,6 @@ class deleteQuestionValue_view(privateView):
             if deleted:
                 self.returnRawViewResult = True
                 return {"status": 200}
-                # return HTTPFound(location=self.request.route_url('questionvalues', qid=qid))
             else:
                 error_summary = {"dberror": msg}
                 self.returnRawViewResult = True
@@ -446,7 +448,9 @@ def actionsInquestion(self, formdata):
 
     formdata["question_dtype"] = int(formdata["question_dtype"])
     formdata["user_name"] = self.user.login
-    formdata["question_code"] = re.sub("[^A-Za-z0-9\-]+", "", formdata["question_code"])
+    formdata["question_code"] = re.sub(
+        "[^A-Za-z0-9_\-]+", "", formdata["question_code"]
+    )
 
     try:
         category = formdata["question_group"].split("[*$%&]")
@@ -474,8 +478,11 @@ def actionsInquestion(self, formdata):
         and formdata["question_desc"] != ""
         and formdata["question_dtype"] != ""
     ):
-        if not questionExists(self.user.login, formdata["question_code"], self.request):
-            if formdata["action"] == "insert":
+        if formdata["action"] == "insert":
+            formdata["question_code"] = "qst_" + formdata["question_code"]
+            if not questionExists(
+                self.user.login, formdata["question_code"], self.request
+            ):
                 add, idorerror = addQuestion(formdata, self.request)
                 if not add:
                     return {"result": "error", "error": idorerror}
@@ -496,11 +503,21 @@ def actionsInquestion(self, formdata):
                                 return {"result": "error", "error": resp}
 
                     return {
+                        "question_id": idorerror,
+                        "user_name": formdata["user_name"],
                         "result": "success",
                         "success": self._("The question was successfully added"),
                     }
-        else:
-            if formdata["action"] == "update":
+            else:
+                return {
+                    "result": "error",
+                    "error": self._(
+                        "There is another question with the same variable code."
+                    ),
+                }
+
+        if formdata["action"] == "update":
+            if questionExists(self.user.login, formdata["question_code"], self.request):
                 updated, idorerror = updateQuestion(formdata, self.request)
                 if not updated:
                     return {"result": "error", "error": idorerror}
@@ -520,6 +537,8 @@ def actionsInquestion(self, formdata):
                             if not addded:
                                 return {"result": "error", "error": resp}
                     return {
+                        "question_id": formdata["question_id"],
+                        "user_name": formdata["user_name"],
                         "result": "success",
                         "success": self._("The question was successfully modified"),
                     }
@@ -551,19 +570,103 @@ class questionsActions_view(privateView):
         return {}
 
 
+class getUserQuestionPreview_view(privateView):
+    def processView(self):
+        if self.request.method == "GET":
+            self.returnRawViewResult = True
+
+            userOwner = self.request.matchdict["user"]
+            questionId = self.request.matchdict["questionid"]
+
+            question = userQuestionDetailsById(userOwner, questionId, self.request)
+            listOfQuestions = []
+            if question["question_quantitative"] == 1:
+                for opt in range(0, 3):
+                    aux = question.copy()
+                    code = chr(65 + opt)
+                    aux["question_desc"] = (
+                        aux["question_desc"] + " - " + self._("Option") + " " + code
+                    )
+                    listOfQuestions.append(aux)
+            else:
+                listOfQuestions.append(question)
+
+            PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            env = Environment(
+                autoescape=False,
+                loader=FileSystemLoader(
+                    os.path.join(PATH, "templates", "snippets", "project")
+                ),
+                trim_blocks=False,
+            )
+            template = env.get_template("previewForm.jinja2")
+
+            info = {
+                "img1": self.request.url_for_static("landing/odk.png"),
+                "img2": self.request.url_for_static("landing/odk2.png"),
+                "img3": self.request.url_for_static("landing/odk3.png"),
+                "data": listOfQuestions,
+                "isOneProject": "True",
+                "activeProject": getActiveProject(self.user.login, self.request),
+                "_": self._,
+                "showPhone": True,
+            }
+            render_temp = template.render(info)
+
+            return render_temp
+
+
+class getUserQuestionDetails_view(privateView):
+    def processView(self):
+
+        if self.request.method == "GET":
+
+            userOwner = self.request.matchdict["user"]
+            questionId = self.request.matchdict["questionid"]
+            question = userQuestionDetailsById(userOwner, questionId, self.request)
+            self.returnRawViewResult = True
+
+            return question
+
+        raise HTTPNotFound
+
+
+class getUserCategoryDetails_view(privateView):
+    def processView(self):
+
+        if self.request.method == "GET":
+            self.returnRawViewResult = True
+
+            userOwner = self.request.matchdict["user"]
+            categoryId = self.request.matchdict["categoryid"]
+
+            category = getCategoryByIdAndUser(categoryId, userOwner, self.request)
+
+            return category
+
+        raise HTTPNotFound
+
+
 class qlibrary_view(privateView):
     def processView(self):
 
         user_name = self.request.matchdict["user_name"]
 
+        try:
+            questionId = int(self.request.params["questionId"])
+            seeQuestion = {"question_id": questionId, "user_name": user_name}
+        except:
+            seeQuestion = {}
+
         regularDict = {
             "UserQuestion": UserQuestionMoreBioversity(user_name, self.request),
             "showing": user_name,
-            # "QuestionsOptions": QuestionsOptions(self.user.login, self.request),
-            # "ClimMobQuestionsOptions": QuestionsOptions("bioversity", self.request),
-            "Categories": getCategoriesParents(self.user.login, self.request),
-            # "editable": True,
+            "Categories": getCategoriesParents(
+                self.user.login, self.user.login, self.request
+            ),
             "allCategories": getCategories(user_name, self.request),
+            "activeProject": getActiveProject(self.user.login, self.request),
+            "seeQuestion": seeQuestion,
         }
 
         return regularDict

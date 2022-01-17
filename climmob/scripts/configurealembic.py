@@ -2,7 +2,6 @@ import configparser
 import logging
 import os
 import sys
-
 from jinja2 import Environment, FileSystemLoader
 
 log = logging.getLogger("climmob")

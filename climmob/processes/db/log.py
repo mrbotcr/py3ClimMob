@@ -1,4 +1,4 @@
-from ...models import Activitylog, mapFromSchema
+from climmob.models import Activitylog, mapFromSchema
 
 __all__ = ["addToLog", "getLastActivityLogByUser"]
 

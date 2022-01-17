@@ -1,6 +1,8 @@
 if (!require("ClimMobTools"))
 {
-  install.packages("ClimMobTools",repos="http://cran.rstudio.com/")
+  remotes::install_github("agrobioinfoservices/ClimMobTools",
+                        upgrade = "never",
+                        force = TRUE)
 }
 if (!require("sf"))
 {

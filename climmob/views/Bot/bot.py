@@ -1,9 +1,9 @@
-from ..classes import apiView
+from climmob.views.classes import apiView
 from pyramid.response import Response
 import json
 import telebot
 import datetime
-from ...processes import addChat, readChatByUser
+from climmob.processes import addChat, readChatByUser
 
 
 class sendFeedbackToBot_view(apiView):
@@ -55,10 +55,6 @@ class sendFeedbackToBot_view(apiView):
                         ),
                     )
                     return response
-                    # else:
-                    #    print(out)
-                    #    response = Response(status=401, body=self._("Feedback could not be sent."))
-                    #    return response
                 except:
                     response = Response(
                         status=401, body=self._("Feedback could not be sent.")
