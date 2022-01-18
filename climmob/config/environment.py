@@ -95,7 +95,7 @@ def load_environment(settings, config, apppath, policy_array):
     config.set_session_factory(my_session_factory)
 
     # Add render subscribers for internationalization
-    config.add_translation_dirs("climmob:locale")
+    # config.add_translation_dirs("climmob:locale")
     config.add_subscriber(
         "climmob.i18n.i18n.add_renderer_globals", "pyramid.events.BeforeRender"
     )
