@@ -2,7 +2,6 @@ import datetime
 import json
 import os
 import unittest
-import pkg_resources
 
 
 """
@@ -15,22 +14,18 @@ the environment processes multiple times and crash ClimMob.
 
 class FunctionalTests(unittest.TestCase):
     def setUp(self):
-        pkg_resources.require("climmob")
         if os.environ.get("CLIMMOB_PYTEST_RUNNING", "false") == "false":
             raise ValueError(
                 "Environment variable CLIMMOB_PYTEST_RUNNING must be true. "
                 "Do 'export CLIMMOB_PYTEST_RUNNING=true' before running PyTest"
             )
-        # config_file = os.path.join(
-        #     os.path.dirname(os.path.abspath(__file__)), *["test_config.json"]
-        # )
-        with open(
-            "/home/cquiros/data/projects2017/climmob/software/py3ClimMob/climmob/tests/test_config.json"
-        ) as json_file:
+        config_file = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), *["test_config.json"]
+        )
+        with open(config_file) as json_file:
             server_config = json.load(json_file)
 
         from climmob import main
-
         from pathlib import Path
 
         home = str(Path.home())
@@ -40,18 +35,14 @@ class FunctionalTests(unittest.TestCase):
         if not os.path.exists(working_dir):
             os.makedirs(working_dir)
 
-        print("***************Before")
         app = main(None, **server_config)
-        print("***************After")
         from webtest import TestApp
 
         self.testapp = TestApp(app)
         self.randonLogin = ""
         self.randonLoginKey = ""
         self.server_config = server_config
-        self.path = (
-            "/home/cquiros/data/projects2017/climmob/software/py3ClimMob/climmob/tests"
-        )
+        self.path = os.path.dirname(os.path.abspath(__file__))
         self.working_dir = working_dir
 
     def test_all(self):

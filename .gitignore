@@ -95,3 +95,4 @@ production.ini
 mysql.cnf
 alembic.ini
 climmob/config/celery_app.py
+test_config.json
