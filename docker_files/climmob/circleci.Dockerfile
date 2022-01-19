@@ -7,17 +7,11 @@ RUN ln -snf /usr/share/zoneinfo/$CR /etc/localtime && echo $CR > /etc/timezone
 RUN apt-get update && apt-get -y upgrade
 RUN apt-get install -y software-properties-common
 RUN add-apt-repository universe && add-apt-repository multiverse
-RUN apt-add-repository -y ppa:mosquitto-dev/mosquitto-ppa
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
+RUN add-apt-repository -y 'deb https://cloud.r-project.org/bin/linux/ubuntu focal-cran40/'
 RUN apt-get update
 
-
-RUN apt-get install -y build-essential qt5-default qtbase5-private-dev qtdeclarative5-dev libqt5sql5-mysql libqt5webkit5-dev libqt5svg5-dev libqt5xmlpatterns5-dev cmake mongodb jq libboost-all-dev unzip zlib1g-dev automake npm redis-server libmysqlclient-dev mysql-client-8.0 openjdk-11-jdk git python3-venv wget texlive-extra-utils r-base libcurl4-openssl-dev pandoc pandoc-citeproc libfontconfig1-dev libcairo2-dev libudunits2-dev libgdal-dev cutycapt xvfb sqlite3 libqt5sql5-sqlite libgmp3-dev libmpfr-dev git wget python3-venv tidy golang-go mosquitto curl nano
-
-
-RUN wget https://dev.mysql.com/get/mysql-apt-config_0.8.17-1_all.deb
-RUN dpkg -i ./mysql-apt-config_0.8.17-1_all.deb
-RUN apt-get update
-RUN apt-get install mysql-shell
+RUN apt-get install -y build-essential qt5-default qtbase5-private-dev qtdeclarative5-dev libqt5sql5-mysql libqt5webkit5-dev libqt5svg5-dev libqt5xmlpatterns5-dev cmake mongodb jq libboost-all-dev unzip zlib1g-dev automake npm redis-server libmysqlclient-dev mysql-client-8.0 openjdk-11-jdk git python3-venv wget texlive-extra-utils r-base libcurl4-openssl-dev pandoc pandoc-citeproc libfontconfig1-dev libcairo2-dev libudunits2-dev libgdal-dev cutycapt xvfb sqlite3 libqt5sql5-sqlite libgmp3-dev libmpfr-dev tidy
 
 # ---------------From Circle CI
 # make Apt non-interactive
@@ -195,6 +189,19 @@ COPY ./docker_files/packages.r /opt
 WORKDIR /opt
 RUN Rscript ./new_r_code/R/check_packages.R
 RUN Rscript ./packages.r
+RUN mkdir climmob_repository
+RUN mkdir climmob_log
+RUN mkdir climmob_celery
+RUN mkdir climmob_gunicorn
+RUN mkdir climmob_config
+RUN mkdir climmob_plugins
+
+RUN chown -R circleci /opt/climmob_repository
+RUN chown -R circleci /opt/climmob_log
+RUN chown -R circleci /opt/climmob_celery
+RUN chown -R circleci /opt/climmob_gunicorn
+RUN chown -R circleci /opt/climmob_config
+RUN chown -R circleci /opt/climmob_plugins
 
 RUN ldconfig
 USER circleci
