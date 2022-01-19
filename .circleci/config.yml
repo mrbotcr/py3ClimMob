@@ -34,7 +34,7 @@ jobs:
             pip install codecov --user
             /home/circleci/.local/bin/codecov
             mysql -h 127.0.0.1 -u root --ssl-mode=DISABLED --password=circleci --execute='CREATE SCHEMA IF NOT EXISTS climmobv4'
-            mysql -h 127.0.0.1 -u root --ssl-mode=DISABLED --password=circleci climmobv4 < ./climmob/docker_files/base_db.sql
+            mysql -h 127.0.0.1 -u root --ssl-mode=DISABLED --password=circleci climmobv4 < ./docker_files/climmob/docker_files/base_db.sql
             python3 create_config.py --daemon --capture_output --mysql_host 127.0.0.1 --mysql_user_name root --mysql_user_password circleci --repository_path /opt/climmob_repository --odktools_path /opt/odktools --climmob_host localhost --climmob_port 5900 --forwarded_allow_ip localhost --pid_file /opt/climmob_gunicorn/climmob.pid --error_log_file /opt/climmob_log/error_log /opt/climmob_config/development.ini
             ln -s /opt/climmob_config/development.ini ./development.ini
             python3 configure_celery.py ./development.ini
