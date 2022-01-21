@@ -409,6 +409,17 @@ def startTheRegistry(self, userOwner, projectId, projectCod, listOfLabelsForPack
                 self.request, userOwner, projectId, projectCod, "registry"
             )
 
+        for plugin in p.PluginImplementations(p.IpackagesWithTechnologiesExtension):
+            plugin.create_qr_packages_with_technologies(
+                self.request,
+                self.request.locale_name,
+                userOwner,
+                projectId,
+                projectCod,
+                ncombs,
+                packages,
+            )
+
     return correct, str(error, "utf-8")
 
 

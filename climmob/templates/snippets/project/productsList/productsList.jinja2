@@ -91,7 +91,11 @@
                                                                                     {{ _("Excel template for uploading assessment form data") }}: {{ product.extraInformation.ass_desc }}
                                                                                 {% endif %}
                                                                             {% else %}
-                                                                                {{ product.product_id }}
+                                                                                {% if product.product_id == "qrpackagewithtechnologies" %}
+                                                                                    {{ _("List of packages with QR - Showing technologies.") }}
+                                                                                {% else %}
+                                                                                    {{ product.product_id }}
+                                                                                {% endif %}
                                                                             {% endif %}
                                                                         {% endif %}
                                                                     {% endif %}
