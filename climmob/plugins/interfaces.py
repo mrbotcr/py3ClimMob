@@ -320,11 +320,19 @@ class IDatabase(Interface):  # pragma: no cover
     After calling this
     """
 
-    def update_orm(self, metadata):
+    def update_orm(self, config):
         """
-        Called by FormShare so plugins can add new tables to FormShare ORM
-        :param metadata: FormShare ORM metadata object
+        Called by ClimMob so plugins can add new tables to ClimMob ORM
+        :param config: ClimMob configuration
         """
+
+    def update_extendable_tables(self, tables_allowed):
+        """
+        Allow to add new tables to the list of tables allowed to have a flexible schema using extras
+        :param tables_allowed: "Current list of tables allowed"
+        :return: Must return a modified version of tables_allowed
+        """
+        raise NotImplementedError("after_create must be implemented in subclasses")
 
 
 class IForm(Interface):  # pragma: no cover

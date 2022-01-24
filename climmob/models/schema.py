@@ -12,9 +12,16 @@ def initialize_schema():
     for table in metadata.sorted_tables:
         fields = []
         for column in table.c:
-            fields.append({"name": column.name, "storage": "db", "comment": ""})
-            # TODO: With SQL Alchemy 1.2 comment should be column.comment
-        _SCHEMA.append({"name": table.name, "fields": fields})
+            fields.append(
+                {"name": column.name, "storage": "db", "comment": column.comment}
+            )
+        table_found = False
+        for a_table in _SCHEMA:
+            if a_table["name"] == table.name:
+                table_found = True
+                break
+        if not table_found:
+            _SCHEMA.append({"name": table.name, "fields": fields})
 
 
 # This function add new columns to the schema in the extra field
