@@ -292,4 +292,16 @@ def register_products(config):
     )
     products.append(uploadData)
 
+    # PACKAGES WITH TECNOLOGIES
+
+    packagesWithTechnologies = addProduct(
+        "qrpackagewithtechnologies", "List of packages with QR - Showing technologies."
+    )
+    addMetadataToProduct(packagesWithTechnologies, "author", "Brandon Madriz")
+    addMetadataToProduct(packagesWithTechnologies, "version", "1.0")
+    addMetadataToProduct(
+        packagesWithTechnologies, "Licence", "Copyright 2021, MrBot Software Solutions",
+    )
+    products.append(packagesWithTechnologies)
+
     return products

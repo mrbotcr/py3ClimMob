@@ -23,6 +23,7 @@ __all__ = [
     "ICheckBox",
     "IUpload",
     "IDataColletionProgress",
+    "IpackagesWithTechnologiesExtension",
 ]
 
 
@@ -90,7 +91,7 @@ class IResource(Interface):
 
     def add_libraries(self, config):
         """
-        Called by FormShare so plugins can add new JS and CSS libraries to FormShare
+        Called by ClimMob so plugins can add new JS and CSS libraries to ClimMob
 
         :param config: ``pyramid.config`` object
         :return Returns a dict array [{'name':'mylibrary','path':'/path/to/my/resources'}]
@@ -99,7 +100,7 @@ class IResource(Interface):
 
     def add_js_resources(self, config):
         """
-        Called by FormShare so plugins can add new JS Resources
+        Called by ClimMob so plugins can add new JS Resources
 
         :param config: ``pyramid.config`` object
         :return Returns a dict array [{'libraryname':'mylibrary','id':'myResourceID','file':'/relative/path/to/jsFile',
@@ -109,7 +110,7 @@ class IResource(Interface):
 
     def add_css_resources(self, config):
         """
-        Called by FormShare so plugins can add new FanStatic CSS Resources
+        Called by ClimMob so plugins can add new FanStatic CSS Resources
 
         :param config: ``pyramid.config`` object
         :return Returns a dict array [{'libraryname':'mylibrary','id':'myResourceID','file':'/relative/path/to/jsFile',
@@ -344,7 +345,7 @@ class IForm(Interface):  # pragma: no cover
         self, request, userOwner, projectId, projectCod, formId, ass_cod
     ):
         """
-        Called by ClimMob so plugins can perform actions after FormShare deletes a form from the database
+        Called by ClimMob so plugins can perform actions after ClimMob deletes a form from the database
         :param request: ``pyramid.request`` object
         :param user_name: User ID
         :param projectid: Project ID
@@ -357,7 +358,7 @@ class IForm(Interface):  # pragma: no cover
         self, request, userOwner, projectId, projectCod, formId, ass_cod
     ):
         """
-        Called by ClimMob so plugins can perform actions after FormShare deletes a form from the database
+        Called by ClimMob so plugins can perform actions after ClimMob deletes a form from the database
         :param request: ``pyramid.request`` object
         :param user_name: User ID
         :param projectid: Project ID
@@ -370,7 +371,7 @@ class IForm(Interface):  # pragma: no cover
 class IMultimedia(Interface):
     def start_multimedia_download(self, path, user_name, projectid, formId, ass_cod):
         """
-        Called by ClimMob so plugins can perform actions after FormShare deletes a form from the database
+        Called by ClimMob so plugins can perform actions after ClimMob deletes a form from the database
         :param request: ``pyramid.request`` object
         :paran path: Path for the result
         :param user_name: User ID
@@ -383,6 +384,7 @@ class IMultimedia(Interface):
 
 class IDataColletionProgress(Interface):
     def create_data_collection_progress(
+        self,
         request,
         locale,
         userOwner,
@@ -391,6 +393,16 @@ class IDataColletionProgress(Interface):
         projectDetails,
         geoInformation,
     ):
+        """
+
+        """
+
+
+class IpackagesWithTechnologiesExtension(Interface):
+    def create_qr_packages_with_technologies(
+        self, request, locale, userOwner, projectId, projectCod, options, packages
+    ):
+
         """
 
         """

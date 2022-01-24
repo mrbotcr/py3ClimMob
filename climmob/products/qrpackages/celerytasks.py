@@ -30,12 +30,9 @@ def create_index_html(html, png, qrid, packageid, projectid, projectname, projec
 
     context = {
         "qrid": qrid,
-        "climmob": os.path.join(PATH, "images/icon.png"),
-        "bioversity": os.path.join(PATH, "images/bioversity.png"),
         "packageid": packageid,
         "projectid": projectid,
         "projectname": projectname,
-        "projectdate": projectdate,
     }
     options = {"crop-w": 384, "log-level": "none"}
 
