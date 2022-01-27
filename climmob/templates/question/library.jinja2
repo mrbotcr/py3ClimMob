@@ -56,6 +56,7 @@
                         {% set eventClick=True %}
                         {% set classByUser=True %}
                         {% set colorsUserCategories=True %}
+                        {% set redForVisible=True %}
                         {% include 'snippets/jstreeQuestions.jinja2' %}
                     </div>
                 </div>
@@ -452,6 +453,12 @@
             if ($("#ckb_tricot_quantitative").is(':checked'))
                 question_quantitative = 1;
 
+            {% if activeUser.login == "bioversity" %}
+                var question_visible = 0;
+                if ($("#ckb_question_visible").is(':checked'))
+                    question_visible = 1;
+            {% endif %}
+
             {% block dataprivacy_ajax_post_prepare %}
 
             {% endblock dataprivacy_ajax_post_prepare %}
@@ -480,6 +487,10 @@
                     "question_notobserved": question_notobserved,
                     "question_quantitative":question_quantitative,
                     "optionsValues":  JSON.stringify(optionsValues),
+                    {% if activeUser.login == "bioversity" %}
+                    "question_visible": question_visible,
+                    {% endif %}
+
                     {% block dataprivacy_ajax_post %}
 
                     {% endblock dataprivacy_ajax_post %}
@@ -666,6 +677,11 @@
             $("#ckb_tricot_quantitative").bootstrapSwitch('state',false);
             $("#ckb_answer_tied").bootstrapSwitch('state',false);
             $("#ckb_answer_notobserved").bootstrapSwitch('state',false);
+
+            {% if activeUser.login == "bioversity" %}
+                $("#ckb_question_visible").bootstrapSwitch('state',true);
+            {% endif %}
+
             {% block dataprivacy_function_create_question %}
 
             {% endblock dataprivacy_function_create_question %}
@@ -745,6 +761,13 @@
                     $("#ckb_tricot_quantitative").bootstrapSwitch('state',true);
                 else
                     $("#ckb_tricot_quantitative").bootstrapSwitch('state',false);
+
+                {% if activeUser.login == "bioversity" %}
+                    if (dataJson["question_visible"] == 1)
+                        $("#ckb_question_visible").bootstrapSwitch('state',true);
+                    else
+                        $("#ckb_question_visible").bootstrapSwitch('state',false);
+                {% endif %}
 
                 {% block dataprivacy_function_open_questions %}
 
@@ -869,6 +892,17 @@
                     $(".inputForQuestionSelect").select2({disabled:'readonly'});
                     $(".inputForQuestionCheck").bootstrapSwitch('readonly', true);
                 }
+
+                {% if activeUser.login == "bioversity" %}
+
+                    if(jQuery.inArray(dataJson["question_id"], [162,163,199]) == -1)
+                    {
+                        $("#ckb_question_visible").bootstrapSwitch('readonly', false);
+                        $("#btn_update_question").prop('disabled', false);
+                        $("#btn_update_question").css('display', 'initial');
+                    }
+
+                {% endif %}
 
                 $(".inputForQuestionSelect").select2({ width: '100%' });
 

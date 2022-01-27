@@ -235,6 +235,19 @@
 
 </div>
 
+{% if activeUser.login == "bioversity" %}
+
+    <div class="form-group">
+        <label class="col-sm-4 control-label">{{ _("Available to users") }}</label>
+        <div class="col-sm-8">
+            <div class="switch">
+                <input type="checkbox" id="ckb_question_visible" class="inputForQuestionCheck" name="question_visible" data-on-color="success" data-off-color="danger" data-on-text="{{ _('Yes') }}" data-off-text="{{ _('No') }}" >
+            </div>
+        </div>
+    </div>
+
+{% endif %}
+
 {% block dataprivacy_question_field %}
 
 {% endblock dataprivacy_question_field %}
