@@ -190,6 +190,13 @@ def load_environment(settings, config, apppath, policy_array):
 
     # Call any connected plugins to add their modifications into the schema
     schemas_allowed = ["user", "project", "question", "assessment"]
+
+    for plugin in p.PluginImplementations(p.IDatabase):
+        schemas_allowed = plugin.update_extendable_tables(schemas_allowed)
+
+    for plugin in p.PluginImplementations(p.IDatabase):
+        plugin.update_orm(config)
+
     for plugin in p.PluginImplementations(p.ISchema):
         schemaFields = plugin.update_schema(config)
         for field in schemaFields:
@@ -197,9 +204,6 @@ def load_environment(settings, config, apppath, policy_array):
                 addColumnToSchema(
                     field["schema"], field["fieldname"], field["fielddesc"]
                 )
-
-    for plugin in p.PluginImplementations(p.IDatabase):
-        plugin.update_orm(config.registry["dbsession_metadata"])
 
     # jinjaEnv is used by the jinja2 extensions so we get it from the config
     jinjaEnv = config.get_jinja2_environment()
