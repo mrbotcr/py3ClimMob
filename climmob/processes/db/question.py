@@ -162,7 +162,7 @@ def UserQuestion(user, request):
 def UserQuestionMoreBioversity(user, request):
 
     query = (
-            request.dbsession.query(
+        request.dbsession.query(
             Question,
             func.coalesce(I18nQuestion.question_desc, Question.question_desc).label(
                 "question_desc"
@@ -189,16 +189,13 @@ def UserQuestionMoreBioversity(user, request):
             isouter=True,
         )
         .filter(or_(Question.user_name == user, Question.user_name == "bioversity"))
-
         .order_by(Question.user_name, Question.question_dtype)
-              )
+    )
 
     if user != "bioversity":
         query = query.filter(Question.question_visible == 1)
 
-    mappedData = mapFromSchema(
-        query.all()
-    )
+    mappedData = mapFromSchema(query.all())
 
     result = []
     for data in mappedData:
