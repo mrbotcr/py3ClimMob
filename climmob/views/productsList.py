@@ -220,10 +220,7 @@ class generateProductView(privateView):
                     activeProjectData["project_id"], self.request
                 )
                 if len(tech) == 1:
-                    if (
-                        tech[0]["tech_name"] == "Colores"
-                        or tech[0]["tech_name"] == "Colors"
-                    ):
+                    if tech[0]["tech_id"] == 76 or tech[0]["tech_id"] == 78:
                         create_colors_cards(
                             self.request,
                             activeProjectData["owner"]["user_name"],

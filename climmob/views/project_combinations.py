@@ -373,10 +373,7 @@ def startTheRegistry(self, userOwner, projectId, projectCod, listOfLabelsForPack
         if numberOfCombinations == 3:
             tech = searchTechnologiesInProject(projectId, self.request)
             if len(tech) == 1:
-                if (
-                    tech[0]["tech_name"] == "Colores"
-                    or tech[0]["tech_name"] == "Colors"
-                ):
+                if tech[0]["tech_id"] == 76 or tech[0]["tech_id"] == 78:
                     time.sleep(1)
                     create_colors_cards(
                         self.request,
