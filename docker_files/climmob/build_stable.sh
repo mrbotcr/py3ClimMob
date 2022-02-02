@@ -1,1 +1,1 @@
-sudo docker build --rm -t alliancecostarica/climmob:20220128 -f ./master.Dockerfile .
+sudo docker build --rm -t alliancecostarica/climmob:20220203 -f ./master.Dockerfile .
