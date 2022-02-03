@@ -152,7 +152,7 @@
                             <div class="form-group" style="margin: 5px">
                                 <label class="col-sm-4 control-label">{{ _("Do you want to create your project from a template ?") }}</label>
                                 <div class="col-sm-8">
-                                    <select id="usingTemplate" name="usingTemplate" class="form-control chosen-select">
+                                    <select id="usingTemplate" name="usingTemplate" class="form-control chosen-select" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} {% if not permissionForChanges %} disabled {% endif %} >
                                         <option value="">{{ _("Select a template") }}</option>
                                         {% for template in listOfTemplates %}
                                             <option value="{{ template.project_id }}" {% if dataworking["usingTemplate"] == template.project_id %}selected{% endif %}>{{ template.project_name }}</option>

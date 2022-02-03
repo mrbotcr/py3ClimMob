@@ -1,4 +1,4 @@
-FROM alliancecostarica/climmob_base:20220127
+FROM alliancecostarica/climmob_base:20220202
 
 MAINTAINER Alliance Bioversity-CIAT
 
