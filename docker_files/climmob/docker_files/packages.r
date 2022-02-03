@@ -1,6 +1,6 @@
 if (!require("ClimMobTools"))
 {
-  remotes::install_github("agrobioinfoservices/ClimMobTools",
+  remotes::install_github("agrdatasci/ClimMobTools",
                         upgrade = "never",
                         force = TRUE)
 }
