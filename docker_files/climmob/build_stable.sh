@@ -1,1 +1,1 @@
-sudo docker build --rm -t alliancecostarica/climmob:20220203 -f ./master.Dockerfile .
+sudo docker build --no-cache --rm -t alliancecostarica/climmob:20220203 -f ./stable.Dockerfile .
