@@ -46,7 +46,7 @@
                     {% include 'snippets/error.jinja2' %}
 
                     <input type="text" class="form-control form-control-sm m-b-xs" id="filter" placeholder="{{ _("Search technology") }}">
-                    <div class="activity-stream">
+                    <div class="activity-stream" style="overflow-y: scroll; max-height: calc(100vh - 380px);">
                         <table class="footable table table-stripped tableHover" data-page-size="50000" data-filter=#filter>
                             <thead>
                                 <tr>
@@ -69,15 +69,14 @@
                                 {% endif %}
                             </tbody>
                         </table>
-
-                        <div class="stream" style="padding: 4px 0" onclick="showCreateTechnology()">
-                            <div class="stream-badge">
-                                <i class="fa fa-plus" style="color:#000000"></i>
-                            </div>
-                            <div class="stream-panel" style="margin-top: 4px">
-                                <div class="stream-info">
-                                    <strong class="label label-primary" style="font-size: 12px; background-color: #3c763d">{{ _("Create new technology") }}</strong>
-                                </div>
+                    </div>
+                    <div class="stream" style="padding: 4px 0" onclick="showCreateTechnology()">
+                        <div class="stream-badge">
+                            <i class="fa fa-plus" style="color:#000000"></i>
+                        </div>
+                        <div class="stream-panel" style="margin-top: 4px">
+                            <div class="stream-info">
+                                <strong class="label label-primary" style="font-size: 12px; background-color: #3c763d">{{ _("Create new technology") }}</strong>
                             </div>
                         </div>
                     </div>
@@ -108,8 +107,19 @@
                     <br>
                     <br>
                     <hr>
-                    <div class="activity-stream" id="div_show_alias">
+                    <h4>{{ _("List of technology options:") }}</h4>
+                    <div class="activity-stream" id="div_show_alias" style="overflow-y: scroll; max-height: calc(100vh - 495px);">
 
+                    </div>
+                    <div class='stream' style='padding:4px 0; display: none' onclick='showCreateAlias()' id="div_show_create_alias">
+                        <div class='stream-badge'>
+                            <i class='fa fa-plus' style='color:#000000'></i>
+                        </div>
+                        <div class='stream-panel' style='margin-top:4px'>
+                            <div class='stream-info'>
+                                <strong class='label label-primary' style='font-size: 12px; background-color: #3c763d'>{{ _("Create new technology option") }}</strong>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -268,6 +278,9 @@
         });
 
         function showVarietiesInTechnology(tech_id, user_name, closeError='yes') {
+
+            $("#div_show_create_alias").css("display","none");
+
             var URL= "{{ request.route_url('getUserTechnologyDetails',user="__user_name__", technologyid="__techid__") }}"
             URL= URL.replace("__user_name__",user_name).replace("__techid__", tech_id)
             data = {};
@@ -294,7 +307,7 @@
                 $(".tech_id").val(tech.tech_id)
                 $("#tech_name").val(tech.tech_name)
 
-                allHTML = "<h4>{{ _("List of technology options:") }}</h4>"
+                allHTML = ""
                 for(var i=0; i<tech.tech_alias.length; i++)
                 {
                     var arrayForAlias = JSON.stringify(tech.tech_alias[i]).replace(/(')/g, "\\u0027");
@@ -319,16 +332,17 @@
                     allHTML +="</div>"
                 }
                 if(tech.user_name == "{{ activeUser.login }}"){
-                    allHTML +="<div class='stream' style='padding:4px 0' onclick='showCreateAlias()'>"
-                    allHTML +="<div class='stream-badge'>"
-                    allHTML +="<i class='fa fa-plus' style='color:#000000'></i>"
-                    allHTML +="</div>"
-                    allHTML +="<div class='stream-panel' style='margin-top:4px'>"
-                    allHTML +="<div class='stream-info'>"
-                    allHTML +="<strong class='label label-primary' style='font-size: 12px; background-color: #3c763d'>{{ _("Create new technology option") }}</strong>"
-                    allHTML +="</div>"
-                    allHTML +="</div>"
-                    allHTML +="</div>"
+                    {#allHTML +="<div class='stream' style='padding:4px 0' onclick='showCreateAlias()'>"#}
+                    {#allHTML +="<div class='stream-badge'>"#}
+                    {#allHTML +="<i class='fa fa-plus' style='color:#000000'></i>"#}
+                    {#allHTML +="</div>"#}
+                    {#allHTML +="<div class='stream-panel' style='margin-top:4px'>"#}
+                    {#allHTML +="<div class='stream-info'>"#}
+                    {#allHTML +="<strong class='label label-primary' style='font-size: 12px; background-color: #3c763d'>{{ _("Create new technology option") }}</strong>"#}
+                    {#allHTML +="</div>"#}
+                    {#allHTML +="</div>"#}
+                    {#allHTML +="</div>"#}
+                    $("#div_show_create_alias").css("display","block");
                 }
 
                 $("#div_show_alias").html(allHTML)
@@ -355,7 +369,7 @@
                 }
 
                 $("#div_create_technology").css('display','initial')
-                $("#div_show_alias").css('display','initial')
+                $("#div_show_alias").css('display','block')
 
             });
         }
@@ -412,6 +426,7 @@
                 $("#btn_modify_alias").css('display','initial')
                 $("#div_update_option").css('display','initial')
                 $("#div_create_technology_option").css('display','initial')
+                $("#alias_name").focus();
             });
         }
 

@@ -50,7 +50,7 @@
                     </div>
                 </div>
                 <div class="ibox-content " >
-                    <div id="questionsTree" style="display: none">
+                    <div id="questionsTree" style="display: none; overflow-y: scroll; max-height: calc(100vh - 310px);">
                         {% set doActions=True %}
                         {% set jstreeId="jstree1" %}
                         {% set eventClick=True %}
@@ -373,7 +373,7 @@
                 $("#txt_time15").html(dateSelected.toLocaleTimeString())
             });
 
-            $("#questionsTree").css('display','initial')
+            $("#questionsTree").css('display','block')
 
             {% if seeQuestion %}
                 openQuestions("{{ seeQuestion["question_id"] }}", "{{ seeQuestion["user_name"] }}")
@@ -898,6 +898,7 @@
                     if(jQuery.inArray(dataJson["question_id"], [162,163,199]) == -1)
                     {
                         $("#ckb_question_visible").bootstrapSwitch('readonly', false);
+                        $("#question_desc").attr('readonly',false);
                         $("#btn_update_question").prop('disabled', false);
                         $("#btn_update_question").css('display', 'initial');
                     }

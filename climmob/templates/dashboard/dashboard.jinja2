@@ -501,146 +501,148 @@
                                     </div>
                                 {% endif %}
 
+                                {% if activeProject["project_template"] != 1 %}
+                                    {% for assessment in progress.assessments %}
+                                        {% if assessment.ass_status == 1 or assessment.ass_status == 2 %}
+                                            <div class="ibox float-e-margins">
+                                                <div class="ibox-title">
 
-                                {% for assessment in progress.assessments %}
-                                    {% if assessment.ass_status == 1 or assessment.ass_status == 2 %}
-                                        <div class="ibox float-e-margins">
-                                            <div class="ibox-title">
-
-                                                <div class="ibox-tools">
-                                                    <div class="row" style="padding: 5px">
-                                                        <table style="width: 100%">
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td style="vertical-align: middle; width: 50%;text-align: left;">
-                                                                        <h5 style=" margin: initial">{{ _("Data collection") }}: {{ assessment.ass_desc }}</h5>
-                                                                    </td>
-                                                                    <td style="vertical-align: middle; text-align: center">
-                                                                        {% set pbtype = "progress-bar-info" %}
-                                                                        {% if progress.asssubmissions == 0 %}
-                                                                            <div class="small" style="text-align: left">{{ _("Not yet started") }}</div>
-                                                                        {% endif %}
-                                                                        {% if assessment.ass_status == 1 %}
-                                                                            <div class="small" style="text-align: left">{{ _("On going") }}</div>
-                                                                        {% endif %}
-                                                                        {% if assessment.ass_status == 2 %}
-                                                                            <div class="small" style="text-align: left">{{ _("Closed") }}</div>
-                                                                            {% if assessment.assperc >= 100 %}
-                                                                                {% set pbtype = "progress-bar-success" %}
-                                                                            {% else %}
-                                                                                {% set pbtype = "progress-bar-warning" %}
+                                                    <div class="ibox-tools">
+                                                        <div class="row" style="padding: 5px">
+                                                            <table style="width: 100%">
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td style="vertical-align: middle; width: 50%;text-align: left;">
+                                                                            <h5 style=" margin: initial">{{ _("Data collection") }}: {{ assessment.ass_desc }}</h5>
+                                                                        </td>
+                                                                        <td style="vertical-align: middle; text-align: center">
+                                                                            {% set pbtype = "progress-bar-info" %}
+                                                                            {% if progress.asssubmissions == 0 %}
+                                                                                <div class="small" style="text-align: left">{{ _("Not yet started") }}</div>
                                                                             {% endif %}
-                                                                        {% endif %}
-                                                                        <div class="progress progress-mini">
-                                                                            <div style="width: {{ assessment.assperc }}%;" class="progress-bar {{ pbtype }}"></div>
-                                                                        </div>
-                                                                    </td>
-                                                                    <td style="vertical-align: middle;text-align: center; width: 10%">
-                                                                        <a class="collapse-link">
-                                                                            <i class="fa fa-chevron-{% if assessment.ass_status == 2 %}down{% else %}up{% endif %}"></i>
-                                                                        </a>
-                                                                    </td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
+                                                                            {% if assessment.ass_status == 1 %}
+                                                                                <div class="small" style="text-align: left">{{ _("On going") }}</div>
+                                                                            {% endif %}
+                                                                            {% if assessment.ass_status == 2 %}
+                                                                                <div class="small" style="text-align: left">{{ _("Closed") }}</div>
+                                                                                {% if assessment.assperc >= 100 %}
+                                                                                    {% set pbtype = "progress-bar-success" %}
+                                                                                {% else %}
+                                                                                    {% set pbtype = "progress-bar-warning" %}
+                                                                                {% endif %}
+                                                                            {% endif %}
+                                                                            <div class="progress progress-mini">
+                                                                                <div style="width: {{ assessment.assperc }}%;" class="progress-bar {{ pbtype }}"></div>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td style="vertical-align: middle;text-align: center; width: 10%">
+                                                                            <a class="collapse-link">
+                                                                                <i class="fa fa-chevron-{% if assessment.ass_status == 2 %}down{% else %}up{% endif %}"></i>
+                                                                            </a>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="ibox-content" {% if assessment.ass_status == 2 %}style="display: none" {% endif %}>
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        <h3>{{ _("Statistics") }}</h3>
-                                                        <div id="pie{{ assessment.ass_cod }}"></div>
-                                                        <table class="table table-striped">
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td>{{ _("Total number of participants") }}: </td>
-                                                                    <td>{{ assessment.submissions }}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td style="vertical-align: inherit">{{ _("Number of submissions") }}: </td>
-                                                                    <td style="vertical-align: inherit">{{ assessment.asstotal }} {% if assessment.asstotal > 0 %}({{ assessment.assperc|round(1, 'floor') }}%){% endif %}</td>
-
-                                                                </tr>
-                                                                <tr>
-                                                                    <td {% if assessment.errors > 0 and assessment.ass_status == 1%}style="color: #ed5565;" {% endif %}>{{ _("Submissions with conflicts") }}:</td>
-                                                                    <td {% if assessment.errors > 0 and assessment.ass_status == 1%}style="color: #ed5565;" {% endif %}>{{ assessment.errors }}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>{{ _("Last submission") }}</td>
-                                                                    <td>{{ assessment.lastass }}</td>
-                                                                </tr>
-
-                                                                {% if assessment.ass_status == 1 %}
-
-                                                                    {% block upload_data_assessment scoped%}
-
-                                                                    {% endblock upload_data_assessment %}
-
-                                                                    {% block enketo_information_assessment scoped%}
-
-                                                                    {% endblock enketo_information_assessment %}
-
-                                                                {% endif %}
-
-                                                                <tr>
-                                                                    <td colspan="2">
-                                                                        {% if assessment.asstotal > 0 %}
-                                                                            <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('EditDataAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}" href="#"><i class="fa fa-table"></i> {{ _("View data") }}</a>
-                                                                            <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-cloud-download"></i> {{ _("Download data") }}</a>
-
-                                                                            {% if assessment.ass_status == 1%}
-                                                                            {% endif %}
-                                                                        {% endif %}
-                                                                        {% if assessment.errors > 0 and assessment.ass_status == 1%}
-                                                                            <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;white-space: normal !important;word-wrap: break-word !important;" href="{{request.route_url('CleanErrorLogsAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-bug"></i> {{ _("Show submissions with conflicts") }}</a>
-                                                                            <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;white-space: normal !important;word-wrap: break-word !important;" href="{{request.route_url('downloadErrorLogDocumentAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-cloud-download"></i> {{ _("Download submissions with conflicts") }}</a>
-                                                                        {% endif %}
-                                                                    </td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    {% if assessment.asstotal > 0 %}
-                                                        <div class="col-md-6">
-                                                            {% if assessment.ass_status == 1 %}
-                                                                <a class="btn btn-danger btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" onclick="location.href = '{{ request.route_url('closeassessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}'"><i class="fa fa-stop"></i> {{ _("Finish") }} {{ assessment.ass_desc }}</a>
-                                                            {% endif %}
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            {% if assessment.ass_status == 1 %}
-                                                                <a class="btn btn-danger btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" onclick="location.href = '{{ request.route_url('cancelassessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}'"><i class="fa fa-stop"></i> {{ _("Cancel") }} {{ assessment.ass_desc }}</a>
-                                                            {% endif %}
-                                                        </div>
-                                                    {% else %}
+                                                <div class="ibox-content" {% if assessment.ass_status == 2 %}style="display: none" {% endif %}>
+                                                    <div class="row">
                                                         <div class="col-md-12">
-                                                            {% if assessment.ass_status == 1 %}
-                                                                <a class="btn btn-danger btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" onclick="location.href = '{{ request.route_url('cancelassessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}'"><i class="fa fa-stop"></i> {{ _("Cancel") }} {{ assessment.ass_desc }}</a>
-                                                            {% endif %}
-                                                        </div>
-                                                    {% endif %}
+                                                            <h3>{{ _("Statistics") }}</h3>
+                                                            <div id="pie{{ assessment.ass_cod }}"></div>
+                                                            <table class="table table-striped">
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>{{ _("Total number of participants") }}: </td>
+                                                                        <td>{{ assessment.submissions }}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td style="vertical-align: inherit">{{ _("Number of submissions") }}: </td>
+                                                                        <td style="vertical-align: inherit">{{ assessment.asstotal }} {% if assessment.asstotal > 0 %}({{ assessment.assperc|round(1, 'floor') }}%){% endif %}</td>
 
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td {% if assessment.errors > 0 and assessment.ass_status == 1%}style="color: #ed5565;" {% endif %}>{{ _("Submissions with conflicts") }}:</td>
+                                                                        <td {% if assessment.errors > 0 and assessment.ass_status == 1%}style="color: #ed5565;" {% endif %}>{{ assessment.errors }}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>{{ _("Last submission") }}</td>
+                                                                        <td>{{ assessment.lastass }}</td>
+                                                                    </tr>
+
+                                                                    {% if assessment.ass_status == 1 %}
+
+                                                                        {% block upload_data_assessment scoped%}
+
+                                                                        {% endblock upload_data_assessment %}
+
+                                                                        {% block enketo_information_assessment scoped%}
+
+                                                                        {% endblock enketo_information_assessment %}
+
+                                                                    {% endif %}
+
+                                                                    <tr>
+                                                                        <td colspan="2">
+                                                                            {% if assessment.asstotal > 0 %}
+                                                                                <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('EditDataAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}" href="#"><i class="fa fa-table"></i> {{ _("View data") }}</a>
+                                                                                <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-cloud-download"></i> {{ _("Download data") }}</a>
+
+                                                                                {% if assessment.ass_status == 1%}
+                                                                                {% endif %}
+                                                                            {% endif %}
+                                                                            {% if assessment.errors > 0 and assessment.ass_status == 1%}
+                                                                                <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;white-space: normal !important;word-wrap: break-word !important;" href="{{request.route_url('CleanErrorLogsAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-bug"></i> {{ _("Show submissions with conflicts") }}</a>
+                                                                                <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;white-space: normal !important;word-wrap: break-word !important;" href="{{request.route_url('downloadErrorLogDocumentAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-cloud-download"></i> {{ _("Download submissions with conflicts") }}</a>
+                                                                            {% endif %}
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        {% if assessment.asstotal > 0 %}
+                                                            <div class="col-md-6">
+                                                                {% if assessment.ass_status == 1 %}
+                                                                    <a class="btn btn-danger btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" onclick="location.href = '{{ request.route_url('closeassessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}'"><i class="fa fa-stop"></i> {{ _("Finish") }} {{ assessment.ass_desc }}</a>
+                                                                {% endif %}
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                {% if assessment.ass_status == 1 %}
+                                                                    <a class="btn btn-danger btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" onclick="location.href = '{{ request.route_url('cancelassessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}'"><i class="fa fa-stop"></i> {{ _("Cancel") }} {{ assessment.ass_desc }}</a>
+                                                                {% endif %}
+                                                            </div>
+                                                        {% else %}
+                                                            <div class="col-md-12">
+                                                                {% if assessment.ass_status == 1 %}
+                                                                    <a class="btn btn-danger btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" onclick="location.href = '{{ request.route_url('cancelassessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}'"><i class="fa fa-stop"></i> {{ _("Cancel") }} {{ assessment.ass_desc }}</a>
+                                                                {% endif %}
+                                                            </div>
+                                                        {% endif %}
+
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    {% endif %}
-                                {% endfor %}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
 
 
-
-                                {% if total_ass_records > 5 or (activeProject.project_registration_and_analysis == 1 and progress.regtotal >=5)%}
-                                    {%  if activeProject["access_type"] not in [4] %}
-                                        <div class="ibox float-e-margins" >
-                                            <div class="ibox-title">
-                                                <h5>{{ _("Analysis") }}</h5>
+                                {% if activeProject["project_template"] != 1 %}
+                                    {% if total_ass_records > 5 or (activeProject.project_registration_and_analysis == 1 and progress.regtotal >=5)%}
+                                        {%  if activeProject["access_type"] not in [4] %}
+                                            <div class="ibox float-e-margins" >
+                                                <div class="ibox-title">
+                                                    <h5>{{ _("Analysis") }}</h5>
+                                                </div>
+                                                <div class="ibox-content">
+                                                    <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" onclick="location.href = '{{request.route_url('createAnalysis')}}' "><i class="fa fa-bar-chart-o"></i> {{ _("Start analysis") }}</a>
+                                                    <br>
+                                                </div>
                                             </div>
-                                            <div class="ibox-content">
-                                                <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" onclick="location.href = '{{request.route_url('createAnalysis')}}' "><i class="fa fa-bar-chart-o"></i> {{ _("Start analysis") }}</a>
-                                                <br>
-                                            </div>
-                                        </div>
+                                        {% endif %}
                                     {% endif %}
                                 {% endif %}
 
