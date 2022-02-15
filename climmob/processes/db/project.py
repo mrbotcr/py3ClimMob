@@ -20,7 +20,7 @@ from climmob.processes.db.question import getQuestionOptions
 import datetime, os, glob
 from sqlalchemy import func
 from climmob.processes.db.project_technologies import numberOfCombinationsForTheProject
-from climmob.processes.db.enumerator import countEnumerators
+from climmob.processes.db.enumerator import countEnumeratorsOfAllCollaborators
 from ago import human
 from climmob.models.repository import sql_fetch_all, sql_fetch_one
 import uuid
@@ -560,7 +560,7 @@ def getProjectProgress(userName, projectCode, project, request):
     _ = request.translate
     result = {}
     perc = 0
-    result["enumerators_by_user"] = countEnumerators(userName, request)
+    result["enumerators_by_user"] = countEnumeratorsOfAllCollaborators(project, request)
 
     if (
         request.dbsession.query(PrjEnumerator)

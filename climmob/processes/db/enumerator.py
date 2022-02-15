@@ -1,4 +1,10 @@
-from climmob.models import Enumerator, mapToSchema, mapFromSchema, PrjEnumerator
+from climmob.models import (
+    Enumerator,
+    mapToSchema,
+    mapFromSchema,
+    PrjEnumerator,
+    userProject,
+)
 from climmob.config.encdecdata import encodeData, decodeData
 from sqlalchemy.exc import IntegrityError
 
@@ -17,6 +23,7 @@ __all__ = [
     "isEnumeratorAssigned",
     "countEnumerators",
     "getEnumeratorByProject",
+    "countEnumeratorsOfAllCollaborators",
 ]
 
 
@@ -38,6 +45,21 @@ def countEnumerators(user, request):
     result = (
         request.dbsession.query(Enumerator).filter(Enumerator.user_name == user).count()
     )
+    return result
+
+
+def countEnumeratorsOfAllCollaborators(projectId, request):
+
+    projectCollaborators = request.dbsession.query(userProject.user_name).filter(
+        userProject.project_id == projectId
+    )
+
+    result = (
+        request.dbsession.query(Enumerator)
+        .filter(Enumerator.user_name.in_(projectCollaborators))
+        .count()
+    )
+
     return result
 
 
