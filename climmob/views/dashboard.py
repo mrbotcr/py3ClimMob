@@ -16,6 +16,7 @@ from climmob.processes import (
     getTheProjectIdForOwner,
 )
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
+import climmob.plugins as p
 
 
 class dashboard_view(privateView):
@@ -49,9 +50,16 @@ class dashboard_view(privateView):
 
                 hasActiveProject = True
                 showAnalysis = False
+
                 progress["usableAssessments"] = get_usable_assessments(
                     self.request, activeProjectId
                 )
+
+                for plugin in p.PluginImplementations(p.IRhomis):
+                    progress["usableAssessments"] = plugin.get_usable_assessments(
+                        self.request, activeProjectId
+                    )
+
                 progress["analysisControl"] = getAnalysisControl(
                     self.request,
                     self.user.login,

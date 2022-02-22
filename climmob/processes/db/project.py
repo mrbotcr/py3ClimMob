@@ -682,6 +682,7 @@ def getProjectProgress(userName, projectCode, project, request):
     assessments = (
         request.dbsession.query(Assessment)
         .filter(Assessment.project_id == project)
+        .order_by(Assessment.ass_days)
         .all()
     )
     for assessment in assessments:

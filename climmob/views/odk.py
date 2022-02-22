@@ -263,7 +263,7 @@ class assessmentMediaFile_view(odkView):
         fileid = self.request.matchdict["fileid"]
         assessmentid = self.request.matchdict["assessmentid"]
 
-        if isEnumeratorActive(projectId, self.user, self.request):
+        if isEnumeratorinProject(projectId, self.user, self.request):
             if self.authorize(getEnumeratorPassword(user, self.user, self.request)):
                 return getAssessmentMediaFile(
                     projectUserOwner,

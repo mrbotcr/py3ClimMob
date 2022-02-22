@@ -24,6 +24,7 @@ __all__ = [
     "IUpload",
     "IDataColletionProgress",
     "IpackagesWithTechnologiesExtension",
+    "IRhomis",
 ]
 
 
@@ -429,6 +430,25 @@ class IUpload(Interface):
         self, request, userOwner, projectId, projectCod, assCod=None
     ):
 
+        """
+
+        """
+
+
+class IRhomis(Interface):
+    def start_external_data_collection_form(
+        self, request, userOwner, projectId, projectCod, assCod
+    ):
+        """
+
+        """
+
+    def get_usable_assessments(self, request, project_id):
+        """
+
+        """
+
+    def before_process_modify(self, userOwner, projectCod, data, request):
         """
 
         """

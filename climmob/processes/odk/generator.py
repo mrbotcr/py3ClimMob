@@ -107,7 +107,20 @@ def buildDatabase(cnfFile, createFile, insertFile, schema, dropSchema):
     return error
 
 
-def createDatabase(xlsxFile, outputDir, schema, keyVar, preFix, dropSchema, request):
+def createDatabase(
+    xlsxFile,
+    outputDir,
+    schema,
+    keyVar,
+    preFix,
+    dropSchema,
+    request,
+    external_files=None,
+):
+
+    if external_files is None:
+        external_files = []
+
     paths = ["JXFormToMysql", "jxformtomysql"]
     jxform_to_mysql = os.path.join(request.registry.settings["odktools.path"], *paths)
 
@@ -128,6 +141,9 @@ def createDatabase(xlsxFile, outputDir, schema, keyVar, preFix, dropSchema, requ
         "-p " + preFix,
         "-o m",
     ]
+
+    for a_file in external_files:
+        args.append(a_file)
 
     paths = ["tmp"]
     tempPath = os.path.join(outputDir, *paths)

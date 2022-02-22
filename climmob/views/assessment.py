@@ -229,6 +229,11 @@ class assessmenthead_view(privateView):
                                 data, "ass_rhomis"
                             )
 
+                        for plugin in p.PluginImplementations(p.IRhomis):
+                            data = plugin.before_process_modify(
+                                activeProjectUser, activeProjectCod, data, self.request
+                            )
+
                         error, msg = modifyProjectAssessment(data, self.request)
                         if data["ass_final"] == 1:
                             data["ass_final"] = "on"
@@ -425,95 +430,125 @@ class startAssessments_view(privateView):
                 assessment_id = data["assessment_id"]
                 redirect = False
                 print("checkAssessments")
-                checkPass, error_summary = checkAssessments(
+
+                isExternal = False
+                assessInfo = getProjectAssessmentInfo(
                     activeProjectId, assessment_id, self.request
                 )
-                if checkPass:
-                    print("generateAssessmentFiles")
-                    sectionOfThePackageCode = getTheGroupOfThePackageCodeAssessment(
+                if "ass_rhomis" in assessInfo.keys():
+                    if assessInfo["ass_rhomis"] == 1:
+                        isExternal = True
+                        for plugin in p.PluginImplementations(p.IRhomis):
+                            (
+                                checkPass,
+                                error_summary,
+                            ) = plugin.start_external_data_collection_form(
+                                self.request,
+                                activeProjectUser,
+                                activeProjectId,
+                                activeProjectCod,
+                                assessment_id,
+                            )
+
+                            if checkPass:
+                                self.returnRawViewResult = True
+                                return HTTPFound(
+                                    location=self.request.route_url("dashboard")
+                                )
+
+                if not isExternal:
+
+                    checkPass, error_summary = checkAssessments(
                         activeProjectId, assessment_id, self.request
                     )
-
-                    projectDetails = getActiveProject(self.user.login, self.request)
-                    listOfLabels = [
-                        projectDetails["project_label_a"],
-                        projectDetails["project_label_b"],
-                        projectDetails["project_label_c"],
-                    ]
-
-                    correct = generateAssessmentFiles(
-                        activeProjectUser,
-                        activeProjectId,
-                        activeProjectCod,
-                        assessment_id,
-                        self.request,
-                        sectionOfThePackageCode,
-                        listOfLabels,
-                    )
-
-                    # Edited by Brandon
-                    if correct[0]["result"]:
-                        print("setAssessmentIndividualStatus")
-                        setAssessmentIndividualStatus(
-                            activeProjectId, assessment_id, 1, self.request
+                    if checkPass:
+                        print("generateAssessmentFiles")
+                        sectionOfThePackageCode = getTheGroupOfThePackageCodeAssessment(
+                            activeProjectId, assessment_id, self.request
                         )
 
-                        print("getPackages")
-                        ncombs, packages = getPackages(
-                            activeProjectUser, activeProjectId, self.request
-                        )
-                        print("getDataFormPreview")
-                        data, finalCloseQst = getDataFormPreview(
-                            self, activeProjectUser, activeProjectId, assessment_id
-                        )
-                        print("create_document_form")
-                        create_document_form(
-                            self.request,
-                            self.request.locale_name,
+                        projectDetails = getActiveProject(self.user.login, self.request)
+                        listOfLabels = [
+                            projectDetails["project_label_a"],
+                            projectDetails["project_label_b"],
+                            projectDetails["project_label_c"],
+                        ]
+
+                        correct = generateAssessmentFiles(
                             activeProjectUser,
                             activeProjectId,
                             activeProjectCod,
-                            "Assessment",
                             assessment_id,
-                            data,
-                            packages,
+                            self.request,
+                            sectionOfThePackageCode,
                             listOfLabels,
                         )
-                        print("Returning")
 
-                        for plugin in p.PluginImplementations(p.IForm):
-                            plugin.after_adding_form(
+                        # Edited by Brandon
+                        if correct[0]["result"]:
+                            print("setAssessmentIndividualStatus")
+                            setAssessmentIndividualStatus(
+                                activeProjectId, assessment_id, 1, self.request
+                            )
+
+                            print("getPackages")
+                            ncombs, packages = getPackages(
+                                activeProjectUser, activeProjectId, self.request
+                            )
+                            print("getDataFormPreview")
+                            data, finalCloseQst = getDataFormPreview(
+                                self, activeProjectUser, activeProjectId, assessment_id
+                            )
+                            print("create_document_form")
+                            create_document_form(
                                 self.request,
+                                self.request.locale_name,
                                 activeProjectUser,
                                 activeProjectId,
                                 activeProjectCod,
-                                "assessment",
+                                "Assessment",
                                 assessment_id,
+                                data,
+                                packages,
+                                listOfLabels,
                             )
+                            print("Returning")
 
-                        for plugin in p.PluginImplementations(p.IUpload):
-                            plugin.create_Excel_template_for_upload_data(
-                                self.request,
-                                activeProjectUser,
-                                activeProjectId,
-                                activeProjectCod,
-                                "assessment",
-                                assessment_id,
+                            for plugin in p.PluginImplementations(p.IForm):
+                                plugin.after_adding_form(
+                                    self.request,
+                                    activeProjectUser,
+                                    activeProjectId,
+                                    activeProjectCod,
+                                    "assessment",
+                                    assessment_id,
+                                )
+
+                            for plugin in p.PluginImplementations(p.IUpload):
+                                plugin.create_Excel_template_for_upload_data(
+                                    self.request,
+                                    activeProjectUser,
+                                    activeProjectId,
+                                    activeProjectCod,
+                                    "assessment",
+                                    assessment_id,
+                                )
+
+                            self.returnRawViewResult = True
+                            return HTTPFound(
+                                location=self.request.route_url("dashboard")
                             )
-
-                        self.returnRawViewResult = True
-                        return HTTPFound(location=self.request.route_url("dashboard"))
-                    else:
-                        onlyError = True
-                        error_summary = {
-                            "error": self._(
-                                "There has been a problem in the creation of the basic structure of the project, this may be due to something wrong with the form."
-                            ),
-                            "contact": self._(
-                                "Contact the ClimMob team with the next message to get the solution to the problem:"
-                            ),
-                            "copie": str(correct[0]["error"], "utf-8"),
-                        }
+                        else:
+                            onlyError = True
+                            error_summary = {
+                                "error": self._(
+                                    "There has been a problem in the creation of the basic structure of the project, this may be due to something wrong with the form."
+                                ),
+                                "contact": self._(
+                                    "Contact the ClimMob team with the next message to get the solution to the problem:"
+                                ),
+                                "copie": str(correct[0]["error"], "utf-8"),
+                            }
 
                 return {
                     "activeUser": self.user,

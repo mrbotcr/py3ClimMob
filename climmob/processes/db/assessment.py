@@ -419,20 +419,25 @@ def getAnalysisControl(request, userSession, userName, projectId, projectCod):
 
 
 def getProjectAssessments(projectId, request):
-
-    sql = (
-        "SELECT assessment.ass_cod,assessment.ass_desc,assessment.ass_days,assessment.ass_status,assessment.ass_final,COUNT(assdetail.question_id) as totquestions "
-        "FROM assessment, assdetail "
-        "WHERE assessment.project_id = assdetail.project_id "
-        "AND assessment.ass_cod = assdetail.ass_cod "
-        "AND assessment.project_id = '" + projectId + "' "
-        "GROUP BY assessment.ass_cod,assessment.ass_desc,assessment.ass_days,assessment.ass_status,assessment.ass_final ORDER BY assessment.ass_days"
+    res = (
+        request.dbsession.query(
+            Assessment, func.count(AssDetail.question_id).label("totquestions")
+        )
+        .filter(Assessment.project_id == AssDetail.project_id)
+        .filter(Assessment.ass_cod == AssDetail.ass_cod)
+        .filter(Assessment.project_id == projectId)
+        .group_by(
+            Assessment.ass_cod,
+            Assessment.ass_desc,
+            Assessment.ass_days,
+            Assessment.ass_status,
+            Assessment.ass_final,
+        )
+        .order_by(Assessment.ass_days)
+        .all()
     )
-    assessments = request.dbsession.execute(sql).fetchall()
-    result = []
-    for qst in assessments:
-        dct = dict(qst)
-        result.append(dct)
+    result = mapFromSchema(res)
+
     return result
 
 

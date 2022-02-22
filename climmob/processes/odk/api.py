@@ -57,7 +57,7 @@ def generateManifest(mediaFileArray):
     root = etree.Element("manifest", xmlns="http://openrosa.org/xforms/xformsManifest")
     for file in mediaFileArray:
         xformTag = etree.Element("mediaFile")
-        for key, value in file.iteritems():
+        for key, value in file.items():
             atag = etree.Element(key)
             atag.text = value
             xformTag.append(atag)

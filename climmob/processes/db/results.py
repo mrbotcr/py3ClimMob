@@ -566,6 +566,7 @@ def getJSONResult(
                 assessments = (
                     request.dbsession.query(Assessment)
                     .filter(Assessment.project_id == projectId)
+                    .order_by(Assessment.ass_days)
                     .all()
                 )
 
@@ -589,6 +590,7 @@ def getJSONResult(
                                     {
                                         "code": assessment.ass_cod,
                                         "desc": assessment.ass_desc,
+                                        "intervalindays": assessment.ass_days,
                                         "lkptables": getLookups(
                                             assessmentXML,
                                             userOwner,
