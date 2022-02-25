@@ -101,6 +101,7 @@ function drawtable(data_fill) {
 
     $("#jqGrid").jqGrid({
         data: mydata,
+        rowNum: 20,
         datatype: "local",
         height: 'auto',
         autowidth: true,
@@ -248,7 +249,7 @@ function drawtable(data_fill) {
     //--------------------
 
     $("#jqGrid").jqGrid('navGrid', '#pager_list_2',
-        {edit: true, add: false, del: false, search: true},
+        {edit: false, add: false, del: false, search: true},
         //edit
         {
             editCaption: "The Edit Dialog",

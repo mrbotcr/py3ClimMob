@@ -153,7 +153,7 @@ def fillDataTable(
         # print col
         col = col.split("$%*")
         ret["colNames"].append(col[1])
-        if col[0] == "surveyid" or col[0] == "qst162":
+        if col[0] == "qst162":
             proData = getProjectData(projectId, self.request)
             packages = {}
             for y in range(1, proData["project_numobs"] + 1):
@@ -296,6 +296,7 @@ def fillDataTable(
     # print sql
     # print "***************************************************************************"
     result = sql_execute(sql)
+    cont = 1
     for res in result:
         rowx = {}
         rowx["flag_update"] = False
@@ -304,7 +305,10 @@ def fillDataTable(
                 rowx[str(r[0])] = list(map(str, str(r[1]).split(" ")))
             else:
                 rowx[str(r[0])] = str(r[1])
+
+        rowx["id"] = cont
         ret["data"].append(rowx)
+        cont = cont + 1
 
     return json.dumps(ret)
 
@@ -314,6 +318,7 @@ def update_edited_data(userOwner, projectCod, form, data, file, code):
     data = json.loads(data[0])
 
     for row in data:
+        del row["id"]
         if row["flag_update"]:
             query_update = "update %s.%s_geninfo set " % (
                 userOwner + "_" + projectCod,
