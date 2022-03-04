@@ -150,8 +150,43 @@ class submissionByProject_view(odkView):
             else:
                 return self.askForCredentials()
         else:
-            response = Response(status=404)
-            return response
+            if self.request.method == "POST":
+                if isEnumeratorActive(userCollaborator, self.user, self.request):
+                    activeProjectId = getTheProjectIdForOwner(
+                        userOwner, projectCod, self.request
+                    )
+                    if not isEnumeratorAssigned(
+                        userCollaborator, activeProjectId, self.user, self.request
+                    ):
+
+                        if self.authorize(
+                            getEnumeratorPassword(
+                                userCollaborator, self.user, self.request
+                            )
+                        ):
+                            stored, error = storeSubmission(
+                                userCollaborator, self.user, self.request
+                            )
+                            print("********************77")
+                            print(stored)
+                            print(error)
+                            print("********************77")
+                            if stored:
+                                response = Response(status=201)
+                                return response
+                            else:
+                                response = Response(status=error)
+                                return response
+                        else:
+                            return self.askForCredentials()
+                    else:
+                        return self.askForCredentials()
+                else:
+                    response = Response(status=401)
+                    return response
+            else:
+                response = Response(status=404)
+                return response
 
 
 class XMLForm_view(odkView):
