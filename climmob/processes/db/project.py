@@ -690,6 +690,9 @@ def getProjectProgress(userName, projectCode, project, request):
         if "enketo_url" not in assessment.keys():
             assessment["enketo_url"] = ""
 
+        if "ass_rhomis" not in assessment.keys():
+            assessment["ass_rhomis"] = ""
+
         sql = (
             "SELECT COUNT(*) as total FROM "
             + userName
@@ -744,6 +747,7 @@ def getProjectProgress(userName, projectCode, project, request):
                     "errors": errorsCount,
                     "lastass": lastAss,
                     "enketo_url": assessment["enketo_url"],
+                    "ass_rhomis": assessment["ass_rhomis"],
                 }
             )
         else:
@@ -771,6 +775,7 @@ def getProjectProgress(userName, projectCode, project, request):
                     "errors": 0,
                     "lastass": _("Without submissions"),
                     "enketo_url": assessment["enketo_url"],
+                    "ass_rhomis": assessment["ass_rhomis"],
                 }
             )
     result["assessments"] = assessmentArray
