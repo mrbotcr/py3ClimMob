@@ -330,7 +330,7 @@ class assessment_view(privateView):
                     activeProjectId, assessmentid, self.request,
                 ),
                 "Categories": getCategoriesFromUserCollaborators(
-                    activeProjectUser, self.request
+                    activeProjectId, self.request
                 ),
             }
 
