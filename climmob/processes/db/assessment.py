@@ -1391,6 +1391,7 @@ def createQuestionForm(
         24: "subscriberid",
         25: "simserial",
         26: "phonenumber",
+        27: "text"
     }
     ODKType = options[question_dtype]
     dataQuestion = {}
