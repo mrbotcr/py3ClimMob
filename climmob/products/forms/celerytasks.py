@@ -62,15 +62,16 @@ def createDocumentForm(
     PATH2 = os.path.dirname(os.path.abspath(__file__))
     doc = DocxTemplate(PATH2 + "/template/word_template.docx")
     imgsOfQRs = []
-    if form == "Registration":
-        for package in packages:
 
-            if self.is_aborted():
-                sh.rmtree(pathqr)
-                return ""
-
-            qr = create_qr(package, projectid, pathqr)
-            imgsOfQRs.append(InlineImage(doc, qr, width=Mm(50)))
+    # if form == "Registration":
+    #     for package in packages:
+    #
+    #         if self.is_aborted():
+    #             sh.rmtree(pathqr)
+    #             return ""
+    #
+    #         qr = create_qr(package, projectid, pathqr)
+    #         imgsOfQRs.append(InlineImage(doc, qr, width=Mm(50)))
 
     if form == "Registration":
         tittle = _("Registration form for the project")
@@ -83,12 +84,16 @@ def createDocumentForm(
         "Instruction": _("Please complete this form"),
         "data": formGroupsAndQuestions,
         "imgsOfQRs": imgsOfQRs,
-        "number_of_packages": len(packages),
+        "number_of_packages": 1,
         "logo": InlineImage(
             doc, os.path.join(PATH2, "template/prueba.png"), width=Mm(100)
         ),
         "_": _,
         "options": listOfLabels,
+        "Indication1": _("Write the package code you are delivering to the user."),
+        "Indication2": _(
+            "When you are going to fill out the form digitally, scan the corresponding package code from:  'List of packages with QR for the registration form', available in the download section."
+        ),
     }
 
     if self.is_aborted():
