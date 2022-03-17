@@ -304,4 +304,13 @@ def register_products(config):
     )
     products.append(packagesWithTechnologies)
 
+    # DATA XLSX
+    dataxlsx = addProduct("dataxlsx", "Information collected in the project.")
+    addMetadataToProduct(dataxlsx, "author", "Brandon Madriz")
+    addMetadataToProduct(dataxlsx, "version", "1.0")
+    addMetadataToProduct(
+        dataxlsx, "Licence", "Copyright 2022, MrBot Software Solutions",
+    )
+    products.append(dataxlsx)
+
     return products

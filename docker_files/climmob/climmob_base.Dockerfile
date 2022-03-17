@@ -11,7 +11,7 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD5
 RUN add-apt-repository -y 'deb https://cloud.r-project.org/bin/linux/ubuntu focal-cran40/'
 RUN apt-get update
 
-RUN apt-get install -y build-essential qt5-default qtbase5-private-dev qtdeclarative5-dev libqt5sql5-mysql libqt5webkit5-dev libqt5svg5-dev libqt5xmlpatterns5-dev cmake mongodb jq libboost-all-dev unzip zlib1g-dev automake npm redis-server libmysqlclient-dev mysql-client-8.0 openjdk-11-jdk git python3-venv wget texlive-extra-utils r-base libcurl4-openssl-dev pandoc pandoc-citeproc libfontconfig1-dev libcairo2-dev libudunits2-dev libgdal-dev cutycapt xvfb sqlite3 libqt5sql5-sqlite libgmp3-dev libmpfr-dev tidy
+RUN apt-get install -y build-essential qt5-default qtbase5-private-dev qtdeclarative5-dev libqt5sql5-mysql libqt5webkit5-dev libqt5svg5-dev libqt5xmlpatterns5-dev cmake mongodb jq libboost-all-dev unzip zlib1g-dev automake npm redis-server libmysqlclient-dev mysql-client-8.0 openjdk-11-jdk git python3-venv wget texlive-extra-utils r-base libcurl4-openssl-dev pandoc pandoc-citeproc libfontconfig1-dev libcairo2-dev libudunits2-dev libgdal-dev cutycapt xvfb sqlite3 libqt5sql5-sqlite libgmp3-dev libmpfr-dev tidy mysql-shell
 
 # This is a patched MySQL Driver to allow connections between Client 8.0 and Server 5.7.X
 COPY ./docker_files/sqldriver/libqsqlmysql.s_o /usr/lib/x86_64-linux-gnu/qt5/plugins/sqldrivers/libqsqlmysql.so
@@ -27,6 +27,17 @@ RUN make install
 
 WORKDIR /opt
 RUN git clone https://github.com/AgrDataSci/ClimMob-analysis.git new_r_code
+
+RUN wget https://github.com/BurntSushi/xsv/releases/download/0.13.0/xsv-0.13.0-x86_64-unknown-linux-musl.tar.gz
+RUN tar xvfz xsv-0.13.0-x86_64-unknown-linux-musl.tar.gz
+RUN cp xsv /bin
+
+RUN git clone https://github.com/qlands/csv2xlsx.git
+WORKDIR csv2xlsx
+RUN go build
+RUN cp csv2xlsx /bin
+
+WORKDIR /opt
 
 RUN git clone https://github.com/qlands/odktools.git
 

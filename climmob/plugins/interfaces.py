@@ -452,3 +452,10 @@ class IRhomis(Interface):
         """
 
         """
+
+    def generate_XLS_of_data_from_an_external_form(
+        self, request, userOwner, projectId, projectCod, assessmentId, create_xml
+    ):
+        """
+
+        """
