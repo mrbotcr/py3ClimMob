@@ -136,7 +136,7 @@ class Enumerator(Base):
     user_name = Column(Unicode(80), primary_key=True, nullable=False)
     enum_id = Column(Unicode(80), primary_key=True, nullable=False)
     enum_name = Column(Unicode(120))
-    enum_password = Column(Unicode(80))
+    enum_password = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
     enum_active = Column(Integer)
 
     project = relationship(u"User")
@@ -806,7 +806,7 @@ class User(Base):
 
     user_name = Column(Unicode(80), primary_key=True)
     user_fullname = Column(Unicode(120))
-    user_password = Column(Unicode(80))
+    user_password = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
     user_organization = Column(Unicode(120))
     user_email = Column(Unicode(120))
     user_apikey = Column(Unicode(45))
