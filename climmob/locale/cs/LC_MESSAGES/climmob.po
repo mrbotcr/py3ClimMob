@@ -1,1 +1,73 @@
+# English translations for Climmob3.
+# Copyright (C) 2016 ORGANIZATION
+# This file is distributed under the same license as the Climmob3 project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2016.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Climmob3 0.0\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2016-02-23 21:20+0300\n"
+"PO-Revision-Date: 2021-12-19 20:49+0100\n"
+"Last-Translator: Jiří Podhorecký <j.podhorecky@volny.cz>\n"
+"Language-Team: Jiří Podhorecký <j.podhorecky@gmail.com>\n"
+"Language: cs\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n>=2 && n<=4 ? 1 : 2);\n"
+"Generated-By: Babel 2.2.0\n"
+"X-Generator: Poedit 3.0.1\n"
 
+#: climmob3/views.py:53
+msgid "This is a translated text"
+msgstr "Toto je přeložený text"
+
+#: climmob3/views.py:123 climmob3/templates/home/index.html:11
+#: climmob3/templates/home/index.html:16
+msgid "Welcome to Climmob"
+msgstr "Vítejte v Climmob"
+
+#: climmob3/views.py:127
+msgid "User created but unable to login!"
+msgstr "Uživatel vytvořen, ale nelze se přihlásit!"
+
+#: climmob3/views.py:129
+msgid "Unable to create user"
+msgstr "Nelze vytvořit uživatele"
+
+#: climmob3/views.py:195
+msgid "Cannot update profile"
+msgstr "Nelze aktualizovat profil"
+
+#: climmob3/views.py:197
+msgid "Other user is using the same email adddress"
+msgstr "Jiný uživatel používá stejnou e-mailovou adresu"
+
+#: climmob3/views.py:199
+msgid "Organization cannot be empty"
+msgstr "Organizace nemůže být prázdná"
+
+#: climmob3/views.py:201
+msgid "Email cannot be empty"
+msgstr "E-mail nemůže být prázdný"
+
+#: climmob3/views.py:203
+msgid "Full name cannot be empty"
+msgstr "Celé jméno nesmí být prázdné"
+
+#: climmob3/views.py:214
+msgid "Cannot change password"
+msgstr "Nelze změnit heslo"
+
+#: climmob3/views.py:216
+msgid "New password and re-type are not equal"
+msgstr "Nové heslo a opakované zadání se nerovnají"
+
+#: climmob3/views.py:218
+msgid "New password cannot be empty"
+msgstr "Nové heslo nemůže být prázdné"
+
+#: climmob3/views.py:220
+msgid "The current password is not valid"
+msgstr "Aktuální heslo není platné"
