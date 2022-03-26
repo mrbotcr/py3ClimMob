@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: climmob 3.3.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2021-12-03 09:02-0600\n"
-"PO-Revision-Date: 2022-03-25 11:22+0100\n"
-"Language: cs\n"
+"PO-Revision-Date: 2022-03-26 23:35+0100\n"
+"Last-Translator: Jiří Podhorecký <j.podhorecky@volny.cz>\n"
 "Language-Team: en <LL@li.org>\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n>=2 && n<=4 ? 1 : 2);\n"
+"Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n>=2 && n<=4 ? 1 : 2);\n"
 "Generated-By: Babel 2.8.0\n"
-"Last-Translator: \n"
 "X-Generator: Poedit 3.0\n"
 
 #: climmob/processes/db/assessment.py:184
@@ -24,22 +24,26 @@ msgid ""
 " 'Overrall ranking' question is not part of the final assessments. It is "
 "necessary to add this question from the ClimMob library to the assessment."
 msgstr ""
+" Otázka \"celkového hodnocení\" není součástí závěrečného hodnocení. Tuto "
+"otázku je nutné do hodnocení přidat z knihovny ClimMob."
 
 #: climmob/processes/db/assessment.py:200
 msgid ""
 "'Comparison with current' question is not part of the final assessments. It is "
 "necessary to add this question from the ClimMob library to the assessment."
 msgstr ""
+"Otázka \"Srovnání se současným stavem\" není součástí závěrečného hodnocení. "
+"Tuto otázku je nutné do hodnocení přidat z knihovny ClimMob."
 
 #: climmob/processes/db/assessment.py:236 climmob/processes/db/assessment.py:239
 #: climmob/processes/db/assessment.py:283 climmob/processes/db/assessment.py:286
 msgid " Other "
-msgstr ""
+msgstr " Ostatní "
 
 #: climmob/processes/db/assessment.py:1077
 #: climmob/products/packages/celerytasks.py:98
 msgid "Option "
-msgstr ""
+msgstr "Možnost "
 
 #: climmob/processes/db/assessment.py:1132 climmob/processes/odk/generator.py:968
 #: climmob/templates/question/library.jinja2:539
@@ -47,52 +51,52 @@ msgstr ""
 #: climmob/templates/question/library.jinja2:796
 #: climmob/templates/snippets/question/question-form.jinja2:145
 msgid "Other"
-msgstr ""
+msgstr "Další"
 
 #: climmob/processes/db/assessment.py:1288 climmob/processes/odk/generator.py:931
 #: climmob/templates/snippets/project/previewForm.jinja2:107
 msgid "Better"
-msgstr ""
+msgstr "Lepší"
 
 #: climmob/processes/db/assessment.py:1293 climmob/processes/odk/generator.py:936
 #: climmob/templates/snippets/project/previewForm.jinja2:108
 msgid "Worse"
-msgstr ""
+msgstr "Horší"
 
 #: climmob/processes/db/assessment.py:1304
 msgid "Have necessary questions for documentation."
-msgstr ""
+msgstr "Připravte si potřebné otázky pro dokumentaci."
 
 #: climmob/processes/db/assessment.py:1312 climmob/processes/db/assessment.py:1314
 #: climmob/processes/odk/generator.py:593
 msgid "Start of survey"
-msgstr ""
+msgstr "Zahájení průzkumu"
 
 #: climmob/processes/db/assessment.py:1325 climmob/processes/db/assessment.py:1327
 #: climmob/processes/odk/generator.py:975
 msgid "End of survey"
-msgstr ""
+msgstr "Ukončení průzkumu"
 
 #: climmob/processes/db/project.py:87
 msgid "Farmer selection"
-msgstr ""
+msgstr "Výběr zemědělců"
 
 #: climmob/processes/db/project.py:88
 msgid "List of farmers included in the registration form"
-msgstr ""
+msgstr "Seznam zemědělců uvedený v registračním formuláři"
 
 #: climmob/processes/db/project.py:107 climmob/processes/db/project.py:205
 msgid "Main section"
-msgstr ""
+msgstr "Main section"
 
 #: climmob/processes/db/project.py:108 climmob/processes/db/project.py:206
 msgid "General data"
-msgstr ""
+msgstr "Obecné údaje"
 
 #: climmob/processes/db/project.py:542 climmob/processes/db/project.py:556
 #: climmob/processes/db/project.py:771
 msgid "Without submissions"
-msgstr ""
+msgstr "Bez podání"
 
 #: climmob/processes/db/project.py:644
 #: climmob/templates/dashboard/dashboard.jinja2:371
@@ -100,7 +104,7 @@ msgstr ""
 #: climmob/templates/progress/progressInformation.jinja2:118
 #: climmob/templates/progress/progressInformation.jinja2:149
 msgid "Not yet started"
-msgstr ""
+msgstr "Zatím nezahájeno"
 
 #: climmob/processes/db/project_packages.py:252
 #: climmob/products/cards/celerytasks.py:64
@@ -109,35 +113,35 @@ msgstr ""
 #: climmob/templates/snippets/project/registry/create/package_table.jinja2:25
 #: climmob/views/editDataDB.py:160
 msgid "Package"
-msgstr ""
+msgstr "Balíček"
 
 #: climmob/processes/db/project_share.py:98
 msgid "The project owner cannot be removed"
-msgstr ""
+msgstr "Vlastníka projektu nelze odvolat"
 
 #: climmob/processes/db/registry.py:377 climmob/processes/db/registry.py:400
 msgid "This section already exists"
-msgstr ""
+msgstr "Tato sekce již existuje"
 
 #: climmob/processes/db/utils.py:116
 msgid "Does not have projects yet"
-msgstr ""
+msgstr "Zatím nemá projekty"
 
 #: climmob/processes/odk/generator.py:394
 msgid "The scanned Qr is incorrect, it is not for this project."
-msgstr ""
+msgstr "Naskenovaný QR kód je nesprávný, není určen pro tento projekt."
 
 #: climmob/processes/odk/generator.py:402
 msgid " requires a value"
-msgstr ""
+msgstr " vyžaduje hodnotu"
 
 #: climmob/processes/odk/generator.py:592
 msgid "Device IMEI"
-msgstr ""
+msgstr "IMEI zařízení"
 
 #: climmob/processes/odk/generator.py:600
 msgid "Validation of the selected participant"
-msgstr ""
+msgstr "Ověření vybraného účastníka"
 
 #: climmob/processes/odk/generator.py:620
 msgid ""
@@ -145,6 +149,9 @@ msgid ""
 "${clc_after}</span>.<br>This package belongs to <span style=\"color:#009551; "
 "font-weight:bold\">${farmername}</span>."
 msgstr ""
+"Naskenovali jste číslo balíku <span style=\"color:#009551; font-weight:bold\">"
+"${clc_after}</span>.<br>Tento balík patří uživateli <span style=\"color:"
+"#009551; font-weight :bold\">${farmername}</span>."
 
 #: climmob/processes/odk/generator.py:636
 msgid ""
@@ -152,12 +159,17 @@ msgid ""
 "${QST163}</span>.<br>This package belongs to <span style=\"color:#009551; font-"
 "weight:bold\">${clc_after}</span>."
 msgstr ""
+"Vybrali jste číslo balíčku <span style=\"color:#009551; font-weight:bold\">"
+"${QST163}</span>.<br>Tento balíček patří společnosti <span style=\"color:"
+"#009551; font-weight :bold\">${clc_after}</span>."
 
 #: climmob/processes/odk/generator.py:693
 msgid ""
 "In the following field try to write the name of the participant to filter the "
 "information and find him/her more easily."
 msgstr ""
+"Do následujícího pole zkuste napsat jméno účastníka, abyste mohli informace "
+"filtrovat a snadněji ho najít."
 
 #: climmob/processes/odk/generator.py:756 climmob/processes/odk/generator.py:833
 #: climmob/processes/odk/generator.py:839 climmob/processes/odk/generator.py:910
@@ -165,7 +177,7 @@ msgstr ""
 #: climmob/templates/snippets/project/previewForm.jinja2:92
 #: climmob/templates/snippets/question/question-form.jinja2:224
 msgid "Not observed"
-msgstr ""
+msgstr "Nebylo zjištěno"
 
 #: climmob/processes/odk/generator.py:822 climmob/processes/odk/generator.py:827
 #: climmob/processes/odk/generator.py:900
@@ -173,48 +185,48 @@ msgstr ""
 #: climmob/templates/snippets/project/previewForm.jinja2:89
 #: climmob/templates/snippets/question/question-form.jinja2:211
 msgid "Tied"
-msgstr ""
+msgstr "Vázané"
 
 #: climmob/processes/odk/generator.py:970
 msgid "Add the other value here"
-msgstr ""
+msgstr "Zde přidejte další hodnotu"
 
 #: climmob/processes/odk/generator.py:1066
 msgid "Registration-"
-msgstr ""
+msgstr "Registrace -"
 
 #: climmob/processes/odk/generator.py:1089 climmob/processes/odk/generator.py:1290
 msgid "Error converting XLSX to XML"
-msgstr ""
+msgstr "Chyba při převodu XLSX na XML"
 
 #: climmob/processes/odk/generator.py:1231
 msgid "Data collection - "
-msgstr ""
+msgstr "Sběr dat - "
 
 #: climmob/products/analysis/celerytasks.py:89
 #: climmob/products/analysis/celerytasks.py:115
 #: climmob/templates/project/closeassessment.jinja2:20
 #: climmob/templates/project/closepregistry.jinja2:20
 msgid "participant"
-msgstr ""
+msgstr "účastník"
 
 #: climmob/products/analysis/celerytasks.py:91
 #: climmob/products/analysis/celerytasks.py:117
 msgid "item"
-msgstr ""
+msgstr "položka"
 
 #: climmob/products/analysis/celerytasks.py:206
 #: climmob/templates/mapForProjectVisualization/mapForVisualization.jinja2:62
 msgid "Number of participants"
-msgstr ""
+msgstr "Počet účastníků"
 
 #: climmob/products/analysis/celerytasks.py:209
 msgid "Number of aspects to evaluate"
-msgstr ""
+msgstr "Počet hodnocených aspektů"
 
 #: climmob/products/analysis/celerytasks.py:210
 msgid "Total number of types"
-msgstr ""
+msgstr "Celkový počet typů"
 
 #: climmob/products/cards/celerytasks.py:63
 #: climmob/templates/mapForProjectVisualization/mapForVisualization.jinja2:72
@@ -222,63 +234,63 @@ msgstr ""
 #: climmob/templates/projectHelp/projectHelp.jinja2:91
 #: climmob/templates/snippets/project/project_form.jinja2:39
 msgid "Trial coordinator"
-msgstr ""
+msgstr "Koordinátor zkoušek"
 
 #: climmob/products/cards/celerytasks.py:65
 #: climmob/templates/dashboard/editprofile.jinja2:80
 #: climmob/templates/recover.jinja2:23 climmob/templates/recover.jinja2:24
 #: climmob/templates/register.jinja2:38 climmob/templates/register.jinja2:39
-#, fuzzy
 msgid "Email"
 msgstr "E-mail"
 
 #: climmob/products/datacollectionprogress/celerytasks.py:36
 msgid "Alliance"
-msgstr ""
+msgstr "Alliance"
 
 #: climmob/products/datacollectionprogress/celerytasks.py:37
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:65
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:208
 msgid "Progress report on data collection"
-msgstr ""
+msgstr "Zpráva o pokroku při sběru dat"
 
 #: climmob/products/datacollectionprogress/celerytasks.py:38
 msgid "Maps of georeferenced points where the forms were applied by field agents."
-msgstr ""
+msgstr "Mapy georeferencovaných bodů, kde terénní pracovníci použili formuláře."
 
 #: climmob/products/datacollectionprogress/celerytasks.py:39
 msgid "Table to show if the information was collected and on what date."
 msgstr ""
+"Tabulka, která zobrazuje, zda byly informace shromážděny a ke kterému datu."
 
 #: climmob/products/datacollectionprogress/celerytasks.py:40
 msgid "Form map"
-msgstr ""
+msgstr "Mapa formuláře"
 
 #: climmob/products/datacollectionprogress/celerytasks.py:41
 msgid "Registry"
-msgstr ""
+msgstr "Registr"
 
 #: climmob/products/errorLogDocument/celerytasks.py:41
 #: climmob/templates/project/enumerators/enumerators.jinja2:59
 msgid "Field agent"
-msgstr ""
+msgstr "Terénní pracovník"
 
 #: climmob/products/errorLogDocument/celerytasks.py:41
 #: climmob/templates/dashboard/dashboard.jinja2:223
 #: climmob/templates/project/CleanErrors/clean.jinja2:38
 msgid "Error"
-msgstr ""
+msgstr "Chyba"
 
 #: climmob/products/fieldagents/celerytasks.py:106
 msgid "List of field agents for the project"
-msgstr ""
+msgstr "Seznam terénních pracovníků projektu"
 
 #: climmob/products/fieldagents/celerytasks.py:108
 #: climmob/templates/project/enumerators/enumerators.jinja2:109
 #: climmob/templates/project/share/share.jinja2:87
 #: climmob/templates/snippets/cloneProjects/projectDetails.jinja2:13
 msgid "Name"
-msgstr ""
+msgstr "Jméno"
 
 #: climmob/products/fieldagents/celerytasks.py:109
 #: climmob/templates/enumerators/enumerators.jinja2:78
@@ -286,66 +298,67 @@ msgstr ""
 #: climmob/templates/projectHelp/projectHelp.jinja2:74
 #: climmob/templates/snippets/enumerators/enumerator-form.jinja2:6
 msgid "Username"
-msgstr ""
+msgstr "Uživatelské jméno"
 
 #: climmob/products/fieldagents/celerytasks.py:110
 #: climmob/templates/enumerators/enumerators.jinja2:79
 #: climmob/templates/login.jinja2:58 climmob/templates/register.jinja2:68
 #: climmob/templates/register.jinja2:69
 #: climmob/templates/snippets/enumerators/enumerator-form.jinja2:10
-#, fuzzy
 msgid "Password"
 msgstr "Heslo"
 
 #: climmob/products/fieldagents/celerytasks.py:111
 msgid "QR"
-msgstr ""
+msgstr "QR"
 
 #: climmob/products/fieldagents/celerytasks.py:113
 msgid ""
 "To manually configure the ODK Collect server, use the URL of the user to which "
 "it belongs and use the corresponding field agent user and password."
 msgstr ""
+"Chcete-li ručně nakonfigurovat server ODK Collect, použijte adresu URL "
+"uživatele, kterému patří, a použijte odpovídajícího uživatele a heslo polního "
+"agenta."
 
 #: climmob/products/fieldagents/celerytasks.py:117
 msgid "Server"
-msgstr ""
+msgstr "Server"
 
 #: climmob/products/fieldagents/celerytasks.py:118
 msgid "User-owned field agents"
-msgstr ""
+msgstr "Terénní agenti ve vlastnictví uživatele"
 
 #: climmob/products/forms/celerytasks.py:76
 msgid "Registration form for the project"
-msgstr ""
+msgstr "Registrační formulář projektu"
 
 #: climmob/products/forms/celerytasks.py:78
 msgid "Assessment form for the project"
-msgstr ""
+msgstr "Formulář pro hodnocení projektu"
 
 #: climmob/products/forms/celerytasks.py:83
 msgid "Please complete this form"
-msgstr ""
+msgstr "Vyplňte prosím tento formulář"
 
 #: climmob/products/generalReport/celerytasks.py:38
 msgid "Assigned field agents"
-msgstr ""
+msgstr "Přidělení terénní pracovníci"
 
 #: climmob/products/generalReport/celerytasks.py:39
 msgid "Selected technologies"
-msgstr ""
+msgstr "Vybrané technologie"
 
 #: climmob/products/generalReport/celerytasks.py:40
 msgid "Pending step"
-msgstr ""
+msgstr "Nevyřízený krok"
 
 #: climmob/products/generalReport/celerytasks.py:41
 msgid "Combinations included in the project"
-msgstr ""
+msgstr "Kombinace zahrnuté do projektu"
 
 #: climmob/products/generalReport/celerytasks.py:42
 #: climmob/templates/snippets/jstreeForm.jinja2:14
-#, fuzzy
 msgid "Section"
 msgstr "Sekce"
 
@@ -353,159 +366,163 @@ msgstr "Sekce"
 #: climmob/templates/snippets/project/registry/create/package_table.jinja2:6
 #: climmob/views/editDataDB.py:138
 msgid "Package code"
-msgstr ""
+msgstr "Kód balíčku"
 
 #: climmob/products/qrpackages/celerytasks.py:123
 msgid "Package "
-msgstr ""
+msgstr "Balíček "
 
 #: climmob/products/stickers/celerytasks.py:57
 msgid "Stickers for packages"
-msgstr ""
+msgstr "Samolepky na balíčky"
 
 #: climmob/templates/404.jinja2:7
 msgid "ClimMob | 404 Error"
-msgstr ""
+msgstr "ClimMob | Chyba 404"
 
 #: climmob/templates/404.jinja2:18
 msgid "Page Not Found"
-msgstr ""
+msgstr "Stránka nebyla nalezena"
 
 #: climmob/templates/404.jinja2:21
 msgid "Sorry, but the page you are looking for has not been found."
-msgstr ""
+msgstr "Je nám líto, ale stránka, kterou hledáte, nebyla nalezena."
 
 #: climmob/templates/404.jinja2:22
 msgid "You can go back to main page"
-msgstr ""
+msgstr "Můžete se vrátit na hlavní stránku"
 
 #: climmob/templates/404.jinja2:22 climmob/templates/landing.jinja2:49
 msgid "Home"
-msgstr ""
+msgstr "Úvodní strana"
 
 #: climmob/templates/landing.jinja2:14
 msgid "Welcome to ClimMob"
-msgstr ""
+msgstr "Vítejte v Climmob"
 
 #: climmob/templates/landing.jinja2:37
 msgid "Toggle navigation"
-msgstr ""
+msgstr "Přepnout navigaci"
 
 #: climmob/templates/landing.jinja2:43
 msgid "Login or request an account"
-msgstr ""
+msgstr "Přihlášení nebo žádost o účet"
 
 #: climmob/templates/landing.jinja2:50
 msgid "Features"
-msgstr ""
+msgstr "Funkce"
 
 #: climmob/templates/landing.jinja2:51 climmob/templates/landing.jinja2:200
 msgid "Join us"
-msgstr ""
+msgstr "Připojte se"
 
 #: climmob/templates/landing.jinja2:53
 #: climmob/templates/progress/progressInformation.jinja2:62
 msgid "Contact"
-msgstr ""
+msgstr "Kontakt"
 
 #: climmob/templates/landing.jinja2:71
 msgid "Welcome to "
-msgstr ""
+msgstr "Vítejte v "
 
 #: climmob/templates/landing.jinja2:72
 msgid "Scaling "
-msgstr ""
+msgstr "Měřítko "
 
 #: climmob/templates/landing.jinja2:72
 msgid "end-user"
-msgstr ""
+msgstr "koncový-uživatel"
 
 #: climmob/templates/landing.jinja2:72
 msgid "testing"
-msgstr ""
+msgstr "testování"
 
 #: climmob/templates/landing.jinja2:73
 msgid "Design and analyse agricultural trials in a"
-msgstr ""
+msgstr "Navrhování a analýza zemědělských výzkumů v"
 
 #: climmob/templates/landing.jinja2:73
 msgid "smart way"
-msgstr ""
+msgstr "chytrý způsob"
 
 #: climmob/templates/landing.jinja2:89
 msgid "Ready for use"
-msgstr ""
+msgstr "Připraveno k použití"
 
 #: climmob/templates/landing.jinja2:89
 msgid "by private sector"
-msgstr ""
+msgstr "soukromým sektorem"
 
 #: climmob/templates/landing.jinja2:90
 msgid ""
 "Testing new technology options on farms will accelerate agricultural development"
 msgstr ""
+"Testování nových technologických možností v zemědělských podnicích urychlí "
+"rozvoj zemědělství"
 
 #: climmob/templates/landing.jinja2:90
 msgid "will assist you in deploying"
-msgstr ""
+msgstr "pomůže vám s nasazením"
 
 #: climmob/templates/landing.jinja2:90
 msgid "large-scale"
-msgstr ""
+msgstr "rozsáhlých"
 
 #: climmob/templates/landing.jinja2:90
 msgid "on-farm trials"
-msgstr ""
+msgstr "studií na farmách"
 
 #: climmob/templates/landing.jinja2:90
 msgid "across"
-msgstr ""
+msgstr "napříř"
 
 #: climmob/templates/landing.jinja2:90
 msgid "multiple"
-msgstr ""
+msgstr "více"
 
 #: climmob/templates/landing.jinja2:90
 msgid "locations"
-msgstr ""
+msgstr "lokalitám"
 
 #: climmob/templates/cloneProjects/cloneProjects.jinja2:201
 #: climmob/templates/cloneProjects/cloneProjects.jinja2:224
 #: climmob/templates/landing.jinja2:101
 msgid "Previous"
-msgstr ""
+msgstr "Předchozí"
 
 #: climmob/templates/landing.jinja2:105
 msgid "Next"
-msgstr ""
+msgstr "Další"
 
 #: climmob/templates/landing.jinja2:115
 msgid "Mobile Data Collection"
-msgstr ""
+msgstr "Mobilní sběr dat"
 
 #: climmob/templates/landing.jinja2:116
 msgid "Collect data using Android mobile devices"
-msgstr ""
+msgstr "Sběr dat pomocí mobilních zařízení Android"
 
 #: climmob/templates/landing.jinja2:119
 msgid "Complex trial design"
-msgstr ""
+msgstr "Komplexní návrh studie"
 
 #: climmob/templates/landing.jinja2:120
 msgid "Design complex trials to test crop varieties and crop management options."
 msgstr ""
+"Navrhování komplexních pokusů pro testování odrůd plodin a možností řízení "
+"pěstování."
 
 #: climmob/templates/landing.jinja2:123
 msgid "Summaries and statistics"
-msgstr ""
+msgstr "Shrnutí a statistiky"
 
 #: climmob/templates/landing.jinja2:124
 msgid "Analyze your trials and report on the findings."
-msgstr ""
+msgstr "Analyzujte své testy a podávejte zprávy o zjištěních."
 
 #: climmob/templates/landing.jinja2:127
 msgid "Dual license"
-msgstr ""
+msgstr "Dvojitá licence"
 
 #: climmob/templates/landing.jinja2:128
 msgid ""
@@ -513,72 +530,75 @@ msgid ""
 "becomes public. However if you are a private sector you can use the platform "
 "privately."
 msgstr ""
+"ClimMob je zdarma pro výzkumné a vývojové projekty, jejichž data se nakonec "
+"stanou veřejnými. Pokud však patříte do soukromého sektoru, můžete platformu "
+"používat soukromě."
 
 #: climmob/templates/landing.jinja2:129
 msgid "Details"
-msgstr ""
+msgstr "Detaily"
 
 #: climmob/templates/landing.jinja2:201
 msgid "The smart way for evaluating climate-smart agriculture."
-msgstr ""
+msgstr "Chytrý způsob hodnocení zemědělství šetrného ke klimatu."
 
 #: climmob/templates/landing.jinja2:218
 msgid "Registered users"
-msgstr ""
+msgstr "Registrovaní uživatelé"
 
 #: climmob/templates/landing.jinja2:233
 msgid "Trial projects"
-msgstr ""
+msgstr "Testovací projekty"
 
 #: climmob/templates/landing.jinja2:615
 msgid "Contact Us"
-msgstr ""
+msgstr "Kontaktujte nás"
 
 #: climmob/templates/landing.jinja2:616
 msgid "Your comments and suggestions are welcome."
-msgstr ""
+msgstr "Vaše připomínky a návrhy jsou vítány."
 
 #: climmob/templates/landing.jinja2:634
 msgid "The ClimMob platform has very specific terms of service"
-msgstr ""
+msgstr "Platforma ClimMob má velmi specifické podmínky poskytování služeb"
 
 #: climmob/templates/landing.jinja2:634
 msgid "Click"
-msgstr ""
+msgstr "Klikněte"
 
 #: climmob/templates/landing.jinja2:634
 msgid "here"
-msgstr ""
+msgstr "zde"
 
 #: climmob/templates/landing.jinja2:634
 msgid "for more details"
-msgstr ""
+msgstr "pro více detailů"
 
 #: climmob/templates/landing.jinja2:642
 msgid "Send us mail"
-msgstr ""
+msgstr "Pošlete nám mail"
 
 #: climmob/templates/landing.jinja2:646
 msgid "Or follow us on social media"
-msgstr ""
+msgstr "Nebo nás sledujte na sociálních sítích"
 
 #: climmob/templates/dashboard/dashboard.jinja2:771
 #: climmob/templates/landing.jinja2:662 climmob/templates/login.jinja2:71
 msgid "Copyright"
-msgstr ""
+msgstr "Autorská práva"
 
 #: climmob/templates/dashboard/dashboard.jinja2:771
 #: climmob/templates/landing.jinja2:662 climmob/templates/login.jinja2:71
 msgid "2021, Alliance of Bioversity International and CIAT"
-msgstr ""
+msgstr "2021, Alliance of Bioversity International and CIAT"
 
 #: climmob/templates/landing.jinja2:663
 msgid "Version"
-msgstr ""
+msgstr "Verze"
 
 #: climmob/templates/landing.jinja2:677 climmob/templates/login.jinja2:82
 msgid "Cookies"
-msgstr ""
+msgstr "Cookies"
 
 #: climmob/templates/landing.jinja2:680 climmob/templates/login.jinja2:85
 msgid ""
@@ -586,10 +606,13 @@ msgid ""
 "remember you or to know that you have been authenticated. To find out more "
 "about the cookies we use, see our"
 msgstr ""
+"Tyto webové stránky ukládají do vašeho počítače soubory cookie. Tyto soubory "
+"cookie slouží k tomu, aby si vás zapamatovaly nebo aby věděly, že jste byli "
+"ověřeni. Více informací o souborech cookie, které používáme, naleznete v našem"
 
 #: climmob/templates/landing.jinja2:680 climmob/templates/login.jinja2:85
 msgid "Privacy Policy"
-msgstr ""
+msgstr "Zásady ochrany osobních údajů"
 
 #: climmob/templates/landing.jinja2:681 climmob/templates/login.jinja2:86
 msgid ""
@@ -597,122 +620,127 @@ msgid ""
 "your answer and 2) a cookie for us to know that you are authenticated once you "
 "login."
 msgstr ""
+"Pokud odmítnete, budou uloženy dva zašifrované soubory cookie: 1) soubor cookie "
+"pro zapamatování vaší odpovědi a 2) soubor cookie, abychom věděli, že jste se "
+"přihlásili."
 
 #: climmob/templates/landing.jinja2:685 climmob/templates/login.jinja2:90
 msgid "Accept"
-msgstr ""
+msgstr "Přijmout"
 
 #: climmob/templates/landing.jinja2:686 climmob/templates/login.jinja2:91
 msgid "Decline"
-msgstr ""
+msgstr "Odmítnout"
 
 #: climmob/templates/layout.jinja2:11
 msgid "Cookiecutter Alchemy project for the Pyramid Web Framework"
-msgstr ""
+msgstr "Projekt Cookiecutter Alchemy pro Pyramid Web Framework"
 
 #: climmob/templates/layout.jinja2:39
 msgid "No content"
-msgstr ""
+msgstr "Žádný obsah"
 
 #: climmob/templates/layout.jinja2:46
 msgid "Github Project"
-msgstr ""
+msgstr "Projekt Github"
 
 #: climmob/templates/layout.jinja2:47
 msgid "IRC Channel"
-msgstr ""
+msgstr "IRC kanál"
 
 #: climmob/templates/layout.jinja2:48
 msgid "Pylons Project"
-msgstr ""
+msgstr "Pylons Projekt"
 
 #: climmob/templates/login.jinja2:11
 msgid "ClimMob | Login"
-msgstr ""
+msgstr "ClimMob | Přihlášení"
 
 #: climmob/templates/login.jinja2:43
 msgid "Login in"
-msgstr ""
+msgstr "Přihlášení"
 
 #: climmob/templates/login.jinja2:48
 msgid "Login failed. Please check your credentials and try again"
 msgstr ""
+"Přihlášení se nezdařilo. Zkontrolujte prosím své přihlašovací údaje a zkuste to "
+"znovu"
 
 #: climmob/templates/login.jinja2:61 climmob/templates/register.jinja2:82
 msgid "Login"
-msgstr ""
+msgstr "Přihlášení"
 
 #: climmob/templates/login.jinja2:63
 msgid "Forgot password?"
-msgstr ""
+msgstr "Zapomenuté heslo?"
 
 #: climmob/templates/login.jinja2:64
 msgid "Do not have an account?"
-msgstr ""
+msgstr "Nemáte účet?"
 
 #: climmob/templates/login.jinja2:65
 msgid "Create an account"
-msgstr ""
+msgstr "Vytvořit účet"
 
 #: climmob/templates/mytemplate.jinja2:7
 msgid "Welcome to"
-msgstr ""
+msgstr "Vítejte v"
 
 #: climmob/templates/privacy.jinja2:13 climmob/templates/register.jinja2:77
 #: climmob/templates/usage.jinja2:13
 msgid "Privacy policy"
-msgstr ""
+msgstr "Zásady ochrany osobních údajů"
 
 #: climmob/templates/recover.jinja2:4
 msgid "ClimMob | Password recovery"
-msgstr ""
+msgstr "ClimMob | Obnovení hesla"
 
 #: climmob/templates/recover.jinja2:8
 msgid "Recover your ClimMob password"
-msgstr ""
+msgstr "Obnovení hesla ClimMob"
 
 #: climmob/templates/recover.jinja2:26
 msgid "Recover my password"
-msgstr ""
+msgstr "Obnovení mého hesla"
 
 #: climmob/templates/register.jinja2:15
 msgid "ClimMob | Register"
-msgstr ""
+msgstr "ClimMob | Registrace"
 
 #: climmob/templates/register.jinja2:19
 msgid "Register as user"
-msgstr ""
+msgstr "Zaregistrovat se jako uživatel"
 
 #: climmob/templates/enumerators/enumerators.jinja2:77
 #: climmob/templates/register.jinja2:34
 #: climmob/templates/snippets/enumerators/enumerator-form.jinja2:2
 msgid "Full name"
-msgstr ""
+msgstr "Celé jméno"
 
 #: climmob/templates/dashboard/editprofile.jinja2:74
 #: climmob/templates/register.jinja2:35
 msgid "Full Name"
-msgstr ""
+msgstr "Celé Jméno"
 
 #: climmob/templates/register.jinja2:35
 #: climmob/templates/snippets/enumerators/enumerator-form.jinja2:3
 msgid "Write the full name."
-msgstr ""
+msgstr "Napište celé jméno."
 
 #: climmob/templates/register.jinja2:39
 msgid "Write the email."
-msgstr ""
+msgstr "Napište e-mail."
 
 #: climmob/templates/dashboard/editprofile.jinja2:92
 #: climmob/templates/dashboard/profile.jinja2:93
 #: climmob/templates/mapForProjectVisualization/mapForVisualization.jinja2:82
 #: climmob/templates/register.jinja2:42 climmob/templates/register.jinja2:43
 msgid "Organization"
-msgstr ""
+msgstr "Organizace"
 
 #: climmob/templates/register.jinja2:43
 msgid "Write the organization."
-msgstr ""
+msgstr "Napište organizaci."
 
 #: climmob/templates/dashboard/editprofile.jinja2:98
 #: climmob/templates/dashboard/profile.jinja2:77
@@ -720,58 +748,57 @@ msgstr ""
 #: climmob/templates/register.jinja2:46
 #: climmob/templates/snippets/project/project_form.jinja2:106
 msgid "Country"
-msgstr ""
+msgstr "Země"
 
 #: climmob/templates/dashboard/editprofile.jinja2:110
 #: climmob/templates/dashboard/profile.jinja2:85
 #: climmob/templates/register.jinja2:54
 msgid "Sector"
-msgstr ""
+msgstr "Sektor"
 
 #: climmob/templates/register.jinja2:63 climmob/templates/register.jinja2:64
 msgid "User Name"
-msgstr ""
+msgstr "Uživatelské jméno"
 
 #: climmob/templates/projectHelp/projectHelp.jinja2:75
 #: climmob/templates/register.jinja2:64
 msgid "Write the user name."
-msgstr ""
+msgstr "Napište uživatelské jméno."
 
 #: climmob/templates/register.jinja2:65
 msgid "You can only use letters and numbers. Special characters are not allowed."
-msgstr ""
+msgstr "Můžete používat pouze písmena a číslice. Speciální znaky nejsou povoleny."
 
 #: climmob/templates/register.jinja2:69
 #: climmob/templates/snippets/enumerators/enumerator-form.jinja2:11
 msgid "Write the password."
-msgstr ""
+msgstr "Napište heslo."
 
 #: climmob/templates/register.jinja2:72 climmob/templates/register.jinja2:73
 msgid "Retype password"
-msgstr ""
+msgstr "Opětovné zadání hesla"
 
 #: climmob/templates/register.jinja2:77
 msgid "You agree with our"
-msgstr ""
+msgstr "Souhlasíte s našimi"
 
 #: climmob/templates/dashboard/dashboard.jinja2:944
 #: climmob/templates/register.jinja2:77 climmob/templates/register.jinja2:91
 #: climmob/templates/register.jinja2:95
 msgid "Terms of service"
-msgstr ""
+msgstr "Podmínkami služby"
 
 #: climmob/templates/register.jinja2:77
 msgid "and our"
-msgstr ""
+msgstr "a našimi"
 
 #: climmob/templates/register.jinja2:79
-#, fuzzy
 msgid "Register"
 msgstr "Registrovat"
 
 #: climmob/templates/register.jinja2:81
 msgid "Do you already have an account?"
-msgstr ""
+msgstr "Máte již účet?"
 
 #: climmob/templates/dashboard/dashboard.jinja2:943
 #: climmob/templates/dashboard/dashboard.jinja2:1026
@@ -782,57 +809,57 @@ msgstr ""
 #: climmob/templates/register.jinja2:90 climmob/templates/register.jinja2:98
 #: climmob/templates/technologies/technologies.jinja2:487
 msgid "Close"
-msgstr ""
+msgstr "Zavřít"
 
 #: climmob/templates/register.jinja2:92
 msgid "You will use ClimMob under the following terms"
-msgstr ""
+msgstr "Společnost ClimMob budete používat za následujících podmínek"
 
 #: climmob/templates/terms.jinja2:13
 msgid "Terms of Service"
-msgstr ""
+msgstr "Podmínky služby"
 
 #: climmob/templates/cloneProjects/cloneProjects.jinja2:4
 msgid "ClimMob | Clone a project"
-msgstr ""
+msgstr "ClimMob | Klonovat projekt"
 
 #: climmob/templates/cloneProjects/cloneProjects.jinja2:31
 msgid "Clone a project"
-msgstr ""
+msgstr "Klonovat projekt"
 
 #: climmob/templates/cloneProjects/cloneProjects.jinja2:83
 msgid "Selection"
-msgstr ""
+msgstr "Výběr"
 
 #: climmob/templates/cloneProjects/cloneProjects.jinja2:93
 #: climmob/templates/project/registry/create/createregistry.jinja2:145
 msgid "Confirm"
-msgstr ""
+msgstr "Potvrzení"
 
 #: climmob/templates/cloneProjects/cloneProjects.jinja2:103
 msgid "New profile"
-msgstr ""
+msgstr "Nový profil"
 
 #: climmob/templates/cloneProjects/cloneProjects.jinja2:113
 msgid "Verification"
-msgstr ""
+msgstr "Ověření"
 
 #: climmob/templates/cloneProjects/cloneProjects.jinja2:140
 msgid "Project"
-msgstr ""
+msgstr "Projekt"
 
 #: climmob/templates/cloneProjects/cloneProjects.jinja2:142
 msgid "Select one project."
-msgstr ""
+msgstr "Vyberte jeden projekt."
 
 #: climmob/templates/cloneProjects/cloneProjects.jinja2:143
 msgid "Select a project to clone"
-msgstr ""
+msgstr "Vyberte projekt, který chcete klonovat"
 
 #: climmob/templates/cloneProjects/cloneProjects.jinja2:155
 #: climmob/templates/cloneProjects/cloneProjects.jinja2:202
 msgid "Next step"
-msgstr ""
+msgstr "Další krok"
 
 #: climmob/templates/cloneProjects/cloneProjects.jinja2:183
 #: climmob/templates/cloneProjects/cloneProjects.jinja2:254
@@ -840,7 +867,7 @@ msgstr ""
 #: climmob/templates/project/registry/registry.jinja2:73
 #: climmob/templates/snippets/project/project_form.jinja2:189
 msgid "Registration form"
-msgstr ""
+msgstr "Registrační formulář"
 
 #: climmob/templates/cloneProjects/cloneProjects.jinja2:190
 #: climmob/templates/cloneProjects/cloneProjects.jinja2:261
@@ -848,58 +875,59 @@ msgstr ""
 #: climmob/templates/project/assessment/assessment.jinja2:76
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:26
 msgid "Data collection moment"
-msgstr ""
+msgstr "Okamžik sběru dat"
 
 #: climmob/templates/cloneProjects/cloneProjects.jinja2:225
 msgid "Create clone"
-msgstr ""
+msgstr "Vytvořit klon"
 
 #: climmob/templates/cloneProjects/cloneProjects.jinja2:231
 msgid "The project was successfully cloned."
-msgstr ""
+msgstr "Projekt byl úspěšně naklonován."
 
 #: climmob/templates/cloneProjects/cloneProjects.jinja2:232
 msgid ""
 "Please check that the information is correct and that the projects have the "
 "same structure."
 msgstr ""
+"Zkontrolujte, zda jsou informace správné a zda mají projekty stejnou strukturu."
 
 #: climmob/templates/cloneProjects/cloneProjects.jinja2:302
 msgid "Go to the new project"
-msgstr ""
+msgstr "Přejít na nový projekt"
 
 #: climmob/templates/dashboard/dashboard.jinja2:12
 #: climmob/templates/dashboard/dashboard.jinja2:122
 msgid "ClimMob"
-msgstr ""
+msgstr "ClimMob"
 
 #: climmob/templates/dashboard/dashboard.jinja2:60
 msgid "Actions"
-msgstr ""
+msgstr "Akce"
 
 #: climmob/templates/dashboard/dashboard.jinja2:66
 #: climmob/templates/dashboard/editprofile.jinja2:16
 #: climmob/templates/dashboard/editprofile.jinja2:18
 #: climmob/templates/dashboard/profile.jinja2:8
 msgid "Profile"
-msgstr ""
+msgstr "Profil"
 
 #: climmob/templates/dashboard/dashboard.jinja2:68
 msgid "Logout"
-msgstr ""
+msgstr "Odhlášení"
 
 #: climmob/templates/dashboard/dashboard.jinja2:82
 #: climmob/templates/snippets/menuheading.jinja2:18
 msgid "Main menu"
-msgstr ""
+msgstr "Hlavní nabídka"
 
 #: climmob/templates/dashboard/dashboard.jinja2:91
 msgid "Project profile"
-msgstr ""
+msgstr "Profil projektu"
 
 #: climmob/templates/dashboard/dashboard.jinja2:95
 msgid "Library"
-msgstr ""
+msgstr "Knihovna"
 
 #: climmob/templates/dashboard/dashboard.jinja2:97
 #: climmob/templates/dashboard/dashboard.jinja2:1003
@@ -907,7 +935,7 @@ msgstr ""
 #: climmob/templates/snippets/cloneProjects/fieldAgents.jinja2:4
 #: climmob/templates/snippets/project/project_form.jinja2:186
 msgid "Field agents"
-msgstr ""
+msgstr "Terénní pracovníci"
 
 #: climmob/templates/dashboard/dashboard.jinja2:98
 #: climmob/templates/dashboard/dashboard.jinja2:1009
@@ -915,37 +943,37 @@ msgstr ""
 #: climmob/templates/snippets/project/technologies/techgroup.jinja2:29
 #: climmob/templates/snippets/project/technologies/techgroup.jinja2:31
 msgid "Technology options"
-msgstr ""
+msgstr "Možnosti technologie"
 
 #: climmob/templates/dashboard/dashboard.jinja2:99
 #: climmob/templates/dashboard/dashboard.jinja2:1015
 msgid "Questions"
-msgstr ""
+msgstr "Otázky"
 
 #: climmob/templates/dashboard/dashboard.jinja2:103
 #: climmob/templates/dashboard/dashboard.jinja2:1021
 #: climmob/templates/project/productsList/productsList.jinja2:14
 #: climmob/templates/project/productsList/productsList.jinja2:16
 msgid "Downloads"
-msgstr ""
+msgstr "Ke stažení"
 
 #: climmob/templates/dashboard/dashboard.jinja2:107
 #: climmob/templates/projectHelp/projectHelp.jinja2:16
 msgid "Project help"
-msgstr ""
+msgstr "Nápověda Projektu"
 
 #: climmob/templates/dashboard/dashboard.jinja2:135
 msgid "Log out"
-msgstr ""
+msgstr "Odhlášení"
 
 #: climmob/templates/dashboard/dashboard.jinja2:141
 #: climmob/templates/dashboard/profile.jinja2:43
 msgid "Projects"
-msgstr ""
+msgstr "Projekty"
 
 #: climmob/templates/dashboard/dashboard.jinja2:190
 msgid "Project definition"
-msgstr ""
+msgstr "Definice projektu"
 
 #: climmob/templates/dashboard/dashboard.jinja2:193
 #: climmob/templates/dashboard/dashboard.jinja2:211
@@ -953,81 +981,83 @@ msgstr ""
 #: climmob/templates/dashboard/dashboard.jinja2:246
 #: climmob/templates/dashboard/dashboard.jinja2:263
 msgid "Completed"
-msgstr ""
+msgstr "Dokončeno"
 
 #: climmob/templates/dashboard/dashboard.jinja2:208
 #: climmob/templates/project/enumerators/enumerators.jinja2:20
 #: climmob/templates/project/enumerators/enumerators.jinja2:38
 msgid "Assign field agents"
-msgstr ""
+msgstr "Přiřazení terénních pracovníků"
 
 #: climmob/templates/dashboard/dashboard.jinja2:211
 #: climmob/templates/dashboard/dashboard.jinja2:232
 #: climmob/templates/dashboard/dashboard.jinja2:248
 #: climmob/templates/dashboard/dashboard.jinja2:265
 msgid "Pending"
-msgstr ""
+msgstr "Čeká se na"
 
 #: climmob/templates/dashboard/dashboard.jinja2:218
 msgid "Select technology options"
-msgstr ""
+msgstr "Výběr možností technologie"
 
 #: climmob/templates/dashboard/dashboard.jinja2:229
 msgid "Partial"
-msgstr ""
+msgstr "Částečně"
 
 #: climmob/templates/dashboard/dashboard.jinja2:241
 msgid "Prepare registration form"
-msgstr ""
+msgstr "Příprava registračního formuláře"
 
 #: climmob/templates/dashboard/dashboard.jinja2:257
 #: climmob/templates/project/assessment/assessment.jinja2:21
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:25
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:359
 msgid "Prepare data collection"
-msgstr ""
+msgstr "Příprava sběru dat"
 
 #: climmob/templates/dashboard/dashboard.jinja2:276
 msgid "Share project with other users"
-msgstr ""
+msgstr "Sdílení projektu s ostatními uživateli"
 
 #: climmob/templates/dashboard/dashboard.jinja2:289
 msgid "Share this link to show trial progress"
-msgstr ""
+msgstr "Sdílením tohoto odkazu zobrazíte průběh testů"
 
 #: climmob/templates/dashboard/dashboard.jinja2:292
 msgid "Copy to clipboard"
-msgstr ""
+msgstr "Kopírovat do schránky"
 
 #: climmob/templates/dashboard/dashboard.jinja2:308
 msgid "Data Collection moments"
-msgstr ""
+msgstr "Okamžiky sběru dat"
 
 #: climmob/templates/dashboard/dashboard.jinja2:317
 msgid ""
 "Please check the following types of questions are in the started assessments or "
 "include them in the next assessments:"
 msgstr ""
+"Zkontrolujte, zda jsou následující typy otázek v zahájených hodnoceních, nebo "
+"je zahrňte do dalších hodnocení:"
 
 #: climmob/templates/dashboard/dashboard.jinja2:318
 #: climmob/templates/dashboard/dashboard.jinja2:319
 #: climmob/templates/dashboard/dashboard.jinja2:320
 msgid "You have included "
-msgstr ""
+msgstr "Zahrnuli jste "
 
 #: climmob/templates/dashboard/dashboard.jinja2:318
 msgid " Ranking of options"
-msgstr ""
+msgstr " Hodnocení možností"
 
 #: climmob/templates/dashboard/dashboard.jinja2:318
 #: climmob/templates/project/analysis/projectAnalysis.jinja2:42
 #: climmob/templates/snippets/question/question-form.jinja2:24
 msgid "Ranking of options"
-msgstr ""
+msgstr "Hodnocení možností"
 
 #: climmob/templates/dashboard/dashboard.jinja2:319
 msgid " Comparison with check"
-msgstr ""
+msgstr " Srovnání s kontrolou"
 
 #: climmob/templates/dashboard/dashboard.jinja2:319
 #: climmob/templates/project/analysis/projectAnalysis.jinja2:43
@@ -1035,46 +1065,48 @@ msgstr ""
 #: climmob/templates/project/assessment/assessment.jinja2:87
 #: climmob/templates/snippets/question/question-form.jinja2:25
 msgid "Comparison with check"
-msgstr ""
+msgstr "Srovnání s kontrolou"
 
 #: climmob/templates/dashboard/dashboard.jinja2:320
 msgid " Explanatory variables"
-msgstr ""
+msgstr " Vysvětlující proměnné"
 
 #: climmob/templates/dashboard/dashboard.jinja2:320
 msgid "Explanatory variables"
-msgstr ""
+msgstr "Vysvětlující proměnné"
 
 #: climmob/templates/dashboard/dashboard.jinja2:321
 #: climmob/templates/dashboard/dashboard.jinja2:322
 msgid "You have included this question in the assessment"
-msgstr ""
+msgstr "Tuto otázku jste zahrnuli do hodnocení"
 
 #: climmob/templates/dashboard/dashboard.jinja2:321
 msgid "Overall ranking of options"
-msgstr ""
+msgstr "Celkové pořadí možností"
 
 #: climmob/templates/dashboard/dashboard.jinja2:322
 msgid "Overall comparison with check"
-msgstr ""
+msgstr "Celkové porovnání s kontrolou"
 
 #: climmob/templates/dashboard/dashboard.jinja2:330
 msgid "Select the assessment for start the data collection"
-msgstr ""
+msgstr "Vyberte hodnocení pro zahájení sběru dat"
 
 #: climmob/templates/dashboard/dashboard.jinja2:338
 msgid "Start an assessment"
-msgstr ""
+msgstr "Zahájení hodnocení"
 
 #: climmob/templates/dashboard/dashboard.jinja2:344
 msgid ""
 "You can start the data collection once the registration of participants is "
 "closed and the project definition is completed"
 msgstr ""
+"Sběr dat můžete zahájit po uzavření registrace účastníků a dokončení definice "
+"projektu"
 
 #: climmob/templates/dashboard/dashboard.jinja2:366
 msgid "Participant registration"
-msgstr ""
+msgstr "Registrace účastníků"
 
 #: climmob/templates/dashboard/dashboard.jinja2:374
 #: climmob/templates/dashboard/dashboard.jinja2:517
@@ -1082,216 +1114,221 @@ msgstr ""
 #: climmob/templates/progress/progressInformation.jinja2:152
 #: climmob/templates/project/assessment/assessment.jinja2:99
 msgid "On going"
-msgstr ""
+msgstr "Probíhá"
 
 #: climmob/templates/dashboard/dashboard.jinja2:377
 #: climmob/templates/dashboard/dashboard.jinja2:520
 #: climmob/templates/progress/progressInformation.jinja2:123
 #: climmob/templates/progress/progressInformation.jinja2:154
 #: climmob/templates/project/assessment/assessment.jinja2:102
-#, fuzzy
 msgid "Closed"
 msgstr "Uzavřeno"
 
 #: climmob/templates/dashboard/dashboard.jinja2:405
 msgid "Generate packages with technology options"
-msgstr ""
+msgstr "Generování balíčků s technologickými možnostmi"
 
 #: climmob/templates/dashboard/dashboard.jinja2:405
 msgid "and open the registration of participants"
-msgstr ""
+msgstr "a zahájit registraci účastníků"
 
 #: climmob/templates/dashboard/dashboard.jinja2:409
 msgid ""
 "You can start the registration of participants once the project has field "
 "agents, technology options and a registration form"
 msgstr ""
+"Registraci účastníků můžete zahájit, jakmile má projekt k dispozici terénní "
+"pracovníky, technologické možnosti a registrační formulář"
 
 #: climmob/templates/dashboard/dashboard.jinja2:419
 #: climmob/templates/dashboard/dashboard.jinja2:545
 msgid "Statistics"
-msgstr ""
+msgstr "Statistiky"
 
 #: climmob/templates/dashboard/dashboard.jinja2:424
 #: climmob/templates/dashboard/dashboard.jinja2:550
 msgid "Total number of participants"
-msgstr ""
+msgstr "Celkový počet účastníků"
 
 #: climmob/templates/dashboard/dashboard.jinja2:428
 #: climmob/templates/dashboard/dashboard.jinja2:554
 #: climmob/templates/dashboard/dashboard.jinja2:657
 #: climmob/templates/dashboard/dashboard.jinja2:713
 msgid "Number of submissions"
-msgstr ""
+msgstr "Počet podání"
 
 #: climmob/templates/dashboard/dashboard.jinja2:433
 #: climmob/templates/dashboard/dashboard.jinja2:559
 msgid "Submissions with conflicts"
-msgstr ""
+msgstr "Podání s konflikty"
 
 #: climmob/templates/dashboard/dashboard.jinja2:437
 #: climmob/templates/dashboard/dashboard.jinja2:563
 msgid "Last submission"
-msgstr ""
+msgstr "Poslední podání"
 
 #: climmob/templates/dashboard/dashboard.jinja2:451
 #: climmob/templates/dashboard/dashboard.jinja2:578
 msgid "View data"
-msgstr ""
+msgstr "Zobrazit údaje"
 
 #: climmob/templates/dashboard/dashboard.jinja2:453
 #: climmob/templates/dashboard/dashboard.jinja2:579
 msgid "Download data"
-msgstr ""
+msgstr "Stáhnout data"
 
 #: climmob/templates/dashboard/dashboard.jinja2:457
 #: climmob/templates/dashboard/dashboard.jinja2:585
 msgid "Show submissions with conflicts"
-msgstr ""
+msgstr "Zobrazit podání s konflikty"
 
 #: climmob/templates/dashboard/dashboard.jinja2:458
 #: climmob/templates/dashboard/dashboard.jinja2:586
 msgid "Download submissions with conflicts"
-msgstr ""
+msgstr "Stáhnout podání s konflikty"
 
 #: climmob/templates/dashboard/dashboard.jinja2:472
 #: climmob/templates/project/closepregistry.jinja2:8
 msgid "Finish registration"
-msgstr ""
+msgstr "Dokončení registrace"
 
 #: climmob/templates/dashboard/dashboard.jinja2:475
 #: climmob/templates/dashboard/dashboard.jinja2:479
 #: climmob/templates/dashboard/dashboard.jinja2:487
 #: climmob/templates/project/cancelregistry.jinja2:25
 msgid "Cancel registration"
-msgstr ""
+msgstr "Zrušení registrace"
 
 #: climmob/templates/dashboard/dashboard.jinja2:509
 msgid "Data collection"
-msgstr ""
+msgstr "Sběr dat"
 
 #: climmob/templates/dashboard/dashboard.jinja2:598
 msgid "Finish"
-msgstr ""
+msgstr "Dokončit"
 
 #: climmob/templates/dashboard/dashboard.jinja2:603
 #: climmob/templates/dashboard/dashboard.jinja2:609
 #: climmob/templates/project/editData/editData.jinja2:67
 msgid "Cancel"
-msgstr ""
+msgstr "Zrušit"
 
 #: climmob/templates/dashboard/dashboard.jinja2:626
 msgid "Analysis"
-msgstr ""
+msgstr "Analýza"
 
 #: climmob/templates/dashboard/dashboard.jinja2:629
 msgid "Start analysis"
-msgstr ""
+msgstr "Zahájení analýzy"
 
 #: climmob/templates/dashboard/dashboard.jinja2:756
 msgid "Let's start!"
-msgstr ""
+msgstr "Začněme!"
 
 #: climmob/templates/dashboard/dashboard.jinja2:757
 msgid "Create a new project"
-msgstr ""
+msgstr "Vytvoření nového projektu"
 
 #: climmob/templates/dashboard/dashboard.jinja2:781
 msgid "Send us feedback"
-msgstr ""
+msgstr "Pošlete nám zpětnou vazbu"
 
 #: climmob/templates/dashboard/dashboard.jinja2:791
 msgid "Write the feedback message."
-msgstr ""
+msgstr "Napište zpětnou vazbu."
 
 #: climmob/templates/dashboard/dashboard.jinja2:793
-#, fuzzy
 msgid "Send"
 msgstr "Odeslat"
 
 #: climmob/templates/dashboard/dashboard.jinja2:804
 msgid "Chat"
-msgstr ""
+msgstr "Chat"
 
 #: climmob/templates/dashboard/dashboard.jinja2:866
 #: climmob/templates/dashboard/dashboard.jinja2:877
 #: climmob/templates/dashboard/dashboard.jinja2:884
 msgid "ClimMob Team"
-msgstr ""
+msgstr "Tým ClimMob"
 
 #: climmob/templates/dashboard/dashboard.jinja2:874
 msgid "Unread messages"
-msgstr ""
+msgstr "Nepřečtené zprávy"
 
 #: climmob/templates/dashboard/dashboard.jinja2:884
 msgid "Hi there! Any question or feedback?"
-msgstr ""
+msgstr "Ahoj! Jakýkoli dotaz nebo zpětná vazba?"
 
 #: climmob/templates/dashboard/dashboard.jinja2:912
 msgid "You have"
-msgstr ""
+msgstr "Máte"
 
 #: climmob/templates/dashboard/dashboard.jinja2:912
 msgid "project"
-msgstr ""
+msgstr "projekt"
 
 #: climmob/templates/dashboard/dashboard.jinja2:914
 msgid "You don't have projects."
-msgstr ""
+msgstr "Nemáte projekty."
 
 #: climmob/templates/dashboard/dashboard.jinja2:917
 msgid "Add new project"
-msgstr ""
+msgstr "Přidat nový projekt"
 
 #: climmob/templates/dashboard/dashboard.jinja2:919
 msgid "Clone existing project"
-msgstr ""
+msgstr "Klonování stávajícího projektu"
 
 #: climmob/templates/dashboard/dashboard.jinja2:955
 msgid "Something here"
-msgstr ""
+msgstr "Něco zde"
 
 #: climmob/templates/dashboard/dashboard.jinja2:997
 msgid "Libraries"
-msgstr ""
+msgstr "Knihovny"
 
 #: climmob/templates/dashboard/dashboard.jinja2:998
 msgid ""
 "Libraries allow you to save information that can be assigned to different "
 "projects."
-msgstr ""
+msgstr "Knihovny umožňují ukládat informace, které lze přiřadit různým projektům."
 
 #: climmob/templates/dashboard/dashboard.jinja2:1004
 msgid "Create a list of field agents that you can later use in projects"
 msgstr ""
+"Vytvoření seznamu terénních pracovníků, které můžete později použít v projektech"
 
 #: climmob/templates/dashboard/dashboard.jinja2:1010
 msgid ""
 "Add or check if the ClimMob library has the necessary technologies for your "
 "project"
 msgstr ""
+"Přidejte nebo zkontrolujte, zda knihovna ClimMob obsahuje potřebné technologie "
+"pro váš projekt"
 
 #: climmob/templates/dashboard/dashboard.jinja2:1016
 msgid "Create the questions that you want to use to evaluate in your projects"
-msgstr ""
+msgstr "Vytvořte si otázky, které chcete použít k hodnocení ve svých projektech"
 
 #: climmob/templates/dashboard/dashboard.jinja2:1022
 msgid ""
 "ClimMob generates different output documents per project, in this menu option "
 "you could download the information"
 msgstr ""
+"ClimMob generuje různé výstupní dokumenty pro jednotlivé projekty, v této "
+"nabídce si můžete stáhnout informace"
 
 #: climmob/templates/dashboard/dashboard.jinja2:1026
 msgid "« Prev"
-msgstr ""
+msgstr "\" Předchozí"
 
 #: climmob/templates/dashboard/dashboard.jinja2:1026
 msgid "Next »"
-msgstr ""
+msgstr "Další »"
 
 #: climmob/templates/dashboard/dashboard.jinja2:1042
 msgid "Update libraries"
-msgstr ""
+msgstr "Aktualizovat knihovny"
 
 #: climmob/templates/dashboard/dashboard.jinja2:1043
 msgid ""
@@ -1299,109 +1336,113 @@ msgid ""
 "update them in the event that necessary information is missing for your new "
 "project"
 msgstr ""
+"Nezapomeňte, že knihovny obsahují užitečné informace pro vaše projekty, "
+"aktualizujte je v případě, že pro váš nový projekt chybí potřebné informace"
 
 #: climmob/templates/dashboard/dashboard.jinja2:1068
 msgid "Before assign field agents"
-msgstr ""
+msgstr "Před přidělením terénních pracovníků"
 
 #: climmob/templates/dashboard/dashboard.jinja2:1069
 msgid ""
 "First you have to add your field agents to the library then assign them to the "
 "project"
 msgstr ""
+"Nejprve je třeba přidat terénní pracovníky do knihovny a poté je přiřadit k "
+"projektu"
 
 #: climmob/templates/dashboard/dashboard.jinja2:1073
 msgid "Go to add field agents"
-msgstr ""
+msgstr "Přejděte na přidání terénních pracovníků"
 
 #: climmob/templates/dashboard/editprofile.jinja2:4
 msgid "ClimMob | Edit Profile"
-msgstr ""
+msgstr "ClimMob | Upravit profil"
 
 #: climmob/templates/dashboard/editprofile.jinja2:19
 #: climmob/templates/project/editData/editData.jinja2:66
 msgid "Edit"
-msgstr ""
+msgstr "ClimMob | Upravit profil"
 
 #: climmob/templates/dashboard/editprofile.jinja2:51
 msgid "Your password was changed successfully."
-msgstr ""
+msgstr "Vaše heslo bylo úspěšně změněno."
 
 #: climmob/templates/dashboard/editprofile.jinja2:58
 msgid "Your profile was changed successfully."
-msgstr ""
+msgstr "Váš profil byl úspěšně změněn."
 
 #: climmob/templates/dashboard/editprofile.jinja2:66
 msgid "Edit profile information"
-msgstr ""
+msgstr "Úprava informací o profilu"
 
 #: climmob/templates/dashboard/editprofile.jinja2:86
 msgid "About me"
-msgstr ""
+msgstr "O mně"
 
 #: climmob/templates/dashboard/editprofile.jinja2:122
 msgid "Update profile"
-msgstr ""
+msgstr "Aktualizace profilu"
 
 #: climmob/templates/dashboard/editprofile.jinja2:134
 #: climmob/templates/dashboard/editprofile.jinja2:161
 msgid "Change password"
-msgstr ""
+msgstr "Změnit heslo"
 
 #: climmob/templates/dashboard/editprofile.jinja2:142
 msgid "Current password"
-msgstr ""
+msgstr "Aktuální heslo"
 
 #: climmob/templates/dashboard/editprofile.jinja2:148
 msgid "New Password"
-msgstr ""
+msgstr "Nové heslo"
 
 #: climmob/templates/dashboard/editprofile.jinja2:154
 msgid "Re-type New Password"
-msgstr ""
+msgstr "Znovu zadejte nové heslo"
 
 #: climmob/templates/dashboard/profile.jinja2:4
 msgid "ClimMob | Profile"
-msgstr ""
+msgstr "ClimMob | Profil"
 
 #: climmob/templates/dashboard/profile.jinja2:29
 msgid "There is no information about yourself. Edit your profile."
-msgstr ""
+msgstr "Nejsou zde žádné informace o vás. Upravte svůj profil."
 
 #: climmob/templates/dashboard/profile.jinja2:31
 msgid "Edit profile"
-msgstr ""
+msgstr "Upravit profil"
 
 #: climmob/templates/dashboard/profile.jinja2:46
 msgid "Last project"
-msgstr ""
+msgstr "Poslední projekt"
 
 #: climmob/templates/dashboard/profile.jinja2:52
 msgid "Joined"
-msgstr ""
+msgstr "Připojil se"
 
 #: climmob/templates/dashboard/profile.jinja2:68
 msgid "About"
-msgstr ""
+msgstr "O webu"
 
 #: climmob/templates/dashboard/profile.jinja2:101
 msgid "API Key"
-msgstr ""
+msgstr "API Klíč"
 
 #: climmob/templates/enumerators/enumerators.jinja2:4
 msgid "ClimMob | Field agents"
-msgstr ""
+msgstr "ClimMob | Terénní pracovníci"
 
 #: climmob/templates/enumerators/enumerators.jinja2:35
 msgid "Field agent details"
-msgstr ""
+msgstr "Podrobnosti o terénním pracovníkovi"
 
 #: climmob/templates/enumerators/enumerators.jinja2:55
 #: climmob/templates/project/assessment/assessment.jinja2:54
 #: climmob/templates/project/technologies/technologies.jinja2:195
 #: climmob/templates/snippets/project/technologies/techgroup.jinja2:31
 msgid "Add"
-msgstr ""
+msgstr "Přidat"
 
 #: climmob/templates/enumerators/enumerators.jinja2:56
 #: climmob/templates/project/assessment/assessment.jinja2:55
@@ -1411,404 +1452,406 @@ msgstr ""
 #: climmob/templates/project/registry/registry.jinja2:114
 #: climmob/templates/project/technologies/technologies.jinja2:163
 msgid "Save"
-msgstr ""
+msgstr "Uložit"
 
 #: climmob/templates/enumerators/enumerators.jinja2:68
 msgid "Registered field agents"
-msgstr ""
+msgstr "Registrovaní terénní pracovníci"
 
 #: climmob/templates/enumerators/enumerators.jinja2:80
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #: climmob/templates/enumerators/enumerators.jinja2:92
 #: climmob/templates/snippets/cloneProjects/fieldAgents.jinja2:17
 #: climmob/templates/snippets/enumerators/enumerator-form.jinja2:15
 msgid "Can submit data"
-msgstr ""
+msgstr "Může odesílat data"
 
 #: climmob/templates/enumerators/enumerators.jinja2:94
 #: climmob/templates/snippets/cloneProjects/fieldAgents.jinja2:19
 msgid "Cannot submit data"
-msgstr ""
+msgstr "Nemůže odesílat data"
 
 #: climmob/templates/enumerators/enumerators.jinja2:99
 msgid "Edit field agent"
-msgstr ""
+msgstr "Upravit terénního pracovníka"
 
 #: climmob/templates/enumerators/enumerators.jinja2:100
 #: climmob/templates/project/enumerators/enumerators.jinja2:129
 msgid "Do you really want to remove this field agent?"
-msgstr ""
+msgstr "Opravdu chcete odstranit tohoto terénního pracovníka?"
 
 #: climmob/templates/enumerators/enumerators.jinja2:100
 #: climmob/templates/project/enumerators/enumerators.jinja2:129
 msgid "Remove field agent"
-msgstr ""
+msgstr "Odstranění terénního pracovníka"
 
 #: climmob/templates/enumerators/enumerators.jinja2:109
 msgid "No field agents to display"
-msgstr ""
+msgstr "Žádní terénní pracovníci k zobrazení"
 
 #: climmob/templates/enumerators/enumerators.jinja2:138
 #: climmob/templates/project/assessment/assessment.jinja2:133
 #: climmob/templates/technologies/technologies.jinja2:458
 #: climmob/templates/technologies/technologies.jinja2:471
 msgid "Please click the button."
-msgstr ""
+msgstr "Klikněte na tlačítko."
 
 #: climmob/templates/mapForProjectVisualization/mapForVisualization.jinja2:52
 #: climmob/templates/projectHelp/projectHelp.jinja2:87
 msgid "Project name"
-msgstr ""
+msgstr "Název projektu"
 
 #: climmob/templates/mapForProjectVisualization/mapForVisualization.jinja2:92
 #: climmob/templates/snippets/project/project_form.jinja2:45
 msgid "Email address"
-msgstr ""
+msgstr "E-mailová adresa"
 
 #: climmob/templates/mapForProjectVisualization/mapForVisualization.jinja2:102
 #: climmob/templates/snippets/cloneProjects/projectDetails.jinja2:21
 msgid "Creation date"
-msgstr ""
+msgstr "Datum vytvoření"
 
 #: climmob/templates/progress/progressInformation.jinja2:9
 msgid "ClimMob - Progress Information"
-msgstr ""
+msgstr "ClimMob - Informace o pokroku"
 
 #: climmob/templates/progress/progressInformation.jinja2:41
 msgid "Project information"
-msgstr ""
+msgstr "Informace o projektu"
 
 #: climmob/templates/progress/progressInformation.jinja2:48
 #: climmob/templates/snippets/project/project_form.jinja2:17
 msgid "Project Name"
-msgstr ""
+msgstr "Název projektu"
 
 #: climmob/templates/progress/progressInformation.jinja2:52
 msgid "Created by"
-msgstr ""
+msgstr "Vytvořeno"
 
 #: climmob/templates/progress/progressInformation.jinja2:71
 msgid "Created"
-msgstr ""
+msgstr "Vytvořeno"
 
 #: climmob/templates/progress/progressInformation.jinja2:80
 msgid "Last updated"
-msgstr ""
+msgstr "Poslední aktualizace"
 
 #: climmob/templates/progress/progressInformation.jinja2:88
 #: climmob/templates/progress/progressInformation.jinja2:89
 msgid "Active"
-msgstr ""
+msgstr "Aktivní"
 
 #: climmob/templates/progress/progressInformation.jinja2:89
 msgid "Inactive"
-msgstr ""
+msgstr "Neaktivní"
 
 #: climmob/templates/progress/progressInformation.jinja2:95
 #: climmob/templates/snippets/project/project_form.jinja2:30
 msgid "Tags"
-msgstr ""
+msgstr "Štítky"
 
 #: climmob/templates/progress/progressInformation.jinja2:112
 msgid "Registration of participants"
-msgstr ""
+msgstr "Registrace účastníků"
 
 #: climmob/templates/progress/progressInformation.jinja2:143
 #: climmob/templates/snippets/project/project_form.jinja2:191
 msgid "Assessment"
-msgstr ""
+msgstr "Hodnocení"
 
 #: climmob/templates/progress/progressInformation.jinja2:187
 msgid "Packages delivered"
-msgstr ""
+msgstr "Doručené balíčky"
 
 #: climmob/templates/progress/progressInformation.jinja2:188
 msgid "Pending packages"
-msgstr ""
+msgstr "Nevyřízené balíčky"
 
 #: climmob/templates/progress/progressInformation.jinja2:205
 msgid "Information delivered"
-msgstr ""
+msgstr "Informace doručeny"
 
 #: climmob/templates/progress/progressInformation.jinja2:206
 msgid "Pending information"
-msgstr ""
+msgstr "Nevyřízené informace"
 
 #: climmob/templates/project/cancelassessment.jinja2:4
 msgid "ClimMob | Cancel data collection"
-msgstr ""
+msgstr "ClimMob | Zrušit sběr dat"
 
 #: climmob/templates/project/cancelassessment.jinja2:8
 msgid "Cancel assessment"
-msgstr ""
+msgstr "Zrušit hodnocení"
 
 #: climmob/templates/project/cancelassessment.jinja2:17
 msgid "You are going to cancel the data collection"
-msgstr ""
+msgstr "Chystáte se zrušit sběr dat"
 
 #: climmob/templates/project/cancelassessment.jinja2:21
 msgid "After you cancel this data collection all data will be lost"
-msgstr ""
+msgstr "Po zrušení tohoto sběru dat budou všechna data ztracena"
 
 #: climmob/templates/project/cancelassessment.jinja2:22
 msgid "Are you sure that you want to cancel the ongoing data collection?"
-msgstr ""
+msgstr "Opravdu chcete zrušit probíhající sběr dat?"
 
 #: climmob/templates/project/cancelassessment.jinja2:26
 #: climmob/templates/project/cancelregistry.jinja2:24
 #: climmob/templates/project/closeassessment.jinja2:29
 #: climmob/templates/project/closepregistry.jinja2:29
 msgid "Go back"
-msgstr ""
+msgstr "Zpět"
 
 #: climmob/templates/project/cancelassessment.jinja2:27
 #: climmob/views/Api/projectAssessmentStart.py:260
 msgid "Cancel data collection"
-msgstr ""
+msgstr "Zrušit sběr dat"
 
 #: climmob/templates/project/cancelregistry.jinja2:4
 msgid "ClimMob | Cancel registry"
-msgstr ""
+msgstr "ClimMob | Zrušit registr"
 
 #: climmob/templates/project/cancelregistry.jinja2:8
 msgid "Cancel the registration"
-msgstr ""
+msgstr "Zrušit registraci"
 
 #: climmob/templates/project/cancelregistry.jinja2:17
 msgid "You are going to cancel the registration"
-msgstr ""
+msgstr "Chystáte se zrušit registraci"
 
 #: climmob/templates/project/cancelregistry.jinja2:17
 msgid "All submitted data will be deleted!"
-msgstr ""
+msgstr "Všechna odeslaná data budou smazána!"
 
 #: climmob/templates/project/cancelregistry.jinja2:20
 msgid "Are you sure you that want to cancel the registration of participants?"
-msgstr ""
+msgstr "Opravdu chcete zrušit registraci účastníků?"
 
 #: climmob/templates/project/closeassessment.jinja2:4
 msgid "ClimMob | Close data collection"
-msgstr ""
+msgstr "ClimMob | Zavřít sběr dat"
 
 #: climmob/templates/project/closeassessment.jinja2:8
 msgid "Finish assessment"
-msgstr ""
+msgstr "Dokončení hodnocení"
 
 #: climmob/templates/project/closeassessment.jinja2:17
 msgid "You are going to finish the data collection"
-msgstr ""
+msgstr "Chystáte se dokončit sběr dat"
 
 #: climmob/templates/project/closeassessment.jinja2:20
 #: climmob/templates/project/closepregistry.jinja2:20
 msgid "You still have"
-msgstr ""
+msgstr "Stále máte"
 
 #: climmob/templates/project/closeassessment.jinja2:20
 msgid "to survey"
-msgstr ""
+msgstr "k průzkumu"
 
 #: climmob/templates/project/closeassessment.jinja2:24
 msgid ""
 "After you finish this data collection no more participants will be able to "
 "submit data"
-msgstr ""
+msgstr "Po ukončení tohoto sběru dat nebudou moci další účastníci údaje odesílat"
 
 #: climmob/templates/project/closeassessment.jinja2:25
 msgid "Are you sure that you want to finish this data collection?"
-msgstr ""
+msgstr "Jste si jisti, že chcete tento sběr dat dokončit?"
 
 #: climmob/templates/project/closeassessment.jinja2:30
 msgid "Finish data collection"
-msgstr ""
+msgstr "Dokončení sběru dat"
 
 #: climmob/templates/project/closepregistry.jinja2:4
 msgid "ClimMob | Finish registration"
-msgstr ""
+msgstr "ClimMob | Dokončit registraci"
 
 #: climmob/templates/project/closepregistry.jinja2:17
 msgid ""
 "You are going to finish the registration of participants and start data "
 "collection"
-msgstr ""
+msgstr "Chystáte se dokončit registraci účastníků a zahájit sběr dat"
 
 #: climmob/templates/project/closepregistry.jinja2:20
 msgid "to register"
-msgstr ""
+msgstr "k registraci"
 
 #: climmob/templates/project/closepregistry.jinja2:24
 msgid ""
 "After you finish the registration no more participants will be able to register"
 msgstr ""
+"Po dokončení registrace se již nebudou moci registrovat žádní další účastníci"
 
 #: climmob/templates/project/closepregistry.jinja2:25
 msgid "Are you sure that you want to finish the registration?"
-msgstr ""
+msgstr "Opravdu chcete dokončit registraci?"
 
 #: climmob/templates/project/closepregistry.jinja2:30
 msgid "Finish the registration"
-msgstr ""
+msgstr "Dokončit registraci"
 
 #: climmob/templates/project/modifyproject.jinja2:4
 msgid "ClimMob | Project details"
-msgstr ""
+msgstr "ClimMob | Detaily projektu"
 
 #: climmob/templates/project/modifyproject.jinja2:28
 #: climmob/templates/projectHelp/projectHelp.jinja2:83
 #: climmob/templates/snippets/cloneProjects/projectDetails.jinja2:4
 msgid "Project details"
-msgstr ""
+msgstr "Detaily projektu"
 
 #: climmob/templates/project/modifyproject.jinja2:62
 msgid "Do you really want to remove this project?"
-msgstr ""
+msgstr "Opravdu chcete tento projekt odstranit?"
 
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:112
 #: climmob/templates/project/modifyproject.jinja2:62
 #: climmob/templates/project/registry/registry.jinja2:115
 #: climmob/templates/snippets/project/technologies/aliasgroup.jinja2:57
 msgid "Delete"
-msgstr ""
+msgstr "Smazat"
 
 #: climmob/templates/project/modifyproject.jinja2:68
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:168
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:172
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:176
 msgid "Update"
-msgstr ""
+msgstr "Aktualizovat"
 
 #: climmob/templates/project/modifyproject.jinja2:105
 #: climmob/templates/project/newproject.jinja2:83
 #: climmob/templates/snippets/project/project_form.jinja2:156
 msgid "Select a template"
-msgstr ""
+msgstr "Vybrat šablonu"
 
 #: climmob/templates/project/newproject.jinja2:4
 msgid "ClimMob | New project"
-msgstr ""
+msgstr "ClimMob | Nový projekt"
 
 #: climmob/templates/project/newproject.jinja2:23
 #: climmob/templates/project/newproject.jinja2:48
 msgid "Create project"
-msgstr ""
+msgstr "Vytvořit projekt"
 
 #: climmob/templates/project/startassessments.jinja2:4
 msgid "ClimMob | Start data collection"
-msgstr ""
+msgstr "ClimMob | Zahájení sběru dat"
 
 #: climmob/templates/project/startassessments.jinja2:8
 msgid "Start data collection"
-msgstr ""
+msgstr "Zahájení sběru dat"
 
 #: climmob/templates/project/registry/create/createregistry.jinja2:160
 #: climmob/templates/project/startassessments.jinja2:49
 msgid "Go to the menu"
-msgstr ""
+msgstr "Přejít do nabídky"
 
 #: climmob/templates/project/CleanErrors/clean.jinja2:4
 msgid "ClimMob | Clean error logs"
-msgstr ""
+msgstr "ClimMob | Vymazat chybové protokoly"
 
 #: climmob/templates/project/CleanErrors/clean.jinja2:8
 msgid "Solve conflicts"
-msgstr ""
+msgstr "Řešení konfliktů"
 
 #: climmob/templates/project/CleanErrors/clean.jinja2:29
 msgid "Select the conflict you want to solve"
-msgstr ""
+msgstr "Vyberte konflikt, který chcete vyřešit"
 
 #: climmob/templates/project/CleanErrors/clean.jinja2:38
 msgid "Error: The .log file don't exits"
-msgstr ""
+msgstr "Chyba: Soubor .log se neukončí"
 
 #: climmob/templates/project/CleanErrors/clean.jinja2:44
 #: climmob/templates/project/CleanErrors/clean.jinja2:46
 msgid "Show conflict"
-msgstr ""
+msgstr "Zobrazit konflikt"
 
 #: climmob/templates/project/CleanErrors/clean.jinja2:64
 msgid "Information collected"
-msgstr ""
+msgstr "Shromážděné informace"
 
 #: climmob/templates/project/CleanErrors/clean.jinja2:72
 msgid "Compare the information and apply the indicated action"
-msgstr ""
+msgstr "Porovnejte informace a proveďte určenou akci"
 
 #: climmob/templates/project/CleanErrors/clean.jinja2:74
 msgid "The duplicate problem has been fixed in the 'Edit data' section"
-msgstr ""
+msgstr "Problém s duplicitami byl opraven v sekci \"Upravit data\""
 
 #: climmob/templates/project/CleanErrors/clean.jinja2:74
 msgid "Now you can process the information"
-msgstr ""
+msgstr "Nyní můžete informace zpracovat"
 
 #: climmob/templates/project/CleanErrors/clean.jinja2:80
 msgid "Question"
-msgstr ""
+msgstr "Otázka"
 
 #: climmob/templates/project/CleanErrors/clean.jinja2:81
 msgid "Recorded information without problem"
-msgstr ""
+msgstr "Nahrané informace bez problémů"
 
 #: climmob/templates/project/CleanErrors/clean.jinja2:82
 msgid "Conflicting information"
-msgstr ""
+msgstr "Konfliktní informace"
 
 #: climmob/templates/project/CleanErrors/clean.jinja2:226
 msgid "Keep previously registered information"
-msgstr ""
+msgstr "Zachovat dříve registrované informace"
 
 #: climmob/templates/project/CleanErrors/clean.jinja2:227
 msgid "Replace information with new data"
-msgstr ""
+msgstr "Nahradit informace novými daty"
 
 #: climmob/templates/project/analysis/projectAnalysis.jinja2:4
 msgid "ClimMob | Analysis"
-msgstr ""
+msgstr "ClimMob | Analýza"
 
 #: climmob/templates/project/analysis/projectAnalysis.jinja2:22
 msgid "Analize data"
-msgstr ""
+msgstr "Analýza dat"
 
 #: climmob/templates/project/analysis/projectAnalysis.jinja2:32
 msgid "Select your variables to analyze"
-msgstr ""
+msgstr "Vyberte proměnné, které chcete analyzovat"
 
 #: climmob/templates/project/analysis/projectAnalysis.jinja2:38
 #: climmob/templates/project/analysis/projectAnalysis.jinja2:172
 msgid "Data collection moments"
-msgstr ""
+msgstr "Okamžiky sběru dat"
 
 #: climmob/templates/project/analysis/projectAnalysis.jinja2:39
 msgid "Explanatory"
-msgstr ""
+msgstr "Vysvětlení"
 
 #: climmob/templates/project/analysis/projectAnalysis.jinja2:40
 msgid "Linear regression"
-msgstr ""
+msgstr "Lineární regrese"
 
 #: climmob/templates/project/analysis/projectAnalysis.jinja2:47
 #: climmob/templates/project/analysis/projectAnalysis.jinja2:48
 #: climmob/templates/project/analysis/projectAnalysis.jinja2:50
 #: climmob/templates/project/analysis/projectAnalysis.jinja2:51
 msgid "Select all"
-msgstr ""
+msgstr "Vybrat vše"
 
 #: climmob/templates/project/analysis/projectAnalysis.jinja2:54
 #: climmob/templates/project/analysis/projectAnalysis.jinja2:176
 msgid "Registration"
-msgstr ""
+msgstr "Registrace"
 
 #: climmob/templates/project/analysis/projectAnalysis.jinja2:159
 msgid "Splits"
-msgstr ""
+msgstr "Rozdělení"
 
 #: climmob/templates/project/analysis/projectAnalysis.jinja2:160
 msgid ""
 "Do you want to do an extra analysis, separating by the values of the selection "
 "questions?"
 msgstr ""
+"Chcete provést dodatečnou analýzu rozdělenou podle hodnot výběrových otázek?"
 
 #: climmob/templates/project/analysis/projectAnalysis.jinja2:165
 #: climmob/templates/project/analysis/projectAnalysis.jinja2:213
@@ -1820,7 +1863,7 @@ msgstr ""
 #: climmob/templates/snippets/question/question-form.jinja2:216
 #: climmob/templates/snippets/question/question-form.jinja2:229
 msgid "Yes"
-msgstr ""
+msgstr "Ano"
 
 #: climmob/templates/project/analysis/projectAnalysis.jinja2:165
 #: climmob/templates/project/analysis/projectAnalysis.jinja2:213
@@ -1832,199 +1875,197 @@ msgstr ""
 #: climmob/templates/snippets/question/question-form.jinja2:217
 #: climmob/templates/snippets/question/question-form.jinja2:230
 msgid "No"
-msgstr ""
+msgstr "Ne"
 
 #: climmob/templates/project/analysis/projectAnalysis.jinja2:173
 msgid "Make split by variable"
-msgstr ""
+msgstr "Provést rozdělení podle proměnné"
 
 #: climmob/templates/project/analysis/projectAnalysis.jinja2:208
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:85
 msgid "Individual feedback reports for participants"
-msgstr ""
+msgstr "Individuální zprávy o zpětné vazbě pro účastníky"
 
 #: climmob/templates/project/analysis/projectAnalysis.jinja2:229
 msgid "Perform analysis"
-msgstr ""
+msgstr "Perform analysis"
 
 #: climmob/templates/project/assessment/assessment.jinja2:4
 msgid "ClimMob | Prepare data collection"
-msgstr ""
+msgstr "ClimMob | Příprava sběru dat"
 
 #: climmob/templates/project/assessment/assessment.jinja2:40
 msgid "Data collection moment details"
-msgstr ""
+msgstr "Podrobnosti o okamžiku sběru dat"
 
 #: climmob/templates/project/assessment/assessment.jinja2:67
 msgid "Active data collection moments"
-msgstr ""
+msgstr "Okamžiky aktivního sběru dat"
 
 #: climmob/templates/project/assessment/assessment.jinja2:77
 msgid "Interval in days"
-msgstr ""
+msgstr "Interval ve dnech"
 
 #: climmob/templates/project/assessment/assessment.jinja2:84
-#, fuzzy
 msgid "question"
-msgstr "otázky"
+msgstr "otázka"
 
 #: climmob/templates/project/assessment/assessment.jinja2:84
 #: climmob/templates/project/assessment/assessment.jinja2:87
 msgid "Overall performance"
-msgstr ""
+msgstr "Celkový výkon"
 
 #: climmob/templates/project/assessment/assessment.jinja2:87
-#, fuzzy
 msgid "questions"
 msgstr "otázky"
 
 #: climmob/templates/project/assessment/assessment.jinja2:91
 msgid "See questions"
-msgstr ""
+msgstr "Viz otázky"
 
 #: climmob/templates/project/assessment/assessment.jinja2:94
 msgid "Edit data collection"
-msgstr ""
+msgstr "Úprava sběru dat"
 
 #: climmob/templates/project/assessment/assessment.jinja2:95
 msgid "Do you really want to remove this data collection moment?"
-msgstr ""
+msgstr "Opravdu chcete tento okamžik sběru dat odstranit?"
 
 #: climmob/templates/project/assessment/assessment.jinja2:95
 msgid "Remove data collection"
-msgstr ""
+msgstr "Odstranit sběr dat"
 
 #: climmob/templates/project/assessment/assessment.jinja2:113
 msgid "There are no data collection moments."
-msgstr ""
+msgstr "Neexistují žádné okamžiky sběru dat."
 
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:4
 msgid "ClimMob - Form editor"
-msgstr ""
+msgstr "ClimMob - Editor formulářů"
 
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:23
 msgid "Form editor"
-msgstr ""
+msgstr "Editor formulářů"
 
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:46
 #: climmob/templates/project/registry/registry.jinja2:49
 msgid "Available questions from library"
-msgstr ""
+msgstr "Dostupné otázky z knihovny"
 
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:70
 msgid "Assessment form"
-msgstr ""
+msgstr "Hodnotící formulář"
 
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:98
 #: climmob/templates/project/registry/registry.jinja2:101
 msgid "New section"
-msgstr ""
+msgstr "Nová sekce"
 
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:127
 #: climmob/templates/project/registry/registry.jinja2:133
 #: climmob/templates/question/library.jinja2:127
 msgid "Preview"
-msgstr ""
+msgstr "Náhled"
 
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:321
 msgid "Update completed."
-msgstr ""
+msgstr "Aktualizace dokončena."
 
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:360
 #: climmob/templates/project/registry/registry.jinja2:379
 msgid "Move the questions from left to right."
-msgstr ""
+msgstr "Posuňte otázky zleva doprava."
 
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:436
 #: climmob/templates/project/registry/registry.jinja2:441
 msgid "Do you really want to remove this section?"
-msgstr ""
+msgstr "Opravdu chcete tuto část odstranit?"
 
 #: climmob/templates/project/editData/editData.jinja2:23
 msgid "Edit data"
-msgstr ""
+msgstr "Upravit data"
 
 #: climmob/templates/project/editData/editData.jinja2:37
 msgid "Edit registration survey data"
-msgstr ""
+msgstr "Úprava údajů z registračního průzkumu"
 
 #: climmob/templates/project/editData/editData.jinja2:44
 msgid "Available fields for edit"
-msgstr ""
+msgstr "Dostupná pole pro úpravy"
 
 #: climmob/templates/project/editData/editData.jinja2:70
 msgid "Error. No field available for editing."
-msgstr ""
+msgstr "Chyba. Žádné pole není k dispozici pro editaci."
 
 #: climmob/templates/project/editData/editData.jinja2:82
 msgid "Save changes"
-msgstr ""
+msgstr "Uložit změny"
 
 #: climmob/templates/project/editData/editData.jinja2:85
 msgid "Cancel editing"
-msgstr ""
+msgstr "Zrušit úpravy"
 
 #: climmob/templates/project/editData/editDataJS.jinja2:16
 msgid "Select at least one column"
-msgstr ""
+msgstr "Vyberte alespoň jeden sloupec"
 
 #: climmob/templates/project/editData/editDataJS.jinja2:21
 msgid "Ready!"
-msgstr ""
+msgstr "Připraveno!"
 
 #: climmob/templates/project/editData/editDataJS.jinja2:21
 msgid "Your changes were saved in the database."
-msgstr ""
+msgstr "Vaše změny byly uloženy do databáze."
 
 #: climmob/templates/project/editData/editDataJS.jinja2:26
 msgid "Error!"
-msgstr ""
+msgstr "Chyba!"
 
 #: climmob/templates/project/editData/editDataJS.jinja2:27
 msgid "An error occurred while updating your data, please try again."
-msgstr ""
+msgstr "Při aktualizaci dat došlo k chybě, zkuste to prosím znovu."
 
 #: climmob/templates/project/editData/editDataJS.jinja2:88
 msgid "Check that the value is not duplicated in another column."
-msgstr ""
+msgstr "Zkontrolujte, zda hodnota není duplicitní v jiném sloupci."
 
 #: climmob/templates/project/editData/editDataJS.jinja2:110
 msgid "Table of edition"
-msgstr ""
+msgstr "Tabulka vydání"
 
 #: climmob/templates/project/editData/editDataJS.jinja2:345
 msgid "There are unsaved changes!"
-msgstr ""
+msgstr "Jsou zde neuložené změny!"
 
 #: climmob/templates/project/editData/editDataJS.jinja2:346
 msgid "Do you want to save the changes made to the database?"
-msgstr ""
+msgstr "Chcete uložit provedené změny v databázi?"
 
 #: climmob/templates/project/editData/editDataJS.jinja2:350
 msgid "Yes, I want to keep them!"
-msgstr ""
+msgstr "Ano, chci si je nechat!"
 
 #: climmob/templates/project/editData/editDataJS.jinja2:351
 msgid "No, I want to cancel!"
-msgstr ""
+msgstr "Ne, chci to zrušit!"
 
 #: climmob/templates/project/editData/editDataJS.jinja2:362
 #: climmob/templates/snippets/delete.jinja2:41
 #: climmob/templates/snippets/delete.jinja2:46
 msgid "Cancelled"
-msgstr ""
+msgstr "Zrušeno"
 
 #: climmob/templates/project/editData/editDataJS.jinja2:363
 msgid "Your changes will not be stored in the database."
-msgstr ""
+msgstr "Vaše změny se do databáze neuloží."
 
 #: climmob/templates/project/enumerators/enumerators.jinja2:4
 msgid "ClimMob | Assign field agents"
-msgstr ""
+msgstr "ClimMob | Přiřazení terénních pracovníků"
 
 #: climmob/templates/project/enumerators/enumerators.jinja2:58
 msgid "Select to add"
-msgstr ""
+msgstr "Vyberte, zda chcete přidat"
 
 #: climmob/templates/project/enumerators/enumerators.jinja2:68
 #: climmob/templates/project/enumerators/enumerators.jinja2:70
@@ -2035,351 +2076,356 @@ msgstr ""
 #: climmob/templates/snippets/technologies/technologies-stream.jinja2:3
 #: climmob/templates/snippets/technologies/technologies-stream.jinja2:26
 msgid "by"
-msgstr ""
+msgstr "od"
 
 #: climmob/templates/project/enumerators/enumerators.jinja2:78
 msgid "Add field agents"
-msgstr ""
+msgstr "Přidat terénní pracovníky"
 
 #: climmob/templates/project/enumerators/enumerators.jinja2:84
 msgid "Go to"
-msgstr ""
+msgstr "Přejít na"
 
 #: climmob/templates/project/enumerators/enumerators.jinja2:84
 msgid "field agents"
-msgstr ""
+msgstr "terénní pracovníci"
 
 #: climmob/templates/project/enumerators/enumerators.jinja2:84
 msgid "to register more of them."
-msgstr ""
+msgstr "abyste jich zaregistrovali více."
 
 #: climmob/templates/project/enumerators/enumerators.jinja2:86
 msgid ""
 "No field agents found. Register your field agents first. Go to Library (left "
 "panel) > Field agents."
 msgstr ""
+"Nebyl nalezen žádný terénní pracovník. Nejprve zaregistrujte své terénní "
+"pracovníky. Přejděte do nabídky Knihovna (levý panel) > Terénní pracovníci."
 
 #: climmob/templates/project/enumerators/enumerators.jinja2:99
 msgid "Field agents assigned to the project"
-msgstr ""
+msgstr "Terénní pracovníci přidělení k projektu"
 
 #: climmob/templates/project/enumerators/enumerators.jinja2:124
 msgid "Can not submit data"
-msgstr ""
+msgstr "Nelze odeslat data"
 
 #: climmob/templates/project/enumerators/enumerators.jinja2:139
 msgid "You can download a"
-msgstr ""
+msgstr "Můžete si stáhnout"
 
 #: climmob/templates/project/enumerators/enumerators.jinja2:139
 msgid "PDF document"
-msgstr ""
+msgstr "PDF document"
 
 #: climmob/templates/project/enumerators/enumerators.jinja2:139
 msgid "to configure ODK Collect on Android devices."
-msgstr ""
+msgstr "konfigurovat ODK Collect v zařízeních se systémem Android."
 
 #: climmob/templates/project/enumerators/enumerators.jinja2:143
 msgid "No field agents assigned to this project."
-msgstr ""
+msgstr "K tomuto projektu nebyl přidělen žádný terénní pracovník."
 
 #: climmob/templates/project/productsList/productsList.jinja2:4
 msgid "ClimMob | Products"
-msgstr ""
+msgstr "ClimMob | Produkty"
 
 #: climmob/templates/project/productsList/productsList.jinja2:28
 msgid "Push button to see if pending documents are ready."
-msgstr ""
+msgstr "Stisknutím tlačítka zjistíte, zda jsou čekající dokumenty připraveny."
 
 #: climmob/templates/project/productsList/productsList.jinja2:29
 #: climmob/templates/project/registry/create/createregistry.jinja2:111
 msgid "Refresh"
-msgstr ""
+msgstr "Obnovit"
 
 #: climmob/templates/project/productsList/productsList.jinja2:37
 msgid "You haven't files to download."
-msgstr ""
+msgstr "Nemáte žádné soubory ke stažení."
 
 #: climmob/templates/project/productsList/productsList.jinja2:38
 msgid "Create project summary"
-msgstr ""
+msgstr "Vytvořit shrnutí projektu"
 
 #: climmob/templates/project/productsList/productsList.jinja2:45
 msgid "To download files you need to have an active project."
-msgstr ""
+msgstr "Chcete-li stahovat soubory, musíte mít aktivní projekt."
 
 #: climmob/templates/project/registry/registry.jinja2:4
 msgid "ClimMob - Registration"
-msgstr ""
+msgstr "ClimMob - Registrace"
 
 #: climmob/templates/project/registry/registry.jinja2:25
 #: climmob/templates/project/registry/registry.jinja2:378
 msgid "Prepare participant registration"
-msgstr ""
+msgstr "Příprava registrace účastníků"
 
 #: climmob/templates/project/registry/create/createregistry.jinja2:4
 msgid "ClimMob - Select combinations"
-msgstr ""
+msgstr "ClimMob - Vybrat kombinace"
 
 #: climmob/templates/project/registry/create/createregistry.jinja2:23
 msgid ""
 "Generate packages with technology options and open the registration of "
 "participants"
 msgstr ""
+"Generování balíčků s technologickými možnostmi a otevření registrace účastníků"
 
 #: climmob/templates/project/registry/create/createregistry.jinja2:66
 msgid "Set combinations"
-msgstr ""
+msgstr "Nastavení kombinací"
 
 #: climmob/templates/project/registry/create/createregistry.jinja2:75
 msgid "Review packages"
-msgstr ""
+msgstr "Přehled balíčků"
 
 #: climmob/templates/project/registry/create/createregistry.jinja2:99
 msgid "ClimMob is generating the randomization of your packages."
-msgstr ""
+msgstr "Společnost ClimMob generuje náhodný výběr vašich balíčků."
 
 #: climmob/templates/project/registry/create/createregistry.jinja2:102
 msgid "This process may take some time but no more than two minutes."
-msgstr ""
+msgstr "Tento proces může nějakou dobu trvat, ne však déle než dvě minuty."
 
 #: climmob/templates/project/registry/create/createregistry.jinja2:106
 msgid ""
 "Please wait and refresh the screen from time to time to verify that your "
 "packages are already available."
 msgstr ""
+"Vyčkejte a čas od času obnovte obrazovku, abyste si ověřili, zda jsou vaše "
+"balíčky již k dispozici."
 
 #: climmob/templates/project/registry/create/createregistry.jinja2:139
 msgid "Continue"
-msgstr ""
+msgstr "Pokračovat"
 
 #: climmob/templates/project/registry/create/createregistry.jinja2:147
 #: climmob/templates/snippets/project/technologies/techgroup.jinja2:31
 msgid "Modify"
-msgstr ""
+msgstr "Upravit"
 
 #: climmob/templates/project/share/share.jinja2:4
 msgid "ClimMob | Share project"
-msgstr ""
+msgstr "ClimMob | Sdílet projekt"
 
 #: climmob/templates/project/share/share.jinja2:22
 #: climmob/templates/project/share/share.jinja2:32
 #: climmob/templates/project/share/share.jinja2:66
 msgid "Share project"
-msgstr ""
+msgstr "Sdílet projekt"
 
 #: climmob/templates/project/share/share.jinja2:50
 msgid "User with whom you want to share the project"
-msgstr ""
+msgstr "Uživatel, se kterým chcete projekt sdílet"
 
 #: climmob/templates/project/share/share.jinja2:52
 msgid "Select one user."
-msgstr ""
+msgstr "Vyberte jednoho uživatele."
 
 #: climmob/templates/project/share/share.jinja2:57
 msgid "Role for the user"
-msgstr ""
+msgstr "Role pro uživatele"
 
 #: climmob/templates/project/share/share.jinja2:59
 #: climmob/templates/project/share/share.jinja2:99
 msgid "Admin"
-msgstr ""
+msgstr "Administrátor"
 
 #: climmob/templates/project/share/share.jinja2:60
 #: climmob/templates/project/share/share.jinja2:102
 msgid "Editor"
-msgstr ""
+msgstr "Editor"
 
 #: climmob/templates/project/share/share.jinja2:61
 #: climmob/templates/project/share/share.jinja2:105
 msgid "Member"
-msgstr ""
+msgstr "Člen"
 
 #: climmob/templates/project/share/share.jinja2:77
 msgid "Users collaborating in the project"
-msgstr ""
+msgstr "Uživatelé spolupracující na projektu"
 
 #: climmob/templates/project/share/share.jinja2:88
 msgid "Rol"
-msgstr ""
+msgstr "Rol"
 
 #: climmob/templates/project/share/share.jinja2:89
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:9
 #: climmob/templates/snippets/project/registry/create/combination_table.jinja2:11
 msgid "Action"
-msgstr ""
+msgstr "Akce"
 
 #: climmob/templates/project/share/share.jinja2:96
 msgid "Owner"
-msgstr ""
+msgstr "Vlastník"
 
 #: climmob/templates/project/share/share.jinja2:113
 msgid "Do you really want to remove this collaborator?"
-msgstr ""
+msgstr "Opravdu chcete tohoto spolupracovníka odstranit?"
 
 #: climmob/templates/project/share/share.jinja2:113
 msgid "Remove collaborator"
-msgstr ""
+msgstr "Odebrat spolupracovníka"
 
 #: climmob/templates/project/share/share.jinja2:115
 msgid "The project owner can't be removed"
-msgstr ""
+msgstr "Vlastníka projektu nelze odstranit"
 
 #: climmob/templates/project/share/share.jinja2:125
 msgid "There are no users collaborating in this project."
-msgstr ""
+msgstr "Na tomto projektu nespolupracují žádní uživatelé."
 
 #: climmob/templates/project/technologies/technologies.jinja2:4
 msgid "ClimMob - Select technology options"
-msgstr ""
+msgstr "ClimMob - Vyberte možnosti technologie"
 
 #: climmob/templates/project/technologies/technologies.jinja2:19
 msgid "Select technologies"
-msgstr ""
+msgstr "Zvolit technologie"
 
 #: climmob/templates/project/technologies/technologies.jinja2:36
 msgid "Add technology"
-msgstr ""
+msgstr "Přidat technologii"
 
 #: climmob/templates/project/technologies/technologies.jinja2:46
 #: climmob/templates/technologies/technologies.jinja2:48
 msgid "Search technology"
-msgstr ""
+msgstr "Hledat technologie"
 
 #: climmob/templates/project/technologies/technologies.jinja2:50
 #: climmob/templates/technologies/technologies.jinja2:53
 msgid "Technology"
-msgstr ""
+msgstr "Technologie"
 
 #: climmob/templates/project/technologies/technologies.jinja2:51
 msgid "Available"
-msgstr ""
+msgstr "Dostupné"
 
 #: climmob/templates/project/technologies/technologies.jinja2:52
 msgid "Selected"
-msgstr ""
+msgstr "Vybráno"
 
 #: climmob/templates/project/technologies/technologies.jinja2:74
 msgid "Total of combinations"
-msgstr ""
+msgstr "Celkem kombinací"
 
 #: climmob/templates/project/technologies/technologies.jinja2:96
 #: climmob/templates/project/technologies/technologies.jinja2:97
 msgid "Show technologies"
-msgstr ""
+msgstr "Zobrazit technologie"
 
 #: climmob/templates/project/technologies/technologies.jinja2:111
 msgid "Technology options for"
-msgstr ""
+msgstr "Možnosti technologií pro"
 
 #: climmob/templates/project/technologies/technologies.jinja2:151
 #: climmob/templates/technologies/technologies.jinja2:328
 msgid "Create new technology option"
-msgstr ""
+msgstr "Vytvoření nové možnosti technologie"
 
 #: climmob/templates/project/technologies/technologies.jinja2:175
 msgid "New technology option details"
-msgstr ""
+msgstr "Podrobnosti o nové technologii"
 
 #: climmob/templates/project/technologies/technologies.jinja2:183
 msgid "Create an new technology option just for this project"
-msgstr ""
+msgstr "Vytvoření nové možnosti technologie pouze pro tento projekt"
 
 #: climmob/templates/project/technologies/technologies.jinja2:189
 #: climmob/templates/technologies/technologies.jinja2:144
 msgid "Name:"
-msgstr ""
+msgstr "Název:"
 
 #: climmob/templates/project/technologies/technologies.jinja2:192
 #: climmob/templates/technologies/technologies.jinja2:138
 #: climmob/templates/technologies/technologies.jinja2:146
 msgid "Write the technology option name."
-msgstr ""
+msgstr "Napište název možnosti technologie."
 
 #: climmob/templates/projectHelp/projectHelp.jinja2:4
 msgid "ClimMob | Project help"
-msgstr ""
+msgstr "ClimMob | Nápověda k projektu"
 
 #: climmob/templates/projectHelp/projectHelp.jinja2:28
 msgid "Increase number of participants"
-msgstr ""
+msgstr "Zvýšit počet účastníků"
 
 #: climmob/templates/projectHelp/projectHelp.jinja2:55
 msgid ""
 "The project has not yet started collecting information, you cannot increase it"
-msgstr ""
+msgstr "Projekt ještě nezačal shromažďovat informace, nelze je zvýšit"
 
 #: climmob/templates/projectHelp/projectHelp.jinja2:62
 msgid ""
 "This project cannot be increased because the registration form is already closed"
-msgstr ""
+msgstr "Tento projekt nelze navýšit, protože registrační formulář je již uzavřen"
 
 #: climmob/templates/projectHelp/projectHelp.jinja2:68
 #: climmob/templates/snippets/project/project_form.jinja2:11
 msgid "Project code"
-msgstr ""
+msgstr "Kód projektu"
 
 #: climmob/templates/projectHelp/projectHelp.jinja2:69
 #: climmob/templates/snippets/project/project_form.jinja2:12
 msgid "Write the project code."
-msgstr ""
+msgstr "Napište kód projektu."
 
 #: climmob/templates/projectHelp/projectHelp.jinja2:95
 #: climmob/templates/snippets/project/project_form.jinja2:61
 msgid "Number of observers participating in the project"
-msgstr ""
+msgstr "Počet pozorovatelů účastnících se projektu"
 
 #: climmob/templates/projectHelp/projectHelp.jinja2:103
 msgid "Number of technologies"
-msgstr ""
+msgstr "Počet technologií"
 
 #: climmob/templates/projectHelp/projectHelp.jinja2:108
 msgid "Project combinations"
-msgstr ""
+msgstr "Kombinace projektů"
 
 #: climmob/templates/projectHelp/projectHelp.jinja2:113
 msgid "Combination number"
-msgstr ""
+msgstr "Číslo kombinace"
 
 #: climmob/templates/projectHelp/projectHelp.jinja2:133
 msgid "Project adjustments"
-msgstr ""
+msgstr "Úpravy projektu"
 
 #: climmob/templates/projectHelp/projectHelp.jinja2:136
 msgid "How many new packages do you want to add?"
-msgstr ""
+msgstr "Kolik nových balíčků chcete přidat?"
 
 #: climmob/templates/projectHelp/projectHelp.jinja2:137
 msgid "Write the number of packages."
-msgstr ""
+msgstr "Napište počet balíčků."
 
 #: climmob/templates/projectHelp/projectHelp.jinja2:140
 msgid "Apply changes"
-msgstr ""
+msgstr "Provést změny"
 
 #: climmob/templates/projectHelp/projectHelp.jinja2:148
 msgid "Search project"
-msgstr ""
+msgstr "Hledat projekt"
 
 #: climmob/templates/question/library.jinja2:4
 msgid "ClimMob | Questions library"
-msgstr ""
+msgstr "ClimMob | Knihovna otázek"
 
 #: climmob/templates/question/library.jinja2:34
 msgid "Questions library"
-msgstr ""
+msgstr "Knihovna otázek"
 
 #: climmob/templates/question/library.jinja2:48
 msgid "Questions available in the library by category"
-msgstr ""
+msgstr "Otázky dostupné v knihovně podle kategorií"
 
 #: climmob/templates/question/library.jinja2:69
 msgid "Category details"
-msgstr ""
+msgstr "Detaily kategorie"
 
 #: climmob/templates/question/library.jinja2:76
 msgid "Category name:"
-msgstr ""
+msgstr "Název kategorie:"
 
 #: climmob/templates/question/library.jinja2:85
 #: climmob/templates/question/library.jinja2:86
@@ -2388,40 +2434,40 @@ msgstr ""
 #: climmob/templates/technologies/technologies.jinja2:106
 #: climmob/templates/technologies/technologies.jinja2:154
 msgid "Save and close"
-msgstr ""
+msgstr "Uložit a zavřít"
 
 #: climmob/templates/question/library.jinja2:87
 msgid "Delete category"
-msgstr ""
+msgstr "Smazat kategorii"
 
 #: climmob/templates/question/library.jinja2:100
 msgid "Question details"
-msgstr ""
+msgstr "Detaily otázky"
 
 #: climmob/templates/question/library.jinja2:115
 msgid "Delete question"
-msgstr ""
+msgstr "Smazat otázku"
 
 #: climmob/templates/question/library.jinja2:177
 #: climmob/templates/question/library.jinja2:188
 #: climmob/templates/snippets/project/project_form.jinja2:209
 #: climmob/templates/snippets/project/project_form.jinja2:220
 msgid "Used"
-msgstr ""
+msgstr "Použito"
 
 #: climmob/templates/question/library.jinja2:177
 #: climmob/templates/question/library.jinja2:188
 #: climmob/templates/snippets/project/project_form.jinja2:209
 #: climmob/templates/snippets/project/project_form.jinja2:220
 msgid "of"
-msgstr ""
+msgstr "z"
 
 #: climmob/templates/question/library.jinja2:177
 #: climmob/templates/question/library.jinja2:188
 #: climmob/templates/snippets/project/project_form.jinja2:209
 #: climmob/templates/snippets/project/project_form.jinja2:220
 msgid "chars"
-msgstr ""
+msgstr "znaků"
 
 #: climmob/templates/question/library.jinja2:276
 #: climmob/templates/question/library.jinja2:520
@@ -2437,7 +2483,7 @@ msgstr ""
 #: climmob/templates/snippets/question/question-form.jinja2:140
 #: climmob/views/question.py:588
 msgid "Option"
-msgstr ""
+msgstr "Možnost"
 
 #: climmob/templates/question/library.jinja2:276
 #: climmob/templates/question/library.jinja2:520
@@ -2445,147 +2491,147 @@ msgstr ""
 #: climmob/templates/question/library.jinja2:560
 #: climmob/templates/question/library.jinja2:791
 msgid "Write the option value."
-msgstr ""
+msgstr "Zapište hodnotu možnosti."
 
 #: climmob/templates/question/library.jinja2:405
 msgid "Do you really want to remove this question ?"
-msgstr ""
+msgstr "Opravdu chcete tuto otázku odstranit ?"
 
 #: climmob/templates/question/library.jinja2:540
 #: climmob/templates/question/library.jinja2:796
 msgid "Value is other"
-msgstr ""
+msgstr "Hodnota je ostatní"
 
 #: climmob/templates/question/library.jinja2:560
 #: climmob/templates/question/library.jinja2:561
 #: climmob/templates/question/library.jinja2:803
 #: climmob/templates/snippets/question/question-form.jinja2:150
 msgid "Not applicable"
-msgstr ""
+msgstr "Nepoužitelné"
 
 #: climmob/templates/question/library.jinja2:561
 #: climmob/templates/question/library.jinja2:803
 msgid "Value is not applicable"
-msgstr ""
+msgstr "Hodnota není použitelná"
 
 #: climmob/templates/question/library.jinja2:609
 msgid "Write the name of the category"
-msgstr ""
+msgstr "Napište název kategorie"
 
 #: climmob/templates/snippets/delete.jinja2:6
 msgid "Are you sure"
-msgstr ""
+msgstr "Jste si jistý"
 
 #: climmob/templates/snippets/delete.jinja2:11
 msgid "Yes, delete it!"
-msgstr ""
+msgstr "Ano, smazat!"
 
 #: climmob/templates/snippets/delete.jinja2:12
 msgid "No, cancel!"
-msgstr ""
+msgstr "Ne, zrušit!"
 
 #: climmob/templates/snippets/delete.jinja2:41
 msgid "The information could not be deleted."
-msgstr ""
+msgstr "Informace nebylo možné vymazat."
 
 #: climmob/templates/snippets/delete.jinja2:46
 msgid "We have not deleted the data"
-msgstr ""
+msgstr "Data jsme nesmazali"
 
 #: climmob/templates/snippets/jstreeForm.jinja2:39
 msgid "Create new section"
-msgstr ""
+msgstr "Vytvořit novou sekci"
 
 #: climmob/templates/snippets/jstreeQuestions.jinja2:13
 msgid "Create new question"
-msgstr ""
+msgstr "Vytvořit novou otázku"
 
 #: climmob/templates/snippets/jstreeQuestions.jinja2:17
 msgid "Create new category"
-msgstr ""
+msgstr "Vytvořit novou kategorii"
 
 #: climmob/templates/snippets/my_snippet.jinja2:2
 msgid "Hello from Snippet"
-msgstr ""
+msgstr "Dobrý den od Snippet"
 
 #: climmob/templates/snippets/cloneProjects/fieldAgents.jinja2:28
 msgid "The project has no assigned field agents."
-msgstr ""
+msgstr "Projekt nemá žádné přidělené terénní pracovníky."
 
 #: climmob/templates/snippets/cloneProjects/projectDetails.jinja2:9
 msgid "Code"
-msgstr ""
+msgstr "Kód"
 
 #: climmob/templates/snippets/cloneProjects/projectDetails.jinja2:17
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:6
 #: climmob/templates/snippets/project/project_form.jinja2:23
 msgid "Description"
-msgstr ""
+msgstr "Popis"
 
 #: climmob/templates/snippets/cloneProjects/technologiesAndAlias.jinja2:4
 msgid "Technologies and technology options"
-msgstr ""
+msgstr "Technologie a technologické možnosti"
 
 #: climmob/templates/snippets/cloneProjects/technologiesAndAlias.jinja2:23
 #: climmob/templates/snippets/technologies/technologies-stream.jinja2:15
 msgid "only for this project"
-msgstr ""
+msgstr "pouze pro tento projekt"
 
 #: climmob/templates/snippets/cloneProjects/technologiesAndAlias.jinja2:34
 msgid "The technology has no assigned technology options."
-msgstr ""
+msgstr "Technologie nemá přiřazené žádné technologické možnosti."
 
 #: climmob/templates/snippets/cloneProjects/technologiesAndAlias.jinja2:40
 msgid "The project has no assigned technologies."
-msgstr ""
+msgstr "Projekt nemá přiřazené žádné technologie."
 
 #: climmob/templates/snippets/dashboard/project_details.jinja2:10
 msgid "Registration not yet started"
-msgstr ""
+msgstr "Registrace ještě nebyla zahájena"
 
 #: climmob/templates/snippets/dashboard/project_details.jinja2:13
 msgid "Registration ongoing"
-msgstr ""
+msgstr "Registrace probíhá"
 
 #: climmob/templates/snippets/dashboard/project_details.jinja2:17
 msgid "Registration closed"
-msgstr ""
+msgstr "Registrace uzavřena"
 
 #: climmob/templates/snippets/dashboard/project_details.jinja2:19
 msgid "Data collection / analysis ongoing"
-msgstr ""
+msgstr "Probíhá sběr dat / analýza"
 
 #: climmob/templates/snippets/dashboard/project_details.jinja2:25
 msgid "Project created"
-msgstr ""
+msgstr "Projekt vytvořen"
 
 #: climmob/templates/snippets/enumerators/enumerator-form.jinja2:7
 msgid "Write the username."
-msgstr ""
+msgstr "Napište uživatelské jméno."
 
 #: climmob/templates/snippets/project/previewForm.jinja2:38
 msgid "Get GPS point"
-msgstr ""
+msgstr "Získat bod GPS"
 
 #: climmob/templates/snippets/project/previewForm.jinja2:40
 msgid "Latitude"
-msgstr ""
+msgstr "Zeměpisná šířka"
 
 #: climmob/templates/snippets/project/previewForm.jinja2:42
 msgid "Longitude"
-msgstr ""
+msgstr "Zeměpisná délka"
 
 #: climmob/templates/snippets/project/previewForm.jinja2:44
 msgid "Altitude"
-msgstr ""
+msgstr "Nadmořská výška"
 
 #: climmob/templates/snippets/project/previewForm.jinja2:46
 msgid "Accuracy"
-msgstr ""
+msgstr "Přesnost"
 
 #: climmob/templates/snippets/project/previewForm.jinja2:131
 msgid "Get Barcode"
-msgstr ""
+msgstr "Získat čárový kód"
 
 #: climmob/templates/snippets/project/previewForm.jinja2:133
 #: climmob/templates/snippets/project/previewForm.jinja2:148
@@ -2593,297 +2639,304 @@ msgstr ""
 #: climmob/templates/snippets/project/previewForm.jinja2:180
 #: climmob/templates/snippets/project/project_form.jinja2:164
 msgid "Note"
-msgstr ""
+msgstr "Poznámka"
 
 #: climmob/templates/snippets/project/previewForm.jinja2:143
 msgid "Take Picture"
-msgstr ""
+msgstr "Pořídit obrázek"
 
 #: climmob/templates/snippets/project/previewForm.jinja2:145
 msgid "Choose Image"
-msgstr ""
+msgstr "Vyberte si obrázek"
 
 #: climmob/templates/snippets/project/previewForm.jinja2:157
 msgid "Record Sound"
-msgstr ""
+msgstr "Nahrát zvuk"
 
 #: climmob/templates/snippets/project/previewForm.jinja2:159
 msgid "Choose Sound"
-msgstr ""
+msgstr "Zvolte zvuk"
 
 #: climmob/templates/snippets/project/previewForm.jinja2:161
 msgid "Play Sound"
-msgstr ""
+msgstr "Přehrát zvuk"
 
 #: climmob/templates/snippets/project/previewForm.jinja2:173
 msgid "Record Video"
-msgstr ""
+msgstr "Nahrát video"
 
 #: climmob/templates/snippets/project/previewForm.jinja2:175
 msgid "Choose Video"
-msgstr ""
+msgstr "Vyberte si video"
 
 #: climmob/templates/snippets/project/previewForm.jinja2:177
 msgid "Play Video"
-msgstr ""
+msgstr "Přehrát video"
 
 #: climmob/templates/snippets/project/previewForm.jinja2:190
 #: climmob/templates/snippets/project/previewForm.jinja2:219
 msgid "Select date"
-msgstr ""
+msgstr "Zvolte datum"
 
 #: climmob/templates/snippets/project/previewForm.jinja2:191
 #: climmob/templates/snippets/project/previewForm.jinja2:220
 msgid "No date selected"
-msgstr ""
+msgstr "Nebylo vybráno žádné datum"
 
 #: climmob/templates/snippets/project/previewForm.jinja2:193
 #: climmob/templates/snippets/project/previewForm.jinja2:222
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:7
 #: climmob/templates/snippets/question/question-form.jinja2:34
 msgid "Date"
-msgstr ""
+msgstr "Datum"
 
 #: climmob/templates/snippets/project/previewForm.jinja2:205
 #: climmob/templates/snippets/project/previewForm.jinja2:227
 msgid "Select time"
-msgstr ""
+msgstr "Zvolte čas"
 
 #: climmob/templates/snippets/project/previewForm.jinja2:206
 #: climmob/templates/snippets/project/previewForm.jinja2:228
 msgid "No time selected"
-msgstr ""
+msgstr "Nebyl zvolen žádný čas"
 
 #: climmob/templates/snippets/project/previewForm.jinja2:208
 #: climmob/templates/snippets/project/previewForm.jinja2:230
 msgid "Time"
-msgstr ""
+msgstr "Čas"
 
 #: climmob/templates/snippets/project/project_form.jinja2:5
 msgid "1. General information"
-msgstr ""
+msgstr "1. Obecné informace"
 
 #: climmob/templates/snippets/project/project_form.jinja2:18
 msgid "Write the project name."
-msgstr ""
+msgstr "Napište název projektu."
 
 #: climmob/templates/snippets/project/project_form.jinja2:24
 msgid "Write the description."
-msgstr ""
+msgstr "Napište popis."
 
 #: climmob/templates/snippets/project/project_form.jinja2:32
 msgid "Write the tags."
-msgstr ""
+msgstr "Napište značky."
 
 #: climmob/templates/snippets/project/project_form.jinja2:33
 msgid "Press comma after every word to add the tag"
-msgstr ""
+msgstr "Po každém slově přidejte čárku, abyste přidali značku"
 
 #: climmob/templates/snippets/project/project_form.jinja2:40
 msgid "Write the principal investigator."
-msgstr ""
+msgstr "Napište hlavnímu řešiteli."
 
 #: climmob/templates/snippets/project/project_form.jinja2:46
 msgid "Write the email address."
-msgstr ""
+msgstr "Napište e-mailovou adresu."
 
 #: climmob/templates/snippets/project/project_form.jinja2:56
 msgid "2. Size and labels"
-msgstr ""
+msgstr "2. Velikost a štítky"
 
 #: climmob/templates/snippets/project/project_form.jinja2:68
 msgid "Number of items that each participant compares"
-msgstr ""
+msgstr "Počet položek, které každý účastník porovnává"
 
 #: climmob/templates/snippets/project/project_form.jinja2:74
 msgid "Name to be given to the 3 items that each participant compares"
-msgstr ""
+msgstr "Název pro 3 položky, které každý účastník porovnává"
 
 #: climmob/templates/snippets/project/project_form.jinja2:77
 msgid "Item #1"
-msgstr ""
+msgstr "Položka č. 1"
 
 #: climmob/templates/snippets/project/project_form.jinja2:78
 #: climmob/templates/snippets/project/project_form.jinja2:85
 #: climmob/templates/snippets/project/project_form.jinja2:92
 msgid "Write the label for the option."
-msgstr ""
+msgstr "Napište označení pro možnost."
 
 #: climmob/templates/snippets/project/project_form.jinja2:84
 msgid "Item #2"
-msgstr ""
+msgstr "Položka č. 2"
 
 #: climmob/templates/snippets/project/project_form.jinja2:91
 msgid "Item #3"
-msgstr ""
+msgstr "Položka č. 3"
 
 #: climmob/templates/snippets/project/project_form.jinja2:101
 msgid "3. Geographic information"
-msgstr ""
+msgstr "3. Geografické informace"
 
 #: climmob/templates/snippets/project/project_form.jinja2:109
 msgid "Select one country."
-msgstr ""
+msgstr "Select one country."
 
 #: climmob/templates/snippets/project/project_form.jinja2:110
 msgid "Select one country"
-msgstr ""
+msgstr "Select one country"
 
 #: climmob/templates/snippets/project/project_form.jinja2:125
 msgid "4. Type of project"
-msgstr ""
+msgstr "4. Typ projektu"
 
 #: climmob/templates/snippets/project/project_form.jinja2:130
 #: climmob/templates/snippets/question/question-form.jinja2:20
 msgid "Type"
-msgstr ""
+msgstr "Typ"
 
 #: climmob/templates/snippets/project/project_form.jinja2:132
 msgid "On-farm testing"
-msgstr ""
+msgstr "Testování na farmě"
 
 #: climmob/templates/snippets/project/project_form.jinja2:134
 msgid "Consumer/Market testing"
-msgstr ""
+msgstr "Spotřebitelské/tržní testování"
 
 #: climmob/templates/snippets/project/project_form.jinja2:143
 msgid "Do you want to define this project as a template ?"
-msgstr ""
+msgstr "Chcete tento projekt definovat jako šablonu ?"
 
 #: climmob/templates/snippets/project/project_form.jinja2:153
 msgid "Do you want to create your project from a template ?"
-msgstr ""
+msgstr "Chcete vytvořit projekt podle šablony ?"
 
 #: climmob/templates/snippets/project/project_form.jinja2:164
 msgid ""
 "If you select a new template, your current forms will be replaced by the "
 "template forms."
 msgstr ""
+"Pokud vyberete novou šablonu, vaše aktuální formuláře budou nahrazeny formuláři "
+"šablony."
 
 #: climmob/templates/snippets/project/project_form.jinja2:180
 msgid "5. Structure to be cloned"
-msgstr ""
+msgstr "5. Struktura, která má být klonována"
 
 #: climmob/templates/snippets/project/project_form.jinja2:187
 msgid "Technologies"
-msgstr ""
+msgstr "Technologie"
 
 #: climmob/templates/snippets/project/assessment/assessmentform.jinja2:2
 msgid "Data collection moment code:"
-msgstr ""
+msgstr "Kód okamžiku sběru dat:"
 
 #: climmob/templates/snippets/project/assessment/assessmentform.jinja2:6
 msgid "Data collection moment:"
-msgstr ""
+msgstr "Okamžik sběru dat:"
 
 #: climmob/templates/snippets/project/assessment/assessmentform.jinja2:7
 msgid "Write the data collection moment."
-msgstr ""
+msgstr "Napište okamžik sběru dat."
 
 #: climmob/templates/snippets/project/assessment/assessmentform.jinja2:10
 msgid "Interval in days:"
-msgstr ""
+msgstr "Interval ve dnech:"
 
 #: climmob/templates/snippets/project/assessment/assessmentform.jinja2:11
 msgid "Set the interval in days."
-msgstr ""
+msgstr "Nastavte interval ve dnech."
 
 #: climmob/templates/snippets/project/assessment/assessmentform.jinja2:11
 msgid ""
 "This data collection is done after how many days from the distribution of the "
 "packages."
-msgstr ""
+msgstr "Tento sběr dat se provádí po kolika dnech od distribuce balíčků."
 
 #: climmob/templates/snippets/project/assessment/assessmentform.jinja2:16
 msgid ""
 "Will data collection include questions about overall performance and comparison "
 "with check?"
 msgstr ""
+"Bude sběr dat zahrnovat otázky týkající se celkové výkonnosti a srovnání s "
+"kontrolou?"
 
 #: climmob/templates/snippets/project/assessment/assessmentform.jinja2:22
 msgid ""
 "The final data collection moment has to include questions about overall "
 "performance and comparison with check."
 msgstr ""
+"Závěrečný okamžik sběru dat musí zahrnovat otázky týkající se celkové "
+"výkonnosti a srovnání s kontrolou."
 
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:8
 msgid "Format"
-msgstr ""
+msgstr "Formát"
 
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:22
 msgid "List of packages with QR for the registration form"
-msgstr ""
+msgstr "Seznam balíčků s QR pro registrační formulář"
 
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:25
 msgid "List with randomized trial packages"
-msgstr ""
+msgstr "Seznam s balíčky randomizovaných studií"
 
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:28
 msgid "List with field agents and their QR codes to configure ODK Collect"
 msgstr ""
+"Seznam s terénními pracovníky a jejich QR kódy pro konfiguraci ODK Collect"
 
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:31
 msgid "Color cards to explain ClimMob"
-msgstr ""
+msgstr "Barevné karty k vysvětlení ClimMob"
 
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:37
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:186
 msgid "Information collected in all the project"
-msgstr ""
+msgstr "Informace shromážděné ve všech projektech"
 
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:40
 msgid "Information collected in the registration form"
-msgstr ""
+msgstr "Informace shromážděné v registračním formuláři"
 
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:42
 msgid "Information collected in the assessment form"
-msgstr ""
+msgstr "Informace shromážděné v hodnotícím formuláři"
 
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:47
 msgid "Report generated in the analysis of the information"
-msgstr ""
+msgstr "Zpráva vytvořená při analýze informací"
 
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:50
 msgid "Data collected in "
-msgstr ""
+msgstr "Údaje shromážděné v "
 
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:54
 msgid "Printer-friendly registration form"
-msgstr ""
+msgstr "Registrační formulář vhodný pro tisk"
 
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:56
 msgid "Printer-friendly assessment form"
-msgstr ""
+msgstr "Hodnotící formulář vhodný pro tisk"
 
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:61
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:197
 msgid "Project summary"
-msgstr ""
+msgstr "Shrnutí projektu"
 
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:68
 msgid "Stickers for each variety pack"
-msgstr ""
+msgstr "Nálepky pro každé balení odrůdy"
 
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:72
 msgid "Document of submissions with conflicts in the registration form"
-msgstr ""
+msgstr "Dokumentace podání s konflikty v registračním formuláři"
 
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:74
 msgid "Document of submissions with conflicts in the assessment form"
-msgstr ""
+msgstr "Dokumentace podání s rozpory v hodnotícím formuláři"
 
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:79
 msgid "Multimedia content collected in the registration form"
-msgstr ""
+msgstr "Multimediální obsah shromážděný v registračním formuláři"
 
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:81
 msgid "Multimedia content collected in the assessment form"
-msgstr ""
+msgstr "Multimediální obsah shromážděný v hodnotícím formuláři"
 
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:133
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:135
 msgid "Download"
-msgstr ""
+msgstr "Stáhnout"
 
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:139
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:142
@@ -2893,188 +2946,190 @@ msgstr ""
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:201
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:212
 msgid "Create"
-msgstr ""
+msgstr "Vytvořit"
 
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:146
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:160
 msgid "There was a problem creating the product."
-msgstr ""
+msgstr "Při vytváření produktu se vyskytl problém."
 
 #: climmob/templates/snippets/project/registry/groupform.jinja2:2
 msgid "Section label:"
-msgstr ""
+msgstr "Označení sekce:"
 
 #: climmob/templates/snippets/project/registry/groupform.jinja2:5
 msgid "Write the section label."
-msgstr ""
+msgstr "Napište označení sekce."
 
 #: climmob/templates/snippets/project/registry/groupform.jinja2:11
 msgid "Content description:"
-msgstr ""
+msgstr "Popis obsahu:"
 
 #: climmob/templates/snippets/project/registry/groupform.jinja2:13
 msgid "Write the content description."
-msgstr ""
+msgstr "Napište popis obsahu."
 
 #: climmob/templates/snippets/project/registry/question-title.jinja2:5
 #: climmob/templates/snippets/question/question-form.jinja2:23
 msgid "Text"
-msgstr ""
+msgstr "Text"
 
 #: climmob/templates/snippets/project/registry/create/combination_table.jinja2:6
 msgid "Combination of levels"
-msgstr ""
+msgstr "Kombinace úrovní"
 
 #: climmob/templates/snippets/project/registry/create/combination_table.jinja2:10
 msgid "How many packages can you create with this combination?"
-msgstr ""
+msgstr "Kolik balíčků můžete touto kombinací vytvořit?"
 
 #: climmob/templates/snippets/project/registry/create/combination_table.jinja2:34
 #: climmob/templates/snippets/project/registry/create/combination_table.jinja2:36
 msgid "Click to toggle"
-msgstr ""
+msgstr "Klikněte pro přepnutí"
 
 #: climmob/templates/snippets/project/registry/create/combination_table.jinja2:34
 msgid "Included"
-msgstr ""
+msgstr "Zahrnuto"
 
 #: climmob/templates/snippets/project/registry/create/combination_table.jinja2:36
 msgid "Excluded"
-msgstr ""
+msgstr "Vyloučeno"
 
 #: climmob/templates/snippets/project/technologies/aliasgroup.jinja2:5
 #: climmob/templates/snippets/project/technologies/techgroup.jinja2:5
 msgid "Drop up to exclude"
-msgstr ""
+msgstr "Pokles až k vyloučení"
 
 #: climmob/templates/snippets/project/technologies/aliasgroup.jinja2:7
 #: climmob/templates/snippets/project/technologies/techgroup.jinja2:7
 msgid "Drop down to include"
-msgstr ""
+msgstr "Rozbalit a zahrnout"
 
 #: climmob/templates/snippets/project/technologies/aliasgroup.jinja2:16
 msgid "Technology option from libraries"
-msgstr ""
+msgstr "Možnost využití technologií v knihovnách"
 
 #: climmob/templates/snippets/project/technologies/aliasgroup.jinja2:44
 msgid "Technology options included for this project"
-msgstr ""
+msgstr "Možnosti technologie zahrnuté do tohoto projektu"
 
 #: climmob/templates/snippets/project/technologies/aliasgroup.jinja2:47
 msgid "Add new technology option"
-msgstr ""
+msgstr "Přidat novou možnost technologie"
 
 #: climmob/templates/snippets/project/technologies/techgroup.jinja2:29
 msgid "with"
-msgstr ""
+msgstr "s"
 
 #: climmob/templates/snippets/question/question-form.jinja2:3
 msgid "Variable code"
-msgstr ""
+msgstr "Kód proměnné"
 
 #: climmob/templates/snippets/question/question-form.jinja2:6
 msgid "Write the variable code."
-msgstr ""
+msgstr "Napište kód proměnné."
 
 #: climmob/templates/snippets/question/question-form.jinja2:7
 msgid ""
 "Column label for the database (without spaces or special characters), for "
 "example 'grainyield'"
 msgstr ""
+"Označení sloupce databáze (bez mezer a speciálních znaků), například "
+"\"grainyield\"."
 
 #: climmob/templates/snippets/question/question-form.jinja2:12
 msgid "Variable name"
-msgstr ""
+msgstr "Název proměnné"
 
 #: climmob/templates/snippets/question/question-form.jinja2:14
 msgid "Write the variable name."
-msgstr ""
+msgstr "Napište název proměnné."
 
 #: climmob/templates/snippets/question/question-form.jinja2:15
 msgid "Short name for the variable, for example 'Grain Yield'"
-msgstr ""
+msgstr "Krátký název proměnné, například \"Grain Yield\"."
 
 #: climmob/templates/snippets/question/question-form.jinja2:26
 msgid "Location"
-msgstr ""
+msgstr "Lokalita"
 
 #: climmob/templates/snippets/question/question-form.jinja2:27
 msgid "Decimal"
-msgstr ""
+msgstr "Desetinné číslo"
 
 #: climmob/templates/snippets/question/question-form.jinja2:28
 msgid "Integer"
-msgstr ""
+msgstr "Celé číslo"
 
 #: climmob/templates/snippets/question/question-form.jinja2:29
 msgid "GeoPoint"
-msgstr ""
+msgstr "GeoPoint"
 
 #: climmob/templates/snippets/question/question-form.jinja2:30
 msgid "Select one"
-msgstr ""
+msgstr "Vyberte jeden"
 
 #: climmob/templates/snippets/question/question-form.jinja2:31
 msgid "Select multiple"
-msgstr ""
+msgstr "Vyberte více"
 
 #: climmob/templates/snippets/question/question-form.jinja2:32
 msgid "Geotrace"
-msgstr ""
+msgstr "Geotrace"
 
 #: climmob/templates/snippets/question/question-form.jinja2:33
 msgid "Geoshape"
-msgstr ""
+msgstr "Geoshape"
 
 #: climmob/templates/snippets/question/question-form.jinja2:35
 msgid "Time "
-msgstr ""
+msgstr "Čas "
 
 #: climmob/templates/snippets/question/question-form.jinja2:36
 msgid "DateTime "
-msgstr ""
+msgstr "Datum a čas "
 
 #: climmob/templates/snippets/question/question-form.jinja2:37
 msgid "Image "
-msgstr ""
+msgstr "Obrázek "
 
 #: climmob/templates/snippets/question/question-form.jinja2:38
 msgid "Audio "
-msgstr ""
+msgstr "Audio "
 
 #: climmob/templates/snippets/question/question-form.jinja2:39
 msgid "Video "
-msgstr ""
+msgstr "Video "
 
 #: climmob/templates/snippets/question/question-form.jinja2:40
 msgid "Barcode/QR"
-msgstr ""
+msgstr "Čárový kód/QR"
 
 #: climmob/templates/snippets/question/question-form.jinja2:51
 msgid "Category"
-msgstr ""
+msgstr "Kategorie"
 
 #: climmob/templates/snippets/question/question-form.jinja2:69
 #: climmob/templates/snippets/question/values/char-form.jinja2:2
 #: climmob/templates/snippets/question/values/perf-form.jinja2:2
 msgid "Question asked"
-msgstr ""
+msgstr "Položená otázka"
 
 #: climmob/templates/snippets/question/question-form.jinja2:71
 msgid "Write the question asked."
-msgstr ""
+msgstr "Napište položenou otázku."
 
 #: climmob/templates/snippets/question/question-form.jinja2:72
 msgid "Text of the question as shown in the ODK Collect app."
-msgstr ""
+msgstr "Text otázky zobrazený v aplikaci ODK Collect."
 
 #: climmob/templates/snippets/question/question-form.jinja2:77
 msgid "Unit"
-msgstr ""
+msgstr "Jednotka"
 
 #: climmob/templates/snippets/question/question-form.jinja2:87
 msgid "How to describe the ranking variable"
-msgstr ""
+msgstr "Jak popsat proměnnou hodnocení"
 
 #: climmob/templates/snippets/question/question-form.jinja2:91
 msgid ""
@@ -3082,10 +3137,13 @@ msgid ""
 "technologies based on a criterion. In tricot, we compare three options, so we "
 "can know the ranking of the options by asking two questions only."
 msgstr ""
+"Pořadí možností je typ otázky, která se používá k porovnání dvou nebo více "
+"technologií na základě určitého kritéria. V trikotu porovnáváme tři možnosti, "
+"takže pořadí možností můžeme zjistit pouze na základě dvou otázek."
 
 #: climmob/templates/snippets/question/question-form.jinja2:101
 msgid "How to describe a comparison with check"
-msgstr ""
+msgstr "Jak popsat porovnání pomocí kontroly"
 
 #: climmob/templates/snippets/question/question-form.jinja2:105
 msgid ""
@@ -3094,12 +3152,16 @@ msgid ""
 "farmer or a commonly used technology. For example, if a project is evaluating "
 "three different varieties of bean then the performance questions would be:"
 msgstr ""
+"Srovnání s kontrolou je typ otázky, která se používá k porovnání technologií "
+"testovaných v projektu se současnou technologií používanou zemědělcem nebo "
+"běžně používanou technologií. Pokud se například v projektu hodnotí tři různé "
+"odrůdy fazolí, pak by otázky týkající se výkonu byly následující:"
 
 #: climmob/templates/snippets/question/question-form.jinja2:108
 #: climmob/templates/snippets/question/question-form.jinja2:110
 #: climmob/templates/snippets/question/question-form.jinja2:112
 msgid "In terms of taste, how does variety"
-msgstr ""
+msgstr "Co se týče chuti, jak se projevuje rozmanitost"
 
 #: climmob/templates/snippets/question/question-form.jinja2:108
 #: climmob/templates/snippets/question/question-form.jinja2:110
@@ -3107,393 +3169,403 @@ msgstr ""
 #: climmob/templates/snippets/question/question-form.jinja2:119
 #: climmob/templates/snippets/question/values/perf-form.jinja2:5
 msgid "compares with the variety you usually use?"
-msgstr ""
+msgstr "v porovnání s odrůdou, kterou obvykle používáte?"
 
 #: climmob/templates/snippets/question/question-form.jinja2:115
 msgid "In ClimMob you define this with one statement with the wildcard"
-msgstr ""
+msgstr "V aplikaci ClimMob to definujete jedním příkazem se zástupným znakem"
 
 #: climmob/templates/snippets/question/question-form.jinja2:116
 #: climmob/templates/snippets/question/question-form.jinja2:119
 #: climmob/templates/snippets/question/values/perf-form.jinja2:5
 msgid "option"
-msgstr ""
+msgstr "možnost"
 
 #: climmob/templates/snippets/question/question-form.jinja2:116
 msgid "For example:"
-msgstr ""
+msgstr "Například:"
 
 #: climmob/templates/snippets/question/question-form.jinja2:119
 #: climmob/templates/snippets/question/values/perf-form.jinja2:5
 msgid "In terms of taste, how does"
-msgstr ""
+msgstr "Co se týče chuti, jak se"
 
 #: climmob/templates/snippets/question/question-form.jinja2:121
 msgid "The user answers it with two choices 'Better' or 'Worse'"
-msgstr ""
+msgstr "Uživatel na ni odpovídá dvěma možnostmi \"Lepší\" nebo \"Horší\"."
 
 #: climmob/templates/snippets/question/question-form.jinja2:132
 msgid "Options for select"
-msgstr ""
+msgstr "Možnosti výběru"
 
 #: climmob/templates/snippets/question/question-form.jinja2:162
 msgid "Answer required"
-msgstr ""
+msgstr "Vyžadovaná odpověď"
 
 #: climmob/templates/snippets/question/question-form.jinja2:169
 msgid "Providing an answer to this question is obligatory during data collection."
-msgstr ""
+msgstr "Poskytnutí odpovědi na tuto otázku je při sběru dat povinné."
 
 #: climmob/templates/snippets/question/question-form.jinja2:175
 msgid "Expand question"
-msgstr ""
+msgstr "Rozšířit otázku"
 
 #: climmob/templates/snippets/question/question-form.jinja2:189
 msgid "What does 'Expand question' mean?"
-msgstr ""
+msgstr "Co znamená \"rozšířit otázku\"?"
 
 #: climmob/templates/snippets/question/question-form.jinja2:193
 msgid ""
 "Expands a given question to all options A, B, C in your tricot project, given "
 "to you a unique answer to each of your tested options"
 msgstr ""
+"Rozšíří danou otázku na všechny možnosti A, B, C ve vašem projektu trikot, "
+"přičemž vám poskytne jedinečnou odpověď na každou z testovaných možností"
 
 #: climmob/templates/snippets/question/question-form.jinja2:193
 msgid "Example:"
-msgstr ""
+msgstr "Příklad:"
 
 #: climmob/templates/snippets/question/question-form.jinja2:196
 #: climmob/templates/snippets/question/question-form.jinja2:198
 #: climmob/templates/snippets/question/question-form.jinja2:200
 msgid "Yield in kg"
-msgstr ""
+msgstr "Výnos v kg"
 
 #: climmob/templates/snippets/question/question-form.jinja2:196
 #: climmob/views/cloneProjects/cloneProjects.py:95 climmob/views/project.py:72
 msgid "Option A"
-msgstr ""
+msgstr "Možnost A"
 
 #: climmob/templates/snippets/question/question-form.jinja2:198
 #: climmob/views/cloneProjects/cloneProjects.py:96 climmob/views/project.py:73
 msgid "Option B"
-msgstr ""
+msgstr "Možnost B"
 
 #: climmob/templates/snippets/question/question-form.jinja2:200
 #: climmob/views/cloneProjects/cloneProjects.py:97 climmob/views/project.py:74
 msgid "Option C"
-msgstr ""
+msgstr "Možnost C"
 
 #: climmob/templates/snippets/question/question-form.jinja2:211
 #: climmob/templates/snippets/question/question-form.jinja2:224
 msgid "Answer"
-msgstr ""
+msgstr "Odpověď"
 
 #: climmob/templates/snippets/question/values/char-form.jinja2:4
 #: climmob/templates/snippets/question/values/char-form.jinja2:7
 msgid "Write the question."
-msgstr ""
+msgstr "Napište otázku."
 
 #: climmob/templates/snippets/question/values/char-form.jinja2:5
 #: climmob/templates/snippets/question/values/char-form.jinja2:8
 #: climmob/templates/snippets/question/values/perf-form.jinja2:5
 msgid "Example"
-msgstr ""
+msgstr "Příklad"
 
 #: climmob/templates/snippets/question/values/char-form.jinja2:5
 #: climmob/templates/snippets/question/values/char-form.jinja2:8
 msgid "Which variety gave you"
-msgstr ""
+msgstr "Která odrůda vám poskytla"
 
 #: climmob/templates/snippets/question/values/char-form.jinja2:5
 msgid "more"
-msgstr ""
+msgstr "větší"
 
 #: climmob/templates/snippets/question/values/char-form.jinja2:5
 #: climmob/templates/snippets/question/values/char-form.jinja2:8
 msgid "yield"
-msgstr ""
+msgstr "výnos"
 
 #: climmob/templates/snippets/question/values/char-form.jinja2:8
 msgid "less"
-msgstr ""
+msgstr "menší"
 
 #: climmob/templates/snippets/question/values/perf-form.jinja2:4
 msgid "Write the statement."
-msgstr ""
+msgstr "Napište prohlášení."
 
 #: climmob/templates/snippets/technologies/technologies-form.jinja2:4
 msgid "Technology name"
-msgstr ""
+msgstr "Název technologie"
 
 #: climmob/templates/snippets/technologies/technologies-form.jinja2:7
 msgid "Write the technology name."
-msgstr ""
+msgstr "Napište název technologie."
 
 #: climmob/templates/technologies/technologies.jinja2:4
 msgid "ClimMob | Technology options library"
-msgstr ""
+msgstr "ClimMob | Knihovna technologických možností"
 
 #: climmob/templates/technologies/technologies.jinja2:28
 msgid "Technologies library"
-msgstr ""
+msgstr "Knihovna technologií"
 
 #: climmob/templates/technologies/technologies.jinja2:38
 msgid "Technologies available"
-msgstr ""
+msgstr "Dostupné technologie"
 
 #: climmob/templates/technologies/technologies.jinja2:54
 msgid "Number of options"
-msgstr ""
+msgstr "Počet možností"
 
 #: climmob/templates/technologies/technologies.jinja2:79
 msgid "Create new technology"
-msgstr ""
+msgstr "Vytvoření nové technologie"
 
 #: climmob/templates/technologies/technologies.jinja2:92
 msgid "Technology details"
-msgstr ""
+msgstr "Podrobnosti o technologii"
 
 #: climmob/templates/technologies/technologies.jinja2:104
 msgid "Delete technology"
-msgstr ""
+msgstr "Odstranit technologii"
 
 #: climmob/templates/technologies/technologies.jinja2:105
 #: climmob/templates/technologies/technologies.jinja2:153
 msgid "Add and close"
-msgstr ""
+msgstr "Přidat a zavřít"
 
 #: climmob/templates/technologies/technologies.jinja2:121
 msgid "Technology options details"
-msgstr ""
+msgstr "Podrobnosti o technologických možnostech"
 
 #: climmob/templates/technologies/technologies.jinja2:137
 msgid "Write each technology option on separate lines."
-msgstr ""
+msgstr "Každou možnost technologie napište na samostatný řádek."
 
 #: climmob/templates/technologies/technologies.jinja2:152
 msgid "Delete option"
-msgstr ""
+msgstr "Odstranit možnost"
 
 #: climmob/templates/technologies/technologies.jinja2:297
 msgid "List of technology options:"
-msgstr ""
+msgstr "Seznam technologických možností:"
 
 #: climmob/templates/technologies/technologies.jinja2:420
 msgid "Do you really want to remove this technology?"
-msgstr ""
+msgstr "Opravdu chcete tuto technologii odstranit?"
 
 #: climmob/templates/technologies/technologies.jinja2:426
 msgid "Do you really want to remove this technology option?"
-msgstr ""
+msgstr "Opravdu chcete tuto možnost technologie odstranit?"
 
 #: climmob/templates/technologies/technologies.jinja2:482
 msgid "Creating technologies in the library"
-msgstr ""
+msgstr "Vytváření technologií v knihovně"
 
 #: climmob/templates/technologies/technologies.jinja2:483
 msgid "Click on the button: 'Create new technology'."
-msgstr ""
+msgstr "Klikněte na tlačítko \"Vytvořit novou technologii\"."
 
 #: climmob/templates/technologies/technologies.jinja2:483
 msgid "Click on the technology row."
-msgstr ""
+msgstr "Klikněte na řádek technologie."
 
 #: climmob/utility/validators.py:13
 msgid "Invalid password"
-msgstr ""
+msgstr "Neplatné heslo"
 
 #: climmob/utility/validators.py:16
 msgid "User name already exits"
-msgstr ""
+msgstr "Uživatelské jméno již existuje"
 
 #: climmob/utility/validators.py:19
 msgid "There is already an account using to this email"
-msgstr ""
+msgstr "Na tento e-mail již existuje účet, který používá"
 
 #: climmob/utility/validators.py:24
 msgid "You need to accept the terms of service"
-msgstr ""
+msgstr "Musíte přijmout podmínky služby"
 
 #: climmob/utility/validators.py:27
 msgid "User cannot be emtpy"
-msgstr ""
+msgstr "Uživatel nemůže být prázdný"
 
 #: climmob/utility/validators.py:30
 msgid "Password cannot be emtpy"
-msgstr ""
+msgstr "Heslo nemůže být prázdné"
 
 #: climmob/utility/validators.py:33
 msgid "Full name cannot be emtpy"
-msgstr ""
+msgstr "Celé jméno nemůže být prázdné"
 
 #: climmob/utility/validators.py:36
 msgid "Email cannot be emtpy"
-msgstr ""
+msgstr "E-mail nemůže být prázdný"
 
 #: climmob/views/Api/projectAssessments.py:574
 #: climmob/views/Api/projectAssessments.py:687 climmob/views/assessment.py:87
 #: climmob/views/assessment.py:103 climmob/views/registry.py:70
 #: climmob/views/registry.py:86
 msgid "There is already a group with this name."
-msgstr ""
+msgstr "Skupina s tímto názvem již existuje."
 
 #: climmob/views/assessment.py:94 climmob/views/registry.py:77
 msgid "The section was successfully added"
-msgstr ""
+msgstr "Sekce byla úspěšně přidána"
 
 #: climmob/views/assessment.py:110 climmob/views/registry.py:93
 msgid "The section was successfully updated"
-msgstr ""
+msgstr "Sekce byla úspěšně aktualizována"
 
 #: climmob/views/Api/projectAssessments.py:1422
 #: climmob/views/Api/projectRegistry.py:896 climmob/views/assessment.py:348
 #: climmob/views/registry.py:287
 msgid "Questions cannot be outside a group"
-msgstr ""
+msgstr "Otázky nemohou být mimo skupinu"
 
 #: climmob/views/assessment.py:479 climmob/views/project_combinations.py:291
 msgid ""
 "There has been a problem in the creation of the basic structure of the project, "
 "this may be due to something wrong with the form."
 msgstr ""
+"Při vytváření základní struktury projektu došlo k problému, který může být "
+"způsoben chybou ve formuláři."
 
 #: climmob/views/assessment.py:482 climmob/views/project_combinations.py:294
 msgid ""
 "Contact the ClimMob team with the next message to get the solution to the "
 "problem:"
-msgstr ""
+msgstr "Další zprávou kontaktujte tým ClimMob a získejte řešení problému:"
 
 #: climmob/views/basic_views.py:136
 msgid "ClimMob Version 3 - Password recovery"
-msgstr ""
+msgstr "ClimMob verze 3 - Obnovení hesla"
 
 #: climmob/views/basic_views.py:175
 msgid ""
 "Hello, \n"
 "\n"
 msgstr ""
+"Dobrý den, \n"
+"\n"
 
 #: climmob/views/basic_views.py:176
 msgid ""
 "You requested ClimMob Version 3 to send you your password.\n"
 "\n"
 msgstr ""
+"Požádali jste společnost ClimMob verze 3 o zaslání hesla.\n"
+"\n"
 
 #: climmob/views/basic_views.py:179
 msgid "Your account is: {} \n"
-msgstr ""
+msgstr "Váš účet je: {} \n"
 
 #: climmob/views/basic_views.py:182
 msgid ""
 "Your password is: {} \n"
 "\n"
 msgstr ""
+"Vaše heslo je: {} \n"
+"\n"
 
 #: climmob/views/basic_views.py:185
 msgid "Regards,\n"
-msgstr ""
+msgstr "S pozdravem,\n"
 
 #: climmob/views/basic_views.py:186
 msgid "The ClimMob team.\n"
-msgstr ""
+msgstr "Tým ClimMob.\n"
 
 #: climmob/views/basic_views.py:191
 msgid "Cannot find an user with such email address"
-msgstr ""
+msgstr "Nelze najít uživatele s takovou e-mailovou adresou"
 
 #: climmob/views/basic_views.py:195
 msgid "You need to provide an email address"
-msgstr ""
+msgstr "Musíte zadat e-mailovou adresu"
 
 #: climmob/views/basic_views.py:264
 msgid "Password does not match {}"
-msgstr ""
+msgstr "Heslo neodpovídá {}"
 
 #: climmob/views/basic_views.py:269
 msgid "The account name cannot have any special characters."
-msgstr ""
+msgstr "Název účtu nesmí obsahovat žádné speciální znaky."
 
 #: climmob/views/basic_views.py:273
 msgid "User is None!"
-msgstr ""
+msgstr "Uživatel neexistuje!"
 
 #: climmob/views/basic_views.py:275
 msgid "Unable to create user"
-msgstr ""
+msgstr "Nelze vytvořit uživatele"
 
 #: climmob/views/Api/enumerators.py:50 climmob/views/enumerator.py:55
 msgid "The field agent was created successfully."
-msgstr ""
+msgstr "Terénní pracovník byl úspěšně vytvořen."
 
 #: climmob/views/enumerator.py:59
 msgid "This field agent username already exists."
-msgstr ""
+msgstr "Toto uživatelské jméno terénního pracovníka již existuje."
 
 #: climmob/views/Api/enumerators.py:128 climmob/views/enumerator.py:90
 msgid "The field agent was modified successfully."
-msgstr ""
+msgstr "Terénní pracovník byl úspěšně upraven."
 
 #: climmob/views/profile.py:74
 msgid "User with the same email address has already been registered."
-msgstr ""
+msgstr "Uživatel se stejnou e-mailovou adresou již byl zaregistrován."
 
 #: climmob/views/profile.py:78
 msgid "Organization cannot be empty"
-msgstr ""
+msgstr "Organizace nemůže být prázdná"
 
 #: climmob/views/profile.py:82
 msgid "Email cannot be empty"
-msgstr ""
+msgstr "E-mail nemůže být prázdný"
 
 #: climmob/views/profile.py:84
 msgid "Full name cannot be empty"
-msgstr ""
+msgstr "Celé jméno nesmí být prázdné"
 
 #: climmob/views/profile.py:110
 msgid "Cannot change password"
-msgstr ""
+msgstr "Nelze změnit heslo"
 
 #: climmob/views/profile.py:114
 msgid "New password and re-type are not equal"
-msgstr ""
+msgstr "Nové heslo a opakované zadání se nerovnají"
 
 #: climmob/views/profile.py:118
 msgid "New password cannot be empty"
-msgstr ""
+msgstr "Nové heslo nemůže být prázdné"
 
 #: climmob/views/profile.py:122
 msgid "The current password is not valid"
-msgstr ""
+msgstr "Aktuální heslo není platné"
 
 #: climmob/views/project.py:87
 msgid "The project was created successfully"
-msgstr ""
+msgstr "Projekt byl úspěšně vytvořen"
 
 #: climmob/views/Api/projectCreation.py:372 climmob/views/project.py:182
 msgid "A project already exists with this code."
-msgstr ""
+msgstr "Projekt s tímto kódem již existuje."
 
 #: climmob/views/Api/projectCreation.py:356
 #: climmob/views/Api/projectCreation.py:723 climmob/views/project.py:188
 #: climmob/views/project.py:423
 msgid "The names that the items will receive should be different."
-msgstr ""
+msgstr "Názvy, které položky dostanou, by se měly lišit."
 
 #: climmob/views/project.py:193
 msgid "The project code can't be empty"
-msgstr ""
+msgstr "Kód projektu nemůže být prázdný"
 
 #: climmob/views/project.py:196
 msgid "The number of observations must be greater than 0."
-msgstr ""
+msgstr "Počet pozorování musí být větší než 0."
 
 #: climmob/views/project.py:412
 msgid "The project was modified successfully"
-msgstr ""
+msgstr "Projekt byl úspěšně upraven"
 
 #: climmob/views/Api/projectCreation.py:799 climmob/views/project.py:465
 msgid "The project was deleted successfully"
-msgstr ""
+msgstr "Projekt byl úspěšně odstraněn"
 
 #: climmob/views/project_combinations.py:221
 msgid ""
@@ -3501,11 +3573,16 @@ msgid ""
 "available quantity of each combination (Click on the 'Modify' button) and try "
 "to generate the packages again."
 msgstr ""
+"Při vytváření balíčků došlo k problému, zkontrolujte prosím dostupné množství "
+"jednotlivých kombinací (klikněte na tlačítko \"Upravit\") a zkuste balíčky "
+"vygenerovat znovu."
 
 #: climmob/views/project_enumerators.py:93
 msgid ""
 "The user {} cannot be added because there is another user with the same username"
 msgstr ""
+"Uživatele {} nelze přidat, protože existuje jiný uživatel se stejným "
+"uživatelským jménem"
 
 #: climmob/views/project_technologies.py:154
 msgid ""
@@ -3513,101 +3590,104 @@ msgid ""
 "you are exceeding this number so you must remove technology options to be able "
 "to create the packages later."
 msgstr ""
+"ClimMob omezil počet možných kombinací na 50, v současné době tento počet "
+"překračujete, takže musíte odstranit možnosti technologie, abyste mohli balíčky "
+"vytvořit později."
 
 #: climmob/views/project_technologies.py:304 climmob/views/techaliases.py:71
 #: climmob/views/techaliases.py:151
 msgid "This technology option already exists in the technology"
-msgstr ""
+msgstr "Tato technologická možnost již existuje v technologii"
 
 #: climmob/views/project_technologies.py:311 climmob/views/techaliases.py:77
 #: climmob/views/techaliases.py:157
 msgid "The name of the technology option cannot be empy"
-msgstr ""
+msgstr "Název možnosti technologie nemůže být prázdný"
 
 #: climmob/views/question.py:108 climmob/views/question.py:543
 msgid "The question was successfully modified"
-msgstr ""
+msgstr "Otázka byla úspěšně upravena"
 
 #: climmob/views/question.py:122 climmob/views/question.py:551
 msgid "Incomplete information."
-msgstr ""
+msgstr "Neúplné informace."
 
 #: climmob/views/question.py:260
 msgid "Option already exists"
-msgstr ""
+msgstr "Možnost již existuje"
 
 #: climmob/views/question.py:262
 msgid "Both code and label cannot be empty"
-msgstr ""
+msgstr "Kód i štítek nemohou být prázdné"
 
 #: climmob/views/question.py:340 climmob/views/question.py:405
 #: climmob/views/question.py:509
 msgid "The question was successfully added"
-msgstr ""
+msgstr "Otázka byla úspěšně přidána"
 
 #: climmob/views/question.py:344
 msgid "You successfully updated the performance statement."
-msgstr ""
+msgstr "Úspěšně jste aktualizovali výkaz výkonu."
 
 #: climmob/views/question.py:352 climmob/views/question.py:471
 msgid "The performance statement must have the wildcard {{option}}"
-msgstr ""
+msgstr "Příkaz výkonu musí mít zástupný znak {{option}}"
 
 #: climmob/views/question.py:409
 msgid "You successfully updated the characteristic."
-msgstr ""
+msgstr "Úspěšně jste aktualizovali charakteristiku."
 
 #: climmob/views/question.py:514
 msgid "There is another question with the same variable code."
-msgstr ""
+msgstr "Existuje další otázka se stejným proměnným kódem."
 
 #: climmob/views/Api/questions.py:242 climmob/views/question.py:548
 msgid "There is another question with the same code."
-msgstr ""
+msgstr "Existuje další otázka se stejným kódem."
 
 #: climmob/views/question.py:695
 msgid "Could not create category"
-msgstr ""
+msgstr "Nepodařilo se vytvořit kategorii"
 
 #: climmob/views/question.py:701
 msgid "The category was created successfully"
-msgstr ""
+msgstr "Kategorie byla úspěšně vytvořena"
 
 #: climmob/views/question.py:707 climmob/views/question.py:735
 msgid "This category name already exists."
-msgstr ""
+msgstr "Tento název kategorie již existuje."
 
 #: climmob/views/question.py:721
 msgid "Could not update the category"
-msgstr ""
+msgstr "Kategorii nelze aktualizovat"
 
 #: climmob/views/question.py:727
 msgid "The category was updated successfully"
-msgstr ""
+msgstr "Kategorie byla úspěšně aktualizována"
 
 #: climmob/views/question.py:746
 msgid "Could not delete the category"
-msgstr ""
+msgstr "Kategorii se nepodařilo odstranit"
 
 #: climmob/views/question.py:752
 msgid "The category was deleted successfully"
-msgstr ""
+msgstr "Kategorie byla úspěšně odstraněna"
 
 #: climmob/views/technologies.py:143 climmob/views/technologies.py:205
 msgid "This technology already exists in your personal library"
-msgstr ""
+msgstr "Tato technologie již existuje ve vaší osobní knihovně"
 
 #: climmob/views/technologies.py:149 climmob/views/technologies.py:211
 msgid "This technology already exists in the generic library"
-msgstr ""
+msgstr "Tato technologie již existuje v generické knihovně"
 
 #: climmob/views/technologies.py:155 climmob/views/technologies.py:217
 msgid "You need to set values for the name"
-msgstr ""
+msgstr "Je třeba nastavit hodnoty pro název"
 
 #: climmob/views/technologies.py:258
 msgid "The technology was deleted successfully"
-msgstr ""
+msgstr "The technology was deleted successfully"
 
 #: climmob/views/Api/dashboard.py:21
 #: climmob/views/Api/projectAssessmentStart.py:394
@@ -3637,7 +3717,7 @@ msgstr ""
 #: climmob/views/Api/project_analysis.py:85
 #: climmob/views/Api/project_analysis.py:193 climmob/views/Api/questions.py:588
 msgid "Error in the JSON, It does not have the 'body' parameter."
-msgstr ""
+msgstr "Technologie byla úspěšně odstraněna."
 
 #: climmob/views/Api/dashboard.py:52 climmob/views/Api/projectAssessments.py:76
 #: climmob/views/Api/projectCreation.py:731
@@ -3650,7 +3730,7 @@ msgstr ""
 #: climmob/views/Api/projectTechnologies.py:185
 #: climmob/views/Api/projectTechnologies.py:248
 msgid "There is no a project with that code."
-msgstr ""
+msgstr "Projekt s tímto kódem neexistuje."
 
 #: climmob/views/Api/dashboard.py:56 climmob/views/Api/enumerators.py:75
 #: climmob/views/Api/enumerators.py:147 climmob/views/Api/enumerators.py:233
@@ -3722,7 +3802,7 @@ msgstr ""
 #: climmob/views/Api/technologies.py:196 climmob/views/Api/technologies.py:240
 #: climmob/views/Bot/bot.py:65
 msgid "Error in the JSON."
-msgstr ""
+msgstr "Chyba v JSON."
 
 #: climmob/views/Api/dashboard.py:59 climmob/views/Api/enumerators.py:93
 #: climmob/views/Api/projectAssessmentStart.py:473
@@ -3754,15 +3834,15 @@ msgstr ""
 #: climmob/views/Api/questionsGroups.py:281 climmob/views/Api/techaliases.py:130
 #: climmob/views/Api/technologies.py:100 climmob/views/Bot/bot.py:88
 msgid "Only accepts GET method."
-msgstr ""
+msgstr "Akceptuje pouze metodu GET."
 
 #: climmob/views/Api/enumerators.py:58
 msgid "This field agent name already exists."
-msgstr ""
+msgstr "Toto jméno terénního pracovníka již existuje."
 
 #: climmob/views/Api/enumerators.py:64
 msgid "The password and its retype are not the same."
-msgstr ""
+msgstr "Heslo a jeho opakované zadání nejsou stejné."
 
 #: climmob/views/Api/enumerators.py:71 climmob/views/Api/enumerators.py:143
 #: climmob/views/Api/enumerators.py:229
@@ -3814,7 +3894,7 @@ msgstr ""
 #: climmob/views/Api/techaliases.py:274 climmob/views/Api/technologies.py:71
 #: climmob/views/Api/technologies.py:192
 msgid "Not all parameters have data."
-msgstr ""
+msgstr "Ne všechny parametry mají data."
 
 #: climmob/views/Api/enumerators.py:78 climmob/views/Api/enumerators.py:150
 #: climmob/views/Api/enumerators.py:236 climmob/views/Api/enumerators.py:274
@@ -3866,41 +3946,41 @@ msgstr ""
 #: climmob/views/Api/technologies.py:78 climmob/views/Api/technologies.py:199
 #: climmob/views/Api/technologies.py:243 climmob/views/Bot/bot.py:68
 msgid "Only accepts POST method."
-msgstr ""
+msgstr "Přijímá pouze metodu POST."
 
 #: climmob/views/Api/enumerators.py:136 climmob/views/Api/enumerators.py:222
 msgid "There is no field agent with that identifier."
-msgstr ""
+msgstr "Neexistuje žádný terénní pracovník s tímto identifikátorem."
 
 #: climmob/views/Api/enumerators.py:200
 msgid "The password was modified successfully."
-msgstr ""
+msgstr "Heslo bylo úspěšně upraveno."
 
 #: climmob/views/Api/enumerators.py:208
 msgid "The new password and the retype are not the same."
-msgstr ""
+msgstr "Nové heslo a opakované zadání nejsou stejné."
 
 #: climmob/views/Api/enumerators.py:216
 msgid "The current password is incorrect."
-msgstr ""
+msgstr "Aktuální heslo je nesprávné."
 
 #: climmob/views/Api/enumerators.py:254
 msgid "This field agent does not exist."
-msgstr ""
+msgstr "Tento terénní pracovník neexistuje."
 
 #: climmob/views/Api/enumerators.py:267
 msgid "The field agent was deleted successfully."
-msgstr ""
+msgstr "Terénní pracovník byl úspěšně odstraněn."
 
 #: climmob/views/Api/projectAssessmentStart.py:65
 #: climmob/views/Api/projectAssessments.py:919
 #: climmob/views/Api/projectRegistry.py:821
 msgid "The access assigned for this project does not allow you to do this action."
-msgstr ""
+msgstr "Přístup přidělený pro tento projekt vám tuto akci neumožňuje."
 
 #: climmob/views/Api/projectAssessmentStart.py:146
 msgid "Data collection started."
-msgstr ""
+msgstr "Sběr dat byl zahájen."
 
 #: climmob/views/Api/projectAssessmentStart.py:152
 #: climmob/views/Api/projectRegistryStart.py:722
@@ -3909,36 +3989,39 @@ msgid ""
 "this may be due to something wrong with the form. Contact the ClimMob team with "
 "the next message to get the solution to the problem"
 msgstr ""
+"Při vytváření základní struktury projektu došlo k problému, který může být "
+"způsoben chybou ve formuláři. Kontaktujte tým ClimMob pomocí další zprávy, "
+"abyste získali řešení problému"
 
 #: climmob/views/Api/projectAssessmentStart.py:169
 msgid "You must have created the assessment forms."
-msgstr ""
+msgstr "Musíte mít vytvořeny hodnotící formuláře."
 
 #: climmob/views/Api/projectAssessmentStart.py:177
 msgid "Data collection has already started."
-msgstr ""
+msgstr "Sběr dat již byl zahájen."
 
 #: climmob/views/Api/projectAssessmentStart.py:183
 msgid ""
 "You cannot add data collection moments. You alreaday started data collection."
-msgstr ""
+msgstr "Nelze přidávat okamžiky sběru dat. Sběr dat jste již zahájili."
 
 #: climmob/views/Api/projectAssessmentStart.py:191
 #: climmob/views/Api/projectProducts.py:63
 msgid "There is not project with that code."
-msgstr ""
+msgstr "Projekt s tímto kódem neexistuje."
 
 #: climmob/views/Api/projectAssessmentStart.py:242
 #: climmob/views/Api/projectAssessmentStart.py:326
 msgid ""
 "The access assigned for this project does not allow you to cancel the "
 "assessment."
-msgstr ""
+msgstr "Přístup přidělený pro tento projekt neumožňuje hodnocení zrušit."
 
 #: climmob/views/Api/projectAssessmentStart.py:267
 #: climmob/views/Api/projectAssessmentStart.py:361
 msgid "Data collection has not started. You cannot cancel it."
-msgstr ""
+msgstr "Sběr dat nebyl zahájen. Nelze jej zrušit."
 
 #: climmob/views/Api/projectAssessmentStart.py:275
 #: climmob/views/Api/projectAssessmentStart.py:369
@@ -3982,11 +4065,11 @@ msgstr ""
 #: climmob/views/Api/projectTechnologies.py:848
 #: climmob/views/Api/projectTechnologies.py:960
 msgid "There is no project with that code."
-msgstr ""
+msgstr "Žádný projekt s tímto kódem neexistuje."
 
 #: climmob/views/Api/projectAssessmentStart.py:346
 msgid "Data collection closed."
-msgstr ""
+msgstr "Sběr dat byl ukončen."
 
 #: climmob/views/Api/projectAssessmentStart.py:353
 #: climmob/views/Api/projectAssessmentStart.py:447
@@ -4003,102 +4086,107 @@ msgstr ""
 #: climmob/views/Api/projectAssessments.py:1282
 #: climmob/views/Api/projectAssessments.py:1444
 msgid "There is no data collection with that code."
-msgstr ""
+msgstr "S tímto kódem se neshromažďují žádná data."
 
 #: climmob/views/Api/projectAssessmentStart.py:455
 #: climmob/views/Api/projectAssessmentStart.py:795
 #: climmob/views/Api/projectAssessmentStart.py:900
 msgid "Data collection has not started."
-msgstr ""
+msgstr "Sběr dat nebyl zahájen."
 
 #: climmob/views/Api/projectAssessmentStart.py:512
 msgid ""
 "The access assigned for this project does not allow you to push information."
-msgstr ""
+msgstr "Přístup přidělený pro tento projekt neumožňuje odesílat informace."
 
 #: climmob/views/Api/projectAssessmentStart.py:643
 msgid ""
 "You have repeated data in the next column: . Remember that the options can not "
 "be repeated."
 msgstr ""
+"V dalším sloupci máte opakující se údaje: . Nezapomeňte, že možnosti se nemohou "
+"opakovat."
 
 #: climmob/views/Api/projectAssessmentStart.py:721
 msgid "The data could not be saved. ERROR: "
-msgstr ""
+msgstr "Data se nepodařilo uložit. CHYBA: "
 
 #: climmob/views/Api/projectAssessmentStart.py:730
 #: climmob/views/Api/projectRegistryStart.py:1215
 msgid "Data registered."
-msgstr ""
+msgstr "Data zapsána."
 
 #: climmob/views/Api/projectAssessmentStart.py:739
 msgid "ERROR: The farmer code must be a number."
-msgstr ""
+msgstr "CHYBA: Kód zemědělce musí být číslo."
 
 #: climmob/views/Api/projectAssessmentStart.py:747
 #: climmob/views/Api/projectRegistryStart.py:1239
 msgid "Error in the JSON. Not all parameters have data."
-msgstr ""
+msgstr "Chyba v JSON. Ne všechny parametry mají data."
 
 #: climmob/views/Api/projectAssessmentStart.py:755
 msgid "Error in the JSON sent by parameter. Check the obligatory Keys."
-msgstr ""
+msgstr "Chyba v JSON odeslaném parametrem. Zkontrolujte povinné klíče."
 
 #: climmob/views/Api/projectAssessmentStart.py:763
 msgid "Error in the JSON sent by parameter. Check the permitted Keys."
-msgstr ""
+msgstr "Chyba v JSON odeslaném parametrem. Zkontrolujte povolené klíče."
 
 #: climmob/views/Api/projectAssessmentStart.py:771
 msgid "Error in the JSON sent by parameter."
-msgstr ""
+msgstr "Chyba v JSON odeslaném parametrem."
 
 #: climmob/views/Api/projectAssessmentStart.py:779
 msgid "The data do not have structure."
-msgstr ""
+msgstr "Data nemají strukturu."
 
 #: climmob/views/Api/projectAssessmentStart.py:787
 msgid ""
 "Data collection is closed. After you close data collection, no more data can be "
 "entered."
 msgstr ""
+"Sběr dat je ukončen. Po uzavření sběru dat již nelze zadávat žádná další data."
 
 #: climmob/views/Api/projectAssessments.py:128
 msgid ""
 "The access assigned for this project does not allow you to add assessments."
-msgstr ""
+msgstr "Přístup přidělený pro tento projekt neumožňuje přidávat hodnocení."
 
 #: climmob/views/Api/projectAssessments.py:149
 #: climmob/views/Api/projectAssessments.py:248
 msgid "The parameter ass_days must be a number."
-msgstr ""
+msgstr "Parametr ass_days musí být číslo."
 
 #: climmob/views/Api/projectAssessments.py:212
 msgid ""
 "The access assigned for this project does not allow you to update assessments."
-msgstr ""
+msgstr "Přístup přidělený pro tento projekt neumožňuje aktualizovat hodnocení."
 
 #: climmob/views/Api/projectAssessments.py:232
 msgid "Data collection updated successfully."
-msgstr ""
+msgstr "Sběr dat byl úspěšně aktualizován."
 
 #: climmob/views/Api/projectAssessments.py:313
 msgid ""
 "The access assigned for this project does not allow you to delete assessments."
-msgstr ""
+msgstr "Přístup přidělený pro tento projekt neumožňuje mazat hodnocení."
 
 #: climmob/views/Api/projectAssessments.py:338
 msgid "Data collection moment deleted succesfully."
-msgstr ""
+msgstr "Moment sběru dat byl úspěšně smazán."
 
 #: climmob/views/Api/projectAssessments.py:346
 msgid ""
 "You can not delete this group because you have questions required for the data "
 "collection moment."
 msgstr ""
+"Tuto skupinu nemůžete smazat, protože máte otázky potřebné pro okamžik sběru "
+"dat."
 
 #: climmob/views/Api/projectAssessments.py:548
 msgid "The access assigned for this project does not allow you to create groups."
-msgstr ""
+msgstr "Přístup přidělený pro tento projekt neumožňuje vytvářet skupiny."
 
 #: climmob/views/Api/projectAssessments.py:590
 #: climmob/views/Api/projectAssessments.py:714
@@ -4110,17 +4198,17 @@ msgstr ""
 msgid ""
 "You cannot update data collection moments. You already started the data "
 "collection."
-msgstr ""
+msgstr "Okamžiky sběru dat nelze aktualizovat. Sběr dat jste již zahájili."
 
 #: climmob/views/Api/projectAssessments.py:665
 #: climmob/views/Api/projectRegistry.py:340
 msgid "The access assigned for this project does not allow you to update groups."
-msgstr ""
+msgstr "Přístup přidělený pro tento projekt neumožňuje aktualizovat skupiny."
 
 #: climmob/views/Api/projectAssessments.py:700
 #: climmob/views/Api/projectRegistry.py:357
 msgid "Group updated successfully."
-msgstr ""
+msgstr "Skupina byla úspěšně aktualizována."
 
 #: climmob/views/Api/projectAssessments.py:706
 #: climmob/views/Api/projectAssessments.py:831
@@ -4131,39 +4219,41 @@ msgstr ""
 #: climmob/views/Api/projectRegistry.py:605
 #: climmob/views/Api/projectRegistry.py:754
 msgid "There is not a group with that code."
-msgstr ""
+msgstr "Skupina s tímto kódem neexistuje."
 
 #: climmob/views/Api/projectAssessments.py:782
 #: climmob/views/Api/projectRegistry.py:430
 msgid "The access assigned for this project does not allow you to delete groups."
-msgstr ""
+msgstr "Přístup přidělený pro tento projekt neumožňuje odstraňovat skupiny."
 
 #: climmob/views/Api/projectAssessments.py:815
 #: climmob/views/Api/projectRegistry.py:453
 msgid "Group deleted successfully."
-msgstr ""
+msgstr "Skupina byla úspěšně odstraněna."
 
 #: climmob/views/Api/projectAssessments.py:823
 msgid ""
 "You can not delete this group because you have questions required for the "
 "assessment."
 msgstr ""
+"Tuto skupinu nemůžete odstranit, protože máte otázky potřebné pro hodnocení."
 
 #: climmob/views/Api/projectAssessments.py:1028
 msgid ""
 "The access assigned for this project does not allow you to add question to "
 "groups."
-msgstr ""
+msgstr "Přístup přidělený pro tento projekt neumožňuje přidávat otázky do skupin."
 
 #: climmob/views/Api/projectAssessments.py:1080
 msgid "The question was added to the data collection moment."
-msgstr ""
+msgstr "Tato otázka byla přidána do okamžiku sběru dat."
 
 #: climmob/views/Api/projectAssessments.py:1088
 msgid ""
 "The question is already assigned to the data collection moment or cannot be "
 "used in this section."
 msgstr ""
+"Otázka je již přiřazena k okamžiku sběru dat nebo ji nelze v této sekci použít."
 
 #: climmob/views/Api/projectAssessments.py:1096
 #: climmob/views/Api/projectAssessments.py:1258
@@ -4174,63 +4264,64 @@ msgstr ""
 #: climmob/views/Api/questions.py:1037 climmob/views/Api/questions.py:1151
 #: climmob/views/Api/questions.py:1267
 msgid "You do not have a question with this ID."
-msgstr ""
+msgstr "S tímto ID nemáte žádnou otázku."
 
 #: climmob/views/Api/projectAssessments.py:1128
 #: climmob/views/Api/projectRegistry.py:621
 msgid ""
 "You are trying to add a question from a user that does not belong to this "
 "project."
-msgstr ""
+msgstr "Snažíte se přidat otázku od uživatele, který nepatří do tohoto projektu."
 
 #: climmob/views/Api/projectAssessments.py:1195
 msgid ""
 "The access assigned for this project does not allow you to delete questions "
 "from a group."
-msgstr ""
+msgstr "Přístup přidělený pro tento projekt neumožňuje mazat otázky ze skupiny."
 
 #: climmob/views/Api/projectAssessments.py:1219
 msgid ""
 "You can not delete this question because is required for this data collection "
 "moment."
 msgstr ""
+"Tuto otázku nelze vymazat, protože je pro tento okamžik sběru dat vyžadována."
 
 #: climmob/views/Api/projectAssessments.py:1242
 #: climmob/views/Api/projectRegistry.py:730
 msgid "Question deleted successfully."
-msgstr ""
+msgstr "Otázka úspěšně smazána."
 
 #: climmob/views/Api/projectAssessments.py:1250
 #: climmob/views/Api/projectRegistry.py:738
 msgid "You do not have a question with this ID in this group."
-msgstr ""
+msgstr "V této skupině nemáte otázku s tímto ID."
 
 #: climmob/views/Api/projectAssessments.py:1343
 msgid ""
 "The access assigned for this project does not allow you to order the questions."
-msgstr ""
+msgstr "Přístup přidělený pro tento projekt vám neumožňuje seřadit otázky."
 
 #: climmob/views/Api/projectAssessments.py:1398
 #: climmob/views/Api/projectRegistry.py:872
 msgid "The order of the groups and questions has been changed."
-msgstr ""
+msgstr "Pořadí skupin a otázek bylo změněno."
 
 #: climmob/views/Api/projectAssessments.py:1406
 msgid "You are ordering questions that are not part of the form."
-msgstr ""
+msgstr "Zadáváte otázky, které nejsou součástí formuláře."
 
 #: climmob/views/Api/projectAssessments.py:1414
 msgid "You are ordering groups that are not part of the form."
-msgstr ""
+msgstr "Objednáváte skupiny, které nejsou součástí formuláře."
 
 #: climmob/views/Api/projectAssessments.py:1430
 #: climmob/views/Api/projectRegistry.py:904
 msgid "Error in the JSON order."
-msgstr ""
+msgstr "Chyba v objednávce JSON."
 
 #: climmob/views/Api/projectCreation.py:160
 msgid "You cannot create a clone and use a template at the same time."
-msgstr ""
+msgstr "Nelze vytvořit klon a současně použít šablonu."
 
 #: climmob/views/Api/projectCreation.py:183
 #: climmob/views/Api/projectCreation.py:541
@@ -4238,20 +4329,20 @@ msgstr ""
 msgid ""
 "You are trying to use a template that does not correspond to the type of "
 "project you are creating."
-msgstr ""
+msgstr "Snažíte se použít šablonu, která neodpovídá typu vytvářeného projektu."
 
 #: climmob/views/Api/projectCreation.py:191
 #: climmob/views/Api/projectCreation.py:569
 msgid "There is no template with this identifier."
-msgstr ""
+msgstr "Neexistuje žádná šablona s tímto identifikátorem."
 
 #: climmob/views/Api/projectCreation.py:206
 msgid "The project to be cloned does not exist."
-msgstr ""
+msgstr "Projekt, který má být klonován, neexistuje."
 
 #: climmob/views/Api/projectCreation.py:230
 msgid "The parameter project_numobs must be a number."
-msgstr ""
+msgstr "Parametr project_numobs musí být číslo."
 
 #: climmob/views/Api/projectCreation.py:247
 #: climmob/views/Api/projectCreation.py:605
@@ -4261,6 +4352,10 @@ msgid ""
 "moments (with different forms)','1':'Requires registering participants and "
 "immediately asking questions to analyze the information']"
 msgstr ""
+"Možné hodnoty parametru \"project_registration_and_analysis\" jsou: [\"0\": "
+"\"Nejprve se provede registrace, po níž následuje jeden nebo více okamžiků "
+"sběru dat (s různými formuláři)\", \"1\": \"Vyžaduje registraci účastníků a "
+"okamžité položení otázek k analýze informací\"]."
 
 #: climmob/views/Api/projectCreation.py:258
 #: climmob/views/Api/projectCreation.py:618
@@ -4268,37 +4363,41 @@ msgid ""
 "The possible values in the parameter 'project_localvariety' are: "
 "['0':'No','1':'Yes']"
 msgstr ""
+"Možné hodnoty parametru \"project_localvariety\" jsou: [\"0\": \"Ne\", \"1\": "
+"\"Ano\"]."
 
 #: climmob/views/Api/projectCreation.py:269
 #: climmob/views/Api/projectCreation.py:630
 msgid "The country assigned to the project does not exist in the ClimMob list."
-msgstr ""
+msgstr "Země přiřazená projektu v seznamu ClimMob neexistuje."
 
 #: climmob/views/Api/projectCreation.py:304
 msgid "Project successfully cloned."
-msgstr ""
+msgstr "Projekt byl úspěšně naklonován."
 
 #: climmob/views/Api/projectCreation.py:348
 msgid "Project created successfully."
-msgstr ""
+msgstr "Projekt byl úspěšně vytvořen."
 
 #: climmob/views/Api/projectCreation.py:364
 msgid "The number of combinations and observations must be greater than 0."
-msgstr ""
+msgstr "Počet kombinací a pozorování musí být větší než 0."
 
 #: climmob/views/Api/projectCreation.py:380
 msgid "The project code must start with a letter."
-msgstr ""
+msgstr "Kód projektu musí začínat písmenem."
 
 #: climmob/views/Api/projectCreation.py:388
 msgid ""
 "For the project code only letters and numbers are allowed. The project code "
 "must start with a letter."
 msgstr ""
+"Pro kód projektu jsou povolena pouze písmena a číslice. Kód projektu musí "
+"začínat písmenem."
 
 #: climmob/views/Api/projectCreation.py:401
 msgid "You are trying to use a parameter that is not allowed.."
-msgstr ""
+msgstr "Snažíte se použít parametr, který není povolen.."
 
 #: climmob/views/Api/projectCreation.py:409
 #: climmob/views/Api/projectCreation.py:748 climmob/views/Api/questions.py:261
@@ -4308,21 +4407,21 @@ msgstr ""
 #: climmob/views/Api/questionsGroups.py:169
 #: climmob/views/Api/questionsGroups.py:251
 msgid "It is not complying with the obligatory keys."
-msgstr ""
+msgstr "Není v souladu s povinnými klíči."
 
 #: climmob/views/Api/projectCreation.py:508
 #: climmob/views/Api/projectEnumerators.py:240
 msgid ""
 "The access assigned for this project does not allow you to make modifications."
-msgstr ""
+msgstr "Přístup přidělený pro tento projekt neumožňuje provádět úpravy."
 
 #: climmob/views/Api/projectCreation.py:715
 msgid "The project was modified successfully."
-msgstr ""
+msgstr "Projekt byl úspěšně upraven."
 
 #: climmob/views/Api/projectCreation.py:742
 msgid "Error in the parameters that you want to modify."
-msgstr ""
+msgstr "Chyba v parametrech, které chcete upravit."
 
 #: climmob/views/Api/projectCreation.py:773
 #: climmob/views/Api/projectCreation.py:830
@@ -4332,191 +4431,207 @@ msgstr ""
 #: climmob/views/Api/project_analysis.py:166
 #: climmob/views/Api/project_analysis.py:339
 msgid "This project does not exist."
-msgstr ""
+msgstr "Tento projekt neexistuje."
 
 #: climmob/views/Api/projectCreation.py:787
 msgid ""
 "The access assigned for this project does not allow you to delete the project."
-msgstr ""
+msgstr "Přístup přidělený tomuto projektu neumožňuje projekt odstranit."
 
 #: climmob/views/Api/projectCreation.py:890
 msgid ""
 "The access assigned for this project does not allow you to add collaborators to "
 "the project."
 msgstr ""
+"Přístup přidělený pro tento projekt neumožňuje přidávat do projektu "
+"spolupracovníky."
 
 #: climmob/views/Api/projectCreation.py:913
 msgid "Collaborator added successfully."
-msgstr ""
+msgstr "Spolupracovník byl úspěšně přidán."
 
 #: climmob/views/Api/projectCreation.py:923
 msgid ""
 "The types of access for collaborators are as follows: 2=Admin, 3=Editor, "
 "4=Member."
 msgstr ""
+"Typy přístupu pro spolupracovníky jsou následující: 2=Admin, 3=Editor, 4=Člen."
 
 #: climmob/views/Api/projectCreation.py:931
 msgid "The collaborator you want to add already belongs to the project."
-msgstr ""
+msgstr "Spolupracovník, kterého chcete přidat, již patří k projektu."
 
 #: climmob/views/Api/projectCreation.py:939
 msgid "The user you want to add as a collaborator does not exist."
-msgstr ""
+msgstr "Uživatel, kterého chcete přidat jako spolupracovníka, neexistuje."
 
 #: climmob/views/Api/projectCreation.py:983
 msgid ""
 "The access assigned for this project does not allow you to delete collaborators "
 "from the project."
 msgstr ""
+"Přístup přidělený pro tento projekt neumožňuje odstranit spolupracovníky z "
+"projektu."
 
 #: climmob/views/Api/projectCreation.py:1009
 msgid "The collaborator has been successfully removed."
-msgstr ""
+msgstr "Spolupracovník byl úspěšně odstraněn."
 
 #: climmob/views/Api/projectCreation.py:1021
 msgid "The user who owns the project cannot be deleted."
-msgstr ""
+msgstr "Uživatele, který projekt vlastní, nelze odstranit."
 
 #: climmob/views/Api/projectCreation.py:1029
 msgid ""
 "You are trying to delete a collaborator that does not belong to this project."
-msgstr ""
+msgstr "Pokoušíte se odstranit spolupracovníka, který nepatří do tohoto projektu."
 
 #: climmob/views/Api/projectCreation.py:1037
 msgid "The user you want to delete as a collaborator does not exist."
-msgstr ""
+msgstr "Uživatel, kterého chcete odstranit jako spolupracovníka, neexistuje."
 
 #: climmob/views/Api/projectEnumerators.py:59
 msgid ""
 "The access assigned for this project does not allow you to add field agents."
 msgstr ""
+"Přístup přidělený pro tento projekt neumožňuje přidávat terénní pracovníky."
 
 #: climmob/views/Api/projectEnumerators.py:110
 msgid "The field agent has been added to the project."
-msgstr ""
+msgstr "Do projektu byl přidán terénní pracovník."
 
 #: climmob/views/Api/projectEnumerators.py:118
 msgid "The field agent is inactive or is already assigned to the project."
-msgstr ""
+msgstr "Terénní pracovník je neaktivní nebo je již přiřazen k projektu."
 
 #: climmob/views/Api/projectEnumerators.py:126
 #: climmob/views/Api/projectEnumerators.py:362
 msgid "There is not enumerator with that identifier."
-msgstr ""
+msgstr "Neexistuje žádný výčet s tímto identifikátorem."
 
 #: climmob/views/Api/projectEnumerators.py:134
 msgid ""
 "You are trying to add a field agent from a user that does not belong to this "
 "project."
 msgstr ""
+"Pokoušíte se přidat terénního pracovníka od uživatele, který nepatří do tohoto "
+"projektu."
 
 #: climmob/views/Api/projectEnumerators.py:303
 msgid ""
 "The access assigned for this project does not allow you to delete field agents."
-msgstr ""
+msgstr "Přístup přidělený pro tento projekt neumožňuje mazat terénní pracovníky."
 
 #: climmob/views/Api/projectEnumerators.py:343
 msgid "The field agent was removed from the project."
-msgstr ""
+msgstr "Terénní pracovník byl z projektu odvolán."
 
 #: climmob/views/Api/projectEnumerators.py:354
 msgid "The field agent is inactive or is not assigned to the project."
-msgstr ""
+msgstr "Terénní pracovník je neaktivní nebo není k projektu přiřazen."
 
 #: climmob/views/Api/projectProducts.py:156
 msgid "There is no product with that product_id."
-msgstr ""
+msgstr "Neexistuje žádný produkt s tímto product_id."
 
 #: climmob/views/Api/projectProducts.py:164
 msgid "There is no product with that celery_taskid or product_id."
-msgstr ""
+msgstr "Neexistuje žádný produkt s tímto celery_taskid nebo product_id."
 
 #: climmob/views/Api/projectRegistry.py:164
 #: climmob/views/Api/projectTechnologies.py:233
 #: climmob/views/Api/projectTechnologies.py:808
 msgid ""
 "The access assigned for this project does not allow you to get this information."
-msgstr ""
+msgstr "Přístup přidělený pro tento projekt vám tyto informace neumožňuje získat."
 
 #: climmob/views/Api/projectRegistry.py:244
 msgid "The access assigned for this project does not allow you to add groups."
-msgstr ""
+msgstr "Přístup přidělený pro tento projekt neumožňuje přidávat skupiny."
 
 #: climmob/views/Api/projectRegistry.py:273
 msgid "You cannot create groups. You started registration."
-msgstr ""
+msgstr "Skupiny nelze vytvářet. Zahájili jste registraci."
 
 #: climmob/views/Api/projectRegistry.py:369
 msgid "You can not update groups. You started registration."
-msgstr ""
+msgstr "Skupiny nelze aktualizovat. Zahájili jste registraci."
 
 #: climmob/views/Api/projectRegistry.py:459
 msgid ""
 "You cannot delete this group because it contains questions required for the "
 "registration."
 msgstr ""
+"Tuto skupinu nelze odstranit, protože obsahuje otázky potřebné pro registraci."
 
 #: climmob/views/Api/projectRegistry.py:473
 msgid "You cannot delete groups. You started registration."
-msgstr ""
+msgstr "Skupiny nelze odstranit. Zahájili jste registraci."
 
 #: climmob/views/Api/projectRegistry.py:539
 msgid "The access assigned for this project does not allow you to add questions."
-msgstr ""
+msgstr "Přístup přidělený pro tento projekt neumožňuje přidávat otázky."
 
 #: climmob/views/Api/projectRegistry.py:581
 msgid "The question was added to the project"
-msgstr ""
+msgstr "Otázka byla přidána do projektu"
 
 #: climmob/views/Api/projectRegistry.py:589
 msgid ""
 "The question has already been assigned to the registration or cannot be used in "
 "this section."
 msgstr ""
+"Otázka již byla přiřazena k registraci nebo ji nelze v tomto oddíle použít."
 
 #: climmob/views/Api/projectRegistry.py:613
 msgid "You cannot add questions. You started registration."
-msgstr ""
+msgstr "Otázky nelze přidávat. Zahájili jste registraci."
 
 #: climmob/views/Api/projectRegistry.py:687
 msgid ""
 "The access assigned for this project does not allow you to delete questions."
-msgstr ""
+msgstr "Přístup přidělený pro tento projekt neumožňuje mazat otázky."
 
 #: climmob/views/Api/projectRegistry.py:706
 msgid "You can not delete this question because is required during registration."
-msgstr ""
+msgstr "Tuto otázku nelze smazat, protože je vyžadována při registraci."
 
 #: climmob/views/Api/projectRegistry.py:760
 msgid "You cannot delete questions. You started the registration."
-msgstr ""
+msgstr "Otázky nelze mazat. Zahájili jste registraci."
 
 #: climmob/views/Api/projectRegistry.py:880
 msgid ""
 "You are ordering questions that are not part of the form or you are forgetting "
 "to order some questions that belong to the form."
 msgstr ""
+"Zadáváte otázky, které nejsou součástí formuláře, nebo jste zapomněli zadat "
+"některé otázky, které do formuláře patří."
 
 #: climmob/views/Api/projectRegistry.py:888
 msgid ""
 "You are ordering groups that are not part of the form or you are forgetting to "
 "order some groups that belong to the form."
 msgstr ""
+"Zadáváte skupiny, které nejsou součástí formuláře, nebo jste zapomněli zadat "
+"některé skupiny, které do formuláře patří."
 
 #: climmob/views/Api/projectRegistry.py:910
 msgid "No group and questions to order."
-msgstr ""
+msgstr "Žádná skupina a otázky k zadání."
 
 #: climmob/views/Api/projectRegistry.py:916
 msgid ""
 "You cannot order the groups and questions. You have started the registration."
-msgstr ""
+msgstr "Skupiny a otázky nelze zadávat. Zahájili jste registraci."
 
 #: climmob/views/Api/projectRegistryStart.py:156
 msgid ""
 "You must have the field agents, technologies, technology options and created "
 "the registration form to read the combinations."
 msgstr ""
+"Pro čtení kombinací musíte mít k dispozici terénní pracovníky, technologie, "
+"možnosti technologií a vytvořený registrační formulář."
 
 #: climmob/views/Api/projectRegistryStart.py:216
 #: climmob/views/Api/projectRegistryStart.py:366
@@ -4524,28 +4639,29 @@ msgid ""
 "The access assigned for this project does not allow you to set usable "
 "combinations."
 msgstr ""
+"Přístup přidělený pro tento projekt neumožňuje nastavit použitelné kombinace."
 
 #: climmob/views/Api/projectRegistryStart.py:260
 msgid "The state of the combination was changed."
-msgstr ""
+msgstr "Stav kombinace byl změněn."
 
 #: climmob/views/Api/projectRegistryStart.py:268
 msgid "The state is the same."
-msgstr ""
+msgstr "Stav je stejný."
 
 #: climmob/views/Api/projectRegistryStart.py:276
 msgid "The value of the status is 0 [unusable] or 1 [usable]."
-msgstr ""
+msgstr "Hodnota stavu je 0 [nepoužitelné] nebo 1 [použitelné]."
 
 #: climmob/views/Api/projectRegistryStart.py:284
 #: climmob/views/Api/projectRegistryStart.py:421
 msgid "You do not have a combination with this ID."
-msgstr ""
+msgstr "Nemáte kombinaci s tímto ID."
 
 #: climmob/views/Api/projectRegistryStart.py:292
 #: climmob/views/Api/projectRegistryStart.py:429
 msgid "The combinations have not been created."
-msgstr ""
+msgstr "Kombinace nebyly vytvořeny."
 
 #: climmob/views/Api/projectRegistryStart.py:300
 #: climmob/views/Api/projectRegistryStart.py:437
@@ -4554,147 +4670,156 @@ msgstr ""
 msgid ""
 "You must have the field agents, technology options and registration form ready."
 msgstr ""
+"Musíte mít připravené terénní pracovníky, technologické možnosti a registrační "
+"formulář."
 
 #: climmob/views/Api/projectRegistryStart.py:308
 #: climmob/views/Api/projectRegistryStart.py:445
 #: climmob/views/Api/projectRegistryStart.py:757
 msgid "Registration has already started."
-msgstr ""
+msgstr "Registrace již byla zahájena."
 
 #: climmob/views/Api/projectRegistryStart.py:405
 msgid "The availability of the combination was changed."
-msgstr ""
+msgstr "Dostupnost kombinace byla změněna."
 
 #: climmob/views/Api/projectRegistryStart.py:413
 msgid "The number of items available in the combination must be an integer."
-msgstr ""
+msgstr "Počet položek dostupných v kombinaci musí být celé číslo."
 
 #: climmob/views/Api/projectRegistryStart.py:515
 msgid ""
 "The access assigned for this project does not allow you to create packages."
-msgstr ""
+msgstr "Přístup přidělený pro tento projekt neumožňuje vytvářet balíčky."
 
 #: climmob/views/Api/projectRegistryStart.py:560
 msgid ""
 "ClimMob has started the package creation process, please check back in a moment "
 "to verify that the process has been completed."
 msgstr ""
+"Společnost ClimMob zahájila proces vytváření balíčků, za chvíli se prosím "
+"vraťte a zkontrolujte, zda byl proces dokončen."
 
 #: climmob/views/Api/projectRegistryStart.py:569
 msgid ""
 "ClimMob is still generating the packages, please try this request again in a "
 "moment."
 msgstr ""
+"ClimMob stále generuje balíčky, zkuste prosím tento požadavek za chvíli "
+"zopakovat."
 
 #: climmob/views/Api/projectRegistryStart.py:578
 msgid ""
 "There was a problem with the creation of the packages please check the "
 "available quantity of each combination."
 msgstr ""
+"Při vytváření balíčků došlo k problému, zkontrolujte prosím dostupné množství "
+"jednotlivých kombinací."
 
 #: climmob/views/Api/projectRegistryStart.py:605
 #: climmob/views/Api/projectRegistryStart.py:741
 msgid ""
 "This project has not created the combinations. You need to create the "
 "combinations first."
-msgstr ""
+msgstr "Tento projekt nevytvořil kombinace. Nejprve je třeba vytvořit kombinace."
 
 #: climmob/views/Api/projectRegistryStart.py:673
 msgid ""
 "The access assigned for this project does not allow you to create the registry."
-msgstr ""
+msgstr "Přístup přidělený pro tento projekt neumožňuje vytvořit registr."
 
 #: climmob/views/Api/projectRegistryStart.py:716
 msgid "Registration started."
-msgstr ""
+msgstr "Registrace byla zahájena."
 
 #: climmob/views/Api/projectRegistryStart.py:733
 msgid "Packages have not available yet. You need to do the randomization first."
-msgstr ""
+msgstr "Balíčky zatím nejsou k dispozici. Nejprve je třeba provést randomizaci."
 
 #: climmob/views/Api/projectRegistryStart.py:815
 msgid ""
 "The access assigned for this project does not allow you to cancel the registry."
-msgstr ""
+msgstr "Přístup přidělený pro tento projekt neumožňuje zrušit registr."
 
 #: climmob/views/Api/projectRegistryStart.py:834
 msgid "Cancel registration."
-msgstr ""
+msgstr "Zrušení registrace."
 
 #: climmob/views/Api/projectRegistryStart.py:840
 #: climmob/views/Api/projectRegistryStart.py:937
 msgid "The registration has not started. You cannot cancel it."
-msgstr ""
+msgstr "Registrace nebyla zahájena. Nelze ji zrušit."
 
 #: climmob/views/Api/projectRegistryStart.py:900
 msgid ""
 "The access assigned for this project does not allow you to finish the registry."
-msgstr ""
+msgstr "Přístup přidělený pro tento projekt vám neumožňuje dokončit registr."
 
 #: climmob/views/Api/projectRegistryStart.py:923
 msgid "Closed registration."
-msgstr ""
+msgstr "Ukončená registrace."
 
 #: climmob/views/Api/projectRegistryStart.py:929
 msgid "You cannot close the registration because you do not have data."
-msgstr ""
+msgstr "Registraci nelze uzavřít, protože nemáte k dispozici údaje."
 
 #: climmob/views/Api/projectRegistryStart.py:1016
 #: climmob/views/Api/projectRegistryStart.py:1290
 #: climmob/views/Api/projectRegistryStart.py:1371
 msgid "Registration has not started."
-msgstr ""
+msgstr "Registrace nebyla zahájena."
 
 #: climmob/views/Api/projectRegistryStart.py:1074
 msgid ""
 "The access assigned for this project does not allow you to push information to "
 "the project."
 msgstr ""
+"Přístup přidělený tomuto projektu neumožňuje odesílat informace do projektu."
 
 #: climmob/views/Api/projectRegistryStart.py:1206
 msgid "The data could not be registered. ERROR: "
-msgstr ""
+msgstr "Data se nepodařilo zaregistrovat. CHYBA: "
 
 #: climmob/views/Api/projectRegistryStart.py:1223
 msgid "ERROR: You do not have a package code with this ID."
-msgstr ""
+msgstr "CHYBA: Nemáte kód balíčku s tímto ID."
 
 #: climmob/views/Api/projectRegistryStart.py:1231
 msgid "ERROR: The package code must be a number."
-msgstr ""
+msgstr "CHYBA: Kód balíčku musí být číslo."
 
 #: climmob/views/Api/projectRegistryStart.py:1249
 msgid "Error in the JSON sent by parameter. Check the obligatory Keys: "
-msgstr ""
+msgstr "Chyba v JSON odeslaném parametrem. Zkontrolujte povinné klíče: "
 
 #: climmob/views/Api/projectRegistryStart.py:1259
 msgid "Error in the JSON sent by parameter. Check the permited Keys: "
-msgstr ""
+msgstr "Chyba v JSON odeslaném parametrem. Zkontrolujte povolené klíče: "
 
 #: climmob/views/Api/projectRegistryStart.py:1268
 msgid "Error in the JSON sent by parameter. "
-msgstr ""
+msgstr "Chyba v JSON odeslaném parametrem. "
 
 #: climmob/views/Api/projectRegistryStart.py:1275
 msgid "This project do not have structure."
-msgstr ""
+msgstr "Tento projekt nemá strukturu."
 
 #: climmob/views/Api/projectRegistryStart.py:1283
 msgid "Registration has closed. No more participants can be registered."
-msgstr ""
+msgstr "Registrace byla ukončena. Další účastníci již nemohou být přihlášeni."
 
 #: climmob/views/Api/projectTechnologies.py:67
 msgid ""
 "The access assigned for this project does not allow you to add technologies."
-msgstr ""
+msgstr "Přístup přidělený pro tento projekt neumožňuje přidávat technologie."
 
 #: climmob/views/Api/projectTechnologies.py:95
 msgid "The technology was added correctly."
-msgstr ""
+msgstr "Technologie byla přidána správně."
 
 #: climmob/views/Api/projectTechnologies.py:103
 msgid "The technology is already assigned to the project."
-msgstr ""
+msgstr "Technologie je již k projektu přiřazena."
 
 #: climmob/views/Api/projectTechnologies.py:111
 #: climmob/views/Api/projectTechnologies.py:338
@@ -4705,25 +4830,26 @@ msgstr ""
 #: climmob/views/Api/projectTechnologies.py:843
 #: climmob/views/Api/projectTechnologies.py:945
 msgid "There is no technology with that identifier."
-msgstr ""
+msgstr "Neexistuje žádná technologie s tímto identifikátorem."
 
 #: climmob/views/Api/projectTechnologies.py:119
 msgid "You cannot add more technologies. You started the registry."
-msgstr ""
+msgstr "Nelze přidávat další technologie. Spustili jste registr."
 
 #: climmob/views/Api/projectTechnologies.py:127
 msgid ""
 "You are trying to add a tech from a user that does not belong to this project."
 msgstr ""
+"Snažíte se přidat techniku od uživatele, který nepatří do tohoto projektu."
 
 #: climmob/views/Api/projectTechnologies.py:297
 msgid ""
 "The access assigned for this project does not allow you to delete technologies."
-msgstr ""
+msgstr "Přístup přidělený pro tento projekt neumožňuje odstraňovat technologie."
 
 #: climmob/views/Api/projectTechnologies.py:319
 msgid "The technology has been removed from the project."
-msgstr ""
+msgstr "Tato technologie byla z projektu odstraněna."
 
 #: climmob/views/Api/projectTechnologies.py:330
 #: climmob/views/Api/projectTechnologies.py:455
@@ -4733,11 +4859,11 @@ msgstr ""
 #: climmob/views/Api/projectTechnologies.py:835
 #: climmob/views/Api/projectTechnologies.py:937
 msgid "The technology is not assigned to the project."
-msgstr ""
+msgstr "Technologie není k projektu přiřazena."
 
 #: climmob/views/Api/projectTechnologies.py:346
 msgid "You cannot delete technologies. You have started registration."
-msgstr ""
+msgstr "Technologie nelze odstranit. Zahájili jste registraci."
 
 #: climmob/views/Api/projectTechnologies.py:401
 #: climmob/views/Api/projectTechnologies.py:531
@@ -4745,71 +4871,82 @@ msgid ""
 "The access assigned for this project does not allow you to add technology "
 "options."
 msgstr ""
+"Přístup přidělený pro tento projekt neumožňuje přidávat technologické možnosti."
 
 #: climmob/views/Api/projectTechnologies.py:439
 msgid "The technology option has not been assigned to the project."
-msgstr ""
+msgstr "Možnost technologie nebyla k projektu přiřazena."
 
 #: climmob/views/Api/projectTechnologies.py:447
 #: climmob/views/Api/projectTechnologies.py:929
 msgid "There is no technology option with that identifier for this technology."
 msgstr ""
+"Pro tuto technologii neexistuje žádná možnost technologie s tímto "
+"identifikátorem."
 
 #: climmob/views/Api/projectTechnologies.py:471
 msgid ""
 "You can not add an technology option for technologies. You have already started "
 "registration."
 msgstr ""
+"U technologií nelze přidat možnost technologie. Registraci jste již zahájili."
 
 #: climmob/views/Api/projectTechnologies.py:479
 msgid ""
 "You are trying to add a technology alias from a user that does not belong to "
 "this project."
 msgstr ""
+"Pokoušíte se přidat technologický alias od uživatele, který nepatří do tohoto "
+"projektu."
 
 #: climmob/views/Api/projectTechnologies.py:566
 #: climmob/views/Api/techaliases.py:182
 msgid "This technology option already exists for the technology."
-msgstr ""
+msgstr "Tato možnost technologie již existuje."
 
 #: climmob/views/Api/projectTechnologies.py:590
 msgid ""
 "You can not add technology option for technologies. You have already started "
 "registration."
 msgstr ""
+"U technologií nelze přidat možnost technologie. Registraci jste již zahájili."
 
 #: climmob/views/Api/projectTechnologies.py:598
 msgid ""
 "You are trying to add a technology alias extra from a user that does not belong "
 "to this project."
 msgstr ""
+"Pokoušíte se přidat technologický alias navíc od uživatele, který nepatří do "
+"tohoto projektu."
 
 #: climmob/views/Api/projectTechnologies.py:894
 msgid ""
 "The access assigned for this project does not allow you to delete technology "
 "options."
 msgstr ""
+"Přístup přidělený pro tento projekt neumožňuje odstranit možnosti technologie."
 
 #: climmob/views/Api/projectTechnologies.py:921
 msgid "The technology option has been deleted in the project."
-msgstr ""
+msgstr "Možnost technologie byla v projektu odstraněna."
 
 #: climmob/views/Api/projectTechnologies.py:953
 msgid ""
 "You can not delete the technology option for technologies. You started "
 "registration."
 msgstr ""
+"Možnost technologie pro technologie nelze odstranit. Zahájili jste registraci."
 
 #: climmob/views/Api/project_analysis.py:113
 #: climmob/views/Api/project_analysis.py:221
 msgid ""
 "The access assigned for this project does not allow you to create an analysis."
-msgstr ""
+msgstr "Přístup přidělený pro tento projekt neumožňuje vytvořit analýzu."
 
 #: climmob/views/Api/project_analysis.py:159
 #: climmob/views/Api/project_analysis.py:332
 msgid "You don't have the amount of information needed to do a ClimMob analysis."
-msgstr ""
+msgstr "Nemáte k dispozici tolik informací, abyste mohli provést analýzu ClimMob."
 
 #: climmob/views/Api/project_analysis.py:291
 msgid ""
@@ -4817,22 +4954,24 @@ msgid ""
 "processed, as soon as it is ready you will be able to see it in the download "
 "list."
 msgstr ""
+"Analýza se právě generuje, jedná se o proces, který vyžaduje čas na zpracování, "
+"jakmile bude hotová, budete ji moci vidět v seznamu ke stažení."
 
 #: climmob/views/Api/project_analysis.py:299
 msgid "The variable_to_analyze parameter must contain data."
-msgstr ""
+msgstr "Parametr variable_to_analyze musí obsahovat data."
 
 #: climmob/views/Api/project_analysis.py:307
 msgid "One of the variables you sent for analysis does not exist."
-msgstr ""
+msgstr "Jedna z proměnných, které jste poslali k analýze, neexistuje."
 
 #: climmob/views/Api/project_analysis.py:315
 msgid "The variable_to_analyze parameter must be a list."
-msgstr ""
+msgstr "Parametr variable_to_analyze musí být seznam."
 
 #: climmob/views/Api/project_analysis.py:324
 msgid "Problem with the data sent in the parameter: variables_to_analyze"
-msgstr ""
+msgstr "Problém s daty zaslanými v parametru: variables_to_analyze"
 
 #: climmob/views/Api/questions.py:111 climmob/views/Api/questions.py:387
 msgid ""
@@ -4840,241 +4979,246 @@ msgid ""
 "'question_alwaysinreg','question_alwaysinasse','question_requiredvalue', "
 "'question_quantitative' is 1 or 0."
 msgstr ""
+"Možné hodnoty v parametrech: "
+"'question_alwaysinreg','question_alwaysinasse','question_requiredvalue', "
+"'question_quantitative' jsou 1 nebo 0."
 
 #: climmob/views/Api/questions.py:138 climmob/views/Api/questions.py:434
 msgid "Check the ID of the question type."
-msgstr ""
+msgstr "Zkontrolujte ID typu otázky."
 
 #: climmob/views/Api/questions.py:202
 msgid "The question was successfully added. Configure the ranking of options now."
-msgstr ""
+msgstr "Otázka byla úspěšně přidána. Nyní nastavte pořadí možností."
 
 #: climmob/views/Api/questions.py:234
 msgid "There is no category with this identifier."
-msgstr ""
+msgstr "Neexistuje žádná kategorie s tímto identifikátorem."
 
 #: climmob/views/Api/questions.py:255 climmob/views/Api/questions.py:506
 #: climmob/views/Api/questions.py:808 climmob/views/Api/questions.py:948
 #: climmob/views/Api/questions.py:1162 climmob/views/Api/questions.py:1278
 msgid "Error in the parameters that you want to add."
-msgstr ""
+msgstr "Chybně zadané parametry, které chcete přidat."
 
 #: climmob/views/Api/questions.py:406
 msgid "There is a problem with the question category you want to assign."
-msgstr ""
+msgstr "V kategorii otázek, kterou chcete přiřadit, je problém."
 
 #: climmob/views/Api/questions.py:470
 msgid "The question was successfully modified."
-msgstr ""
+msgstr "Otázka byla úspěšně upravena."
 
 #: climmob/views/Api/questions.py:479 climmob/views/Api/questions.py:921
 #: climmob/views/Api/questions.py:1135 climmob/views/Api/questions.py:1251
 msgid "This question has already been assigned to a form. You cannot edit it."
-msgstr ""
+msgstr "Tato otázka již byla přiřazena k formuláři. Nelze ji upravovat."
 
 #: climmob/views/Api/questions.py:487 climmob/views/Api/questions.py:929
 #: climmob/views/Api/questions.py:1143 climmob/views/Api/questions.py:1259
 msgid "The question is from the ClimMob library. You cannot edit it."
-msgstr ""
+msgstr "Otázka je z knihovny ClimMob. Nelze ji upravovat."
 
 #: climmob/views/Api/questions.py:543
 msgid "The question was deleted successfully."
-msgstr ""
+msgstr "Otázka byla úspěšně smazána."
 
 #: climmob/views/Api/questions.py:550 climmob/views/Api/questions.py:1021
 msgid "This question has already been assigned to a form. You cannot delete it."
-msgstr ""
+msgstr "Tato otázka již byla přiřazena k formuláři. Nelze ji odstranit."
 
 #: climmob/views/Api/questions.py:558 climmob/views/Api/questions.py:1029
 msgid "The question is from the ClimMob library. You cannot delete it."
-msgstr ""
+msgstr "Otázka je z knihovny ClimMob. Nelze ji odstranit."
 
 #: climmob/views/Api/questions.py:613 climmob/views/Api/questions.py:772
 #: climmob/views/Api/questions.py:912 climmob/views/Api/questions.py:1012
 msgid "This is not a question of type Select one or Multiple selection."
-msgstr ""
+msgstr "Toto není otázka typu Vyberte jeden nebo Vícenásobný výběr."
 
 #: climmob/views/Api/questions.py:689
 msgid "An option cannot be 'Other' and 'Not applicable'."
-msgstr ""
+msgstr "Možnost nemůže být \"Jiné\" a \"Nepoužije se\"."
 
 #: climmob/views/Api/questions.py:702
 msgid "There is already an 'Other' option."
-msgstr ""
+msgstr "Možnost \"Ostatní\" již existuje."
 
 #: climmob/views/Api/questions.py:715
 msgid "There is already an 'Not applicable' option."
-msgstr ""
+msgstr "Již existuje možnost \"Nepoužije se\"."
 
 #: climmob/views/Api/questions.py:743
 msgid "The option was successfully added."
-msgstr ""
+msgstr "Možnost byla úspěšně přidána."
 
 #: climmob/views/Api/questions.py:756
 msgid "There is already an option with that description."
-msgstr ""
+msgstr "Možnost s tímto popisem již existuje."
 
 #: climmob/views/Api/questions.py:764
 msgid "There is already an option with that code."
-msgstr ""
+msgstr "Již existuje možnost s tímto kódem."
 
 #: climmob/views/Api/questions.py:781
 msgid "This question has already been assigned to a form. You cannot add it."
-msgstr ""
+msgstr "Tato otázka již byla přiřazena k formuláři. Nelze ji přidat."
 
 #: climmob/views/Api/questions.py:789
 msgid "The question is from the ClimMob library. You cannot add it."
-msgstr ""
+msgstr "Otázka je z knihovny ClimMob. Nelze ji přidat."
 
 #: climmob/views/Api/questions.py:893
 msgid "The option was successfully update."
-msgstr ""
+msgstr "Možnost byla úspěšně aktualizována."
 
 #: climmob/views/Api/questions.py:904 climmob/views/Api/questions.py:1004
 msgid "Does not have an option with this value_code"
-msgstr ""
+msgstr "Nemá možnost s tímto value_code"
 
 #: climmob/views/Api/questions.py:993
 msgid "The option was successfully deleted."
-msgstr ""
+msgstr "Možnost byla úspěšně odstraněna."
 
 #: climmob/views/Api/questions.py:1115
 msgid "You successfully updated the ranking of options."
-msgstr ""
+msgstr "Úspěšně jste aktualizovali pořadí možností."
 
 #: climmob/views/Api/questions.py:1126
 msgid "This is not a question of type ranking of options."
-msgstr ""
+msgstr "Nejedná se o typové pořadí možností."
 
 #: climmob/views/Api/questions.py:1223
 msgid "You successfully updated the comparison with check."
-msgstr ""
+msgstr "Porovnání jste úspěšně aktualizovali pomocí kontroly."
 
 #: climmob/views/Api/questions.py:1234
 msgid "The comparison with check must have the wildcard {{option}}"
-msgstr ""
+msgstr "Porovnání s kontrolou musí mít zástupný znak {{option}}"
 
 #: climmob/views/Api/questions.py:1242
 msgid "This is not a question of type comparison with check."
-msgstr ""
+msgstr "Nejedná se o porovnání typu s kontrolou."
 
 #: climmob/views/Api/questionsGroups.py:52
 msgid "There was a problem with the creation of the category."
-msgstr ""
+msgstr "Při vytváření kategorie se vyskytl problém."
 
 #: climmob/views/Api/questionsGroups.py:70
 #: climmob/views/Api/questionsGroups.py:147
 msgid "There is already a category with this name."
-msgstr ""
+msgstr "Kategorie s tímto názvem již existuje."
 
 #: climmob/views/Api/questionsGroups.py:129
 msgid "There was a problem updating the category."
-msgstr ""
+msgstr "Při aktualizaci kategorie došlo k problému."
 
 #: climmob/views/Api/questionsGroups.py:155
 msgid ""
 "You cannot edit this category because it does not belong to your personal "
 "library."
-msgstr ""
+msgstr "Tuto kategorii nelze upravovat, protože nepatří do vaší osobní knihovny."
 
 #: climmob/views/Api/questionsGroups.py:215
 msgid "There was a problem removing the category."
-msgstr ""
+msgstr "Při odstraňování kategorie došlo k problému."
 
 #: climmob/views/Api/questionsGroups.py:223
 msgid "The category was removed."
-msgstr ""
+msgstr "Kategorie byla odstraněna."
 
 #: climmob/views/Api/questionsGroups.py:229
 msgid "This category cannot be removed because it has questions."
-msgstr ""
+msgstr "Tuto kategorii nelze odstranit, protože obsahuje otázky."
 
 #: climmob/views/Api/questionsGroups.py:237
 msgid ""
 "You cannot delete this category because it does not belong to your personal "
 "library."
-msgstr ""
+msgstr "Tuto kategorii nelze odstranit, protože nepatří do vaší osobní knihovny."
 
 #: climmob/views/Api/techaliases.py:52
 msgid "This technology option already exists in the technology."
-msgstr ""
+msgstr "Tato možnost již v technologii existuje."
 
 #: climmob/views/Api/techaliases.py:60 climmob/views/Api/techaliases.py:198
 #: climmob/views/Api/techaliases.py:268 climmob/views/Api/technologies.py:169
 #: climmob/views/Api/technologies.py:236
 msgid "You do not have a technology with this ID."
-msgstr ""
+msgstr "S tímto ID nemáte žádnou technologii."
 
 #: climmob/views/Api/techaliases.py:118
 msgid "There is no technology with this ID."
-msgstr ""
+msgstr "Toto ID není vybaveno žádnou technologií."
 
 #: climmob/views/Api/techaliases.py:166
 msgid "The technology option was updated successfully."
-msgstr ""
+msgstr "Možnost technologie byla úspěšně aktualizována."
 
 #: climmob/views/Api/techaliases.py:174
 msgid ""
 "You can not update this technology option because it has been assigned to a "
 "project."
 msgstr ""
+"Tuto možnost technologie nelze aktualizovat, protože byla přiřazena k projektu."
 
 #: climmob/views/Api/techaliases.py:190
 msgid "You do not have a technology option with this ID."
-msgstr ""
+msgstr "U tohoto ID nemáte možnost volby technologie."
 
 #: climmob/views/Api/techaliases.py:246
 msgid "The technology option was deleted successfully."
-msgstr ""
+msgstr "Možnost technologie byla úspěšně odstraněna."
 
 #: climmob/views/Api/techaliases.py:254
 msgid ""
 "You cannot delete this technology option because it has been assigned to a "
 "project."
 msgstr ""
+"Tuto možnost technologie nelze odstranit, protože byla přiřazena k projektu."
 
 #: climmob/views/Api/techaliases.py:262
 msgid "You do not have a alias with this ID."
-msgstr ""
+msgstr "Nemáte alias s tímto ID."
 
 #: climmob/views/Api/technologies.py:56 climmob/views/Api/technologies.py:177
 msgid "This technology already exists in your personal library."
-msgstr ""
+msgstr "Tato technologie již existuje ve vaší osobní knihovně."
 
 #: climmob/views/Api/technologies.py:64 climmob/views/Api/technologies.py:185
 msgid "This technology already exists in the generic library."
-msgstr ""
+msgstr "Tato technologie již existuje v generické knihovně."
 
 #: climmob/views/Api/technologies.py:153
 msgid "The technology was modified successfully."
-msgstr ""
+msgstr "Technologie byla úspěšně upravena."
 
 #: climmob/views/Api/technologies.py:161
 msgid ""
 "You cannot update this technology because it has been assigned to a project."
-msgstr ""
+msgstr "Tuto technologii nelze aktualizovat, protože byla přiřazena k projektu."
 
 #: climmob/views/Api/technologies.py:222
 msgid "The technology was deleted successfully."
-msgstr ""
+msgstr "Technologie byla úspěšně odstraněna."
 
 #: climmob/views/Api/technologies.py:228
 msgid ""
 "You cannot delete this technology because it has been assigned to a project."
-msgstr ""
+msgstr "Tuto technologii nelze odstranit, protože byla přiřazena k projektu."
 
 #: climmob/views/Bot/bot.py:60
 msgid "Feedback could not be sent."
-msgstr ""
+msgstr "Zpětnou vazbu se nepodařilo odeslat."
 
 #: climmob/views/Share/projectShare.py:52
 msgid "The project was successfully shared with the user"
-msgstr ""
+msgstr "Projekt byl úspěšně sdílen s uživatelem"
 
 #: climmob/views/projectHelp/projectHelp.py:57
 msgid "The number of participants was successfully increased"
-msgstr ""
+msgstr "Počet účastníků se podařilo zvýšit"
 
 #: climmob/views/projectHelp/projectHelp.py:95
 msgid "We haven't found a project that matches what was specified"
-msgstr ""
+msgstr "Nenašli jsme projekt, který by odpovídal zadání"
