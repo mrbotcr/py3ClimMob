@@ -16,6 +16,7 @@ def create_analysis(
     request,
     pathScript,
     variablesSplit,
+    combinationRerence,
 ):
     # We create the plugin directory if it does not exists and return it
     # The path user.repository in development.ini/user/project/products/product and
@@ -40,6 +41,7 @@ def create_analysis(
             infosheet,
             pathScript,
             variablesSplit,
+            combinationRerence,
         ),
         queue="ClimMob",
     )

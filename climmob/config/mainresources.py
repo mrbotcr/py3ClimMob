@@ -81,6 +81,10 @@ def createResources(apppath, config):
         "coreresources", "jquerysteps", "project/combinations/combinations.css", "style"
     )
 
+    r.add_css_resource(
+        "coreresources", "steps", "inspinia/css/plugins/steps/jquery.steps.css"
+    )
+
     # EditData
     r.add_css_resource(
         "coreresources",
@@ -361,7 +365,10 @@ def createResources(apppath, config):
 
     # Analysis
     r.add_js_resource(
-        "coreresources", "analysisData", "project/analysis/analysisData.js", None
+        "coreresources",
+        "steps",
+        "inspinia/js/plugins/steps/jquery.steps.min.js",
+        "jquery",
     )
 
     # Progress

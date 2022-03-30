@@ -23,6 +23,7 @@ def createReports(
     infosheet,
     pathScript,
     variablesSplit,
+    combinationRerence,
 ):
 
     if os.path.exists(path):
@@ -65,6 +66,8 @@ def createReports(
 
     if variablesSplit != "":
         variablesSplit = "c(" + ", ".join(map(str, variablesSplit.split(","))) + ")"
+    else:
+        variablesSplit = "c()"
 
     print(
         "Rscript "
