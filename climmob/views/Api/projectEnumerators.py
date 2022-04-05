@@ -336,7 +336,7 @@ class deleteProjectEnumerator_view(apiView):
                                     getProjectEnumerators(
                                         activeProjectId, self.request,
                                     ),
-                                    getProjectData(self.request),
+                                    getProjectData(activeProjectId, self.request),
                                 )
                                 response = Response(
                                     status=200,
