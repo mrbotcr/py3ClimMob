@@ -76,6 +76,7 @@
                             <tr>
                                 <th class="text-center">{{ _('Full name') }}</th>
                                 <th class="text-center">{{ _('Username') }}</th>
+                                <th class="text-center">{{ _('Telephone') }}</th>
                                 <th class="text-center">{{ _('Password') }}</th>
                                 <th class="text-center">{{ _('Status') }}</th>
                                 <th class="text-center" style="min-width: 81px;"></th>
@@ -85,6 +86,7 @@
                                 <tr>
                                     <td style="vertical-align: middle;"> {{ enumerator.enum_name }}</td>
                                     <td style="vertical-align: middle;"> {{ enumerator.enum_id }}</td>
+                                    <td style="vertical-align: middle;"> {{ enumerator.enum_telephone }}</td>
                                     <td style="vertical-align: middle;"> {{ enumerator.enum_password }}</td>
                                     <td style="vertical-align: middle;">
 
@@ -163,6 +165,7 @@
 
             $("#enum_name").val(dataJson["enum_name"])
             $("#enum_id").val(dataJson["enum_id"])
+            $("#enum_telephone").val(dataJson["enum_telephone"])
             $("#enum_password").val(dataJson["enum_password"])
             $("#enum_id").attr('readonly', true);
 

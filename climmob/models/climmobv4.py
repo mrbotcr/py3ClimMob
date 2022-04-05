@@ -137,6 +137,7 @@ class Enumerator(Base):
     enum_id = Column(Unicode(80), primary_key=True, nullable=False)
     enum_name = Column(Unicode(120))
     enum_password = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
+    enum_telephone = Column(Unicode(120), server_default=text("''"))
     enum_active = Column(Integer)
 
     project = relationship(u"User")
