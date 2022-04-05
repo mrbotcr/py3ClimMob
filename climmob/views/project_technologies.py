@@ -21,7 +21,7 @@ from climmob.processes import (
     getActiveProject,
     getTheProjectIdForOwner,
     getProjectData,
-    getCombinationsData
+    getCombinationsData,
 )
 
 
@@ -52,9 +52,7 @@ class projectTecnologies_view(privateView):
             prjData = getProjectData(activeProjectId, self.request)
 
             if prjData["project_regstatus"] > 0:
-                listOfCombinations = getCombinationsData(
-                    activeProjectId, self.request
-                )
+                listOfCombinations = getCombinationsData(activeProjectId, self.request)
 
             if prjData["project_template"] == 1:
                 self.returnRawViewResult = True
@@ -177,7 +175,7 @@ class projectTecnologies_view(privateView):
                 "techSee": techSee,
                 "error_summary2": error_summary2,
                 "totalOfCombinations": totalOfCombinations,
-                "combinations": listOfCombinations
+                "combinations": listOfCombinations,
             }
 
 

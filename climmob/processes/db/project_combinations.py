@@ -119,7 +119,9 @@ def getCombinations(projectId, request):
         " SELECT * FROM (("
         " SELECT prjcombdet.comb_code,prjcombination.comb_usable,prjcombination.quantity_available,prjcombdet.tech_id,techalias.alias_id,"
         " COALESCE(i.alias_name,techalias.alias_name) as alias_name,prjcombdet.alias_order,"
-        " (SELECT COUNT(pkgcomb.comb_code) FROM pkgcomb where project_id ='" + projectId + "' and pkgcomb.comb_code = prjcombdet.comb_code ) as number_of_times_used"
+        " (SELECT COUNT(pkgcomb.comb_code) FROM pkgcomb where project_id ='"
+        + projectId
+        + "' and pkgcomb.comb_code = prjcombdet.comb_code ) as number_of_times_used"
         " FROM "
         " prjcombdet,prjalias,prjcombination,techalias "
         " LEFT JOIN i18n_techalias i "
@@ -140,7 +142,9 @@ def getCombinations(projectId, request):
         " UNION ("
         " SELECT prjcombdet.comb_code,prjcombination.comb_usable,prjcombination.quantity_available,prjcombdet.tech_id,"
         " concat('C',prjalias.alias_id) as alias_id,prjalias.alias_name,alias_order,"
-        " (SELECT COUNT(pkgcomb.comb_code) FROM pkgcomb where project_id ='" + projectId + "' and pkgcomb.comb_code = prjcombdet.comb_code ) as number_of_times_used"
+        " (SELECT COUNT(pkgcomb.comb_code) FROM pkgcomb where project_id ='"
+        + projectId
+        + "' and pkgcomb.comb_code = prjcombdet.comb_code ) as number_of_times_used"
         " FROM "
         " prjcombdet,prjalias,prjcombination WHERE "
         " prjcombdet.project_id = prjalias.project_id AND "
