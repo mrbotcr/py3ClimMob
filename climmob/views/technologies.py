@@ -9,6 +9,7 @@ from climmob.processes import (
     deleteTechnology,
     getUserTechById,
     getActiveProject,
+    getTechnologyByName,
 )
 from climmob.views.techaliases import newalias_view, modifyalias_view
 
@@ -59,6 +60,9 @@ class technologies_view(privateView):
                 dict_return = newtechnology_view.processView(self)
                 dataworking = dict_return["formdata"]
                 error_summary_add = dict_return["error_summary"]
+                if not error_summary_add:
+                    tech = getTechnologyByName(dataworking, self.request)
+                    techSee = getUserTechById(tech["tech_id"], self.request)
                 if not dict_return["redirect"]:
                     action = "addTechnology"
 
@@ -137,6 +141,9 @@ class newtechnology_view(privateView):
                             if not added:
                                 error_summary = {"dberror": message}
                             else:
+                                self.request.session.flash(
+                                    self._("The technology was created successfully")
+                                )
                                 redirect = True
                         else:
                             error_summary = {
