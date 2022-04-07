@@ -10,7 +10,7 @@ from climmob.processes import (
     getActiveProject,
     getEnumeratorData,
 )
-from pyramid.httpexceptions import HTTPNotFound
+from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 
 
 class getEnumeratorDetails_view(privateView):
@@ -34,7 +34,10 @@ class enumerators_view(privateView):
         error_summary = {}
         modify = False
 
+        nextPage = self.request.params.get("next")
+
         if self.request.method == "POST":
+
             dataworking = self.getPostDict()
             if "btn_add_enumerator" in self.request.POST:
                 modify = False
@@ -54,6 +57,9 @@ class enumerators_view(privateView):
                         self.request.session.flash(
                             self._("The field agent was created successfully.")
                         )
+                        # if nextPage:
+                        #    self.returnRawViewResult = True
+                        #    return HTTPFound(nextPage)
                 else:
                     error_summary = {
                         "exists": self._("This field agent username already exists.")
@@ -97,6 +103,7 @@ class enumerators_view(privateView):
             "dataworking": dataworking,
             "error_summary": error_summary,
             "modify": modify,
+            "nextPage": nextPage,
         }
 
 

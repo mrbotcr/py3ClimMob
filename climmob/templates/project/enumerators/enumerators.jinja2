@@ -37,6 +37,7 @@
                     <div class="ibox-title">
                         <h5>{{ _("Assign field agents") }}</h5>
                         <div class="ibox-tools">
+                            <a class="btn btn-success btn-rounded  btn-xs" style="color: white" href="{{ request.route_url('enumerators',_query={'next': request.url}) }}"><i class="fa fa-plus-square"></i> {{  _("Add new field agent") }}</a>
                         </div>
                     </div>
                     <div class="ibox-content animated fadeInRightBig" style="height: 89%">
@@ -81,7 +82,7 @@
                         {% else %}
                             <div style="width: 100%; text-align: center">
                                 {% if enumeratorsInProject %}
-                                    <h3><b><a href="{{ request.route_url('enumerators') }}" style="color: black">{{ _("Go to") }} <u style="color: #337ab7">{{ _("field agents")}}</u> {{ _("to register more of them.")  }}</a></b></h3>
+                                    <h3><b><a href="{{ request.route_url('enumerators',_query={'next': request.url}) }}" style="color: black">{{ _("Click to") }} <u style="color: #337ab7">{{ _("+ Add new field agent")}}</u> {{ _("to register more of them.")  }}</a></b></h3>
                                 {% else%}
                                     <h3><b>{{ _("No field agents found. Register your field agents first. Go to Library (left panel) > Field agents.")  }}</b></h3>
                                 {% endif %}
