@@ -45,6 +45,7 @@
                                 <div class="ibox-title" >
                                     <h5>{{ _("Available questions from library") }}</h5>
                                     <div class="ibox-tools">
+                                        <a class="btn btn-success btn-rounded  btn-xs" style="color: white" onclick="showHelp()"><i class="fa fa-thumbs-o-up"></i> {{  _("Show help") }}</a>
                                     </div>
                                 </div>
                                 <div class="ibox-content" >
@@ -347,7 +348,7 @@
                         {
                             element: "#div_for_help",
                             title: "{{ _("Prepare data collection") }}",
-                            content: "{{ _("Move the questions from left to right.") }}<img src='{{ request.url_for_static('gif/move_questions.gif') }}' />",
+                            content: "<b>{{ _("Add questions to the form") }}:</b><br>{{ _("Move the question from left to right.") }}<br><br><b>{{ _("Remove questions from the form") }}:</b><br>{{ _("Move the question from right to left.") }}<img src='{{ request.url_for_static('gif/move_questions.gif') }}' />",
                             placement: "bottom"
                         }
                        ],
