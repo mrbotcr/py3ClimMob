@@ -3,18 +3,18 @@
     <table class="table table-striped table-bordered table-hover dataTables-example" >
         <thead>
         <tr>
-            <th>{{ _("Combination of levels") }}</th>
+{#            <th>{{ _("Combination of levels") }}</th>#}
             {% for tech in techs %}
-                <th>{{  tech.tech_name }}</th>
+                <th style="vertical-align: middle">{{  tech.tech_name }}</th>
             {% endfor %}
             <th width="178px">{{ _("How many packages can you create with this combination?") }}</th>
-            <th>{{ _("Action") }}</th>
+            <th style="vertical-align: middle; text-align: center">{{ _("Action") }}</th>
         </tr>
         </thead>
         <tbody>
         {% for comb in combArray %}
             <tr class="gradeX">
-                <td class="center">{{ comb.ncomb }}</td>
+{#                <td class="center">{{ comb.ncomb }}</td>#}
                 {% for element in comb.elements %}
                     <td>{{ element.alias_name }}</td>
                 {% endfor %}

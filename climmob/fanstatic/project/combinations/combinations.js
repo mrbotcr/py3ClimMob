@@ -37,7 +37,8 @@ $(document).ready(function(){
             "scrollCollapse": true,
             "paging":         false,
             "scrollX": true,
-            "order": []
+            "order": [],
+            "searching": false
         } );
     }
 });
