@@ -48,7 +48,7 @@
                                 <div class="ibox-title" >
                                     <h5>{{ _("Available questions from library") }}</h5>
                                     <div class="ibox-tools" >
-                                        <a class="btn btn-success btn-rounded  btn-xs" style="color: white" onclick="showHelp()"><i class="fa fa-thumbs-o-up"></i> {{  _("Show help") }}</a>
+                                        <a class="btn btn-success btn-rounded  btn-xs" style="color: white" onclick="showHelp()"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a>
                                     </div>
                                 </div>
                                 <div class="ibox-content" >
@@ -79,21 +79,23 @@
 
                                     </div>
                                 </div>
-                                <div class="ibox-content" style="overflow-x: hidden; overflow-y: scroll; min-height: 375px; max-height: calc(100vh - 270px);">
-                                    {% include 'snippets/error.jinja2' %}
-                                    {% set eventClick=False %}
-                                    {% set classByUser=False %}
-                                    {% set classByRegRequired=True %}
-                                    {% set classByAssesRequired=False %}
-                                    {% set createSection=True %}
-                                    {% set jstreeName="jstree1" %}
-                                    {% set showCreator=True %}
-                                    {% set colorsUserCategories=False %}
-                                    {% include 'snippets/jstreeForm.jinja2' %}
-                                    <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}" id="formFoSendInformation" style="display: none">
-                                        <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
-                                        <textarea id="nestable-output" name="neworder" class="form-control" style="display:none;"></textarea>
-                                    </form>
+                                <div class="ibox-content" >
+                                    <div style="overflow-x: hidden; overflow-y: scroll; min-height: 375px; max-height: calc(100vh - 270px);">
+                                        {% include 'snippets/error.jinja2' %}
+                                        {% set eventClick=False %}
+                                        {% set classByUser=False %}
+                                        {% set classByRegRequired=True %}
+                                        {% set classByAssesRequired=False %}
+                                        {% set createSection=True %}
+                                        {% set jstreeName="jstree1" %}
+                                        {% set showCreator=True %}
+                                        {% set colorsUserCategories=False %}
+                                        {% include 'snippets/jstreeForm.jinja2' %}
+                                        <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}" id="formFoSendInformation" style="display: none">
+                                            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                                            <textarea id="nestable-output" name="neworder" class="form-control" style="display:none;"></textarea>
+                                        </form>
+                                    </div>
 
                                 </div>
                             </div>
