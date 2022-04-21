@@ -55,6 +55,8 @@ class technologies_view(privateView):
         techSee = {}
         # alias = {}
 
+        nextPage = self.request.params.get("next")
+
         if self.request.method == "POST":
             if "btn_add_technology" in self.request.POST:
                 dict_return = newtechnology_view.processView(self)
@@ -111,7 +113,8 @@ class technologies_view(privateView):
             "UserTechs": getUserTechs(self.user.login, self.request),
             "ClimMobTechs": getUserTechs("bioversity", self.request),
             "action": action,
-            "techSee": techSee
+            "techSee": techSee,
+            "nextPage": nextPage,
             # "alias": alias
         }
 

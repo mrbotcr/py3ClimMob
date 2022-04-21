@@ -47,6 +47,9 @@
                 <div class="ibox-title" >
                     <h5>{{ _("Questions available in the library by category") }}</h5>
                     <div class="ibox-tools">
+                        {% if nextPage %}
+                            <a class="btn btn-success btn-rounded  btn-xs" style="color: white" href="{{ nextPage }}"><i class="fa fa-reply"></i> {{ _('Back to form') }}</a>
+                        {% endif %}
                     </div>
                 </div>
                 <div class="ibox-content " >
@@ -403,7 +406,7 @@
 
         function showDeleteQuestion() {
             var urlAction = '{{ request.application_url }}/question/'+$('#question_id').val()+'/delete'
-            showDelete(urlAction,'{{ _("Do you really want to remove this question ?") }}','{{ request.session.get_csrf_token() }}',"{{ request.route_url("qlibrary", user_name=activeUser.login) }}")
+            showDelete(urlAction,'{{ _("Do you really want to remove this question ?") }}','{{ request.session.get_csrf_token() }}', {% if nextPage %}"{{ request.route_url("qlibrary", user_name=activeUser.login, _query={'next': nextPage} ) }}" {% else %} "{{ request.route_url("qlibrary", user_name=activeUser.login ) }}" {% endif %})
             $(this).parent().parent().remove();
         }
 
@@ -507,10 +510,14 @@
                         $("#btn_add_question").prop('disabled', false);
                         $("#btn_update_question").prop('disabled', false);
                     }else{
-                        console.log(respuesta)
-                        var URL = "{{ request.route_url("qlibrary", user_name=activeUser.login ,_query={ "questionId": "__questionId__"} ) }}"
+
+                        {% if nextPage %}
+                            var URL = "{{ request.route_url("qlibrary", user_name=activeUser.login ,_query={ "questionId": "__questionId__", "next": nextPage} ) }}"
+                        {% else %}
+                            var URL = "{{ request.route_url("qlibrary", user_name=activeUser.login ,_query={ "questionId": "__questionId__"} ) }}"
+                        {% endif %}
+
                         URL = URL.replace("__questionId__",respuesta["question_id"])
-                        console.log(URL)
                         location.href = URL
                     }
                 },
@@ -608,7 +615,11 @@
                             toastr.error(respuesta['error']);
                         }else{
                             //toastr.success(respuesta['success']);
-                            location.href = "{{ request.route_url("qlibrary", user_name=activeUser.login) }}";
+                            {% if nextPage %}
+                                location.href = "{{ request.route_url("qlibrary", user_name=activeUser.login, _query={'next': nextPage}) }}";
+                            {% else %}
+                                location.href = "{{ request.route_url("qlibrary", user_name=activeUser.login) }}";
+                            {% endif %}
                         }
                     },
                     error: function (respuesta) {

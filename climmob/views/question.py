@@ -658,6 +658,8 @@ class qlibrary_view(privateView):
         except:
             seeQuestion = {}
 
+        nextPage = self.request.params.get("next")
+
         regularDict = {
             "UserQuestion": UserQuestionMoreBioversity(user_name, self.request),
             "showing": user_name,
@@ -667,6 +669,7 @@ class qlibrary_view(privateView):
             "allCategories": getCategories(user_name, self.request),
             "activeProject": getActiveProject(self.user.login, self.request),
             "seeQuestion": seeQuestion,
+            "nextPage": nextPage,
         }
 
         return regularDict

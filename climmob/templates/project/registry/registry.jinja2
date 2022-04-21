@@ -76,7 +76,7 @@
                                 <div class="ibox-title">
                                     <h5>{{ _("Registration form") }}</h5>
                                     <div class="ibox-tools">
-
+                                        <a class="btn btn-success btn-rounded  btn-xs" style="color: white" href="{{ request.route_url('qlibrary', user_name=activeUser.login,_query={'next': request.url}) }}"><i class="fa fa-plus-square"></i> {{  _("Add new question") }}</a>
                                     </div>
                                 </div>
                                 <div class="ibox-content" >
