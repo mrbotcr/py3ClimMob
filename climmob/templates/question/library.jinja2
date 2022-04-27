@@ -484,6 +484,7 @@
                     "question_negstm": $("#question_negstm").val(),
                     "question_perfstmt": $("#question_perfstmt").val(),
                     "question_group": $("#question_group").val(),
+                    "question_forms": $("#question_forms").val(),
                     "question_dtype": parseInt($("#question_dtype").val()),
                     "question_requiredvalue": question_requiredvalue,
                     "question_tied": question_tied,
@@ -678,6 +679,7 @@
 
             $(".inputForQuestion").val("")
             $("#question_group").val(category);
+            $("#question_forms").val("3");
             $('#question_group').trigger("change.select2");
             $("#question_dtype").val("1")
             $('#question_dtype').trigger('change.select2');
@@ -743,6 +745,8 @@
                 $("#question_perfstmt").val(dataJson["question_perfstmt"])
                 $("#question_group").val(dataJson["qstgroups_id"] +"[*$%&]"+dataJson["qstgroups_user"])
                 $('#question_group').trigger("change.select2");
+                $("#question_forms").val(dataJson["question_forms"])
+                $("#question_forms").trigger('change.select2');
                 $("#question_dtype").val(dataJson["question_dtype"])
                 $('#question_dtype').trigger('change.select2');
 
