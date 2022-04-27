@@ -119,5 +119,8 @@ class deleteEnumerator_view(privateView):
                 self.returnRawViewResult = True
                 return {"status": 400, "error": message}
             else:
+                self.request.session.flash(
+                    self._("The field agent was successfully removed")
+                )
                 self.returnRawViewResult = True
                 return {"status": 200}

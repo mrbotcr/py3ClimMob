@@ -209,6 +209,9 @@ class modifytechnology_view(privateView):
                             if not update:
                                 error_summary = {"dberror": message}
                             else:
+                                self.request.session.flash(
+                                    self._("The technology was successfully edited")
+                                )
                                 redirect = True
                         else:
                             error_summary = {
@@ -260,6 +263,9 @@ class deletetechnology_view(privateView):
                 self.returnRawViewResult = True
                 return {"status": 400, "error": message}
             else:
+                self.request.session.flash(
+                    self._("The technology was successfully removed")
+                )
                 self.returnRawViewResult = True
                 return {"status": 200}
 
