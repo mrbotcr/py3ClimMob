@@ -21,6 +21,7 @@ import logging
 import datetime
 import io
 import shutil as sh
+import glob
 
 log = logging.getLogger(__name__)
 
@@ -598,52 +599,85 @@ def storeSubmission(userid, userEnum, request):
     userOwner = None
     projectId = None
     error = 404
+    xml_name = None
+    requiresToBeStored = True
+
     for key in request.POST.keys():
-        filename = request.POST[key].filename
-        if filename.upper().find(".XML") >= 0 or filename == "xml_submission_file":
-            input_file = request.POST[key].file
 
-            # Change by Brandon
-            iniqueIDTemp = uuid4()
+        if key != "*isIncomplete*":
 
-            pathTemp = os.path.join(
-                request.registry.settings["user.repository"],
-                *[userid, "data", "xml", str(iniqueIDTemp)]
-            )
+            filename = request.POST[key].filename
+            if filename.upper().find(".XML") >= 0 or filename == "xml_submission_file":
+                input_file = request.POST[key].file
+                xml_name = request.POST[key].filename
 
-            os.makedirs(pathTemp)
+                # Change by Brandon
+                iniqueIDTemp = uuid4()
 
-            filePath = os.path.join(pathTemp, filename)
-            tempFilePath = filePath + "~"
+                pathTemp = os.path.join(
+                    request.registry.settings["user.repository"],
+                    *[userid, "data", "xml", str(iniqueIDTemp)]
+                )
 
-            input_file.seek(0)
+                os.makedirs(pathTemp)
 
-            with open(tempFilePath, "wb") as output_file:
-                shutil.copyfileobj(input_file, output_file)
+                filePath = os.path.join(pathTemp, filename)
+                tempFilePath = filePath + "~"
 
-            final = open(filePath, "w")
-            args = ["tidy", "-xml", tempFilePath]
-            p = Popen(args, stdout=final, stderr=PIPE)
-            stdout, stderr = p.communicate()
-            final.close()
-            if p.returncode != 0:
-                return False, 500
-            # End changes by Brandon
+                input_file.seek(0)
 
-            (
-                acceptSubmission,
-                error,
-                projectCod,
-                submissionType,
-                assessmentID,
-                userOwner,
-                projectId,
-            ) = checkSubmission(userid, filePath, request)
+                with open(tempFilePath, "wb") as output_file:
+                    shutil.copyfileobj(input_file, output_file)
 
-            sh.rmtree(pathTemp)
+                final = open(filePath, "w")
+                args = ["tidy", "-xml", tempFilePath]
+                p = Popen(args, stdout=final, stderr=PIPE)
+                stdout, stderr = p.communicate()
+                final.close()
+                if p.returncode != 0:
+                    return False, 500
+                # End changes by Brandon
+
+                (
+                    acceptSubmission,
+                    error,
+                    projectCod,
+                    submissionType,
+                    assessmentID,
+                    userOwner,
+                    projectId,
+                ) = checkSubmission(userid, filePath, request)
+
+                sh.rmtree(pathTemp)
 
     if acceptSubmission:
         iniqueID = uuid4()
+
+        if submissionType == "REG":
+            dirs = glob.glob(
+                os.path.join(
+                    request.registry.settings["user.repository"],
+                    *[userOwner, projectCod, "data", "reg", "xml"]
+                )
+                + "/*",
+                recursive=True,
+            )
+        else:
+            dirs = glob.glob(
+                os.path.join(
+                    request.registry.settings["user.repository"],
+                    *[userOwner, projectCod, "data", "ass", assessmentID, "xml"]
+                )
+                + "/*",
+                recursive=True,
+            )
+
+        for dir in dirs:
+            info = open(dir + "/" + os.path.basename(dir) + ".info").read()
+            if info == xml_name:
+                iniqueID = os.path.basename(dir)
+                requiresToBeStored = False
+
         if submissionType == "REG":
             path = os.path.join(
                 request.registry.settings["user.repository"],
@@ -690,42 +724,52 @@ def storeSubmission(userid, userEnum, request):
 
         XMLFile = ""
         for key in request.POST.keys():
-            filename = request.POST[key].filename
-            input_file = request.POST[key].file
-            file_path = os.path.join(path, filename)
-            if file_path.upper().find(".XML") >= 0 or filename == "xml_submission_file":
-                XMLFile = file_path
-            temp_file_path = file_path + "~"
 
-            input_file.seek(0)
-            with open(temp_file_path, "wb") as output_file:
-                shutil.copyfileobj(input_file, output_file)
-            # Now that we know the file has been fully saved to disk move it into place.
-            os.rename(temp_file_path, file_path)
+            if key != "*isIncomplete*":
+
+                filename = request.POST[key].filename
+                input_file = request.POST[key].file
+                file_path = os.path.join(path, filename)
+                if (
+                    file_path.upper().find(".XML") >= 0
+                    or filename == "xml_submission_file"
+                ):
+                    XMLFile = file_path
+                    xml_name = request.POST[key].filename
+                temp_file_path = file_path + "~"
+
+                input_file.seek(0)
+                with open(temp_file_path, "wb") as output_file:
+                    shutil.copyfileobj(input_file, output_file)
+                # Now that we know the file has been fully saved to disk move it into place.
+                os.rename(temp_file_path, file_path)
         if XMLFile != "":
             XMLFilePath = os.path.dirname(XMLFile)
             newFile = os.path.join(XMLFilePath, str(iniqueID) + ".xml")
             # Write the original name in info for reference
             infoFile = os.path.join(XMLFilePath, str(iniqueID) + ".info")
             file = open(infoFile, "w")
-            file.write(filename)
+            file.write(xml_name)
             file.close()
             # Rename the file
             os.rename(XMLFile, newFile)
             XMLFile = newFile
             JSONFile = XMLFile.replace("xml", "json")
-            convertXMLToJSON(
-                userid,
-                userOwner,
-                userEnum,
-                XMLFile,
-                JSONFile,
-                projectCod,
-                submissionType,
-                assessmentID,
-                request,
-                projectId,
-            )
+
+            if requiresToBeStored:
+
+                convertXMLToJSON(
+                    userid,
+                    userOwner,
+                    userEnum,
+                    XMLFile,
+                    JSONFile,
+                    projectCod,
+                    submissionType,
+                    assessmentID,
+                    request,
+                    projectId,
+                )
             return True, 201
         else:
             return False, 500
