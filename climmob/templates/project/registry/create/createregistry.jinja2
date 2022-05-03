@@ -123,6 +123,28 @@
                                                             </div>
                                                         {% endfor %}
                                                     {% else %}
+                                                        <div class="row ">
+
+                                                            <div class="col-lg-3 "></div>
+
+                                                            <div class="col-lg-6">
+                                                                <br>
+                                                                <br>
+                                                                <div class="panel panel-primary" style="margin-bottom: 0px">
+                                                                    <div class="panel-heading">
+                                                                        <i class="fa fa-info-circle"></i> {{  _("Important") }}
+                                                                    </div>
+                                                                    <div class="panel-body">
+                                                                        <p>{{ _("Please review the generated packages.") }}</p>
+                                                                        <u style="text-decoration: none; border-bottom: 1px solid #ff0000; "> <i class="fa fa-warning" style="color: red;"></i> {{ _("You must confirm this procedure at the end of the table to continue with the opening of the participant registration.") }}</u>
+                                                                    </div>
+
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-lg-3 "></div>
+
+                                                        </div>
                                                         {% include 'snippets/project/registry/create/package_table.jinja2' %}
                                                     {% endif %}
 

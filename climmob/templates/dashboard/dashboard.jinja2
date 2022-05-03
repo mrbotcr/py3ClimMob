@@ -17,6 +17,7 @@
         {% cssresource request,'coreresources','style' %}
         {% cssresource request,'coreresources','sweet' %}
         {% cssresource request,'coreresources','tour' %}
+        {% cssresource request,'coreresources','toastr' %}
 
     {% endblock css %}
 
@@ -987,7 +988,7 @@
                 showMethod: 'slideDown',
                 timeOut: 4000
             };
-            //toastr.success("{{ toastrmessage[0] }}");
+            toastr.success("{{ toastrmessage[0] }}");
         </script>
     {% endif %}
 {% endblock toastr %}

@@ -28,7 +28,6 @@
 {% block pagecontent %}
 
     <div class="row">
-
         <div class="col-lg-6 ">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
@@ -48,7 +47,7 @@
                     {% endif %}
 
                     <div class="error-desc">
-                        <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}" >
+                        <form class="form-horizontal formElement" role="form" method="post" action="{{ request.url }}" >
                             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                             {% include 'snippets/enumerators/enumerator-form.jinja2'%}
 
@@ -67,6 +66,9 @@
                 <div class="ibox-title">
                     <h5>{{ _("Registered field agents") }}</h5>
                     <div class="ibox-tools">
+                        {% if nextPage %}
+                            <a class="btn btn-success btn-rounded  btn-xs" style="color: white" href="{{ nextPage }}"><i class="fa fa-reply"></i> {{ _('Back to assign field agents to the project') }}</a>
+                        {% endif %}
                     </div>
                 </div>
                 <div class="ibox-content" >
@@ -76,6 +78,7 @@
                             <tr>
                                 <th class="text-center">{{ _('Full name') }}</th>
                                 <th class="text-center">{{ _('Username') }}</th>
+                                <th class="text-center">{{ _('Telephone') }}</th>
                                 <th class="text-center">{{ _('Password') }}</th>
                                 <th class="text-center">{{ _('Status') }}</th>
                                 <th class="text-center" style="min-width: 81px;"></th>
@@ -85,6 +88,7 @@
                                 <tr>
                                     <td style="vertical-align: middle;"> {{ enumerator.enum_name }}</td>
                                     <td style="vertical-align: middle;"> {{ enumerator.enum_id }}</td>
+                                    <td style="vertical-align: middle;"> {{ enumerator.enum_telephone }}</td>
                                     <td style="vertical-align: middle;"> {{ enumerator.enum_password }}</td>
                                     <td style="vertical-align: middle;">
 
@@ -115,6 +119,8 @@
 
 
     </div>
+
+
 
     <script>
 
@@ -163,6 +169,7 @@
 
             $("#enum_name").val(dataJson["enum_name"])
             $("#enum_id").val(dataJson["enum_id"])
+            $("#enum_telephone").val(dataJson["enum_telephone"])
             $("#enum_password").val(dataJson["enum_password"])
             $("#enum_id").attr('readonly', true);
 

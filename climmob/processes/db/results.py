@@ -676,6 +676,7 @@ def getCombinationsData(ProjectId, request):
                     "combination_code": comb["comb_code"] - 1,
                     "comb_usable": combs[pos2 - 1]["comb_usable"],
                     "quantity_available": combs[pos2 - 1]["quantity_available"],
+                    "number_of_times_used": combs[pos2 - 1]["number_of_times_used"],
                     "elements": list(elements),
                 }
             )
@@ -693,6 +694,7 @@ def getCombinationsData(ProjectId, request):
             "combination_code": ncombs,
             "comb_usable": combs[pos2 - 1]["comb_usable"],
             "quantity_available": combs[pos2 - 1]["quantity_available"],
+            "number_of_times_used": combs[pos2 - 1]["number_of_times_used"],
             "elements": list(elements),
         }
     )

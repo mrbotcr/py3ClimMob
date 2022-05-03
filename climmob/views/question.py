@@ -56,6 +56,9 @@ class deleteQuestion_view(privateView):
                 self.returnRawViewResult = True
                 return {"status": 400, "error": message}
             else:
+                self.request.session.flash(
+                    self._("The question was successfully removed")
+                )
                 self.returnRawViewResult = True
                 return {"status": 200}
 
@@ -502,6 +505,10 @@ def actionsInquestion(self, formdata):
                             if not addded:
                                 return {"result": "error", "error": resp}
 
+                    self.request.session.flash(
+                        self._("The question was successfully added")
+                    )
+
                     return {
                         "question_id": idorerror,
                         "user_name": formdata["user_name"],
@@ -536,6 +543,11 @@ def actionsInquestion(self, formdata):
                             addded, resp = addOptionToQuestion(option, self.request)
                             if not addded:
                                 return {"result": "error", "error": resp}
+
+                    self.request.session.flash(
+                        self._("The question was successfully modified")
+                    )
+
                     return {
                         "question_id": formdata["question_id"],
                         "user_name": formdata["user_name"],
@@ -658,6 +670,8 @@ class qlibrary_view(privateView):
         except:
             seeQuestion = {}
 
+        nextPage = self.request.params.get("next")
+
         regularDict = {
             "UserQuestion": UserQuestionMoreBioversity(user_name, self.request),
             "showing": user_name,
@@ -667,6 +681,7 @@ class qlibrary_view(privateView):
             "allCategories": getCategories(user_name, self.request),
             "activeProject": getActiveProject(self.user.login, self.request),
             "seeQuestion": seeQuestion,
+            "nextPage": nextPage,
         }
 
         return regularDict

@@ -898,8 +898,9 @@ class addCollaborator_view(apiView):
                     if not theUserBelongsToTheProject(
                         dataworking["user_collaborator"], activeProjectId, self.request,
                     ):
-                        if dataworking["access_type"] in [2, 3, 4]:
+                        if dataworking["access_type"] in [2, 3, 4, "2", "3", "4"]:
 
+                            dataworking["access_type"] = int(dataworking["access_type"])
                             dataworking["project_id"] = activeProjectId
                             dataworking["user_name"] = dataworking["user_collaborator"]
                             dataworking["project_dashboard"] = 0

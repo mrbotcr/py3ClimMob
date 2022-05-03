@@ -7,6 +7,10 @@
     <div class="col-sm-8"><input type="text" class="form-control inputsEnumerators" value="{{ dataworking['enum_id'] }}" id="enum_id" name="enum_id" placeholder="" required="" oninvalid="this.setCustomValidity('{{ _("Write the username.") }}')" onchange="this.setCustomValidity('')"></div>
 </div>
 <div class="form-group">
+    <label class="col-sm-4 control-label">{{ _('Telephone') }}</label>
+    <div class="col-sm-8"><input type="text" class="form-control inputsEnumerators" value="{{ dataworking['enum_telephone'] }}" id="enum_telephone" name="enum_telephone" placeholder="" oninvalid="this.setCustomValidity('{{ _("Write the telephone.") }}')" onchange="this.setCustomValidity('')"></div>
+</div>
+<div class="form-group">
     <label class="col-sm-4 control-label">{{ _('Password') }} </label>
     <div class="col-sm-8"><input type="text"  class="form-control inputsEnumerators" value="{{ dataworking['enum_password'] }}" id="enum_password" name="enum_password" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("Write the password.") }}')" onchange="this.setCustomValidity('')"></div>
 </div>

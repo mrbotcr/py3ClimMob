@@ -45,17 +45,21 @@
                                 <div class="ibox-title" >
                                     <h5>{{ _("Available questions from library") }}</h5>
                                     <div class="ibox-tools">
+                                        <a class="btn btn-success btn-rounded  btn-xs" style="color: white" onclick="showHelp()"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a>
                                     </div>
                                 </div>
-                                <div class="ibox-content" style="min-height: 400px" id="div_availables">
-                                    {% set doActions=False %}
-                                    {% set jstreeId="jstree2" %}
-                                    {% set eventClick=False %}
-                                    {% set classByUser=False %}
-                                    {% set classByRegRequired=False %}
-                                    {% set showCreator=True %}
-                                    {% set colorsUserCategories=False %}
-                                    {% include 'snippets/jstreeQuestions.jinja2' %}
+                                <div class="ibox-content" >
+                                    <input type="text" class="form-control form-control-sm m-b-xs" id="filterjstree2" placeholder="{{ _("Search question") }}">
+                                    <div style="overflow-x: hidden; overflow-y: scroll; min-height: 300px; max-height: calc(100vh - 345px);" id="div_availables">
+                                        {% set doActions=False %}
+                                        {% set jstreeId="jstree2" %}
+                                        {% set eventClick=False %}
+                                        {% set classByUser=False %}
+                                        {% set classByRegRequired=False %}
+                                        {% set showCreator=True %}
+                                        {% set colorsUserCategories=False %}
+                                        {% include 'snippets/jstreeQuestions.jinja2' %}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -69,24 +73,26 @@
                                 <div class="ibox-title">
                                     <h5>{{ _("Assessment form") }}</h5>
                                     <div class="ibox-tools">
-
+                                        <a class="btn btn-success btn-rounded  btn-xs" style="color: white" href="{{ request.route_url('qlibrary', user_name=activeUser.login,_query={'next': request.url}) }}"><i class="fa fa-plus-square"></i> {{  _("Add new question") }}</a>
                                     </div>
                                 </div>
-                                <div class="ibox-content" style="min-height: 500px" id="div_form">
-                                    {% include 'snippets/error.jinja2' %}
-                                    {% set eventClick=False %}
-                                    {% set classByUser=False %}
-                                    {% set classByRegRequired=False %}
-                                    {% set classByAssesRequired=True %}
-                                    {% set createSection=True %}
-                                    {% set jstreeName="jstree1" %}
-                                    {% set showCreator=True %}
-                                    {% set colorsUserCategories=False %}
-                                    {% include 'snippets/jstreeForm.jinja2'  %}
-                                    <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}" id="formFoSendInformation" style="display: none">
-                                        <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
-                                        <textarea id="nestable-output" name="neworder" class="form-control" style="display:none;"></textarea>
-                                    </form>
+                                <div class="ibox-content" >
+                                    <div style="overflow-x: hidden; overflow-y: scroll; min-height: 375px; max-height: calc(100vh - 270px);">
+                                        {% include 'snippets/error.jinja2' %}
+                                        {% set eventClick=False %}
+                                        {% set classByUser=False %}
+                                        {% set classByRegRequired=False %}
+                                        {% set classByAssesRequired=True %}
+                                        {% set createSection=True %}
+                                        {% set jstreeName="jstree1" %}
+                                        {% set showCreator=True %}
+                                        {% set colorsUserCategories=False %}
+                                        {% include 'snippets/jstreeForm.jinja2'  %}
+                                        <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}" id="formFoSendInformation" style="display: none">
+                                            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                                            <textarea id="nestable-output" name="neworder" class="form-control" style="display:none;"></textarea>
+                                        </form>
+                                    </div>
 
                                 </div>
                             </div>
@@ -277,7 +283,6 @@
                 $("#formFoSendInformation").css('display','initial')
                 $("#form_section").css('display','none')
                 refreshTheQuestions()
-                $("#div_availables").trigger('heightChange');
 
             }
 
@@ -292,13 +297,22 @@
                             return false;
                     }
                 },
-                'plugins': ['types', 'dnd'],
+                'plugins': ['types', 'dnd','search'],
                 'types' : {
                     'default': {
                         'icon': 'fa fa-folder'
                     }
+                },
+                'search':{
+                    'case_sensitive': false,
+                    'show_only_matches': true
                 }
 
+            });
+
+            $("#filterjstree2").keyup(function (){
+                var searchString = $(this).val();
+                $("#jstree2").jstree('search', searchString);
             });
 
             $("#jstree2").bind("copy_node.jstree", function(e, data) {
@@ -317,35 +331,14 @@
                     },
                     success: function (respuesta) {
                         $("#htmlForPreview").html("")
-                        $("#htmlForPreview").html(respuesta)
-                        //toastr.success("{{ _("Update completed.") }}");
+                        $("#htmlForPreview").html('<div width="100%" style="text-align:center"> <img alt="image" src="{{ request.url_for_static('gif/loading.gif') }}" style="height: 200px; width: 200px"/> </div>');
+                        setTimeout(() => {  $("#htmlForPreview").html(respuesta) }, 1000);
                     },
                     error: function (respuesta) {
                         console.log(respuesta)
                     }
                 });
             }
-
-            $('#div_availables').bind('heightChange', function(){
-                $('#div_form').css('height','')
-                $('#div_availables').css('height','')
-                $('#div_form').css('overflow-y','initial')
-                $('#div_availables').css('overflow-y','initial')
-
-                var availables = $('#div_availables').css('height').replace("px","");
-                var form = $('#div_form').css('height').replace("px","");
-
-                if(parseInt(availables)<parseInt(form))
-                {
-                    $('#div_form').css('height',availables)
-                    $('#div_form').css('overflow-y','scroll')
-                }else{
-                    $('#div_availables').css('height',form)
-                    $('#div_availables').css('overflow-y','scroll')
-                }
-            });
-
-            $("#div_availables").trigger('heightChange');
 
         });
 
@@ -357,7 +350,7 @@
                         {
                             element: "#div_for_help",
                             title: "{{ _("Prepare data collection") }}",
-                            content: "{{ _("Move the questions from left to right.") }}<img src='{{ request.url_for_static('gif/move_questions.gif') }}' />",
+                            content: "<b>{{ _("Add questions to the form") }}:</b><br>{{ _("Move the question from left to right.") }}<br><br><b>{{ _("Remove questions from the form") }}:</b><br>{{ _("Move the question from right to left.") }}<img src='{{ request.url_for_static('gif/move_questions.gif') }}' />",
                             placement: "bottom"
                         }
                        ],

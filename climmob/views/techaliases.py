@@ -64,6 +64,9 @@ class newalias_view(privateView):
                                     badalias += alias + "\n"
 
                     if badalias == "":
+                        self.request.session.flash(
+                            self._("The technology options were successfully created")
+                        )
                         redirect = True
                     else:
                         formdata["alias_name"] = badalias
@@ -107,6 +110,9 @@ class deletealias_view(privateView):
                 self.returnRawViewResult = True
                 return {"status": 400, "error": message}
             else:
+                self.request.session.flash(
+                    self._("The technology option was successfully removed")
+                )
                 self.returnRawViewResult = True
                 return {"status": 200}
             # else:
@@ -145,6 +151,9 @@ class modifyalias_view(privateView):
                         if not update:
                             error_summary = {"dberror": message}
                         else:
+                            self.request.session.flash(
+                                self._("The technology option was successfully edited")
+                            )
                             redirect = True
                     else:
                         error_summary = {

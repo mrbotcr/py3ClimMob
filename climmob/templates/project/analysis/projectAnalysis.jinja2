@@ -8,14 +8,16 @@
     {% cssresource request,'coreresources','icheck' %}
     {% cssresource request,'coreresources','switch' %}
     {% cssresource request,'coreresources','footable' %}
+
+    {% cssresource request,'coreresources','steps' %}
 {% endblock css %}
 
 {% block topScripts %}
     {% jsresource request,'coreresources','toastr' %}
     {% jsresource request,'coreresources','icheck' %}
     {% jsresource request,'coreresources','switch' %}
-    {% jsresource request,'coreresources','analysisData' %}
     {% jsresource request,'coreresources','footable' %}
+    {% jsresource request,'coreresources','steps'%}
 {% endblock topScripts %}
 
 {% block pageheading %}
@@ -25,250 +27,430 @@
 {% endblock %}
 
 {% block pagecontent %}
+
+    <style>
+        .wizard .content {
+            min-height: 100px;
+        }
+        .wizard .content > .body {
+            width: 100%;
+            height: auto;
+            padding: 15px;
+            position: relative;
+        }
+    </style>
+
     <div class="row">
-        <div class="col-md-8">
-            <div class="ibox float-e-margins">
+        <div class="col-lg-12">
+            <div class="ibox ">
                 <div class="ibox-title">
-                    <h5>{{ _("Select your variables to analyze") }}</h5>
+                    <h5>{{ _("Create the analysis") }}</h5>
                 </div>
-                <div class="ibox-content">
-                    {% set percentage = 0  %}
-                    <table class="table table-bordered">
-                        <tr>
-                            <th class="text-center" style="width: {{percentage}}% ">{{ _("Data collection moments") }}</th>
-                            <th class="text-center" style="width: {{percentage}}% ">{{ _("Explanatory") }}</th>
-                            <th class="text-center" style="width: {{percentage}}% ">{{ _("Linear regression") }}</th>
-{#                            <th class="text-center" style="width: {{percentage}}% ">{{ _("Quantitative") }}</th>#}
-                            <th class="text-center" style="width: {{percentage}}% ">{{ _("Ranking of options") }}</th>
-                            <th class="text-center" style="width: {{percentage}}% ">{{ _("Comparison with check") }}</th>
-                        </tr>
-                        <tr>
-                            <td class="text-center" style="border-top-style: hidden;"></td>
-                            <td class="text-center" style="border-top-style: hidden;"><label style="font-weight: inherit"> <input class="checkbox i-checksAll" type="checkbox" id="explanatorySelect"><i></i> {{ _("Select all") }}</label></td>
-                            <td class="text-center" style="border-top-style: hidden;"><label style="font-weight: inherit"> <input class="checkbox i-checksAll" type="checkbox" id="linearregressionSelect"><i></i> {{ _("Select all") }}</label></td>
-{#                            <td class="text-center" style="border-top-style: hidden;"><label style="font-weight: inherit"> <input class="checkbox i-checksAll" type="checkbox" id="quantitativeSelect"><i></i> {{ _("Select all") }}</label></td>#}
-                            <td class="text-center" style="border-top-style: hidden;"><label style="font-weight: inherit"> <input class="checkbox i-checksAll" type="checkbox" id="rankingSelect"><i></i> {{ _("Select all") }}</label></td>
-                            <td class="text-center" style="border-top-style: hidden;"><label style="font-weight: inherit"> <input class="checkbox i-checksAll" type="checkbox" id="comparisonSelect"><i></i> {{ _("Select all") }}</label></td>
-                        </tr>
-                        <tr>
-                            <th style="vertical-align:middle"> {{ _("Registration") }}</th>
-                            <td>
-                                {% if dataForAnalysis.Explanatory %}
-                                    {%for c in dataForAnalysis.Explanatory%}
-                                        {% if c.code == None %}
-                                            <label style="font-weight: inherit"> <input class="checkbox i-checks explanatorySelect" type="checkbox" id="explanatory_REG__{{c.id}}_add" variable="{{ c.vars }}"><i></i> {{ c.name }}</label><br>
-                                        {% endif%}
-                                    {%endfor%}
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if dataForAnalysis.linearRegression %}
-                                    {%for c in dataForAnalysis.linearRegression%}
-                                        {% if c.code == None %}
-                                            <label style="font-weight: inherit"> <input class="checkbox i-checks linearregressionSelect" type="checkbox" id="linearregression_REG__{{c.id}}_add"><i></i> {{ c.name }}</label><br>
-                                        {% endif%}
-                                    {%endfor%}
-                                {% endif %}
-                            </td>
-{#                           <td>#}
-{#                                {% if dataForAnalysis.Quantitative %}#}
-{#                                    {%for c in dataForAnalysis.Quantitative%}#}
-{#                                        {% if c.code == None %}#}
-{#                                            <label style="font-weight: inherit"> <input class="checkbox i-checks quantitativeSelect" type="checkbox" id="quantitaive_REG__{{c.id}}_add"><i></i> {{ c.name }}</label><br>#}
-{#                                        {% endif%}#}
-{#                                    {%endfor%}#}
-{#                                {% endif %}#}
-{#                            </td>#}
-                            <td>
-                                {% if dataForAnalysis.Characteristics %}
-                                    {%for c in dataForAnalysis.Characteristics%}
-                                        {% if c.code == None %}
-                                            <label style="font-weight: inherit"> <input class="checkbox i-checks rankingSelect" type="checkbox" id="characteristic_REG__{{c.id}}_add"><i></i> {{ c.name }}</label><br>
-                                        {% endif%}
-                                    {%endfor%}
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if dataForAnalysis.Performance%}
-                                    {%for c in dataForAnalysis.Performance%}
-                                        {% if c.code == None %}
-                                            <label style="font-weight: inherit"> <input class="checkbox i-checks comparisonSelect" type="checkbox" id="performance_REG__{{c.id}}_add"><i></i> {{ c.name }}</label><br>
-                                        {% endif%}
-                                    {%endfor%}
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% for assess in assessmentsList%}
-                            <tr>
-                                <th style="vertical-align:middle">{{ assess.ass_desc}}</th>
-                                <td>
-                                    {% if dataForAnalysis.Explanatory %}
-                                        {%for c in dataForAnalysis.Explanatory%}
-                                            {% if c.code.ass_cod == assess.ass_cod %}
-                                                <label style="font-weight: inherit"> <input class="checkbox i-checks explanatorySelect" type="checkbox" id="explanatory_ASS_{{ assess.ass_cod }}_{{c.id}}_add" variable="{{ c.vars }}"><i></i> {{ c.name }}</label><br>
-                                            {% endif%}
-                                        {%endfor%}
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if dataForAnalysis.linearRegression %}
-                                        {%for c in dataForAnalysis.linearRegression%}
-                                            {% if c.code.ass_cod == assess.ass_cod %}
-                                                <label style="font-weight: inherit"> <input class="checkbox i-checks linearregressionSelect" type="checkbox" id="linearregression_ASS_{{ assess.ass_cod }}_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
-                                            {% endif%}
-                                        {%endfor%}
-                                    {% endif %}
-                                </td>
-{#                                <td>#}
-{#                                    {% if dataForAnalysis.Quantitative %}#}
-{#                                        {%for c in dataForAnalysis.Quantitative%}#}
-{#                                            {% if c.code.ass_cod == assess.ass_cod %}#}
-{#                                                <label style="font-weight: inherit"> <input class="checkbox i-checks quantitativeSelect" type="checkbox" id="quantitative_ASS_{{ assess.ass_cod }}_{{c.id}}_add"><i></i> {{ c.name }}</label><br>#}
-{#                                            {% endif%}#}
-{#                                        {%endfor%}#}
-{#                                    {% endif %}#}
-{#                                </td>#}
-                                <td>
-                                    {% if dataForAnalysis.Characteristics %}
-                                        {%for c in dataForAnalysis.Characteristics%}
-                                            {% if c.code.ass_cod == assess.ass_cod %}
-                                                <label style="font-weight: inherit"> <input class="checkbox i-checks rankingSelect" type="checkbox" id="characteristic_ASS_{{ assess.ass_cod }}_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
-                                            {% endif%}
-                                        {%endfor%}
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if dataForAnalysis.Performance%}
-                                        {%for c in dataForAnalysis.Performance%}
-                                            {% if c.code.ass_cod == assess.ass_cod %}
-                                                <label style="font-weight: inherit"> <input class="checkbox i-checks comparisonSelect" type="checkbox" id="performance_ASS_{{ assess.ass_cod }}_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
-                                            {% endif%}
-                                        {%endfor%}
-                                    {% endif %}
-                                </td>
+                <div class="ibox-content" >
 
-                            </tr>
-                        {% endfor %}
+                    <form method="post" class="form-horizontal formElement" action="{{ request.path }}">
+                        <input type="text" id="txt_included_in_analysis" name="txt_included_in_analysis" style="width: 100%;display:none">
+                        <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                        <input type="text" id="txt_infosheets" name="txt_infosheets" value="true" style="width: 100%;display:none">
+                        <input type="text" id="txt_splits" name="txt_splits" value="true," style="width: 100%;display:none">
+                        <input type="text" id="txt_reference" name="txt_reference" style="display: none">
 
-
-                    </table>
-
-
-                    <br>
-                    <div class="form-group">
-                        <b>{{ _("Splits") }}</b>
-                        <p>{{ _("Do you want to do an extra analysis, separating by the values of the selection questions?") }}</p>
-
-                        <div class="col-lg-offset-2 col-lg-10">
-
-                            <div class="form-group">
-                                <input type="checkbox" id="ckb_Splits" name="ckb_Splits" data-on-color="success" data-off-color="danger" data-on-text="{{ _('Yes') }}" data-off-text="{{ _('No') }}" >
-                            </div>
-                        </div>
-
-                        <table class="table table-bordered" id="tableOfSplits" style="width: 100%">
-                            <tbody>
-                                <tr>
-                                    <th class="text-center" style="width: {{percentage}}% ">{{ _("Data collection moments") }}</th>
-                                    <th class="text-center" style="width: {{percentage}}% ">{{ _("Make split by variable") }}</th>
-                                </tr>
-                                <tr>
-                                    <th style="vertical-align:middle"> {{ _("Registration") }}</th>
-                                    <td>
-                                        {% if dataForAnalysis.Explanatory %}
-                                            {%for c in dataForAnalysis.Explanatory%}
-                                                {% if c.dtype in [5,6] %}
-                                                    {% if c.code == None %}
-                                                        <label style="font-weight: inherit"> <input class="checkbox i-checks explanatorySplit" type="checkbox" id="explanatory_REG__{{c.id}}_add" variable="{{ c.vars }}"><i></i> {{ c.name }}</label><br>
-                                                    {% endif%}
-                                                {% endif%}
-                                            {%endfor%}
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                                {% for assess in assessmentsList%}
+                        <div id="wizard">
+                            <h1>{{ _("Select your variables to analyze") }}</h1>
+                            <div class="step-content" style="border: 2px solid #1AB394; background-color: white">
+                                <div class="alert alert-danger alert-dismissable" id="alert0" style="display: none">
+                                    {{ _("You must select at least one variable") }}
+                                </div>
+                                {% set percentage = 0  %}
+                                <table class="table table-bordered">
                                     <tr>
-                                        <th style="vertical-align:middle">{{ assess.ass_desc}}</th>
+                                        <th class="text-center" style="width: {{percentage}}% ">{{ _("Data collection moments") }}</th>
+                                        <th class="text-center" style="width: {{percentage}}% ">{{ _("Explanatory") }}</th>
+                                        <th class="text-center" style="width: {{percentage}}% ">{{ _("Linear regression") }}</th>
+            {#                            <th class="text-center" style="width: {{percentage}}% ">{{ _("Quantitative") }}</th>#}
+                                        <th class="text-center" style="width: {{percentage}}% ">{{ _("Ranking of options") }}</th>
+                                        <th class="text-center" style="width: {{percentage}}% ">{{ _("Comparison with check") }}</th>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center" style="border-top-style: hidden;"></td>
+                                        <td class="text-center" style="border-top-style: hidden;"><label style="font-weight: inherit"> <input class="checkbox i-checksAll" type="checkbox" id="explanatorySelect"><i></i> {{ _("Select all") }}</label></td>
+                                        <td class="text-center" style="border-top-style: hidden;"><label style="font-weight: inherit"> <input class="checkbox i-checksAll" type="checkbox" id="linearregressionSelect"><i></i> {{ _("Select all") }}</label></td>
+            {#                            <td class="text-center" style="border-top-style: hidden;"><label style="font-weight: inherit"> <input class="checkbox i-checksAll" type="checkbox" id="quantitativeSelect"><i></i> {{ _("Select all") }}</label></td>#}
+                                        <td class="text-center" style="border-top-style: hidden;"><label style="font-weight: inherit"> <input class="checkbox i-checksAll" type="checkbox" id="rankingSelect"><i></i> {{ _("Select all") }}</label></td>
+                                        <td class="text-center" style="border-top-style: hidden;"><label style="font-weight: inherit"> <input class="checkbox i-checksAll" type="checkbox" id="comparisonSelect"><i></i> {{ _("Select all") }}</label></td>
+                                    </tr>
+                                    <tr>
+                                        <th style="vertical-align:middle"> {{ _("Registration") }}</th>
                                         <td>
                                             {% if dataForAnalysis.Explanatory %}
                                                 {%for c in dataForAnalysis.Explanatory%}
-                                                    {% if c.code.ass_cod == assess.ass_cod %}
-                                                        <label style="font-weight: inherit"> <input class="checkbox i-checks explanatorySplit" type="checkbox" id="explanatory_ASS_{{ assess.ass_cod }}_{{c.id}}_add" variable="{{ c.vars }}"><i></i> {{ c.name }}</label><br>
+                                                    {% if c.code == None %}
+                                                        <label style="font-weight: inherit"> <input class="checkbox i-checks explanatorySelect" type="checkbox" id="explanatory_REG__{{c.id}}_add" variable="{{ c.vars }}"><i></i> {{ c.name }}</label><br>
+                                                    {% endif%}
+                                                {%endfor%}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if dataForAnalysis.linearRegression %}
+                                                {%for c in dataForAnalysis.linearRegression%}
+                                                    {% if c.code == None %}
+                                                        <label style="font-weight: inherit"> <input class="checkbox i-checks linearregressionSelect" type="checkbox" id="linearregression_REG__{{c.id}}_add"><i></i> {{ c.name }}</label><br>
+                                                    {% endif%}
+                                                {%endfor%}
+                                            {% endif %}
+                                        </td>
+            {#                           <td>#}
+            {#                                {% if dataForAnalysis.Quantitative %}#}
+            {#                                    {%for c in dataForAnalysis.Quantitative%}#}
+            {#                                        {% if c.code == None %}#}
+            {#                                            <label style="font-weight: inherit"> <input class="checkbox i-checks quantitativeSelect" type="checkbox" id="quantitaive_REG__{{c.id}}_add"><i></i> {{ c.name }}</label><br>#}
+            {#                                        {% endif%}#}
+            {#                                    {%endfor%}#}
+            {#                                {% endif %}#}
+            {#                            </td>#}
+                                        <td>
+                                            {% if dataForAnalysis.Characteristics %}
+                                                {%for c in dataForAnalysis.Characteristics%}
+                                                    {% if c.code == None %}
+                                                        <label style="font-weight: inherit"> <input class="checkbox i-checks rankingSelect" type="checkbox" id="characteristic_REG__{{c.id}}_add"><i></i> {{ c.name }}</label><br>
+                                                    {% endif%}
+                                                {%endfor%}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if dataForAnalysis.Performance%}
+                                                {%for c in dataForAnalysis.Performance%}
+                                                    {% if c.code == None %}
+                                                        <label style="font-weight: inherit"> <input class="checkbox i-checks comparisonSelect" type="checkbox" id="performance_REG__{{c.id}}_add"><i></i> {{ c.name }}</label><br>
                                                     {% endif%}
                                                 {%endfor%}
                                             {% endif %}
                                         </td>
                                     </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                                    {% for assess in assessmentsList%}
+                                        <tr>
+                                            <th style="vertical-align:middle">{{ assess.ass_desc}}</th>
+                                            <td>
+                                                {% if dataForAnalysis.Explanatory %}
+                                                    {%for c in dataForAnalysis.Explanatory%}
+                                                        {% if c.code.ass_cod == assess.ass_cod %}
+                                                            <label style="font-weight: inherit"> <input class="checkbox i-checks explanatorySelect" type="checkbox" id="explanatory_ASS_{{ assess.ass_cod }}_{{c.id}}_add" variable="{{ c.vars }}"><i></i> {{ c.name }}</label><br>
+                                                        {% endif%}
+                                                    {%endfor%}
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if dataForAnalysis.linearRegression %}
+                                                    {%for c in dataForAnalysis.linearRegression%}
+                                                        {% if c.code.ass_cod == assess.ass_cod %}
+                                                            <label style="font-weight: inherit"> <input class="checkbox i-checks linearregressionSelect" type="checkbox" id="linearregression_ASS_{{ assess.ass_cod }}_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
+                                                        {% endif%}
+                                                    {%endfor%}
+                                                {% endif %}
+                                            </td>
+            {#                                <td>#}
+            {#                                    {% if dataForAnalysis.Quantitative %}#}
+            {#                                        {%for c in dataForAnalysis.Quantitative%}#}
+            {#                                            {% if c.code.ass_cod == assess.ass_cod %}#}
+            {#                                                <label style="font-weight: inherit"> <input class="checkbox i-checks quantitativeSelect" type="checkbox" id="quantitative_ASS_{{ assess.ass_cod }}_{{c.id}}_add"><i></i> {{ c.name }}</label><br>#}
+            {#                                            {% endif%}#}
+            {#                                        {%endfor%}#}
+            {#                                    {% endif %}#}
+            {#                                </td>#}
+                                            <td>
+                                                {% if dataForAnalysis.Characteristics %}
+                                                    {%for c in dataForAnalysis.Characteristics%}
+                                                        {% if c.code.ass_cod == assess.ass_cod %}
+                                                            <label style="font-weight: inherit"> <input class="checkbox i-checks rankingSelect" type="checkbox" id="characteristic_ASS_{{ assess.ass_cod }}_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
+                                                        {% endif%}
+                                                    {%endfor%}
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if dataForAnalysis.Performance%}
+                                                    {%for c in dataForAnalysis.Performance%}
+                                                        {% if c.code.ass_cod == assess.ass_cod %}
+                                                            <label style="font-weight: inherit"> <input class="checkbox i-checks comparisonSelect" type="checkbox" id="performance_ASS_{{ assess.ass_cod }}_{{c.id}}_add"><i></i> {{ c.name }}</label><br>
+                                                        {% endif%}
+                                                    {%endfor%}
+                                                {% endif %}
+                                            </td>
 
-                    </div>
-                    <div class="form-group">
-                        <b>{{ _("Individual feedback reports for participants") }}</b>
-                        <div class="col-lg-offset-2 col-lg-10">
+                                        </tr>
+                                    {% endfor %}
 
-                            <div class="form-group">
-                                <br>
+
+                                </table>
+
+                            </div>
+
+                            <h1>{{ _("Splits") }}</h1>
+                            <div class="step-content" style="border: 2px solid #1AB394; background-color: white">
+                                <p>{{ _("Do you want to do an extra analysis, separating by the values of the selection questions?") }}</p>
+
+                                <div class="col-lg-offset-2 col-lg-10">
+
+                                    <div class="form-group">
+                                        <input type="checkbox" id="ckb_Splits" name="ckb_Splits" data-on-color="success" data-off-color="danger" data-on-text="{{ _('Yes') }}" data-off-text="{{ _('No') }}" >
+                                    </div>
+                                </div>
+
+                                <div class="alert alert-danger alert-dismissable" id="alert1" style="display: none">
+                                    {{ _("You must select at least one variable") }}
+                                </div>
+
+                                <table class="table table-bordered" id="tableOfSplits" style="width: 100%">
+                                    <tbody>
+                                        <tr>
+                                            <th class="text-center" style="width: {{percentage}}% ">{{ _("Data collection moments") }}</th>
+                                            <th class="text-center" style="width: {{percentage}}% ">{{ _("Make split by variable") }}</th>
+                                        </tr>
+                                        <tr>
+                                            <th style="vertical-align:middle"> {{ _("Registration") }}</th>
+                                            <td>
+                                                {% if dataForAnalysis.Explanatory %}
+                                                    {%for c in dataForAnalysis.Explanatory%}
+                                                        {% if c.dtype in [5,6] %}
+                                                            {% if c.code == None %}
+                                                                <label style="font-weight: inherit"> <input class="checkbox i-checks explanatorySplit" type="checkbox" id="explanatory_REG__{{c.id}}_add" variable="{{ c.vars }}"><i></i> {{ c.name }}</label><br>
+                                                            {% endif%}
+                                                        {% endif%}
+                                                    {%endfor%}
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% for assess in assessmentsList%}
+                                            <tr>
+                                                <th style="vertical-align:middle">{{ assess.ass_desc}}</th>
+                                                <td>
+                                                    {% if dataForAnalysis.Explanatory %}
+                                                        {%for c in dataForAnalysis.Explanatory%}
+                                                            {% if c.code.ass_cod == assess.ass_cod %}
+                                                                <label style="font-weight: inherit"> <input class="checkbox i-checks explanatorySplit" type="checkbox" id="explanatory_ASS_{{ assess.ass_cod }}_{{c.id}}_add" variable="{{ c.vars }}"><i></i> {{ c.name }}</label><br>
+                                                            {% endif%}
+                                                        {%endfor%}
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <h1>{{ _("Infosheets") }}</h1>
+
+                            <div class="step-content" style="border: 2px solid #1AB394; background-color: white">
+
+                                <p> {{ _("Do you want to generate an individual feedback report for the participants ?") }}</p>
+
                                 <input type="checkbox" id="ckb_Infosheets" name="ckb_Infosheets" data-on-color="success" data-off-color="danger" data-on-text="{{ _('Yes') }}" data-off-text="{{ _('No') }}" >
+
+                            </div>
+
+                            <h1>{{ _("Select the reference combination") }}</h1>
+                            <div class="step-content" style="border: 2px solid #1AB394; background-color: white">
+
+                                <div class="alert alert-danger alert-dismissable" id="alert3" style="display: none">
+                                    {{ _("You must select one combination") }}
+                                </div>
+
+                                <input type="text" class="form-control form-control-sm m-b-xs" id="filter" placeholder="{{ _("Search technology") }}">
+                                <table class="TableOfReference table table-bordered" >
+                                    <tr>
+                                        <th style="text-align: center">{{ _("Select") }}</th>
+                                        <th colspan="2" style="text-align: center">{{ _("Combination") }}</th>
+                                    </tr>
+                                    {% for combination in combinations %}
+                                        <tr  id="comb{{ combination.combination_code }}">
+                                            <td style="vertical-align: middle; text-align: center;">
+                                                <div class="i-checks2"><label>
+                                                    <input type="radio" name="radioReference"  value="{{ combination.combination_code }}">
+                                                    <i></i></label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                            {% for element in combination.elements %}
+                                                {{ element.technology_name }}: {{ element.alias_name }}
+                                                <br>
+                                            {% endfor %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+
+                                </table>
                             </div>
                         </div>
 
-                    </div>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <div class="text-center">
-                        <form method="post" class="form-horizontal formElement" action="{{ request.path }}">
-                            <input type="text" id="txt_included_in_analysis" name="txt_included_in_analysis" style="width: 100%;display:none">
-                            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
-                            <input type="text" id="txt_infosheets" name="txt_infosheets" value="true" style="width: 100%;display:none">
-                            <input type="text" id="txt_splits" name="txt_splits" value="true," style="width: 100%;display:none">
-                            <input type="text" id="txt_reference" name="txt_reference" style="display: none">
-                            <button type="submit" name="btn_createAnalysis" id="btn_createAnalysis" class="btn btn-primary clm-actions "> {{ _("Perform analysis") }}</button>
-                        </form>
-                    </div>
+                        <button type="submit" name="btn_createAnalysis" id="btn_createAnalysis" class="btn btn-primary clm-actions " style="display: none"> {{ _("Perform analysis") }}</button>
+
+                    </form>
                 </div>
             </div>
         </div>
-{#        <div class="col-md-4">#}
-{#            <div class="ibox float-e-margins">#}
-{#                <div class="ibox-title">#}
-{#                    <h5>{{ _("Select your reference combination") }}</h5>#}
-{#                </div>#}
-{#                <div class="ibox-content">#}
-{#                    <input type="text" class="form-control form-control-sm m-b-xs" id="filter" placeholder="{{ _("Search technology") }}">#}
-{#                    <table class="TableOfReference table table-bordered" >#}
-{#                        <tr>#}
-{#                            <th style="text-align: center">{{ _("Select") }}</th>#}
-{#                            <th colspan="2" style="text-align: center">{{ _("Combination") }}</th>#}
-{#                        </tr>#}
-{#                        {% for combination in combinations %}#}
-{#                            <tr  id="comb{{ combination.combination_code }}">#}
-{#                                <td style="vertical-align: middle; text-align: center;">#}
-{#                                    <div class="i-checks2"><label>#}
-{#                                        <input type="radio" name="radioReference"  value="{{ combination.combination_code }}">#}
-{#                                        <i></i></label>#}
-{#                                    </div>#}
-{#                                </td>#}
-{#                                <td>#}
-{#                                {% for element in combination.elements %}#}
-{#                                    {{ element.technology_name }}: {{ element.alias_name }}#}
-{#                                    <br>#}
-{#                                {% endfor %}#}
-{#                                </td>#}
-{#                            </tr>#}
-{#                        {% endfor %}#}
-{##}
-{#                    </table>#}
-{#                </div>#}
-{#            </div>#}
-{#        </div>#}
+
     </div>
 
 
     {% include 'snippets/loading.jinja2' %}
+
+    <script>
+        $(document).ready(function(){
+
+            $("#wizard").steps({
+                labels: {
+                    current: "{{ _("current step") }}:",
+                    pagination: "{{ _("Pagination") }}",
+                    finish: "{{ _("Perform analysis") }}",
+                    next: "{{ _("Next") }}",
+                    previous: "{{ _("Previous") }}",
+                    loading: "{{ _("Loading") }} ..."
+                },
+                onFinishing: function (event, currentIndex)
+                {
+                    if($("#txt_reference").val() =="")
+                    {
+                        $("#alert"+currentIndex).css("display","block")
+                        return false;
+                    }
+
+                    $("#alert"+currentIndex).css("display","none")
+                    return true;
+                },
+                onFinished: function (event, currentIndex) {
+
+                    $('button[type="submit"]').trigger('click');
+                },
+                onStepChanging: function (event, currentIndex, newIndex)
+                {
+                    if (currentIndex > newIndex)
+                    {
+                        return true;
+                    }
+
+                    if(currentIndex == 0)
+                    {
+                        if($("#txt_included_in_analysis").val() =="")
+                        {
+                            $("#alert"+currentIndex).css("display","block")
+                            return false;
+                        }
+                    }else{
+                        if(currentIndex == 1){
+                            if($("#txt_splits").val() == "true,")
+                            {
+                                $("#alert"+currentIndex).css("display","flex")
+                                return false;
+                            }
+                        }
+                    }
+
+                    $("#alert"+currentIndex).css("display","none")
+                    return true;
+                }
+            });
+
+
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+
+            $('.i-checksAll').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+
+            $('.i-checksAll').on('ifChanged', function()
+            {
+                id = $(this).attr("id")
+                if ($(this).prop('checked')) {
+                    $("." + id).iCheck('check');
+                }else{
+                    $("." + id).iCheck('uncheck');
+                }
+            });
+
+
+            $('.i-checks').on('ifChanged', function()
+            {
+
+                id = $(this).attr("id")
+                if ($(this).prop('checked')) {
+
+                    $('#txt_included_in_analysis').val($('#txt_included_in_analysis').val()+id+",");
+                } else {
+                    $('#txt_included_in_analysis').val($('#txt_included_in_analysis').val().replace(id+",",""));
+                }
+
+            });
+
+            $('.explanatorySplit').on('ifChanged', function()
+            {
+                id = $(this).attr("variable")
+
+                if ($(this).prop('checked')) {
+
+                    $('#txt_splits').val($('#txt_splits').val()+id+",");
+                } else {
+                    $('#txt_splits').val($('#txt_splits').val().replace(id+",",""));
+                }
+
+            });
+
+            $("[name='ckb_Infosheets']").bootstrapSwitch('state',true);
+
+            $("#ckb_Infosheets").on('switchChange.bootstrapSwitch', function(event, state) {
+
+                if($(this).is(':checked')) {
+                    $("#txt_infosheets").val('true');
+                }
+                else{
+                    $("#txt_infosheets").val('false');
+                }
+            });
+
+            $("[name='ckb_Splits']").bootstrapSwitch('state',true);
+
+            $("#ckb_Splits").on('switchChange.bootstrapSwitch', function(event, state) {
+
+                if($(this).is(':checked')) {
+                    values = $("#txt_splits").val().substring(6);
+                    $("#txt_splits").val('true,'+ values);
+                    $("#tableOfSplits").css("display","inline-table");
+                }
+                else{
+                    values = $("#txt_splits").val().substring(5);
+                    $("#txt_splits").val('false,'+values);
+                    $("#alert1").css("display","none");
+                    $("#tableOfSplits").css("display","none");
+                }
+
+            });
+
+            $('.i-checks2').iCheck({
+                radioClass: 'iradio_square-green',
+            });
+
+            $('input[name="radioReference"]').on('ifClicked', function (event) {
+
+                $("#txt_reference").val(this.value);
+            });
+
+            $("#filter").keyup(function () {
+                var value = this.value.toLowerCase().trim();
+
+                $(".TableOfReference tr").each(function (index) {
+                    if (!index) return;
+                    $(this).each(function () {
+                        var id = $(this).text().toLowerCase().trim();
+                        var not_found = (id.indexOf(value) == -1);
+                        $(this).closest('tr').toggle(!not_found);
+                        return not_found;
+                    });
+                });
+            });
+                });
+    </script>
 
 {% endblock pagecontent%}
 

@@ -9,6 +9,7 @@ from climmob.processes import (
     deleteTechnology,
     getUserTechById,
     getActiveProject,
+    getTechnologyByName,
 )
 from climmob.views.techaliases import newalias_view, modifyalias_view
 
@@ -54,11 +55,16 @@ class technologies_view(privateView):
         techSee = {}
         # alias = {}
 
+        nextPage = self.request.params.get("next")
+
         if self.request.method == "POST":
             if "btn_add_technology" in self.request.POST:
                 dict_return = newtechnology_view.processView(self)
                 dataworking = dict_return["formdata"]
                 error_summary_add = dict_return["error_summary"]
+                if not error_summary_add:
+                    tech = getTechnologyByName(dataworking, self.request)
+                    techSee = getUserTechById(tech["tech_id"], self.request)
                 if not dict_return["redirect"]:
                     action = "addTechnology"
 
@@ -107,7 +113,8 @@ class technologies_view(privateView):
             "UserTechs": getUserTechs(self.user.login, self.request),
             "ClimMobTechs": getUserTechs("bioversity", self.request),
             "action": action,
-            "techSee": techSee
+            "techSee": techSee,
+            "nextPage": nextPage,
             # "alias": alias
         }
 
@@ -137,6 +144,9 @@ class newtechnology_view(privateView):
                             if not added:
                                 error_summary = {"dberror": message}
                             else:
+                                self.request.session.flash(
+                                    self._("The technology was created successfully")
+                                )
                                 redirect = True
                         else:
                             error_summary = {
@@ -199,6 +209,9 @@ class modifytechnology_view(privateView):
                             if not update:
                                 error_summary = {"dberror": message}
                             else:
+                                self.request.session.flash(
+                                    self._("The technology was successfully edited")
+                                )
                                 redirect = True
                         else:
                             error_summary = {
@@ -250,6 +263,9 @@ class deletetechnology_view(privateView):
                 self.returnRawViewResult = True
                 return {"status": 400, "error": message}
             else:
+                self.request.session.flash(
+                    self._("The technology was successfully removed")
+                )
                 self.returnRawViewResult = True
                 return {"status": 200}
 

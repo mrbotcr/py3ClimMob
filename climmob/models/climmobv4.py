@@ -137,6 +137,7 @@ class Enumerator(Base):
     enum_id = Column(Unicode(80), primary_key=True, nullable=False)
     enum_name = Column(Unicode(120))
     enum_password = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
+    enum_telephone = Column(Unicode(120), server_default=text("''"))
     enum_active = Column(Integer)
 
     project = relationship(u"User")
@@ -716,6 +717,7 @@ class Question(Base):
     question_tied = Column(Integer, server_default=text("'0'"))
     question_notobserved = Column(Integer, server_default=text("'0'"))
     question_quantitative = Column(Integer, server_default=text("'0'"))
+    question_forms = Column(Integer, server_default=text("'3'"))
     qstgroups_user = Column(Unicode(80), nullable=True)
     qstgroups_id = Column(Unicode(80), nullable=True)
     extra = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))

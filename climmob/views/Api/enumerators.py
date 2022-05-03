@@ -23,56 +23,93 @@ class createEnumerator_view(apiView):
                 u"enum_password",
                 u"enum_password_re",
             ]
+
+            possibles = [
+                u"enum_id",
+                u"enum_name",
+                u"enum_password",
+                u"enum_password_re",
+                u"enum_telephone",
+            ]
+
             dataworking = json.loads(self.body)
 
-            if sorted(obligatory) == sorted(dataworking.keys()):
+            permitedKeys = True
+            for key in dataworking.keys():
+                if key not in possibles:
+                    permitedKeys = False
 
-                dataInParams = True
-                for key in dataworking.keys():
-                    if dataworking[key] == "":
-                        dataInParams = False
+            obligatoryKeys = True
 
-                if dataInParams:
-                    if dataworking["enum_password"] == dataworking["enum_password_re"]:
-                        dataworking.pop("enum_password_re")
-                        if not enumeratorExists(
-                            self.user.login, dataworking["enum_id"], self.request
+            for key in obligatory:
+                if key not in dataworking.keys():
+                    obligatoryKeys = False
+
+            if obligatoryKeys:
+                if permitedKeys:
+
+                    dataInParams = True
+                    for key in dataworking.keys():
+                        if dataworking[key] == "":
+                            dataInParams = False
+
+                    if dataInParams:
+                        if (
+                            dataworking["enum_password"]
+                            == dataworking["enum_password_re"]
                         ):
-                            added, message = addEnumerator(
-                                self.user.login, dataworking, self.request
-                            )
-                            if not added:
-                                response = Response(status=401, body=message)
-                                return response
+                            dataworking.pop("enum_password_re")
+                            if not enumeratorExists(
+                                self.user.login, dataworking["enum_id"], self.request
+                            ):
+                                added, message = addEnumerator(
+                                    self.user.login, dataworking, self.request
+                                )
+                                if not added:
+                                    response = Response(status=401, body=message)
+                                    return response
+                                else:
+                                    response = Response(
+                                        status=200,
+                                        body=self._(
+                                            "The field agent was created successfully."
+                                        ),
+                                    )
+                                    return response
                             else:
                                 response = Response(
-                                    status=200,
+                                    status=401,
                                     body=self._(
-                                        "The field agent was created successfully."
+                                        "This field agent name already exists."
                                     ),
                                 )
                                 return response
                         else:
                             response = Response(
                                 status=401,
-                                body=self._("This field agent name already exists."),
+                                body=self._(
+                                    "The password and its retype are not the same."
+                                ),
                             )
                             return response
                     else:
                         response = Response(
-                            status=401,
-                            body=self._(
-                                "The password and its retype are not the same."
-                            ),
+                            status=401, body=self._("Not all parameters have data.")
                         )
                         return response
                 else:
                     response = Response(
-                        status=401, body=self._("Not all parameters have data.")
+                        status=401,
+                        body=self._(
+                            "You are trying to use a parameter that is not allowed.."
+                        ),
                     )
                     return response
             else:
-                response = Response(status=401, body=self._("Error in the JSON."))
+                response = Response(
+                    status=401,
+                    body=self._("It is not complying with the obligatory keys."),
+                )
                 return response
         else:
             response = Response(status=401, body=self._("Only accepts POST method."))
@@ -99,52 +136,87 @@ class updateEnumerator_view(apiView):
 
         if self.request.method == "POST":
 
-            obligatory = [u"enum_id", u"enum_name", u"enum_active"]
+            obligatory = [
+                u"enum_id",
+            ]
+
+            possibles = [
+                u"enum_id",
+                u"enum_name",
+                u"enum_password",
+                u"enum_password_re",
+                u"enum_telephone",
+                u"enum_active",
+            ]
+
             dataworking = json.loads(self.body)
 
-            if sorted(obligatory) == sorted(dataworking.keys()):
+            permitedKeys = True
+            for key in dataworking.keys():
+                if key not in possibles:
+                    permitedKeys = False
 
-                dataInParams = True
-                for key in dataworking.keys():
-                    if dataworking[key] == "":
-                        dataInParams = False
+            obligatoryKeys = True
 
-                if dataInParams:
-                    if enumeratorExists(
-                        self.user.login, dataworking["enum_id"], self.request
-                    ):
-                        mdf, message = modifyEnumerator(
-                            self.user.login,
-                            dataworking["enum_id"],
-                            dataworking,
-                            self.request,
-                        )
-                        if not mdf:
-                            response = Response(status=401, body=message)
-                            return response
+            for key in obligatory:
+                if key not in dataworking.keys():
+                    obligatoryKeys = False
+
+            if obligatoryKeys:
+                if permitedKeys:
+
+                    dataInParams = True
+                    for key in dataworking.keys():
+                        if dataworking[key] == "":
+                            dataInParams = False
+
+                    if dataInParams:
+                        if enumeratorExists(
+                            self.user.login, dataworking["enum_id"], self.request
+                        ):
+                            mdf, message = modifyEnumerator(
+                                self.user.login,
+                                dataworking["enum_id"],
+                                dataworking,
+                                self.request,
+                            )
+                            if not mdf:
+                                response = Response(status=401, body=message)
+                                return response
+                            else:
+                                response = Response(
+                                    status=200,
+                                    body=self._(
+                                        "The field agent was modified successfully."
+                                    ),
+                                )
+                                return response
                         else:
                             response = Response(
-                                status=200,
+                                status=401,
                                 body=self._(
-                                    "The field agent was modified successfully."
+                                    "There is no field agent with that identifier."
                                 ),
                             )
                             return response
                     else:
                         response = Response(
-                            status=401,
-                            body=self._(
-                                "There is no field agent with that identifier."
-                            ),
+                            status=401, body=self._("Not all parameters have data.")
                         )
                         return response
                 else:
                     response = Response(
-                        status=401, body=self._("Not all parameters have data.")
+                        status=401,
+                        body=self._(
+                            "You are trying to use a parameter that is not allowed.."
+                        ),
                     )
                     return response
             else:
-                response = Response(status=401, body=self._("Error in the JSON."))
+                response = Response(
+                    status=401,
+                    body=self._("It is not complying with the obligatory keys."),
+                )
                 return response
         else:
             response = Response(status=401, body=self._("Only accepts POST method."))
