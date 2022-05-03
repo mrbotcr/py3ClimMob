@@ -25,8 +25,10 @@ if [ $initial_database == "true" ]; then
   set_super_password ./development.ini
 fi
 deactivate
+export CLIMMOB_RUN_FROM_CELERY=true
 /etc/init.d/celery_climmob stop
 /etc/init.d/celery_climmob start
+export CLIMMOB_RUN_FROM_CELERY=false
 source /opt/climmob_env/bin/activate
 rm /opt/climmob_gunicorn/climmob.pid
 pserve /opt/climmob/development.ini
