@@ -1,4 +1,5 @@
 import sys
+import os
 
 if (
     os.environ.get("CLIMMOB_PYTEST_RUNNING", "false") == "false"
