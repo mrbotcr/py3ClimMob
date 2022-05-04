@@ -1,6 +1,9 @@
 import sys
 
-if os.environ.get("CLIMMOB_PYTEST_RUNNING", "false") == "false" and os.environ.get("CLIMMOB_RUN_FROM_CELERY", "false") == "false":
+if (
+    os.environ.get("CLIMMOB_PYTEST_RUNNING", "false") == "false"
+    and os.environ.get("CLIMMOB_RUN_FROM_CELERY", "false") == "false"
+):
     if sys.version_info[0] == 3 and sys.version_info[1] >= 6:
         import gevent.monkey
 
