@@ -24,7 +24,7 @@
 
 {% block pageheading %}
     {% set _linkWiki="https://climmob.net/blog/wiki/technologies-library/" %}
-    {% set _title= _("Technologies library") %}
+    {% set _title= _("Technologies") %}
     {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
 
@@ -46,6 +46,11 @@
                     {% set error_summary=error_summary_add %}
                     {% include 'snippets/error.jinja2' %}
 
+                    <div class="text-center">
+                        <p>{{ _("Click on the row in the table to see the technology options of the technology") }}</p>
+                        <a class="btn btn-success btn-rounded  btn-xs" style="color: white" onclick="showHelp()"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a>
+                    </div>
+
                     <input type="text" class="form-control form-control-sm m-b-xs" id="filter" placeholder="{{ _("Search technology") }}">
                     <div class="activity-stream" style="overflow-y: scroll; max-height: calc(100vh - 380px);">
                         <table class="footable table table-stripped tableHover" data-page-size="50000" data-filter=#filter>
@@ -53,7 +58,7 @@
                                 <tr>
                                     <th >{{ _("Technology")}}</th>
                                     <th style="text-align: center" data-type="numeric">{{  _("Number of options") }}</th>
-                                    <th></th>
+{#                                    <th></th>#}
                                 </tr>
                             </thead>
                             <tbody>
@@ -61,6 +66,7 @@
                                 {% set color="#000000"%}
                                 {% set UserTechs=ClimMobTechs %}
                                 {% set yourLib=False %}
+                                {% set showCreator=True %}
                                 {% include 'snippets/technologies/technologies-stream.jinja2' %}
                                 {% if activeUser.login != "bioversity" %}
                                     {% set color="#1ab394" %}
@@ -91,7 +97,7 @@
                 <div class="ibox-title">
                     <h5>{{ _("Technology details") }}</h5>
                     <div class="ibox-tools">
-                        <button id="btn_cancel_technology"  class="btn btn-xs btn-default pull-right " ><i class="fa fa-close" style="color: black"></i> </button>
+                        <button id="btn_cancel_technology"  class="btn btn-xs btn-default pull-right " >{{ _("Clear and close form") }} </button>
                     </div>
                 </div>
                 <div class="ibox-content">
@@ -131,7 +137,7 @@
                 <div class="ibox-title">
                     <h5>{{ _("Technology options details") }}</h5>
                     <div class="ibox-tools">
-                        <button id="btn_cancel_technology_options"  class="btn btn-xs btn-default pull-right " ><i class="fa fa-close" style="color: black"></i> </button>
+                        <button id="btn_cancel_technology_options"  class="btn btn-xs btn-default pull-right " >{{ _("Clear and close form") }} </button>
                     </div>
                 </div>
                 <div class="ibox-content">
@@ -174,16 +180,26 @@
 
     <style>
 
-        .tableHover tr:hover
+        .tableHover tbody tr:hover
         {
-            background-color: #23c6c8;
+            background-color: #1ab394;
             color: black;
+        }
+
+        .tableHover tbody tr:hover td  p
+        {
+            color: white !important;
         }
 
         .tableHover2
         {
-            background-color: #23c6c8;
-            color: black;
+            background-color: #1ab394;
+            color: white;
+        }
+
+        .tableHover2 td p
+        {
+            color: white !important;
         }
     </style>
 
@@ -269,6 +285,7 @@
             $('.i-checkTech').iCheck('uncheck');
             $("#btn_cancel_technology_options").click()
             $("#div_create_technology").css('display','none')
+            $("#div_show_create_alias").css('display','none')
             $('.footable tbody tr').siblings().removeClass('tableHover2');
         });
 
@@ -495,12 +512,12 @@
                 steps: [
                         {
                             element: "#div_for_help",
-                            title: "{{ _("Creating technologies in the library") }}",
-                            content: "1. {{ _("Click on the button: 'Create new technology'.") }}<br>2. {{ _("Click on the technology row.") }}<img src='{{ request.url_for_static('gif/create_technologies.gif') }}' />",
+                            title: "{{ _("Creating technology and technology options in the library") }}",
+                            content: "<p><b>1</b>. {{ _("Click on the row in the table to see the technology options of the technology") }}.</p><p><b>*</b>{{ _("If the technology has been created by you, you will be able to perform actions (Modify/Delete/Add technology options) as long as the technology has not been added to a project, in that case you will only be able to add more technology options.") }}.</p><p><b>*</b> {{ _("If the technology belongs to the ClimMob user, you will not be able to perform any action other than viewing the registered technology options") }}.</p><br><img src='{{ request.url_for_static('gif/library_technologies.gif') }}'/>",
                             placement: "bottom"
                         }
                        ],
-                template: "<div class='popover tour' style='border-color: #23c6c8; max-width: none; width:868px'><div class='arrow' ></div><h3 class='popover-title btn-info'></h3><div class='popover-content'></div><div class='popover-navigation'> <button class='btn btn-sm btn-secondary' data-role='end'>{{ _("Close") }}</button> </div>",
+                template: "<div class='popover tour' style='border-color: #23c6c8; max-width: none; width:1045px'><div class='arrow' ></div><h3 class='popover-title btn-info'></h3><div class='popover-content'></div><div class='popover-navigation'> <button class='btn btn-sm btn-secondary' data-role='end'>{{ _("Close") }}</button> </div>",
                 backdrop: true,
                 backdropContainer: 'body'
             });

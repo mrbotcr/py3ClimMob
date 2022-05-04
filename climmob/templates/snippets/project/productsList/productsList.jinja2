@@ -19,7 +19,7 @@
             <tr>
                 <td style="vertical-align: middle;">
                     {% if product.product_id == "qrpackage" %}
-                        {{ _("List of packages with QR for the registration form") }}
+                        {{ _("List of packages with QR for the participant registration form") }}
                     {% else %}
                         {% if product.product_id == "packages" %}
                             {{ _("List with randomized trial packages") }}
@@ -37,7 +37,7 @@
                                             {{ _("Information collected in all the project") }}
                                         {% else %}
                                             {% if product.process_name == "create_data_Registration_" %}
-                                                {{ _("Information collected in the registration form") }}
+                                                {{ _("Information collected in the participant registration form") }}
                                             {% else %}
                                                 {{ _("Information collected in the assessment form") }}: {{ product.extraInformation.ass_desc }}
                                             {% endif %}
@@ -51,9 +51,9 @@
                                             {% else %}
                                                 {% if product.product_id == "documentform" %}
                                                     {% if product.process_name == "create_from_Registration_" %}
-                                                        {{ _("Printer-friendly registration form") }}
+                                                        {{ _("Participant registration form to fill by hand") }}
                                                     {% else %}
-                                                        {{ _("Printer-friendly assessment form") }}: {{ product.extraInformation.ass_desc }}
+                                                        {{ _("Assessment form to fill by hand") }}: {{ product.extraInformation.ass_desc }}
                                                     {% endif %}
                                                 {% else %}
                                                     {% if product.product_id == "generalreport" %}
@@ -69,14 +69,14 @@
                                                             {% else %}
                                                                 {% if product.product_id == "errorlogdocument" %}
                                                                     {% if product.process_name == "create_errorlog_Registration_" %}
-                                                                        {{ _("Document of submissions with conflicts in the registration form") }}
+                                                                        {{ _("Document of submissions with conflicts in the participant registration form") }}
                                                                     {% else %}
                                                                         {{ _("Document of submissions with conflicts in the assessment form") }}: {{ product.extraInformation.ass_desc }}
                                                                     {% endif %}
                                                                 {% else %}
                                                                     {% if product.product_id == "multimediadownloads" %}
                                                                         {% if product.process_name == "create_multimedia_Registration_" %}
-                                                                            {{ _("Multimedia content collected in the registration form") }}
+                                                                            {{ _("Multimedia content collected in the participant registration form") }}
                                                                         {% else %}
                                                                             {{ _("Multimedia content collected in the assessment form") }}: {{ product.extraInformation.ass_desc }}
                                                                         {% endif %}
@@ -86,13 +86,13 @@
                                                                         {% else %}
                                                                             {% if product.product_id == "uploaddata" %}
                                                                                 {% if product.process_name == "create_uploaddata_Registration_" %}
-                                                                                    {{ _("Excel template for uploading registration form data") }}
+                                                                                    {{ _("Excel template for uploading participant registration form data") }}
                                                                                 {% else %}
                                                                                     {{ _("Excel template for uploading assessment form data") }}: {{ product.extraInformation.ass_desc }}
                                                                                 {% endif %}
                                                                             {% else %}
                                                                                 {% if product.product_id == "qrpackagewithtechnologies" %}
-                                                                                    {{ _("List of packages with QR - Showing technologies.") }}
+                                                                                    {{ _("List of packages with QR for the participant registration form (Showing technology options).") }}
                                                                                 {% else %}
                                                                                     {{ product.product_id }}
                                                                                 {% endif %}

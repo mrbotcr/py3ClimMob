@@ -22,7 +22,7 @@
 
 {% block pageheading %}
     {% set _linkWiki="https://climmob.net/blog/wiki/prepare-grower-registration/" %}
-    {% set _title= _("Prepare participant registration") %}
+    {% set _title= _("Prepare participant registration form") %}
 
 
     {% include 'snippets/menuheading.jinja2' %}
@@ -74,9 +74,9 @@
                         <div class="col-lg-12" id="form_questions" style="padding-right: 0px; padding-left: 0px">
                             <div class="ibox float-e-margins">
                                 <div class="ibox-title">
-                                    <h5>{{ _("Registration form") }}</h5>
+                                    <h5>{{ _("Participant registration form") }}</h5>
                                     <div class="ibox-tools">
-                                        <a class="btn btn-success btn-rounded  btn-xs" style="color: white" href="{{ request.route_url('qlibrary', user_name=activeUser.login,_query={'next': request.url}) }}"><i class="fa fa-plus-square"></i> {{  _("Add new question") }}</a>
+                                        {% if not onlySee %}<a class="btn btn-success btn-rounded  btn-xs" style="color: white" href="{{ request.route_url('qlibrary', user_name=activeUser.login,_query={'next': request.url}) }}"><i class="fa fa-plus-square"></i> {{  _("Add new question") }}</a> {% endif %}
                                     </div>
                                 </div>
                                 <div class="ibox-content" >
@@ -106,7 +106,7 @@
                                 <div class="ibox-title">
                                     <h5>{{ _("New section") }}</h5>
                                     <div class="ibox-tools">
-                                        <button id="btnCancelSection"  class="btn btn-xs btn-default pull-right " ><i class="fa fa-close"></i></button>
+                                        <button id="btnCancelSection"  class="btn btn-xs btn-default pull-right " >{{ _("Clear and close form") }}</button>
                                     </div>
                                 </div>
                                 <div class="ibox-content">

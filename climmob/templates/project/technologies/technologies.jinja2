@@ -7,12 +7,14 @@
 {% block css %}
     {% cssresource request,'coreresources','icheck' %}
     {% cssresource request,'coreresources','footable' %}
+    {% cssresource request,'coreresources','tour' %}
 {% endblock css %}
 
 {% block topScripts %}
     {% jsresource request,'coreresources','footable' %}
     {% jsresource request,'coreresources','icheck' %}
     {% jsresource request,'coreresources','prjtechnologies' %}
+    {% jsresource request,'coreresources','tour' %}
 {% endblock topScripts %}
 
 {% block pageheading %}
@@ -33,9 +35,9 @@
         <div class="col-lg-4 " >
             <div class="ibox float-e-margins" >
                 <div class="ibox-title">
-                    <h5>{{ _("Select technology") }}</h5>
+                    <h5>{{ _("Assign technology and technology options") }}</h5>
                     <div class="ibox-tools">
-                        <a class="btn btn-success btn-rounded  btn-xs" style="color: white" href="{{ request.route_url('usertechnologies',_query={'next': request.url}) }}"><i class="fa fa-plus-square"></i> {{  _("Add new technology") }}</a>
+                        {% if not onlySee %}<a class="btn btn-success btn-rounded  btn-xs" style="color: white" href="{{ request.route_url('usertechnologies',_query={'next': request.url}) }}"><i class="fa fa-plus-square"></i> {{  _("Add new technology") }}</a> {% endif %}
                     </div>
                 </div>
                 <div class="ibox-content" >
@@ -44,14 +46,20 @@
                         {% set error_summary = error_summary2 %}
                         {% include 'snippets/error.jinja2' %}
                         {% set error_summary = auxError %}
+
+                        <div class="text-center">
+                            <p>{{ _("Click on the row in the table to see the technology options of the technology") }}</p>
+                            <a class="btn btn-success btn-rounded  btn-xs" style="color: white" onclick="showHelp()"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a>
+                        </div>
+
                         <input type="text" class="form-control form-control-sm m-b-xs" id="filter" placeholder="{{ _("Search technology") }}">
                         <table class="footable  table table-stripped tableHover" data-page-size="50000" data-filter=#filter>
                             <thead>
                                 <tr>
                                     <th >{{ _("Technology")}}</th>
-                                    <th style="text-align: center" data-type="numeric">{{  _("Available") }}</th>
-                                    <th style="text-align: center" data-type="numeric"> {{ _("Selected") }}</th>
-                                    <th></th>
+                                    <th style="text-align: center" data-type="numeric">{{  _("Available in the library") }}</th>
+                                    <th style="text-align: center" data-type="numeric"> {{ _("Selected for the project") }}</th>
+{#                                    <th></th>#}
                                 </tr>
                             </thead>
                             <tbody>
@@ -112,7 +120,7 @@
                     <div class="ibox-title">
                         <div id="title_for_options"><h5>{{ _("Technology options for") }}: {{ techSee.tech_name }}</h5></div>
                         <div class="ibox-tools">
-                            <button   class="btn btn-xs btn-default pull-right btn_cancel_technology_options" ><i class="fa fa-close btn_cancel_technology_options" style="color: black"></i> </button>
+                            <button   class="btn btn-xs btn-default pull-right btn_cancel_technology_options" >{{ _("Close selection") }} </button>
                         </div>
                     </div>
                     <div class="ibox-content animated fadeInRightBig" >
@@ -179,7 +187,7 @@
                     <div class="ibox-title">
                         <h5>{{ _("New technology option details") }}</h5>
                         <div class="ibox-tools">
-                            <button   class="btn btn-xs btn-default pull-right btn_cancel_technology_options" ><i class="fa fa-close btn_cancel_technology_options" style="color: black"></i> </button>
+                            <button   class="btn btn-xs btn-default pull-right btn_cancel_technology_options" >{{ _("Clear and close form") }}</button>
                         </div>
                     </div>
                     <div class="ibox-content animated fadeInRightBig" >
@@ -245,16 +253,26 @@
 
     <style>
 
-        .tableHover tr:hover
+        .tableHover tbody tr:hover
         {
-            background-color: #23c6c8;
+            background-color: #1ab394;
             color: black;
+        }
+
+        .tableHover tbody tr:hover td  p
+        {
+            color: white !important;
         }
 
         .tableHover2
         {
-            background-color: #23c6c8;
-            color: black;
+            background-color: #1ab394;
+            color: white;
+        }
+
+        .tableHover2 td p
+        {
+            color: white !important;
         }
     </style>
 
@@ -296,6 +314,27 @@
             $("#txt_add_alias").val("")
             $('.tableHover tbody tr').siblings().removeClass('tableHover2');
         });
+
+        function showHelp()
+        {
+            var tour = new Tour({
+                steps: [
+                        {
+                            element: "#div_for_help",
+                            title: "{{ _("Select technology and technology options") }}",
+                            content: "<p><b>1</b>. {{ _("Click on the row in the table to see the technology options of the technology") }}.</p><br><p><b>2</b>. {{ _("Select and check the technology options you want to add to the project") }}.</p><br><p><b>3.</b> {{ _("Save the information") }}.</p><br><img src='{{ request.url_for_static('gif/using_technologies.gif') }}'/>",
+                            placement: "bottom"
+                        }
+                       ],
+                template: "<div class='popover tour' style='border-color: #23c6c8; max-width: none; width:900px'><div class='arrow' ></div><h3 class='popover-title btn-info'></h3><div class='popover-content'></div><div class='popover-navigation'> <button class='btn btn-sm btn-secondary' data-role='end'>{{ _("Close") }}</button> </div>",
+                backdrop: true,
+                backdropContainer: 'body'
+            });
+
+            // Initialize the tour
+            tour.init();
+            tour.restart();
+        }
 
 
     </script>

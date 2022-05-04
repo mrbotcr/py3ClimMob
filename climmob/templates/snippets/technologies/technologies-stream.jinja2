@@ -1,6 +1,6 @@
 
 {% for technology in UserTechs %}
-    <tr id="tech{{ technology.tech_id}}" {% if not checkbox %}onclick='showVarietiesInTechnology("{{ technology.tech_id }}","{{ technology.user_name }}")'{% else%}{%if not isAlias%}{% if checked%}onclick='showVarieties({{technology.tech_id}})'{% else %}onclick='showLibraryVarieties({{technology.tech_id}})'{%endif%}{%endif%}{% endif %} {% if showCreator %}title="{{ _("by") }} {{ technology.user_fullname }}" {% endif %}>
+    <tr id="tech{{ technology.tech_id}}" {% if not checkbox %}onclick='showVarietiesInTechnology("{{ technology.tech_id }}","{{ technology.user_name }}")'{% else%}{%if not isAlias%}{% if checked%}onclick='showVarieties({{technology.tech_id}})'{% else %}onclick='showLibraryVarieties({{technology.tech_id}})'{%endif%}{%endif%}{% endif %} {% if showCreator %}title="{{ _("Click to display technology options") }}" {% endif %}>
         <td style="vertical-align: middle" >
             {% if isAlias %}
                 {% if checkbox %}
@@ -23,7 +23,7 @@
             {% endif %}
 
             {% if showCreator %}
-                <p class="pull-left" style="margin: 0px; color: #1ab394">&nbsp;{{ _("by") }} {{ technology.user_fullname[0:12] }}{% if technology.user_fullname|length > 12 %}...{% endif %}</p>
+                <p class="pull-left by" style="margin: 0px; color: #1ab394">&nbsp;{{ _("by") }} {{ technology.user_fullname[0:12] }}{% if technology.user_fullname|length > 12 %}...{% endif %}</p>
             {% endif %}
         </td>
         {% if not isAlias %}
@@ -37,13 +37,13 @@
                     {{ technology.quantity }}
                 {% endif %}
             </td>
-            <td style="vertical-align: middle">
-            {% if color == "#000000" %}
-                <a class="btn btn-default btn-circle"><i class="fa fa-list-ul"></i></a>
-            {% else %}
-                <a class="btn btn-default btn-circle" style="background-color: {{ color }}"><i class="fa fa-list-ul" style="color: white"></i></a>
-            {% endif %}
-            </td>
+{#            <td style="vertical-align: middle">#}
+{#            {% if color == "#000000" %}#}
+{#                <a class="btn btn-default ">{{ _("Assign technology options") }}</a>#}
+{#            {% else %}#}
+{#                <a class="btn btn-default btn-circle" style="background-color: {{ color }}"><i class="fa fa-list-ul" style="color: white"></i></a>#}
+{#            {% endif %}#}
+{#            </td>#}
         {% endif %}
     </tr>
 {% endfor %}

@@ -16,7 +16,7 @@
         </div>
     </div>
 
-    <div class="form-group">
+    <div class="form-group" >
         <label class="col-sm-4 control-label">{{ _("Type") }}</label>
         <div class="col-sm-8">
             <select id="question_dtype" name="question_dtype" class="form-control inputForQuestionSelect">
@@ -44,6 +44,305 @@
                 {% block qstformqtypes_extra %}
                 {% endblock qstformqtypes_extra %}
             </select>
+        </div>
+    </div>
+    <div class="form-group formExtraForQuestion" id="question1" style="margin: 0px">
+        <label class="col-sm-4 control-label"></label>
+        <div class="col-sm-8" style="padding-left: 8px; padding-right: 0px">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <i class="fa fa-info-circle"></i> {{ _("Text question") }}
+                </div>
+                <div class="panel-body">
+                    <div >
+                        <p style="margin-bottom: 0.11in; line-height: 108%"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group formExtraForQuestion" id="question2" style="margin: 0px">
+        <label class="col-sm-4 control-label"></label>
+        <div class="col-sm-8" style="padding-left: 8px; padding-right: 0px">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <i class="fa fa-info-circle"></i> {{ _("Decimal question") }}
+                </div>
+                <div class="panel-body">
+                    <div >
+                        <p style="margin-bottom: 0.11in; line-height: 108%"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="question9" class="formExtraForQuestion">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <i class="fa fa-info-circle"></i> {{ _("How to describe the ranking variable") }}
+            </div>
+            <div class="panel-body">
+                <div >
+                    <p style="margin-bottom: 0.11in; line-height: 108%">{{ _("A ranking of options is a type of question that is used to compare two of more technologies based on a criterion. In tricot, we compare three options, so we can know the ranking of the options by asking two questions only.") }}</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="question10" class="formExtraForQuestion">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <i class="fa fa-info-circle"></i> {{ _("How to describe a comparison with check") }}
+            </div>
+            <div class="panel-body">
+                <div>
+                    <p style="margin-bottom: 0in; line-height: 100%">{{ _("Comparison with check is a type of question that is used to compare the technologies being tested in a project with the current one in use by the farmer or a commonly used technology. For example, if a project is evaluating three different varieties of bean then the performance questions would be:") }}</p>
+                    <ul>
+                        <li/>
+                        <p style="margin-bottom: 0in; line-height: 100%">{{ _("In terms of taste, how does variety") }} <b>A</b> {{ _("compares with the variety you usually use?") }}</p>
+                        <li/>
+                        <p style="margin-bottom: 0in; line-height: 100%">{{ _("In terms of taste, how does variety") }} <b>B</b> {{ _("compares with the variety you usually use?") }}</p>
+                        <li/>
+                        <p style="margin-bottom: 0in; line-height: 100%">{{ _("In terms of taste, how does variety") }} <b>C</b> {{ _("compares with the variety you usually use?") }}</p>
+                    </ul>
+                    <p style="margin-bottom: 0in; line-height: 100%"><a name="_GoBack"></a>
+                        {{ _("In ClimMob you define this with one statement with the wildcard") }}
+                        &#123;&#123;{{ _("option") }}&#125;&#125;. {{ _("For example:") }}</p>
+                    <ul>
+                        <li/>
+                        <p style="margin-bottom: 0in; line-height: 100%">{{ _("In terms of taste, how does") }} <b>&#123;&#123;{{ _("option") }}&#125;&#125;</b> {{ _("compares with the variety you usually use?") }}</p>
+                    </ul>
+                    <p style="margin-bottom: 0in; line-height: 100%">{{ _("The user answers it with two choices 'Better' or 'Worse'") }}</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="form-group formExtraForQuestion" id="question27" style="margin: 0px">
+        <label class="col-sm-4 control-label"></label>
+        <div class="col-sm-8" style="padding-left: 8px; padding-right: 0px">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <i class="fa fa-info-circle"></i> {{ _("Location question") }}
+                </div>
+                <div class="panel-body">
+                    <div >
+                        <p style="margin-bottom: 0.11in; line-height: 108%"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group formExtraForQuestion" id="question3" style="margin: 0px">
+        <label class="col-sm-4 control-label"></label>
+        <div class="col-sm-8" style="padding-left: 8px; padding-right: 0px">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <i class="fa fa-info-circle"></i> {{ _("Integer question") }}
+                </div>
+                <div class="panel-body">
+                    <div >
+                        <p style="margin-bottom: 0.11in; line-height: 108%"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group formExtraForQuestion" id="question4" style="margin: 0px">
+        <label class="col-sm-4 control-label"></label>
+        <div class="col-sm-8" style="padding-left: 8px; padding-right: 0px">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <i class="fa fa-info-circle"></i> {{ _("Geopoint question") }}
+                </div>
+                <div class="panel-body">
+                    <div >
+                        <p style="margin-bottom: 0.11in; line-height: 108%"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group formExtraForQuestion" id="question5" style="margin: 0px">
+        <label class="col-sm-4 control-label"></label>
+        <div class="col-sm-8" style="padding-left: 8px; padding-right: 0px">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <i class="fa fa-info-circle"></i> {{ _("Select one question") }}
+                </div>
+                <div class="panel-body">
+                    <div >
+                        <p style="margin-bottom: 0.11in; line-height: 108%"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group formExtraForQuestion" id="question6" style="margin: 0px">
+        <label class="col-sm-4 control-label"></label>
+        <div class="col-sm-8" style="padding-left: 8px; padding-right: 0px">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <i class="fa fa-info-circle"></i> {{ _("Select multiple question") }}
+                </div>
+                <div class="panel-body">
+                    <div >
+                        <p style="margin-bottom: 0.11in; line-height: 108%"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group formExtraForQuestion" id="question11" style="margin: 0px">
+        <label class="col-sm-4 control-label"></label>
+        <div class="col-sm-8" style="padding-left: 8px; padding-right: 0px">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <i class="fa fa-info-circle"></i> {{ _("Geotrace question") }}
+                </div>
+                <div class="panel-body">
+                    <div >
+                        <p style="margin-bottom: 0.11in; line-height: 108%"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group formExtraForQuestion" id="question12" style="margin: 0px">
+        <label class="col-sm-4 control-label"></label>
+        <div class="col-sm-8" style="padding-left: 8px; padding-right: 0px">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <i class="fa fa-info-circle"></i> {{ _("Geoshape question") }}
+                </div>
+                <div class="panel-body">
+                    <div >
+                        <p style="margin-bottom: 0.11in; line-height: 108%"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group formExtraForQuestion" id="question13" style="margin: 0px">
+        <label class="col-sm-4 control-label"></label>
+        <div class="col-sm-8" style="padding-left: 8px; padding-right: 0px">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <i class="fa fa-info-circle"></i> {{ _("Date question") }}
+                </div>
+                <div class="panel-body">
+                    <div >
+                        <p style="margin-bottom: 0.11in; line-height: 108%"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group formExtraForQuestion" id="question14" style="margin: 0px">
+        <label class="col-sm-4 control-label"></label>
+        <div class="col-sm-8" style="padding-left: 8px; padding-right: 0px">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <i class="fa fa-info-circle"></i> {{ _("Time question") }}
+                </div>
+                <div class="panel-body">
+                    <div >
+                        <p style="margin-bottom: 0.11in; line-height: 108%"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group formExtraForQuestion" id="question15" style="margin: 0px">
+        <label class="col-sm-4 control-label"></label>
+        <div class="col-sm-8" style="padding-left: 8px; padding-right: 0px">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <i class="fa fa-info-circle"></i> {{ _("DateTime question") }}
+                </div>
+                <div class="panel-body">
+                    <div >
+                        <p style="margin-bottom: 0.11in; line-height: 108%"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group formExtraForQuestion" id="question16" style="margin: 0px">
+        <label class="col-sm-4 control-label"></label>
+        <div class="col-sm-8" style="padding-left: 8px; padding-right: 0px">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <i class="fa fa-info-circle"></i> {{ _("Image question") }}
+                </div>
+                <div class="panel-body">
+                    <div >
+                        <p style="margin-bottom: 0.11in; line-height: 108%"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group formExtraForQuestion" id="question17" style="margin: 0px">
+        <label class="col-sm-4 control-label"></label>
+        <div class="col-sm-8" style="padding-left: 8px; padding-right: 0px">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <i class="fa fa-info-circle"></i> {{ _("Audio question") }}
+                </div>
+                <div class="panel-body">
+                    <div >
+                        <p style="margin-bottom: 0.11in; line-height: 108%"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group formExtraForQuestion" id="question18" style="margin: 0px">
+        <label class="col-sm-4 control-label"></label>
+        <div class="col-sm-8" style="padding-left: 8px; padding-right: 0px">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <i class="fa fa-info-circle"></i> {{ _("Video question") }}
+                </div>
+                <div class="panel-body">
+                    <div >
+                        <p style="margin-bottom: 0.11in; line-height: 108%"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group formExtraForQuestion" id="question19" style="margin: 0px">
+        <label class="col-sm-4 control-label"></label>
+        <div class="col-sm-8" style="padding-left: 8px; padding-right: 0px">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <i class="fa fa-info-circle"></i> {{ _("Barcode/QR question") }}
+                </div>
+                <div class="panel-body">
+                    <div >
+                        <p style="margin-bottom: 0.11in; line-height: 108%"></p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -82,48 +381,11 @@
 </div>
 
 <div id="form_characteristics" class="formExtraForQuestion">
-    <div class="panel panel-info">
-        <div class="panel-heading">
-            <i class="fa fa-info-circle"></i> {{ _("How to describe the ranking variable") }}
-        </div>
-        <div class="panel-body">
-            <div >
-                <p style="margin-bottom: 0.11in; line-height: 108%">{{ _("A ranking of options is a type of question that is used to compare two of more technologies based on a criterion. In tricot, we compare three options, so we can know the ranking of the options by asking two questions only.") }}</p>
-            </div>
-        </div>
-    </div>
     {% include 'snippets/question/values/char-form.jinja2' %}
 </div>
 
 <div id="form_performance" class="formExtraForQuestion">
-    <div class="panel panel-info">
-        <div class="panel-heading">
-            <i class="fa fa-info-circle"></i> {{ _("How to describe a comparison with check") }}
-        </div>
-        <div class="panel-body">
-            <div>
-                <p style="margin-bottom: 0in; line-height: 100%">{{ _("Comparison with check is a type of question that is used to compare the technologies being tested in a project with the current one in use by the farmer or a commonly used technology. For example, if a project is evaluating three different varieties of bean then the performance questions would be:") }}</p>
-                <ul>
-                    <li/>
-                    <p style="margin-bottom: 0in; line-height: 100%">{{ _("In terms of taste, how does variety") }} <b>A</b> {{ _("compares with the variety you usually use?") }}</p>
-                    <li/>
-                    <p style="margin-bottom: 0in; line-height: 100%">{{ _("In terms of taste, how does variety") }} <b>B</b> {{ _("compares with the variety you usually use?") }}</p>
-                    <li/>
-                    <p style="margin-bottom: 0in; line-height: 100%">{{ _("In terms of taste, how does variety") }} <b>C</b> {{ _("compares with the variety you usually use?") }}</p>
-                </ul>
-                <p style="margin-bottom: 0in; line-height: 100%"><a name="_GoBack"></a>
-                    {{ _("In ClimMob you define this with one statement with the wildcard") }}
-                    &#123;&#123;{{ _("option") }}&#125;&#125;. {{ _("For example:") }}</p>
-                <ul>
-                    <li/>
-                    <p style="margin-bottom: 0in; line-height: 100%">{{ _("In terms of taste, how does") }} <b>&#123;&#123;{{ _("option") }}&#125;&#125;</b> {{ _("compares with the variety you usually use?") }}</p>
-                </ul>
-                <p style="margin-bottom: 0in; line-height: 100%">{{ _("The user answers it with two choices 'Better' or 'Worse'") }}</p>
-            </div>
-        </div>
-    </div>
     {% include 'snippets/question/values/perf-form.jinja2' %}
-
 </div>
 
 <div id="form_options" class="formExtraForQuestion " >

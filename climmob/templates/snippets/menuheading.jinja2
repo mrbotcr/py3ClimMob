@@ -15,22 +15,25 @@
                 </tr>
                 <tr>
                     <td style="vertical-align: middle">
-                        <ol class="breadcrumb">
-                            <li>
-                                <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
-                            </li>
-                            {% for opt in extra %}
+                        {% set showTabsOfMenu = True %}
+                        {% if showTabsOfMenu %}
+                            <ol class="breadcrumb">
                                 <li>
-                                    <a href="{{ opt[1] }}">{{ opt[0] }}</a>
+                                    <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
                                 </li>
-                            {% endfor %}
-                            <li class="active">
-                                {% if otherTitle %}
-                                    {% set _title = otherTitle %}
-                                {% endif %}
-                                <strong>{{ _title }}</strong>
-                            </li>
-                        </ol>
+                                {% for opt in extra %}
+                                    <li>
+                                        <a href="{{ opt[1] }}">{{ opt[0] }}</a>
+                                    </li>
+                                {% endfor %}
+                                <li class="active">
+                                    {% if otherTitle %}
+                                        {% set _title = otherTitle %}
+                                    {% endif %}
+                                    <strong>{{ _title }}</strong>
+                                </li>
+                            </ol>
+                        {% endif %}
                     </td>
                 </tr>
             </table>

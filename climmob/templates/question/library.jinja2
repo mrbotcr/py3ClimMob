@@ -31,7 +31,7 @@
 {% endblock topScripts %}
 
 {% block pageheading %}
-    {% set _title= _("Questions library") %}
+    {% set _title= _("Questions") %}
     {% set _linkWiki="https://climmob.net/blog/wiki/questions-library/" %}
     {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
@@ -72,7 +72,7 @@
                 <div class="ibox-title" >
                     <h5>{{ _("Category details") }}</h5>
                     <div class="ibox-tools">
-                        <button id="btnCancelCategory"  class="btn btn-xs btn-default pull-right " ><i class="fa fa-close" style="color: black"></i> </button>
+                        <button id="btnCancelCategory"  class="btn btn-xs btn-default pull-right " >{{ _("Clear and close form") }}</button>
                     </div>
                 </div>
                 <div class="ibox-content " >
@@ -103,7 +103,7 @@
                 <div class="ibox-title" >
                     <h5>{{ _("Question details") }}</h5>
                     <div class="ibox-tools">
-                        <button id="btn_cancel_question"  class="btn btn-xs btn-default pull-right " ><i class="fa fa-close" style="color: black"></i></button>
+                        <button id="btn_cancel_question"  class="btn btn-xs btn-default pull-right " >{{ _("Clear and close form") }}</button>
                     </div>
                 </div>
                 <div class="ibox-content " >
@@ -242,7 +242,7 @@
 
                 var value = $('#question_dtype').val();
 
-
+                $("#question"+value).css("display",'initial');
 
                 if (value != 9 && value != 10) {
                     $("#extraQuantitative").css("display","block")
@@ -683,6 +683,8 @@
             $('#question_group').trigger("change.select2");
             $("#question_dtype").val("1")
             $('#question_dtype').trigger('change.select2');
+            $("#question1").css("display",'initial');
+
 
             $(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
 
@@ -750,6 +752,8 @@
                 $("#question_dtype").val(dataJson["question_dtype"])
                 $('#question_dtype').trigger('change.select2');
 
+                $("#question"+dataJson["question_dtype"]).css("display",'initial');
+
                 {% block function_open_questions_extra_field %}
 
                 {% endblock function_open_questions_extra_field %}
@@ -810,7 +814,6 @@
 
                 if(dataJson["question_dtype"] == "10")
                 {
-                    $("#form_performance").css("display","initial")
                     $(".inputForQuestionPerf").prop('disabled',false);
                     $("#question_desc").val("-")
                 }

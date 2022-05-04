@@ -1,4 +1,4 @@
-from climmob.models.climmobv4 import Technology, Techalia, Prjtech, I18nTechnology
+from climmob.models.climmobv4 import Technology, Techalia, Prjtech, I18nTechnology, User
 from climmob.models.schema import mapToSchema, mapFromSchema
 from sqlalchemy import func, and_
 from climmob.processes.db.techaliases import getTechsAlias
@@ -31,6 +31,7 @@ def getUserTechs(user, request):
             func.coalesce(I18nTechnology.tech_name, Technology.tech_name).label(
                 "tech_name"
             ),
+            User.user_fullname,
         )
         .join(
             I18nTechnology,
@@ -41,6 +42,7 @@ def getUserTechs(user, request):
             isouter=True,
         )
         .filter(Technology.user_name == user)
+        .filter(Technology.user_name == User.user_name)
         .order_by(Technology.tech_name)
         .all()
     )

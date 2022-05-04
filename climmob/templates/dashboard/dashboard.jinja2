@@ -96,7 +96,7 @@
                                 <a href="#"><i class="fa fa-book"></i> <span class="nav-label">{{ _("Library") }}</span><span class="fa arrow"></span></a>
                                 <ul class="nav nav-second-level collapse " style="border-left: initial;background: initial">
                                     <li id="nav_enumerators"><a href="{{ request.route_url('enumerators') }}"><i class="fa fa-group"></i> <span class="nav-label">{{ _("Field agents") }}</span></a></li>
-                                    <li id="nav_technology"><a href="{{ request.route_url('usertechnologies') }}"><i class="fa fa-flask"></i> <span class="nav-label">{{ _("Technology options") }}</span></a></li>
+                                    <li id="nav_technology"><a href="{{ request.route_url('usertechnologies') }}"><i class="fa fa-flask"></i> <span class="nav-label">{{ _("Technologies") }}</span></a></li>
                                     <li id="nav_questions"><a href="{{ request.route_url('qlibrary',user_name =activeUser.login) }}"><i class="fa fa-comment"></i> <span class="nav-label">{{ _("Questions") }}</span></a></li>
                                 </ul>
                             </li>
@@ -219,7 +219,7 @@
                                         {% if activeProject["project_template"] != 1 %}
                                             <div class="row">
                                                 <div class="col-md-9">
-                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" {% if activeProject["project_createpkgs"] ==2 %} disabled {% else %} href="{{ request.route_url('prjtechnologies', user=activeProject["owner"].user_name, project=activeProject["project_cod"]) }}" {% endif %}><i class="fa fa-envira"></i> {{ _("Select technology options") }}</a>
+                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" {% if activeProject["project_createpkgs"] ==2 %} disabled {% else %} href="{{ request.route_url('prjtechnologies', user=activeProject["owner"].user_name, project=activeProject["project_cod"]) }}" {% endif %}><i class="fa fa-envira"></i> {{ _("Select technologies") }}</a>
                                                 </div>
                                                 <div class="col-md-3">
                                                     <p style="margin-top: 8px; text-align: center">
@@ -242,7 +242,7 @@
                                         {% endif %}
                                         <div class="row">
                                             <div class="col-md-9">
-                                                <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('registry', user=activeProject["owner"].user_name, project=activeProject.project_cod) }}"><i class="fa fa-address-card-o"></i> {{ _("Prepare registration form") }}</a>
+                                                <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('registry', user=activeProject["owner"].user_name, project=activeProject.project_cod) }}"><i class="fa fa-address-card-o"></i> {{ _("Prepare participant registration form") }}</a>
                                             </div>
                                             <div class="col-md-3">
                                                 <p style="margin-top: 8px; text-align: center;">
@@ -1024,7 +1024,7 @@
                     },
                     {
                         element: "#nav_technology",
-                        title: "{{_("Technology options")}}",
+                        title: "{{_("Technologies")}}",
                         content: "{{ _("Add or check if the ClimMob library has the necessary technologies for your project") }}.",
                         placement: "right"
                     },

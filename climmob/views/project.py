@@ -61,8 +61,8 @@ class newProject_view(privateView):
         dataworking["project_name"] = ""
         dataworking["project_abstract"] = ""
         dataworking["project_tags"] = ""
-        dataworking["project_pi"] = ""
-        dataworking["project_piemail"] = ""
+        dataworking["project_pi"] = self.user.fullName
+        dataworking["project_piemail"] = self.user.email
         dataworking["project_numobs"] = 0
         dataworking["project_numcom"] = 3
         dataworking["project_regstatus"] = 0

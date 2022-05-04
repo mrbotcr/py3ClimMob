@@ -59,7 +59,7 @@ def getDataProduct(projectId, request):
         + projectId
         + "' and product_id= edited.product_id and process_name= edited.process_name) and edited.project_id='"
         + projectId
-        + "' order by field(edited.product_id,'fieldagents','packages','qrpackage') desc, edited.datetime_added"
+        + "' order by field(edited.product_id,'fieldagents','packages','qrpackagewithtechnologies','qrpackage') desc, edited.datetime_added"
     )
 
     products = request.dbsession.execute(sql).fetchall()

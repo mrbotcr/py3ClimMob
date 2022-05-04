@@ -95,6 +95,8 @@ class cloneProjects_view(privateView):
             dataworking["project_label_a"] = self._("Option A")
             dataworking["project_label_b"] = self._("Option B")
             dataworking["project_label_c"] = self._("Option C")
+            dataworking["project_pi"] = self.user.fullName
+            dataworking["project_piemail"] = self.user.email
 
             if self.request.method == "POST":
                 dataworking = self.getPostDict()
