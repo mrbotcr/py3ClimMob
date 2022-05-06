@@ -1,0 +1,143 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob | Project list") }}</title>
+{% endblock title %}
+
+{% block css %}
+    {% cssresource request,'coreresources','footable' %}
+    {% cssresource request,'coreresources','tour' %}
+{% endblock css %}
+
+{% block topScripts %}
+    {% jsresource request,'coreresources','footable' %}
+    {% jsresource request,'coreresources','toastr' %}
+    {% jsresource request,'coreresources','tour' %}
+{% endblock topScripts %}
+
+{% block pageheading %}
+    {% set _title= _("Project list") %}
+{#    {% set _linkWiki= "https://climmob.net/blog/wiki/create-project-2/"%}#}
+    {% include 'snippets/menuheading.jinja2' %}
+{% endblock %}
+
+{% block pagecontent %}
+    
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="wrapper wrapper-content animated fadeInUp">
+
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h5>{{ _("All projects assigned to this account") }}</h5>
+                        <div class="ibox-tools">
+                            <a class="btn btn-primary" href="{{ request.route_url('newproject') }}">{{ _("Add new project") }}</a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        {% if userProjects %}
+                            <div class="text-center">
+                                <p>{{ _("Click on the row of the table to change the project in the \"Main menu\" section") }}.</p>
+                                <a class="btn btn-success btn-rounded  btn-xs" style="color: white" onclick="showHelp()"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a>
+                                <br><br>
+                            </div>
+
+                            <input type="text" class="form-control form-control-sm m-b-xs" id="filter" placeholder="{{ _("Search project") }}">
+
+                            <div class="project-list">
+
+                                <table class="footable table table-hover" data-filter=#filter>
+                                    <tbody>
+                                        {% for project in userProjects %}
+                                            <tr onclick="window.location = '{{ request.route_url('dashboard', _query={'user':project["owner"].user_name, "project": project.project_cod}) }}';">
+                                                <td class="project-status">
+                                                    {% if project.project_dashboard == 1%}
+                                                        <a class="label label-primary">{{ _("Active project in main menu") }}</a>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="project-title" title="{{ request.h.readble_date(project.project_creationdate) }}">
+                                                    <a >{{ project.project_name }}</a>
+                                                    <br/>
+                                                    <small>Created {{  request.h.humanize_date(project.project_creationdate) }}</small>
+                                                    <br>
+                                                    {% for tag in project.project_tags.split(",") %}
+                                                        <span class="label label-info">{{ tag }}</span>
+                                                    {% endfor %}
+                                                </td>
+                                                <td class="project-completion">
+                                                    <p>{{ _("Trial coordinator") }}: {{ project.project_pi }}</p>
+                                                    <p>{{ _("Email address") }}: {{ project.project_piemail }}</p>
+                                                </td>
+                                                <td class="project-completion">
+                                                    <p>{{ _("User owner") }}: {{ project.owner["user_name"] }}</p>
+                                                    <p>{{ _("Project code") }}: {{ project.project_cod }}</p>
+                                                </td>
+                                                <td class="project-people" style="text-align: center">
+                                                    <i class="fa fa-user-circle-o" style="font-size: 30px"></i><br>
+                                                    <p>
+                                                        {% if project.access_type== 1 %}
+                                                            {{ _("Owner") }}
+                                                        {% else %}
+                                                            {% if project.access_type== 2 %}
+                                                                {{ _("Administrator") }}
+                                                            {% else %}
+                                                                {% if project.access_type== 3 %}
+                                                                    {{ _("Editor") }}
+                                                                {% else %}
+                                                                    {{ _("Member") }}
+                                                                {% endif %}
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    </p>
+                                                </td>
+                                                <td class="project-actions">
+
+                                                    <p>
+                                                        {% if project.progress.regsubmissions == 0 %}
+                                                            {{ _("Registration not yet started") }}
+                                                        {% else %}
+                                                            {% if project.progress.regsubmissions == 1 %}
+                                                                {{ _("Registration ongoing") }}
+                                                            {% else %}
+                                                                {% if project.progress.regsubmissions == 2 %}
+                                                                    {% if project.progress.assessments|length == 0 %}
+                                                                        {{ _("Registration closed") }}
+                                                                    {% else %}
+                                                                        {{ _("Data collection / Analysis ongoing") }}
+                                                                    {% endif %}
+                                                                {% endif %}
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    </p>
+
+                                                </td>
+                                                <td class="project-actions">
+                                                    <a class="btn btn-primary btn-xs" href="{{ request.route_url('cloneProject', _query={"stage":2, "user": project.owner["user_name"],"project": project.project_cod}) }}">{{ _("Clone this project") }}</a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+
+                            <div style="text-align: center">
+                                <h3><i class="fa fa-tim"></i> {{ _("You don't have projects.") }}</h3>
+                                <a class="btn btn-primary" href="{{ request.route_url('newproject') }}">{{ _("Add new project") }}</a>
+                            </div>
+
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+
+            $('.footable').footable();
+        })
+    </script>
+{% endblock pagecontent %}

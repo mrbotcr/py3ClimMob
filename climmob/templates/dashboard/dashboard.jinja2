@@ -141,9 +141,9 @@
                                 </li>
                                 <li>
                                     {% block headsidebar %}
-                                        <a class="right-sidebar-toggle">
+                                        <a class="right-sidebar-toggle" href="{{ request.route_url('projectList') }}">
                                             <i class="fa fa-tasks"> </i> {{ _("Projects") }}
-                                            {% do withsidebar.append(1) %}
+{#                                            {% do withsidebar.append(1) %}#}
                                         </a>
                                     {% endblock headsidebar %}
                                 </li>
@@ -908,47 +908,36 @@
             </script>
         {% endblock %}
 
-        {% if withsidebar %}
-            <div id="right-sidebar" class="animated">
-                <div class="sidebar-container">
-{#                    <ul class="nav nav-tabs navs-3">#}
-{#                        {% block sidebartabs %}#}
-{#                            <li class="active"><a data-toggle="tab" href="#tab-1">#}
-{#                                {{ _("Projects") }}#}
-{#                            </a></li>#}
-{#                            <li class=""><a data-toggle="tab" href="#tab-2">#}
-{#                                <i class="fa fa-gear"></i>#}
-{#                            </a></li>#}
-{#                        {% endblock sidebartabs %}#}
-{#                    </ul>#}
-                    <div class="tab-content">
-                        {% block sidebarcontent %}
-                            <div id="tab-1" class="tab-pane active">
-                                <div class="sidebar-title text-center">
-{#                                    <h3> <i class="fa fa-cube"></i> {{ _("Latest projects") }}</h3>#}
-                                    {% if hasActiveProject %}
-                                        <h3><i class="fa fa-tim"></i> {{ _("You have") }} {{ userProjects|length }} {{ request.h.pluralize(_("project"),userProjects|length) }}.</h3>
-                                    {% else %}
-                                        <h3><i class="fa fa-tim"></i> {{ _("You don't have projects.") }}</h3>
-                                    {% endif %}
-                                    <br/>
-                                    <a class="btn btn-primary" href="{{ request.route_url('newproject') }}">{{ _("Add new project") }}</a><br><br>
-
-                                    <a class="btn btn-primary" href="{{ request.route_url('cloneProject') }}">{{ _("Clone existing project") }}</a>
-                                </div>
-                                <ul class="sidebar-list">
-                                    {% if hasActiveProject %}
-                                        {% for project in userProjects %}
-                                            {% include 'snippets/dashboard/project_details.jinja2' %}
-                                        {% endfor %}
-                                    {% endif %}
-                                </ul>
-                            </div>
-                        {% endblock sidebarcontent %}
-                    </div>
-                </div>
-            </div>
-        {% endif %}
+{#        {% if withsidebar %}#}
+{#            <div id="right-sidebar" class="animated">#}
+{#                <div class="sidebar-container">#}
+{#                    <div class="tab-content">#}
+{#                        {% block sidebarcontent %}#}
+{#                            <div id="tab-1" class="tab-pane active">#}
+{#                                <div class="sidebar-title text-center">#}
+{#                                    {% if hasActiveProject %}#}
+{#                                        <h3><i class="fa fa-tim"></i> {{ _("You have") }} {{ userProjects|length }} {{ request.h.pluralize(_("project"),userProjects|length) }}.</h3>#}
+{#                                    {% else %}#}
+{#                                        <h3><i class="fa fa-tim"></i> {{ _("You don't have projects.") }}</h3>#}
+{#                                    {% endif %}#}
+{#                                    <br/>#}
+{#                                    <a class="btn btn-primary" href="{{ request.route_url('newproject') }}">{{ _("Add new project") }}</a><br><br>#}
+{##}
+{#                                    <a class="btn btn-primary" href="{{ request.route_url('cloneProject') }}">{{ _("Clone existing project") }}</a>#}
+{#                                </div>#}
+{#                                <ul class="sidebar-list">#}
+{#                                    {% if hasActiveProject %}#}
+{#                                        {% for project in userProjects %}#}
+{#                                            {% include 'snippets/dashboard/project_details.jinja2' %}#}
+{#                                        {% endfor %}#}
+{#                                    {% endif %}#}
+{#                                </ul>#}
+{#                            </div>#}
+{#                        {% endblock sidebarcontent %}#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        {% endif %}#}
     </div>
 
 {% endblock body %}

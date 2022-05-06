@@ -212,7 +212,6 @@ class privateView(object):
             "activeUser": None,
             "hasActiveProject": None,
             "activeProject": None,
-            "userProjects": [],
             "counterChat": 0,
             "showHelp": False,
             "showRememberAfterCreateProject": False,
@@ -230,9 +229,6 @@ class privateView(object):
         if self.user == None:
             return HTTPFound(location=self.request.route_url("login"))
 
-        self.classResult["userProjects"] = getUserProjects(
-            self.user.login, self.request
-        )
         self.classResult["counterChat"] = counterChat(self.user.login, self.request)
         activeProjectData = getActiveProject(self.user.login, self.request)
         if activeProjectData:

@@ -34,6 +34,7 @@ from climmob.processes import (
     AliasExtraSearchTechnologyInProject,
     deleteRegistryByProjectId,
     deleteProjectAssessments,
+    getUserProjects,
 )
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 import datetime
@@ -49,6 +50,15 @@ class getTemplatesByTypeOfProject_view(privateView):
             return templates
 
         raise HTTPNotFound
+
+
+class projectList_view(privateView):
+    def processView(self):
+
+        return {
+            "activeProject": getActiveProject(self.user.login, self.request),
+            "userProjects": getUserProjects(self.user.login, self.request),
+        }
 
 
 class newProject_view(privateView):

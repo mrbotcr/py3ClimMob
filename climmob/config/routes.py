@@ -23,6 +23,7 @@ from climmob.views.project import (
     getTemplatesByTypeOfProject_view,
     modifyProject_view,
     deleteProject_view,
+    projectList_view,
 )
 
 from climmob.views.question import (
@@ -343,6 +344,14 @@ def loadRoutes(config):
             "path": "/projects",
             "view": dashboard_view,
             "renderer": "dashboard/dashboard.jinja2",
+        }
+    )
+    routes.append(
+        {
+            "name": "projectList",
+            "path": "/projectList",
+            "view": projectList_view,
+            "renderer": "project/projectList.jinja2",
         }
     )
     routes.append(
