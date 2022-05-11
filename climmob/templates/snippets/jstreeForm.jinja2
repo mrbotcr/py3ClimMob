@@ -11,7 +11,7 @@
                     {% endif %}
 
                     {% if item.createGRP %}
-                        <li class="jstree-open"  data-jstree='{"type":"group","icon": "fa fa-folder"}' data-type="group" id="GRP{{ item.section_id }}" > <strong onclick="seeSection('{{ item.section_id }}','{{ item.section_name }}','{{ item.section_content }}')" style="font-size: 16px; color: #000000;" >{{ _("Section") }}: {{ item.section_name }} ({{ item.section_content }})</strong>
+                        <li class="jstree-open"  data-jstree='{"type":"group","icon": "fa fa-folder"}' data-type="group" id="GRP{{ item.section_id }}" > <strong onclick="seeSection('{{ item.section_id }}','{{ item.section_name }}','{{ item.section_content }}')" style="font-size: 16px; color: #000000;" >{{ _("Section") }}: {{ item.section_name }} </strong>
                             {% if item.hasQuestions %}
                                 <ul >
                                     {% set question=item %}
