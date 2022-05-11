@@ -89,7 +89,7 @@
                                     {% set idForProject = activeProject.project_cod%}
                                 {% endif %}
                                 <li>
-                                    <a href="{{ request.route_url('modifyproject',user=activeProject["owner"].user_name, project=activeProject.project_cod) }}"><i class="fa fa-list-alt"></i> {{ _("Project profile") }}</a>
+                                    <a href="{{ request.route_url('projectList')  }}"><i class="fa fa-tasks"></i> {{ _("Projects") }}</a>
                                 </li>
                             {% endif %}
                             <li class="active" style="border-left: initial;background: initial" id="nav_libraries">
@@ -139,14 +139,14 @@
                                         <i class="fa fa-sign-out"></i> {{ _("Log out") }}
                                     </a>
                                 </li>
-                                <li>
-                                    {% block headsidebar %}
-                                        <a class="right-sidebar-toggle" href="{{ request.route_url('projectList') }}">
-                                            <i class="fa fa-tasks"> </i> {{ _("Projects") }}
+{#                                <li>#}
+{#                                    {% block headsidebar %}#}
+{#                                        <a class="right-sidebar-toggle" href="{{ request.route_url('projectList') }}">#}
+{#                                            <i class="fa fa-tasks"> </i> {{ _("Projects") }}#}
 {#                                            {% do withsidebar.append(1) %}#}
-                                        </a>
-                                    {% endblock headsidebar %}
-                                </li>
+{#                                        </a>#}
+{#                                    {% endblock headsidebar %}#}
+{#                                </li>#}
                             {% endblock headitems %}
                         </ul>
                     </nav>
@@ -206,6 +206,14 @@
                                         </div>
                                     </div>
                                     <div class="ibox-content">
+                                        <div class="row">
+                                            <div class="col-md-9">
+                                                <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('modifyproject',user=activeProject["owner"].user_name, project=activeProject.project_cod) }}" ><i class="fa fa-list-alt"></i> {{ _("Project profile") }}</a>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <p style="margin-top: 8px; text-align: center"><span class="label label-success">{{ _("Completed") }}</span></p>
+                                            </div>
+                                        </div>
                                         {% if activeProject["project_template"] != 1 %}
                                             <div class="row">
                                                 <div class="col-md-9">
