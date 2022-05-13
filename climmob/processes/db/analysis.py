@@ -1,4 +1,5 @@
 from climmob.models.schema import mapFromSchema
+
 from climmob.models import (
     AssDetail,
     Asssection,
@@ -15,6 +16,7 @@ from climmob.processes import (
 )
 from sqlalchemy import or_, func, and_
 from jinja2 import Environment
+import climmob.plugins as p
 
 __all__ = ["getQuestionsByType", "getQuestionsStructure"]
 
@@ -540,5 +542,10 @@ def getQuestionsStructure(projectId, ass_cod, request):
                             )
 
                 dic.append(questInfo)
+
+    if ass_cod != "":
+
+        for plugin in p.PluginImplementations(p.IRhomis):
+            dic = plugin.before_clean_errors(request, projectId, ass_cod, dic)
 
     return dic
