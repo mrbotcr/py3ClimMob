@@ -370,7 +370,9 @@ class IForm(Interface):  # pragma: no cover
 
 
 class IMultimedia(Interface):
-    def start_multimedia_download(self, path, user_name, projectid, formId, ass_cod):
+    def start_multimedia_download(
+        self, request, userOwner, projectId, projectCod, formId, ass_cod
+    ):
         """
         Called by ClimMob so plugins can perform actions after ClimMob deletes a form from the database
         :param request: ``pyramid.request`` object
