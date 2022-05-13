@@ -38,29 +38,29 @@ __all__ = [
 
 class climmobPublicView(publicView):
     """
-        A view class for plugins which require a public (not login required) view.
+    A view class for plugins which require a public (not login required) view.
     """
 
 
 class climmobPrivateView(privateView):
     """
-        A view class for plugins which require a private (login required) view.
+    A view class for plugins which require a private (login required) view.
     """
 
 
 class climmobCeleryTask(celeryTask):
     """
-        A view class for plugins which require a private (login required) view.
+    A view class for plugins which require a private (login required) view.
     """
 
 
 def __returnCurrentPath():
     """
-    
-    This code is based on CKAN 
+
+    This code is based on CKAN
     :Copyright (C) 2007 Open Knowledge Foundation
     :license: AGPL V3, see LICENSE for more details.
-     
+
     """
     frame, filename, line_number, function_name, lines, index = inspect.getouterframes(
         inspect.currentframe()

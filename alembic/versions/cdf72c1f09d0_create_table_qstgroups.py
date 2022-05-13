@@ -25,9 +25,9 @@ def upgrade():
         sa.Column("qstgroups_name", sa.String(length=120), nullable=True),
         sa.ForeignKeyConstraint(
             ["user_name"],
-            [u"user.user_name"],
+            ["user.user_name"],
             name=op.f("fk_qstgroups_user_name_user"),
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint("user_name", "qstgroups_id", name=op.f("pk_qstgroups")),
         mysql_charset="utf8",

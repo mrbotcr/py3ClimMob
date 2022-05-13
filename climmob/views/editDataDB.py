@@ -172,7 +172,10 @@ def fillDataTable(
                     "align": "center",
                     "formatter": "select",
                     "edittype": "select",
-                    "editoptions": {"multiple": False, "value": packages,},
+                    "editoptions": {
+                        "multiple": False,
+                        "value": packages,
+                    },
                 }
             )
         else:

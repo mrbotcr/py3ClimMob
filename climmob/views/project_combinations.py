@@ -133,7 +133,11 @@ class projectCombinations_view(privateView):
                 createCombinations(
                     activeProjectUser, activeProjectId, activeProjectCod, self.request
                 )
-                techs, ncombs, combs, = getCombinations(activeProjectId, self.request)
+                (
+                    techs,
+                    ncombs,
+                    combs,
+                ) = getCombinations(activeProjectId, self.request)
 
                 pos = 1
                 elements = []

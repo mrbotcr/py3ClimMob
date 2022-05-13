@@ -33,7 +33,7 @@ class readProjectRegistry_view(apiView):
     def processView(self):
 
         if self.request.method == "GET":
-            obligatory = [u"project_cod", u"user_owner"]
+            obligatory = ["project_cod", "user_owner"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -128,7 +128,7 @@ class readPossibleQuestionsForRegistryGroup_view(apiView):
     def processView(self):
 
         if self.request.method == "GET":
-            obligatory = [u"project_cod", u"user_owner"]
+            obligatory = ["project_cod", "user_owner"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -204,10 +204,10 @@ class addRegistryGroup_view(apiView):
 
         if self.request.method == "POST":
             obligatory = [
-                u"project_cod",
-                u"user_owner",
-                u"section_name",
-                u"section_content",
+                "project_cod",
+                "user_owner",
+                "section_name",
+                "section_content",
             ]
             dataworking = json.loads(self.body)
 
@@ -299,11 +299,11 @@ class updateRegistryGroup_view(apiView):
 
         if self.request.method == "POST":
             obligatory = [
-                u"project_cod",
-                u"user_owner",
-                u"group_cod",
-                u"section_name",
-                u"section_content",
+                "project_cod",
+                "user_owner",
+                "group_cod",
+                "section_name",
+                "section_content",
             ]
             dataworking = json.loads(self.body)
 
@@ -394,7 +394,7 @@ class deleteRegistryGroup_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"user_owner", u"group_cod"]
+            obligatory = ["project_cod", "user_owner", "group_cod"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -499,11 +499,11 @@ class addQuestionToGroupRegistry_view(apiView):
 
         if self.request.method == "POST":
             obligatory = [
-                u"project_cod",
-                u"user_owner",
-                u"group_cod",
-                u"question_id",
-                u"question_user_name",
+                "project_cod",
+                "user_owner",
+                "group_cod",
+                "question_id",
+                "question_user_name",
             ]
             dataworking = json.loads(self.body)
 
@@ -647,11 +647,11 @@ class deleteQuestionFromGroupRegistry_view(apiView):
 
         if self.request.method == "POST":
             obligatory = [
-                u"project_cod",
-                u"user_owner",
-                u"group_cod",
-                u"question_id",
-                u"question_user_name",
+                "project_cod",
+                "user_owner",
+                "group_cod",
+                "question_id",
+                "question_user_name",
             ]
             dataworking = json.loads(self.body)
 
@@ -786,7 +786,7 @@ class orderRegistryQuestions_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"user_owner", u"order"]
+            obligatory = ["project_cod", "user_owner", "order"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -826,7 +826,10 @@ class orderRegistryQuestions_view(apiView):
 
                         dataworking["project_id"] = activeProjectId
                         if projectRegStatus(activeProjectId, self.request):
-                            if haveTheBasic(activeProjectId, self.request,):
+                            if haveTheBasic(
+                                activeProjectId,
+                                self.request,
+                            ):
                                 try:
                                     originalData = json.loads(dataworking["order"])
 
@@ -856,8 +859,10 @@ class orderRegistryQuestions_view(apiView):
                                             dataworking, self
                                         )
                                         if sorted(groupsInProject) == sorted(groups):
-                                            questionsInProject = getRegistryQuestionsApi(
-                                                dataworking, self
+                                            questionsInProject = (
+                                                getRegistryQuestionsApi(
+                                                    dataworking, self
+                                                )
                                             )
                                             if sorted(questionsInProject) == sorted(
                                                 questions

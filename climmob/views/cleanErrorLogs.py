@@ -120,7 +120,10 @@ class cleanErrorLogs_view(privateView):
                                     )
 
                                     update_registry_status_log(
-                                        self.request, activeProjectId, logId, 2,
+                                        self.request,
+                                        activeProjectId,
+                                        logId,
+                                        2,
                                     )
 
                                     self.returnRawViewResult = True
@@ -178,7 +181,11 @@ class cleanErrorLogs_view(privateView):
                                     )
 
                                     update_assessment_status_log(
-                                        self.request, activeProjectId, codeId, logId, 2,
+                                        self.request,
+                                        activeProjectId,
+                                        codeId,
+                                        logId,
+                                        2,
                                     )
 
                                     self.returnRawViewResult = True
@@ -195,7 +202,10 @@ class cleanErrorLogs_view(privateView):
                             if "discard" in dataworking.keys():
                                 if formId == "registry":
                                     update_registry_status_log(
-                                        self.request, activeProjectId, logId, 3,
+                                        self.request,
+                                        activeProjectId,
+                                        logId,
+                                        3,
                                     )
 
                                     self.returnRawViewResult = True
@@ -209,7 +219,11 @@ class cleanErrorLogs_view(privateView):
                                     )
                                 else:
                                     update_assessment_status_log(
-                                        self.request, activeProjectId, codeId, logId, 3,
+                                        self.request,
+                                        activeProjectId,
+                                        codeId,
+                                        logId,
+                                        3,
                                     )
 
                                     self.returnRawViewResult = True

@@ -32,7 +32,8 @@ class projectHelp_view(privateView):
             )
 
             dataworking["project_details"] = getProjectData(
-                activeProjectId, self.request,
+                activeProjectId,
+                self.request,
             )
 
             if dataworking["project_details"]:
@@ -53,7 +54,8 @@ class projectHelp_view(privateView):
                     )
                     if status:
                         dataworking["project_details"] = getProjectData(
-                            activeProjectId, self.request,
+                            activeProjectId,
+                            self.request,
                         )
                         dataworking["result_positive"] = self._(
                             "The number of participants was successfully increased"
@@ -107,15 +109,19 @@ def getImportantInformation(dataworking, request):
     dataworking["project_details"]["country"] = getCountryName(
         dataworking["project_details"]["project_cnty"], request
     )
-    techs, ncombs, combs, = getCombinations(
-        dataworking["project_details"]["project_id"], request
-    )
+    (
+        techs,
+        ncombs,
+        combs,
+    ) = getCombinations(dataworking["project_details"]["project_id"], request)
     techInfo = searchTechnologiesInProject(
         dataworking["project_details"]["project_id"], request
     )
     for tech in techInfo:
         tech["alias"] = AliasSearchTechnologyInProject(
-            tech["tech_id"], dataworking["project_details"]["project_id"], request,
+            tech["tech_id"],
+            dataworking["project_details"]["project_id"],
+            request,
         )
     dataworking["project_details"]["techs"] = techInfo
     dataworking["project_details"]["ncombs"] = ncombs
@@ -127,7 +133,10 @@ def getImportantInformation(dataworking, request):
         for comb in combs:
             if pos <= len(techs):
                 elements.append(
-                    {"alias_id": comb["alias_id"], "alias_name": comb["alias_name"],}
+                    {
+                        "alias_id": comb["alias_id"],
+                        "alias_name": comb["alias_name"],
+                    }
                 )
                 pos += 1
             else:
@@ -140,7 +149,10 @@ def getImportantInformation(dataworking, request):
                 )
                 elements = []
                 elements.append(
-                    {"alias_id": comb["alias_id"], "alias_name": comb["alias_name"],}
+                    {
+                        "alias_id": comb["alias_id"],
+                        "alias_name": comb["alias_name"],
+                    }
                 )
                 pos = 2
             pos2 += 1

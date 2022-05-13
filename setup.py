@@ -174,10 +174,14 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
-    extras_require={"testing": tests_require,},
+    extras_require={
+        "testing": tests_require,
+    },
     install_requires=requires,
     entry_points={
-        "paste.app_factory": ["main = climmob:main",],
+        "paste.app_factory": [
+            "main = climmob:main",
+        ],
         "console_scripts": [
             "configure_mysql = climmob.scripts.configuremysql:main",
             "configure_alembic = climmob.scripts.configurealembic:main",

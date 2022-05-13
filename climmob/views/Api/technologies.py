@@ -18,7 +18,7 @@ class createTechnology_view(apiView):
 
         if self.request.method == "POST":
 
-            obligatory = [u"tech_name"]
+            obligatory = ["tech_name"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -120,7 +120,7 @@ class updateTechnology_view(apiView):
 
         if self.request.method == "POST":
 
-            obligatory = [u"tech_id", u"tech_name"]
+            obligatory = ["tech_id", "tech_name"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -205,7 +205,7 @@ class deletetechnologyView_api(apiView):
 
         if self.request.method == "POST":
 
-            obligatory = [u"tech_id"]
+            obligatory = ["tech_id"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):

@@ -30,7 +30,7 @@ from climmob.processes.odk.api import storeJSONInMySQL
 class createProjectAssessment_view(apiView):
     def processView(self):
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"user_owner", u"ass_cod"]
+            obligatory = ["project_cod", "user_owner", "ass_cod"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -75,7 +75,9 @@ class createProjectAssessment_view(apiView):
                         )
                         if progress["regsubmissions"] == 2:
                             if projectAsessmentStatus(
-                                activeProjectId, dataworking["ass_cod"], self.request,
+                                activeProjectId,
+                                dataworking["ass_cod"],
+                                self.request,
                             ):
                                 if progress["assessment"] == True:
                                     checkPass, errors = checkAssessments(
@@ -84,10 +86,12 @@ class createProjectAssessment_view(apiView):
                                         self.request,
                                     )
                                     if checkPass:
-                                        sectionOfThePackageCode = getTheGroupOfThePackageCodeAssessment(
-                                            activeProjectId,
-                                            dataworking["ass_cod"],
-                                            self.request,
+                                        sectionOfThePackageCode = (
+                                            getTheGroupOfThePackageCodeAssessment(
+                                                activeProjectId,
+                                                dataworking["ass_cod"],
+                                                self.request,
+                                            )
                                         )
                                         projectDetails = getProjectData(
                                             activeProjectId, self.request
@@ -207,7 +211,7 @@ class createProjectAssessment_view(apiView):
 class cancelAssessmentApi_view(apiView):
     def processView(self):
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"user_owner", u"ass_cod"]
+            obligatory = ["project_cod", "user_owner", "ass_cod"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -246,7 +250,9 @@ class cancelAssessmentApi_view(apiView):
                             return response
 
                         if not projectAsessmentStatus(
-                            activeProjectId, dataworking["ass_cod"], self.request,
+                            activeProjectId,
+                            dataworking["ass_cod"],
+                            self.request,
                         ):
 
                             setAssessmentIndividualStatus(
@@ -291,7 +297,7 @@ class cancelAssessmentApi_view(apiView):
 class closeAssessmentApi_view(apiView):
     def processView(self):
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"user_owner", u"ass_cod"]
+            obligatory = ["project_cod", "user_owner", "ass_cod"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -330,10 +336,14 @@ class closeAssessmentApi_view(apiView):
                             return response
 
                         if not projectAsessmentStatus(
-                            activeProjectId, dataworking["ass_cod"], self.request,
+                            activeProjectId,
+                            dataworking["ass_cod"],
+                            self.request,
                         ):
                             if assessmentExists(
-                                activeProjectId, dataworking["ass_cod"], self.request,
+                                activeProjectId,
+                                dataworking["ass_cod"],
+                                self.request,
                             ):
 
                                 setAssessmentIndividualStatus(
@@ -385,7 +395,7 @@ class closeAssessmentApi_view(apiView):
 class readAssessmentStructure_view(apiView):
     def processView(self):
         if self.request.method == "GET":
-            obligatory = [u"project_cod", u"user_owner", u"ass_cod"]
+            obligatory = ["project_cod", "user_owner", "ass_cod"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -422,10 +432,14 @@ class readAssessmentStructure_view(apiView):
                         )
 
                         if not projectAsessmentStatus(
-                            activeProjectId, dataworking["ass_cod"], self.request,
+                            activeProjectId,
+                            dataworking["ass_cod"],
+                            self.request,
                         ):
                             if assessmentExists(
-                                activeProjectId, dataworking["ass_cod"], self.request,
+                                activeProjectId,
+                                dataworking["ass_cod"],
+                                self.request,
                             ):
                                 response = Response(
                                     status=200,
@@ -477,7 +491,7 @@ class readAssessmentStructure_view(apiView):
 class pushJsonToAssessment_view(apiView):
     def processView(self):
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"user_owner", u"ass_cod", u"json"]
+            obligatory = ["project_cod", "user_owner", "ass_cod", "json"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -516,10 +530,14 @@ class pushJsonToAssessment_view(apiView):
                             return response
 
                         if assessmentExists(
-                            activeProjectId, dataworking["ass_cod"], self.request,
+                            activeProjectId,
+                            dataworking["ass_cod"],
+                            self.request,
                         ):
                             if not projectAsessmentStatus(
-                                activeProjectId, dataworking["ass_cod"], self.request,
+                                activeProjectId,
+                                dataworking["ass_cod"],
+                                self.request,
                             ):
                                 if isAssessmentOpen(
                                     activeProjectId,
@@ -582,7 +600,10 @@ class pushJsonToAssessment_view(apiView):
 
 def ApiAssessmentPushProcess(self, structure, dataworking, activeProjectId):
     if structure:
-        numComb = numberOfCombinationsForTheProject(activeProjectId, self.request,)
+        numComb = numberOfCombinationsForTheProject(
+            activeProjectId,
+            self.request,
+        )
         obligatoryQuestions = []
         possibleQuestions = []
         searchQST163 = ""
@@ -702,7 +723,8 @@ def ApiAssessmentPushProcess(self, structure, dataworking, activeProjectId):
                                 return response
 
                             response = Response(
-                                status=200, body=self._("Data registered."),
+                                status=200,
+                                body=self._("Data registered."),
                             )
                             return response
 
@@ -738,18 +760,22 @@ def ApiAssessmentPushProcess(self, structure, dataworking, activeProjectId):
                 return response
         except:
             response = Response(
-                status=401, body=self._("Error in the JSON sent by parameter."),
+                status=401,
+                body=self._("Error in the JSON sent by parameter."),
             )
             return response
     else:
-        response = Response(status=401, body=self._("The data do not have structure."),)
+        response = Response(
+            status=401,
+            body=self._("The data do not have structure."),
+        )
         return response
 
 
 class readAssessmentData_view(apiView):
     def processView(self):
         if self.request.method == "GET":
-            obligatory = [u"project_cod", u"user_owner", u"ass_cod"]
+            obligatory = ["project_cod", "user_owner", "ass_cod"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -786,10 +812,14 @@ class readAssessmentData_view(apiView):
                         )
 
                         if not projectAsessmentStatus(
-                            activeProjectId, dataworking["ass_cod"], self.request,
+                            activeProjectId,
+                            dataworking["ass_cod"],
+                            self.request,
                         ):
                             if assessmentExists(
-                                activeProjectId, dataworking["ass_cod"], self.request,
+                                activeProjectId,
+                                dataworking["ass_cod"],
+                                self.request,
                             ):
                                 info = getJSONResult(
                                     dataworking["user_owner"],
@@ -807,7 +837,8 @@ class readAssessmentData_view(apiView):
                                 }
 
                                 response = Response(
-                                    status=200, body=json.dumps(newJson),
+                                    status=200,
+                                    body=json.dumps(newJson),
                                 )
                                 return response
                             else:

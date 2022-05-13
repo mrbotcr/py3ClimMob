@@ -18,7 +18,7 @@ class readDataOfProjectView_api(apiView):
 
         if self.request.method == "GET":
 
-            obligatory = [u"project_cod", u"user_owner"]
+            obligatory = ["project_cod", "user_owner"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -76,7 +76,7 @@ class readVariablesForAnalysisView_api(apiView):
 
         if self.request.method == "GET":
 
-            obligatory = [u"project_cod", u"user_owner"]
+            obligatory = ["project_cod", "user_owner"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -180,8 +180,8 @@ class generateAnalysisByApiView_api(apiView):
         if self.request.method == "POST":
 
             obligatory = [
-                u"project_cod",
-                u"user_owner",
+                "project_cod",
+                "user_owner",
                 "variables_to_analyze",
                 "infosheets",
             ]

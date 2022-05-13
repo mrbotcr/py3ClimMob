@@ -152,7 +152,10 @@ def exitsAssessmentGroup(data, self):
 def projectAsessmentStatus(projectId, ass_cod, request):
     result = (
         request.dbsession.query(Assessment)
-        .filter(Assessment.project_id == projectId, Assessment.ass_cod == ass_cod,)
+        .filter(
+            Assessment.project_id == projectId,
+            Assessment.ass_cod == ass_cod,
+        )
         .first()
     )
     if result:
@@ -487,7 +490,9 @@ def addProjectAssessment(data, request, _from=""):
             return (
                 True,
                 getProjectAssessmentInfo(
-                    data["project_id"], newAssessment.ass_cod, request,
+                    data["project_id"],
+                    newAssessment.ass_cod,
+                    request,
                 ),
             )
     except Exception as e:
@@ -1185,13 +1190,23 @@ def generateStructureForInterfaceForms(
 
                     if questionData["question_tied"] == 1:
                         dataQuestionop = createOption(
-                            "Tied", 0, 98, 0, 98, questionData["question_id"],
+                            "Tied",
+                            0,
+                            98,
+                            0,
+                            98,
+                            questionData["question_id"],
                         )
                         optionsReq.append(dataQuestionop)
 
                     if questionData["question_notobserved"] == 1:
                         dataQuestionop = createOption(
-                            "Not observed", 0, 99, 0, 99, questionData["question_id"],
+                            "Not observed",
+                            0,
+                            99,
+                            0,
+                            99,
+                            questionData["question_id"],
                         )
                         optionsReq.append(dataQuestionop)
 
@@ -1306,12 +1321,22 @@ def generateStructureForInterfaceForms(
                         )
                         # the best option
                         dataQuestionop = createOption(
-                            _("Better"), 0, 1, 0, 1, questionData["question_id"],
+                            _("Better"),
+                            0,
+                            1,
+                            0,
+                            1,
+                            questionData["question_id"],
                         )
                         dataQuestion["question_options"].append(dataQuestionop)
                         # the worst option
                         dataQuestionop = createOption(
-                            _("Worse"), 0, 2, 0, 2, questionData["question_id"],
+                            _("Worse"),
+                            0,
+                            2,
+                            0,
+                            2,
+                            questionData["question_id"],
                         )
                         dataQuestion["question_options"].append(dataQuestionop)
                         # add to the section

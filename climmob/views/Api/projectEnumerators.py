@@ -22,7 +22,7 @@ class addProjectEnumerator_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"user_owner", u"enum_id", u"enum_user_name"]
+            obligatory = ["project_cod", "user_owner", "enum_id", "enum_user_name"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -101,7 +101,8 @@ class addProjectEnumerator_view(apiView):
                                         dataworking["project_cod"],
                                         activeProjectId,
                                         getProjectEnumerators(
-                                            activeProjectId, self.request,
+                                            activeProjectId,
+                                            self.request,
                                         ),
                                         getProjectData(activeProjectId, self.request),
                                     )
@@ -153,7 +154,7 @@ class readProjectEnumerators_view(apiView):
     def processView(self):
 
         if self.request.method == "GET":
-            obligatory = [u"project_cod", u"user_owner"]
+            obligatory = ["project_cod", "user_owner"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -183,7 +184,10 @@ class readProjectEnumerators_view(apiView):
                     response = Response(
                         status=200,
                         body=json.dumps(
-                            getProjectEnumerators(activeProjectId, self.request,)
+                            getProjectEnumerators(
+                                activeProjectId,
+                                self.request,
+                            )
                         ),
                     )
                     return response
@@ -204,7 +208,7 @@ class readPossibleProjectEnumerators_view(apiView):
     def processView(self):
 
         if self.request.method == "GET":
-            obligatory = [u"project_cod", u"user_owner"]
+            obligatory = ["project_cod", "user_owner"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -246,7 +250,10 @@ class readPossibleProjectEnumerators_view(apiView):
                     response = Response(
                         status=200,
                         body=json.dumps(
-                            getUsableEnumerators(activeProjectId, self.request,)
+                            getUsableEnumerators(
+                                activeProjectId,
+                                self.request,
+                            )
                         ),
                     )
                     return response
@@ -267,7 +274,7 @@ class deleteProjectEnumerator_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"user_owner", u"enum_id", u"enum_user_name"]
+            obligatory = ["project_cod", "user_owner", "enum_id", "enum_user_name"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -318,13 +325,17 @@ class deleteProjectEnumerator_view(apiView):
                             self.request,
                         ):
                             deleted, message = removeEnumeratorFromProject(
-                                activeProjectId, dataworking["enum_id"], self.request,
+                                activeProjectId,
+                                dataworking["enum_id"],
+                                self.request,
                             )
 
                             if deleted:
                                 # EDITED FOR CREATE THE REPORT
                                 stopTasksByProcess(
-                                    self.request, activeProjectId, "create_fieldagents",
+                                    self.request,
+                                    activeProjectId,
+                                    "create_fieldagents",
                                 )
                                 locale = self.request.locale_name
                                 create_fieldagents_report(
@@ -334,7 +345,8 @@ class deleteProjectEnumerator_view(apiView):
                                     dataworking["project_cod"],
                                     activeProjectId,
                                     getProjectEnumerators(
-                                        activeProjectId, self.request,
+                                        activeProjectId,
+                                        self.request,
                                     ),
                                     getProjectData(activeProjectId, self.request),
                                 )
@@ -367,7 +379,8 @@ class deleteProjectEnumerator_view(apiView):
 
                 else:
                     response = Response(
-                        status=401, body=self._("There is no project with that code."),
+                        status=401,
+                        body=self._("There is no project with that code."),
                     )
                     return response
             else:

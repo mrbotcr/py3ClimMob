@@ -762,7 +762,9 @@ def generateODKFile(
 
                         if question.question_tied == 1:
                             excelFile.addOption(
-                                "char_" + question.question_code, str(98), "Tied",
+                                "char_" + question.question_code,
+                                str(98),
+                                "Tied",
                             )
 
                         if question.question_notobserved == 1:

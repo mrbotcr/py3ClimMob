@@ -4,7 +4,12 @@ from climmob.products.randomization.celerytasks import createRandomization
 
 # This function has been declated in climmob.plugins.interfaces.IPackage#after_create_packages
 def create_randomization(
-    request, locale, userOwner, projectId, projectCod, settings,
+    request,
+    locale,
+    userOwner,
+    projectId,
+    projectCod,
+    settings,
 ):
     # We create the plugin directory if it does not exists and return it
     # The path user.repository in development.ini/user/project/products/product and

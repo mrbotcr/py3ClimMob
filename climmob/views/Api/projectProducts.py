@@ -16,7 +16,7 @@ class readProducts_view(apiView):
                 return o.__str__()
 
         if self.request.method == "GET":
-            obligatory = [u"project_cod", u"user_owner"]
+            obligatory = ["project_cod", "user_owner"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -81,10 +81,10 @@ class downloadApi_view(apiView):
 
         if self.request.method == "GET":
             obligatory = [
-                u"project_cod",
-                u"user_owner",
-                u"celery_taskid",
-                u"product_id",
+                "project_cod",
+                "user_owner",
+                "celery_taskid",
+                "product_id",
             ]
             try:
                 dataworking = json.loads(self.body)

@@ -275,7 +275,12 @@ def loadRoutes(config):
         {"name": "home", "path": "/", "view": home_view, "renderer": "landing.jinja2"}
     )
     routes.append(
-        {"name": "health", "path": "/health", "view": HealthView, "renderer": "json",}
+        {
+            "name": "health",
+            "path": "/health",
+            "view": HealthView,
+            "renderer": "json",
+        }
     )
     routes.append(
         {
@@ -1467,7 +1472,10 @@ def loadRoutes(config):
 
     routes.append(
         addRoute(
-            "readregistrydata", "/api/readRegistryData", readRegistryData_view, None,
+            "readregistrydata",
+            "/api/readRegistryData",
+            readRegistryData_view,
+            None,
         )
     )
 

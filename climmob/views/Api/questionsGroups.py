@@ -275,7 +275,10 @@ class readGroupsOfQuestions_view(apiView):
                     }
                 )
 
-            response = Response(status=200, body=json.dumps(listOfGroups),)
+            response = Response(
+                status=200,
+                body=json.dumps(listOfGroups),
+            )
             return response
         else:
             response = Response(status=401, body=self._("Only accepts GET method."))

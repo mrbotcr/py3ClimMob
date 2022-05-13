@@ -71,8 +71,8 @@ class SingletonPlugin(_pca_SingletonPlugin):
 
 
 def get_plugin(plugin):
-    """ Get an instance of a active plugin by name.  This is helpful for
-    testing. """
+    """Get an instance of a active plugin by name.  This is helpful for
+    testing."""
     if plugin in _PLUGINS_SERVICE:
         return _PLUGINS_SERVICE[plugin]
 

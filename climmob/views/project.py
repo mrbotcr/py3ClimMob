@@ -217,7 +217,10 @@ def createProjectFunction(dataworking, error_summary, self):
 def functionCreateClone(self, projectId, newProjectId, structureToBeCloned):
 
     if "fieldagents" in structureToBeCloned:
-        enumerators = getProjectEnumerators(projectId, self.request,)
+        enumerators = getProjectEnumerators(
+            projectId,
+            self.request,
+        )
         for participant in enumerators:
             for fieldAgent in enumerators[participant]:
                 addEnumeratorToProject(
@@ -228,17 +231,24 @@ def functionCreateClone(self, projectId, newProjectId, structureToBeCloned):
         "technologies" in structureToBeCloned
         or "technologyoptions" in structureToBeCloned
     ):
-        techInfo = searchTechnologiesInProject(projectId, self.request,)
+        techInfo = searchTechnologiesInProject(
+            projectId,
+            self.request,
+        )
         for tech in techInfo:
             added, message = addTechnologyProject(
-                newProjectId, tech["tech_id"], self.request,
+                newProjectId,
+                tech["tech_id"],
+                self.request,
             )
 
             if added:
                 if "technologyoptions" in structureToBeCloned:
 
                     allAlias = AliasSearchTechnologyInProject(
-                        tech["tech_id"], projectId, self.request,
+                        tech["tech_id"],
+                        projectId,
+                        self.request,
                     )
                     for alias in allAlias:
                         data = {}
@@ -248,7 +258,9 @@ def functionCreateClone(self, projectId, newProjectId, structureToBeCloned):
                         add, message = AddAliasTechnology(data, self.request)
 
                     allAliasExtra = AliasExtraSearchTechnologyInProject(
-                        tech["tech_id"], projectId, self.request,
+                        tech["tech_id"],
+                        projectId,
+                        self.request,
                     )
                     for alias in allAliasExtra:
                         data = {}
@@ -258,21 +270,29 @@ def functionCreateClone(self, projectId, newProjectId, structureToBeCloned):
                         add, message = addTechAliasExtra(data, self.request)
 
     if "registry" in structureToBeCloned:
-        groupsInRegistry = getAllRegistryGroups(projectId, self.request,)
+        groupsInRegistry = getAllRegistryGroups(
+            projectId,
+            self.request,
+        )
         for group in groupsInRegistry:
             group["project_id"] = newProjectId
             addgroup, message = addRegistryGroup(group, self)
 
             if addgroup:
                 questionsInRegistry = getQuestionsByGroupInRegistry(
-                    projectId, group["section_id"], self.request,
+                    projectId,
+                    group["section_id"],
+                    self.request,
                 )
                 for question in questionsInRegistry:
                     question["project_id"] = newProjectId
                     question["section_project_id"] = projectId
                     addq, message = addRegistryQuestionToGroup(question, self.request)
 
-    assessments = getProjectAssessments(projectId, self.request,)
+    assessments = getProjectAssessments(
+        projectId,
+        self.request,
+    )
     for assessment in assessments:
         if assessment["ass_cod"] in structureToBeCloned:
             newAssessment = {}
@@ -306,9 +326,10 @@ def functionCreateClone(self, projectId, newProjectId, structureToBeCloned):
                             question["ass_cod"] = newAssessment["ass_cod"]
                             question["section_project_id"] = newProjectId
                             question["section_assessment"] = newAssessment["ass_cod"]
-                            (addq, message,) = addAssessmentQuestionToGroup(
-                                question, self.request
-                            )
+                            (
+                                addq,
+                                message,
+                            ) = addAssessmentQuestionToGroup(question, self.request)
 
     return ""
 
@@ -408,7 +429,9 @@ class modifyProject_view(privateView):
                                     listOfElementToInclude.append(assess["ass_cod"])
 
                                 newProjectId = getTheProjectIdForOwner(
-                                    self.user.login, data["project_cod"], self.request,
+                                    self.user.login,
+                                    data["project_cod"],
+                                    self.request,
                                 )
 
                                 functionCreateClone(

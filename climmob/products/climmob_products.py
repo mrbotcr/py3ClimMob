@@ -79,7 +79,14 @@ def registerProductInstance(
     newTask=True,
 ):
     p.registerProductInstance(
-        projectId, product, output, mimeType, processName, instanceID, request, newTask,
+        projectId,
+        product,
+        output,
+        mimeType,
+        processName,
+        instanceID,
+        request,
+        newTask,
     )
 
 
@@ -165,7 +172,9 @@ def register_products(config):
     addMetadataToProduct(infosheetsProduct, "author", "Brandon Madriz")
     addMetadataToProduct(infosheetsProduct, "version", "1.0")
     addMetadataToProduct(
-        infosheetsProduct, "Licence", "Copyright 2021, MrBot Software Solutions",
+        infosheetsProduct,
+        "Licence",
+        "Copyright 2021, MrBot Software Solutions",
     )
     products.append(infosheetsProduct)
 
@@ -266,7 +275,9 @@ def register_products(config):
     addMetadataToProduct(multimediadownloads, "author", "Brandon Madriz")
     addMetadataToProduct(multimediadownloads, "version", "1.0")
     addMetadataToProduct(
-        multimediadownloads, "Licence", "Copyright 2021, MrBot Software Solutions",
+        multimediadownloads,
+        "Licence",
+        "Copyright 2021, MrBot Software Solutions",
     )
     products.append(multimediadownloads)
 
@@ -276,7 +287,9 @@ def register_products(config):
     addMetadataToProduct(randomization, "author", "Brandon Madriz")
     addMetadataToProduct(randomization, "version", "1.0")
     addMetadataToProduct(
-        randomization, "Licence", "Copyright 2021, MrBot Software Solutions",
+        randomization,
+        "Licence",
+        "Copyright 2021, MrBot Software Solutions",
     )
     products.append(randomization)
 
@@ -288,7 +301,9 @@ def register_products(config):
     addMetadataToProduct(uploadData, "author", "Brandon Madriz")
     addMetadataToProduct(uploadData, "version", "1.0")
     addMetadataToProduct(
-        uploadData, "Licence", "Copyright 2021, MrBot Software Solutions",
+        uploadData,
+        "Licence",
+        "Copyright 2021, MrBot Software Solutions",
     )
     products.append(uploadData)
 
@@ -300,7 +315,9 @@ def register_products(config):
     addMetadataToProduct(packagesWithTechnologies, "author", "Brandon Madriz")
     addMetadataToProduct(packagesWithTechnologies, "version", "1.0")
     addMetadataToProduct(
-        packagesWithTechnologies, "Licence", "Copyright 2021, MrBot Software Solutions",
+        packagesWithTechnologies,
+        "Licence",
+        "Copyright 2021, MrBot Software Solutions",
     )
     products.append(packagesWithTechnologies)
 
@@ -309,7 +326,9 @@ def register_products(config):
     addMetadataToProduct(dataxlsx, "author", "Brandon Madriz")
     addMetadataToProduct(dataxlsx, "version", "1.0")
     addMetadataToProduct(
-        dataxlsx, "Licence", "Copyright 2022, MrBot Software Solutions",
+        dataxlsx,
+        "Licence",
+        "Copyright 2022, MrBot Software Solutions",
     )
     products.append(dataxlsx)
 

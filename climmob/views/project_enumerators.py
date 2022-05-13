@@ -139,7 +139,9 @@ class removeProjectEnumerators_view(privateView):
                     return {"status": 400, "error": message}
                 else:
                     stopTasksByProcess(
-                        self.request, activeProjectId, processName="create_fieldagents",
+                        self.request,
+                        activeProjectId,
+                        processName="create_fieldagents",
                     )
                     locale = self.request.locale_name
                     create_fieldagents_report(

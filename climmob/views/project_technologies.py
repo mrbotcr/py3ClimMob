@@ -84,7 +84,9 @@ class projectTecnologies_view(privateView):
                             attr = element.split("_")
                             if attr[2] == "new":
                                 addTechnologyProject(
-                                    activeProjectId, attr[1], self.request,
+                                    activeProjectId,
+                                    attr[1],
+                                    self.request,
                                 )
                     if postdata["txt_technologies_excluded"] != "":
 
@@ -94,7 +96,9 @@ class projectTecnologies_view(privateView):
                             attr = element.split("_")
                             if attr[2] == "exists":
                                 deleteTechnologyProject(
-                                    activeProjectId, attr[1], self.request,
+                                    activeProjectId,
+                                    attr[1],
+                                    self.request,
                                 )
 
                 if "btn_show_technology_alias" in self.request.POST:
@@ -122,7 +126,9 @@ class projectTecnologies_view(privateView):
                     dataworking["user_name"] = self.user.login
                     if not isTechnologyAssigned(dataworking, self.request):
                         added, message = addTechnologyProject(
-                            activeProjectId, dataworking["tech_id"], self.request,
+                            activeProjectId,
+                            dataworking["tech_id"],
+                            self.request,
                         )
                     self.request.matchdict["tech_id"] = postdata["tech_id"]
                     alias = prjTechAliases_view.processView(self)
@@ -136,7 +142,9 @@ class projectTecnologies_view(privateView):
                     dataworking["user_name"] = self.user.login
                     if not isTechnologyAssigned(dataworking, self.request):
                         added, message = addTechnologyProject(
-                            activeProjectId, dataworking["tech_id"], self.request,
+                            activeProjectId,
+                            dataworking["tech_id"],
+                            self.request,
                         )
 
                     self.request.matchdict["tech_id"] = postdata["tech_id"]
@@ -222,7 +230,10 @@ class prjTechAliases_view(privateView):
                         for element in part:
                             attr = element.split("_")
                             delete, message = deleteAliasTechnology(
-                                activeProjectId, technologyid, attr[1], self.request,
+                                activeProjectId,
+                                technologyid,
+                                attr[1],
+                                self.request,
                             )
                             if not delete:
                                 error_summary = {"dberror": message}

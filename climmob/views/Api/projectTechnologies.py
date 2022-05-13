@@ -30,7 +30,7 @@ class addProjectTechnology_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"user_owner", u"tech_id", u"tech_user_name"]
+            obligatory = ["project_cod", "user_owner", "tech_id", "tech_user_name"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -146,7 +146,7 @@ class readProjectTechnologies_view(apiView):
     def processView(self):
 
         if self.request.method == "GET":
-            obligatory = [u"project_cod", u"user_owner"]
+            obligatory = ["project_cod", "user_owner"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -176,7 +176,10 @@ class readProjectTechnologies_view(apiView):
                     response = Response(
                         status=200,
                         body=json.dumps(
-                            searchTechnologiesInProject(activeProjectId, self.request,)
+                            searchTechnologiesInProject(
+                                activeProjectId,
+                                self.request,
+                            )
                         ),
                     )
                     return response
@@ -197,7 +200,7 @@ class readPossibleProjectTechnologies_view(apiView):
     def processView(self):
 
         if self.request.method == "GET":
-            obligatory = [u"project_cod", u"user_owner"]
+            obligatory = ["project_cod", "user_owner"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -239,7 +242,10 @@ class readPossibleProjectTechnologies_view(apiView):
                     response = Response(
                         status=200,
                         body=json.dumps(
-                            searchTechnologies(activeProjectId, self.request,)
+                            searchTechnologies(
+                                activeProjectId,
+                                self.request,
+                            )
                         ),
                     )
                     return response
@@ -260,7 +266,7 @@ class deleteProjectTechnology_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"user_owner", u"tech_id", u"tech_user_name"]
+            obligatory = ["project_cod", "user_owner", "tech_id", "tech_user_name"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -350,7 +356,8 @@ class deleteProjectTechnology_view(apiView):
                         return response
                 else:
                     response = Response(
-                        status=401, body=self._("There is no project with that code."),
+                        status=401,
+                        body=self._("There is no project with that code."),
                     )
                     return response
             else:
@@ -368,11 +375,11 @@ class addProjectTechnologyAlias_view(apiView):
     def processView(self):
         if self.request.method == "POST":
             obligatory = [
-                u"project_cod",
-                u"user_owner",
-                u"tech_id",
-                u"tech_user_name",
-                u"alias_id",
+                "project_cod",
+                "user_owner",
+                "tech_id",
+                "tech_user_name",
+                "alias_id",
             ]
             dataworking = json.loads(self.body)
 
@@ -483,7 +490,8 @@ class addProjectTechnologyAlias_view(apiView):
                         return response
                 else:
                     response = Response(
-                        status=401, body=self._("There is no project with that code."),
+                        status=401,
+                        body=self._("There is no project with that code."),
                     )
                     return response
             else:
@@ -498,11 +506,11 @@ class addProjectTechnologyAliasExtra_view(apiView):
     def processView(self):
         if self.request.method == "POST":
             obligatory = [
-                u"project_cod",
-                u"user_owner",
-                u"tech_id",
-                u"tech_user_name",
-                u"alias_name",
+                "project_cod",
+                "user_owner",
+                "tech_id",
+                "tech_user_name",
+                "alias_name",
             ]
             dataworking = json.loads(self.body)
 
@@ -602,7 +610,8 @@ class addProjectTechnologyAliasExtra_view(apiView):
                         return response
                 else:
                     response = Response(
-                        status=401, body=self._("There is no project with that code."),
+                        status=401,
+                        body=self._("There is no project with that code."),
                     )
                     return response
             else:
@@ -617,7 +626,7 @@ class readProjectTechnologiesAlias_view(apiView):
     def processView(self):
 
         if self.request.method == "GET":
-            obligatory = [u"project_cod", u"user_owner", u"tech_id", u"tech_user_name"]
+            obligatory = ["project_cod", "user_owner", "tech_id", "tech_user_name"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -679,7 +688,8 @@ class readProjectTechnologiesAlias_view(apiView):
                         return response
                 else:
                     response = Response(
-                        status=401, body=self._("There is no project with that code."),
+                        status=401,
+                        body=self._("There is no project with that code."),
                     )
                     return response
             else:
@@ -694,7 +704,7 @@ class readProjectTechnologiesAliasExtra_view(apiView):
     def processView(self):
 
         if self.request.method == "GET":
-            obligatory = [u"project_cod", u"user_owner", u"tech_id", u"tech_user_name"]
+            obligatory = ["project_cod", "user_owner", "tech_id", "tech_user_name"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -756,7 +766,8 @@ class readProjectTechnologiesAliasExtra_view(apiView):
                         return response
                 else:
                     response = Response(
-                        status=401, body=self._("There is no project with that code."),
+                        status=401,
+                        body=self._("There is no project with that code."),
                     )
                     return response
             else:
@@ -771,7 +782,7 @@ class readPossibleProjectTechnologiesAlias_view(apiView):
     def processView(self):
 
         if self.request.method == "GET":
-            obligatory = [u"project_cod", u"user_owner", u"tech_id", u"tech_user_name"]
+            obligatory = ["project_cod", "user_owner", "tech_id", "tech_user_name"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -845,7 +856,8 @@ class readPossibleProjectTechnologiesAlias_view(apiView):
                         return response
                 else:
                     response = Response(
-                        status=401, body=self._("There is no project with that code."),
+                        status=401,
+                        body=self._("There is no project with that code."),
                     )
                     return response
             else:
@@ -861,11 +873,11 @@ class deleteProjectTechnologyAlias_view(apiView):
 
         if self.request.method == "POST":
             obligatory = [
-                u"project_cod",
-                u"user_owner",
-                u"tech_id",
-                u"tech_user_name",
-                u"alias_id",
+                "project_cod",
+                "user_owner",
+                "tech_id",
+                "tech_user_name",
+                "alias_id",
             ]
             dataworking = json.loads(self.body)
 
@@ -957,7 +969,8 @@ class deleteProjectTechnologyAlias_view(apiView):
                         return response
                 else:
                     response = Response(
-                        status=401, body=self._("There is no project with that code."),
+                        status=401,
+                        body=self._("There is no project with that code."),
                     )
                     return response
             else:

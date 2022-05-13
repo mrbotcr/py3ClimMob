@@ -23,13 +23,13 @@ def initialize(pathToTemplates):
 
 
 def render_snippet(template_name, **kw):
-    """ This function will render the snippet.
+    """This function will render the snippet.
 
-    This code is based on CKAN 
+    This code is based on CKAN
     :Copyright (C) 2007 Open Knowledge Foundation
     :license: AGPL V3, see LICENSE for more details.
 
-     """
+    """
     request = get_current_request()
 
     template = jinjaEnv.get_template(template_name)
@@ -135,15 +135,15 @@ class BaseExtension(ext.Extension):
 
 
 class ResourceExtension(BaseExtension):
-    """ 
+    """
 
     This allows the inclusion of resources from templates
     Useful in combination with tag {% extend_this %}
-    to include plugin resources in extended templates 
+    to include plugin resources in extended templates
 
     {% resource '<resourceID>' %}
 
-    This code is based on CKAN 
+    This code is based on CKAN
     :Copyright (C) 2007 Open Knowledge Foundation
     :license: AGPL V3, see LICENSE for more details.
 
@@ -190,14 +190,14 @@ def render_resource(request, library_name, resource_type, resource_id):
 
 
 class SnippetExtension(BaseExtension):
-    """ 
+    """
 
     This tags inject small portions of reusable code i.e. snippets
     into a jinja2 template
 
     {% snippet <template_name> [, <keyword>=<value>].. %}
 
-    This code is based on CKAN 
+    This code is based on CKAN
     :Copyright (C) 2007 Open Knowledge Foundation
     :license: AGPL V3, see LICENSE for more details.
 
@@ -233,10 +233,10 @@ class CSSResourceExtension(BaseExtension):
 
 
 def regularise_html(html):
-    """ Take badly formatted html with strings 
+    """Take badly formatted html with strings
 
 
-    This code is based on CKAN 
+    This code is based on CKAN
     :Copyright (C) 2007 Open Knowledge Foundation
     :license: AGPL V3, see LICENSE for more details.
 

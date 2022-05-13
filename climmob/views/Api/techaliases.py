@@ -18,7 +18,7 @@ class createAlias_view(apiView):
 
         if self.request.method == "POST":
 
-            obligatory = [u"tech_id", u"alias_name"]
+            obligatory = ["tech_id", "alias_name"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -77,7 +77,7 @@ class createAlias_view(apiView):
 class readAlias_view(apiView):
     def processView(self):
         if self.request.method == "GET":
-            obligatory = [u"tech_id"]
+            obligatory = ["tech_id"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -135,7 +135,7 @@ class updateAlias_view(apiView):
     def processView(self):
         if self.request.method == "POST":
 
-            obligatory = [u"tech_id", u"alias_id", u"alias_name"]
+            obligatory = ["tech_id", "alias_id", "alias_name"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -217,7 +217,7 @@ class deleteAliasView_api(apiView):
 
         if self.request.method == "POST":
 
-            obligatory = [u"tech_id", u"alias_id"]
+            obligatory = ["tech_id", "alias_id"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):

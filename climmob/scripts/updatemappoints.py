@@ -168,7 +168,8 @@ def calculationOfFinalCoordinates(listOfLatitude, listOfLongitude):
 
 
 def processTheProject(
-    project, infoInTheProject,
+    project,
+    infoInTheProject,
 ):
     listOfLatitude = []
     listOfLongitude = []

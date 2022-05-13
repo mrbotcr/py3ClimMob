@@ -39,7 +39,7 @@ class readProjectCombinations_view(apiView):
     def processView(self):
 
         if self.request.method == "GET":
-            obligatory = [u"project_cod", u"user_owner"]
+            obligatory = ["project_cod", "user_owner"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -94,7 +94,8 @@ class readProjectCombinations_view(apiView):
                                 self.request,
                             )
                             techs, ncombs, combs, = getCombinations(
-                                activeProjectId, self.request,
+                                activeProjectId,
+                                self.request,
                             )
 
                             pos = 1
@@ -181,7 +182,7 @@ class setUsableCombinations_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"user_owner", u"ncomb", u"status"]
+            obligatory = ["project_cod", "user_owner", "ncomb", "status"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -233,7 +234,8 @@ class setUsableCombinations_view(apiView):
                                 and progress["registry"] == True
                             ):
                                 if not projectCreateCombinations(
-                                    activeProjectId, self.request,
+                                    activeProjectId,
+                                    self.request,
                                 ):
                                     exits, status = getCombinationStatus(
                                         activeProjectId,
@@ -331,7 +333,7 @@ class setAvailabilityCombination_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"user_owner", u"ncomb", u"availability"]
+            obligatory = ["project_cod", "user_owner", "ncomb", "availability"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -383,7 +385,8 @@ class setAvailabilityCombination_view(apiView):
                                 and progress["registry"] == True
                             ):
                                 if not projectCreateCombinations(
-                                    activeProjectId, self.request,
+                                    activeProjectId,
+                                    self.request,
                                 ):
                                     exits, status = getCombinationStatus(
                                         activeProjectId,
@@ -471,7 +474,7 @@ class createPackages_view(apiView):
                 return o.__str__()
 
         if self.request.method == "GET":
-            obligatory = [u"project_cod", u"user_owner"]
+            obligatory = ["project_cod", "user_owner"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -531,7 +534,8 @@ class createPackages_view(apiView):
                             and progress["registry"] == True
                         ):
                             if not projectCreateCombinations(
-                                activeProjectId, self.request,
+                                activeProjectId,
+                                self.request,
                             ):
                                 prjData = getProjectData(activeProjectId, self.request)
                                 # Only create the packages if its needed
@@ -638,7 +642,7 @@ class createProjectRegistry_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"user_owner"]
+            obligatory = ["project_cod", "user_owner"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -690,10 +694,12 @@ class createProjectRegistry_view(apiView):
                                 and progress["registry"] == True
                             ):
                                 if not projectCreateCombinations(
-                                    activeProjectId, self.request,
+                                    activeProjectId,
+                                    self.request,
                                 ):
                                     if not projectCreatePackages(
-                                        activeProjectId, self.request,
+                                        activeProjectId,
+                                        self.request,
                                     ):
                                         projectDetails = getProjectData(
                                             activeProjectId, self.request
@@ -780,7 +786,7 @@ class cancelRegistryApi_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"user_owner"]
+            obligatory = ["project_cod", "user_owner"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -827,7 +833,8 @@ class cancelRegistryApi_view(apiView):
                                 self.request,
                             )
                             stopTasksByProcess(
-                                self.request, activeProjectId,
+                                self.request,
+                                activeProjectId,
                             )
 
                             response = Response(
@@ -865,7 +872,7 @@ class closeRegistryApi_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"user_owner"]
+            obligatory = ["project_cod", "user_owner"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -962,7 +969,7 @@ class readRegistryStructure_view(apiView):
     def processView(self):
 
         if self.request.method == "GET":
-            obligatory = [u"project_cod", u"user_owner"]
+            obligatory = ["project_cod", "user_owner"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -1039,7 +1046,7 @@ class pushJsonToRegistry_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"user_owner", u"json"]
+            obligatory = ["project_cod", "user_owner", "json"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -1078,7 +1085,10 @@ class pushJsonToRegistry_view(apiView):
                             return response
 
                         if not projectRegStatus(activeProjectId, self.request):
-                            if not isRegistryClose(activeProjectId, self.request,):
+                            if not isRegistryClose(
+                                activeProjectId,
+                                self.request,
+                            ):
                                 structure = generateStructureForInterfaceForms(
                                     dataworking["user_owner"],
                                     activeProjectId,
@@ -1124,8 +1134,8 @@ class pushJsonToRegistry_view(apiView):
 
 def ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId):
     if structure:
-        obligatoryQuestions = [u"clm_start", u"clm_end"]
-        possibleQuestions = [u"clm_start", u"clm_end"]
+        obligatoryQuestions = ["clm_start", "clm_end"]
+        possibleQuestions = ["clm_start", "clm_end"]
         searchQST162 = ""
         for section in structure:
             for question in section["section_questions"]:
@@ -1163,7 +1173,8 @@ def ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId):
 
                         if _json[searchQST162].isdigit():
                             if int(_json[searchQST162]) <= getProjectNumobs(
-                                activeProjectId, self.request,
+                                activeProjectId,
+                                self.request,
                             ):
                                 _json["clm_deviceimei"] = "API_" + str(self.apiKey)
 
@@ -1214,7 +1225,8 @@ def ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId):
                                     return response
 
                                 response = Response(
-                                    status=200, body=self._("Data registered."),
+                                    status=200,
+                                    body=self._("Data registered."),
                                 )
                                 return response
                             else:
@@ -1268,7 +1280,8 @@ def ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId):
             return response
     else:
         response = Response(
-            status=401, body=self._("This project do not have structure."),
+            status=401,
+            body=self._("This project do not have structure."),
         )
         return response
 
@@ -1277,7 +1290,7 @@ class readRegistryData_view(apiView):
     def processView(self):
 
         if self.request.method == "GET":
-            obligatory = [u"project_cod", u"user_owner"]
+            obligatory = ["project_cod", "user_owner"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -1328,7 +1341,10 @@ class readRegistryData_view(apiView):
                                 "data": info["data"],
                             }
 
-                            response = Response(status=200, body=json.dumps(newJson),)
+                            response = Response(
+                                status=200,
+                                body=json.dumps(newJson),
+                            )
                             return response
                         else:
                             response = Response(

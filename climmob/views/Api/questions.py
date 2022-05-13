@@ -28,28 +28,28 @@ class createQuestion_view(apiView):
         if self.request.method == "POST":
 
             possibles = [
-                u"question_code",
-                u"question_name",
-                u"question_desc",
-                u"question_dtype",
-                u"question_notes",
-                u"qstgroups_id",
-                u"question_unit",
-                u"question_alwaysinreg",
-                u"question_alwaysinasse",
-                u"question_requiredvalue",
-                u"question_tied",
-                u"question_notobserved",
-                u"question_quantitative",
+                "question_code",
+                "question_name",
+                "question_desc",
+                "question_dtype",
+                "question_notes",
+                "qstgroups_id",
+                "question_unit",
+                "question_alwaysinreg",
+                "question_alwaysinasse",
+                "question_requiredvalue",
+                "question_tied",
+                "question_notobserved",
+                "question_quantitative",
                 "user_name",
             ]
             obligatory = [
-                u"question_code",
-                u"question_name",
-                u"question_desc",
-                u"question_dtype",
-                u"qstgroups_id",
-                u"question_requiredvalue",
+                "question_code",
+                "question_name",
+                "question_desc",
+                "question_dtype",
+                "qstgroups_id",
+                "question_requiredvalue",
             ]
             zeroOrTwo = [
                 "question_alwaysinreg",
@@ -294,22 +294,22 @@ class updateQuestion_view(apiView):
         if self.request.method == "POST":
 
             possibles = [
-                u"question_id",
-                u"question_name",
-                u"question_desc",
-                u"question_dtype",
-                u"question_notes",
-                u"question_unit",
-                u"question_alwaysinreg",
-                u"question_alwaysinasse",
-                u"question_requiredvalue",
-                u"question_tied",
-                u"question_notobserved",
-                u"question_quantitative",
-                u"qstgroups_id",
-                u"user_name",
+                "question_id",
+                "question_name",
+                "question_desc",
+                "question_dtype",
+                "question_notes",
+                "question_unit",
+                "question_alwaysinreg",
+                "question_alwaysinasse",
+                "question_requiredvalue",
+                "question_tied",
+                "question_notobserved",
+                "question_quantitative",
+                "qstgroups_id",
+                "user_name",
             ]
-            obligatory = [u"question_id"]
+            obligatory = ["question_id"]
             zeroOrTwo = [
                 "question_alwaysinreg",
                 "question_alwaysinasse",
@@ -522,7 +522,7 @@ class deleteQuestion_viewApi(apiView):
 
         if self.request.method == "POST":
 
-            obligatory = [u"question_id"]
+            obligatory = ["question_id"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -578,7 +578,7 @@ class readQuestionValues_view(apiView):
     def processView(self):
 
         if self.request.method == "GET":
-            obligatory = [u"question_id", "user_name"]
+            obligatory = ["question_id", "user_name"]
 
             try:
                 dataworking = json.loads(self.body)
@@ -634,14 +634,14 @@ class addQuestionValue_viewApi(apiView):
 
         if self.request.method == "POST":
             possibles = [
-                u"question_id",
-                u"value_code",
-                u"value_desc",
-                u"value_isother",
-                u"value_isna",
+                "question_id",
+                "value_code",
+                "value_desc",
+                "value_isother",
+                "value_isna",
                 "user_name",
             ]
-            obligatory = [u"question_id", u"value_code", u"value_desc", "user_name"]
+            obligatory = ["question_id", "value_code", "value_desc", "user_name"]
 
             dataworking = json.loads(self.body)
             dataworking["user_name"] = self.user.login
@@ -824,12 +824,12 @@ class updateQuestionValue_view(apiView):
 
         if self.request.method == "POST":
             possibles = [
-                u"question_id",
-                u"value_code",
-                u"value_desc",
+                "question_id",
+                "value_code",
+                "value_desc",
                 "user_name",
             ]
-            obligatory = [u"question_id", u"value_code", u"value_desc", "user_name"]
+            obligatory = ["question_id", "value_code", "value_desc", "user_name"]
 
             dataworking = json.loads(self.body)
             dataworking["user_name"] = self.user.login
@@ -963,7 +963,7 @@ class deleteQuestionValue_viewApi(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u"question_id", u"value_code", "user_name"]
+            obligatory = ["question_id", "value_code", "user_name"]
 
             dataworking = json.loads(self.body)
             dataworking["user_name"] = self.user.login
@@ -1062,17 +1062,17 @@ class updateQuestionCharacteristics_view(apiView):
 
         if self.request.method == "POST":
             possibles = [
-                u"question_id",
-                u"question_twoitems",
-                u"question_posstm",
-                u"question_negstm",
-                u"question_moreitems",
+                "question_id",
+                "question_twoitems",
+                "question_posstm",
+                "question_negstm",
+                "question_moreitems",
                 "user_name",
             ]
             obligatory = [
-                u"question_id",
-                u"question_posstm",
-                u"question_negstm",
+                "question_id",
+                "question_posstm",
+                "question_negstm",
                 "user_name",
             ]
 
@@ -1177,8 +1177,8 @@ class updateQuestionPerformance_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            possibles = [u"question_id", u"question_perfstmt", "user_name"]
-            obligatory = [u"question_id", u"question_perfstmt", "user_name"]
+            possibles = ["question_id", "question_perfstmt", "user_name"]
+            obligatory = ["question_id", "question_perfstmt", "user_name"]
 
             dataworking = json.loads(self.body)
             dataworking["user_name"] = self.user.login

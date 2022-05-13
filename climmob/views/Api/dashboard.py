@@ -12,7 +12,7 @@ class readProjectDetails_view(apiView):
                 return o.__str__()
 
         if self.request.method == "GET":
-            obligatory = [u"project_cod"]
+            obligatory = ["project_cod"]
             try:
                 dataworking = json.loads(self.body)
             except:

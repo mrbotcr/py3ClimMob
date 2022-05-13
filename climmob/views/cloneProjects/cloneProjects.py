@@ -197,7 +197,9 @@ def getAllInformationForProject(self, userOwner, projectId):
     techInfo = searchTechnologiesInProject(projectId, self.request)
     for tech in techInfo:
         tech["alias"] = AliasSearchTechnologyInProject(
-            tech["tech_id"], projectId, self.request,
+            tech["tech_id"],
+            projectId,
+            self.request,
         )
         tech["aliasExtra"] = AliasExtraSearchTechnologyInProject(
             tech["tech_id"], projectId, self.request

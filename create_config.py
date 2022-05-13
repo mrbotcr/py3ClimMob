@@ -8,7 +8,7 @@ from jinja2 import Environment, FileSystemLoader
 
 
 def random_password(size):
-    """Generate a random password """
+    """Generate a random password"""
     random_source = string.ascii_letters + string.digits + string.punctuation
     password = random.choice(string.ascii_lowercase)
     password += random.choice(string.ascii_uppercase)
@@ -32,13 +32,20 @@ def main():
         help="IP of the proxy server calling climmob",
     )
     parser.add_argument(
-        "--pid_file", required=True, help="File that will store the climmob process ID",
+        "--pid_file",
+        required=True,
+        help="File that will store the climmob process ID",
     )
     parser.add_argument(
-        "--error_log_file", required=True, help="File that will store the climmob logs",
+        "--error_log_file",
+        required=True,
+        help="File that will store the climmob logs",
     )
     parser.add_argument(
-        "-d", "--daemon", action="store_true", help="Start as climmob in detached mode",
+        "-d",
+        "--daemon",
+        action="store_true",
+        help="Start as climmob in detached mode",
     )
     parser.add_argument(
         "-c",

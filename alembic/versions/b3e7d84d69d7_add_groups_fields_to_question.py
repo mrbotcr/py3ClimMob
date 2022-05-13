@@ -30,7 +30,7 @@ def upgrade():
         "qstgroups",
         ["qstgroups_user", "qstgroups_id"],
         ["user_name", "qstgroups_id"],
-        ondelete=u"CASCADE",
+        ondelete="CASCADE",
     )
     # ### end Alembic commands ###
 

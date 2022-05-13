@@ -110,11 +110,11 @@ def get_tm_session(session_factory, transaction_manager):
 
 def initializeClimmobDB(config):
     """
-        Initialize the model for a Pyramid app.
+    Initialize the model for a Pyramid app.
 
-        Activate this setup using ``config.include('climmob.models')``.
+    Activate this setup using ``config.include('climmob.models')``.
 
-        """
+    """
     settings = config.get_settings()
 
     # use pyramid_tm to hook the transaction lifecycle to the request

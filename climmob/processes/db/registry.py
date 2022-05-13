@@ -329,7 +329,9 @@ def saveRegistryOrder(projectId, order, request):
                     request.dbsession.add(newQuestion)
         if item["type"] == "question":
             newQuestion = Registry(
-                project_id=projectId, question_id=item["id"], question_order=pos,
+                project_id=projectId,
+                question_id=item["id"],
+                question_order=pos,
             )
             request.dbsession.add(newQuestion)
     request.dbsession.flush()

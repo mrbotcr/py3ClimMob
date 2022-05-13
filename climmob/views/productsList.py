@@ -497,7 +497,10 @@ class downloadView(climmobPrivateView):
         product_id = self.request.matchdict["product_id"]
         activeProjectData = getActiveProject(self.user.login, self.request)
         dataworking = getProductData(
-            activeProjectData["project_id"], celery_taskid, product_id, self.request,
+            activeProjectData["project_id"],
+            celery_taskid,
+            product_id,
+            self.request,
         )
         product_id = dataworking["product_id"]
 

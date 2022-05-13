@@ -37,7 +37,7 @@ class readProjectAssessments_view(apiView):
     def processView(self):
 
         if self.request.method == "GET":
-            obligatory = [u"project_cod", u"user_owner"]
+            obligatory = ["project_cod", "user_owner"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -67,7 +67,10 @@ class readProjectAssessments_view(apiView):
                     response = Response(
                         status=200,
                         body=json.dumps(
-                            getProjectAssessments(activeProjectId, self.request,)
+                            getProjectAssessments(
+                                activeProjectId,
+                                self.request,
+                            )
                         ),
                     )
                     return response
@@ -88,11 +91,11 @@ class addNewAssessment_view(apiView):
     def processView(self):
         if self.request.method == "POST":
             obligatory = [
-                u"project_cod",
-                u"user_owner",
-                u"ass_desc",
-                u"ass_days",
-                u"ass_final",
+                "project_cod",
+                "user_owner",
+                "ass_desc",
+                "ass_days",
+                "ass_final",
             ]
             dataworking = json.loads(self.body)
 
@@ -172,11 +175,11 @@ class updateProjectAssessment_view(apiView):
     def processView(self):
         if self.request.method == "POST":
             obligatory = [
-                u"project_cod",
-                u"user_owner",
-                u"ass_cod",
-                u"ass_desc",
-                u"ass_days",
+                "project_cod",
+                "user_owner",
+                "ass_cod",
+                "ass_desc",
+                "ass_days",
             ]
             dataworking = json.loads(self.body)
 
@@ -217,7 +220,9 @@ class updateProjectAssessment_view(apiView):
 
                         if dataworking["ass_days"].isdigit():
                             if assessmentExists(
-                                activeProjectId, dataworking["ass_cod"], self.request,
+                                activeProjectId,
+                                dataworking["ass_cod"],
+                                self.request,
                             ):
                                 dataworking["project_id"] = activeProjectId
                                 mdf, msg = modifyProjectAssessment(
@@ -278,7 +283,7 @@ class updateProjectAssessment_view(apiView):
 class deleteProjectAssessment_view(apiView):
     def processView(self):
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"user_owner", u"ass_cod"]
+            obligatory = ["project_cod", "user_owner", "ass_cod"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -317,10 +322,14 @@ class deleteProjectAssessment_view(apiView):
                             return response
 
                         if assessmentExists(
-                            activeProjectId, dataworking["ass_cod"], self.request,
+                            activeProjectId,
+                            dataworking["ass_cod"],
+                            self.request,
                         ):
                             if projectAsessmentStatus(
-                                activeProjectId, dataworking["ass_cod"], self.request,
+                                activeProjectId,
+                                dataworking["ass_cod"],
+                                self.request,
                             ):
                                 delete, msg = deleteProjectAssessment(
                                     dataworking["user_owner"],
@@ -379,7 +388,7 @@ class deleteProjectAssessment_view(apiView):
 class readProjectAssessmentStructure_view(apiView):
     def processView(self):
         if self.request.method == "GET":
-            obligatory = [u"project_cod", u"user_owner", u"ass_cod"]
+            obligatory = ["project_cod", "user_owner", "ass_cod"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -421,7 +430,9 @@ class readProjectAssessmentStructure_view(apiView):
                         )
 
                         if assessmentExists(
-                            activeProjectId, dataworking["ass_cod"], self.request,
+                            activeProjectId,
+                            dataworking["ass_cod"],
+                            self.request,
                         ):
                             projectDetails = getProjectData(
                                 activeProjectId, self.request
@@ -507,11 +518,11 @@ class createAssessmentGroup_view(apiView):
     def processView(self):
         if self.request.method == "POST":
             obligatory = [
-                u"project_cod",
-                u"user_owner",
-                u"ass_cod",
-                u"section_name",
-                u"section_content",
+                "project_cod",
+                "user_owner",
+                "ass_cod",
+                "section_name",
+                "section_content",
             ]
             dataworking = json.loads(self.body)
 
@@ -552,10 +563,14 @@ class createAssessmentGroup_view(apiView):
                             return response
 
                         if assessmentExists(
-                            activeProjectId, dataworking["ass_cod"], self.request,
+                            activeProjectId,
+                            dataworking["ass_cod"],
+                            self.request,
                         ):
                             if projectAsessmentStatus(
-                                activeProjectId, dataworking["ass_cod"], self.request,
+                                activeProjectId,
+                                dataworking["ass_cod"],
+                                self.request,
                             ):
                                 haveTheBasicStructureAssessment(
                                     dataworking["user_owner"],
@@ -623,12 +638,12 @@ class updateAssessmentGroup_view(apiView):
     def processView(self):
         if self.request.method == "POST":
             obligatory = [
-                u"project_cod",
-                u"user_owner",
-                u"ass_cod",
-                u"group_cod",
-                u"section_name",
-                u"section_content",
+                "project_cod",
+                "user_owner",
+                "ass_cod",
+                "group_cod",
+                "section_name",
+                "section_content",
             ]
             dataworking = json.loads(self.body)
 
@@ -669,10 +684,14 @@ class updateAssessmentGroup_view(apiView):
                             return response
 
                         if assessmentExists(
-                            activeProjectId, dataworking["ass_cod"], self.request,
+                            activeProjectId,
+                            dataworking["ass_cod"],
+                            self.request,
                         ):
                             if projectAsessmentStatus(
-                                activeProjectId, dataworking["ass_cod"], self.request,
+                                activeProjectId,
+                                dataworking["ass_cod"],
+                                self.request,
                             ):
                                 dataworking["project_id"] = activeProjectId
                                 exitsGroup = exitsAssessmentGroup(dataworking, self)
@@ -746,7 +765,7 @@ class updateAssessmentGroup_view(apiView):
 class deleteAssessmentGroup_view(apiView):
     def processView(self):
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"user_owner", u"ass_cod", u"group_cod"]
+            obligatory = ["project_cod", "user_owner", "ass_cod", "group_cod"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -786,10 +805,14 @@ class deleteAssessmentGroup_view(apiView):
                             return response
 
                         if assessmentExists(
-                            activeProjectId, dataworking["ass_cod"], self.request,
+                            activeProjectId,
+                            dataworking["ass_cod"],
+                            self.request,
                         ):
                             if projectAsessmentStatus(
-                                activeProjectId, dataworking["ass_cod"], self.request,
+                                activeProjectId,
+                                dataworking["ass_cod"],
+                                self.request,
                             ):
                                 dataworking["project_id"] = activeProjectId
                                 exitsGroup = exitsAssessmentGroup(dataworking, self)
@@ -874,7 +897,7 @@ class deleteAssessmentGroup_view(apiView):
 class readPossibleQuestionForAssessmentGroup_view(apiView):
     def processView(self):
         if self.request.method == "GET":
-            obligatory = [u"project_cod", u"user_owner", u"ass_cod"]
+            obligatory = ["project_cod", "user_owner", "ass_cod"]
             try:
                 dataworking = json.loads(self.body)
             except:
@@ -923,10 +946,14 @@ class readPossibleQuestionForAssessmentGroup_view(apiView):
                             return response
 
                         if assessmentExists(
-                            activeProjectId, dataworking["ass_cod"], self.request,
+                            activeProjectId,
+                            dataworking["ass_cod"],
+                            self.request,
                         ):
                             if projectAsessmentStatus(
-                                activeProjectId, dataworking["ass_cod"], self.request,
+                                activeProjectId,
+                                dataworking["ass_cod"],
+                                self.request,
                             ):
 
                                 response = Response(
@@ -986,12 +1013,12 @@ class addQuestionToGroupAssessment_view(apiView):
     def processView(self):
         if self.request.method == "POST":
             obligatory = [
-                u"project_cod",
-                u"user_owner",
-                u"ass_cod",
-                u"group_cod",
-                u"question_id",
-                u"question_user_name",
+                "project_cod",
+                "user_owner",
+                "ass_cod",
+                "group_cod",
+                "question_id",
+                "question_user_name",
             ]
             dataworking = json.loads(self.body)
 
@@ -1037,7 +1064,9 @@ class addQuestionToGroupAssessment_view(apiView):
                         ):
 
                             if assessmentExists(
-                                activeProjectId, dataworking["ass_cod"], self.request,
+                                activeProjectId,
+                                dataworking["ass_cod"],
+                                self.request,
                             ):
                                 if projectAsessmentStatus(
                                     activeProjectId,
@@ -1153,12 +1182,12 @@ class deleteQuestionFromGroupAssessment_view(apiView):
     def processView(self):
         if self.request.method == "POST":
             obligatory = [
-                u"project_cod",
-                u"user_owner",
-                u"ass_cod",
-                u"group_cod",
-                u"question_id",
-                u"question_user_name",
+                "project_cod",
+                "user_owner",
+                "ass_cod",
+                "group_cod",
+                "question_id",
+                "question_user_name",
             ]
             dataworking = json.loads(self.body)
 
@@ -1199,10 +1228,14 @@ class deleteQuestionFromGroupAssessment_view(apiView):
                             return response
 
                         if assessmentExists(
-                            activeProjectId, dataworking["ass_cod"], self.request,
+                            activeProjectId,
+                            dataworking["ass_cod"],
+                            self.request,
                         ):
                             if projectAsessmentStatus(
-                                activeProjectId, dataworking["ass_cod"], self.request,
+                                activeProjectId,
+                                dataworking["ass_cod"],
+                                self.request,
                             ):
                                 dataworking["project_id"] = activeProjectId
                                 exitsGroup = exitsAssessmentGroup(dataworking, self)
@@ -1308,7 +1341,7 @@ class orderAssessmentQuestions_view(apiView):
     def processView(self):
 
         if self.request.method == "POST":
-            obligatory = [u"project_cod", u"user_owner", u"ass_cod", u"order"]
+            obligatory = ["project_cod", "user_owner", "ass_cod", "order"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -1347,10 +1380,14 @@ class orderAssessmentQuestions_view(apiView):
                             return response
 
                         if assessmentExists(
-                            activeProjectId, dataworking["ass_cod"], self.request,
+                            activeProjectId,
+                            dataworking["ass_cod"],
+                            self.request,
                         ):
                             if projectAsessmentStatus(
-                                activeProjectId, dataworking["ass_cod"], self.request,
+                                activeProjectId,
+                                dataworking["ass_cod"],
+                                self.request,
                             ):
                                 try:
                                     originalData = json.loads(dataworking["order"])
@@ -1381,8 +1418,10 @@ class orderAssessmentQuestions_view(apiView):
                                             dataworking, self
                                         )
                                         if sorted(groupsInProject) == sorted(groups):
-                                            questionsInProject = getAssessmentQuestionsApi(
-                                                dataworking, self
+                                            questionsInProject = (
+                                                getAssessmentQuestionsApi(
+                                                    dataworking, self
+                                                )
                                             )
                                             if sorted(questionsInProject) == sorted(
                                                 questions

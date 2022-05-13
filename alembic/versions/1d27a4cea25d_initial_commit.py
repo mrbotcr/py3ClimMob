@@ -69,16 +69,16 @@ def upgrade():
         sa.Column("user_cnty", sa.String(length=3), nullable=False),
         sa.Column("user_sector", sa.Integer(), nullable=False),
         sa.Column(
-            "user_active", sa.Integer(), server_default=sa.text(u"'1'"), nullable=True
+            "user_active", sa.Integer(), server_default=sa.text("'1'"), nullable=True
         ),
         sa.Column("user_joindate", sa.DateTime(), nullable=True),
         sa.Column("extra", sa.Text(), nullable=True),
         sa.ForeignKeyConstraint(
-            ["user_cnty"], [u"country.cnty_cod"], name=op.f("fk_user_user_cnty_country")
+            ["user_cnty"], ["country.cnty_cod"], name=op.f("fk_user_user_cnty_country")
         ),
         sa.ForeignKeyConstraint(
             ["user_sector"],
-            [u"sector.sector_cod"],
+            ["sector.sector_cod"],
             name=op.f("fk_user_user_sector_sector"),
         ),
         sa.PrimaryKeyConstraint("user_name", name=op.f("pk_user")),
@@ -95,7 +95,7 @@ def upgrade():
         sa.Column("log_type", sa.String(length=3), nullable=True),
         sa.Column("log_message", sa.Text(), nullable=True),
         sa.ForeignKeyConstraint(
-            ["log_user"], [u"user.user_name"], name=op.f("fk_activitylog_log_user_user")
+            ["log_user"], ["user.user_name"], name=op.f("fk_activitylog_log_user_user")
         ),
         sa.PrimaryKeyConstraint("log_id", name=op.f("pk_activitylog")),
         mysql_charset="utf8",
@@ -112,7 +112,7 @@ def upgrade():
         sa.Column("log_user", sa.String(length=80), nullable=False),
         sa.Column("log_uuid", sa.String(length=80), nullable=True),
         sa.ForeignKeyConstraint(
-            ["log_user"], [u"user.user_name"], name=op.f("fk_apilog_log_user_user")
+            ["log_user"], ["user.user_name"], name=op.f("fk_apilog_log_user_user")
         ),
         sa.PrimaryKeyConstraint("log_id", name=op.f("pk_apilog")),
         mysql_charset="utf8",
@@ -128,9 +128,9 @@ def upgrade():
         sa.Column("enum_active", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
             ["user_name"],
-            [u"user.user_name"],
+            ["user.user_name"],
             name=op.f("fk_enumerator_user_name_user"),
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint("user_name", "enum_id", name=op.f("pk_enumerator")),
         mysql_charset="utf8",
@@ -148,49 +148,49 @@ def upgrade():
         sa.Column(
             "project_active",
             sa.Integer(),
-            server_default=sa.text(u"'1'"),
+            server_default=sa.text("'1'"),
             nullable=True,
         ),
         sa.Column(
             "project_public",
             sa.Integer(),
-            server_default=sa.text(u"'0'"),
+            server_default=sa.text("'0'"),
             nullable=True,
         ),
         sa.Column(
             "project_dashboard",
             sa.Integer(),
-            server_default=sa.text(u"'1'"),
+            server_default=sa.text("'1'"),
             nullable=True,
         ),
         sa.Column(
             "project_regstatus",
             sa.Integer(),
-            server_default=sa.text(u"'0'"),
+            server_default=sa.text("'0'"),
             nullable=True,
         ),
         sa.Column(
             "project_assstatus",
             sa.Integer(),
-            server_default=sa.text(u"'0'"),
+            server_default=sa.text("'0'"),
             nullable=True,
         ),
         sa.Column(
             "project_createcomb",
             sa.Integer(),
-            server_default=sa.text(u"'0'"),
+            server_default=sa.text("'0'"),
             nullable=True,
         ),
         sa.Column(
             "project_createpkgs",
             sa.Integer(),
-            server_default=sa.text(u"'0'"),
+            server_default=sa.text("'0'"),
             nullable=True,
         ),
         sa.Column(
             "project_numobs",
             sa.Integer(),
-            server_default=sa.text(u"'0'"),
+            server_default=sa.text("'0'"),
             nullable=False,
         ),
         sa.Column("project_numcom", sa.Integer(), nullable=False),
@@ -200,12 +200,12 @@ def upgrade():
         sa.Column(
             "project_localvariety",
             sa.Integer(),
-            server_default=sa.text(u"'0'"),
+            server_default=sa.text("'0'"),
             nullable=True,
         ),
         sa.Column("extra", sa.Text(), nullable=True),
         sa.ForeignKeyConstraint(
-            ["user_name"], [u"user.user_name"], name=op.f("fk_project_user_name_user")
+            ["user_name"], ["user.user_name"], name=op.f("fk_project_user_name_user")
         ),
         sa.PrimaryKeyConstraint("user_name", "project_cod", name=op.f("pk_project")),
         mysql_charset="utf8",
@@ -226,31 +226,31 @@ def upgrade():
         sa.Column(
             "question_reqinreg",
             sa.Integer(),
-            server_default=sa.text(u"'0'"),
+            server_default=sa.text("'0'"),
             nullable=True,
         ),
         sa.Column(
             "question_reqinasses",
             sa.Integer(),
-            server_default=sa.text(u"'0'"),
+            server_default=sa.text("'0'"),
             nullable=True,
         ),
         sa.Column(
             "question_alwaysinreg",
             sa.Integer(),
-            server_default=sa.text(u"'0'"),
+            server_default=sa.text("'0'"),
             nullable=True,
         ),
         sa.Column(
             "question_alwaysinasse",
             sa.Integer(),
-            server_default=sa.text(u"'0'"),
+            server_default=sa.text("'0'"),
             nullable=True,
         ),
         sa.Column(
             "question_optperprj",
             sa.Integer(),
-            server_default=sa.text(u"'0'"),
+            server_default=sa.text("'0'"),
             nullable=True,
         ),
         sa.Column("user_name", sa.String(length=80), nullable=True),
@@ -263,60 +263,60 @@ def upgrade():
         sa.Column(
             "question_regkey",
             sa.Integer(),
-            server_default=sa.text(u"'0'"),
+            server_default=sa.text("'0'"),
             nullable=True,
         ),
         sa.Column(
             "question_asskey",
             sa.Integer(),
-            server_default=sa.text(u"'0'"),
+            server_default=sa.text("'0'"),
             nullable=True,
         ),
         sa.Column(
             "question_overall",
             sa.Integer(),
-            server_default=sa.text(u"'0'"),
+            server_default=sa.text("'0'"),
             nullable=True,
         ),
         sa.Column(
             "question_overallperf",
             sa.Integer(),
-            server_default=sa.text(u"'0'"),
+            server_default=sa.text("'0'"),
             nullable=True,
         ),
         sa.Column(
             "question_fname",
             sa.Integer(),
-            server_default=sa.text(u"'0'"),
+            server_default=sa.text("'0'"),
             nullable=True,
         ),
         sa.Column(
             "question_district",
             sa.Integer(),
-            server_default=sa.text(u"'0'"),
+            server_default=sa.text("'0'"),
             nullable=True,
         ),
         sa.Column(
             "question_village",
             sa.Integer(),
-            server_default=sa.text(u"'0'"),
+            server_default=sa.text("'0'"),
             nullable=True,
         ),
         sa.Column(
             "question_father",
             sa.Integer(),
-            server_default=sa.text(u"'0'"),
+            server_default=sa.text("'0'"),
             nullable=True,
         ),
         sa.Column(
             "question_visible",
             sa.Integer(),
-            server_default=sa.text(u"'0'"),
+            server_default=sa.text("'0'"),
             nullable=True,
         ),
         sa.Column("extra", sa.Text(), nullable=True),
         sa.ForeignKeyConstraint(
-            ["user_name"], [u"user.user_name"], name=op.f("fk_question_user_name_user")
+            ["user_name"], ["user.user_name"], name=op.f("fk_question_user_name_user")
         ),
         sa.PrimaryKeyConstraint("question_id", name=op.f("pk_question")),
         mysql_charset="utf8",
@@ -332,9 +332,9 @@ def upgrade():
         sa.Column("user_name", sa.String(length=80), nullable=True),
         sa.ForeignKeyConstraint(
             ["user_name"],
-            [u"user.user_name"],
+            ["user.user_name"],
             name=op.f("fk_technology_user_name_user"),
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint("tech_id", name=op.f("pk_technology")),
         mysql_charset="utf8",
@@ -351,16 +351,16 @@ def upgrade():
         sa.Column("ass_desc", sa.String(length=120), nullable=True),
         sa.Column("ass_days", sa.Integer(), nullable=True),
         sa.Column(
-            "ass_status", sa.Integer(), server_default=sa.text(u"'0'"), nullable=True
+            "ass_status", sa.Integer(), server_default=sa.text("'0'"), nullable=True
         ),
         sa.Column(
-            "ass_final", sa.Integer(), server_default=sa.text(u"'0'"), nullable=True
+            "ass_final", sa.Integer(), server_default=sa.text("'0'"), nullable=True
         ),
         sa.ForeignKeyConstraint(
             ["user_name", "project_cod"],
-            [u"project.user_name", u"project.project_cod"],
+            ["project.user_name", "project.project_cod"],
             name=op.f("fk_assessment_user_name_project"),
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint(
             "user_name", "project_cod", "ass_cod", name=op.f("pk_assessment")
@@ -377,12 +377,12 @@ def upgrade():
         sa.Column("project_abstract", sa.Text(), nullable=True),
         sa.ForeignKeyConstraint(
             ["lang_code"],
-            [u"i18n.lang_code"],
+            ["i18n.lang_code"],
             name=op.f("fk_i18n_project_lang_code_i18n"),
         ),
         sa.ForeignKeyConstraint(
             ["user_name", "project_cod"],
-            [u"project.user_name", u"project.project_cod"],
+            ["project.user_name", "project.project_cod"],
             name=op.f("fk_i18n_project_user_name_project"),
         ),
         sa.PrimaryKeyConstraint(
@@ -405,12 +405,12 @@ def upgrade():
         sa.Column("question_negstm", sa.String(length=120), nullable=True),
         sa.ForeignKeyConstraint(
             ["lang_code"],
-            [u"i18n.lang_code"],
+            ["i18n.lang_code"],
             name=op.f("fk_i18n_question_lang_code_i18n"),
         ),
         sa.ForeignKeyConstraint(
             ["question_id"],
-            [u"question.question_id"],
+            ["question.question_id"],
             name=op.f("fk_i18n_question_question_id_question"),
         ),
         sa.PrimaryKeyConstraint(
@@ -429,12 +429,12 @@ def upgrade():
         sa.Column("tech_name", sa.String(length=45), nullable=True),
         sa.ForeignKeyConstraint(
             ["lang_code"],
-            [u"i18n.lang_code"],
+            ["i18n.lang_code"],
             name=op.f("fk_i18n_technology_lang_code_i18n"),
         ),
         sa.ForeignKeyConstraint(
             ["tech_id"],
-            [u"technology.tech_id"],
+            ["technology.tech_id"],
             name=op.f("fk_i18n_technology_tech_id_technology"),
         ),
         sa.PrimaryKeyConstraint(
@@ -458,9 +458,9 @@ def upgrade():
         sa.Column("package_image", sa.LargeBinary(), nullable=True),
         sa.ForeignKeyConstraint(
             ["user_name", "project_cod"],
-            [u"project.user_name", u"project.project_cod"],
+            ["project.user_name", "project.project_cod"],
             name=op.f("fk_package_user_name_project"),
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint(
             "user_name", "project_cod", "package_id", name=op.f("pk_package")
@@ -476,15 +476,15 @@ def upgrade():
         sa.Column("cnty_contact", sa.String(length=120), nullable=True),
         sa.ForeignKeyConstraint(
             ["cnty_cod"],
-            [u"country.cnty_cod"],
+            ["country.cnty_cod"],
             name=op.f("fk_prjcnty_cnty_cod_country"),
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         sa.ForeignKeyConstraint(
             ["user_name", "project_cod"],
-            [u"project.user_name", u"project.project_cod"],
+            ["project.user_name", "project.project_cod"],
             name=op.f("fk_prjcnty_user_name_project"),
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint(
             "user_name", "project_cod", "cnty_cod", name=op.f("pk_prjcnty")
@@ -501,9 +501,9 @@ def upgrade():
         sa.Column("comb_usable", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
             ["user_name", "project_cod"],
-            [u"project.user_name", u"project.project_cod"],
+            ["project.user_name", "project.project_cod"],
             name=op.f("fk_prjcombination_user_name_project"),
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint(
             "user_name", "project_cod", "comb_code", name=op.f("pk_prjcombination")
@@ -519,15 +519,15 @@ def upgrade():
         sa.Column("enum_id", sa.String(length=80), nullable=False),
         sa.ForeignKeyConstraint(
             ["enum_user", "enum_id"],
-            [u"enumerator.user_name", u"enumerator.enum_id"],
+            ["enumerator.user_name", "enumerator.enum_id"],
             name=op.f("fk_prjenumerator_enum_user_enumerator"),
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         sa.ForeignKeyConstraint(
             ["user_name", "project_cod"],
-            [u"project.user_name", u"project.project_cod"],
+            ["project.user_name", "project.project_cod"],
             name=op.f("fk_prjenumerator_user_name_project"),
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint(
             "user_name",
@@ -547,15 +547,15 @@ def upgrade():
         sa.Column("lang_default", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
             ["lang_code"],
-            [u"i18n.lang_code"],
+            ["i18n.lang_code"],
             name=op.f("fk_prjlang_lang_code_i18n"),
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         sa.ForeignKeyConstraint(
             ["user_name", "project_cod"],
-            [u"project.user_name", u"project.project_cod"],
+            ["project.user_name", "project.project_cod"],
             name=op.f("fk_prjlang_user_name_project"),
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint(
             "user_name", "project_cod", "lang_code", name=op.f("pk_prjlang")
@@ -573,15 +573,15 @@ def upgrade():
         sa.Column("tech_id", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(
             ["tech_id"],
-            [u"technology.tech_id"],
+            ["technology.tech_id"],
             name=op.f("fk_prjtech_tech_id_technology"),
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         sa.ForeignKeyConstraint(
             ["user_name", "project_cod"],
-            [u"project.user_name", u"project.project_cod"],
+            ["project.user_name", "project.project_cod"],
             name=op.f("fk_prjtech_user_name_project"),
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint(
             "user_name", "project_cod", "tech_id", name=op.f("pk_prjtech")
@@ -602,9 +602,9 @@ def upgrade():
         sa.Column("datetime_added", sa.DateTime(), nullable=True),
         sa.ForeignKeyConstraint(
             ["user_name", "project_cod"],
-            [u"project.user_name", u"project.project_cod"],
+            ["project.user_name", "project.project_cod"],
             name=op.f("fk_products_user_name_project"),
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint("celery_taskid", name=op.f("pk_products")),
         mysql_charset="utf8",
@@ -616,19 +616,19 @@ def upgrade():
         sa.Column("value_code", sa.String(length=80), nullable=False),
         sa.Column("value_desc", sa.String(length=120), nullable=True),
         sa.Column(
-            "value_isother", sa.Integer(), server_default=sa.text(u"'0'"), nullable=True
+            "value_isother", sa.Integer(), server_default=sa.text("'0'"), nullable=True
         ),
         sa.Column(
-            "value_isna", sa.Integer(), server_default=sa.text(u"'0'"), nullable=True
+            "value_isna", sa.Integer(), server_default=sa.text("'0'"), nullable=True
         ),
         sa.Column(
-            "value_order", sa.Integer(), server_default=sa.text(u"'0'"), nullable=True
+            "value_order", sa.Integer(), server_default=sa.text("'0'"), nullable=True
         ),
         sa.ForeignKeyConstraint(
             ["question_id"],
-            [u"question.question_id"],
+            ["question.question_id"],
             name=op.f("fk_qstoption_question_id_question"),
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint("question_id", "value_code", name=op.f("pk_qstoption")),
         mysql_charset="utf8",
@@ -645,9 +645,9 @@ def upgrade():
         sa.Column("section_color", sa.String(length=20), nullable=True),
         sa.ForeignKeyConstraint(
             ["user_name", "project_cod"],
-            [u"project.user_name", u"project.project_cod"],
+            ["project.user_name", "project.project_cod"],
             name=op.f("fk_regsection_user_name_project"),
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint(
             "user_name", "project_cod", "section_id", name=op.f("pk_regsection")
@@ -669,9 +669,9 @@ def upgrade():
         sa.Column("error_table", sa.String(length=120), nullable=True),
         sa.ForeignKeyConstraint(
             ["user_name", "project_cod"],
-            [u"project.user_name", u"project.project_cod"],
+            ["project.user_name", "project.project_cod"],
             name=op.f("fk_storageerrors_user_name_project"),
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint("fileuid", name=op.f("pk_storageerrors")),
         mysql_charset="utf8",
@@ -684,9 +684,9 @@ def upgrade():
         sa.Column("alias_name", sa.String(length=120), nullable=True),
         sa.ForeignKeyConstraint(
             ["tech_id"],
-            [u"technology.tech_id"],
+            ["technology.tech_id"],
             name=op.f("fk_techalias_tech_id_technology"),
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint("tech_id", "alias_id", name=op.f("pk_techalias")),
         mysql_charset="utf8",
@@ -707,9 +707,9 @@ def upgrade():
         sa.Column("section_color", sa.String(length=20), nullable=True),
         sa.ForeignKeyConstraint(
             ["user_name", "project_cod", "ass_cod"],
-            [u"assessment.user_name", u"assessment.project_cod", u"assessment.ass_cod"],
+            ["assessment.user_name", "assessment.project_cod", "assessment.ass_cod"],
             name=op.f("fk_asssection_user_name_assessment"),
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint(
             "user_name",
@@ -729,12 +729,12 @@ def upgrade():
         sa.Column("value_desc", sa.String(length=120), nullable=True),
         sa.ForeignKeyConstraint(
             ["lang_code"],
-            [u"i18n.lang_code"],
+            ["i18n.lang_code"],
             name=op.f("fk_i18n_qstoption_lang_code_i18n"),
         ),
         sa.ForeignKeyConstraint(
             ["question_id", "value_code"],
-            [u"qstoption.question_id", u"qstoption.value_code"],
+            ["qstoption.question_id", "qstoption.value_code"],
             name=op.f("fk_i18n_qstoption_question_id_qstoption"),
         ),
         sa.PrimaryKeyConstraint(
@@ -759,15 +759,15 @@ def upgrade():
         sa.Column("section_content", sa.Text(), nullable=True),
         sa.ForeignKeyConstraint(
             ["lang_code"],
-            [u"i18n.lang_code"],
+            ["i18n.lang_code"],
             name=op.f("fk_i18n_regsection_lang_code_i18n"),
         ),
         sa.ForeignKeyConstraint(
             ["user_name", "project_cod", "section_id"],
             [
-                u"regsection.user_name",
-                u"regsection.project_cod",
-                u"regsection.section_id",
+                "regsection.user_name",
+                "regsection.project_cod",
+                "regsection.section_id",
             ],
             name=op.f("fk_i18n_regsection_user_name_regsection"),
         ),
@@ -795,12 +795,12 @@ def upgrade():
         sa.Column("alias_name", sa.String(length=120), nullable=True),
         sa.ForeignKeyConstraint(
             ["lang_code"],
-            [u"i18n.lang_code"],
+            ["i18n.lang_code"],
             name=op.f("fk_i18n_techalias_lang_code_i18n"),
         ),
         sa.ForeignKeyConstraint(
             ["tech_id", "alias_id"],
-            [u"techalias.tech_id", u"techalias.alias_id"],
+            ["techalias.tech_id", "techalias.alias_id"],
             name=op.f("fk_i18n_techalias_tech_id_techalias"),
         ),
         sa.PrimaryKeyConstraint(
@@ -827,18 +827,18 @@ def upgrade():
         sa.ForeignKeyConstraint(
             ["comb_user", "comb_project", "comb_code"],
             [
-                u"prjcombination.user_name",
-                u"prjcombination.project_cod",
-                u"prjcombination.comb_code",
+                "prjcombination.user_name",
+                "prjcombination.project_cod",
+                "prjcombination.comb_code",
             ],
             name=op.f("fk_pkgcomb_comb_user_prjcombination"),
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         sa.ForeignKeyConstraint(
             ["user_name", "project_cod", "package_id"],
-            [u"package.user_name", u"package.project_cod", u"package.package_id"],
+            ["package.user_name", "package.project_cod", "package.package_id"],
             name=op.f("fk_pkgcomb_user_name_package"),
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint(
             "user_name",
@@ -869,15 +869,15 @@ def upgrade():
         sa.Column("alias_used", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
             ["tech_used", "alias_used"],
-            [u"techalias.tech_id", u"techalias.alias_id"],
+            ["techalias.tech_id", "techalias.alias_id"],
             name=op.f("fk_prjalias_tech_used_techalias"),
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         sa.ForeignKeyConstraint(
             ["user_name", "project_cod", "tech_id"],
-            [u"prjtech.user_name", u"prjtech.project_cod", u"prjtech.tech_id"],
+            ["prjtech.user_name", "prjtech.project_cod", "prjtech.tech_id"],
             name=op.f("fk_prjalias_user_name_prjtech"),
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint(
             "user_name", "project_cod", "tech_id", "alias_id", name=op.f("pk_prjalias")
@@ -908,25 +908,25 @@ def upgrade():
         sa.Column("question_order", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
             ["question_id"],
-            [u"question.question_id"],
+            ["question.question_id"],
             name=op.f("fk_registry_question_id_question"),
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         sa.ForeignKeyConstraint(
             ["section_user", "section_project", "section_id"],
             [
-                u"regsection.user_name",
-                u"regsection.project_cod",
-                u"regsection.section_id",
+                "regsection.user_name",
+                "regsection.project_cod",
+                "regsection.section_id",
             ],
             name=op.f("fk_registry_section_user_regsection"),
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         sa.ForeignKeyConstraint(
             ["user_name", "project_cod"],
-            [u"project.user_name", u"project.project_cod"],
+            ["project.user_name", "project.project_cod"],
             name=op.f("fk_registry_user_name_project"),
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint(
             "user_name", "project_cod", "question_id", name=op.f("pk_registry")
@@ -956,26 +956,26 @@ def upgrade():
         sa.Column("question_order", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
             ["question_id"],
-            [u"question.question_id"],
+            ["question.question_id"],
             name=op.f("fk_assdetail_question_id_question"),
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         sa.ForeignKeyConstraint(
             ["section_user", "section_project", "section_assessment", "section_id"],
             [
-                u"asssection.user_name",
-                u"asssection.project_cod",
-                u"asssection.ass_cod",
-                u"asssection.section_id",
+                "asssection.user_name",
+                "asssection.project_cod",
+                "asssection.ass_cod",
+                "asssection.section_id",
             ],
             name=op.f("fk_assdetail_section_user_asssection"),
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         sa.ForeignKeyConstraint(
             ["user_name", "project_cod", "ass_cod"],
-            [u"assessment.user_name", u"assessment.project_cod", u"assessment.ass_cod"],
+            ["assessment.user_name", "assessment.project_cod", "assessment.ass_cod"],
             name=op.f("fk_assdetail_user_name_assessment"),
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint(
             "user_name",
@@ -1007,16 +1007,16 @@ def upgrade():
         sa.Column("section_content", sa.Text(), nullable=True),
         sa.ForeignKeyConstraint(
             ["lang_code"],
-            [u"i18n.lang_code"],
+            ["i18n.lang_code"],
             name=op.f("fk_i18n_asssection_lang_code_i18n"),
         ),
         sa.ForeignKeyConstraint(
             ["user_name", "project_cod", "ass_cod", "section_id"],
             [
-                u"asssection.user_name",
-                u"asssection.project_cod",
-                u"asssection.ass_cod",
-                u"asssection.section_id",
+                "asssection.user_name",
+                "asssection.project_cod",
+                "asssection.ass_cod",
+                "asssection.section_id",
             ],
             name=op.f("fk_i18n_asssection_user_name_asssection"),
         ),
@@ -1047,16 +1047,16 @@ def upgrade():
         sa.Column("alias_name", sa.String(length=120), nullable=True),
         sa.ForeignKeyConstraint(
             ["lang_code"],
-            [u"i18n.lang_code"],
+            ["i18n.lang_code"],
             name=op.f("fk_i18n_prjalias_lang_code_i18n"),
         ),
         sa.ForeignKeyConstraint(
             ["user_name", "project_cod", "tech_id", "alias_id"],
             [
-                u"prjalias.user_name",
-                u"prjalias.project_cod",
-                u"prjalias.tech_id",
-                u"prjalias.alias_id",
+                "prjalias.user_name",
+                "prjalias.project_cod",
+                "prjalias.tech_id",
+                "prjalias.alias_id",
             ],
             name=op.f("fk_i18n_prjalias_user_name_prjalias"),
         ),
@@ -1087,23 +1087,23 @@ def upgrade():
         sa.ForeignKeyConstraint(
             ["prjcomb_user", "prjcomb_project", "comb_code"],
             [
-                u"prjcombination.user_name",
-                u"prjcombination.project_cod",
-                u"prjcombination.comb_code",
+                "prjcombination.user_name",
+                "prjcombination.project_cod",
+                "prjcombination.comb_code",
             ],
             name=op.f("fk_prjcombdet_prjcomb_user_prjcombination"),
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         sa.ForeignKeyConstraint(
             ["user_name", "project_cod", "tech_id", "alias_id"],
             [
-                u"prjalias.user_name",
-                u"prjalias.project_cod",
-                u"prjalias.tech_id",
-                u"prjalias.alias_id",
+                "prjalias.user_name",
+                "prjalias.project_cod",
+                "prjalias.tech_id",
+                "prjalias.alias_id",
             ],
             name=op.f("fk_prjcombdet_user_name_prjalias"),
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint(
             "prjcomb_user",

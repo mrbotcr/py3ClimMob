@@ -29,7 +29,7 @@ def downgrade():
         sa.Column(
             "question_visible",
             mysql.INTEGER(display_width=11),
-            server_default=sa.text(u"'0'"),
+            server_default=sa.text("'0'"),
             autoincrement=False,
             nullable=True,
         ),

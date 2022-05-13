@@ -19,8 +19,7 @@ from pyramid_authstack import AuthenticationStackPolicy
 
 
 def main(global_config, **settings):
-    """ This function returns a Pyramid WSGI application.
-    """
+    """This function returns a Pyramid WSGI application."""
     auth_policy = AuthenticationStackPolicy()
     policy_array = []
 

@@ -23,7 +23,7 @@ def upgrade():
         sa.Column(
             "question_visible",
             sa.Integer(),
-            server_default=sa.text(u"'1'"),
+            server_default=sa.text("'1'"),
             nullable=True,
         ),
     )

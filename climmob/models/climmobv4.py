@@ -20,12 +20,12 @@ class Activitylog(Base):
     __tablename__ = "activitylog"
 
     log_id = Column(Integer, primary_key=True)
-    log_user = Column(ForeignKey(u"user.user_name"), nullable=False, index=True)
+    log_user = Column(ForeignKey("user.user_name"), nullable=False, index=True)
     log_datetime = Column(DateTime, default=datetime.datetime.now())
     log_type = Column(Unicode(3))
     log_message = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
 
-    user = relationship(u"User")
+    user = relationship("User")
 
 
 class Apilog(Base):
@@ -34,17 +34,19 @@ class Apilog(Base):
     log_id = Column(Integer, primary_key=True)
     log_datetime = Column(DateTime)
     log_ip = Column(Unicode(45))
-    log_user = Column(ForeignKey(u"user.user_name"), nullable=False, index=True)
+    log_user = Column(ForeignKey("user.user_name"), nullable=False, index=True)
     log_uuid = Column(Unicode(80))
 
-    user = relationship(u"User")
+    user = relationship("User")
 
 
 class Assessment(Base):
     __tablename__ = "assessment"
     __table_args__ = (
         ForeignKeyConstraint(
-            ["project_id"], [u"project.project_id"], ondelete=u"CASCADE",
+            ["project_id"],
+            ["project.project_id"],
+            ondelete="CASCADE",
         ),
         {"mysql_engine": "InnoDB", "mysql_charset": "utf8"},
     )
@@ -56,7 +58,7 @@ class Assessment(Base):
     ass_final = Column(Integer, server_default=text("'0'"))
     extra = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
 
-    project = relationship(u"Project")
+    project = relationship("Project")
 
 
 class AssDetail(Base):
@@ -65,25 +67,29 @@ class AssDetail(Base):
         ForeignKeyConstraint(
             ["section_project_id", "section_assessment", "section_id"],
             [
-                u"asssection.project_id",
-                u"asssection.ass_cod",
-                u"asssection.section_id",
+                "asssection.project_id",
+                "asssection.ass_cod",
+                "asssection.section_id",
             ],
-            ondelete=u"CASCADE",
+            ondelete="CASCADE",
         ),
         ForeignKeyConstraint(
             ["project_id", "ass_cod"],
-            [u"assessment.project_id", u"assessment.ass_cod"],
-            ondelete=u"CASCADE",
+            ["assessment.project_id", "assessment.ass_cod"],
+            ondelete="CASCADE",
         ),
-        Index("fk_assessment_asssection1_idx", "section_project_id", "section_id",),
+        Index(
+            "fk_assessment_asssection1_idx",
+            "section_project_id",
+            "section_id",
+        ),
         {"mysql_engine": "InnoDB", "mysql_charset": "utf8"},
     )
 
     project_id = Column(Unicode(64), primary_key=True, nullable=False)
     ass_cod = Column(Unicode(80), primary_key=True, nullable=False)
     question_id = Column(
-        ForeignKey(u"question.question_id", ondelete=u"CASCADE"),
+        ForeignKey("question.question_id", ondelete="CASCADE"),
         primary_key=True,
         nullable=False,
         index=True,
@@ -93,9 +99,9 @@ class AssDetail(Base):
     section_id = Column(Integer, nullable=False)
     question_order = Column(Integer)
 
-    question = relationship(u"Question")
-    asssection = relationship(u"Asssection")
-    assessment = relationship(u"Assessment")
+    question = relationship("Question")
+    asssection = relationship("Asssection")
+    assessment = relationship("Assessment")
 
 
 class Asssection(Base):
@@ -103,8 +109,8 @@ class Asssection(Base):
     __table_args__ = (
         ForeignKeyConstraint(
             ["project_id", "ass_cod"],
-            [u"assessment.project_id", u"assessment.ass_cod"],
-            ondelete=u"CASCADE",
+            ["assessment.project_id", "assessment.ass_cod"],
+            ondelete="CASCADE",
         ),
         {"mysql_engine": "InnoDB", "mysql_charset": "utf8"},
     )
@@ -117,7 +123,7 @@ class Asssection(Base):
     section_order = Column(Integer)
     section_private = Column(Integer, nullable=True)
 
-    assessment = relationship(u"Assessment")
+    assessment = relationship("Assessment")
 
 
 class Country(Base):
@@ -131,7 +137,7 @@ class Country(Base):
 class Enumerator(Base):
     __tablename__ = "enumerator"
     __table_args__ = (
-        ForeignKeyConstraint(["user_name"], [u"user.user_name"], ondelete=u"CASCADE"),
+        ForeignKeyConstraint(["user_name"], ["user.user_name"], ondelete="CASCADE"),
     )
     user_name = Column(Unicode(80), primary_key=True, nullable=False)
     enum_id = Column(Unicode(80), primary_key=True, nullable=False)
@@ -140,19 +146,21 @@ class Enumerator(Base):
     enum_telephone = Column(Unicode(120), server_default=text("''"))
     enum_active = Column(Integer)
 
-    project = relationship(u"User")
+    project = relationship("User")
 
 
 class PrjEnumerator(Base):
     __tablename__ = "prjenumerator"
     __table_args__ = (
         ForeignKeyConstraint(
-            ["project_id"], [u"project.project_id"], ondelete=u"CASCADE",
+            ["project_id"],
+            ["project.project_id"],
+            ondelete="CASCADE",
         ),
         ForeignKeyConstraint(
             ["enum_user", "enum_id"],
-            [u"enumerator.user_name", u"enumerator.enum_id"],
-            ondelete=u"CASCADE",
+            ["enumerator.user_name", "enumerator.enum_id"],
+            ondelete="CASCADE",
         ),
         {"mysql_engine": "InnoDB", "mysql_charset": "utf8"},
     )
@@ -161,15 +169,17 @@ class PrjEnumerator(Base):
     enum_user = Column(Unicode(80), primary_key=True, nullable=False)
     enum_id = Column(Unicode(80), primary_key=True, nullable=False)
 
-    project = relationship(u"Project")
-    enumerator = relationship(u"Enumerator")
+    project = relationship("Project")
+    enumerator = relationship("Enumerator")
 
 
 class Products(Base):
     __tablename__ = "products"
     __table_args__ = (
         ForeignKeyConstraint(
-            ["project_id"], [u"project.project_id"], ondelete=u"CASCADE",
+            ["project_id"],
+            ["project.project_id"],
+            ondelete="CASCADE",
         ),
         {"mysql_engine": "InnoDB", "mysql_charset": "utf8"},
     )
@@ -182,7 +192,7 @@ class Products(Base):
     output_mimetype = Column(Unicode(80), nullable=False)
     datetime_added = Column(DateTime)
 
-    project = relationship(u"Project")
+    project = relationship("Project")
 
 
 class Tasks(Base):
@@ -202,7 +212,9 @@ class storageErrors(Base):
     __tablename__ = "storageerrors"
     __table_args__ = (
         ForeignKeyConstraint(
-            ["project_id"], [u"project.project_id"], ondelete=u"CASCADE",
+            ["project_id"],
+            ["project.project_id"],
+            ondelete="CASCADE",
         ),
         {"mysql_engine": "InnoDB", "mysql_charset": "utf8"},
     )
@@ -217,7 +229,7 @@ class storageErrors(Base):
     error_des = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
     error_table = Column(Unicode(120))
 
-    project = relationship(u"Project")
+    project = relationship("Project")
 
 
 class I18n(Base):
@@ -233,9 +245,9 @@ class I18nAsssection(Base):
         ForeignKeyConstraint(
             ["project_id", "ass_cod", "section_id"],
             [
-                u"asssection.project_id",
-                u"asssection.ass_cod",
-                u"asssection.section_id",
+                "asssection.project_id",
+                "asssection.ass_cod",
+                "asssection.section_id",
             ],
         ),
         {"mysql_engine": "InnoDB", "mysql_charset": "utf8"},
@@ -245,13 +257,13 @@ class I18nAsssection(Base):
     ass_cod = Column(Unicode(80), primary_key=True, nullable=False)
     section_id = Column(Integer, primary_key=True, nullable=False)
     lang_code = Column(
-        ForeignKey(u"i18n.lang_code"), primary_key=True, nullable=False, index=True
+        ForeignKey("i18n.lang_code"), primary_key=True, nullable=False, index=True
     )
     section_name = Column(Unicode(120))
     section_content = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
 
-    i18n = relationship(u"I18n")
-    asssection = relationship(u"Asssection")
+    i18n = relationship("I18n")
+    asssection = relationship("Asssection")
 
 
 class I18nPrjalia(Base):
@@ -259,7 +271,11 @@ class I18nPrjalia(Base):
     __table_args__ = (
         ForeignKeyConstraint(
             ["project_id", "tech_id", "alias_id"],
-            [u"prjalias.project_id", u"prjalias.tech_id", u"prjalias.alias_id",],
+            [
+                "prjalias.project_id",
+                "prjalias.tech_id",
+                "prjalias.alias_id",
+            ],
         ),
     )
 
@@ -267,27 +283,27 @@ class I18nPrjalia(Base):
     tech_id = Column(Integer, primary_key=True, nullable=False)
     alias_id = Column(Integer, primary_key=True, nullable=False)
     lang_code = Column(
-        ForeignKey(u"i18n.lang_code"), primary_key=True, nullable=False, index=True
+        ForeignKey("i18n.lang_code"), primary_key=True, nullable=False, index=True
     )
     alias_name = Column(Unicode(120))
 
-    i18n = relationship(u"I18n")
-    prjalia = relationship(u"Prjalia")
+    i18n = relationship("I18n")
+    prjalia = relationship("Prjalia")
 
 
 class I18nProject(Base):
     __tablename__ = "i18n_project"
-    __table_args__ = (ForeignKeyConstraint(["project_id"], [u"project.project_id"]),)
+    __table_args__ = (ForeignKeyConstraint(["project_id"], ["project.project_id"]),)
 
     project_id = Column(Unicode(64), primary_key=True, nullable=True)
     lang_code = Column(
-        ForeignKey(u"i18n.lang_code"), primary_key=True, nullable=False, index=True
+        ForeignKey("i18n.lang_code"), primary_key=True, nullable=False, index=True
     )
     project_name = Column(Unicode(120))
     project_abstract = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
 
-    i18n = relationship(u"I18n")
-    project = relationship(u"Project")
+    i18n = relationship("I18n")
+    project = relationship("Project")
 
 
 class I18nQstoption(Base):
@@ -295,7 +311,7 @@ class I18nQstoption(Base):
     __table_args__ = (
         ForeignKeyConstraint(
             ["question_id", "value_code"],
-            [u"qstoption.question_id", u"qstoption.value_code"],
+            ["qstoption.question_id", "qstoption.value_code"],
         ),
         {"mysql_engine": "InnoDB", "mysql_charset": "utf8"},
     )
@@ -303,12 +319,12 @@ class I18nQstoption(Base):
     question_id = Column(Integer, primary_key=True, nullable=False)
     value_code = Column(Unicode(80), primary_key=True, nullable=False)
     lang_code = Column(
-        ForeignKey(u"i18n.lang_code"), primary_key=True, nullable=False, index=True
+        ForeignKey("i18n.lang_code"), primary_key=True, nullable=False, index=True
     )
     value_desc = Column(Unicode(120))
 
-    i18n = relationship(u"I18n")
-    question = relationship(u"Qstoption")
+    i18n = relationship("I18n")
+    question = relationship("Qstoption")
 
 
 class I18nQuestion_group(Base):
@@ -316,29 +332,32 @@ class I18nQuestion_group(Base):
     __table_args__ = (
         ForeignKeyConstraint(
             ["user_name", "qstgroups_id"],
-            [u"qstgroups.user_name", u"qstgroups.qstgroups_id",],
+            [
+                "qstgroups.user_name",
+                "qstgroups.qstgroups_id",
+            ],
         ),
     )
 
     user_name = Column(Unicode(80), primary_key=True, nullable=False)
     qstgroups_id = Column(Unicode(80), primary_key=True, nullable=False)
     lang_code = Column(
-        ForeignKey(u"i18n.lang_code"), primary_key=True, nullable=False, index=True
+        ForeignKey("i18n.lang_code"), primary_key=True, nullable=False, index=True
     )
     qstgroups_name = Column(Unicode(120))
 
-    i18n = relationship(u"I18n")
-    question = relationship(u"Question_group")
+    i18n = relationship("I18n")
+    question = relationship("Question_group")
 
 
 class I18nQuestion(Base):
     __tablename__ = "i18n_question"
 
     question_id = Column(
-        ForeignKey(u"question.question_id"), primary_key=True, nullable=False
+        ForeignKey("question.question_id"), primary_key=True, nullable=False
     )
     lang_code = Column(
-        ForeignKey(u"i18n.lang_code"), primary_key=True, nullable=False, index=True
+        ForeignKey("i18n.lang_code"), primary_key=True, nullable=False, index=True
     )
     question_desc = Column(Unicode(120))
     question_notes = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
@@ -348,8 +367,8 @@ class I18nQuestion(Base):
     question_perfstmt = Column(Unicode(120))
     question_name = Column(Unicode(120))
 
-    i18n = relationship(u"I18n")
-    question = relationship(u"Question")
+    i18n = relationship("I18n")
+    question = relationship("Question")
 
 
 class I18nRegsection(Base):
@@ -357,61 +376,64 @@ class I18nRegsection(Base):
     __table_args__ = (
         ForeignKeyConstraint(
             ["project_id", "section_id"],
-            [u"regsection.project_id", u"regsection.section_id",],
+            [
+                "regsection.project_id",
+                "regsection.section_id",
+            ],
         ),
     )
 
     project_id = Column(Unicode(64), primary_key=True, nullable=False)
     section_id = Column(Integer, primary_key=True, nullable=False)
     lang_code = Column(
-        ForeignKey(u"i18n.lang_code"), primary_key=True, nullable=False, index=True
+        ForeignKey("i18n.lang_code"), primary_key=True, nullable=False, index=True
     )
     section_name = Column(Unicode(120))
     section_content = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
 
-    i18n = relationship(u"I18n")
-    regsection = relationship(u"Regsection")
+    i18n = relationship("I18n")
+    regsection = relationship("Regsection")
 
 
 class I18nTechalia(Base):
     __tablename__ = "i18n_techalias"
     __table_args__ = (
         ForeignKeyConstraint(
-            ["tech_id", "alias_id"], [u"techalias.tech_id", u"techalias.alias_id"]
+            ["tech_id", "alias_id"], ["techalias.tech_id", "techalias.alias_id"]
         ),
     )
 
     tech_id = Column(Integer, primary_key=True, nullable=False)
     alias_id = Column(Integer, primary_key=True, nullable=False)
     lang_code = Column(
-        ForeignKey(u"i18n.lang_code"), primary_key=True, nullable=False, index=True
+        ForeignKey("i18n.lang_code"), primary_key=True, nullable=False, index=True
     )
     alias_name = Column(Unicode(120))
 
-    i18n = relationship(u"I18n")
-    tech = relationship(u"Techalia")
+    i18n = relationship("I18n")
+    tech = relationship("Techalia")
 
 
 class I18nTechnology(Base):
     __tablename__ = "i18n_technology"
 
-    tech_id = Column(
-        ForeignKey(u"technology.tech_id"), primary_key=True, nullable=False
-    )
+    tech_id = Column(ForeignKey("technology.tech_id"), primary_key=True, nullable=False)
     lang_code = Column(
-        ForeignKey(u"i18n.lang_code"), primary_key=True, nullable=False, index=True
+        ForeignKey("i18n.lang_code"), primary_key=True, nullable=False, index=True
     )
     tech_name = Column(Unicode(45))
 
-    i18n = relationship(u"I18n")
-    tech = relationship(u"Technology")
+    i18n = relationship("I18n")
+    tech = relationship("Technology")
 
 
 class Package(Base):
     __tablename__ = "package"
     __table_args__ = (
         ForeignKeyConstraint(
-            ["project_id"], [u"project.project_id"], ondelete=u"CASCADE",
+            ["project_id"],
+            ["project.project_id"],
+            ondelete="CASCADE",
         ),
     )
 
@@ -420,7 +442,7 @@ class Package(Base):
     package_code = Column(Unicode(45))
     package_image = Column(LargeBinary)
 
-    project = relationship(u"Project")
+    project = relationship("Project")
 
 
 class Pkgcomb(Base):
@@ -428,13 +450,16 @@ class Pkgcomb(Base):
     __table_args__ = (
         ForeignKeyConstraint(
             ["comb_project_id", "comb_code"],
-            [u"prjcombination.project_id", u"prjcombination.comb_code",],
-            ondelete=u"CASCADE",
+            [
+                "prjcombination.project_id",
+                "prjcombination.comb_code",
+            ],
+            ondelete="CASCADE",
         ),
         ForeignKeyConstraint(
             ["project_id", "package_id"],
-            [u"package.project_id", u"package.package_id"],
-            ondelete=u"CASCADE",
+            ["package.project_id", "package.package_id"],
+            ondelete="CASCADE",
         ),
         Index("fk_pkgcomb_prjcombination1_idx", "comb_project_id", "comb_code"),
     )
@@ -445,8 +470,8 @@ class Pkgcomb(Base):
     comb_code = Column(Integer, primary_key=True, nullable=False)
     comb_order = Column(Integer)
 
-    prjcombination = relationship(u"Prjcombination")
-    package = relationship(u"Package")
+    prjcombination = relationship("Prjcombination")
+    package = relationship("Package")
 
 
 class Prjalia(Base):
@@ -454,13 +479,13 @@ class Prjalia(Base):
     __table_args__ = (
         ForeignKeyConstraint(
             ["tech_used", "alias_used"],
-            [u"techalias.tech_id", u"techalias.alias_id"],
-            ondelete=u"CASCADE",
+            ["techalias.tech_id", "techalias.alias_id"],
+            ondelete="CASCADE",
         ),
         ForeignKeyConstraint(
             ["project_id", "tech_id"],
-            [u"prjtech.project_id", u"prjtech.tech_id"],
-            ondelete=u"CASCADE",
+            ["prjtech.project_id", "prjtech.tech_id"],
+            ondelete="CASCADE",
         ),
         Index("fk_prjalias_techalias1_idx", "tech_used", "alias_used"),
         Index("fk_prjalias_prjtech1_idx", "project_id", "tech_id"),
@@ -473,29 +498,31 @@ class Prjalia(Base):
     tech_used = Column(Integer)
     alias_used = Column(Integer)
 
-    techalia = relationship(u"Techalia")
-    prjtech = relationship(u"Prjtech")
+    techalia = relationship("Techalia")
+    prjtech = relationship("Prjtech")
 
 
 class Prjcnty(Base):
     __tablename__ = "prjcnty"
     __table_args__ = (
         ForeignKeyConstraint(
-            ["project_id"], [u"project.project_id"], ondelete=u"CASCADE",
+            ["project_id"],
+            ["project.project_id"],
+            ondelete="CASCADE",
         ),
     )
 
     project_id = Column(Unicode(64), primary_key=True, nullable=False)
     cnty_cod = Column(
-        ForeignKey(u"country.cnty_cod", ondelete=u"CASCADE"),
+        ForeignKey("country.cnty_cod", ondelete="CASCADE"),
         primary_key=True,
         nullable=False,
         index=True,
     )
     cnty_contact = Column(Unicode(120))
 
-    country = relationship(u"Country")
-    project = relationship(u"Project")
+    country = relationship("Country")
+    project = relationship("Project")
 
 
 class Prjcombdet(Base):
@@ -503,15 +530,27 @@ class Prjcombdet(Base):
     __table_args__ = (
         ForeignKeyConstraint(
             ["project_id", "comb_code"],
-            [u"prjcombination.project_id", u"prjcombination.comb_code",],
-            ondelete=u"CASCADE",
+            [
+                "prjcombination.project_id",
+                "prjcombination.comb_code",
+            ],
+            ondelete="CASCADE",
         ),
         ForeignKeyConstraint(
             ["project_id_tech", "tech_id", "alias_id"],
-            [u"prjalias.project_id", u"prjalias.tech_id", u"prjalias.alias_id",],
-            ondelete=u"CASCADE",
+            [
+                "prjalias.project_id",
+                "prjalias.tech_id",
+                "prjalias.alias_id",
+            ],
+            ondelete="CASCADE",
         ),
-        Index("fk_prjcombdet_prjalias1_idx", "project_id", "tech_id", "alias_id",),
+        Index(
+            "fk_prjcombdet_prjalias1_idx",
+            "project_id",
+            "tech_id",
+            "alias_id",
+        ),
     )
 
     project_id = Column(Unicode(64), primary_key=True, nullable=False)
@@ -521,15 +560,17 @@ class Prjcombdet(Base):
     alias_id = Column(Integer, primary_key=True, nullable=False)
     alias_order = Column(Integer)
 
-    prjcombination = relationship(u"Prjcombination")
-    prjalia = relationship(u"Prjalia")
+    prjcombination = relationship("Prjcombination")
+    prjalia = relationship("Prjalia")
 
 
 class Prjcombination(Base):
     __tablename__ = "prjcombination"
     __table_args__ = (
         ForeignKeyConstraint(
-            ["project_id"], [u"project.project_id"], ondelete=u"CASCADE",
+            ["project_id"],
+            ["project.project_id"],
+            ondelete="CASCADE",
         ),
     )
 
@@ -538,48 +579,52 @@ class Prjcombination(Base):
     comb_usable = Column(Integer)
     quantity_available = Column(Integer, nullable=True)
 
-    project = relationship(u"Project")
+    project = relationship("Project")
 
 
 class Prjlang(Base):
     __tablename__ = "prjlang"
     __table_args__ = (
         ForeignKeyConstraint(
-            ["project_id"], [u"project.project_id"], ondelete=u"CASCADE",
+            ["project_id"],
+            ["project.project_id"],
+            ondelete="CASCADE",
         ),
     )
 
     project_id = Column(Unicode(64), primary_key=True, nullable=False)
     lang_code = Column(
-        ForeignKey(u"i18n.lang_code", ondelete=u"CASCADE"),
+        ForeignKey("i18n.lang_code", ondelete="CASCADE"),
         primary_key=True,
         nullable=False,
         index=True,
     )
     lang_default = Column(Integer)
 
-    i18n = relationship(u"I18n")
-    project = relationship(u"Project")
+    i18n = relationship("I18n")
+    project = relationship("Project")
 
 
 class Prjtech(Base):
     __tablename__ = "prjtech"
     __table_args__ = (
         ForeignKeyConstraint(
-            ["project_id"], [u"project.project_id"], ondelete=u"CASCADE",
+            ["project_id"],
+            ["project.project_id"],
+            ondelete="CASCADE",
         ),
     )
 
     project_id = Column(Unicode(64), primary_key=True, nullable=False)
     tech_id = Column(
-        ForeignKey(u"technology.tech_id", ondelete=u"CASCADE"),
+        ForeignKey("technology.tech_id", ondelete="CASCADE"),
         primary_key=True,
         nullable=False,
         index=True,
     )
 
-    tech = relationship(u"Technology")
-    project = relationship(u"Project")
+    tech = relationship("Technology")
+    project = relationship("Project")
 
 
 class Project(Base):
@@ -604,7 +649,7 @@ class Project(Base):
     project_lon = Column(Unicode(120), nullable=False)
     project_creationdate = Column(DateTime, nullable=False)
     project_localvariety = Column(Integer, server_default=text("'0'"))
-    project_cnty = Column(ForeignKey(u"country.cnty_cod"), nullable=True, index=True)
+    project_cnty = Column(ForeignKey("country.cnty_cod"), nullable=True, index=True)
     project_registration_and_analysis = Column(Integer, server_default=text("'0'"))
     project_label_a = Column(
         Unicode(120), nullable=False, server_default=text("'Option A'")
@@ -618,7 +663,7 @@ class Project(Base):
     project_template = Column(Integer, server_default=text("'0'"))
     extra = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
 
-    country = relationship(u"Country")
+    country = relationship("Country")
 
 
 class Qstoption(Base):
@@ -626,7 +671,7 @@ class Qstoption(Base):
     __table_args__ = ({"mysql_engine": "InnoDB", "mysql_charset": "utf8"},)
 
     question_id = Column(
-        ForeignKey(u"question.question_id", ondelete=u"CASCADE"),
+        ForeignKey("question.question_id", ondelete="CASCADE"),
         primary_key=True,
         nullable=False,
     )
@@ -636,34 +681,40 @@ class Qstoption(Base):
     value_isna = Column(Integer, server_default=text("'0'"))
     value_order = Column(Integer, server_default=text("'0'"))
 
-    question = relationship(u"Question")
+    question = relationship("Question")
 
 
 class Question_group(Base):
     __tablename__ = "qstgroups"
     __table_args__ = (
-        ForeignKeyConstraint(["user_name"], [u"user.user_name"], ondelete=u"CASCADE"),
+        ForeignKeyConstraint(["user_name"], ["user.user_name"], ondelete="CASCADE"),
     )
 
     user_name = Column(Unicode(80), primary_key=True, nullable=False)
     qstgroups_id = Column(Unicode(80), primary_key=True, nullable=False)
     qstgroups_name = Column(Unicode(120))
 
-    user = relationship(u"User")
+    user = relationship("User")
 
 
 class Question_subgroup(Base):
     __tablename__ = "qstsubgroups"
     __table_args__ = (
         ForeignKeyConstraint(
-            ["group_username", "group_id",],
-            [u"qstgroups.user_name", u"qstgroups.qstgroups_id"],
-            ondelete=u"CASCADE",
+            [
+                "group_username",
+                "group_id",
+            ],
+            ["qstgroups.user_name", "qstgroups.qstgroups_id"],
+            ondelete="CASCADE",
         ),
         ForeignKeyConstraint(
-            ["parent_username", "parent_id",],
-            [u"qstgroups.user_name", u"qstgroups.qstgroups_id"],
-            ondelete=u"CASCADE",
+            [
+                "parent_username",
+                "parent_id",
+            ],
+            ["qstgroups.user_name", "qstgroups.qstgroups_id"],
+            ondelete="CASCADE",
         ),
         {"mysql_engine": "InnoDB", "mysql_charset": "utf8"},
     )
@@ -680,8 +731,8 @@ class Question(Base):
     __table_args__ = (
         ForeignKeyConstraint(
             ["qstgroups_user", "qstgroups_id"],
-            [u"qstgroups.user_name", u"qstgroups.qstgroups_id"],
-            ondelete=u"CASCADE",
+            ["qstgroups.user_name", "qstgroups.qstgroups_id"],
+            ondelete="CASCADE",
         ),
         {"mysql_engine": "InnoDB", "mysql_charset": "utf8"},
     )
@@ -698,7 +749,7 @@ class Question(Base):
     question_alwaysinreg = Column(Integer, server_default=text("'0'"))
     question_alwaysinasse = Column(Integer, server_default=text("'0'"))
     question_optperprj = Column(Integer, server_default=text("'0'"))
-    user_name = Column(ForeignKey(u"user.user_name"), index=True)
+    user_name = Column(ForeignKey("user.user_name"), index=True)
     question_posstm = Column(Unicode(120))
     question_negstm = Column(Unicode(120))
     question_twoitems = Column(Unicode(120))
@@ -721,7 +772,7 @@ class Question(Base):
     qstgroups_user = Column(Unicode(80), nullable=True)
     qstgroups_id = Column(Unicode(80), nullable=True)
     extra = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
-    user = relationship(u"User")
+    user = relationship("User")
 
 
 class Registry(Base):
@@ -729,18 +780,27 @@ class Registry(Base):
     __table_args__ = (
         ForeignKeyConstraint(
             ["section_project_id", "section_id"],
-            [u"regsection.project_id", u"regsection.section_id",],
-            ondelete=u"CASCADE",
+            [
+                "regsection.project_id",
+                "regsection.section_id",
+            ],
+            ondelete="CASCADE",
         ),
         ForeignKeyConstraint(
-            ["project_id"], [u"project.project_id"], ondelete=u"CASCADE",
+            ["project_id"],
+            ["project.project_id"],
+            ondelete="CASCADE",
         ),
-        Index("fk_registry_regsection1_idx", "section_project_id", "section_id",),
+        Index(
+            "fk_registry_regsection1_idx",
+            "section_project_id",
+            "section_id",
+        ),
     )
 
     project_id = Column(Unicode(64), primary_key=True, nullable=False)
     question_id = Column(
-        ForeignKey(u"question.question_id", ondelete=u"CASCADE"),
+        ForeignKey("question.question_id", ondelete="CASCADE"),
         primary_key=True,
         nullable=False,
         index=True,
@@ -749,16 +809,18 @@ class Registry(Base):
     section_id = Column(Integer)
     question_order = Column(Integer)
 
-    question = relationship(u"Question")
-    regsection = relationship(u"Regsection")
-    project = relationship(u"Project")
+    question = relationship("Question")
+    regsection = relationship("Regsection")
+    project = relationship("Project")
 
 
 class Regsection(Base):
     __tablename__ = "regsection"
     __table_args__ = (
         ForeignKeyConstraint(
-            ["project_id"], [u"project.project_id"], ondelete=u"CASCADE",
+            ["project_id"],
+            ["project.project_id"],
+            ondelete="CASCADE",
         ),
     )
     project_id = Column(Unicode(64), primary_key=True, nullable=False)
@@ -768,7 +830,7 @@ class Regsection(Base):
     section_order = Column(Integer)
     section_private = Column(Integer, nullable=True)
 
-    project = relationship(u"Project")
+    project = relationship("Project")
 
 
 class Sector(Base):
@@ -782,7 +844,7 @@ class Techalia(Base):
     __tablename__ = "techalias"
 
     tech_id = Column(
-        ForeignKey(u"technology.tech_id", ondelete=u"CASCADE"),
+        ForeignKey("technology.tech_id", ondelete="CASCADE"),
         primary_key=True,
         nullable=False,
         index=True,
@@ -790,7 +852,7 @@ class Techalia(Base):
     alias_id = Column(Integer, primary_key=True, nullable=False)
     alias_name = Column(Unicode(120))
 
-    tech = relationship(u"Technology")
+    tech = relationship("Technology")
 
 
 class Technology(Base):
@@ -798,9 +860,9 @@ class Technology(Base):
 
     tech_id = Column(Integer, primary_key=True)
     tech_name = Column(Unicode(45))
-    user_name = Column(ForeignKey(u"user.user_name", ondelete=u"CASCADE"), index=True)
+    user_name = Column(ForeignKey("user.user_name", ondelete="CASCADE"), index=True)
 
-    user = relationship(u"User")
+    user = relationship("User")
 
 
 class User(Base):
@@ -813,22 +875,26 @@ class User(Base):
     user_email = Column(Unicode(120))
     user_apikey = Column(Unicode(45))
     user_about = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
-    user_cnty = Column(ForeignKey(u"country.cnty_cod"), nullable=False, index=True)
-    user_sector = Column(ForeignKey(u"sector.sector_cod"), nullable=False, index=True)
+    user_cnty = Column(ForeignKey("country.cnty_cod"), nullable=False, index=True)
+    user_sector = Column(ForeignKey("sector.sector_cod"), nullable=False, index=True)
     user_active = Column(Integer, server_default=text("'1'"))
     user_joindate = Column(DateTime, default=datetime.datetime.now())
     extra = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
 
-    country = relationship(u"Country")
-    sector = relationship(u"Sector")
+    country = relationship("Country")
+    sector = relationship("Sector")
 
 
 class RegistryJsonLog(Base):
     __tablename__ = "registry_jsonlog"
     __table_args__ = (
-        ForeignKeyConstraint(["project_id"], [u"project.project_id"],),
         ForeignKeyConstraint(
-            ["enum_user", "enum_id"], [u"enumerator.user_name", u"enumerator.enum_id"],
+            ["project_id"],
+            ["project.project_id"],
+        ),
+        ForeignKeyConstraint(
+            ["enum_user", "enum_id"],
+            ["enumerator.user_name", "enumerator.enum_id"],
         ),
     )
 
@@ -842,8 +908,8 @@ class RegistryJsonLog(Base):
     log_file = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
     status = Column(Integer)
 
-    project = relationship(u"Project")
-    enumerator = relationship(u"Enumerator")
+    project = relationship("Project")
+    enumerator = relationship("Enumerator")
 
 
 class AssessmentJsonLog(Base):
@@ -851,10 +917,11 @@ class AssessmentJsonLog(Base):
     __table_args__ = (
         ForeignKeyConstraint(
             ["project_id", "ass_cod"],
-            [u"assessment.project_id", u"assessment.ass_cod"],
+            ["assessment.project_id", "assessment.ass_cod"],
         ),
         ForeignKeyConstraint(
-            ["enum_user", "enum_id"], [u"enumerator.user_name", u"enumerator.enum_id"],
+            ["enum_user", "enum_id"],
+            ["enumerator.user_name", "enumerator.enum_id"],
         ),
         {"mysql_engine": "InnoDB", "mysql_charset": "utf8"},
     )
@@ -869,14 +936,14 @@ class AssessmentJsonLog(Base):
     log_file = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
     status = Column(Integer)
 
-    assessment = relationship(u"Assessment")
-    enumerator = relationship(u"Enumerator")
+    assessment = relationship("Assessment")
+    enumerator = relationship("Enumerator")
 
 
 class Chat(Base):
     __tablename__ = "chat"
     __table_args__ = (
-        ForeignKeyConstraint(["user_name"], [u"user.user_name"], ondelete=u"CASCADE"),
+        ForeignKeyConstraint(["user_name"], ["user.user_name"], ondelete="CASCADE"),
     )
     user_name = Column(Unicode(80), primary_key=True, nullable=False)
     chat_id = Column(Integer, primary_key=True, nullable=False)
@@ -886,15 +953,21 @@ class Chat(Base):
     chat_tofrom = Column(Integer)
     chat_date = Column(DateTime)
 
-    project = relationship(u"User")
+    project = relationship("User")
 
 
 class userProject(Base):
     __tablename__ = "user_project"
 
     __table_args__ = (
-        ForeignKeyConstraint(["project_id"], [u"project.project_id"],),
-        ForeignKeyConstraint(["user_name"], [u"user.user_name"],),
+        ForeignKeyConstraint(
+            ["project_id"],
+            ["project.project_id"],
+        ),
+        ForeignKeyConstraint(
+            ["user_name"],
+            ["user.user_name"],
+        ),
         {"mysql_engine": "InnoDB", "mysql_charset": "utf8"},
     )
 
@@ -903,5 +976,5 @@ class userProject(Base):
     access_type = Column(Integer, nullable=False)  # 1=Owner,2=Admin,3=Editor,4=Member.
     project_dashboard = Column(Integer, server_default=text("'1'"))
 
-    project = relationship(u"Project")
-    user = relationship(u"User")
+    project = relationship("Project")
+    user = relationship("User")

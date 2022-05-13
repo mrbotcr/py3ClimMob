@@ -332,7 +332,9 @@ class assessment_view(privateView):
                     activeProjectId, assessmentid, self.request
                 ),
                 "UserQuestion": availableAssessmentQuestions(
-                    activeProjectId, assessmentid, self.request,
+                    activeProjectId,
+                    assessmentid,
+                    self.request,
                 ),
                 "Categories": getCategoriesFromUserCollaborators(
                     activeProjectId, self.request
@@ -367,7 +369,10 @@ class assessmentFormCreation_view(privateView):
 
                 if not questionWithoutGroup:
                     modified, error = saveAssessmentOrder(
-                        activeProjectId, assessmentid, newOrder, self.request,
+                        activeProjectId,
+                        assessmentid,
+                        newOrder,
+                        self.request,
                     )
                 else:
                     error_summary["questionWithoutGroup"] = self._(

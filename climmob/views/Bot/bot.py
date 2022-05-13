@@ -13,7 +13,7 @@ class sendFeedbackToBot_view(apiView):
                 return o.__str__()
 
         if self.request.method == "POST":
-            obligatory = [u"message"]
+            obligatory = ["message"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):

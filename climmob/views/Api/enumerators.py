@@ -18,18 +18,18 @@ class createEnumerator_view(apiView):
         if self.request.method == "POST":
 
             obligatory = [
-                u"enum_id",
-                u"enum_name",
-                u"enum_password",
-                u"enum_password_re",
+                "enum_id",
+                "enum_name",
+                "enum_password",
+                "enum_password_re",
             ]
 
             possibles = [
-                u"enum_id",
-                u"enum_name",
-                u"enum_password",
-                u"enum_password_re",
-                u"enum_telephone",
+                "enum_id",
+                "enum_name",
+                "enum_password",
+                "enum_password_re",
+                "enum_telephone",
             ]
 
             dataworking = json.loads(self.body)
@@ -137,16 +137,16 @@ class updateEnumerator_view(apiView):
         if self.request.method == "POST":
 
             obligatory = [
-                u"enum_id",
+                "enum_id",
             ]
 
             possibles = [
-                u"enum_id",
-                u"enum_name",
-                u"enum_password",
-                u"enum_password_re",
-                u"enum_telephone",
-                u"enum_active",
+                "enum_id",
+                "enum_name",
+                "enum_password",
+                "enum_password_re",
+                "enum_telephone",
+                "enum_active",
             ]
 
             dataworking = json.loads(self.body)
@@ -229,10 +229,10 @@ class updatePasswordEnumerator_view(apiView):
         if self.request.method == "POST":
 
             obligatory = [
-                u"enum_id",
-                u"enum_password",
-                u"enum_password_new",
-                u"enum_password_new_re",
+                "enum_id",
+                "enum_password",
+                "enum_password_new",
+                "enum_password_new_re",
             ]
             dataworking = json.loads(self.body)
 
@@ -314,7 +314,7 @@ class apiDeleteEnumerator_view(apiView):
 
         if self.request.method == "POST":
 
-            obligatory = [u"enum_id"]
+            obligatory = ["enum_id"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):

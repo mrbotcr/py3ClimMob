@@ -34,7 +34,7 @@ class readListOfTemplates_view(apiView):
     def processView(self):
         if self.request.method == "GET":
 
-            obligatory = [u"project_type"]
+            obligatory = ["project_type"]
 
             dataworking = json.loads(self.body)
 
@@ -77,7 +77,8 @@ class readListOfCountries_view(apiView):
         if self.request.method == "GET":
 
             response = Response(
-                status=200, body=json.dumps(getCountryList(self.request)),
+                status=200,
+                body=json.dumps(getCountryList(self.request)),
             )
             return response
         else:
@@ -91,36 +92,36 @@ class createProject_view(apiView):
         if self.request.method == "POST":
 
             obligatory = [
-                u"project_cod",
-                u"project_name",
-                u"project_abstract",
-                u"project_tags",
-                u"project_pi",
-                u"project_piemail",
-                u"project_numobs",
-                u"project_cnty",
-                u"project_registration_and_analysis",
-                u"project_label_a",
-                u"project_label_b",
-                u"project_label_c",
+                "project_cod",
+                "project_name",
+                "project_abstract",
+                "project_tags",
+                "project_pi",
+                "project_piemail",
+                "project_numobs",
+                "project_cnty",
+                "project_registration_and_analysis",
+                "project_label_a",
+                "project_label_b",
+                "project_label_c",
             ]
 
             possibles = [
-                u"user_owner",
-                u"project_cod",
-                u"project_name",
-                u"project_abstract",
-                u"project_tags",
-                u"project_pi",
-                u"project_piemail",
-                u"project_numobs",
-                u"project_cnty",
-                u"project_registration_and_analysis",
-                u"project_clone",
-                u"project_label_a",
-                u"project_label_b",
-                u"project_label_c",
-                u"project_template",
+                "user_owner",
+                "project_cod",
+                "project_name",
+                "project_abstract",
+                "project_tags",
+                "project_pi",
+                "project_piemail",
+                "project_numobs",
+                "project_cnty",
+                "project_registration_and_analysis",
+                "project_clone",
+                "project_label_a",
+                "project_label_b",
+                "project_label_c",
+                "project_template",
             ]
 
             dataworking = json.loads(self.body)
@@ -241,7 +242,10 @@ class createProject_view(apiView):
                                             dataworking[
                                                 "project_registration_and_analysis"
                                             ]
-                                        ) not in ["0", "1",]:
+                                        ) not in [
+                                            "0",
+                                            "1",
+                                        ]:
                                             response = Response(
                                                 status=401,
                                                 body=self._(
@@ -252,7 +256,10 @@ class createProject_view(apiView):
 
                                         if str(
                                             dataworking["project_localvariety"]
-                                        ) not in ["0", "1",]:
+                                        ) not in [
+                                            "0",
+                                            "1",
+                                        ]:
                                             response = Response(
                                                 status=401,
                                                 body=self._(
@@ -324,10 +331,12 @@ class createProject_view(apiView):
                                                             assess["ass_cod"]
                                                         )
 
-                                                    newProjectId = getTheProjectIdForOwner(
-                                                        self.user.login,
-                                                        dataworking["project_cod"],
-                                                        self.request,
+                                                    newProjectId = (
+                                                        getTheProjectIdForOwner(
+                                                            self.user.login,
+                                                            dataworking["project_cod"],
+                                                            self.request,
+                                                        )
                                                     )
 
                                                     functionCreateClone(
@@ -440,24 +449,24 @@ class updateProject_view(apiView):
         if self.request.method == "POST":
 
             possibles = [
-                u"user_owner",
-                u"project_cod",
-                u"project_name",
-                u"project_abstract",
-                u"project_tags",
-                u"project_pi",
-                u"project_piemail",
-                u"project_numobs",
-                u"project_cnty",
-                u"project_registration_and_analysis",
-                u"user_name",
-                u"project_numcom",
-                u"project_label_a",
-                u"project_label_b",
-                u"project_label_c",
-                u"project_template",
+                "user_owner",
+                "project_cod",
+                "project_name",
+                "project_abstract",
+                "project_tags",
+                "project_pi",
+                "project_piemail",
+                "project_numobs",
+                "project_cnty",
+                "project_registration_and_analysis",
+                "user_name",
+                "project_numcom",
+                "project_label_a",
+                "project_label_b",
+                "project_label_c",
+                "project_template",
             ]
-            obligatory = [u"project_cod", u"user_owner"]
+            obligatory = ["project_cod", "user_owner"]
 
             dataworking = json.loads(self.body)
             dataworking["user_name"] = self.user.login
@@ -590,7 +599,8 @@ class updateProject_view(apiView):
 
                                 if isNecessarygenerateCombinations:
                                     changeTheStateOfCreateComb(
-                                        activeProjectId, self.request,
+                                        activeProjectId,
+                                        self.request,
                                     )
 
                             if (
@@ -599,7 +609,10 @@ class updateProject_view(apiView):
                             ):
                                 if str(
                                     dataworking["project_registration_and_analysis"]
-                                ) not in ["0", "1",]:
+                                ) not in [
+                                    "0",
+                                    "1",
+                                ]:
                                     response = Response(
                                         status=401,
                                         body=self._(
@@ -657,7 +670,9 @@ class updateProject_view(apiView):
                             ):
 
                                 modified, message = modifyProject(
-                                    activeProjectId, dataworking, self.request,
+                                    activeProjectId,
+                                    dataworking,
+                                    self.request,
                                 )
 
                                 if modified:
@@ -758,7 +773,7 @@ class deleteProject_view_api(apiView):
 
         if self.request.method == "POST":
 
-            obligatory = [u"project_cod", u"user_owner"]
+            obligatory = ["project_cod", "user_owner"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -815,7 +830,7 @@ class readCollaborators_view(apiView):
 
         if self.request.method == "GET":
 
-            obligatory = [u"project_cod", u"user_owner"]
+            obligatory = ["project_cod", "user_owner"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -857,8 +872,8 @@ class addCollaborator_view(apiView):
         if self.request.method == "POST":
 
             obligatory = [
-                u"project_cod",
-                u"user_owner",
+                "project_cod",
+                "user_owner",
                 "user_collaborator",
                 "access_type",
             ]
@@ -896,7 +911,9 @@ class addCollaborator_view(apiView):
                 if getUserInfo(self.request, dataworking["user_collaborator"]):
 
                     if not theUserBelongsToTheProject(
-                        dataworking["user_collaborator"], activeProjectId, self.request,
+                        dataworking["user_collaborator"],
+                        activeProjectId,
+                        self.request,
                     ):
                         if dataworking["access_type"] in [2, 3, 4, "2", "3", "4"]:
 
@@ -955,7 +972,7 @@ class deleteCollaborator_view(apiView):
 
         if self.request.method == "POST":
 
-            obligatory = [u"project_cod", u"user_owner", "user_collaborator"]
+            obligatory = ["project_cod", "user_owner", "user_collaborator"]
             dataworking = json.loads(self.body)
 
             if sorted(obligatory) == sorted(dataworking.keys()):
@@ -990,7 +1007,9 @@ class deleteCollaborator_view(apiView):
                 if getUserInfo(self.request, dataworking["user_collaborator"]):
 
                     if theUserBelongsToTheProject(
-                        dataworking["user_collaborator"], activeProjectId, self.request,
+                        dataworking["user_collaborator"],
+                        activeProjectId,
+                        self.request,
                     ):
                         if (
                             dataworking["user_owner"]
