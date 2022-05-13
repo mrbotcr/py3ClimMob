@@ -97,13 +97,14 @@ class productsView(climmobPrivateView):
                     else:
                         product["exists"] = "incorrect"
 
-                    if (
-                        product["product_id"] == "documentform"
-                        or product["product_id"] == "datacsv"
-                        or product["product_id"] == "errorlogdocument"
-                        or product["product_id"] == "multimediadownloads"
-                        or product["product_id"] == "uploaddata"
-                    ):
+                    if product["product_id"] in [
+                        "documentform",
+                        "datacsv",
+                        "errorlogdocument",
+                        "multimediadownloads",
+                        "uploaddata",
+                        "dataxlsx",
+                    ]:
                         product["extraInformation"] = getProjectAssessmentInfo(
                             activeProjectData["project_id"],
                             product["process_name"].split("_")[3],

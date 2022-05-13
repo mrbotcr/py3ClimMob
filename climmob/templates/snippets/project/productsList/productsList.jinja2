@@ -94,7 +94,11 @@
                                                                                 {% if product.product_id == "qrpackagewithtechnologies" %}
                                                                                     {{ _("List of packages with QR for the participant registration form (Showing technology options).") }}
                                                                                 {% else %}
-                                                                                    {{ product.product_id }}
+                                                                                    {% if product.product_id == "dataxlsx" %}
+                                                                                        {{ _("Information collected in the assessment form") }}: {{ product.extraInformation.ass_desc }}
+                                                                                    {% else %}
+                                                                                        {{ product.product_id }}
+                                                                                    {% endif %}
                                                                                 {% endif %}
                                                                             {% endif %}
                                                                         {% endif %}
