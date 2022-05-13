@@ -44,7 +44,7 @@ __all__ = [
     "getMD5Project",
     "getProjectTemplates",
     "getProjectIsTemplate",
-    "getProjectUserAndOwner"
+    "getProjectUserAndOwner",
 ]
 
 
@@ -794,14 +794,15 @@ def getProductData(projectId, celerytaskId, productId, request):
     )
     return mappedData
 
+
 def getProjectUserAndOwner(projectId, request):
 
     mappedData = mapFromSchema(
         request.dbsession.query(userProject, Project.project_cod)
-            .filter(userProject.project_id == projectId)
-            .filter(userProject.access_type == 1)
-            .filter(userProject.project_id == Project.project_id)
-            .first()
+        .filter(userProject.project_id == projectId)
+        .filter(userProject.access_type == 1)
+        .filter(userProject.project_id == Project.project_id)
+        .first()
     )
 
     return mappedData
