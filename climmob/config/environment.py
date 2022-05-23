@@ -21,7 +21,7 @@ from climmob.config.jinja_extensions import (
 import climmob.resources as r
 import climmob.products as prd
 from climmob.config.mainresources import createResources
-from climmob.models import addColumnToSchema
+from climmob.models import addColumnToSchema, add_modules_to_schema
 import climmob.utility.helpers as helpers
 from climmob.products.climmob_products import register_products
 
@@ -190,8 +190,15 @@ def load_environment(settings, config, apppath, policy_array):
     # Call any connected plugins to add their modifications into the schema
     schemas_allowed = ["user", "project", "question", "assessment"]
 
+    modules_allowed = ["climmob.models.climmobv4"]
+
     for plugin in p.PluginImplementations(p.IDatabase):
         schemas_allowed = plugin.update_extendable_tables(schemas_allowed)
+
+    for plugin in p.PluginImplementations(p.IDatabase):
+        modules_allowed = plugin.update_extendable_modules(modules_allowed)
+
+    add_modules_to_schema(modules_allowed)
 
     for plugin in p.PluginImplementations(p.IDatabase):
         plugin.update_orm(config)
