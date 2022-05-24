@@ -153,15 +153,25 @@
                             {% if editTemplate %}
                                 <div class="hr-line-dashed"></div>
 
-                                <div class="form-group" style="margin: 5px">
+                                <div class="form-group" style="margin: 5px" id="div_of_templates">
                                     <label class="col-sm-4 control-label">{{ _("Do you want to create your project from a template ?") }}</label>
                                     <div class="col-sm-8">
-                                        <select id="usingTemplate" name="usingTemplate" class="form-control chosen-select" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} {% if not permissionForChanges %} disabled {% endif %} >
-                                            <option value="">{{ _("Select a template") }}</option>
-                                            {% for template in listOfTemplates %}
-                                                <option value="{{ template.project_id }}" {% if dataworking["usingTemplate"] == template.project_id %}selected{% endif %}>{{ template.project_name }}</option>
-                                            {% endfor %}
-                                        </select>
+                                        <table style="width: 100%">
+                                            <tr>
+                                                <td style="width: 80%">
+                                                    <select id="usingTemplate" name="usingTemplate" class="form-control chosen-select" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} {% if not permissionForChanges %} disabled {% endif %} style="width:0px;" >
+                                                        <option value="">{{ _("Select a template") }}</option>
+                                                        {% for template in listOfTemplates %}
+                                                            <option value="{{ template.project_id }}" {% if dataworking["usingTemplate"] == template.project_id %}selected{% endif %}>{{ template.project_name }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </td>
+                                                <td style="vertical-align: middle; text-align: center">
+                                                    <a class="btn btn-success btn-rounded  btn-xs" style="color: white" onclick="showHelp()"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a>
+                                                </td>
+                                            </tr>
+                                        </table>
+
                                         {% if showNote %}
                                             <br>
                                             <br>
@@ -229,4 +239,27 @@
     )
 
     $('.chosen-select').chosen({width: "100%"});
+
+    function showHelp()
+    {
+
+        var tour = new Tour({
+            steps: [
+                    {
+                        element: "#div_of_templates",
+                        title: "{{ _("Create your project from a template") }}",
+                        content: "",
+                        placement: "top"
+                    }
+                   ],
+            template: "<div class='popover tour' style='border-color: #23c6c8; max-width: none; width:814px'><div class='arrow' ></div><h3 class='popover-title btn-info'></h3><div class='popover-content'></div><div class='popover-navigation'> <button class='btn btn-sm btn-secondary' data-role='end'>{{ _("Close") }}</button> </div>",
+            backdrop: true,
+            backdropContainer: 'body'
+        });
+
+        // Initialize the tour
+        tour.init();
+        tour.restart();
+    }
+
 </script>

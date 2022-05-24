@@ -464,7 +464,7 @@
                                                             <tr>
                                                                 <td colspan="2">
                                                                     {% if progress.regtotal > 0 %}
-                                                                        <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('EditDataRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry') }}"><i class="fa fa-table"></i> {{ _("View data") }}</a>
+                                                                        <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('EditDataRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry') }}"><i class="fa fa-table"></i> {{ _("View and edit data") }}</a>
 
                                                                         <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data") }}</a>
 
@@ -597,7 +597,7 @@
                                                                             {% block rhomis_btns_for_datacollection scoped%}
 
                                                                                 {% if assessment.asstotal > 0 %}
-                                                                                    <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('EditDataAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}" href="#"><i class="fa fa-table"></i> {{ _("View data") }}</a>
+                                                                                    <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('EditDataAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}" href="#"><i class="fa fa-table"></i> {{ _("View and edit data") }}</a>
                                                                                     <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i class="fa fa-cloud-download"></i> {{ _("Download data") }}</a>
 
                                                                                     {% if assessment.ass_status == 1%}

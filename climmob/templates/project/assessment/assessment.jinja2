@@ -39,7 +39,7 @@
                     <div class="ibox-title">
                         <h5>{{ _("Data collection moment details") }}</h5>
                         <div class="ibox-tools">
-                            <button id="btn_cancel_assessment"  class="btn btn-xs btn-default pull-right " > {{ _("Clear form") }}</button>
+                            <button id="btn_cancel_assessment"  class="btn btn-xs btn-default pull-right " ><i class="fa fa-undo"></i>  {{ _("Clear form") }}</button>
                         </div>
                     </div>
                     <div class="ibox-content">
@@ -98,13 +98,13 @@
                                     <td class="text-center" style="vertical-align: middle"> {{ assessment.ass_days }}</td>
                                     <td class="text-center" style="vertical-align: middle">
                                         {% block rhomis_BtnSeeAssessment scoped%}
-                                            <a class="btn btn-default " href="{{ request.route_url('assessmentdetail', user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}" title="{{ _("See questions") }}"><i class="fa fa-list-ul"></i> {{ _("Show form") }}</a>
+                                            <a class="btn btn-default " href="{{ request.route_url('assessmentdetail', user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}" title="{{ _("See form") }}"><i class="fa fa-list-ul"></i> {{ _("Show") }}</a>
                                         {% endblock rhomis_BtnSeeAssessment  %}
 
                                         {% if assessment.ass_status == 0 %}
                                             {% if not onlySee %}
-                                                <a class="btn btn-warning btn-circle" onclick='seeAssessment("{{ assessment.ass_cod|string }}")' title="{{ _("Edit data collection") }}"><i class="fa fa-pencil"></i></a>
-                                                <button class="btn btn-danger btn-circle"  onclick="showDelete('{{ request.route_url('deleteassessment', user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}','{{ _("Do you really want to remove this data collection moment?") }}','{{ request.session.get_csrf_token() }}')" title="{{ _("Remove data collection")}}"><i class="fa fa-trash"></i></button>
+                                                <a class="btn btn-warning " onclick='seeAssessment("{{ assessment.ass_cod|string }}")' title="{{ _("Edit data collection") }}"><i class="fa fa-pencil"></i> {{ _("Edit") }}</a>
+                                                <button class="btn btn-danger "  onclick="showDelete('{{ request.route_url('deleteassessment', user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}','{{ _("Do you really want to remove this data collection moment?") }}','{{ request.session.get_csrf_token() }}')" title="{{ _("Remove data collection")}}"><i class="fa fa-trash"></i> {{ _("Remove") }}</button>
                                             {% endif %}
                                         {% else %}
                                             {% if assessment.ass_status == 1 %}

@@ -23,6 +23,7 @@
 {% endblock topScripts %}
 
 {% block pageheading %}
+    {% set iconOfLibrary="fa-flask" %}
     {% set _linkWiki="https://climmob.net/blog/wiki/technologies-library/" %}
     {% set _title= _("Technologies") %}
     {% include 'snippets/menuheading.jinja2' %}
@@ -97,7 +98,7 @@
                 <div class="ibox-title">
                     <h5>{{ _("Technology details") }}</h5>
                     <div class="ibox-tools">
-                        <button id="btn_cancel_technology"  class="btn btn-xs btn-default pull-right " >{{ _("Clear and close form") }} </button>
+                        <button id="btn_cancel_technology"  class="btn btn-xs btn-default pull-right " ><i class="fa fa-close"></i> {{ _("Clear and close form") }} </button>
                     </div>
                 </div>
                 <div class="ibox-content">
@@ -137,7 +138,7 @@
                 <div class="ibox-title">
                     <h5>{{ _("Technology options details") }}</h5>
                     <div class="ibox-tools">
-                        <button id="btn_cancel_technology_options"  class="btn btn-xs btn-default pull-right " >{{ _("Clear and close form") }} </button>
+                        <button id="btn_cancel_technology_options"  class="btn btn-xs btn-default pull-right " ><i class="fa fa-close"></i> {{ _("Clear and close form") }} </button>
                     </div>
                 </div>
                 <div class="ibox-content">

@@ -168,6 +168,10 @@ def availableRegistryQuestions(projectId, request, registration_and_analysis):
         + "') AND"
         " question.user_name = user.user_name"
     )
+
+    if registration_and_analysis == 0:
+        sql = sql + " AND question.question_forms in (1,3)"
+
     questions = request.dbsession.execute(sql).fetchall()
 
     result = []

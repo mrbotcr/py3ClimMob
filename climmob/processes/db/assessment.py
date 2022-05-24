@@ -608,6 +608,7 @@ def availableAssessmentQuestions(projectId, assessment, request):
         + "')"
         " AND question.question_id NOT IN (" + sqlOverral + ") AND"
         " question.user_name = user.user_name"
+        " AND question.question_forms in (2,3)"
     )
     questions = request.dbsession.execute(sql).fetchall()
 
