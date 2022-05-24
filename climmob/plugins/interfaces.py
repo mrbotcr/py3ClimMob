@@ -336,6 +336,16 @@ class IDatabase(Interface):  # pragma: no cover
         """
         raise NotImplementedError("after_create must be implemented in subclasses")
 
+    def update_extendable_modules(self, modules_allowed):
+        """
+        Allow to add new tables to the list of tables modules for the schema to filter
+        :param modules_allowed: "Current list of tables allowed"
+        :return: Must return a modified version of modules_allowed
+        """
+        raise NotImplementedError(
+            "update_extendable_modules must be implemented in subclasses"
+        )
+
 
 class IForm(Interface):  # pragma: no cover
     """

@@ -3,9 +3,16 @@ import json
 from sqlalchemy import inspect
 from future.utils import iteritems
 
-__all__ = ["initialize_schema", "addColumnToSchema", "mapToSchema", "mapFromSchema"]
+__all__ = [
+    "initialize_schema",
+    "addColumnToSchema",
+    "mapToSchema",
+    "mapFromSchema",
+    "add_modules_to_schema",
+]
 
 _SCHEMA = []
+_MODULES = []
 
 
 def initialize_schema():
@@ -22,6 +29,11 @@ def initialize_schema():
                 break
         if not table_found:
             _SCHEMA.append({"name": table.name, "fields": fields})
+
+
+def add_modules_to_schema(module_list):
+    for a_module in module_list:
+        _MODULES.append(a_module)
 
 
 # This function add new columns to the schema in the extra field
@@ -137,7 +149,7 @@ def mapFromSchema(data):
                 # noinspection PyProtectedMember
                 dict_result = data._asdict()  # This is not private
                 for key, value in dict_result.items():
-                    if value.__class__.__module__ == "climmob.models.climmobv4":
+                    if value.__class__.__module__ in _MODULES:
                         for c in inspect(value).mapper.column_attrs:
                             if c.key != "extra":
                                 mapped_data[c.key] = getattr(value, c.key)
@@ -169,7 +181,7 @@ def mapFromSchema(data):
                 # noinspection PyProtectedMember
                 dict_result = row._asdict()  # This is not private
                 for key, value in dict_result.items():
-                    if value.__class__.__module__ == "climmob.models.climmobv4":
+                    if value.__class__.__module__ in _MODULES:
                         for c in inspect(value).mapper.column_attrs:
                             if c.key != "extra":
                                 temp[c.key] = getattr(value, c.key)
