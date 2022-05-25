@@ -139,5 +139,27 @@
 
             $('.footable').footable();
         })
+
+        function showHelp()
+        {
+            alert("Ingresa")
+            var tour = new Tour({
+                steps: [
+                        {
+                            element: "#div_for_help",
+                            title: "{{ _("Switch project") }}",
+                            content: "<p>{{ _("Click on the row of the table to change the project in the \"Main menu\" section.") }}</p><img src='{{ request.url_for_static('gif/switch_project.gif') }}' />",
+                            placement: "bottom"
+                        }
+                       ],
+                template: "<div class='popover tour' style='border-color: #23c6c8; max-width: none; width:757px'><div class='arrow' ></div><h3 class='popover-title btn-info'></h3><div class='popover-content'></div><div class='popover-navigation'> <button class='btn btn-sm btn-secondary' data-role='end'>{{ _("Close") }}</button> </div>",
+                backdrop: true,
+                backdropContainer: 'body'
+            });
+
+            // Initialize the tour
+            tour.init();
+            tour.restart();
+        }
     </script>
 {% endblock pagecontent %}

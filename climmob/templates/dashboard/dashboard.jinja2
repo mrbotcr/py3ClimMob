@@ -139,14 +139,14 @@
                                         <i class="fa fa-sign-out"></i> {{ _("Log out") }}
                                     </a>
                                 </li>
-{#                                <li>#}
-{#                                    {% block headsidebar %}#}
-{#                                        <a class="right-sidebar-toggle" href="{{ request.route_url('projectList') }}">#}
-{#                                            <i class="fa fa-tasks"> </i> {{ _("Projects") }}#}
-{#                                            {% do withsidebar.append(1) %}#}
-{#                                        </a>#}
-{#                                    {% endblock headsidebar %}#}
-{#                                </li>#}
+                                <li>
+                                    {% block headsidebar %}
+                                        <a class="right-sidebar-toggle" href="{{ request.route_url('projectList') }}">
+                                            <i class="fa fa-tasks"> </i> {{ _("Projects") }}
+                                            {% do withsidebar.append(1) %}
+                                        </a>
+                                    {% endblock headsidebar %}
+                                </li>
                             {% endblock headitems %}
                         </ul>
                     </nav>
