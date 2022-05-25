@@ -97,64 +97,79 @@ def getQuestionsByType(projectId, request):
         .all()
     )
     for assessment in assessments:
+
         _assessments.append(assessment)
-        sections = mapFromSchema(
-            request.dbsession.query(Asssection)
-            .filter(Asssection.project_id == projectId)
-            .filter(Asssection.ass_cod == assessment["ass_cod"])
-            .order_by(Asssection.section_order)
-            .all()
-        )
 
-        for section in sections:
+        isExternal = False
 
-            questions = mapFromSchema(
-                request.dbsession.query(AssDetail)
-                .filter(AssDetail.project_id == projectId)
-                .filter(AssDetail.ass_cod == assessment["ass_cod"])
-                .filter(AssDetail.section_id == section["section_id"])
-                .order_by(AssDetail.question_order)
+        if "ass_rhomis" in assessment.keys():
+            if assessment["ass_rhomis"] == 1:
+                isExternal = True
+                for plugin in p.PluginImplementations(p.IRhomis):
+                    # print("Esta activo el plugin de externos")
+                    dic = plugin.get_questions_by_type_external(
+                        request, projectId, assessment["ass_cod"], assessment, dic
+                    )
+
+        if not isExternal:
+            sections = mapFromSchema(
+                request.dbsession.query(Asssection)
+                .filter(Asssection.project_id == projectId)
+                .filter(Asssection.ass_cod == assessment["ass_cod"])
+                .order_by(Asssection.section_order)
                 .all()
             )
-            for question in questions:
 
-                questionData = mapFromSchema(
-                    request.dbsession.query(
-                        Question,
-                        func.coalesce(
-                            I18nQuestion.question_name, Question.question_name
-                        ).label("question_name"),
-                        func.coalesce(
-                            I18nQuestion.question_desc, Question.question_desc
-                        ).label("question_desc"),
-                        func.coalesce(
-                            I18nQuestion.question_posstm, Question.question_posstm
-                        ).label("question_posstm"),
-                        func.coalesce(
-                            I18nQuestion.question_negstm, Question.question_negstm
-                        ).label("question_negstm"),
-                        func.coalesce(
-                            I18nQuestion.question_perfstmt, Question.question_perfstmt
-                        ).label("question_perfstmt"),
-                    )
-                    .join(
-                        I18nQuestion,
-                        and_(
-                            Question.question_id == I18nQuestion.question_id,
-                            I18nQuestion.lang_code == request.locale_name,
-                        ),
-                        isouter=True,
-                    )
-                    .filter(Question.question_id == question["question_id"])
-                    .first()
+            for section in sections:
+
+                questions = mapFromSchema(
+                    request.dbsession.query(AssDetail)
+                    .filter(AssDetail.project_id == projectId)
+                    .filter(AssDetail.ass_cod == assessment["ass_cod"])
+                    .filter(AssDetail.section_id == section["section_id"])
+                    .order_by(AssDetail.question_order)
+                    .all()
                 )
+                for question in questions:
 
-                dictName, dictQues = addQuestionToDictionary(
-                    projectLabels, questionData, numComb, assessment
-                )
+                    questionData = mapFromSchema(
+                        request.dbsession.query(
+                            Question,
+                            func.coalesce(
+                                I18nQuestion.question_name, Question.question_name
+                            ).label("question_name"),
+                            func.coalesce(
+                                I18nQuestion.question_desc, Question.question_desc
+                            ).label("question_desc"),
+                            func.coalesce(
+                                I18nQuestion.question_posstm, Question.question_posstm
+                            ).label("question_posstm"),
+                            func.coalesce(
+                                I18nQuestion.question_negstm, Question.question_negstm
+                            ).label("question_negstm"),
+                            func.coalesce(
+                                I18nQuestion.question_perfstmt,
+                                Question.question_perfstmt,
+                            ).label("question_perfstmt"),
+                        )
+                        .join(
+                            I18nQuestion,
+                            and_(
+                                Question.question_id == I18nQuestion.question_id,
+                                I18nQuestion.lang_code == request.locale_name,
+                            ),
+                            isouter=True,
+                        )
+                        .filter(Question.question_id == question["question_id"])
+                        .first()
+                    )
 
-                if dictName != "":
-                    dic[dictName].append(dictQues)
+                    dictName, dictQues = addQuestionToDictionary(
+                        projectLabels, questionData, numComb, assessment
+                    )
+
+                    if dictName != "":
+                        dic[dictName].append(dictQues)
 
     return dic, _assessments
 

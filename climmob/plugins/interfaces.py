@@ -456,3 +456,8 @@ class IRhomis(Interface):
 
     def before_clean_errors(self, request, projectId, assCod, dic):
         """ """
+
+    def get_questions_by_type_external(
+        self, request, projectId, assCod, assessmentData, dic
+    ):
+        """ """
