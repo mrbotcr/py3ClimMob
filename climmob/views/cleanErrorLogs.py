@@ -237,6 +237,77 @@ class cleanErrorLogs_view(privateView):
                                         )
                                     )
 
+                            if "deleteboth" in dataworking.keys():
+
+                                if formId == "registry":
+
+                                    if str(dataworking["txt_oldvalue"]) == str(
+                                        dataworking["newqst"].split("-")[1]
+                                    ):
+                                        query = (
+                                            "Delete from "
+                                            + activeProjectUser
+                                            + "_"
+                                            + activeProjectCod
+                                            + ".REG_geninfo where qst162='"
+                                            + dataworking["newqst"].split("-")[1]
+                                            + "'"
+                                        )
+                                        sql_execute(query)
+
+                                    update_registry_status_log(
+                                        self.request,
+                                        activeProjectId,
+                                        logId,
+                                        3,
+                                    )
+
+                                    self.returnRawViewResult = True
+                                    return HTTPFound(
+                                        location=self.request.route_url(
+                                            "CleanErrorLogs",
+                                            user=activeProjectUser,
+                                            project=activeProjectCod,
+                                            formid=formId,
+                                        )
+                                    )
+                                else:
+
+                                    if str(dataworking["txt_oldvalue"]) == str(
+                                        dataworking["newqst2"]
+                                    ):
+                                        query = (
+                                            "Delete from "
+                                            + activeProjectUser
+                                            + "_"
+                                            + activeProjectCod
+                                            + ".ASS"
+                                            + codeId
+                                            + "_geninfo where qst163='"
+                                            + dataworking["newqst2"]
+                                            + "'"
+                                        )
+                                        sql_execute(query)
+
+                                    update_assessment_status_log(
+                                        self.request,
+                                        activeProjectId,
+                                        codeId,
+                                        logId,
+                                        3,
+                                    )
+
+                                    self.returnRawViewResult = True
+                                    return HTTPFound(
+                                        location=self.request.route_url(
+                                            "CleanErrorLogsAssessment",
+                                            user=activeProjectUser,
+                                            project=activeProjectCod,
+                                            formid=formId,
+                                            codeid=codeId,
+                                        )
+                                    )
+
                         else:
                             new_json = convertJsonLog(
                                 formId,
