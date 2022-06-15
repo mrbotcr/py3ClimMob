@@ -1,10 +1,10 @@
 
 <div class="row" style="background-color: white" id="div_for_help">
-    <div class="col-lg-12">
-        <div class="ibox-content" style="padding: 5px 20px 0px 20px;">
+    <div class="col-lg-12"  style=" {% if iconOfLibrary %} background-image: url('{{ request.url_for_static('landing/library.png') }}'); background-size: contain; {% endif %}" >
+        <div class="ibox-content" style="padding: 5px 20px 0px 20px; {% if iconOfLibrary %}background-color: rgba(255,255,255,0.9); {% endif %}">
             <table width="100%">
                 <tr>
-                    <td style="width: {% if iconOfLibrary %}45{% else %}95{% endif %}%">
+                    <td style="{% if iconOfLibrary %}width:45%; color: black;{% else %}width:95%{% endif %}">
                         <h2 >{{ _title }}</h2>
                     </td>
                     {% if iconOfLibrary %}
@@ -22,7 +22,7 @@
                     <td style="vertical-align: middle">
                         {% set showTabsOfMenu = True %}
                         {% if showTabsOfMenu %}
-                            <ol class="breadcrumb">
+                            <ol class="breadcrumb" style="{% if iconOfLibrary %} background-color: rgba(255,255,255,0.1); color: black{% endif %}" >
                                 <li>
                                     <a href="{{ request.route_url('dashboard') }}">{{ _("Main menu") }}</a>
                                 </li>
