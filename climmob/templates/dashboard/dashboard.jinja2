@@ -250,7 +250,11 @@
                                         {% endif %}
                                         <div class="row">
                                             <div class="col-md-9">
-                                                <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('registry', user=activeProject["owner"].user_name, project=activeProject.project_cod) }}"><i class="fa fa-address-card-o"></i> {{ _("Prepare participant registration form") }}</a>
+                                                {% if activeProject.project_registration_and_analysis == 0 %}
+                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('registry', user=activeProject["owner"].user_name, project=activeProject.project_cod) }}"><i class="fa fa-address-card-o"></i> {{ _("Prepare participant registration form") }}</a>
+                                                {% else %}
+                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('registry', user=activeProject["owner"].user_name, project=activeProject.project_cod) }}"><i class="fa fa-address-card-o"></i> {{ _("Prepare participant registration form and data collection") }}</a>
+                                                {% endif %}
                                             </div>
                                             <div class="col-md-3">
                                                 <p style="margin-top: 8px; text-align: center;">
