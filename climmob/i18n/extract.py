@@ -2,7 +2,7 @@ from jinja2.ext import babel_extract as extract_jinja2
 import climmob.config.jinja_extensions as je
 
 jinja_extensions = """
-                    jinja2.ext.do, jinja2.ext.with_,
+                    jinja2.ext.do, jinja2.ext.i18n,
                     climmob.config.jinja_extensions.SnippetExtension,
                     climmob.config.jinja_extensions.ResourceExtension,
                     climmob.config.jinja_extensions:JSResourceExtension,

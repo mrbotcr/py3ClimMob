@@ -44,7 +44,7 @@
                     {% endblock mainbutton %}
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
-                    <ul class="nav navbar-nav navbar-right">
+                    <ul class="nav navbar-nav navbar-right" style="background-color: rgba(160,160,160, 0.8);">
                         {% block navitems %}
                             <li><a class="page-scroll" href="#page-top">{{ _("Home") }}</a></li>
                             <li><a class="page-scroll" href="#features">{{ _("Features") }}</a></li>
@@ -109,6 +109,10 @@
 
     {% block features %}
         <section id="features" {% block features_class %}class="container services"{% endblock features_class %}>
+            <div class="text-center">
+                <div class="navy-line"></div>
+                <h1>{{ _("Features") }}</h1>
+            </div>
             <div class="row">
                 {% block feature_items %}
                     <div class="col-sm-3">
