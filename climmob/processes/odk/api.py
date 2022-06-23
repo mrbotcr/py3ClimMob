@@ -142,7 +142,7 @@ def getFormList(userid, enumerator, request, userOwner=None, projectCod=None):
             files = glob.glob(path)
             if files:
                 with open(files[0]) as data_file:
-                    data = json.load(data_file, encoding="utf8")
+                    data = json.load(data_file)
                     data["downloadUrl"] = request.route_url(
                         "odkxmlformass",
                         user=userid,

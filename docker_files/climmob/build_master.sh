@@ -1,1 +1,1 @@
-sudo docker build --rm -t alliancecostarica/climmob:master -f ./master.Dockerfile .
+sudo docker build --no-cache --rm -t alliancecostarica/climmob:master -f ./master.Dockerfile .

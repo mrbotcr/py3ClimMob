@@ -1,1 +1,1 @@
-sudo docker build --rm -t alliancecostarica/climmob_base:20220202 -f ./climmob_base.Dockerfile .
+sudo docker build  --rm -t alliancecostarica/climmob_base:20220622 -f ./climmob_base.Dockerfile .
