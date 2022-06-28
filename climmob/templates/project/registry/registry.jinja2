@@ -337,12 +337,13 @@
                         "neworder": $("#nestable-output").val(),
                     },
                     success: function (respuesta) {
+                        toastr.success("Form correctly updated");
                         $("#htmlForPreview").html("")
                         $("#htmlForPreview").html('<div width="100%" style="text-align:center"> <img alt="image" src="{{ request.url_for_static('gif/loading.gif') }}" style="height: 200px; width: 200px"/> </div>');
                         setTimeout(() => {  $("#htmlForPreview").html(respuesta) }, 1000);
                     },
                     error: function (respuesta) {
-
+                        toastr.error("There was a problem updating the form");
                     }
                 });
             }
