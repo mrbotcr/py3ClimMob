@@ -562,19 +562,21 @@ def getProjectProgress(userName, projectCode, project, request):
     result = {}
     perc = 0
     result["enumerators_by_user"] = countEnumeratorsOfAllCollaborators(project, request)
-    #Project Profile
+    # Project Profile
     perc = perc + 20
 
-    if (
+    numberOfFieldAgents = (
         request.dbsession.query(PrjEnumerator)
         .filter(PrjEnumerator.project_id == project)
-        .first()
-        is not None
-    ):
+        .count()
+    )
+    if numberOfFieldAgents > 0:
         result["enumerators"] = True
+        result["numberOfFieldAgents"] = numberOfFieldAgents
         perc = perc + 20
     else:
         result["enumerators"] = False
+        result["numberOfFieldAgents"] = 0
 
     if (
         request.dbsession.query(Prjtech).filter(Prjtech.project_id == project).first()
@@ -613,7 +615,9 @@ def getProjectProgress(userName, projectCode, project, request):
 
     # Check On-farm testing or Market testing
     formType = (
-        request.dbsession.query(Project.project_registration_and_analysis).filter(Project.project_id == project).first()
+        request.dbsession.query(Project.project_registration_and_analysis)
+        .filter(Project.project_id == project)
+        .first()
     )
     formType = formType[0]
     # If the registry has not only required climmob questions
@@ -625,7 +629,12 @@ def getProjectProgress(userName, projectCode, project, request):
         is not None
     ):
         result["registry"] = True
-
+        numberOfQuestionsInRegistry = (
+            request.dbsession.query(Registry)
+            .filter(Registry.project_id == project)
+            .count()
+        )
+        result["numberOfQuestionsInRegistry"] = numberOfQuestionsInRegistry
         if formType == 0:
             perc = perc + 20
         else:

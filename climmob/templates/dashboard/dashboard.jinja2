@@ -217,7 +217,7 @@
                                         {% if activeProject["project_template"] != 1 %}
                                             <div class="row">
                                                 <div class="col-md-9">
-                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" {% if progress.enumerators_by_user == 0 %} onclick="seeHelp()" {% else %} href="{{ request.route_url('prjenumerators',user=activeProject["owner"].user_name, project=activeProject["project_cod"]) }}" {% endif %}><i class="fa fa-user-circle-o"></i> {{ _("2. Assign field agents") }}</a>
+                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" {% if progress.enumerators_by_user == 0 %} onclick="seeHelp()" {% else %} href="{{ request.route_url('prjenumerators',user=activeProject["owner"].user_name, project=activeProject["project_cod"]) }}" {% endif %}><i class="fa fa-user-circle-o"></i> {{ _("2. Assign field agents") }} {% if progress.numberOfFieldAgents > 0 %} <span class="label b-r-xl label-default" style="background-color: white; color: black; float: right!important; margin-top: 2px" title="{{ progress.numberOfFieldAgents }} {{ _("field agents assigned") }}">{{ progress.numberOfFieldAgents }}</span> {% endif %} </a>
                                                 </div>
                                                 <div class="col-md-3">
                                                     <p style="margin-top: 8px; text-align: center"><span class="label {% if progress.enumerators %}label-success{% else %}label-danger{% endif %}">{% if progress.enumerators %}{{ _("Completed") }}{% else %}{{ _("Pending") }}{% endif %}</span></p>
@@ -227,7 +227,7 @@
                                         {% if activeProject["project_template"] != 1 %}
                                             <div class="row">
                                                 <div class="col-md-9">
-                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" {% if activeProject["project_createpkgs"] ==2 %} disabled {% else %} href="{{ request.route_url('prjtechnologies', user=activeProject["owner"].user_name, project=activeProject["project_cod"]) }}" {% endif %}><i class="fa fa-envira"></i> {{ _("3. Select technologies") }}</a>
+                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" {% if activeProject["project_createpkgs"] ==2 %} disabled {% else %} href="{{ request.route_url('prjtechnologies', user=activeProject["owner"].user_name, project=activeProject["project_cod"]) }}" {% endif %}><i class="fa fa-envira"></i> {{ _("3. Select technologies") }} {% if progress.numberOfCombinations > 0 %} <span class="label b-r-xl label-default" style="background-color: white; color: black; float: right!important; margin-top: 2px" title="{{ progress.numberOfCombinations }} {{ _("technology options assigned") }}">{{ progress.numberOfCombinations }}</span> {% endif %} </a>
                                                 </div>
                                                 <div class="col-md-3">
                                                     <p style="margin-top: 8px; text-align: center">
@@ -251,9 +251,9 @@
                                         <div class="row">
                                             <div class="col-md-9">
                                                 {% if activeProject.project_registration_and_analysis == 0 %}
-                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('registry', user=activeProject["owner"].user_name, project=activeProject.project_cod) }}"><i class="fa fa-address-card-o"></i> {{ _("4. Prepare participant registration form") }}</a>
+                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('registry', user=activeProject["owner"].user_name, project=activeProject.project_cod) }}"><i class="fa fa-address-card-o"></i> {{ _("4. Prepare participant registration form") }} {% if progress.numberOfQuestionsInRegistry > 0 %} <span class="label b-r-xl label-default" style="background-color: white; color: black; float: right!important; margin-top: 2px" title="{{ progress.numberOfQuestionsInRegistry }} {{ _("questions assigned to the form") }}">{{ progress.numberOfQuestionsInRegistry }}</span> {% endif %}</a>
                                                 {% else %}
-                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('registry', user=activeProject["owner"].user_name, project=activeProject.project_cod) }}"><i class="fa fa-address-card-o"></i> {{ _("4. Prepare participant registration form and data collection") }}</a>
+                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('registry', user=activeProject["owner"].user_name, project=activeProject.project_cod) }}"><i class="fa fa-address-card-o"></i> {{ _("4. Prepare participant registration form and data collection") }} {% if progress.numberOfQuestionsInRegistry > 0 %} <span class="label b-r-xl label-default" style="background-color: white; color: black; float: right!important; margin-top: 2px" title="{{ progress.numberOfQuestionsInRegistry }} {{ _("questions assigned to the form") }}">{{ progress.numberOfQuestionsInRegistry }}</span> {% endif %} </a>
                                                 {% endif %}
                                             </div>
                                             <div class="col-md-3">
@@ -270,7 +270,7 @@
                                             <div class="row">
                                                 <div class="col-md-9">
 
-                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('assessment',user=activeProject["owner"].user_name, project=activeProject.project_cod) }}" ><i class="fa fa-balance-scale"></i> {{ _("5. Prepare data collection") }}</a>
+                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('assessment',user=activeProject["owner"].user_name, project=activeProject.project_cod) }}" ><i class="fa fa-balance-scale"></i> {{ _("5. Prepare data collection") }} {% if progress.assessments|length > 0 %} <span class="label b-r-xl label-default" style="background-color: white; color: black; float: right!important; margin-top: 2px" title="{{ progress.assessments|length }} {{ _(" data collection moments created") }}">{{ progress.assessments|length }}</span> {% endif %}</a>
 
                                                 </div>
                                                 <div class="col-md-3">
