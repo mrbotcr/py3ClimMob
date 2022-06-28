@@ -41,18 +41,19 @@
                     </div>
                 </div>
                 <div class="ibox-content" >
+                    {% set auxError = error_summary %}
+                    {% set error_summary = error_summary2 %}
+                    {% include 'snippets/error.jinja2' %}
+                    {% set error_summary = auxError %}
+
+                    <div class="text-center">
+                        <p>{{ _("Click on the row in the table to see the technology options of the technology") }}</p>
+                        <a class="btn btn-success btn-rounded  btn-xs" style="color: white" onclick="showHelp()"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a>
+                    </div>
+
+                    <input type="text" class="form-control form-control-sm m-b-xs" id="filter" placeholder="{{ _("Search technology") }}">
                     <div style="overflow-x: hidden; overflow-y: scroll; max-height: calc(100vh - 310px);">
-                        {% set auxError = error_summary %}
-                        {% set error_summary = error_summary2 %}
-                        {% include 'snippets/error.jinja2' %}
-                        {% set error_summary = auxError %}
 
-                        <div class="text-center">
-                            <p>{{ _("Click on the row in the table to see the technology options of the technology") }}</p>
-                            <a class="btn btn-success btn-rounded  btn-xs" style="color: white" onclick="showHelp()"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a>
-                        </div>
-
-                        <input type="text" class="form-control form-control-sm m-b-xs" id="filter" placeholder="{{ _("Search technology") }}">
                         <table class="footable  table table-stripped tableHover" data-page-size="50000" data-filter=#filter>
                             <thead>
                                 <tr>
@@ -124,8 +125,10 @@
                         </div>
                     </div>
                     <div class="ibox-content animated fadeInRightBig" >
+                        <p><b>{{ _("Select to add") }}</b></p>
                         <div style="overflow-x: hidden; overflow-y: scroll; max-height: calc(100vh - {% if onlySee == False %}385{% else %}310{% endif %}px);">
                             <table class="footable table table-stripped" data-page-size="50000" data-filter=#filter>
+
                                 <tbody>
 
                                     {% set UserTechs=alias.AliasTechnologyInProject %}
