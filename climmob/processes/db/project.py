@@ -562,6 +562,8 @@ def getProjectProgress(userName, projectCode, project, request):
     result = {}
     perc = 0
     result["enumerators_by_user"] = countEnumeratorsOfAllCollaborators(project, request)
+    #Project Profile
+    perc = perc + 20
 
     if (
         request.dbsession.query(PrjEnumerator)
@@ -579,7 +581,7 @@ def getProjectProgress(userName, projectCode, project, request):
         is not None
     ):
         result["technology"] = True
-        perc = perc + 20
+        perc = perc + 10
 
         data = (
             request.dbsession.query(
@@ -601,7 +603,7 @@ def getProjectProgress(userName, projectCode, project, request):
 
         if total <= 50:
             if total >= necessary:
-                perc = perc + 20
+                perc = perc + 10
                 result["techalias"] = True
 
     else:
@@ -609,6 +611,11 @@ def getProjectProgress(userName, projectCode, project, request):
         result["techalias"] = False
         result["numberOfCombinations"] = 0
 
+    # Check On-farm testing or Market testing
+    formType = (
+        request.dbsession.query(Project.project_registration_and_analysis).filter(Project.project_id == project).first()
+    )
+    formType = formType[0]
     # If the registry has not only required climmob questions
 
     if (
@@ -618,7 +625,11 @@ def getProjectProgress(userName, projectCode, project, request):
         is not None
     ):
         result["registry"] = True
-        perc = perc + 20
+
+        if formType == 0:
+            perc = perc + 20
+        else:
+            perc = perc + 40
     else:
         result["registry"] = False
 
@@ -629,7 +640,8 @@ def getProjectProgress(userName, projectCode, project, request):
         is not None
     ):
         result["assessment"] = True
-        perc = perc + 20
+        if formType == 0:
+            perc = perc + 20
     else:
         result["assessment"] = False
 
