@@ -37,7 +37,7 @@
                     <div class="ibox-content">
                         {% if userProjects %}
                             <div class="text-center">
-                                <p>{{ _("Click on the row of the table to change the project in the \"Main menu\" section") }}.</p>
+                                <p>{{ _("Click on the row of the table to change the project in the \"Project overview\" section") }}.</p>
                                 <a class="btn btn-success btn-rounded  btn-xs" style="color: white" onclick="showHelp()"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a>
                                 <br><br>
                             </div>
@@ -52,7 +52,7 @@
                                             <tr onclick="window.location = '{{ request.route_url('dashboard', _query={'user':project["owner"].user_name, "project": project.project_cod}) }}';">
                                                 <td class="project-status">
                                                     {% if project.project_dashboard == 1%}
-                                                        <a class="label label-primary">{{ _("Active project in main menu") }}</a>
+                                                        <a class="label label-primary">{{ _("Active project in 'Project overview' section") }}</a>
                                                     {% endif %}
                                                 </td>
                                                 <td class="project-title" title="{{ request.h.readble_date(project.project_creationdate) }}">
@@ -148,7 +148,7 @@
                         {
                             element: "#div_for_help",
                             title: "{{ _("Switch project") }}",
-                            content: "<p>{{ _("Click on the row of the table to change the project in the \"Main menu\" section.") }}</p><img src='{{ request.url_for_static('gif/switch_project.gif') }}' />",
+                            content: "<p>{{ _("Click on the row of the table to change the project in the \"Project overview\" section.") }}</p><img src='{{ request.url_for_static('gif/switch_project.gif') }}' />",
                             placement: "bottom"
                         }
                        ],

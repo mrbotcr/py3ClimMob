@@ -80,7 +80,7 @@
                         {% endblock mainavheader %}
                         {% block mainavitems %}
                             <li>
-                                <a href="{{ request.route_url('dashboard') }}"><i class="fa fa-th-large"></i> <span class="nav-label">{{ _("Main menu") }}</span></a>
+                                <a href="{{ request.route_url('dashboard') }}"><i class="fa fa-th-large"></i> <span class="nav-label">{{ _("Project overview") }}</span></a>
                             </li>
                             {% if hasActiveProject %}
                                 {% if activeProject is string %}
@@ -89,7 +89,7 @@
                                     {% set idForProject = activeProject.project_cod%}
                                 {% endif %}
                                 <li>
-                                    <a href="{{ request.route_url('projectList')  }}"><i class="fa fa-tasks"></i> {{ _("Projects") }}</a>
+                                    <a href="{{ request.route_url('projectList')  }}"><i class="fa fa-tasks"></i> {{ _("All projects") }}</a>
                                 </li>
                             {% endif %}
                             <li class="active" style="border-left: initial;background: initial" id="nav_libraries">
@@ -142,7 +142,7 @@
                                 <li>
                                     {% block headsidebar %}
                                         <a class="right-sidebar-toggle" href="{{ request.route_url('projectList') }}">
-                                            <i class="fa fa-tasks"> </i> {{ _("Projects") }}
+                                            <i class="fa fa-tasks"> </i> {{ _("All projects") }}
                                             {% do withsidebar.append(1) %}
                                         </a>
                                     {% endblock headsidebar %}
