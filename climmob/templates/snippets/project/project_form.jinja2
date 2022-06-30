@@ -67,12 +67,12 @@
         <div class="col-md-12" style="padding: 0px">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>{{ _("2. Size and labels") }}</h5>
+                    <h5>{{ _("2. Participants and technology options labels") }}</h5>
                 </div>
                 <div class="ibox-content">
 
                     <div class="form-group">
-                        <label class="col-sm-4 control-label">{{ _("Number of observers participating in the project") }}</label>
+                        <label class="col-sm-4 control-label">{{ _("Number of participants in the project") }}</label>
                         <div class="col-sm-8"><input type="number" min="10" class="form-control" id="newproject_numobs" required="" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} {% if not permissionForChanges %} disabled {% endif %} {% if dataworking.project_createpkgs == 2 %} readonly {% endif %} name="project_numobs" value="{{ dataworking.project_numobs }}"></div>
                     </div>
 
@@ -85,7 +85,7 @@
 
                     <div class="hr-line-dashed"></div>
 
-                    <p>{{ _("Name to be given to the 3 technology options that each participant compares") }}:</p><br>
+                    <p>{{ _("Name for each of the 3 technology options that each participant compares") }}:</p><br>
 
                     <div class="form-group">
                         <label class="col-sm-4 control-label">{{ _("Technology option #1") }}</label>
