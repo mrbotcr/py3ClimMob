@@ -47,9 +47,14 @@
             <div class="ibox">
                 <div class="ibox-title" >
                     <h5>{{ _("Questions available in the library by category") }}</h5>
-                    <div class="ibox-tools">
+                    <div class="ibox-tools" style="text-align: center">
                         {% if nextPage %}
-                            <a class="btn btn-success btn-rounded  btn-xs" style="color: white" href="{{ nextPage }}"><i class="fa fa-reply"></i> {{ _('Back to form') }}</a>
+                            {% if "registry" in nextPage %}
+                                <a class="btn btn-success btn-rounded  btn-xs" style="color: white" href="{{ nextPage }}"><i class="fa fa-reply"></i> {{ _('Go back to prepare participant registration form') }}</a>
+                            {% else %}
+                                <a class="btn btn-success btn-rounded  btn-xs" style="color: white" href="{{ nextPage }}"><i class="fa fa-reply"></i> {{ _('Go back to form editor') }}</a>
+                            {% endif %}
+
                         {% endif %}
                     </div>
                 </div>

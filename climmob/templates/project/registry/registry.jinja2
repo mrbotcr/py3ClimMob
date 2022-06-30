@@ -48,10 +48,13 @@
                                 <div class="ibox-title" >
                                     <h5>{{ _("Available questions from library") }}</h5>
                                     <div class="ibox-tools" >
-                                        <a class="btn btn-success btn-rounded  btn-xs" style="color: white" onclick="showHelp()"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a>
+
                                     </div>
                                 </div>
                                 <div class="ibox-content" >
+                                    <div style="text-align: center; margin-bottom: 10px">
+                                        <a class="btn btn-success btn-rounded  btn-xs" style="color: white" onclick="showHelp()"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a>
+                                    </div>
                                     <input type="text" class="form-control form-control-sm m-b-xs" id="filterjstree2" placeholder="{{ _("Search question") }}">
                                     <div style="overflow-x: hidden; overflow-y: scroll; min-height: 300px; max-height: calc(100vh - 345px);" id="div_availables">
                                         {% set doActions=False %}
