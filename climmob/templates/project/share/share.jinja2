@@ -53,6 +53,41 @@
                                 </div>
                             </div>
                             <div class="hr-line-dashed"></div>
+
+                            <div class="form-group "  style="margin: 0px">
+                                <div class="col-sm-12" style="padding-left: 8px; padding-right: 0px">
+                                    <div class="panel panel-info">
+                                        <div class="panel-heading">
+                                            <i class="fa fa-info-circle"></i> {{ _("Explanation of roles") }}
+                                        </div>
+                                        <div class="panel-body">
+                                            <table class="table table-striped table-bordered">
+                                                <tr>
+                                                    <th>{{ _("Role") }}</th>
+                                                    <th style="text-align: center">{{ _("Explanation") }}</th>
+                                                </tr>
+                                                <tr>
+                                                    <td>{{ _("Owner") }}</td>
+                                                    <td>{{ _("This role is assigned by default to the user responsible for creating the project.") }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>{{ _("Admin") }}</td>
+                                                    <td>{{ _("This user have full control of the project and can share it with other users.") }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>{{ _("Editor") }}</td>
+                                                    <td>{{ _("This user can make changes to any section of the project; however do not have permission to share the project.") }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>{{ _("Member") }}</td>
+                                                    <td>{{ _("This user can only see the information in each section of the Project, without making any change.") }}</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="form-group">
                                 <label class="col-sm-4 control-label">{{ _("Role for the user") }}</label>
                                 <div class="col-sm-8">
