@@ -104,7 +104,7 @@
                                         {% if assessment.ass_status == 0 %}
                                             {% if not onlySee %}
                                                 <a class="btn btn-warning " onclick='seeAssessment("{{ assessment.ass_cod|string }}")' title="{{ _("Edit trial data collection") }}"><i class="fa fa-pencil"></i> {{ _("Edit") }}</a>
-                                                <button class="btn btn-danger "  onclick="showDelete('{{ request.route_url('deleteassessment', user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}','{{ _("Do you really want to remove this trial data collection moment?") }}','{{ request.session.get_csrf_token() }}')" title="{{ _("Remove data collection")}}"><i class="fa fa-trash"></i> {{ _("Remove") }}</button>
+                                                <button class="btn btn-danger "  onclick="showDelete('{{ request.route_url('deleteassessment', user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}','{{ _("Do you really want to delete this trial data collection moment?") }}','{{ request.session.get_csrf_token() }}')" title="{{ _("Delete data collection")}}"><i class="fa fa-trash"></i> {{ _("Delete") }}</button>
                                             {% endif %}
                                         {% else %}
                                             {% if assessment.ass_status == 1 %}

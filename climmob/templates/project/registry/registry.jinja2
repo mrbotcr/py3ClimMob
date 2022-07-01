@@ -375,7 +375,7 @@
                         {
                             element: "#div_for_help",
                             title: "{{ _("Prepare participant registration") }}",
-                            content: "<b>{{ _("Add questions to the form") }}:</b><br>{{ _("Move the question from left to right.") }}<br><br><b>{{ _("Remove questions from the form") }}:</b><br>{{ _("Move the question from right to left.") }}<img src='{{ request.url_for_static('gif/move_questions.gif') }}' />",
+                            content: "<b>{{ _("Add questions to the form") }}:</b><br>{{ _("Move the question from left to right.") }}<br><br><b>{{ _("Delete questions from the form") }}:</b><br>{{ _("Move the question from right to left.") }}<img src='{{ request.url_for_static('gif/move_questions.gif') }}' />",
                             placement: "bottom"
                         }
                        ],
@@ -437,7 +437,7 @@
         function showDeleteSection()
         {
             var urlAction = '{{ request.application_url }}/user/{{ activeProject["owner"].user_name }}/project/{{activeProject.project_cod}}/registry/'+$("#txt_section_id").val()+'/delete'
-            showDelete(urlAction,'{{ _("Do you really want to remove this section?") }}','{{ request.session.get_csrf_token() }}')
+            showDelete(urlAction,'{{ _("Do you really want to delete this section?") }}','{{ request.session.get_csrf_token() }}')
         }
 
         function actionSection(action)

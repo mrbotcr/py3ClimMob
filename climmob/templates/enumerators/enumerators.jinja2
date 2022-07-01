@@ -101,8 +101,8 @@
 
                                     </td>
                                     <td class="text-center" style="vertical-align: middle;">
-                                        <button class="btn btn-warning btn-circle" onclick='seeEnumerator("{{ enumerator.enum_id }}","{{ enumerator.user_name }}")'  title="{{ _("Edit field agent") }}"><i class="fa fa-pencil"></i></button>
-                                        <button class="btn btn-danger btn-circle" onclick="showDelete('{{ request.route_url('deleteenumerator',enumeratorid = enumerator.enum_id)}}','{{ _("Do you really want to remove this field agent?") }}','{{ request.session.get_csrf_token() }}')" type="button" title="{{ _("Remove field agent") }}"><i class="fa fa-times"></i></button>
+                                        <button class="btn btn-warning " onclick='seeEnumerator("{{ enumerator.enum_id }}","{{ enumerator.user_name }}")'  title="{{ _("Edit field agent") }}"><i class="fa fa-pencil"></i> {{ _("Edit") }}</button>
+                                        <button class="btn btn-danger" onclick="showDelete('{{ request.route_url('deleteenumerator',enumeratorid = enumerator.enum_id)}}','{{ _("Do you really want to delete this field agent?") }}','{{ request.session.get_csrf_token() }}')" type="button" title="{{ _("Delete field agent") }}"><i class="fa fa-trash"></i> {{ _("Delete") }}</button>
                                     </td>
                                 </tr>
                             {% endfor %}

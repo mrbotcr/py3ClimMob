@@ -61,13 +61,13 @@
                 {% if permissionForChanges %}
                     <div class="row">
                         <div class="col-md-4">
-                            <a class="btn btn-danger pull-left" onclick="showDelete('{{ request.route_url('deleteproject', user=activeProject["owner"].user_name, project=activeProject["project_cod"]) }}','{{ _("Do you really want to remove this project?") }}','{{ request.session.get_csrf_token() }}','{{ request.route_url('dashboard') }}')">{{ _("Delete") }}</a>
+                            <a class="btn btn-danger pull-left" onclick="showDelete('{{ request.route_url('deleteproject', user=activeProject["owner"].user_name, project=activeProject["project_cod"]) }}','{{ _("Do you really want to delete this project?") }}','{{ request.session.get_csrf_token() }}','{{ request.route_url('dashboard') }}')"><i class="fa fa-trash"></i> {{ _("Delete project") }}</a>
                         </div>
                         <div class="col-md-4 text-center">
     {#                        <a class="btn btn-success" style="background-color: darkgrey" href='{{ request.route_url('cloneProject') }}'>{{ _("Clone") }}</a>#}
                         </div>
                         <div class="col-md-4">
-                            <button type="submit" name="btn_addNewProject" id="btn_addNewProject" class="btn btn-warning pull-right">{{ _("Update") }}</button>
+                            <button type="submit" name="btn_addNewProject" id="btn_addNewProject" class="btn btn-primary pull-right">{{ _("Save and close") }}</button>
                         </div>
                     </div>
                     <br>

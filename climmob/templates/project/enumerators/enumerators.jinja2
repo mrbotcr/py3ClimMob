@@ -127,7 +127,7 @@
                                             </td>
                                             {%  if not onlySee %}
                                                 <td class="text-center" style="vertical-align: middle;">
-                                                    <button onclick="showDelete('{{ request.route_url('removeprjenumerator', user=activeProject["owner"]["user_name"] , project= activeProject["project_cod"],enumeratorid=enumerator.enum_id) }}','{{ _("Do you really want to remove this field agent?") }}','{{ request.session.get_csrf_token() }}')" type="button" class="btn btn-danger" title="{{_("Remove field agent")}}"><i class="fa fa-trash"></i> {{ _("Remove") }}</button>
+                                                    <button onclick="showDelete('{{ request.route_url('removeprjenumerator', user=activeProject["owner"]["user_name"] , project= activeProject["project_cod"],enumeratorid=enumerator.enum_id) }}','{{ _("Do you really want to delete this field agent?") }}','{{ request.session.get_csrf_token() }}')" type="button" class="btn btn-danger" title="{{_("Delete field agent")}}"><i class="fa fa-trash"></i> {{ _("Delete") }}</button>
                                                 </td>
                                             {% endif %}
                                         </tr>
