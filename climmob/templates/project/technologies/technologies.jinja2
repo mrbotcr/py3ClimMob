@@ -18,7 +18,7 @@
 {% endblock topScripts %}
 
 {% block pageheading %}
-    {% set _title= _("Select technologies") %}
+    {% set _title= _("Assign technologies") %}
     {% set _linkWiki="https://climmob.net/blog/wiki/select-technology-options/" %}
     {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
@@ -260,6 +260,7 @@
         {
             background-color: #1ab394;
             color: black;
+            cursor: pointer;
         }
 
         .tableHover tbody tr:hover td  p
@@ -281,7 +282,7 @@
 
     <script>
         $(document).ready(function () {
-            $('.footable').footable();
+            //$('.footable').footable();
             if ("{{ tech_id }}" !="")
             {
                 $("#tech{{ tech_id }}").addClass("tableHover2");
