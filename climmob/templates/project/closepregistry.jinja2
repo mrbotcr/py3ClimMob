@@ -1,11 +1,11 @@
 {% extends 'dashboard/dashboard.jinja2' %}
 
 {% block title %}
-    <title>{{ _("ClimMob | Finish registration") }}</title>
+    <title>{{ _("ClimMob | Finish participant registration form") }}</title>
 {% endblock title %}
 
 {% block pageheading %}
-    {% set _title= _("Finish registration") %}
+    {% set _title= _("Finish participant registration form") %}
     {% set _linkWiki="https://climmob.net/blog/wiki/finish-form/" %}
     {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
@@ -14,20 +14,20 @@
     {% if redirect == False %}
         {% block dltqstmessage %}
             <div class=" text-center">
-                <h2 class="font-bold text-danger">{{ _('You are going to finish the registration of participants and start data collection') }}</h2>
+                <h2 class="font-bold text-danger">{{ _('You are going to finish the participant registration form and start trial data collection') }}</h2>
                 <p>
                 {% if progress.regtotal < progress.project_numobs %}
                         <h2>{{ _("You still have") }} {{ progress.project_numobs - progress.regtotal }} {{ request.h.pluralize(_("participant"),progress.project_numobs - progress.regtotal) }} {{ _("to register") }}</h2>
                     {% endif %}
                 <div class="error-desc">
 
-                    <h3>{{ _("After you finish the registration no more participants will be able to register") }}</h3>
-                    <h3>{{ _("Are you sure that you want to finish the registration?") }}</h3>
+                    <h3>{{ _("After you finish the participant registration form no more participants will be able to register") }}</h3>
+                    <h3>{{ _("Are you sure that you want to finish the form?") }}</h3>
                 </div>
                 <form class="form-horizontal" role="form" method="post" action="{{ request.path }}">
                     <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                     <a class="btn btn-default" href="{{ request.route_url('dashboard') }}"> {{ _("Go back") }}</a><br><br>
-                    <button class="btn btn-danger" type="submit" name="closeRegistry"> {{ _('Finish the registration') }}</button>
+                    <button class="btn btn-danger" type="submit" name="closeRegistry"> {{ _('Finish the participant registration form') }}</button>
                 </form>
             </div>
         {% endblock dltqstmessage %}

@@ -253,7 +253,7 @@
                                                 {% if activeProject.project_registration_and_analysis == 0 %}
                                                     <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('registry', user=activeProject["owner"].user_name, project=activeProject.project_cod) }}"><i class="fa fa-address-card-o"></i> {{ _("4. Prepare participant registration form") }} {% if progress.numberOfQuestionsInRegistry > 0 %} <span class="label b-r-xl label-default" style="background-color: white; color: black; float: right!important; margin-top: 2px" title="{{ progress.numberOfQuestionsInRegistry }} {{ _("questions assigned to the form") }}">{{ progress.numberOfQuestionsInRegistry }} {{ _("questions") }}</span> {% endif %}</a>
                                                 {% else %}
-                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('registry', user=activeProject["owner"].user_name, project=activeProject.project_cod) }}"><i class="fa fa-address-card-o"></i> {{ _("4. Prepare participant registration form and data collection") }} {% if progress.numberOfQuestionsInRegistry > 0 %} <span class="label b-r-xl label-default" style="background-color: white; color: black; float: right!important; margin-top: 2px" title="{{ progress.numberOfQuestionsInRegistry }} {{ _("questions assigned to the form") }}">{{ progress.numberOfQuestionsInRegistry }} {{ _("questions") }}</span> {% endif %} </a>
+                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('registry', user=activeProject["owner"].user_name, project=activeProject.project_cod) }}"><i class="fa fa-address-card-o"></i> {{ _("4. Prepare participant registration form and trial data collection") }} {% if progress.numberOfQuestionsInRegistry > 0 %} <span class="label b-r-xl label-default" style="background-color: white; color: black; float: right!important; margin-top: 2px" title="{{ progress.numberOfQuestionsInRegistry }} {{ _("questions assigned to the form") }}">{{ progress.numberOfQuestionsInRegistry }} {{ _("questions") }}</span> {% endif %} </a>
                                                 {% endif %}
                                             </div>
                                             <div class="col-md-3">
@@ -270,7 +270,7 @@
                                             <div class="row">
                                                 <div class="col-md-9">
 
-                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('assessment',user=activeProject["owner"].user_name, project=activeProject.project_cod) }}" ><i class="fa fa-balance-scale"></i> {{ _("5. Prepare data collection") }} {% if progress.assessments|length > 0 %} <span class="label b-r-xl label-default" style="background-color: white; color: black; float: right!important; margin-top: 2px" title="{{ progress.assessments|length }} {{ _(" data collection moments created") }}">{{ progress.assessments|length }} {{ _("forms") }}</span> {% endif %}</a>
+                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('assessment',user=activeProject["owner"].user_name, project=activeProject.project_cod) }}" ><i class="fa fa-balance-scale"></i> {{ _("5. Prepare trial data collection") }} {% if progress.assessments|length > 0 %} <span class="label b-r-xl label-default" style="background-color: white; color: black; float: right!important; margin-top: 2px" title="{{ progress.assessments|length }} {{ _(" data collection moments created") }}">{{ progress.assessments|length }} {{ _("forms") }}</span> {% endif %}</a>
 
                                                 </div>
                                                 <div class="col-md-3">
@@ -321,7 +321,7 @@
                                             <div class="ibox-tools">
                                                 <div class="row">
                                                     <div class="col-md-8">
-                                                        <h5>{{ _("Data Collection moments") }}</h5>
+                                                        <h5>{{ _("Trial data Collection moments") }}</h5>
                                                     </div>
                                                 </div>
                                             </div>
@@ -343,7 +343,7 @@
                                                             {% include 'snippets/error.jinja2' %}
                                                             <form class="formElement" id="start_assessment"  role="form" method="post" action="{{ request.route_url("startassessments",user=activeProject["owner"].user_name, project=activeProject.project_cod) }}">
                                                                 <div class="form-group">
-                                                                    <label>{{ _("Select the assessment for start the data collection") }}</label>
+                                                                    <label>{{ _("Select the assessment for start the trial data collection") }}</label>
                                                                     <select id="assessment_id" name="assessment_id" class="form-control">
                                                                             {% for assessment in progress["usableAssessments"] %}
                                                                                 <option value="{{ assessment.ass_cod }}">{{ assessment.ass_desc }}</option>>
@@ -357,7 +357,7 @@
                                                     </div>
                                                 {% else %}
                                                     <div class="col-md-12">
-                                                        <div class="text-center"><p>{{ _("You can start the data collection once the registration of participants is closed and the project definition is completed") }}</p></div>
+                                                        <div class="text-center"><p>{{ _("You can start the trial data collection once the registration of participants is closed and the project definition is completed") }}</p></div>
                                                     </div>
                                                 {% endif %}
                                             </div>
@@ -526,7 +526,7 @@
                                                                 <tbody>
                                                                     <tr>
                                                                         <td style="vertical-align: middle; width: 50%;text-align: left;">
-                                                                            <h5 style=" margin: initial">{{ _("Data collection") }}: {{ assessment.ass_desc }}</h5>
+                                                                            <h5 style=" margin: initial">{{ _("Trial data collection") }}: {{ assessment.ass_desc }}</h5>
                                                                         </td>
                                                                         <td style="vertical-align: middle; text-align: center">
                                                                             {% set pbtype = "progress-bar-info" %}

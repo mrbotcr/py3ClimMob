@@ -212,7 +212,7 @@
                             <div class="i-checksbox"><label style="font-weight: initial; font-size: 14px"> <input class="checksbox" type="checkbox" id="technologyoptions" > <i></i>{{ _("Technology options") }} </label></div>
                             <div class="i-checksbox"><label style="font-weight: initial; font-size: 14px"> <input class="checksbox" type="checkbox" id="registry" > <i></i>{{ _("Registration form") }} </label></div>
                             {% for assessment in assessments %}
-                                <div class="i-checksbox"><label style="font-weight: initial; font-size: 14px"> <input class="checksbox" type="checkbox" id="{{ assessment.ass_cod }}" > <i></i>{{ _("Assessment") }}: {{ assessment.ass_desc }} </label></div>
+                                <div class="i-checksbox"><label style="font-weight: initial; font-size: 14px"> <input class="checksbox" type="checkbox" id="{{ assessment.ass_cod }}" > <i></i>{{ _("Trial data collection") }}: {{ assessment.ass_desc }} </label></div>
                             {% endfor %}
                         </div>
 

@@ -1,11 +1,11 @@
 {% extends 'dashboard/dashboard.jinja2' %}
 
 {% block title %}
-    <title>{{ _("ClimMob | Cancel registry") }}</title>
+    <title>{{ _("ClimMob | Cancel participant registration form") }}</title>
 {% endblock title %}
 
 {% block pageheading %}
-    {% set _title= _("Cancel the registration") %}
+    {% set _title= _("Cancel participant registration form") %}
     {% set _linkWiki="https://climmob.net/blog/wiki/cancel-form/" %}
     {% include 'snippets/menuheading.jinja2'%}
 {% endblock %}
@@ -14,7 +14,7 @@
     {% if redirect == False %}
         {% block dltqstmessage %}
             <div class="text-center">
-                <h2 class="font-bold text-danger">{{ _("You are going to cancel the registration") }}<br/><span style="color: red">{{ _("All submitted data will be deleted!") }}</span></h2>
+                <h2 class="font-bold text-danger">{{ _("You are going to cancel the participant registration form") }}<br/><span style="color: red">{{ _("All submitted data will be deleted!") }}</span></h2>
                 <p>
                 <div class="error-desc">
                     <h3>{{ _("Are you sure you that want to cancel the registration of participants?") }}</h3>
@@ -22,7 +22,7 @@
                 <form class="form-horizontal" role="form" method="post" action="{{ request.path }}">
                     <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                     <a class="btn btn-default" href="{{ request.route_url('dashboard') }}"> {{ _("Go back") }}</a><br><br>
-                    <button class="btn btn-danger" type="submit" name="cancelRegistry"> {{ _('Cancel registration') }}</button>
+                    <button class="btn btn-danger" type="submit" name="cancelRegistry"> {{ _('Cancel participant registration form') }}</button>
                 </form>
             </div>
         {% endblock dltqstmessage %}

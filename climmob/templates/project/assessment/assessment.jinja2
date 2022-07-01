@@ -1,7 +1,7 @@
 {% extends 'dashboard/dashboard.jinja2' %}
 
 {% block title %}
-    <title>{{ _("ClimMob | Prepare data collection") }}</title>
+    <title>{{ _("ClimMob | Prepare trial data collection") }}</title>
 {% endblock title %}
 
 {% block css %}
@@ -18,7 +18,7 @@
 {% endblock topScripts %}
 
 {% block pageheading %}
-    {% set _title= _("Prepare data collection")%}
+    {% set _title= _("Prepare trial data collection")%}
     {% set _linkWiki="https://climmob.net/blog/wiki/prepare-data-collection/" %}
     {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
@@ -37,7 +37,7 @@
             <div class="col-lg-6 ">
                 <div class="ibox float-e-margins">
                     <div class="ibox-title">
-                        <h5>{{ _("Data collection moment details") }}</h5>
+                        <h5>{{ _("Trial data collection moment details") }}</h5>
                         <div class="ibox-tools">
                             <button id="btn_cancel_assessment"  class="btn btn-xs btn-default pull-right " ><i class="fa fa-undo"></i>  {{ _("Clear form") }}</button>
                         </div>
@@ -64,7 +64,7 @@
         <div class="col-lg-6">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>{{ _("Active data collection moments") }} </h5>
+                    <h5>{{ _("Active trial data collection moments") }} </h5>
                     <div class="ibox-tools">
                     </div>
                 </div>
@@ -73,7 +73,7 @@
                         <table class="table table-striped">
                             <tbody>
                             <tr>
-                                <th class="text-center">{{ _('Data collection moment') }}</th>
+                                <th class="text-center">{{ _('Trial data collection moment') }}</th>
                                 <th class="text-center">{{ _('Interval in days') }}</th>
                                 <th class="text-center" style="min-width: 113px"></th>
                             </tr>
@@ -98,13 +98,13 @@
                                     <td class="text-center" style="vertical-align: middle"> {{ assessment.ass_days }}</td>
                                     <td class="text-center" style="vertical-align: middle">
                                         {% block rhomis_BtnSeeAssessment scoped%}
-                                            <a class="btn btn-default " href="{{ request.route_url('assessmentdetail', user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}" title="{{ _("See form") }}"><i class="fa fa-list-ul"></i> {{ _("Show") }}</a>
+                                            <a class="btn btn-default " href="{{ request.route_url('assessmentdetail', user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}" title="{{ _("Add questions") }}"><i class="fa fa-list-ul"></i> {{ _("Add questions") }}</a>
                                         {% endblock rhomis_BtnSeeAssessment  %}
 
                                         {% if assessment.ass_status == 0 %}
                                             {% if not onlySee %}
-                                                <a class="btn btn-warning " onclick='seeAssessment("{{ assessment.ass_cod|string }}")' title="{{ _("Edit data collection") }}"><i class="fa fa-pencil"></i> {{ _("Edit") }}</a>
-                                                <button class="btn btn-danger "  onclick="showDelete('{{ request.route_url('deleteassessment', user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}','{{ _("Do you really want to remove this data collection moment?") }}','{{ request.session.get_csrf_token() }}')" title="{{ _("Remove data collection")}}"><i class="fa fa-trash"></i> {{ _("Remove") }}</button>
+                                                <a class="btn btn-warning " onclick='seeAssessment("{{ assessment.ass_cod|string }}")' title="{{ _("Edit trial data collection") }}"><i class="fa fa-pencil"></i> {{ _("Edit") }}</a>
+                                                <button class="btn btn-danger "  onclick="showDelete('{{ request.route_url('deleteassessment', user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}','{{ _("Do you really want to remove this trial data collection moment?") }}','{{ request.session.get_csrf_token() }}')" title="{{ _("Remove data collection")}}"><i class="fa fa-trash"></i> {{ _("Remove") }}</button>
                                             {% endif %}
                                         {% else %}
                                             {% if assessment.ass_status == 1 %}
@@ -122,7 +122,7 @@
                         </table>
                     {% else %}
                         <div style="width: 100%; text-align: center">
-                            <h3><b>{{ _("There are no data collection moments.") }}</b></h3>
+                            <h3><b>{{ _("There are no trial data collection moments.") }}</b></h3>
                         </div>
                     {% endif %}
                 </div>

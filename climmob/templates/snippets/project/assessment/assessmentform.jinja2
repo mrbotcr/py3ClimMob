@@ -1,14 +1,14 @@
 <div class="form-group" style="display: none">
-    <label class="col-sm-4 control-label">{{ _('Data collection moment code:') }}</label>
+    <label class="col-sm-4 control-label">{{ _('Trial data collection moment code:') }}</label>
     <div class="col-sm-8"><input type="text" class="form-control" value="{{ data.ass_cod }}" id="ass_cod" name="ass_cod" placeholder=" " ></div>
 </div>
 <div class="form-group">
-    <label class="col-sm-4 control-label">{{ _('Data collection moment:') }}</label>
-    <div class="col-sm-8"><input type="text" class="form-control" value="{{ data.ass_desc }}" id="ass_desc" name="ass_desc" placeholder=" " required oninvalid="this.setCustomValidity('{{ _("Write the data collection moment.") }}')" onchange="this.setCustomValidity('')"></div>
+    <label class="col-sm-4 control-label">{{ _('Trial data collection moment:') }}</label>
+    <div class="col-sm-8"><input type="text" class="form-control" value="{{ data.ass_desc }}" id="ass_desc" name="ass_desc" placeholder=" " required oninvalid="this.setCustomValidity('{{ _("Write the trial data collection moment.") }}')" onchange="this.setCustomValidity('')"></div>
 </div>
 <div class="form-group">
-    <label class="col-sm-4 control-label">{{ _('Interval in days:') }}</label>
-    <div class="col-sm-8"><input type="number" class="form-control" min="0"  value="{{ data.ass_days }}" id="ass_days" name="ass_days" placeholder=" " required oninvalid="this.setCustomValidity('{{ _("Set the interval in days.") }}')" onchange="this.setCustomValidity('')"><span class="help-block m-b-none text-left">{{ _("This data collection is done after how many days from the distribution of the packages.") }}</span></div>
+    <label class="col-sm-4 control-label">{{ _('Days after sowing:') }}</label>
+    <div class="col-sm-8"><input type="number" class="form-control" min="0"  value="{{ data.ass_days }}" id="ass_days" name="ass_days" placeholder=" " required oninvalid="this.setCustomValidity('{{ _("Set the interval in days.") }}')" onchange="this.setCustomValidity('')"><span class="help-block m-b-none text-left">{{ _("This trial data collection is done after how many days from the distribution of the packages.") }}</span></div>
 </div>
 
 {#<div class="form-group" id="check_for_final">#}
