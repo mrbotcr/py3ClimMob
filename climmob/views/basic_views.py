@@ -267,7 +267,7 @@ class register_view(publicView):
                                 )
                         else:
                             error_summary["createError"] = self._(
-                                "The account name cannot have any special characters."
+                                "The username cannot have any special characters."
                             )
                     else:
                         error_summary["createError"] = self._("User is None!")
