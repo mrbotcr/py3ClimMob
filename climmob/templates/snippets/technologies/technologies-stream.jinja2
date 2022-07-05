@@ -2,29 +2,39 @@
 {% for technology in UserTechs %}
     <tr id="tech{{ technology.tech_id}}" {% if not checkbox %}onclick='showVarietiesInTechnology("{{ technology.tech_id }}","{{ technology.user_name }}")'{% else%}{%if not isAlias%}{% if checked%}onclick='showVarieties({{technology.tech_id}})'{% else %}onclick='showLibraryVarieties({{technology.tech_id}})'{%endif%}{%endif%}{% endif %} {% if showCreator %}title="{{ _("Click to display technology options") }}" {% endif %}>
         <td style="vertical-align: middle" >
+            <span>
             {% if isAlias %}
                 {% if checkbox %}
                     <i class="pull-left" style="border: initial; padding: initial">
                         <input type="checkbox" {% if onlySee %} disabled {% endif %} {% if checked %}checked {%endif%} class="{% if isAlias%}i-checksAlias{% if extra%}Extra{%endif%}{% else %}i-checks{% endif %}" id="element_{%if isAlias%}{{technology.alias_id}}{%else%}{{ technology.tech_id }}{%endif%}_{% if checked %}exists{% else %}new{% endif %}">
-                    </i>
+                    </i>&nbsp;
                 {% endif %}
-                {% if showBold %}<b>{% endif %}
-                <p class="pull-left" style="margin: 0px">&nbsp;{{ technology.alias_name }}</p>
-                {% if showBold %}</b>{% endif %}
+
+                <p  style="margin: 0px; display: inline-block">
+                    {% if showBold %}<b>{% endif %}
+                        {{ technology.alias_name }}
+                    {% if showBold %}</b>{% endif %}
+                </p>
+
                 {% if extra %}
-                    &nbsp;({{ _("only for this project") }})
+                    ({{ _("only for this project") }})
                 {%endif%}
             {% else%}
-                {% if showBold %}<b>{% endif %}
-                {% if yourLib %}<em>{% endif %}
-                <p class="pull-left" style="margin: 0px">{{ technology.tech_name }}</p>
-                {% if yourLib%}</em>{% endif %}
-                {% if showBold %}</b>{% endif %}
+
+                <p  style="margin: 0px; display: inline-block">
+                    {% if showBold %}<b>{% endif %}
+                    {% if yourLib %}<em>{% endif %}
+                        {{ technology.tech_name }}
+                    {% if yourLib%}</em>{% endif %}
+                    {% if showBold %}</b>{% endif %}
+                </p>
+
             {% endif %}
 
             {% if showCreator %}
-                <p class="pull-left by" style="margin: 0px; color: #1ab394">&nbsp;{{ _("by") }} {{ technology.user_fullname[0:12] }}{% if technology.user_fullname|length > 12 %}...{% endif %}</p>
+                <p class="by" style="margin: 0px; color: #1ab394; font-size: 10px; display: inline-block">&nbsp;{{ _("by") }} {{ technology.user_fullname[0:12] }}{% if technology.user_fullname|length > 12 %}...{% endif %}</p>
             {% endif %}
+            </span>
         </td>
         {% if not isAlias %}
             {% if checkbox %}
