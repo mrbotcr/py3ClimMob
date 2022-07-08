@@ -141,7 +141,7 @@
                             </tbody>
                         </table>
                         <div style="width: 100%; text-align: center">
-                            <h3><b><a href="{{ request.route_url('productList') }}" style="color: #000000">{{ _("You can download a") }} <u style="color: #337ab7">{{ _("PDF document") }}</u> {{_("to configure ODK Collect on Android devices.") }}</a></b></h3>
+                            <h3><b><a href="{{ request.route_url('productList', _query={"product1":"create_fieldagents"}) }}" style="color: #000000">{{ _("You can download a") }} <u style="color: #337ab7">{{ _("PDF document") }}</u> {{_("to configure ODK Collect on Android devices.") }}</a></b></h3>
                         </div>
                     {% else %}
                         <div style="width: 100%; text-align: center">

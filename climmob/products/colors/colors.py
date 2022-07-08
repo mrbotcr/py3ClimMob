@@ -27,7 +27,7 @@ def create_colors_cards(
         "colors",
         "colors_" + projectCod + ".pdf",
         "application/pdf",
-        "create_packages",
+        "create_colors_cards",
         task.id,
         request,
     )

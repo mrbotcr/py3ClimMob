@@ -15,6 +15,7 @@ class analysisDataView(privateView):
     def processView(self):
         error_summary = {}
         hasActiveProject = False
+        infosheet = False
         activeProjectData = getActiveProject(self.user.login, self.request)
 
         progress, pcompleted = getProjectProgress(
@@ -62,7 +63,22 @@ class analysisDataView(privateView):
                         )
 
                     self.returnRawViewResult = True
-                    return HTTPFound(location=self.request.route_url("productList"))
+                    if infosheet == "TRUE":
+                        return HTTPFound(
+                            location=self.request.route_url(
+                                "productList",
+                                _query={
+                                    "product1": "reports",
+                                    "product2": "infosheets",
+                                },
+                            )
+                        )
+                    else:
+                        return HTTPFound(
+                            location=self.request.route_url(
+                                "productList", _query={"product1": "reports"}
+                            )
+                        )
 
             dataForAnalysis, assessmentsList = getQuestionsByType(
                 activeProjectData["project_id"], self.request

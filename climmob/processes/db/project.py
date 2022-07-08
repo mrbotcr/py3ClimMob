@@ -641,6 +641,7 @@ def getProjectProgress(userName, projectCode, project, request):
             perc = perc + 40
     else:
         result["registry"] = False
+        result["numberOfQuestionsInRegistry"] = 0
 
     if (
         request.dbsession.query(Asssection)

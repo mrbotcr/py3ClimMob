@@ -24,7 +24,7 @@ def create_packages_excell(
         "packages",
         "packages_" + projectCod + ".csv",
         "text/csv",
-        "create_packages",
+        "create_packages_csv",
         task.id,
         request,
     )

@@ -71,7 +71,9 @@ class downloadDataView(privateView):
             code,
         )
 
-        url = self.request.route_url("productList")
+        url = self.request.route_url(
+            "productList", _query={"product1": "create_data_" + formId + "_" + code}
+        )
         self.returnRawViewResult = True
         return HTTPFound(location=url)
 
@@ -157,7 +159,9 @@ class downloadErroLogDocument_view(privateView):
             info,
         )
 
-        url = self.request.route_url("productList")
+        url = self.request.route_url(
+            "productList", _query={"product1": "create_errorlog_" + formId + "_" + code}
+        )
         self.returnRawViewResult = True
         return HTTPFound(location=url)
 

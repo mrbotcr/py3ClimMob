@@ -489,7 +489,11 @@ class generateProductView(privateView):
                     )
 
         self.returnRawViewResult = True
-        return HTTPFound(location=self.request.route_url("productList"))
+        return HTTPFound(
+            location=self.request.route_url(
+                "productList", _query={"product1": processname}
+            )
+        )
 
 
 class downloadView(climmobPrivateView):
