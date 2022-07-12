@@ -682,6 +682,7 @@ class qlibrary_view(privateView):
             "activeProject": getActiveProject(self.user.login, self.request),
             "seeQuestion": seeQuestion,
             "nextPage": nextPage,
+            "sectionActive": "questions",
         }
 
         return regularDict

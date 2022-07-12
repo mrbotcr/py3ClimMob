@@ -115,6 +115,7 @@ class technologies_view(privateView):
             "action": action,
             "techSee": techSee,
             "nextPage": nextPage,
+            "sectionActive": "technologies",
             # "alias": alias
         }
 

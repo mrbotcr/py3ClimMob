@@ -58,6 +58,7 @@ class projectList_view(privateView):
         return {
             "activeProject": getActiveProject(self.user.login, self.request),
             "userProjects": getUserProjects(self.user.login, self.request),
+            "sectionActive": "projectlist",
         }
 
 

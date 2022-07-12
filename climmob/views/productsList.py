@@ -121,6 +121,7 @@ class productsView(climmobPrivateView):
             "activeProject": activeProjectData,
             "hasActiveProject": hasActiveProject,
             "Products": products,
+            "sectionActive": "productlist",
         }
 
 

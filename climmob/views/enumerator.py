@@ -104,6 +104,7 @@ class enumerators_view(privateView):
             "error_summary": error_summary,
             "modify": modify,
             "nextPage": nextPage,
+            "sectionActive": "fieldagents",
         }
 
 

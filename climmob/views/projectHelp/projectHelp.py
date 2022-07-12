@@ -101,6 +101,7 @@ class projectHelp_view(privateView):
         return {
             "dataworking": dataworking,
             "activeProject": getActiveProject(self.user.login, self.request),
+            "sectionActive": "projecthelp",
         }
 
 
