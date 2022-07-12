@@ -1,5 +1,6 @@
 from climmob.processes import userExists, emailExists
 import re
+
 # Form validation
 
 __all__ = ["valideRegisterForm"]
@@ -37,7 +38,9 @@ def valideRegisterForm(data, request, _):
         errors = True
     reg = re.compile(r"^[a-z0-9]+$")
     if not reg.match(data["user_name"]):
-        error_summary["Caracters"]= _("The username can only use lowercase letters and numbers.")
+        error_summary["Caracters"] = _(
+            "The username can only use lowercase letters and numbers."
+        )
         errors = True
 
     return errors, error_summary
