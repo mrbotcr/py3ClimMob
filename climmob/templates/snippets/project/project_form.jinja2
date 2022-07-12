@@ -60,6 +60,31 @@
                 </div>
             </div>
         </div>
+
+        <div class="col-md-12" style="padding: 0px">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{{ _("2. Geographic information") }}</h5>
+                </div>
+                <div class="ibox-content">
+
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">{{ _("Country") }}</label>
+                        <div class="col-sm-8">
+
+                            <select id="project_cnty" name="project_cnty" class="form-control chosen-select" tabindex="2" required oninvalid="this.setCustomValidity('{{ _("Select one country.") }}')" onchange="this.setCustomValidity('')" {% if not permissionForChanges %} disabled {% endif %}>
+                                <option value="">{{ _("Select one country") }}</option>
+                                {% for country in countries %}
+                                    <option value="{{ country.code }}" {% if country.code == dataworking.project_cnty %}selected{% endif %} >{{ country.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <div class="col-md-6">
@@ -67,7 +92,7 @@
         <div class="col-md-12" style="padding: 0px">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>{{ _("2. Participants and technology options labels") }}</h5>
+                    <h5>{{ _("3. Participants and technology options labels") }}</h5>
                 </div>
                 <div class="ibox-content">
 
@@ -109,29 +134,7 @@
             </div>
         </div>
 
-        <div class="col-md-12" style="padding: 0px">
-            <div class="ibox float-e-margins">
-                <div class="ibox-title">
-                    <h5>{{ _("3. Geographic information") }}</h5>
-                </div>
-                <div class="ibox-content">
 
-                    <div class="form-group">
-                        <label class="col-sm-4 control-label">{{ _("Country") }}</label>
-                        <div class="col-sm-8">
-
-                            <select id="project_cnty" name="project_cnty" class="form-control chosen-select" tabindex="2" required oninvalid="this.setCustomValidity('{{ _("Select one country.") }}')" onchange="this.setCustomValidity('')" {% if not permissionForChanges %} disabled {% endif %}>
-                                <option value="">{{ _("Select one country") }}</option>
-                                {% for country in countries %}
-                                    <option value="{{ country.code }}" {% if country.code == dataworking.project_cnty %}selected{% endif %} >{{ country.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
 
         <div class="col-md-12" style="padding: 0px">
             <div class="ibox float-e-margins">
