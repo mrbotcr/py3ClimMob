@@ -243,31 +243,25 @@ class register_view(publicView):
                 if res:
                     user = getUserData(data["user_name"], self.request)
                     if user is not None:
-                        reg = re.compile(r"^[a-z0-9]+$")
-                        if reg.match(data["user_name"]):
-                            if user.check_password(data["user_password"], self.request):
-                                addToLog(
-                                    user.login,
-                                    "PRF",
-                                    "Welcome to ClimMob",
-                                    datetime.datetime.now(),
-                                    self.request,
-                                )
-                                headers = remember(self.request, data["user_name"])
-                                self.returnRawViewResult = True
-                                return HTTPFound(
-                                    location=self.request.route_url("dashboard"),
-                                    headers=headers,
-                                )
-                            else:
-                                error_summary["createError"] = self._(
-                                    "Password does not match {}".format(
-                                        data["user_password"]
-                                    )
-                                )
+                        if user.check_password(data["user_password"], self.request):
+                            addToLog(
+                                user.login,
+                                "PRF",
+                                "Welcome to ClimMob",
+                                datetime.datetime.now(),
+                                self.request,
+                            )
+                            headers = remember(self.request, data["user_name"])
+                            self.returnRawViewResult = True
+                            return HTTPFound(
+                                location=self.request.route_url("dashboard"),
+                                headers=headers,
+                            )
                         else:
                             error_summary["createError"] = self._(
-                                "The username cannot have any special characters."
+                                "Password does not match {}".format(
+                                    data["user_password"]
+                                )
                             )
                     else:
                         error_summary["createError"] = self._("User is None!")

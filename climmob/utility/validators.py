@@ -1,5 +1,5 @@
 from climmob.processes import userExists, emailExists
-
+import re
 # Form validation
 
 __all__ = ["valideRegisterForm"]
@@ -13,7 +13,7 @@ def valideRegisterForm(data, request, _):
         error_summary["InvalidPassword"] = _("Invalid password")
         errors = True
     if userExists(data["user_name"], request):
-        error_summary["UserExists"] = _("User name already exits")
+        error_summary["UserExists"] = _("Username already exits")
         errors = True
     if emailExists(data["user_email"], request):
         error_summary["EmailExists"] = _(
@@ -34,6 +34,10 @@ def valideRegisterForm(data, request, _):
         errors = True
     if data["user_email"] == "":
         error_summary["EmptyEmail"] = _("Email cannot be emtpy")
+        errors = True
+    reg = re.compile(r"^[a-z0-9]+$")
+    if not reg.match(data["user_name"]):
+        error_summary["Caracters"]= _("The username can only use lowercase letters and numbers.")
         errors = True
 
     return errors, error_summary
