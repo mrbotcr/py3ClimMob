@@ -1,8 +1,9 @@
 import argparse
-from pyramid.paster import get_appsettings, setup_logging
-import MySQLdb
 import os
 import sys
+
+import MySQLdb
+from pyramid.paster import get_appsettings, setup_logging
 
 
 def get_dump(host, user, password, db, outputPath):

@@ -1,5 +1,6 @@
-import climmob.resources as r
 import os
+
+import climmob.resources as r
 
 
 def createResources(apppath, config):

@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from climmob.views.classes import privateView
+import datetime
+
+from pyramid.httpexceptions import HTTPNotFound, HTTPFound
+
 from climmob.processes import (
     projectInDatabase,
     addProject,
@@ -36,8 +39,7 @@ from climmob.processes import (
     deleteProjectAssessments,
     getUserProjects,
 )
-from pyramid.httpexceptions import HTTPNotFound, HTTPFound
-import datetime
+from climmob.views.classes import privateView
 
 
 class getTemplatesByTypeOfProject_view(privateView):

@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
-from climmob.config.celery_app import get_ini_value
 from sqlalchemy.pool import NullPool
+
+from climmob.config.celery_app import get_ini_value
 
 
 def sql_fetch_one(sql):

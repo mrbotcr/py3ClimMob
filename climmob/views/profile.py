@@ -1,4 +1,6 @@
-from climmob.views.classes import privateView
+import datetime
+
+from climmob.config.auth import getUserData
 from climmob.processes import (
     getUserLog,
     getUserStats,
@@ -10,8 +12,7 @@ from climmob.processes import (
     getActiveProject,
     changeUserPassword,
 )
-import datetime
-from climmob.config.auth import getUserData
+from climmob.views.classes import privateView
 
 
 class profile_view(privateView):

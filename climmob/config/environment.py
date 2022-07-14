@@ -8,9 +8,13 @@ This code is based on CKAN
 """
 
 import os
+
 from pyramid.session import SignedCookieSessionFactory
+
 import climmob.plugins as p
-from climmob.config.routes import loadRoutes
+import climmob.products as prd
+import climmob.resources as r
+import climmob.utility.helpers as helpers
 from climmob.config.jinja_extensions import (
     initialize,
     SnippetExtension,
@@ -18,11 +22,9 @@ from climmob.config.jinja_extensions import (
     CSSResourceExtension,
     JSResourceExtension,
 )
-import climmob.resources as r
-import climmob.products as prd
 from climmob.config.mainresources import createResources
+from climmob.config.routes import loadRoutes
 from climmob.models import addColumnToSchema, add_modules_to_schema
-import climmob.utility.helpers as helpers
 from climmob.products.climmob_products import register_products
 
 my_session_factory = SignedCookieSessionFactory("b@HdX5Y6nL")

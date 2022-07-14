@@ -5,12 +5,12 @@ Revises: 8f9c1f3f2153
 Create Date: 2021-08-03 10:43:53.827870
 
 """
-from alembic import op
-import sqlalchemy as sa
-from climmob.models.climmobv4 import Project
-from climmob.models import mapToSchema
 import uuid
+
+import sqlalchemy as sa
 from sqlalchemy.orm.session import Session
+
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "4879489bef8d"

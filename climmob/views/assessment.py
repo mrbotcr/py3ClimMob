@@ -1,6 +1,10 @@
-from climmob.views.classes import privateView
-from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 import json
+import os
+
+from jinja2 import Environment, FileSystemLoader
+from pyramid.httpexceptions import HTTPNotFound, HTTPFound
+
+import climmob.plugins as p
 from climmob.processes import (
     projectExists,
     addAssessmentGroup,
@@ -27,10 +31,8 @@ from climmob.processes import (
     getActiveProject,
 )
 from climmob.products.forms.form import create_document_form
-from jinja2 import Environment, FileSystemLoader
+from climmob.views.classes import privateView
 from climmob.views.registry import getDataFormPreview
-import os
-import climmob.plugins as p
 
 
 class deleteAssessmentSection_view(privateView):

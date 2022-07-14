@@ -1,4 +1,9 @@
-from climmob.views.classes import privateView
+import hashlib
+import urllib
+
+import paginate
+from pyramid.httpexceptions import HTTPNotFound, HTTPFound
+
 from climmob.processes import (
     getActiveProject,
     projectExists,
@@ -9,10 +14,7 @@ from climmob.processes import (
     remove_collaborator,
     getAccessTypeForProject,
 )
-from pyramid.httpexceptions import HTTPNotFound, HTTPFound
-import paginate
-import urllib
-import hashlib
+from climmob.views.classes import privateView
 
 
 class projectShare_view(privateView):

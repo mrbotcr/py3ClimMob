@@ -1,4 +1,5 @@
-from climmob.views.classes import privateView
+from pyramid.httpexceptions import HTTPNotFound, HTTPFound
+
 from climmob.processes import (
     getUserProjects,
     getProjectEnumerators,
@@ -12,8 +13,8 @@ from climmob.processes import (
     getActiveProject,
     getTheProjectIdForOwner,
 )
+from climmob.views.classes import privateView
 from climmob.views.project import createProjectFunction, functionCreateClone
-from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 from climmob.views.registry import getDataFormPreview
 
 

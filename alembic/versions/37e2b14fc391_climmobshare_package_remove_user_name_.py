@@ -5,9 +5,10 @@ Revises: 641494781663
 Create Date: 2021-08-26 11:36:41.352933
 
 """
-from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import mysql
+
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "37e2b14fc391"

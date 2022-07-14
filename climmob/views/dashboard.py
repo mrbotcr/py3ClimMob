@@ -1,4 +1,6 @@
-from climmob.views.classes import privateView, publicView
+from pyramid.httpexceptions import HTTPNotFound, HTTPFound
+
+import climmob.plugins as p
 from climmob.processes import (
     getActiveProject,
     getProjectProgress,
@@ -14,8 +16,7 @@ from climmob.processes import (
     seeProgress,
     getTheProjectIdForOwner,
 )
-from pyramid.httpexceptions import HTTPNotFound, HTTPFound
-import climmob.plugins as p
+from climmob.views.classes import privateView, publicView
 
 
 class dashboard_view(privateView):

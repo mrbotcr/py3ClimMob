@@ -1,8 +1,9 @@
-from climmob.config.celery_app import celeryApp
-from climmob.plugins.utilities import climmobCeleryTask
+import json
 import os
 import shutil as sh
-import json
+
+from climmob.config.celery_app import celeryApp
+from climmob.plugins.utilities import climmobCeleryTask
 from climmob.products.analysisdata.exportToCsv import createCSV
 
 

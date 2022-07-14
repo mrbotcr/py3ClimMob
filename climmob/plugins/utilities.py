@@ -6,12 +6,12 @@ These code is licensed under BSD
 
 import inspect
 import os
-import climmob.resources as r
+
 import climmob.products as p
-from climmob.views.classes import publicView, privateView
+import climmob.resources as r
 from climmob.config.celery_class import celeryTask
 from climmob.processes import addTask
-
+from climmob.views.classes import publicView, privateView
 
 __all__ = [
     "addTemplatesDirectory",

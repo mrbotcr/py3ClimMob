@@ -1,9 +1,11 @@
+import os
+import sys
+
+from babel.support import Translations
 from pyramid.i18n import get_localizer, TranslationStringFactory
 from pyramid.threadlocal import get_current_request
-from babel.support import Translations
+
 import climmob.plugins as p
-import sys
-import os
 
 
 def add_renderer_globals(event):

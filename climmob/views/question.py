@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from climmob.views.classes import privateView
+import json
+import os
+import re
+
+from jinja2 import Environment, FileSystemLoader
+from pyramid.httpexceptions import HTTPFound, HTTPNotFound
+
 from climmob.processes import (
     addQuestion,
     addOptionToQuestion,
@@ -25,11 +31,7 @@ from climmob.processes import (
     userQuestionDetailsById,
     getCategoryByIdAndUser,
 )
-from pyramid.httpexceptions import HTTPFound, HTTPNotFound
-import re
-import json
-import os
-from jinja2 import Environment, FileSystemLoader
+from climmob.views.classes import privateView
 
 
 class deleteQuestion_view(privateView):

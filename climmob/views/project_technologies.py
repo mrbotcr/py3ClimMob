@@ -1,5 +1,5 @@
-from climmob.views.classes import privateView
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
+
 from climmob.processes import (
     projectExists,
     projectTechnologyExists,
@@ -23,6 +23,7 @@ from climmob.processes import (
     getProjectData,
     getCombinationsData,
 )
+from climmob.views.classes import privateView
 
 
 class projectTecnologies_view(privateView):

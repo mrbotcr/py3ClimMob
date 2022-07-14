@@ -1,4 +1,9 @@
-from climmob.views.classes import apiView
+import datetime
+import json
+import re
+
+from pyramid.response import Response
+
 from climmob.processes import (
     projectInDatabase,
     addProject,
@@ -23,11 +28,8 @@ from climmob.processes import (
     deleteProjectAssessments,
     getProjectTemplates,
 )
+from climmob.views.classes import apiView
 from climmob.views.project import functionCreateClone
-from pyramid.response import Response
-import json
-import datetime
-import re
 
 
 class readListOfTemplates_view(apiView):

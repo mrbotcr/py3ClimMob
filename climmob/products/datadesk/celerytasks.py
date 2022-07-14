@@ -1,6 +1,7 @@
+import os
+
 from climmob.config.celery_app import celeryApp
 from climmob.plugins.utilities import climmobCeleryTask
-import os
 
 
 @celeryApp.task(base=climmobCeleryTask)

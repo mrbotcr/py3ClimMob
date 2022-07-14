@@ -1,6 +1,7 @@
-from climmob.views.classes import publicView
-import os
 import json
+import os
+
+from climmob.views.classes import publicView
 
 
 class showMapForProjectVisualization_view(publicView):

@@ -1,11 +1,13 @@
-import shutil as sh
-from climmob.config.celery_app import celeryApp
-import os
-import uuid
-from jinja2 import Environment, FileSystemLoader
-from climmob.config.celery_class import celeryTask
-import imgkit
 import gettext
+import os
+import shutil as sh
+import uuid
+
+import imgkit
+from jinja2 import Environment, FileSystemLoader
+
+from climmob.config.celery_app import celeryApp
+from climmob.config.celery_class import celeryTask
 
 # PATH = os.path.abspath('climmob/products/cards')
 PATH = os.path.dirname(os.path.abspath(__file__))

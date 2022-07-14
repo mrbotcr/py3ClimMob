@@ -1,4 +1,6 @@
 # coding: utf-8
+import datetime
+
 from sqlalchemy import (
     Column,
     DateTime,
@@ -10,9 +12,9 @@ from sqlalchemy import (
     Unicode,
     text,
 )
-from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.mysql import MEDIUMTEXT
-import datetime
+from sqlalchemy.orm import relationship
+
 from climmob.models.meta import Base
 
 

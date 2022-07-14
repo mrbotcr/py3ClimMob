@@ -1,5 +1,5 @@
-import json
 import csv
+import json
 
 
 def getRealData(lkptables, rtable, rfield, value, isMultiSelect):

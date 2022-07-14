@@ -5,11 +5,10 @@ Revises: 48888bc4d0b6
 Create Date: 2021-08-03 16:12:38.972394
 
 """
-from alembic import op
 import sqlalchemy as sa
-from sqlalchemy.dialects import mysql
 from sqlalchemy.orm.session import Session
-from climmob.models.climmobv4 import Prjlang, Project
+
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "e8be0af780e1"

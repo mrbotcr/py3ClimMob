@@ -1,19 +1,20 @@
-from climmob.config.auth import getUserData, getUserByApiKey
-from pyramid.httpexceptions import HTTPFound
-from pyramid.session import check_csrf_token
-from pyramid.httpexceptions import HTTPNotFound
-from formencode.variabledecode import variable_decode
-from pyramid.response import Response
-from hashlib import md5
-import uuid
-import logging
 import datetime
 import json
+import logging
+import uuid
+from hashlib import md5
+
+from formencode.variabledecode import variable_decode
+from pyramid.httpexceptions import HTTPFound
+from pyramid.httpexceptions import HTTPNotFound
+from pyramid.response import Response
+from pyramid.session import check_csrf_token
+
+from climmob.config.auth import getUserData, getUserByApiKey
 
 log = logging.getLogger(__name__)
 
 from climmob.processes import (
-    getUserProjects,
     getActiveProject,
     counterChat,
     getLastActivityLogByUser,

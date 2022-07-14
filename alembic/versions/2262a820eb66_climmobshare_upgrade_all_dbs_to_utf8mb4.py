@@ -5,9 +5,9 @@ Revises: 3640687f97bd
 Create Date: 2021-10-22 11:30:44.704537
 
 """
-from alembic import op
 from sqlalchemy.orm.session import Session
 
+from alembic import op
 from climmob.models.climmobv4 import Project, userProject
 
 # revision identifiers, used by Alembic.

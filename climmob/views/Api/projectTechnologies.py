@@ -1,4 +1,7 @@
-from climmob.views.classes import apiView
+import json
+
+from pyramid.response import Response
+
 from climmob.processes import (
     projectExists,
     searchTechnologiesInProject,
@@ -22,8 +25,7 @@ from climmob.processes import (
     getAccessTypeForProject,
     theUserBelongsToTheProject,
 )
-from pyramid.response import Response
-import json
+from climmob.views.classes import apiView
 
 
 class addProjectTechnology_view(apiView):

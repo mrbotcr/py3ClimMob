@@ -5,10 +5,11 @@ Revises: 136b84259860
 Create Date: 2022-07-14 08:06:01.567620
 
 """
-from alembic import op
 import sqlalchemy as sa
 from sqlalchemy import String, Integer
 from sqlalchemy.sql import table, column
+
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "5194a5f1ab00"

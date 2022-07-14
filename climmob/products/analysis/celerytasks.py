@@ -1,12 +1,14 @@
-from climmob.config.celery_app import celeryApp
-from climmob.plugins.utilities import climmobCeleryTask
+import gettext
+import json
 import os
 import shutil as sh
-import json
-from jinja2 import Environment, FileSystemLoader
-from zipfile import ZipFile
 from os.path import basename
-import gettext
+from zipfile import ZipFile
+
+from jinja2 import Environment, FileSystemLoader
+
+from climmob.config.celery_app import celeryApp
+from climmob.plugins.utilities import climmobCeleryTask
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 

@@ -1,4 +1,7 @@
-from climmob.views.classes import apiView
+import json
+
+from pyramid.response import Response
+
 from climmob.processes import (
     getProjectEnumerators,
     isEnumeratorAssigned,
@@ -12,10 +15,9 @@ from climmob.processes import (
     getProjectData,
     projectExists,
 )
-from climmob.products.fieldagents.fieldagents import create_fieldagents_report
 from climmob.products import stopTasksByProcess
-from pyramid.response import Response
-import json
+from climmob.products.fieldagents.fieldagents import create_fieldagents_report
+from climmob.views.classes import apiView
 
 
 class addProjectEnumerator_view(apiView):

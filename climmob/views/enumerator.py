@@ -1,5 +1,7 @@
-from climmob.views.classes import privateView
 import re
+
+from pyramid.httpexceptions import HTTPNotFound
+
 from climmob.config.encdecdata import encodeData, decodeData
 from climmob.processes import (
     searchEnumerator,
@@ -10,7 +12,7 @@ from climmob.processes import (
     getActiveProject,
     getEnumeratorData,
 )
-from pyramid.httpexceptions import HTTPFound, HTTPNotFound
+from climmob.views.classes import privateView
 
 
 class getEnumeratorDetails_view(privateView):

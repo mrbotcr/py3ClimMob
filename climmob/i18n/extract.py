@@ -1,4 +1,5 @@
 from jinja2.ext import babel_extract as extract_jinja2
+
 import climmob.config.jinja_extensions as je
 
 jinja_extensions = """

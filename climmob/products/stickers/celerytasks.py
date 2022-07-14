@@ -1,10 +1,12 @@
-from climmob.config.celery_app import celeryApp
-from climmob.config.celery_class import celeryTask
-from jinja2 import Environment, FileSystemLoader
+import gettext
 import os
 import shutil as sh
-import gettext
+
+from jinja2 import Environment, FileSystemLoader
 from weasyprint import HTML
+
+from climmob.config.celery_app import celeryApp
+from climmob.config.celery_class import celeryTask
 from climmob.products.qrpackages.celerytasks import create_qr
 
 PATH = os.path.dirname(os.path.abspath(__file__))

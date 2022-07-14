@@ -1,6 +1,12 @@
 import argparse
+import json
+import os
+
+import numpy as np
 import transaction
 from pyramid.paster import get_appsettings, setup_logging
+from sqlalchemy import tuple_
+
 from climmob.models import (
     Project,
     mapFromSchema,
@@ -12,13 +18,9 @@ from climmob.models import (
     Prjtech,
     userProject,
 )
-import os
-import json
-from sqlalchemy import tuple_
-from climmob.models.repository import sql_execute
 from climmob.models import get_engine, get_session_factory, get_tm_session
 from climmob.models.meta import Base
-import numpy as np
+from climmob.models.repository import sql_execute
 
 
 def getProjectWithGeoPointInRegistry(dbsession):

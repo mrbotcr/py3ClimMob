@@ -6,6 +6,7 @@ Create Date: 2022-02-17 19:04:55.008216
 
 """
 from sqlalchemy.orm.session import Session
+
 from alembic import op
 
 # revision identifiers, used by Alembic.

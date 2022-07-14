@@ -1,7 +1,8 @@
 import json
 import xml.etree.ElementTree as ET
-from climmob.processes import getProjectData, getQuestionOptionsByQuestionCode
+
 from climmob.models.repository import sql_execute
+from climmob.processes import getProjectData, getQuestionOptionsByQuestionCode
 
 
 def get_FieldsByType(types, file):

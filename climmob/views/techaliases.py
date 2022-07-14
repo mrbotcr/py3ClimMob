@@ -1,4 +1,3 @@
-from climmob.views.classes import privateView
 from climmob.processes import (
     getTechsAlias,
     findTechalias,
@@ -8,6 +7,7 @@ from climmob.processes import (
     removeAlias,
     getTechnology,
 )
+from climmob.views.classes import privateView
 
 
 class alias_view(privateView):

@@ -5,10 +5,10 @@ Revises: a977148d07b4
 Create Date: 2021-08-03 16:26:35.722812
 
 """
-from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.orm.session import Session
-from climmob.models.climmobv4 import storageErrors, Project
+
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "7d3931b8745e"

@@ -1,14 +1,16 @@
-from climmob.config.celery_app import celeryApp
-from climmob.config.celery_class import celeryTask
-from jinja2 import Environment, FileSystemLoader
+import base64
+import gettext
+import json
 import os
 import shutil as sh
-import json
 import zlib
-import base64
+
 import qrcode
-import gettext
+from jinja2 import Environment, FileSystemLoader
 from weasyprint import HTML
+
+from climmob.config.celery_app import celeryApp
+from climmob.config.celery_class import celeryTask
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 # pip install "weasyprint<43"

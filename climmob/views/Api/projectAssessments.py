@@ -1,6 +1,7 @@
-from climmob.views.classes import apiView
-from pyramid.response import Response
 import json
+
+from pyramid.response import Response
+
 from climmob.processes import (
     projectExists,
     getProjectAssessments,
@@ -31,6 +32,7 @@ from climmob.processes import (
     theUserBelongsToTheProject,
     getProjectData,
 )
+from climmob.views.classes import apiView
 
 
 class readProjectAssessments_view(apiView):

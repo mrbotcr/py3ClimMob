@@ -1,13 +1,15 @@
-from jinja2 import nodes
-from jinja2 import ext
 import logging
-from jinja2 import Environment
-from webhelpers2.html import literal
-from jinja2 import FileSystemLoader
-import re
 import os
-import climmob.resources as r
+import re
+
+from jinja2 import Environment
+from jinja2 import FileSystemLoader
+from jinja2 import ext
+from jinja2 import nodes
 from pyramid.threadlocal import get_current_request
+from webhelpers2.html import literal
+
+import climmob.resources as r
 
 jinjaEnv = Environment()
 log = logging.getLogger(__name__)

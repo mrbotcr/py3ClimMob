@@ -1,4 +1,5 @@
-from climmob.views.classes import odkView
+from pyramid.response import Response
+
 from climmob.processes import (
     isEnumeratorActive,
     getEnumeratorPassword,
@@ -14,7 +15,7 @@ from climmob.processes import (
     getTheProjectIdForOwner,
     isEnumeratorAssigned,
 )
-from pyramid.response import Response
+from climmob.views.classes import odkView
 
 
 class formList_view(odkView):

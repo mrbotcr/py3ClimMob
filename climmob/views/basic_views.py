@@ -1,8 +1,15 @@
-from pyramid.security import remember
+import datetime
+import smtplib
+from email import utils
+from email.header import Header
+from email.mime.text import MIMEText
+from time import time
+
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
+from pyramid.security import forget
+from pyramid.security import remember
+
 from climmob.config.auth import getUserData, getUserByEmail
-from climmob.views.classes import publicView
-from climmob.utility import valideRegisterForm
 from climmob.processes import (
     addUser,
     addToLog,
@@ -11,14 +18,8 @@ from climmob.processes import (
     getUserCount,
     getProjectCount,
 )
-from pyramid.security import forget
-import re
-from email.mime.text import MIMEText
-from email.header import Header
-from email import utils
-from time import time
-import smtplib
-import datetime
+from climmob.utility import valideRegisterForm
+from climmob.views.classes import publicView
 
 
 class home_view(publicView):

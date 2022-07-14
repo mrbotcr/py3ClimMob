@@ -1,14 +1,16 @@
-import shutil as sh
-from climmob.config.celery_app import celeryApp
 import base64
-import os
 import bz2
 import gettext
-import qrcode
+import os
+import shutil as sh
 import uuid
-from jinja2 import Environment, FileSystemLoader
-from climmob.config.celery_class import celeryTask
+
 import imgkit
+import qrcode
+from jinja2 import Environment, FileSystemLoader
+
+from climmob.config.celery_app import celeryApp
+from climmob.config.celery_class import celeryTask
 
 # pip install imgkit
 # sudo apt-get install wkhtmltopdf

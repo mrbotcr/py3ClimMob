@@ -1,4 +1,5 @@
-from climmob.views.classes import privateView
+from pyramid.httpexceptions import HTTPFound, HTTPNotFound
+
 from climmob.processes import (
     getActiveProject,
     getQuestionsByType,
@@ -8,7 +9,7 @@ from climmob.processes import (
 )
 from climmob.products.analysis.analysis import create_analysis
 from climmob.products.analysisdata.analysisdata import create_datacsv
-from pyramid.httpexceptions import HTTPFound, HTTPNotFound
+from climmob.views.classes import privateView
 
 
 class analysisDataView(privateView):

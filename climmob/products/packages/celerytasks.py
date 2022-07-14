@@ -1,9 +1,10 @@
-import shutil as sh
-from climmob.config.celery_app import celeryApp
-import os
-from climmob.config.celery_class import celeryTask
 import csv
 import gettext
+import os
+import shutil as sh
+
+from climmob.config.celery_app import celeryApp
+from climmob.config.celery_class import celeryTask
 
 
 @celeryApp.task(bind=True, base=celeryTask, soft_time_limit=7200, time_limit=7200)

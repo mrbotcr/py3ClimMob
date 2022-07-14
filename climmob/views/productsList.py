@@ -1,14 +1,15 @@
+import os
+
+from pyramid.httpexceptions import HTTPFound
+from pyramid.httpexceptions import HTTPNotFound
+from pyramid.response import FileResponse
+
+import climmob.plugins as p
 from climmob.plugins.utilities import (
     climmobPrivateView,
     getProductDirectory,
     getProducts,
 )
-from climmob.views.classes import privateView
-from climmob.products import product_found
-from pyramid.response import FileResponse
-import os
-from pyramid.httpexceptions import HTTPNotFound
-from pyramid.httpexceptions import HTTPFound
 from climmob.processes import (
     getActiveProject,
     getProductData,
@@ -27,17 +28,18 @@ from climmob.processes import (
     get_registry_logs,
     get_assessment_logs,
 )
-from climmob.views.projectHelp.projectHelp import getImportantInformation
-from climmob.views.registry import getDataFormPreview
-from climmob.products.qrpackages.qrpackages import create_qr_packages
-from climmob.products.packages.packages import create_packages_excell
-from climmob.products.colors.colors import create_colors_cards
-from climmob.products.fieldagents.fieldagents import create_fieldagents_report
+from climmob.products import product_found
 from climmob.products.analysisdata.analysisdata import create_datacsv
+from climmob.products.colors.colors import create_colors_cards
+from climmob.products.errorLogDocument.errorLogDocument import create_error_log_document
+from climmob.products.fieldagents.fieldagents import create_fieldagents_report
 from climmob.products.forms.form import create_document_form
 from climmob.products.generalReport.generalReport import create_general_report
-from climmob.products.errorLogDocument.errorLogDocument import create_error_log_document
-import climmob.plugins as p
+from climmob.products.packages.packages import create_packages_excell
+from climmob.products.qrpackages.qrpackages import create_qr_packages
+from climmob.views.classes import privateView
+from climmob.views.projectHelp.projectHelp import getImportantInformation
+from climmob.views.registry import getDataFormPreview
 
 
 def getDataProduct(projectId, request):

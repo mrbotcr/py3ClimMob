@@ -1,6 +1,10 @@
-from climmob.views.classes import privateView
-from climmob.processes import projectExists
+import json
+import os
+import xml.etree.ElementTree as ET
+
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
+
+from climmob.models.repository import sql_execute
 from climmob.processes import (
     get_registry_logs,
     get_registry_log_by_log,
@@ -14,12 +18,10 @@ from climmob.processes import (
     getActiveProject,
     getQuestionsStructure,
 )
-import os
-from climmob.views.editDataDB import getNamesEditByColums, fillDataTable
-import json
-import xml.etree.ElementTree as ET
+from climmob.processes import projectExists
 from climmob.processes.odk.api import storeJSONInMySQL
-from climmob.models.repository import sql_execute
+from climmob.views.classes import privateView
+from climmob.views.editDataDB import getNamesEditByColums, fillDataTable
 
 
 class cleanErrorLogs_view(privateView):

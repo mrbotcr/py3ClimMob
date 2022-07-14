@@ -1,8 +1,10 @@
-import shutil
-from climmob.config.celery_app import celeryApp
 import os
+import shutil
 import uuid
+
 from jinja2 import Environment, FileSystemLoader
+
+from climmob.config.celery_app import celeryApp
 from climmob.config.celery_class import celeryTask
 
 PATH = os.path.dirname(os.path.abspath(__file__))

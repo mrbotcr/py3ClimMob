@@ -1,4 +1,7 @@
-from climmob.views.classes import apiView
+import json
+
+from pyramid.response import Response
+
 from climmob.processes import (
     projectExists,
     getJSONResult,
@@ -8,9 +11,8 @@ from climmob.processes import (
     getTheProjectIdForOwner,
     getAccessTypeForProject,
 )
+from climmob.views.classes import apiView
 from climmob.views.project_analysis import processToGenerateTheReport
-from pyramid.response import Response
-import json
 
 
 class readDataOfProjectView_api(apiView):

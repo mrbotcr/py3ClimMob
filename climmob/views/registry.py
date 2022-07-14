@@ -1,6 +1,10 @@
-from climmob.views.classes import privateView
+import json
+import os
+
+from jinja2 import Environment, FileSystemLoader
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
-import json, os
+
+import climmob.plugins as p
 from climmob.processes import (
     projectExists,
     addRegistryGroup,
@@ -19,9 +23,8 @@ from climmob.processes import (
     getTheProjectIdForOwner,
     getProjectLabels,
 )
-from jinja2 import Environment, FileSystemLoader
 from climmob.products import stopTasksByProcess
-import climmob.plugins as p
+from climmob.views.classes import privateView
 
 
 class deleteRegistrySection_view(privateView):

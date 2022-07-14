@@ -38,9 +38,9 @@ def decodeData(data):
 
 # Code from http://www.codekoala.com/posts/aes-encryption-python-using-pycrypto/
 
-from Crypto.Cipher import AES
 import base64
 
+from Crypto.Cipher import AES
 
 # the block size for the cipher object; must be 16, 24, or 32 for AES
 BLOCK_SIZE = 32

@@ -1,4 +1,11 @@
-from climmob.views.classes import apiView
+import datetime
+import json
+import os
+import uuid
+from xml.dom import minidom
+
+from pyramid.response import Response
+
 from climmob.processes import (
     projectExists,
     projectRegStatus,
@@ -22,17 +29,12 @@ from climmob.processes import (
     updateCreatePackages,
     deleteProjectPackages,
 )
-from climmob.products.randomization.randomization import create_randomization
-from climmob.views.project_combinations import createSettings
-from climmob.products import stopTasksByProcess
 from climmob.processes.odk.api import storeJSONInMySQL
+from climmob.products import stopTasksByProcess
+from climmob.products.randomization.randomization import create_randomization
+from climmob.views.classes import apiView
+from climmob.views.project_combinations import createSettings
 from climmob.views.project_combinations import startTheRegistry
-from pyramid.response import Response
-from xml.dom import minidom
-import json
-import datetime
-import os
-import uuid
 
 
 class readProjectCombinations_view(apiView):

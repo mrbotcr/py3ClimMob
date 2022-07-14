@@ -1,5 +1,6 @@
-from climmob.config.celery_app import celeryApp
 import time
+
+from climmob.config.celery_app import celeryApp
 
 
 @celeryApp.task

@@ -1,7 +1,8 @@
-from sqlalchemy import create_engine
-from climmob.config.celery_app import get_ini_value
-from sqlalchemy.pool import NullPool
 from celery.contrib.abortable import AbortableTask
+from sqlalchemy import create_engine
+from sqlalchemy.pool import NullPool
+
+from climmob.config.celery_app import get_ini_value
 
 
 class celeryTask(AbortableTask):

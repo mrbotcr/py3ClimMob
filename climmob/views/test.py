@@ -1,5 +1,5 @@
-from climmob.views.classes import privateView
 from climmob.processes import getActiveProject, getJSONResult
+from climmob.views.classes import privateView
 
 
 class test_view(privateView):

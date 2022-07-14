@@ -1,5 +1,6 @@
-from climmob.processes import userExists, emailExists
 import re
+
+from climmob.processes import userExists, emailExists
 
 # Form validation
 

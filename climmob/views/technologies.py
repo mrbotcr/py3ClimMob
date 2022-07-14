@@ -1,5 +1,5 @@
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
-from climmob.views.classes import privateView
+
 from climmob.processes import (
     getUserTechs,
     findTechInLibrary,
@@ -11,6 +11,7 @@ from climmob.processes import (
     getActiveProject,
     getTechnologyByName,
 )
+from climmob.views.classes import privateView
 from climmob.views.techaliases import newalias_view, modifyalias_view
 
 

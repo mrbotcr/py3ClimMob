@@ -1,7 +1,9 @@
-from climmob.models.meta import metadata
 import json
-from sqlalchemy import inspect
+
 from future.utils import iteritems
+from sqlalchemy import inspect
+
+from climmob.models.meta import metadata
 
 __all__ = [
     "initialize_schema",

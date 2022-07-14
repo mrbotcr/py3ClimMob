@@ -1,4 +1,8 @@
-from climmob.views.classes import apiView
+import json
+import uuid
+
+from pyramid.response import Response
+
 from climmob.processes import (
     getCategoryById,
     categoryExistsWithDifferentId,
@@ -10,9 +14,7 @@ from climmob.processes import (
     updateCategory,
     deleteCategory,
 )
-import json
-from pyramid.response import Response
-import uuid
+from climmob.views.classes import apiView
 
 
 class createGroupOfQuestion_view(apiView):

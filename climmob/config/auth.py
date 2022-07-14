@@ -1,7 +1,9 @@
-from climmob.models import User as userModel, Country, Sector, mapFromSchema
-from climmob.config.encdecdata import decodeData
+import arrow
+import hashlib
+import urllib
 
-import urllib, hashlib, arrow
+from climmob.config.encdecdata import decodeData
+from climmob.models import User as userModel, Country, Sector, mapFromSchema
 
 
 # User class Used to store information about the user
