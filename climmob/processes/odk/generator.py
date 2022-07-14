@@ -20,7 +20,7 @@ from climmob.models import (
     Registry,
     AssDetail,
 )
-from climmob.processes import getProjectData, getRegisteredFarmers
+from climmob.processes.db.project import getProjectData, getRegisteredFarmers
 
 log = logging.getLogger(__name__)
 

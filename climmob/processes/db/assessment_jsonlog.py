@@ -1,6 +1,6 @@
 from climmob.models import AssessmentJsonLog, Enumerator
 from climmob.models.schema import mapToSchema, mapFromSchema
-from climmob.processes import get_error_from_log
+from climmob.processes.db.registry_jsonlog import get_error_from_log
 
 all = [
     "get_assessment_logs",

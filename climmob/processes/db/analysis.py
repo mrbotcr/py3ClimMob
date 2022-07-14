@@ -12,11 +12,9 @@ from climmob.models import (
     I18nQuestion,
 )
 from climmob.models.schema import mapFromSchema
-from climmob.processes import (
-    numberOfCombinationsForTheProject,
-    getProjectLabels,
-    opcionOtherInQuestion,
-)
+from climmob.processes.db.project_technologies import numberOfCombinationsForTheProject
+from climmob.processes.db.project import getProjectLabels
+from climmob.processes.db.question import opcionOtherInQuestion
 
 __all__ = ["getQuestionsByType", "getQuestionsStructure"]
 

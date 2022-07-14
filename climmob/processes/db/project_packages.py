@@ -6,7 +6,8 @@ from subprocess import check_call, CalledProcessError
 import numpy as np
 
 from climmob.models import Project, Prjcombination, Package, Pkgcomb
-from climmob.processes import setRegistryStatus, getCombinationsUsableInProject
+from climmob.processes.db.registry import setRegistryStatus
+from climmob.processes.db.project_combinations import getCombinationsUsableInProject
 
 __all__ = [
     "create_packages_with_r",

@@ -4,7 +4,7 @@ from climmob.config.encdecdata import decodeData
 from climmob.models import userProject, Assessment, User, Enumerator, PrjEnumerator
 from climmob.models.repository import sql_fetch_all
 from climmob.models.schema import mapFromSchema
-from climmob.processes import getEnumeratorByProject
+from climmob.processes.db.enumerator import getEnumeratorByProject
 
 __all__ = [
     "getProjectEnumerators",

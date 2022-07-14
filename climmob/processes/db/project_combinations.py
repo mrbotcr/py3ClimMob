@@ -2,7 +2,7 @@ import itertools
 import math
 
 from climmob.models import Prjcombination, Prjcombdet, Project
-from climmob.processes import setRegistryStatus
+from climmob.processes.db.registry import setRegistryStatus
 
 __all__ = [
     "createCombinations",
