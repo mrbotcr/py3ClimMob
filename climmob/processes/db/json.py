@@ -1,6 +1,8 @@
-from climmob.models import RegistryJsonLog, AssessmentJsonLog
 import datetime
+
 from sqlalchemy.exc import IntegrityError
+
+from climmob.models import RegistryJsonLog, AssessmentJsonLog
 
 __all__ = ["addJsonLog"]
 

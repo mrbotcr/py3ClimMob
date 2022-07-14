@@ -1,5 +1,7 @@
-from climmob.models.schema import mapFromSchema
+from jinja2 import Environment
+from sqlalchemy import or_, func, and_
 
+import climmob.plugins as p
 from climmob.models import (
     AssDetail,
     Asssection,
@@ -9,14 +11,12 @@ from climmob.models import (
     Registry,
     I18nQuestion,
 )
+from climmob.models.schema import mapFromSchema
 from climmob.processes import (
     numberOfCombinationsForTheProject,
     getProjectLabels,
     opcionOtherInQuestion,
 )
-from sqlalchemy import or_, func, and_
-from jinja2 import Environment
-import climmob.plugins as p
 
 __all__ = ["getQuestionsByType", "getQuestionsStructure"]
 

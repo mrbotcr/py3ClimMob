@@ -1,3 +1,6 @@
+from sqlalchemy.exc import IntegrityError
+
+from climmob.config.encdecdata import encodeData, decodeData
 from climmob.models import (
     Enumerator,
     mapToSchema,
@@ -5,8 +8,6 @@ from climmob.models import (
     PrjEnumerator,
     userProject,
 )
-from climmob.config.encdecdata import encodeData, decodeData
-from sqlalchemy.exc import IntegrityError
 
 __all__ = [
     "searchEnumerator",

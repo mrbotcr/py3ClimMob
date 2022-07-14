@@ -1,5 +1,6 @@
-from climmob.models import Chat, mapToSchema, mapFromSchema
 from sqlalchemy import func
+
+from climmob.models import Chat, mapToSchema, mapFromSchema
 
 __all__ = ["addChat", "readChatByUser", "counterChat"]
 

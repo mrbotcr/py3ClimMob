@@ -1,11 +1,13 @@
-import shutil as sh
-from climmob.config.celery_app import celeryApp
-import os
-from climmob.config.celery_class import celeryTask
 import gettext
-from docxtpl import DocxTemplate, InlineImage
-from docx.shared import Mm
+import os
+import shutil as sh
 from datetime import datetime
+
+from docx.shared import Mm
+from docxtpl import DocxTemplate, InlineImage
+
+from climmob.config.celery_app import celeryApp
+from climmob.config.celery_class import celeryTask
 
 
 @celeryApp.task(base=celeryTask, soft_time_limit=7200, time_limit=7200)

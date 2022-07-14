@@ -1,3 +1,5 @@
+from sqlalchemy import func, or_, and_
+
 from climmob.models import (
     Prjtech,
     Technology,
@@ -10,7 +12,6 @@ from climmob.models import (
     User,
 )
 from climmob.models.schema import mapToSchema, mapFromSchema
-from sqlalchemy import func, or_, and_
 
 __all__ = [
     "searchTechnologies",

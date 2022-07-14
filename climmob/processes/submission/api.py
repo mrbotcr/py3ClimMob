@@ -1,16 +1,17 @@
-from zope.sqlalchemy import mark_changed
-from sqlalchemy.orm.session import Session
-from webhelpers2.html import literal
-from sqlalchemy import create_engine
-from sqlalchemy.pool import NullPool
-from decimal import Decimal
-from sqlalchemy import exc
-from lxml import etree
 import datetime
-import paginate
 import json
 import os
 import re
+from decimal import Decimal
+
+import paginate
+from lxml import etree
+from sqlalchemy import create_engine
+from sqlalchemy import exc
+from sqlalchemy.orm.session import Session
+from sqlalchemy.pool import NullPool
+from webhelpers2.html import literal
+from zope.sqlalchemy import mark_changed
 
 __all__ = ["getTablesFromForm", "getFieldsFromTable", "updateData"]
 

@@ -1,7 +1,8 @@
-from climmob.models import RegistryJsonLog, Enumerator
-from climmob.models.schema import mapToSchema, mapFromSchema
 import os
 from xml.dom import minidom
+
+from climmob.models import RegistryJsonLog, Enumerator
+from climmob.models.schema import mapToSchema, mapFromSchema
 
 all = [
     "get_registry_logs",

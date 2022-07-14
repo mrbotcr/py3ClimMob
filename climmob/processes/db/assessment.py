@@ -1,5 +1,12 @@
+import logging
+import os
+import shutil
+import uuid
+from subprocess import Popen, PIPE
+
+from jinja2 import Environment
 from sqlalchemy import func
-from climmob.models.schema import mapFromSchema, mapToSchema
+
 from climmob.models import (
     AssDetail,
     Asssection,
@@ -11,19 +18,16 @@ from climmob.models import (
     Registry,
     userProject,
 )
+from climmob.models.repository import sql_fetch_one
+from climmob.models.schema import mapFromSchema, mapToSchema
 from climmob.processes.db.project import (
     addQuestionsToAssessment,
     numberOfCombinationsForTheProject,
     getProjectLocalVariety,
     getProjectData,
 )
-from climmob.processes.odk.generator import getRegisteredFarmers
-import uuid, os
-from subprocess import Popen, PIPE
-import logging, shutil
-from jinja2 import Environment
 from climmob.processes.db.question import getQuestionOptions
-from climmob.models.repository import sql_fetch_one
+from climmob.processes.odk.generator import getRegisteredFarmers
 
 __all__ = [
     "availableAssessmentQuestions",

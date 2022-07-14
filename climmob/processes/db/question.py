@@ -1,3 +1,7 @@
+import json
+
+from sqlalchemy import func, or_, and_
+
 from climmob.models import (
     Question,
     Registry,
@@ -8,8 +12,6 @@ from climmob.models import (
     I18nQuestion,
     I18nQstoption,
 )
-import json
-from sqlalchemy import func, or_, and_
 
 __all__ = [
     "addQuestion",

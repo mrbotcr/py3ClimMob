@@ -1,7 +1,9 @@
+import logging
+
 from sqlalchemy import func
+
 from climmob.models import Project, Assessment, userProject, mapFromSchema
 from climmob.models.repository import sql_fetch_one
-import logging
 
 __all__ = ["getProjectEncrypted", "getRegistryInformation", "AssessmentsInformation"]
 

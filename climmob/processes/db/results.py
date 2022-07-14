@@ -1,7 +1,10 @@
+import datetime
+import decimal
 import os
+
 from lxml import etree
+
 from climmob.models import Assessment, Question, Project, mapFromSchema
-import datetime, decimal
 from climmob.models.repository import sql_fetch_all, sql_fetch_one
 from climmob.processes import getCombinations
 

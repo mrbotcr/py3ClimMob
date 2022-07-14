@@ -2,12 +2,11 @@
 # -*- coding: utf-8 -*-
 # pip install mysqlclient
 # pip install pyTelegramBotAPI
-import telebot
-import MySQLdb
 import datetime
-import json
 from configparser import ConfigParser
 
+import MySQLdb
+import telebot
 
 config = ConfigParser()
 config.read("development.ini")

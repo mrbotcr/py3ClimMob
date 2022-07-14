@@ -1,7 +1,13 @@
-from climmob.config.celery_app import celeryApp
-from climmob.config.celery_class import celeryTask
+import gettext
+import os
+import shutil as sh
+from subprocess import check_call, CalledProcessError
+
 import transaction
 from sqlalchemy.orm import configure_mappers
+
+from climmob.config.celery_app import celeryApp
+from climmob.config.celery_class import celeryTask
 from climmob.models import (
     get_engine,
     get_session_factory,
@@ -13,10 +19,6 @@ from climmob.models import (
     Pkgcomb,
     Assessment,
 )
-import gettext
-import os
-import shutil as sh
-from subprocess import check_call, CalledProcessError
 
 
 @celeryApp.task(bind=True, base=celeryTask, soft_time_limit=7200, time_limit=7200)

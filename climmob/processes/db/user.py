@@ -1,6 +1,7 @@
 import uuid
-from climmob.models import User, mapToSchema, mapFromSchema
+
 from climmob.config.encdecdata import encodeData
+from climmob.models import User, mapToSchema, mapFromSchema
 
 __all__ = [
     "addUser",

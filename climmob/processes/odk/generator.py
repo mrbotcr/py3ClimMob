@@ -1,3 +1,17 @@
+import glob
+import json
+import logging
+import os
+from datetime import datetime
+from hashlib import md5
+from subprocess import check_call, CalledProcessError, Popen, PIPE, check_output
+
+import xlsxwriter
+from jinja2 import Environment
+from lxml import etree
+from pyxform import xls2xform
+from pyxform.xls2json import parse_file_to_json
+
 from climmob.models import (
     Regsection,
     Assessment,
@@ -6,19 +20,7 @@ from climmob.models import (
     Registry,
     AssDetail,
 )
-import xlsxwriter
-import os
-from pyxform import xls2xform
-from pyxform.xls2json import parse_file_to_json
-from subprocess import check_call, CalledProcessError, Popen, PIPE, check_output
-import logging
-from datetime import datetime
-import json
-from hashlib import md5
-from lxml import etree
 from climmob.processes import getProjectData, getRegisteredFarmers
-from jinja2 import Environment
-import glob
 
 log = logging.getLogger(__name__)
 

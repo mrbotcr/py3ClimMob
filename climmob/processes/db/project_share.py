@@ -1,6 +1,7 @@
+from sqlalchemy import or_
+
 from climmob.models import User, userProject
 from climmob.models.schema import mapToSchema, mapFromSchema
-from sqlalchemy import or_
 
 __all__ = [
     "query_for_users",

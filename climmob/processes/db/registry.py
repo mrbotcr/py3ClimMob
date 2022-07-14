@@ -1,9 +1,12 @@
+import os
+import shutil
+
 from sqlalchemy import func
-from climmob.models.schema import mapFromSchema, mapToSchema
+
 from climmob.models import Regsection, Registry, Project, Question, userProject
+from climmob.models.schema import mapFromSchema, mapToSchema
 from climmob.processes import addRegistryQuestionsToProject
 from climmob.processes.db.assessment import setAssessmentStatus, formattingQuestions
-import os, shutil
 
 __all__ = [
     "availableRegistryQuestions",

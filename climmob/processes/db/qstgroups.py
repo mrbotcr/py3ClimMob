@@ -1,6 +1,7 @@
+from sqlalchemy import or_, func
+
 from climmob.models import mapToSchema, mapFromSchema
 from climmob.models.climmobv4 import Question_group, Question, userProject
-from sqlalchemy import or_, func
 
 __all__ = [
     "categoryExists",

@@ -1,11 +1,20 @@
-from lxml import etree
-import os, glob, shutil
+import datetime
+import glob
+import io
 import json
-from pyramid.response import FileResponse
+import logging
 import mimetypes
-from pyramid.httpexceptions import HTTPNotFound
+import os
+import shutil
+import shutil as sh
 from hashlib import md5
+from subprocess import check_call, CalledProcessError, Popen, PIPE
 from uuid import uuid4
+
+from lxml import etree
+from pyramid.httpexceptions import HTTPNotFound
+from pyramid.response import FileResponse
+
 from climmob.models import Project, storageErrors, Assessment
 from climmob.processes import (
     isRegistryOpen,
@@ -16,12 +25,6 @@ from climmob.processes import (
     getTheProjectIdForOwner,
 )
 from climmob.processes.db.json import addJsonLog
-from subprocess import check_call, CalledProcessError, Popen, PIPE
-import logging
-import datetime
-import io
-import shutil as sh
-import glob
 
 log = logging.getLogger(__name__)
 

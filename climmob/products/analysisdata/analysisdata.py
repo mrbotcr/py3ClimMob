@@ -1,12 +1,12 @@
-from climmob.products.climmob_products import (
-    createProductDirectory,
-    registerProductInstance,
-)
-from climmob.products.analysisdata.celerytasks import create_CSV
 import climmob.plugins as p
 from climmob.processes import (
     registryHaveQuestionOfMultimediaType,
     assessmentHaveQuestionOfMultimediaType,
+)
+from climmob.products.analysisdata.celerytasks import create_CSV
+from climmob.products.climmob_products import (
+    createProductDirectory,
+    registerProductInstance,
 )
 
 
