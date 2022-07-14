@@ -855,14 +855,30 @@ class Techalia(Base):
     tech = relationship("Technology")
 
 
+class Crop(Base):
+    __tablename__ = "crop"
+
+    __table_args__ = ({"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"},)
+
+    crop_code = Column(Integer, primary_key=True, autoincrement=False)
+    crop_name = Column(Unicode(45))
+
+
 class Technology(Base):
     __tablename__ = "technology"
 
     tech_id = Column(Integer, primary_key=True)
     tech_name = Column(Unicode(45))
     user_name = Column(ForeignKey("user.user_name", ondelete="CASCADE"), index=True)
+    crop_code = Column(
+        ForeignKey("crop.crop_code", ondelete="RESTRICT"),
+        index=True,
+        nullable=False,
+        server_default=text("'0'"),
+    )
 
     user = relationship("User")
+    crop = relationship("Crop")
 
 
 class User(Base):
