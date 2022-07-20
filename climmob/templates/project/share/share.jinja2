@@ -26,85 +26,87 @@
 
 {% block pagecontent %}
     <div class="row" style="height: 100%">
-        <div class="col-lg-6 " style="height: 100%">
-            <div class="ibox float-e-margins" style="height: 100%; margin-bottom: 0px">
-                <div class="ibox-title">
-                    <h5>{{ _("Share project") }}</h5>
-                    <div class="ibox-tools">
+        {%  if activeProject["access_type"] in [1,2] %}
+            <div class="col-lg-6 " style="height: 100%">
+                <div class="ibox float-e-margins" style="height: 100%; margin-bottom: 0px">
+                    <div class="ibox-title">
+                        <h5>{{ _("Share project") }}</h5>
+                        <div class="ibox-tools">
+                        </div>
                     </div>
-                </div>
-                <div class="ibox-content animated fadeInRightBig" style="height: 89%">
-                    {% if error_summary %}
-                        {% for key, error in error_summary.items() %}
-                            <div class="alert alert-danger alert-dismissable">
-                                <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
-                                {{ error }}
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-
-                    <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}">
-                        <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
-                        <div class="row">
-                            <div class="form-group">
-                                <label class="col-sm-4 control-label">{{ _("User with whom you want to share the project") }}</label>
-                                <div class="col-sm-6">
-                                    <select name="user_name" style="width: 100%; !important;" class="js-example-data-ajax form-control" required oninvalid="this.setCustomValidity('{{ _("Select one user.") }}')" onchange="this.setCustomValidity('')"></select>
+                    <div class="ibox-content animated fadeInRightBig" style="height: 89%">
+                        {% if error_summary %}
+                            {% for key, error in error_summary.items() %}
+                                <div class="alert alert-danger alert-dismissable">
+                                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                                    {{ error }}
                                 </div>
-                            </div>
-                            <div class="hr-line-dashed"></div>
+                            {% endfor %}
+                        {% endif %}
 
-                            <div class="form-group "  style="margin: 0px">
-                                <div class="col-sm-12" style="padding-left: 8px; padding-right: 0px">
-                                    <div class="panel panel-info">
-                                        <div class="panel-heading">
-                                            <i class="fa fa-info-circle"></i> {{ _("Explanation of roles") }}
-                                        </div>
-                                        <div class="panel-body">
-                                            <table class="table table-striped table-bordered">
-                                                <tr>
-                                                    <th>{{ _("Role") }}</th>
-                                                    <th style="text-align: center">{{ _("Explanation") }}</th>
-                                                </tr>
-                                                <tr>
-                                                    <td>{{ _("Owner") }}</td>
-                                                    <td>{{ _("This role is assigned by default to the user responsible for creating the project.") }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>{{ _("Admin") }}</td>
-                                                    <td>{{ _("This user have full control of the project and can share it with other users.") }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>{{ _("Editor") }}</td>
-                                                    <td>{{ _("This user can make changes to any section of the project; however do not have permission to share the project.") }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>{{ _("Member") }}</td>
-                                                    <td>{{ _("This user can only see the information in each section of the Project, without making any change.") }}</td>
-                                                </tr>
-                                            </table>
+                        <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}">
+                            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                            <div class="row">
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label">{{ _("User with whom you want to share the project") }}</label>
+                                    <div class="col-sm-6">
+                                        <select name="user_name" style="width: 100%; !important;" class="js-example-data-ajax form-control" required oninvalid="this.setCustomValidity('{{ _("Select one user.") }}')" onchange="this.setCustomValidity('')"></select>
+                                    </div>
+                                </div>
+                                <div class="hr-line-dashed"></div>
+
+                                <div class="form-group "  style="margin: 0px">
+                                    <div class="col-sm-12" style="padding-left: 8px; padding-right: 0px">
+                                        <div class="panel panel-info">
+                                            <div class="panel-heading">
+                                                <i class="fa fa-info-circle"></i> {{ _("Explanation of roles") }}
+                                            </div>
+                                            <div class="panel-body">
+                                                <table class="table table-striped table-bordered">
+                                                    <tr>
+                                                        <th>{{ _("Role") }}</th>
+                                                        <th style="text-align: center">{{ _("Explanation") }}</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>{{ _("Owner") }}</td>
+                                                        <td>{{ _("This role is assigned by default to the user responsible for creating the project.") }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>{{ _("Admin") }}</td>
+                                                        <td>{{ _("This user have full control of the project and can share it with other users.") }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>{{ _("Editor") }}</td>
+                                                        <td>{{ _("This user can make changes to any section of the project; however do not have permission to share the project.") }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>{{ _("Member") }}</td>
+                                                        <td>{{ _("This user can only see the information in each section of the Project, without making any change.") }}</td>
+                                                    </tr>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div class="form-group">
-                                <label class="col-sm-4 control-label">{{ _("Role for the user") }}</label>
-                                <div class="col-sm-8">
-                                    <div class="i-checks"><label> <input type="radio" value="2" name="access_type"> <i></i> {{ _("Admin") }} </label></div>
-                                    <div class="i-checks"><label> <input type="radio" value="3" name="access_type"> <i></i> {{ _("Editor") }} </label></div>
-                                    <div class="i-checks"><label> <input type="radio" value="4" name="access_type" checked> <i></i> {{ _("Member") }} </label></div>
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label">{{ _("Role for the user") }}</label>
+                                    <div class="col-sm-8">
+                                        <div class="i-checks"><label> <input type="radio" value="2" name="access_type"> <i></i> {{ _("Admin") }} </label></div>
+                                        <div class="i-checks"><label> <input type="radio" value="3" name="access_type"> <i></i> {{ _("Editor") }} </label></div>
+                                        <div class="i-checks"><label> <input type="radio" value="4" name="access_type" checked> <i></i> {{ _("Member") }} </label></div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <button id="btnShareProject" name="btnShareProject" onclick="" type="submit" class="btn btn-primary pull-right ">{{ _("Share project") }}</button>
                                 </div>
                             </div>
-
-                            <div class="col-md-12">
-                                <button id="btnShareProject" name="btnShareProject" onclick="" type="submit" class="btn btn-primary pull-right ">{{ _("Share project") }}</button>
-                            </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
+        {% endif %}
 
         <div class="col-lg-6 " style="height: 100%">
             <div class="ibox float-e-margins" style="height: 100%; margin-bottom: 0px">
@@ -115,6 +117,13 @@
                     </div>
                 </div>
                 <div class="ibox-content animated fadeInRightBig" style="height: 89%">
+
+                    {% if activeProject["access_type"] in [3,4] %}
+                        <div class="alert alert-warning alert-dismissable">
+                            {{ _("The role assigned to you only allows you to see the collaborating users and to leave the project if you do not want to belong to it") }}.
+                        </div>
+                    {% endif %}
+
                     {% if usersCollaborators %}
                         <table class="table table-striped table-bordered">
                             <tbody>
@@ -145,7 +154,13 @@
                                         </td>
                                         <td style="text-align: center; vertical-align: middle; max-width: 74px">
                                             {% if collaborator.access_type != 1 %}
-                                                <button class="btn btn-danger " onclick="showDelete('{{ request.route_url('removeprjshare', user=activeProject["owner"].user_name, project=activeProject.project_cod, collaborator=collaborator.user_name)}}','{{ _("Do you really want to delete this collaborator?") }}','{{ request.session.get_csrf_token() }}')" type="button" title="{{ _("Delete collaborator") }}"><i class="fa fa-trash"></i> {{ _("Delete") }}</button>
+
+                                                {% if activeProject["access_type"] in [1,2] or collaborator.user_name == activeUser.login %}
+
+                                                    <button class="btn btn-danger " onclick="showDelete('{{ request.route_url('removeprjshare', user=activeProject["owner"].user_name, project=activeProject.project_cod, collaborator=collaborator.user_name)}}','{{ _("Do you really want to delete this collaborator?") }}','{{ request.session.get_csrf_token() }}')" type="button" title="{{ _("Delete collaborator") }}"><i class="fa fa-trash"></i> {{ _("Delete") }}</button>
+
+                                                {% endif %}
+
                                             {% else %}
                                                 {{ _("The project owner can't be removed") }}
                                             {% endif %}

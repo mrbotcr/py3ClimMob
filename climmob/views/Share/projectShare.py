@@ -37,8 +37,8 @@ class projectShare_view(privateView):
             self.user.login, activeProjectId, self.request
         )
 
-        if accessType in [4]:
-            raise HTTPNotFound()
+        # if accessType in [4]:
+        #     raise HTTPNotFound()
 
         activeProject = getActiveProject(self.user.login, self.request)
         if activeProject["project_template"] == 1:
@@ -56,6 +56,7 @@ class projectShare_view(privateView):
         if self.request.method == "POST":
             dataworking = self.getPostDict()
             dataworking["project_id"] = activeProjectId
+            dataworking["project_dashboard"] = 0
 
             if "btnShareProject" in dataworking.keys():
                 added, error = add_project_collaborator(self.request, dataworking)
@@ -177,6 +178,13 @@ class removeprojectShare_view(privateView):
             activeProjectId = getTheProjectIdForOwner(
                 activeProjectUser, activeProjectCod, self.request
             )
+
+            accessType = getAccessTypeForProject(
+                self.user.login, activeProjectId, self.request
+            )
+
+            if accessType in [3, 4] and collaborator != self.user.login:
+                raise HTTPNotFound()
 
             if self.request.method == "POST":
                 deleted, message = remove_collaborator(
