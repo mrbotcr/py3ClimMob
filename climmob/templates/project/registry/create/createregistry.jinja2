@@ -6,6 +6,7 @@
 
 {% block css %}
     {% cssresource request,'coreresources','jquerysteps' %}
+    {% cssresource request,'coreresources','tour' %}
 
     {% if stage != 3 %}
         {% cssresource request,'coreresources','datatables' %}
@@ -14,6 +15,7 @@
 
 {% block topScripts %}
     {% jsresource request,'coreresources','toastr' %}
+    {% jsresource request,'coreresources','tour' %}
     {% if stage != 3 %}
         {% jsresource request,'coreresources','prjcombinations' %}
     {% endif %}
