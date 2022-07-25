@@ -43,9 +43,6 @@ def query_for_users(request, q, query_from, query_size, projectId):
         .all()
     )
 
-    print(len(result))
-    print(len(result2))
-
     return mapFromSchema(result), len(result2)
 
 
