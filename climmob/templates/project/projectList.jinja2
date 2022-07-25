@@ -93,21 +93,40 @@
                                                 <td class="project-actions">
 
                                                     <p>
-                                                        {% if project.progress.regsubmissions == 0 %}
+                                                        {% if project.project_regstatus == 0 %}
                                                             {{ _("Registration not yet started") }}
                                                         {% else %}
-                                                            {% if project.progress.regsubmissions == 1 %}
+                                                            {% if project.project_regstatus == 1 %}
                                                                 {{ _("Registration ongoing") }}
                                                             {% else %}
-                                                                {% if project.progress.regsubmissions == 2 %}
-                                                                    {% if project.progress.assessments|length == 0 %}
+                                                                {% if project.project_regstatus == 2 %}
+
+                                                                    {% if project.project_assstatus == 0 %}
                                                                         {{ _("Registration closed") }}
                                                                     {% else %}
                                                                         {{ _("Trial data collection / Analysis ongoing") }}
                                                                     {% endif %}
+
                                                                 {% endif %}
+
                                                             {% endif %}
+
                                                         {% endif %}
+{#                                                        {% if project.progress.regsubmissions == 0 %}#}
+{#                                                            {{ _("Registration not yet started") }}#}
+{#                                                        {% else %}#}
+{#                                                            {% if project.progress.regsubmissions == 1 %}#}
+{#                                                                {{ _("Registration ongoing") }}#}
+{#                                                            {% else %}#}
+{#                                                                {% if project.progress.regsubmissions == 2 %}#}
+{#                                                                    {% if project.progress.assessments|length == 0 %}#}
+{#                                                                        {{ _("Registration closed") }}#}
+{#                                                                    {% else %}#}
+{#                                                                        {{ _("Trial data collection / Analysis ongoing") }}#}
+{#                                                                    {% endif %}#}
+{#                                                                {% endif %}#}
+{#                                                            {% endif %}#}
+{#                                                        {% endif %}#}
                                                     </p>
 
                                                 </td>
