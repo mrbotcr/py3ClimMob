@@ -28,6 +28,7 @@
         {% set _title= _("Participant registration and trial data collection") %}
     {% endif %}
 
+    {% set _explanation = _("Here you add and manage the administrative questions that field agents will ask the participants during the registration at the start of the project. This information is important for administrative reasons (who is participating, where do they live etc.) and for data analysis (e.g. to understand if all female participants preferred a certain technology option). Once you defined the list of questions, they will become available through the ODK Collect app. Field agents can input the information directly into the app, when registering the participants.") %}
 
     {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
