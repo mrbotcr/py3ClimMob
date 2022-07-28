@@ -46,7 +46,7 @@
 
                             <div class="project-list">
 
-                                <table class="footable table table-hover" data-filter=#filter>
+                                <table class="footable table table-stripped" data-page-size="50000" data-filter=#filter>
                                     <tbody>
                                         {% for project in userProjects %}
                                             <tr onclick="window.location = '{{ request.route_url('dashboard', _query={'user':project["owner"].user_name, "project": project.project_cod}) }}';">
