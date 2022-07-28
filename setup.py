@@ -129,6 +129,7 @@ requires = [
     "pytz",
     "PyUtilib",
     "pyxform",
+    "PyYAML",
     "qrcode",
     "qrtools",
     "redis",
