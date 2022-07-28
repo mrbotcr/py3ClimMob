@@ -7,7 +7,8 @@
 
 {% block topScripts %}
 
-    {% jsresource request,'coreresources','register' %}
+{#    {% jsresource request,'coreresources','register' %}#}
+    {% jsresource request,'coreresources','select2' %}
     {% jsresource request,'coreresources','icheck' %}
 {% endblock topScripts %}
 
@@ -100,6 +101,46 @@
             </div>
         </div>
     </div>
+
+    <script>
+
+        $(document).ready(function(){
+            
+            function isNumeric(value)
+            {
+                return /^\d+$/.test(value);
+            }
+
+            $('#user_name').on('input',function()
+            {
+                var value = $(this).val();
+
+                if(isNumeric(value))
+                {
+                    $(this).val("");
+                }
+                else
+                {
+                    if((/^[a-z0-9]+$/.test(value))==false){
+                        $(this).val(value.substring(0, value.length - 1));
+                    }
+                    //var value_without_space = value.replace(/[^a-z0-9]/gi,'')
+                    //$(this).val(value_without_space);
+                }
+            });
+
+            $("#user_cnty").select2();
+            $("#user_sector").select2();
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+
+
+
+        });
+
+    </script>
 
 {% endblock logincontent %}
 
