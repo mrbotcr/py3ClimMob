@@ -604,6 +604,7 @@ def storeSubmission(userid, userEnum, request):
     error = 404
     xml_name = None
     requiresToBeStored = True
+    uuidForEnketo = uuid4()
 
     for key in request.POST.keys():
 
@@ -613,6 +614,9 @@ def storeSubmission(userid, userEnum, request):
             if filename.upper().find(".XML") >= 0 or filename == "xml_submission_file":
                 input_file = request.POST[key].file
                 xml_name = request.POST[key].filename
+
+                if filename == "xml_submission_file":
+                    xml_name = str(uuidForEnketo) + ".xml"
 
                 # Change by Brandon
                 iniqueIDTemp = uuid4()
@@ -739,6 +743,10 @@ def storeSubmission(userid, userEnum, request):
                 ):
                     XMLFile = file_path
                     xml_name = request.POST[key].filename
+
+                    if filename == "xml_submission_file":
+                        xml_name = str(uuidForEnketo) + ".xml"
+
                 temp_file_path = file_path + "~"
 
                 input_file.seek(0)
