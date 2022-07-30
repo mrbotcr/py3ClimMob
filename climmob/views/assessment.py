@@ -655,7 +655,7 @@ class CancelAssessmentView(privateView):
                     activeProjectId, assessmentid, 0, self.request
                 )
                 clean_assessments_error_logs(
-                    activeProjectId, self.user.login, assessmentid
+                    self.request, activeProjectId, assessmentid
                 )
 
                 for plugin in p.PluginImplementations(p.IForm):
