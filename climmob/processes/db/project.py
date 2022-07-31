@@ -561,7 +561,7 @@ def getLastAssessmentSubmissionDate(userName, projectCode, assessment, request):
     _ = request.translate
     path = os.path.join(
         request.registry.settings["user.repository"],
-        *[userName, projectCode, "data", "ass", assessment]
+        *[userName, projectCode, "data", "ass", assessment, "*"]
     )
     files = glob.glob(path)
     if files:
