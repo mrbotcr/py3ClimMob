@@ -369,8 +369,14 @@ def addRegistryGroup(data, self, _from=""):
             .one()
         )
         mappedData = mapToSchema(Regsection, data)
-        mappedData["section_id"] = max_id.id_max + 1
-        mappedData["section_order"] = max_order.id_max + 1
+
+        if "section_id" not in data.keys():
+            mappedData["section_id"] = max_id.id_max + 1
+            mappedData["section_order"] = max_order.id_max + 1
+        else:
+            mappedData["section_id"] = data["section_id"]
+            mappedData["section_order"] = data["section_order"]
+
         newGroup = Regsection(**mappedData)
         try:
             self.request.dbsession.add(newGroup)
