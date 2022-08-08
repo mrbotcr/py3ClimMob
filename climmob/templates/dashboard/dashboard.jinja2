@@ -156,7 +156,7 @@
                                             <h2 ><strong>{{ activeProject.project_name }}</strong></h2>
                                         </td>
                                         <td rowspan="2" class="text-center">
-                                            <a href="https://climmob.net/blog/wiki/4-project-definition-navigate-the-project/" target="_blank"><img style="width: 60px; height: 37px " src="{{ request.url_for_static('landing/info.png') }}" alt="info"/> </a>
+                                            <a class="btn btn-success btn-rounded  btn-xs" style="color: white" href="https://climmob.net/blog/wiki/4-project-definition-navigate-the-project/" target="_blank"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a>
                                         </td>
                                     </tr>
                                     <tr>
@@ -784,7 +784,7 @@
                             <a class="btn btn-primary" href="{{ request.route_url('newproject') }}">{{ _("Create a new project") }}</a>
                             <br>
                             <br>
-                            <a href="https://climmob.net/blog/wiki/3-create-a-new-project/" target="_blank"><img style="width: 100px; height: 61px " src="{{ request.url_for_static('landing/info.png') }}" alt="info"/> </a>
+                            <a class="btn btn-success btn-rounded  btn-xs" style="color: white" href="https://climmob.net/blog/wiki/3-create-a-new-project/" target="_blank"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a>
                         </div>
                     {% endif %}
                 {% endblock pagecontent %}
