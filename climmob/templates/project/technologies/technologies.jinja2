@@ -20,11 +20,21 @@
 {% block pageheading %}
     {% set _title= _("Assign technologies") %}
     {% set _linkWiki="https://climmob.net/blog/wiki/select-technology-options/" %}
-    {% set _explanation = _("Here you can specify the technology options you want to compare in your tricot experiment. We recommend you select a pool of 7 to 20 technology options. Technologies can be crops or fertilizer, and options are different varieties or types.") %}
     {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
 
 {% block pagecontent %}
+
+    <div class="row" style="text-align: center">
+        <div class="col-lg-12">
+            <div class="ibox-content" style="padding: 10px">
+                <p style="margin: 0px">
+                    {{ _("Here you can specify the technology options you want to compare in your tricot experiment. We recommend you select a pool of 7 to 20 technology options. Technologies can be crops or fertilizer, and options are different varieties or types.") }}
+                </p>
+            </div>
+        </div>
+    </div>
+
     {% set onlySee = False %}
 
     {% if activeProject["access_type"] in [4] or activeProject["project_regstatus"] > 0 %}
