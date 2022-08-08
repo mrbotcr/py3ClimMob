@@ -192,9 +192,7 @@ def createProjectFunction(dataworking, error_summary, self):
 
                 else:
                     error_summary = {
-                        "exitsproject": self._(
-                            "A project already exists with this code."
-                        )
+                        "exitsproject": self._("This project ID already exists.")
                     }
             else:
                 error_summary = {
@@ -203,7 +201,7 @@ def createProjectFunction(dataworking, error_summary, self):
                     )
                 }
         else:
-            error_summary = {"codempty": self._("The project code can't be empty")}
+            error_summary = {"codempty": self._("The project ID can't be empty")}
     else:
         error_summary = {
             "observations": self._("The number of observations must be greater than 0.")
