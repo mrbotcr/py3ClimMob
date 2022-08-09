@@ -620,7 +620,7 @@ class getUserQuestionPreview_view(privateView):
                 "img2": self.request.url_for_static("landing/odk2.png"),
                 "img3": self.request.url_for_static("landing/odk3.png"),
                 "data": listOfQuestions,
-                "isOneProject": "True",
+                "isOneProject": False,
                 "activeProject": getActiveProject(self.user.login, self.request),
                 "_": self._,
                 "showPhone": True,
