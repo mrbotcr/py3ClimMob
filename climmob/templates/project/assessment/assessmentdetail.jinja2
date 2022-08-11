@@ -319,6 +319,7 @@
                 data.instance.set_id(data.node, data.original.id);
             });
 
+            var timeNumber = 0;
             function refreshTheQuestions() {
 
                 $.ajax({
@@ -334,6 +335,10 @@
                         $("#htmlForPreview").html("")
                         $("#htmlForPreview").html('<div width="100%" style="text-align:center"> <img alt="image" src="{{ request.url_for_static('gif/loading.gif') }}" style="height: 200px; width: 200px"/> </div>');
                         setTimeout(() => {  $("#htmlForPreview").html(respuesta) }, 1000);
+                        if (timeNumber == 0) {
+                            showScrollInPreview();
+                        }
+                        timeNumber = timeNumber + 1;
                     },
                     error: function (respuesta) {
                         toastr.error("There was a problem updating the form");
@@ -358,6 +363,25 @@
                 template: "<div class='popover tour' style='border-color: #23c6c8; max-width: none; width:814px'><div class='arrow' ></div><h3 class='popover-title btn-info'></h3><div class='popover-content'></div><div class='popover-navigation'> <button class='btn btn-sm btn-danger' data-role='end'><i class='fa fa-close'></i> {{ _("Close") }}</button> </div>",
                 backdrop: true,
                 backdropContainer: 'body'
+            });
+
+            // Initialize the tour
+            tour.init();
+            tour.restart();
+        }
+
+        function showScrollInPreview()
+        {
+            var tour = new Tour({
+                steps: [
+                        {
+                            element: "#htmlForPreview",
+                            title: "{{ _("Preview") }}",
+                            content: "<p>{{ _("In case you cannot see all the questions, you can scroll down in this section to see the new questions added.") }}</p>",
+                            placement: "top"
+                        }
+                       ],
+                template: "<div class='popover tour' style='border-color: #23c6c8; max-width: none; width:400px'><div class='arrow' ></div><h3 class='popover-title btn-info'></h3><div class='popover-content'></div><div class='popover-navigation'> <button class='btn btn-sm btn-danger' data-role='end'><i class='fa fa-close'></i> {{ _("Close") }}</button> </div>",
             });
 
             // Initialize the tour
