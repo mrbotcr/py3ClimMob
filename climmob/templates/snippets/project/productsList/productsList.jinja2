@@ -27,7 +27,7 @@
             <th></th>
         </tr>
         {% set productToFocus = "xx" %}
-        {% set changes = {'projectSummary': true, 'DataCollectionProgress': false, 'projectDataCollected': false, 'productToFocus':""} %}
+        {% set changes = {'projectSummary': true, 'DataCollectionProgress': false, 'projectDataCollected': true, 'productToFocus':""} %}
         {% if activeProject.project_regstatus > 0 %}
             {% if changes.update({'DataCollectionProgress': true }) %} {% endif %}
         {% endif %}
