@@ -417,6 +417,7 @@ class startAssessments_view(privateView):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
         onlyError = False
+        checkPass = False
         error_summary = {}
         if not projectExists(
             self.user.login, activeProjectUser, activeProjectCod, self.request
@@ -442,26 +443,27 @@ class startAssessments_view(privateView):
                 assessInfo = getProjectAssessmentInfo(
                     activeProjectId, assessment_id, self.request
                 )
-                if "ass_rhomis" in assessInfo.keys():
-                    if assessInfo["ass_rhomis"] == 1:
-                        isExternal = True
-                        for plugin in p.PluginImplementations(p.IRhomis):
-                            (
-                                checkPass,
-                                error_summary,
-                            ) = plugin.start_external_data_collection_form(
-                                self.request,
-                                activeProjectUser,
-                                activeProjectId,
-                                activeProjectCod,
-                                assessment_id,
-                            )
-
-                            if checkPass:
-                                self.returnRawViewResult = True
-                                return HTTPFound(
-                                    location=self.request.route_url("dashboard")
+                for plugin in p.PluginImplementations(p.IRhomis):
+                    if "ass_rhomis" in assessInfo.keys():
+                        if assessInfo["ass_rhomis"] == 1:
+                            isExternal = True
+                            for plugin in p.PluginImplementations(p.IRhomis):
+                                (
+                                    checkPass,
+                                    error_summary,
+                                ) = plugin.start_external_data_collection_form(
+                                    self.request,
+                                    activeProjectUser,
+                                    activeProjectId,
+                                    activeProjectCod,
+                                    assessment_id,
                                 )
+
+                                if checkPass:
+                                    self.returnRawViewResult = True
+                                    return HTTPFound(
+                                        location=self.request.route_url("dashboard")
+                                    )
 
                 if not isExternal:
 
@@ -653,7 +655,7 @@ class CancelAssessmentView(privateView):
                     activeProjectId, assessmentid, 0, self.request
                 )
                 clean_assessments_error_logs(
-                    activeProjectId, self.user.login, assessmentid
+                    self.request, activeProjectId, assessmentid
                 )
 
                 for plugin in p.PluginImplementations(p.IForm):

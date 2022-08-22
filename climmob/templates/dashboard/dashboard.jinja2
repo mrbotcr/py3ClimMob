@@ -82,16 +82,9 @@
                             <li {% if not sectionActive %}class="active" {% endif %}>
                                 <a href="{{ request.route_url('dashboard') }}"><i class="fa fa-th-large"></i> <span class="nav-label">{{ _("Project overview") }}</span></a>
                             </li>
-                            {% if hasActiveProject %}
-                                {% if activeProject is string %}
-                                    {% set idForProject = activeProject %}
-                                {% else %}
-                                    {% set idForProject = activeProject.project_cod%}
-                                {% endif %}
-                                <li {% if sectionActive == "projectlist" %}class="active" {% endif %}>
-                                    <a href="{{ request.route_url('projectList')  }}"><i class="fa fa-tasks"></i> {{ _("All projects") }}</a>
-                                </li>
-                            {% endif %}
+                            <li {% if sectionActive == "projectlist" %}class="active" {% endif %}>
+                                <a href="{{ request.route_url('projectList')  }}"><i class="fa fa-tasks"></i> {{ _("All projects") }}</a>
+                            </li>
                             <li class="active" style="border-left: initial;background: initial" id="nav_libraries">
                                 <a href="#" style="color: #a7b1c2;"><i class="fa fa-book"></i> <span class="nav-label">{{ _("Library") }}</span><span class="fa arrow"></span></a>
                                 <ul class="nav nav-second-level collapse " style="border-left: initial;background: initial">
@@ -163,7 +156,7 @@
                                             <h2 ><strong>{{ activeProject.project_name }}</strong></h2>
                                         </td>
                                         <td rowspan="2" class="text-center">
-                                            <a href="https://climmob.net/blog/wiki/main-menu/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('landing/info.png') }}" alt="info"/> </a>
+                                            <a class="btn btn-success btn-rounded  btn-xs" style="color: white" href="https://climmob.net/blog/wiki/4-project-definition-navigate-the-project/" target="_blank"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a>
                                         </td>
                                     </tr>
                                     <tr>
@@ -286,15 +279,15 @@
                                         {% endif %}
 
                                         {% if activeProject["project_template"] != 1 %}
-                                            {%  if activeProject["access_type"] in [1,2] %}
-                                                <div class="row">
-                                                    <div class="col-md-9">
-                                                        <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('shareProject',user=activeProject["owner"].user_name, project=activeProject["project_cod"]) }}" ><i class="fa fa-group"></i> {{ _("Share project with other users") }}</a>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                    </div>
+
+                                            <div class="row">
+                                                <div class="col-md-9">
+                                                    <a class="btn btn-primary btn-rounded btn-block" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('shareProject',user=activeProject["owner"].user_name, project=activeProject["project_cod"]) }}" ><i class="fa fa-group"></i> {{ _("Share project with other users") }}</a>
                                                 </div>
-                                            {% endif %}
+                                                <div class="col-md-3">
+                                                </div>
+                                            </div>
+
                                         {% endif %}
 
                                         {% if activeProject["project_template"] != 1 %}
@@ -321,7 +314,7 @@
                                             <div class="ibox-tools">
                                                 <div class="row">
                                                     <div class="col-md-8">
-                                                        <h5>{{ _("Trial data Collection moments") }}</h5>
+                                                        <h5>{{ _("Start trial data collection moments") }}</h5>
                                                     </div>
                                                 </div>
                                             </div>
@@ -329,21 +322,21 @@
                                         <div class="ibox-content">
                                             <div class="row">
                                                 {% if pcompleted == 100 and progress.regsubmissions == 2  %}
-                                                    <div class="text-left" style="padding: 15px;">
-                                                        <p>{{ _("Please check the following types of questions are in the started assessments or include them in the next assessments:") }}</p>
-                                                        <span style="font-size: 16px;font-weight: 600;" title="{{ _("You have included ")}}{{ progress.analysisControl.Characteristics }}{{ _(" Ranking of options") }}"><i  class="fa {% if progress.analysisControl.Characteristics > 0 %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.Characteristics > 0 %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Ranking of options") }}</span><br>
-                                                        <span style="font-size: 16px;font-weight: 600;" title="{{ _("You have included ")}}{{ progress.analysisControl.Performance }}{{ _(" Comparison with check") }}"><i  class="fa {% if progress.analysisControl.Performance > 0 %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.Performance > 0 %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Comparison with check") }}</span><br>
-                                                        <span style="font-size: 16px;font-weight: 600;" title="{{ _("You have included ")}}{{ progress.analysisControl.Explanatory }}{{ _(" Explanatory variables") }}"><i  class="fa {% if progress.analysisControl.Explanatory > 0 %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.Explanatory > 0 %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Explanatory variables") }}</span><br>
-                                                        <span style="font-size: 16px;font-weight: 600;" {% if progress.analysisControl.overralCharacteristic !="" %}title="{{ _("You have included this question in the assessment") }}: '{{ progress.analysisControl.overralCharacteristic }}'" {% endif %}><i  class="fa {% if progress.analysisControl.overralCharacteristic !="" %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.overralCharacteristic != "" %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Overall ranking of options") }}</span><br>
-                                                        <span style="font-size: 16px;font-weight: 600;" {% if progress.analysisControl.overralPerformance !="" %}title="{{ _("You have included this question in the assessment") }}: '{{ progress.analysisControl.overralPerformance }}'" {% endif %}><i  class="fa {% if progress.analysisControl.overralPerformance !="" %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.overralPerformance != "" %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Overall comparison with check") }}</span>
-                                                    </div>
+{#                                                    <div class="text-left" style="padding: 15px;">#}
+{#                                                        <p>{{ _("Please check the following types of questions are in the started assessments or include them in the next assessments:") }}</p>#}
+{#                                                        <span style="font-size: 16px;font-weight: 600;" title="{{ _("You have included ")}}{{ progress.analysisControl.Characteristics }}{{ _(" Ranking of options") }}"><i  class="fa {% if progress.analysisControl.Characteristics > 0 %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.Characteristics > 0 %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Ranking of options") }}</span><br>#}
+{#                                                        <span style="font-size: 16px;font-weight: 600;" title="{{ _("You have included ")}}{{ progress.analysisControl.Performance }}{{ _(" Comparison with check") }}"><i  class="fa {% if progress.analysisControl.Performance > 0 %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.Performance > 0 %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Comparison with check") }}</span><br>#}
+{#                                                        <span style="font-size: 16px;font-weight: 600;" title="{{ _("You have included ")}}{{ progress.analysisControl.Explanatory }}{{ _(" Explanatory variables") }}"><i  class="fa {% if progress.analysisControl.Explanatory > 0 %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.Explanatory > 0 %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Explanatory variables") }}</span><br>#}
+{#                                                        <span style="font-size: 16px;font-weight: 600;" {% if progress.analysisControl.overralCharacteristic !="" %}title="{{ _("You have included this question in the assessment") }}: '{{ progress.analysisControl.overralCharacteristic }}'" {% endif %}><i  class="fa {% if progress.analysisControl.overralCharacteristic !="" %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.overralCharacteristic != "" %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Overall ranking of options") }}</span><br>#}
+{#                                                        <span style="font-size: 16px;font-weight: 600;" {% if progress.analysisControl.overralPerformance !="" %}title="{{ _("You have included this question in the assessment") }}: '{{ progress.analysisControl.overralPerformance }}'" {% endif %}><i  class="fa {% if progress.analysisControl.overralPerformance !="" %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.overralPerformance != "" %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Overall comparison with check") }}</span>#}
+{#                                                    </div>#}
                                                     <div class="col-md-12">
                                                         <br>
                                                         {% if progress.usableAssessments|length > 0 %}
                                                             {% include 'snippets/error.jinja2' %}
                                                             <form class="formElement" id="start_assessment"  role="form" method="post" action="{{ request.route_url("startassessments",user=activeProject["owner"].user_name, project=activeProject.project_cod) }}">
                                                                 <div class="form-group">
-                                                                    <label>{{ _("Select the assessment for start the trial data collection") }}</label>
+                                                                    <label>{{ _("Select the form to start the trial data collection") }}</label>
                                                                     <select id="assessment_id" name="assessment_id" class="form-control">
                                                                             {% for assessment in progress["usableAssessments"] %}
                                                                                 <option value="{{ assessment.ass_cod }}">{{ assessment.ass_desc }}</option>>
@@ -351,7 +344,7 @@
                                                                         </select>
                                                                 </div>
                                                                 <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
-                                                                <button id="start_assessment_button" class="btn btn-primary btn-rounded btn-block" type="submit" name="start_assessment_button"> <i class="fa fa-play"></i> {{ _("Start an assessment") }}</button>
+                                                                <button id="start_assessment_button" class="btn btn-primary btn-rounded btn-block" type="submit" name="start_assessment_button"> <i class="fa fa-play"></i> {{ _("Start an trial data collection moment") }}</button>
                                                             </form>
                                                         {% endif %}
                                                     </div>
@@ -663,6 +656,10 @@
                                     {% endif %}
                                 {% endif %}
 
+                                {% block communityLink %}
+
+                                {% endblock communityLink %}
+
                             </div>
                         </div>
 
@@ -787,7 +784,7 @@
                             <a class="btn btn-primary" href="{{ request.route_url('newproject') }}">{{ _("Create a new project") }}</a>
                             <br>
                             <br>
-                            <a href="https://climmob.net/blog/wiki/main-menu/" target="_blank"><img style="width: 50px; height: 50px " src="{{ request.url_for_static('landing/info.png') }}" alt="info"/> </a>
+                            <a class="btn btn-success btn-rounded  btn-xs" style="color: white" href="https://climmob.net/blog/wiki/3-create-a-new-project/" target="_blank"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a>
                         </div>
                     {% endif %}
                 {% endblock pagecontent %}

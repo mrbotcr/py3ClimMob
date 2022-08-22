@@ -57,7 +57,7 @@
                                             {% if product.process_name == "create_data_Registration_" %}
                                                 {{ _("Information collected in the participant registration form") }}
                                             {% else %}
-                                                {{ _("Information collected in the assessment form") }}: {{ product.extraInformation.ass_desc }}
+                                                {{ _("Information collected in the trial data collection moment form") }}: {{ product.extraInformation.ass_desc }}
                                             {% endif %}
                                         {% endif %}
                                     {% else %}
@@ -71,7 +71,7 @@
                                                     {% if product.process_name == "create_from_Registration_" %}
                                                         {{ _("Participant registration form to fill by hand") }}
                                                     {% else %}
-                                                        {{ _("Assessment form to fill by hand") }}: {{ product.extraInformation.ass_desc }}
+                                                        {{ _("Trial data collection moment form to fill by hand") }}: {{ product.extraInformation.ass_desc }}
                                                     {% endif %}
                                                 {% else %}
                                                     {% if product.product_id == "generalreport" %}
@@ -89,14 +89,14 @@
                                                                     {% if product.process_name == "create_errorlog_Registration_" %}
                                                                         {{ _("Document of submissions with conflicts in the participant registration form") }}
                                                                     {% else %}
-                                                                        {{ _("Document of submissions with conflicts in the assessment form") }}: {{ product.extraInformation.ass_desc }}
+                                                                        {{ _("Document of submissions with conflicts in the trial data collection moment form") }}: {{ product.extraInformation.ass_desc }}
                                                                     {% endif %}
                                                                 {% else %}
                                                                     {% if product.product_id == "multimediadownloads" %}
                                                                         {% if product.process_name == "create_multimedia_Registration_" %}
                                                                             {{ _("Multimedia content collected in the participant registration form") }}
                                                                         {% else %}
-                                                                            {{ _("Multimedia content collected in the assessment form") }}: {{ product.extraInformation.ass_desc }}
+                                                                            {{ _("Multimedia content collected in the trial data collection moment form") }}: {{ product.extraInformation.ass_desc }}
                                                                         {% endif %}
                                                                     {% else %}
                                                                         {% if product.product_id == "infosheets" %}
@@ -106,14 +106,14 @@
                                                                                 {% if product.process_name == "create_uploaddata_Registration_" %}
                                                                                     {{ _("Excel template for uploading participant registration form data") }}
                                                                                 {% else %}
-                                                                                    {{ _("Excel template for uploading assessment form data") }}: {{ product.extraInformation.ass_desc }}
+                                                                                    {{ _("Excel template for uploading trial data collection moment form data") }}: {{ product.extraInformation.ass_desc }}
                                                                                 {% endif %}
                                                                             {% else %}
                                                                                 {% if product.product_id == "qrpackagewithtechnologies" %}
                                                                                     {{ _("List of packages with QR for the participant registration form (Showing technology options).") }}
                                                                                 {% else %}
                                                                                     {% if product.product_id == "dataxlsx" %}
-                                                                                        {{ _("Information collected in the assessment form") }}: {{ product.extraInformation.ass_desc }}
+                                                                                        {{ _("Information collected in the trial data collection moment form") }}: {{ product.extraInformation.ass_desc }}
                                                                                     {% else %}
                                                                                         {{ product.product_id }}
                                                                                     {% endif %}

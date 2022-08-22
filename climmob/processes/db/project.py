@@ -451,9 +451,19 @@ def getUserProjects(user, request):
             .filter(userProject.access_type == 1)
             .one()
         )
-        project["progress"], project["perc"] = getProjectProgress(
-            project["user_name"], project["project_cod"], project["project_id"], request
-        )
+        project["project_assstatus"] = (
+            request.dbsession.query(
+                func.ifnull(func.max(Assessment.ass_status), 0).label(
+                    "project_assstatus"
+                )
+            )
+            .filter(Assessment.project_id == project["project_id"])
+            .one()
+        )[0]
+
+        # project["progress"], project["perc"] = getProjectProgress(
+        #     project["user_name"], project["project_cod"], project["project_id"], request
+        # )
     return mappedData
 
 
@@ -551,7 +561,7 @@ def getLastAssessmentSubmissionDate(userName, projectCode, assessment, request):
     _ = request.translate
     path = os.path.join(
         request.registry.settings["user.repository"],
-        *[userName, projectCode, "data", "ass", assessment]
+        *[userName, projectCode, "data", "ass", assessment, "*"]
     )
     files = glob.glob(path)
     if files:

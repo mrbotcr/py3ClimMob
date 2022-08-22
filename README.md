@@ -43,11 +43,11 @@ ClimMob is a Web-based App created using Python, MySQL, [R](https://github.com/A
 
 ### Releases
 
-The current stable release is 3.5.0 and it is available [here](https://github.com/BioversityCostaRica/py3ClimMob/tree/stable-3.5.0)
+The current stable release is 3.6.0 and it is available [here](https://github.com/BioversityCostaRica/py3ClimMob/tree/stable-3.6.0)
 
-The database signature for stable 3.5.0 is 915e1e3bc787
+The database signature for stable 3.6.0 is f5d54348d6b3
 
-The Docker image for stable 3.5.0 is 20220203
+The Docker image for stable 3.6.0 is 20220801
 
 ### Installation
 
@@ -65,9 +65,9 @@ sudo apt-get install -y docker-compose
 
 # Get the Docker Compose file
 cd /opt
-sudo mkdir climmob_docker_compose_20220203
-cd climmob_docker_compose_20220203
-sudo wget https://raw.githubusercontent.com/BioversityCostaRica/py3ClimMob/stable-3.5.0/docker_compose/docker-compose.yml
+sudo mkdir climmob_docker_compose_20220801
+cd climmob_docker_compose_20220801
+sudo wget https://raw.githubusercontent.com/BioversityCostaRica/py3ClimMob/stable-3.6.0/docker_compose/docker-compose.yml
 
 # Make the directory structure for ClimMob
 sudo mkdir /opt/climmob
@@ -82,11 +82,11 @@ mkdir /opt/climmob/plugins
 sudo chmod -R g+w /opt/climmob
 
 # Download all the required Docker Images
-cd /opt/climmob_docker_compose_20220203
+cd /opt/climmob_docker_compose_20220801
 sudo docker-compose pull
 
 # Edit the docker-compose.yml file to set the MySQL root password
-sudo nano /opt/climmob_docker_compose_20220203/docker-compose.yml
+sudo nano /opt/climmob_docker_compose_20220801/docker-compose.yml
 # Press Alt+Shit+3 to show the line numbers in Nano
 
 Edit line 7: Change the root password from "my_secure_password" to your password
@@ -131,7 +131,7 @@ sudo service apache2 start
 # Subsequent start will take about 2 minutes. You can check the status with "sudo docker stats". 
 # ClimMob will be ready for usage when the container reaches more than 700 kB of MEM USAGE
 # This is the only two commands you need to start ClimMob after a server restart
-cd /opt/climmob_docker_compose_20220203
+cd /opt/climmob_docker_compose_20220801
 sudo docker-compose up -d
 
 # Browse to ClimMob

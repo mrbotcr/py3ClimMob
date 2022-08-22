@@ -18,6 +18,7 @@ HOST = dConfig["app:climmob"]["odktools.mysql.host"]
 USER = dConfig["app:climmob"]["odktools.mysql.user"]
 PASSWORD = dConfig["app:climmob"]["odktools.mysql.password"]
 DATABASE = dConfig["app:climmob"]["odktools.mysql.db"]
+PORT = dConfig["app:climmob"]["odktools.mysql.port"]
 
 bot = telebot.TeleBot(TOKEN)
 _id = "609114960"
@@ -27,7 +28,7 @@ datos = [HOST, USER, PASSWORD, DATABASE]
 
 @bot.message_handler(content_types=["text"])
 def opMenuUsuario(message):
-    connection = MySQLdb.connect(*datos)
+    connection = MySQLdb.connect(*datos, port=int(PORT))
     cursor = connection.cursor()
     if message.reply_to_message:
         chat_id = None

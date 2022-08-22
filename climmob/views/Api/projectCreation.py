@@ -380,16 +380,14 @@ class createProject_view(apiView):
                                 else:
                                     response = Response(
                                         status=401,
-                                        body=self._(
-                                            "A project already exists with this code."
-                                        ),
+                                        body=self._("This project ID already exists."),
                                     )
                                     return response
                             else:
                                 response = Response(
                                     status=401,
                                     body=self._(
-                                        "The project code must start with a letter."
+                                        "The project ID must start with a letter."
                                     ),
                                 )
                                 return response
@@ -397,7 +395,7 @@ class createProject_view(apiView):
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "For the project code only letters and numbers are allowed. The project code must start with a letter."
+                                    "For the project ID only letters and numbers are allowed. The project ID must start with a letter."
                                 ),
                             )
                             return response

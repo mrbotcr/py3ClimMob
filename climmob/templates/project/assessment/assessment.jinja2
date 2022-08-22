@@ -25,6 +25,16 @@
 
 {% block pagecontent %}
 
+    <div class="row" style="text-align: center">
+        <div class="col-lg-12">
+            <div class="ibox-content" style="padding: 10px">
+                <p style="margin: 0px">
+                    {{ _("Here you will set the different data collection moments for the on-farm evaluation that participants will carry out, alongside with the questions that will be asked at each mome. It is important to know which traits will you evaluate in the selected technology options? When will each trait be evaluated during the planting cycle?") }}
+                </p>
+            </div>
+        </div>
+    </div>
+
     {% set onlySee = False %}
 
     {% if activeProject["access_type"] in [4] %}

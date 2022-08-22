@@ -14,7 +14,7 @@
                     {% endif %}
                     <td rowspan="2" class="text-right">
                         {% if _linkWiki %}
-                            <a href="{{ _linkWiki }}" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('landing/info.png') }}" alt="info"/> </a>
+                            <a class="btn btn-success btn-rounded  btn-xs" style="color: white" href="{{ _linkWiki }}" target="_blank"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a>
                         {% endif %}
                     </td>
                 </tr>

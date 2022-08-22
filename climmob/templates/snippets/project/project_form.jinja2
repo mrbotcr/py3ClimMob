@@ -18,9 +18,9 @@
                     <div class="hr-line-dashed"></div>
 
                     <div class="form-group">
-                        <label class="col-sm-4 control-label">{{ _("Project code") }}</label>
+                        <label class="col-sm-4 control-label">{{ _("Project ID") }}</label>
                         <div class="col-sm-8">
-                            <input class="form-control" id="newproject_code" required oninvalid="this.setCustomValidity('{{ _("Write the project code.") }}')" onchange="this.setCustomValidity('')" {% if edit %} disabled {% endif %} name="project_cod" value="{{ dataworking.project_cod }}" maxlength="10">
+                            <input class="form-control" id="newproject_code" required oninvalid="this.setCustomValidity('{{ _("Write the project ID.") }}')" onchange="this.setCustomValidity('')" {% if edit %} disabled {% endif %} name="project_cod" value="{{ dataworking.project_cod }}" maxlength="10">
                             <p style="margin: 10px 0 0">{{ _("e.g. BH19") }}</p>
                         </div>
                     </div>
@@ -261,7 +261,7 @@
                     {
                         element: "#div_of_templates",
                         title: "{{ _("Create your project from a template") }}",
-                        content: "",
+                        content: "{{ _("Templates have some predefined questions for participant registration form and trial data collection") }}",
                         placement: "top"
                     }
                    ],

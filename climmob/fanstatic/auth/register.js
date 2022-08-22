@@ -1,4 +1,4 @@
-
+/*
 $(document).ready(function(){
 
     function isNumeric(value)
@@ -29,4 +29,4 @@ $(document).ready(function(){
 
 
 
-});
+});*/

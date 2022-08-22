@@ -46,7 +46,7 @@
 
                             <div class="project-list">
 
-                                <table class="footable table table-hover" data-filter=#filter>
+                                <table class="footable table table-stripped" data-page-size="50000" data-filter=#filter>
                                     <tbody>
                                         {% for project in userProjects %}
                                             <tr onclick="window.location = '{{ request.route_url('dashboard', _query={'user':project["owner"].user_name, "project": project.project_cod}) }}';">
@@ -58,7 +58,7 @@
                                                 <td class="project-title" title="{{ request.h.readble_date(project.project_creationdate) }}">
                                                     <a >{{ project.project_name }}</a>
                                                     <br/>
-                                                    <small>Created {{  request.h.humanize_date(project.project_creationdate) }}</small>
+                                                    <small>{{ _("Created") }}: {{  request.h.humanize_date(project.project_creationdate) }}</small>
                                                     <br>
                                                     {% for tag in project.project_tags.split(",") %}
                                                         <span class="label label-info">{{ tag }}</span>
@@ -70,7 +70,7 @@
                                                 </td>
                                                 <td class="project-completion">
                                                     <p>{{ _("User owner") }}: {{ project.owner["user_name"] }}</p>
-                                                    <p>{{ _("Project code") }}: {{ project.project_cod }}</p>
+                                                    <p>{{ _("Project ID") }}: {{ project.project_cod }}</p>
                                                 </td>
                                                 <td class="project-people" style="text-align: center">
                                                     <i class="fa fa-user-circle-o" style="font-size: 30px"></i><br>
@@ -93,21 +93,40 @@
                                                 <td class="project-actions">
 
                                                     <p>
-                                                        {% if project.progress.regsubmissions == 0 %}
+                                                        {% if project.project_regstatus == 0 %}
                                                             {{ _("Registration not yet started") }}
                                                         {% else %}
-                                                            {% if project.progress.regsubmissions == 1 %}
+                                                            {% if project.project_regstatus == 1 %}
                                                                 {{ _("Registration ongoing") }}
                                                             {% else %}
-                                                                {% if project.progress.regsubmissions == 2 %}
-                                                                    {% if project.progress.assessments|length == 0 %}
+                                                                {% if project.project_regstatus == 2 %}
+
+                                                                    {% if project.project_assstatus == 0 %}
                                                                         {{ _("Registration closed") }}
                                                                     {% else %}
                                                                         {{ _("Trial data collection / Analysis ongoing") }}
                                                                     {% endif %}
+
                                                                 {% endif %}
+
                                                             {% endif %}
+
                                                         {% endif %}
+{#                                                        {% if project.progress.regsubmissions == 0 %}#}
+{#                                                            {{ _("Registration not yet started") }}#}
+{#                                                        {% else %}#}
+{#                                                            {% if project.progress.regsubmissions == 1 %}#}
+{#                                                                {{ _("Registration ongoing") }}#}
+{#                                                            {% else %}#}
+{#                                                                {% if project.progress.regsubmissions == 2 %}#}
+{#                                                                    {% if project.progress.assessments|length == 0 %}#}
+{#                                                                        {{ _("Registration closed") }}#}
+{#                                                                    {% else %}#}
+{#                                                                        {{ _("Trial data collection / Analysis ongoing") }}#}
+{#                                                                    {% endif %}#}
+{#                                                                {% endif %}#}
+{#                                                            {% endif %}#}
+{#                                                        {% endif %}#}
                                                     </p>
 
                                                 </td>
