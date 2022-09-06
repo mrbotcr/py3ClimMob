@@ -13,6 +13,7 @@ from climmob.processes import (
     getJSONResult,
 )
 from climmob.products.analysisdata.analysisdata import create_datacsv
+from climmob.products.dataxlsx.dataxlsx import create_XLSXToDownload
 from climmob.products.errorLogDocument.errorLogDocument import create_error_log_document
 from climmob.views.classes import privateView
 from climmob.views.editDataDB import (
@@ -28,9 +29,11 @@ class downloadDataView(privateView):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
         formId = self.request.matchdict["formid"]
+        formatId = self.request.matchdict["formatid"]
         includeRegistry = True
         includeAssessment = True
         code = ""
+        formatExtra = ""
 
         if not projectExists(
             self.user.login, activeProjectUser, activeProjectCod, self.request
@@ -63,18 +66,34 @@ class downloadDataView(privateView):
             code,
         )
 
-        create_datacsv(
-            activeProjectUser,
-            activeProjectId,
-            activeProjectCod,
-            info,
-            self.request,
-            formId,
-            code,
-        )
+        if formatId not in ["csv", "xlsx"]:
+            raise HTTPNotFound()
+
+        if formatId == "csv":
+            create_datacsv(
+                activeProjectUser,
+                activeProjectId,
+                activeProjectCod,
+                info,
+                self.request,
+                formId,
+                code,
+            )
+
+        if formatId == "xlsx":
+            formatExtra = formatId + "_"
+            create_XLSXToDownload(
+                activeProjectUser,
+                activeProjectId,
+                activeProjectCod,
+                self.request,
+                formId,
+                code,
+            )
 
         url = self.request.route_url(
-            "productList", _query={"product1": "create_data_" + formId + "_" + code}
+            "productList",
+            _query={"product1": "create_data_" + formatExtra + formId + "_" + code},
         )
         self.returnRawViewResult = True
         return HTTPFound(location=url)

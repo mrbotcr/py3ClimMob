@@ -27,7 +27,7 @@
             <th></th>
         </tr>
         {% set productToFocus = "xx" %}
-        {% set changes = {'projectSummary': true, 'DataCollectionProgress': false, 'projectDataCollected': false, 'productToFocus':""} %}
+        {% set changes = {'projectSummary': true, 'DataCollectionProgress': false, 'projectDataCollected': true, 'productToFocus':""} %}
         {% if activeProject.project_regstatus > 0 %}
             {% if changes.update({'DataCollectionProgress': true }) %} {% endif %}
         {% endif %}
@@ -51,13 +51,12 @@
                                     {% if product.product_id == "datacsv" %}
 
                                         {% if product.process_name == "create_data_Report_" %}
-                                            {% if changes.update({'projectDataCollected': false }) %}{% endif %}
-                                            {{ _("Information collected in all the project") }}
+                                            {{ _("Information collected in all the project in .CSV format") }}
                                         {% else %}
                                             {% if product.process_name == "create_data_Registration_" %}
-                                                {{ _("Information collected in the participant registration form") }}
+                                                {{ _("Information collected in the participant registration form in .CSV format") }}
                                             {% else %}
-                                                {{ _("Information collected in the trial data collection moment form") }}: {{ product.extraInformation.ass_desc }}
+                                                {{ _("Information collected in the trial data collection moment form") }}: {{ product.extraInformation.ass_desc }} {{ _("in .CSV format") }}
                                             {% endif %}
                                         {% endif %}
                                     {% else %}
@@ -113,7 +112,16 @@
                                                                                     {{ _("List of packages with QR for the participant registration form (Showing technology options).") }}
                                                                                 {% else %}
                                                                                     {% if product.product_id == "dataxlsx" %}
-                                                                                        {{ _("Information collected in the trial data collection moment form") }}: {{ product.extraInformation.ass_desc }}
+                                                                                        {% if product.process_name == "create_data_xlsx_Report_" %}
+                                                                                            {% if changes.update({'projectDataCollected': false }) %}{% endif %}
+                                                                                            {{ _("Information collected in all the project in .XLSX format") }}
+                                                                                        {% else %}
+                                                                                            {% if product.process_name == "create_data_xlsx_Registration_" %}
+                                                                                                {{ _("Information collected in the participant registration form in .XLSX format") }}
+                                                                                            {% else %}
+                                                                                                {{ _("Information collected in the trial data collection moment form") }}: {{ product.extraInformation.ass_desc }} {{ _("in .XLSX format") }}
+                                                                                            {% endif %}
+                                                                                        {% endif %}
                                                                                     {% else %}
                                                                                         {{ product.product_id }}
                                                                                     {% endif %}
@@ -198,8 +206,8 @@
                 <td class="text-center" style="width: 110px">
                     {% if product.state == "Success"%}
                         {% if product.exists == "correct" %}
-                            {% if product.product_id == "datacsv" and product.process_name == "create_data_Report_" %}
-                                <a href="{{ request.route_url('generateProduct', productid="datacsv", user=activeProject["owner"].user_name,project=activeProject.project_cod, processname="create_data_Report_") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Update") }}</a>
+                            {% if product.product_id == "dataxlsx" and product.process_name == "create_data_Report_" %}
+                                <a href="{{ request.route_url('generateProduct', productid="dataxlsx", user=activeProject["owner"].user_name,project=activeProject.project_cod, processname="create_data_Report_") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Update") }}</a>
                             {% endif %}
 
                             {% if product.product_id == "generalreport" %}
@@ -222,7 +230,7 @@
                 <td></td>
                 <td></td>
                 <td class="text-center">
-                    <a href="{{ request.route_url('generateProduct', productid="datacsv", user=activeProject["owner"].user_name,project=activeProject.project_cod, processname="create_data_Report_") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
+                    <a href="{{ request.route_url('generateProduct', productid="dataxlsx", user=activeProject["owner"].user_name,project=activeProject.project_cod, processname="create_data_Report_") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
                 </td>
                 <td></td>
             </tr>
