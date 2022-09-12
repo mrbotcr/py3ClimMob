@@ -27,10 +27,14 @@
             <th></th>
         </tr>
         {% set productToFocus = "xx" %}
-        {% set changes = {'projectSummary': true, 'DataCollectionProgress': false, 'projectDataCollected': true, 'productToFocus':""} %}
+        {% set changes = {'projectSummary': true, 'DataCollectionProgress': false, 'QRPackagesEditable':false,'projectDataCollected': true, 'productToFocus':""} %}
         {% if activeProject.project_regstatus > 0 %}
             {% if changes.update({'DataCollectionProgress': true }) %} {% endif %}
         {% endif %}
+
+        {% block qr_packages_editable_variable scoped%}
+
+        {% endblock qr_packages_editable_variable %}
 
         {% for product in Products %}
             {% set color = '#1c84c6' %}
@@ -123,7 +127,12 @@
                                                                                             {% endif %}
                                                                                         {% endif %}
                                                                                     {% else %}
-                                                                                        {{ product.product_id }}
+                                                                                        {% if product.product_id == "qrpackageseditable" %}
+                                                                                            {% if changes.update({'QRPackagesEditable': false }) %} {% endif %}
+                                                                                            {{ _("List of packages with QR for the participant registration form") }} ({{ _("Editable") }})
+                                                                                        {% else %}
+                                                                                            {{ product.product_id }}
+                                                                                        {% endif %}
                                                                                     {% endif %}
                                                                                 {% endif %}
                                                                             {% endif %}
@@ -218,6 +227,10 @@
 
                             {% endblock data_collection_progress_update %}
 
+                            {% block qr_packages_editable_update scoped%}
+
+                            {% endblock qr_packages_editable_update %}
+
                         {% endif %}
                     {% endif %}
                 </td>
@@ -251,6 +264,10 @@
 
             {% endblock data_collection_progress_create %}
         {% endif %}
+
+        {% block qr_packages_editable_create scoped%}
+
+        {% endblock qr_packages_editable_create %}
 
         {% if changes.productToFocus %}
             <script>

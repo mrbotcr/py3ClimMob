@@ -25,6 +25,7 @@ __all__ = [
     "IDataColletionProgress",
     "IpackagesWithTechnologiesExtension",
     "IRhomis",
+    "IQRPackagesEditable"
 ]
 
 
@@ -461,4 +462,11 @@ class IRhomis(Interface):
     def get_questions_by_type_external(
         self, request, projectId, assCod, assessmentData, dic
     ):
+        """ """
+
+class IQRPackagesEditable(Interface):
+    def create_qr_packages_editable(
+        self, request, locale, userOwner, projectId, projectCod, options, packages
+    ):
+
         """ """

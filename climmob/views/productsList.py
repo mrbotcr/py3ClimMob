@@ -166,6 +166,24 @@ class generateProductView(privateView):
                 packages,
             )
 
+        if productid == "qrpackageseditable":
+            ncombs, packages = getPackages(
+                activeProjectData["owner"]["user_name"],
+                activeProjectData["project_id"],
+                self.request,
+            )
+
+            for plugin in p.PluginImplementations(p.IQRPackagesEditable):
+                plugin.create_qr_packages_editable(
+                    self.request,
+                    self.request.locale_name,
+                    activeProjectData["owner"]["user_name"],
+                    activeProjectData["project_id"],
+                    activeProjectData["project_cod"],
+                    ncombs,
+                    packages,
+                )
+
         if productid == "qrpackagewithtechnologies":
 
             ncombs, packages = getPackages(
