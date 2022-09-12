@@ -30,6 +30,7 @@ from climmob.processes import (
 )
 from climmob.products import product_found
 from climmob.products.analysisdata.analysisdata import create_datacsv
+from climmob.products.dataxlsx.dataxlsx import create_XLSXToDownload
 from climmob.products.colors.colors import create_colors_cards
 from climmob.products.errorLogDocument.errorLogDocument import create_error_log_document
 from climmob.products.fieldagents.fieldagents import create_fieldagents_report
@@ -107,9 +108,13 @@ class productsView(climmobPrivateView):
                         "uploaddata",
                         "dataxlsx",
                     ]:
+                        assessId = product["process_name"].split("_")[3]
+                        if product["product_id"] == "dataxlsx":
+                            assessId = product["process_name"].split("_")[4]
+
                         product["extraInformation"] = getProjectAssessmentInfo(
                             activeProjectData["project_id"],
-                            product["process_name"].split("_")[3],
+                            assessId,
                             self.request,
                         )
 
@@ -270,6 +275,17 @@ class generateProductView(privateView):
                 self.request,
                 infoProduct[2],
                 infoProduct[3],
+            )
+
+        if productid == "dataxlsx":
+            infoProduct = processname.split("_")
+            create_XLSXToDownload(
+                activeProjectData["owner"]["user_name"],
+                activeProjectData["project_id"],
+                activeProjectData["project_cod"],
+                self.request,
+                infoProduct[3],
+                infoProduct[4],
             )
 
         if productid == "documentform":

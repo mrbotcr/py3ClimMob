@@ -789,7 +789,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "downloadDataRegistry",
-            "/user/{user}/project/{project}/form/{formid}/Download",
+            "/user/{user}/project/{project}/form/{formid}/format/{formatid}/Download",
             downloadDataView,
             "json",
         )
@@ -797,7 +797,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "downloadDataAssessment",
-            "/user/{user}/project/{project}/form/{formid}/{codeid}/Download",
+            "/user/{user}/project/{project}/form/{formid}/{codeid}/format/{formatid}/Download",
             downloadDataView,
             "json",
         )
