@@ -25,7 +25,7 @@ __all__ = [
     "IDataColletionProgress",
     "IpackagesWithTechnologiesExtension",
     "IRhomis",
-    "IQRPackagesEditable"
+    "IQRPackagesEditable",
 ]
 
 
@@ -463,6 +463,7 @@ class IRhomis(Interface):
         self, request, projectId, assCod, assessmentData, dic
     ):
         """ """
+
 
 class IQRPackagesEditable(Interface):
     def create_qr_packages_editable(
