@@ -25,6 +25,7 @@ __all__ = [
     "IDataColletionProgress",
     "IpackagesWithTechnologiesExtension",
     "IRhomis",
+    "IEnumerator",
 ]
 
 
@@ -462,3 +463,77 @@ class IRhomis(Interface):
         self, request, projectId, assCod, assessmentData, dic
     ):
         """ """
+
+
+class IEnumerator(Interface):
+    """
+    Allows to hook into the processes that create, update and delete enumerators
+    """
+
+    def before_adding_enumerator(self, request, user_name, enumerator_data):
+        """
+        Called by ClimMob so plugins can perform actions before ClimMob adds an enumerator
+        :param request: ``pyramid.request`` object
+        :param user_name: User owner of the enumerators
+        :param enumerator_data: Enumerator data
+        :return: True,"" if the enumerator should be created or False,message
+        """
+
+    def after_adding_enumerator(self, request, user_name, enumerator_data):
+        """
+        Called by ClimMob so plugins can perform actions after ClimMob adds an enumerator
+        :param request: ``pyramid.request`` object
+        :param user_name: User owner of the enumerators
+        :param enumerator_data: Enumerator data
+        :return: None
+        """
+
+    def before_updating_enumerator(
+        self, request, user_name, enumerator_id, enumerator_data
+    ):
+        """
+        Called by ClimMob so plugins can perform actions before ClimMob updates an enumerator
+        :param request: ``pyramid.request`` object
+        :param user_name: The user owner of the enumerator
+        :param enumerator_id: The id of the enumerator
+        :param enumerator_data: Enumerator data
+        :return: True,"" if the enumerator should be updated or False,message
+        """
+
+    def after_updating_enumerator(
+        self, request, user_name, enumerator_id, enumerator_data
+    ):
+        """
+        Called by ClimMob so plugins can perform actions after ClimMob updates an enumerator
+        :param request: ``pyramid.request`` object
+        :param user_name: The user owner of the enumerator
+        :param enumerator_id: The id of the enumerator
+        :param enumerator_data: Enumerator data
+        :return: None
+        """
+
+    def before_deleting_enumerator(self, request, user_name, enumerator_id):
+        """
+        Called by ClimMob so plugins can perform actions before ClimMob deletes an enumerator
+        :param request: ``pyramid.request`` object
+        :param user_name: The user owner of the enumerator
+        :param enumerator_id: The id of the enumerator
+        :return: True,"" if the enumerator should be deleted or False,message
+        """
+
+    def after_deleting_enumerator(self, request, user_name, enumerator_id):
+        """
+        Called by ClimMob so plugins can perform actions after ClimMob deletes an enumerator
+        :param request: ``pyramid.request`` object
+        :param user_name: The user owner of the enumerator
+        :param enumerator_id: The id of the enumerator
+        :return: None
+        """
+
+    def before_returning_context(self, request, context):
+        """
+        Called by ClimMob so plugins can perform actions before returning the context to Jinja
+        :param request: ``pyramid.request`` object
+        :param context: Context for rendering Jinja
+        :return: Modified version of context
+        """

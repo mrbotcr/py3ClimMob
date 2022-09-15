@@ -148,6 +148,10 @@ def addFieldToQuestionSchema(fieldName, fieldDesc):
     return {"schema": "question", "fieldname": fieldName, "fielddesc": fieldDesc}
 
 
+def addFieldToEnumertorSchema(fieldName, fieldDesc):
+    return {"schema": "enumerator", "fieldname": fieldName, "fielddesc": fieldDesc}
+
+
 def createProductDirectory(request, userID, projectID, product):
     try:
         if p.product_found(product):
