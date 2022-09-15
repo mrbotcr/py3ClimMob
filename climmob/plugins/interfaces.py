@@ -26,6 +26,7 @@ __all__ = [
     "IpackagesWithTechnologiesExtension",
     "IRhomis",
     "IEnumerator",
+    "IQRPackagesEditable",
 ]
 
 
@@ -537,3 +538,11 @@ class IEnumerator(Interface):
         :param context: Context for rendering Jinja
         :return: Modified version of context
         """
+
+
+class IQRPackagesEditable(Interface):
+    def create_qr_packages_editable(
+        self, request, locale, userOwner, projectId, projectCod, options, packages
+    ):
+
+        """ """

@@ -42,14 +42,6 @@ def createReports(
     pathInputFiles = os.path.join(path, "inputFile")
     os.makedirs(pathInputFiles)
 
-    with open(pathInputFiles + "/data.json", "w") as outfile:
-        jsonString = json.dumps(data, indent=4, ensure_ascii=False)
-        outfile.write(jsonString)
-
-    with open(pathInputFiles + "/info.json", "w") as outfile:
-        jsonString = json.dumps(info, indent=4, ensure_ascii=False)
-        outfile.write(jsonString)
-
     parts = __file__.split("/products/")
     this_file_path = parts[0] + "/locale"
     try:
@@ -65,6 +57,28 @@ def createReports(
         )
         es.install()
         _ = es.gettext
+
+    data["Parameters"] = {}
+    data["Parameters"]["Data"] = pathInputFiles + "/data.json"
+    data["Parameters"]["Info"] = pathInputFiles + "/info.json"
+    data["Parameters"]["OutputPath"] = pathouttemp
+    data["Parameters"]["InfoSheets"] = infosheet
+    data["Parameters"]["Languaje"] = locale
+    data["Parameters"]["Format"] = "docx"
+    data["Parameters"]["InfoSheets"] = infosheet
+    data["Parameters"]["ReferToParticipants"] = _("participant")
+    data["Parameters"]["ReferToTechnologies"] = _("item")
+    data["Parameters"]["BackwardPath"] = pathScript
+    data["Parameters"]["Split"] = variablesSplit
+    data["Parameters"]["Reference"] = combinationRerence
+
+    with open(pathInputFiles + "/data.json", "w") as outfile:
+        jsonString = json.dumps(data, indent=4, ensure_ascii=False)
+        outfile.write(jsonString)
+
+    with open(pathInputFiles + "/info.json", "w") as outfile:
+        jsonString = json.dumps(info, indent=4, ensure_ascii=False)
+        outfile.write(jsonString)
 
     if variablesSplit != "":
         variablesSplit = "c(" + ", ".join(map(str, variablesSplit.split(","))) + ")"
