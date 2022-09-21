@@ -23,6 +23,10 @@
     <div class="col-sm-8"><input type="checkbox" id="ckb_modify_status" name="ckb_modify_status" data-on-color="success" data-off-color="danger" data-on-text="{{ _('Yes') }}" data-off-text="{{ _('No') }}" {% if dataworking['enum_active'] ==1 %}checked{% endif %}></div>
 </div>
 
+{% block enumerator_form_extra %}
+
+{% endblock %}
+
 
 
 

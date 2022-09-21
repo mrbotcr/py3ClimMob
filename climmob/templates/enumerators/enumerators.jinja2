@@ -176,6 +176,9 @@
 
             $("#btn_modify_enumerator").css('display', 'initial')
             $("#div_submit_data").css("display", 'initial')
+            {% block enumerators_get_js_extra %}
+
+            {% endblock enumerators_get_js_extra %}
         });
     }
 
@@ -193,5 +196,10 @@
 
     {% include 'snippets/loading.jinja2' %}
 
+    <script>
+    {% block enumerators_js_extra %}
+
+    {% endblock enumerators_js_extra %}
+    </script>
 {% endblock pagecontent %}
 
