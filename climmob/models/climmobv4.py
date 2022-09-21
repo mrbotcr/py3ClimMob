@@ -171,6 +171,7 @@ class PrjEnumerator(Base):
     project_id = Column(Unicode(64), primary_key=True, nullable=False)
     enum_user = Column(Unicode(80), primary_key=True, nullable=False)
     enum_id = Column(Unicode(80), primary_key=True, nullable=False)
+    extra = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
 
     project = relationship("Project")
     enumerator = relationship("Enumerator")
