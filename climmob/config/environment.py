@@ -190,7 +190,14 @@ def load_environment(settings, config, apppath, policy_array):
             prd.addProduct(product)
 
     # Call any connected plugins to add their modifications into the schema
-    schemas_allowed = ["user", "project", "question", "assessment", "enumerator"]
+    schemas_allowed = [
+        "user",
+        "project",
+        "question",
+        "assessment",
+        "enumerator",
+        "prjenumerator",
+    ]
 
     modules_allowed = ["climmob.models.climmobv4"]
 
