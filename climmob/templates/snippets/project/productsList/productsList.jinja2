@@ -198,7 +198,7 @@
                         {% endif %}
                     {% else %}
                         {% if product.state =="Pending..." %}
-                            <a  onclick=" location.reload(); " class="btn btn-primary" style="background-color: #f8ac59; border-color: #f8ac59" ><i class="fa fa-refresh"></i> {{ "Pending" }}</a>
+                            <a  onclick=" location.reload(); " class="btn btn-primary" style="background-color: #f8ac59; border-color: #f8ac59" ><i class="fa fa-refresh"></i> {{ _("Pending") }}</a>
                         {% else %}
 
                             {% if  product.product_id == "reports" or product.product_id == "infosheets"%}
@@ -215,8 +215,8 @@
                 <td class="text-center" style="width: 110px">
                     {% if product.state == "Success"%}
                         {% if product.exists == "correct" %}
-                            {% if product.product_id == "dataxlsx" and product.process_name == "create_data_Report_" %}
-                                <a href="{{ request.route_url('generateProduct', productid="dataxlsx", user=activeProject["owner"].user_name,project=activeProject.project_cod, processname="create_data_Report_") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Update") }}</a>
+                            {% if product.product_id == "dataxlsx" and product.process_name == "create_data_xlsx_Report_" %}
+                                <a href="{{ request.route_url('generateProduct', productid="dataxlsx", user=activeProject["owner"].user_name,project=activeProject.project_cod, processname="create_data_xlsx_Report_") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Update") }}</a>
                             {% endif %}
 
                             {% if product.product_id == "generalreport" %}
@@ -243,7 +243,7 @@
                 <td></td>
                 <td></td>
                 <td class="text-center">
-                    <a href="{{ request.route_url('generateProduct', productid="dataxlsx", user=activeProject["owner"].user_name,project=activeProject.project_cod, processname="create_data_Report_") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
+                    <a href="{{ request.route_url('generateProduct', productid="dataxlsx", user=activeProject["owner"].user_name,project=activeProject.project_cod, processname="create_data_xlsx_Report_") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
                 </td>
                 <td></td>
             </tr>

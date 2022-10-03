@@ -660,6 +660,22 @@
                         {% endblock contact_social %}
                     </div>
                 </div>
+
+                <div class="row">
+                    <br><br>
+                    <table width="100%">
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td style="text-align: center">
+                                <img class="language" name="en" src="{{ request.url_for_static('landing/en.png') }}" style="height: 18px; width: 25px">
+                                <img class="language" name="es" src="{{ request.url_for_static('landing/es.png') }}" style="height: 18px; width: 25px">
+                                <img class="language" name="fr" src="{{ request.url_for_static('landing/fr.png') }}" style="height: 18px; width: 25px">
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
                 {% block contact_footer %}
                     <div class="row">
                         <div class="col-lg-8 col-lg-offset-2 text-center m-t-lg m-b-lg">
@@ -707,6 +723,53 @@
         {% block script %}
 
         {% endblock script %}
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            var selectedLanguage = readCookie('_LOCALE_');
+            if (selectedLanguage != null)
+                $('#language').val(selectedLanguage);
+
+            $(".language").click(function () {
+                setCookie('_LOCALE_', this.getAttribute("name"), 365);
+                location.reload();
+            })
+        });
+
+        function setCookie(cookieName, cookieValue, nDays) {
+            var today = new Date();
+            var expire = new Date();
+
+            if (nDays==null || nDays==0)
+                nDays=1;
+
+            expire.setTime(today.getTime() + 3600000*24*nDays);
+            document.cookie = cookieName+"="+escape(cookieValue) + ";expires="+expire.toGMTString() + ";path=/";
+        }
+
+        function readCookie(name) {
+            var nameEQ = name + "=";
+            var ca = document.cookie.split(';');
+            for(var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+
+        function copy() {
+            var copyText = document.getElementById("aForCopy");
+
+             /* Select the text field */
+            copyText.select();
+
+            /* Copy the text inside the text field */
+            document.execCommand("copy");
+
+        }
     </script>
 
     </body>
