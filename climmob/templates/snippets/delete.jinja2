@@ -22,22 +22,27 @@ function showDelete (url,text, csrf, where = '') {
                     type: "POST",
                     data: {"csrf_token": csrf},
                     success: function(respuesta) {
-                        if (where != 'noRedirect' & where != 'noRedirectAndAction') {
-                            if (where == '') {
-                                location.href = window.location.href;
+                        if (respuesta.status === 200) {
+                            if (where != 'noRedirect' & where != 'noRedirectAndAction') {
+                                if (where == '') {
+                                    location.href = window.location.href;
+                                } else {
+                                    location.href = where;
+                                }
                             } else {
-                                location.href = where;
-                            }
-                        }else{
-                            swal.close()
+                                swal.close()
 
-                            if(where == "noRedirectAndAction")
-                            {
-                                myCustomAction()
+                                if (where == "noRedirectAndAction") {
+                                    myCustomAction()
+                                }
                             }
+                        }
+                        else {
+                            swal("{{ _("Cancelled") }}", "{{ _("The information could not be deleted.") }}" + "\n" + respuesta.error , "error");
                         }
                     },
                     error: function(respuesta) {
+                        console.log(respuesta)
                         swal("{{ _("Cancelled") }}", "{{ _("The information could not be deleted.") }}", "error");
                     }
                 });
