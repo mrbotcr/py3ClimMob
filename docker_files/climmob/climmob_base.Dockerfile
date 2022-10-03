@@ -24,6 +24,8 @@ RUN update-alternatives --install /usr/bin/java java /usr/lib/jvm/jdk-18/bin/jav
 
 RUN npm install svg2png -g --unsafe-perm
 
+RUN npm install -g json2csv
+
 #WebKit's
 RUN wget https://github.com/mozilla/geckodriver/releases/download/v0.31.0/geckodriver-v0.31.0-linux64.tar.gz
 RUN tar xvfz geckodriver-v0.31.0-linux64.tar.gz
