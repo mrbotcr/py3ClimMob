@@ -12,19 +12,12 @@ import multiprocessing
 @celeryApp.task(base=climmobCeleryTask)
 def create_XLSX(settings, path, userOwner, projectCod, projectId, form, code):
 
-    """print(multiprocessing.cpu_count())
-    print(settings)
-    print(settings.get("server:threads", "1"))
-
     num_workers = (
-            multiprocessing.cpu_count() - int(settings.get("server:threads", "1")) - 1
+        multiprocessing.cpu_count() - int(settings.get("server:threads", "1")) - 1
     )
-    print(num_workers)
+
     if num_workers <= 0:
         num_workers = 1
-
-    print(num_workers)"""
-    num_workers = 2
 
     pathout = os.path.join(path, "outputs")
     if not os.path.exists(pathout):
