@@ -101,7 +101,7 @@ def createQR(self, locale, path, projectid, packages):
             sh.rmtree(path)
             return ""
 
-        qr = create_qr(package, projectid, pathqr)
+        qr = create_qr(package, projectid, pathqr, all=False)
 
         # myCode = QR(data=data, pixel_size=60)
         # myCode.encode()
@@ -140,7 +140,7 @@ def createQR(self, locale, path, projectid, packages):
             os.system(
                 "pdfjam "
                 + allPNGpaths
-                + "  --no-landscape --nup 2x4 --frame true --outfile "
+                + "  --no-landscape --nup 3x4 --frame true --outfile "
                 + pathpdf
                 + "/"
                 + str(veces)
@@ -166,7 +166,7 @@ def createQR(self, locale, path, projectid, packages):
         os.system(
             "pdfjam "
             + allPNGpaths
-            + "  --no-landscape --nup 2x4 --frame true --outfile "
+            + "  --no-landscape --nup 3x4 --frame true --outfile "
             + pathpdf
             + "/"
             + str(veces)
