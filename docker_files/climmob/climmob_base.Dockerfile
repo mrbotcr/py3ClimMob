@@ -128,3 +128,5 @@ WORKDIR /opt
 
 COPY ./docker_files/verificationFile.txt /opt
 RUN Rscript ./new_r_code/modules/00_check_packages.R
+COPY ./docker_files/check_R_libraries.R /opt
+RUN Rscript /opt/check_R_libraries.R
