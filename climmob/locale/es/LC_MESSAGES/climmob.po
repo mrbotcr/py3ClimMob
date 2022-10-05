@@ -2404,7 +2404,7 @@ msgstr "Revisión de paquetes"
 
 #: climmob/templates/project/registry/create/createregistry.jinja2:101
 msgid "ClimMob is generating the randomization of your packages."
-msgstr "ClimMob está generando la aleatorizaciòn de sus paquetes."
+msgstr "ClimMob está generando la aleatorización de sus paquetes."
 
 #: climmob/templates/project/registry/create/createregistry.jinja2:104
 msgid "This process may take some time but no more than two minutes."
