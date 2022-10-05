@@ -27,7 +27,7 @@
             <th></th>
         </tr>
         {% set productToFocus = "xx" %}
-        {% set changes = {'projectSummary': true, 'DataCollectionProgress': false, 'QRPackagesEditable':false,'projectDataCollected': true, 'productToFocus':""} %}
+        {% set changes = {'projectSummary': true, 'DataCollectionProgress': false, 'QRPackagesEditable':false,'projectDataCollectedCSV':true,'projectDataCollectedXLSX': true, 'productToFocus':""} %}
         {% if activeProject.project_regstatus > 0 %}
             {% if changes.update({'DataCollectionProgress': true }) %} {% endif %}
         {% endif %}
@@ -55,6 +55,7 @@
                                     {% if product.product_id == "datacsv" %}
 
                                         {% if product.process_name == "create_data_Report_" %}
+                                            {% if changes.update({'projectDataCollectedCSV': false }) %}{% endif %}
                                             {{ _("Information collected in all the project in .CSV format") }}
                                         {% else %}
                                             {% if product.process_name == "create_data_Registration_" %}
@@ -63,6 +64,8 @@
                                                 {{ _("Information collected in the trial data collection moment form") }}: {{ product.extraInformation.ass_desc }} {{ _("in .CSV format") }}
                                             {% endif %}
                                         {% endif %}
+
+
                                     {% else %}
                                         {% if product.product_id == "reports" %}
                                             {{ _("Report generated in the analysis of the information") }}
@@ -117,7 +120,7 @@
                                                                                 {% else %}
                                                                                     {% if product.product_id == "dataxlsx" %}
                                                                                         {% if product.process_name == "create_data_xlsx_Report_" %}
-                                                                                            {% if changes.update({'projectDataCollected': false }) %}{% endif %}
+                                                                                            {% if changes.update({'projectDataCollectedXLSX': false }) %}{% endif %}
                                                                                             {{ _("Information collected in all the project in .XLSX format") }}
                                                                                         {% else %}
                                                                                             {% if product.process_name == "create_data_xlsx_Registration_" %}
@@ -215,6 +218,11 @@
                 <td class="text-center" style="width: 110px">
                     {% if product.state == "Success"%}
                         {% if product.exists == "correct" %}
+
+                            {% if product.product_id == "datacsv" and product.process_name == "create_data_Report_" %}
+                                <a href="{{ request.route_url('generateProduct', productid="datacsv", user=activeProject["owner"].user_name,project=activeProject.project_cod, processname="create_data_Report_") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Update") }}</a>
+                            {% endif %}
+
                             {% if product.product_id == "dataxlsx" and product.process_name == "create_data_xlsx_Report_" %}
                                 <a href="{{ request.route_url('generateProduct', productid="dataxlsx", user=activeProject["owner"].user_name,project=activeProject.project_cod, processname="create_data_xlsx_Report_") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Update") }}</a>
                             {% endif %}
@@ -237,9 +245,9 @@
             </tr>
         {% endfor %}
 
-        {% if changes.projectDataCollected %}
+        {% if changes.projectDataCollectedXLSX %}
             <tr>
-                <td>{{ _("Information collected in all the project") }}</td>
+                <td>{{ _("Information collected in all the project in .XLSX format") }}</td>
                 <td></td>
                 <td></td>
                 <td class="text-center">
@@ -248,6 +256,19 @@
                 <td></td>
             </tr>
         {% endif %}
+
+        {% if changes.projectDataCollectedCSV %}
+            <tr>
+                <td>{{ _("Information collected in all the project in .CSV format") }}</td>
+                <td></td>
+                <td></td>
+                <td class="text-center">
+                    <a href="{{ request.route_url('generateProduct', productid="datacsv", user=activeProject["owner"].user_name,project=activeProject.project_cod, processname="create_data_Report_") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
+                </td>
+                <td></td>
+            </tr>
+        {% endif %}
+
         {% if changes.projectSummary %}
             <tr>
                 <td>{{ _("Project summary") }}</td>
