@@ -4738,7 +4738,7 @@ msgstr "Los datos no pueden ser guardados. ERROR: "
 #: climmob/views/Api/projectAssessmentStart.py:729
 #: climmob/views/Api/projectRegistryStart.py:1231
 msgid "Data registered."
-msgstr "Los datos registrados."
+msgstr "Los datos fueron registrados."
 
 #: climmob/views/Api/projectAssessmentStart.py:736
 msgid "ERROR: The farmer code must be a number."
