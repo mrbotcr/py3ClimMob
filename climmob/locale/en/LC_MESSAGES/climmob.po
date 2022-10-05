@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: climmob 3.3.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-09-29 12:04-0600\n"
+"POT-Creation-Date: 2022-10-04 20:21-0600\n"
 "PO-Revision-Date: 2021-06-01 09:47+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -590,46 +590,46 @@ msgid "Or follow us on social media"
 msgstr ""
 
 #: climmob/templates/dashboard/dashboard.jinja2:800
-#: climmob/templates/landing.jinja2:666 climmob/templates/login.jinja2:71
+#: climmob/templates/landing.jinja2:682 climmob/templates/login.jinja2:71
 msgid "Copyright"
 msgstr ""
 
 #: climmob/templates/dashboard/dashboard.jinja2:800
-#: climmob/templates/landing.jinja2:666 climmob/templates/login.jinja2:71
+#: climmob/templates/landing.jinja2:682 climmob/templates/login.jinja2:71
 msgid "2021, Alliance of Bioversity International and CIAT"
 msgstr ""
 
-#: climmob/templates/landing.jinja2:667
+#: climmob/templates/landing.jinja2:683
 msgid "Version"
 msgstr ""
 
-#: climmob/templates/landing.jinja2:681 climmob/templates/login.jinja2:82
+#: climmob/templates/landing.jinja2:697 climmob/templates/login.jinja2:82
 msgid "Cookies"
 msgstr ""
 
-#: climmob/templates/landing.jinja2:684 climmob/templates/login.jinja2:85
+#: climmob/templates/landing.jinja2:700 climmob/templates/login.jinja2:85
 msgid ""
 "This website stores cookies on your computer. These cookies are used to "
 "remember you or to know that you have been authenticated. To find out "
 "more about the cookies we use, see our"
 msgstr ""
 
-#: climmob/templates/landing.jinja2:684 climmob/templates/login.jinja2:85
+#: climmob/templates/landing.jinja2:700 climmob/templates/login.jinja2:85
 msgid "Privacy Policy"
 msgstr ""
 
-#: climmob/templates/landing.jinja2:685 climmob/templates/login.jinja2:86
+#: climmob/templates/landing.jinja2:701 climmob/templates/login.jinja2:86
 msgid ""
 "If you decline, two encrypted cookies will be stored: 1) a cookie to "
 "remember your answer and 2) a cookie for us to know that you are "
 "authenticated once you login."
 msgstr ""
 
-#: climmob/templates/landing.jinja2:689 climmob/templates/login.jinja2:90
+#: climmob/templates/landing.jinja2:705 climmob/templates/login.jinja2:90
 msgid "Accept"
 msgstr ""
 
-#: climmob/templates/landing.jinja2:690 climmob/templates/login.jinja2:91
+#: climmob/templates/landing.jinja2:706 climmob/templates/login.jinja2:91
 msgid "Decline"
 msgstr ""
 
@@ -1014,7 +1014,7 @@ msgstr ""
 #: climmob/templates/dashboard/dashboard.jinja2:237
 #: climmob/templates/dashboard/dashboard.jinja2:257
 #: climmob/templates/dashboard/dashboard.jinja2:274
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:201
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:204
 msgid "Pending"
 msgstr ""
 
@@ -1093,7 +1093,7 @@ msgid ""
 msgstr ""
 
 #: climmob/templates/dashboard/dashboard.jinja2:375
-#: climmob/templates/snippets/question/question-form.jinja2:505
+#: climmob/templates/snippets/question/question-form.jinja2:507
 msgid "Participant registration"
 msgstr ""
 
@@ -1193,7 +1193,7 @@ msgstr ""
 
 #: climmob/templates/dashboard/dashboard.jinja2:523
 #: climmob/templates/snippets/project/project_form.jinja2:218
-#: climmob/templates/snippets/question/question-form.jinja2:506
+#: climmob/templates/snippets/question/question-form.jinja2:508
 msgid "Trial data collection"
 msgstr ""
 
@@ -1979,10 +1979,10 @@ msgstr ""
 #: climmob/templates/snippets/enumerators/enumerator-form.jinja2:23
 #: climmob/templates/snippets/project/project_form.jinja2:162
 #: climmob/templates/snippets/question/question-form.jinja2:430
-#: climmob/templates/snippets/question/question-form.jinja2:443
-#: climmob/templates/snippets/question/question-form.jinja2:479
-#: climmob/templates/snippets/question/question-form.jinja2:492
-#: climmob/templates/snippets/question/question-form.jinja2:518
+#: climmob/templates/snippets/question/question-form.jinja2:445
+#: climmob/templates/snippets/question/question-form.jinja2:481
+#: climmob/templates/snippets/question/question-form.jinja2:494
+#: climmob/templates/snippets/question/question-form.jinja2:520
 msgid "Yes"
 msgstr ""
 
@@ -1991,10 +1991,10 @@ msgstr ""
 #: climmob/templates/snippets/enumerators/enumerator-form.jinja2:23
 #: climmob/templates/snippets/project/project_form.jinja2:162
 #: climmob/templates/snippets/question/question-form.jinja2:431
-#: climmob/templates/snippets/question/question-form.jinja2:444
-#: climmob/templates/snippets/question/question-form.jinja2:480
-#: climmob/templates/snippets/question/question-form.jinja2:493
-#: climmob/templates/snippets/question/question-form.jinja2:518
+#: climmob/templates/snippets/question/question-form.jinja2:446
+#: climmob/templates/snippets/question/question-form.jinja2:482
+#: climmob/templates/snippets/question/question-form.jinja2:495
+#: climmob/templates/snippets/question/question-form.jinja2:520
 msgid "No"
 msgstr ""
 
@@ -2260,6 +2260,7 @@ msgstr ""
 #: climmob/templates/project/editData/editDataJS.jinja2:363
 #: climmob/templates/snippets/delete.jinja2:41
 #: climmob/templates/snippets/delete.jinja2:46
+#: climmob/templates/snippets/delete.jinja2:51
 msgid "Cancelled"
 msgstr ""
 
@@ -2856,10 +2857,11 @@ msgid "No, cancel!"
 msgstr ""
 
 #: climmob/templates/snippets/delete.jinja2:41
+#: climmob/templates/snippets/delete.jinja2:46
 msgid "The information could not be deleted."
 msgstr ""
 
-#: climmob/templates/snippets/delete.jinja2:46
+#: climmob/templates/snippets/delete.jinja2:51
 msgid "We have not deleted the data"
 msgstr ""
 
@@ -3206,7 +3208,7 @@ msgid "Format"
 msgstr ""
 
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:44
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:132
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:135
 msgid "List of packages with QR for the participant registration form"
 msgstr ""
 
@@ -3222,132 +3224,132 @@ msgstr ""
 msgid "Color cards to explain ClimMob"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:58
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:59
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:262
 msgid "Information collected in all the project in .CSV format"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:61
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:62
 msgid "Information collected in the participant registration form in .CSV format"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:63
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:126
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:64
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:129
 msgid "Information collected in the trial data collection moment form"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:63
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:64
 msgid "in .CSV format"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:68
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:71
 msgid "Report generated in the analysis of the information"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:71
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:74
 msgid "Data collected in "
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:75
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:78
 msgid "Participant registration form to fill by hand"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:77
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:80
 msgid "Trial data collection moment form to fill by hand"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:82
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:253
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:85
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:274
 msgid "Project summary"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:86
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:89
 msgid "Progress report on trial data collection"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:89
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:92
 msgid "Stickers for each variety pack"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:93
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:96
 msgid ""
 "Document of submissions with conflicts in the participant registration "
 "form"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:95
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:98
 msgid ""
 "Document of submissions with conflicts in the trial data collection "
 "moment form"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:100
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:103
 msgid "Multimedia content collected in the participant registration form"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:102
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:105
 msgid "Multimedia content collected in the trial data collection moment form"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:106
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:109
 msgid "Individual feedback reports for participants"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:110
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:113
 msgid "Excel template for uploading participant registration form data"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:112
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:115
 msgid "Excel template for uploading trial data collection moment form data"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:116
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:119
 msgid ""
 "List of packages with QR for the participant registration form (Showing "
 "technology options)."
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:121
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:124
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:250
 msgid "Information collected in all the project in .XLSX format"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:124
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:127
 msgid "Information collected in the participant registration form in .XLSX format"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:126
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:129
 msgid "in .XLSX format"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:132
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:135
 msgid "Editable"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:184
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:186
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:187
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:189
 msgid "Download"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:190
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:193
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:205
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:196
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:208
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:246
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:257
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:211
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:254
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:266
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:278
 msgid "Create"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:197
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:211
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:200
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:214
 msgid "There was a problem creating the product."
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:219
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:223
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:227
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:231
 msgid "Update"
-msgstr ""
-
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:242
-msgid "Information collected in all the project"
 msgstr ""
 
 #: climmob/templates/snippets/project/registry/groupform.jinja2:2
@@ -3732,62 +3734,62 @@ msgstr ""
 msgid "Providing an answer to this question is obligatory during data collection."
 msgstr ""
 
-#: climmob/templates/snippets/question/question-form.jinja2:438
+#: climmob/templates/snippets/question/question-form.jinja2:440
 msgid "Expand question"
 msgstr ""
 
-#: climmob/templates/snippets/question/question-form.jinja2:452
+#: climmob/templates/snippets/question/question-form.jinja2:454
 msgid "What does 'Expand question' mean?"
 msgstr ""
 
-#: climmob/templates/snippets/question/question-form.jinja2:456
+#: climmob/templates/snippets/question/question-form.jinja2:458
 msgid ""
 "Expands a given question to all options A, B, C in your tricot project, "
 "given to you a unique answer to each of your tested options"
 msgstr ""
 
-#: climmob/templates/snippets/question/question-form.jinja2:456
+#: climmob/templates/snippets/question/question-form.jinja2:458
 msgid "Example:"
 msgstr ""
 
-#: climmob/templates/snippets/question/question-form.jinja2:459
 #: climmob/templates/snippets/question/question-form.jinja2:461
 #: climmob/templates/snippets/question/question-form.jinja2:463
+#: climmob/templates/snippets/question/question-form.jinja2:465
 msgid "Yield in kg"
 msgstr ""
 
-#: climmob/templates/snippets/question/question-form.jinja2:459
+#: climmob/templates/snippets/question/question-form.jinja2:461
 #: climmob/views/cloneProjects/cloneProjects.py:96 climmob/views/project.py:85
 msgid "Option A"
 msgstr ""
 
-#: climmob/templates/snippets/question/question-form.jinja2:461
+#: climmob/templates/snippets/question/question-form.jinja2:463
 #: climmob/views/cloneProjects/cloneProjects.py:97 climmob/views/project.py:86
 msgid "Option B"
 msgstr ""
 
-#: climmob/templates/snippets/question/question-form.jinja2:463
+#: climmob/templates/snippets/question/question-form.jinja2:465
 #: climmob/views/cloneProjects/cloneProjects.py:98 climmob/views/project.py:87
 msgid "Option C"
 msgstr ""
 
-#: climmob/templates/snippets/question/question-form.jinja2:474
+#: climmob/templates/snippets/question/question-form.jinja2:476
 msgid "Should a 'tie' be allowed as answer?"
 msgstr ""
 
-#: climmob/templates/snippets/question/question-form.jinja2:487
+#: climmob/templates/snippets/question/question-form.jinja2:489
 msgid "Should a 'not observed' be allowed as an answer?"
 msgstr ""
 
-#: climmob/templates/snippets/question/question-form.jinja2:502
+#: climmob/templates/snippets/question/question-form.jinja2:504
 msgid "Forms in which the question can be added"
 msgstr ""
 
-#: climmob/templates/snippets/question/question-form.jinja2:507
+#: climmob/templates/snippets/question/question-form.jinja2:509
 msgid "All forms"
 msgstr ""
 
-#: climmob/templates/snippets/question/question-form.jinja2:515
+#: climmob/templates/snippets/question/question-form.jinja2:517
 msgid "Available to users"
 msgstr ""
 
@@ -6394,5 +6396,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Select the form to start the trial data collection 2"
+#~ msgstr ""
+
+#~ msgid "Information collected in all the project"
 #~ msgstr ""
 
