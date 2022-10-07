@@ -1059,7 +1059,7 @@ msgstr "Copiar al portapapeles"
 
 #: climmob/templates/dashboard/dashboard.jinja2:317
 msgid "Start trial data collection moments"
-msgstr "Preparar el momento de la recolección de datos del ensayo"
+msgstr "Iniciar los momentos de recolección de datos del ensayo"
 
 #: climmob/templates/dashboard/dashboard.jinja2:339
 msgid "Select the form to start the trial data collection"
@@ -1067,7 +1067,7 @@ msgstr "Seleccione la evaluación para iniciar la recolección de datos del ensa
 
 #: climmob/templates/dashboard/dashboard.jinja2:347
 msgid "Start an trial data collection moment"
-msgstr "Preparar el momento de la recolección de datos del ensayo"
+msgstr "Iniciar un momento de recolección de datos del ensayo"
 
 #: climmob/templates/dashboard/dashboard.jinja2:353
 msgid "You can start the trial data collection once the registration of participants is closed and the project definition is completed"
