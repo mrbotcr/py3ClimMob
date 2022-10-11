@@ -80,14 +80,21 @@ class addProjectEnumerator_view(apiView):
                                 dataworking["enum_id"],
                                 self.request,
                             ):
-                                project_enumerator_data = {"project_id": activeProjectId,
-                                                           "enum_user": dataworking["enum_id"],
-                                                           "enum_id": dataworking["enum_user_name"]}
+                                project_enumerator_data = {
+                                    "project_id": activeProjectId,
+                                    "enum_user": dataworking["enum_user_name"],
+                                    "enum_id": dataworking["enum_id"],
+                                }
                                 continue_adding = True
                                 message = ""
-                                for plugin in p.PluginImplementations(p.IProjectEnumerator):
+                                for plugin in p.PluginImplementations(
+                                    p.IProjectEnumerator
+                                ):
                                     if continue_adding:
-                                        continue_clone, message = plugin.before_adding_enumerator_to_project(
+                                        (
+                                            continue_clone,
+                                            message,
+                                        ) = plugin.before_adding_enumerator_to_project(
                                             self.request, project_enumerator_data
                                         )
                                 if continue_adding:
@@ -98,7 +105,9 @@ class addProjectEnumerator_view(apiView):
                                         response = Response(status=401, body=message)
                                         return response
                                     else:
-                                        for plugin in p.PluginImplementations(p.IProjectEnumerator):
+                                        for plugin in p.PluginImplementations(
+                                            p.IProjectEnumerator
+                                        ):
                                             plugin.after_adding_enumerator_to_project(
                                                 self.request, project_enumerator_data
                                             )
@@ -119,7 +128,9 @@ class addProjectEnumerator_view(apiView):
                                                 activeProjectId,
                                                 self.request,
                                             ),
-                                            getProjectData(activeProjectId, self.request),
+                                            getProjectData(
+                                                activeProjectId, self.request
+                                            ),
                                         )
                                         response = Response(
                                             status=200,

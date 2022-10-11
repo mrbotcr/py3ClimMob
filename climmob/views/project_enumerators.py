@@ -86,14 +86,19 @@ class addProjectEnumerators_view(privateView):
                             enumData[0], activeProjectId, self.request
                         )
                         if not alreadyExists:
-                            project_enumerator_data = {"project_id": activeProjectId,
-                                                       "enum_user":  enumData[0],
-                                                       "enum_id": enumData[1]}
+                            project_enumerator_data = {
+                                "project_id": activeProjectId,
+                                "enum_user": enumData[1],
+                                "enum_id": enumData[0],
+                            }
                             continue_adding = True
                             message = ""
                             for plugin in p.PluginImplementations(p.IProjectEnumerator):
                                 if continue_adding:
-                                    continue_clone, message = plugin.before_adding_enumerator_to_project(
+                                    (
+                                        continue_clone,
+                                        message,
+                                    ) = plugin.before_adding_enumerator_to_project(
                                         self.request, project_enumerator_data
                                     )
                             if continue_adding:
@@ -101,10 +106,12 @@ class addProjectEnumerators_view(privateView):
                                     self.request, project_enumerator_data
                                 )
                                 if added:
-                                    for plugin in p.PluginImplementations(p.IProjectEnumerator):
+                                    for plugin in p.PluginImplementations(
+                                        p.IProjectEnumerator
+                                    ):
                                         plugin.after_adding_enumerator_to_project(
-                                                self.request, project_enumerator_data
-                                            )
+                                            self.request, project_enumerator_data
+                                        )
                                     itsNecessaryCreateTheProduct = True
                             else:
                                 error_summary["error" + str(errorCount)] = message

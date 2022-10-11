@@ -135,14 +135,14 @@
                                                         <p style="margin: 0px; display: inline-block; font-size: 10px; color: #1ab394">&nbsp;{{ _("by") }} {{ enumerator.user_fullname[0:12] }}{% if enumerator.user_fullname|length > 12 %}...{% endif %} </p>
                                                     </span>
                                                 </div>
-                                                {% block prj_enumerator_labels %}
+                                                {% block prj_enumerator_labels scoped %}
                                                     {% if enumerator.enum_active != 1 %}
                                                         <span class="label label-danger">{{ _("Can not submit data") }}</span>
                                                     {% endif %}
                                                 {% endblock %}
                                             </td>
                                             {%  if not onlySee %}
-                                                {% block prj_enum_actions %}
+                                                {% block prj_enum_actions scoped %}
                                                     <td class="text-center" style="vertical-align: middle;">
                                                         <button onclick="showDelete('{{ request.route_url('removeprjenumerator', user=activeProject["owner"]["user_name"] , project= activeProject["project_cod"],enumeratorid=enumerator.enum_id) }}','{{ _("Do you really want to delete this field agent?") }}','{{ request.session.get_csrf_token() }}')" type="button" class="btn btn-danger" title="{{_("Delete field agent")}}"><i class="fa fa-trash"></i> {{ _("Delete") }}</button>
                                                     </td>

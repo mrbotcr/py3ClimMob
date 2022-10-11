@@ -101,7 +101,9 @@ class dashboard_view(privateView):
                     ),
                 }
                 for plugin in p.PluginImplementations(p.IDashBoard):
-                    context = plugin.before_returning_dashboard_context(self.request, context)
+                    context = plugin.before_returning_dashboard_context(
+                        self.request, context
+                    )
                 return context
         else:
             activeProjectData = getActiveProject(self.user.login, self.request)
@@ -127,7 +129,9 @@ class dashboard_view(privateView):
                     "allassclosed": False,
                 }
                 for plugin in p.PluginImplementations(p.IDashBoard):
-                    context = plugin.before_returning_dashboard_context(self.request, context)
+                    context = plugin.before_returning_dashboard_context(
+                        self.request, context
+                    )
                 return context
 
 

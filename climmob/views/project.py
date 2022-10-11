@@ -238,20 +238,26 @@ def functionCreateClone(self, projectId, newProjectId, structureToBeCloned):
         )
         for participant in enumerators:
             for fieldAgent in enumerators[participant]:
-                project_enumerator_data = {"project_id": newProjectId,
-                                           "enum_user": fieldAgent["enum_id"],
-                                           "enum_id": participant}
+                project_enumerator_data = {
+                    "project_id": newProjectId,
+                    "enum_user": fieldAgent["enum_id"],
+                    "enum_id": participant,
+                }
                 continue_clone = True
                 for plugin in p.PluginImplementations(p.ICloneProject):
                     if continue_clone:
                         continue_clone = plugin.before_cloning_enumerator(
-                            self.request, enumerators[participant], project_enumerator_data
+                            self.request,
+                            enumerators[participant],
+                            project_enumerator_data,
                         )
                 if continue_clone:
                     addEnumeratorToProject(self.request, project_enumerator_data)
                     for plugin in p.PluginImplementations(p.ICloneProject):
                         plugin.after_cloning_enumerator(
-                            self.request, enumerators[participant], project_enumerator_data
+                            self.request,
+                            enumerators[participant],
+                            project_enumerator_data,
                         )
 
     if (
@@ -517,11 +523,8 @@ class modifyProject_view(privateView):
             ),
         }
         for plugin in p.PluginImplementations(p.IProject):
-            context = plugin.before_returning_project_context(
-                    self.request, context
-                )
+            context = plugin.before_returning_project_context(self.request, context)
         return context
-
 
 
 class deleteProject_view(privateView):
