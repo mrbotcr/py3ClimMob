@@ -1,7 +1,7 @@
 import re
 
 from pyramid.httpexceptions import HTTPNotFound
-
+import validators
 from climmob.config.encdecdata import encodeData, decodeData
 from climmob.processes import (
     searchEnumerator,
@@ -48,30 +48,37 @@ class enumerators_view(privateView):
                 if not enumeratorExists(
                     self.user.login, dataworking["enum_id"], self.request
                 ):
-                    continue_add = True
-                    message = ""
-                    for plugin in p.PluginImplementations(p.IEnumerator):
-                        if continue_add:
-                            continue_add, message = plugin.before_adding_enumerator(
-                                self.request, self.user.login, dataworking
-                            )
-                    if continue_add:
-                        added, message = addEnumerator(
-                            self.user.login, dataworking, self.request
-                        )
-                        if not added:
-                            error_summary = {"dberror": message}
-                        else:
-                            for plugin in p.PluginImplementations(p.IEnumerator):
-                                plugin.after_adding_enumerator(
+                    if validators.email(dataworking["enum_email"]) and re.match(
+                        r"^[A-Za-z0-9._@-]+$", dataworking["enum_email"]
+                    ):
+                        continue_add = True
+                        message = ""
+                        for plugin in p.PluginImplementations(p.IEnumerator):
+                            if continue_add:
+                                continue_add, message = plugin.before_adding_enumerator(
                                     self.request, self.user.login, dataworking
                                 )
-                            dataworking = {}
-                            self.request.session.flash(
-                                self._("The field agent was created successfully.")
+                        if continue_add:
+                            added, message = addEnumerator(
+                                self.user.login, dataworking, self.request
                             )
+                            if not added:
+                                error_summary = {"dberror": message}
+                            else:
+                                for plugin in p.PluginImplementations(p.IEnumerator):
+                                    plugin.after_adding_enumerator(
+                                        self.request, self.user.login, dataworking
+                                    )
+                                dataworking = {}
+                                self.request.session.flash(
+                                    self._("The field agent was created successfully.")
+                                )
+                        else:
+                            error_summary = {"dberror": message}
                     else:
-                        error_summary = {"dberror": message}
+                        error_summary = {
+                            "invalid_email": self._("The email is invalid.")
+                        }
                 else:
                     error_summary = {
                         "exists": self._("This field agent username already exists.")
