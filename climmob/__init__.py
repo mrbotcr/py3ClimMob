@@ -13,12 +13,24 @@ if (
 from climmob.config.environment import load_environment
 from pyramid.config import Configurator
 import os
+from configparser import ConfigParser, NoOptionError
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid_authstack import AuthenticationStackPolicy
 
 
 def main(global_config, **settings):
+
+    if global_config is not None:  # pragma: no cover
+        config = ConfigParser()
+        config.read(global_config["__file__"])
+        try:
+            threads = config.get("server:main", "threads")
+        except NoOptionError:
+            threads = "1"
+        settings["server:threads"] = threads
+        settings["global:config:file"] = global_config["__file__"]
+
     """This function returns a Pyramid WSGI application."""
     auth_policy = AuthenticationStackPolicy()
     policy_array = []

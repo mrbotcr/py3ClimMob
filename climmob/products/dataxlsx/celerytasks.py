@@ -12,19 +12,12 @@ import multiprocessing
 @celeryApp.task(base=climmobCeleryTask)
 def create_XLSX(settings, path, userOwner, projectCod, projectId, form, code):
 
-    """print(multiprocessing.cpu_count())
-    print(settings)
-    print(settings.get("server:threads", "1"))
-
     num_workers = (
-            multiprocessing.cpu_count() - int(settings.get("server:threads", "1")) - 1
+        multiprocessing.cpu_count() - int(settings.get("server:threads", "1")) - 1
     )
-    print(num_workers)
+
     if num_workers <= 0:
         num_workers = 1
-
-    print(num_workers)"""
-    num_workers = 2
 
     pathout = os.path.join(path, "outputs")
     if not os.path.exists(pathout):
@@ -99,7 +92,7 @@ def create_XLSX(settings, path, userOwner, projectCod, projectId, form, code):
             "-H " + mysql_host,
             "-P " + mysql_port,
             "-u " + mysql_user,
-            "-p " + mysql_password,
+            "-p '{}'".format(mysql_password),
             "-s " + userOwner + "_" + projectCod,
             "-x " + create_xml,
             "-o " + xlsx_file,
@@ -107,7 +100,10 @@ def create_XLSX(settings, path, userOwner, projectCod, projectId, form, code):
             "-w {}".format(num_workers),
             "-r {}".format(3),
         ]
-        p = Popen(args, stdout=PIPE, stderr=PIPE)
+        commandToExec = " ".join(map(str, args))
+
+        # p = Popen(args, stdout=PIPE, stderr=PIPE, shell=True)
+        p = Popen(commandToExec, stdout=PIPE, stderr=PIPE, shell=True)
         stdout, stderr = p.communicate()
         if p.returncode == 0:
             # os.system("mv " + xlsx_file + " " + pathout)
@@ -139,6 +135,8 @@ def create_XLSX(settings, path, userOwner, projectCod, projectId, form, code):
         mergeXLSXForms(listOfGeneratedXLSX, projectCod, pathtmpout, pathout, form, code)
 
     sh.rmtree(pathtmpout)
+    if os.path.exists(pathtmp):
+        sh.rmtree(pathtmp)
 
 
 def mergeXLSXForms(listOfGeneratedXLSX, projectCod, pathtmpout, pathout, form, code):

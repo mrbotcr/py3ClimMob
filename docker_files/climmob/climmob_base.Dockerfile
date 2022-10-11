@@ -24,6 +24,8 @@ RUN update-alternatives --install /usr/bin/java java /usr/lib/jvm/jdk-18/bin/jav
 
 RUN npm install svg2png -g --unsafe-perm
 
+RUN npm install -g json2csv
+
 #WebKit's
 RUN wget https://github.com/mozilla/geckodriver/releases/download/v0.31.0/geckodriver-v0.31.0-linux64.tar.gz
 RUN tar xvfz geckodriver-v0.31.0-linux64.tar.gz
@@ -126,3 +128,5 @@ WORKDIR /opt
 
 COPY ./docker_files/verificationFile.txt /opt
 RUN Rscript ./new_r_code/modules/00_check_packages.R
+COPY ./docker_files/check_R_libraries.R /opt
+RUN Rscript /opt/check_R_libraries.R

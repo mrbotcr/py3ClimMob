@@ -297,6 +297,7 @@ class generateProductView(privateView):
 
         if productid == "dataxlsx":
             infoProduct = processname.split("_")
+            print(infoProduct)
             create_XLSXToDownload(
                 activeProjectData["owner"]["user_name"],
                 activeProjectData["project_id"],
