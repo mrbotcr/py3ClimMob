@@ -152,6 +152,10 @@ def addFieldToEnumertorSchema(fieldName, fieldDesc):
     return {"schema": "enumerator", "fieldname": fieldName, "fielddesc": fieldDesc}
 
 
+def addFieldToProjectEnumertorSchema(fieldName, fieldDesc):
+    return {"schema": "prjenumerator", "fieldname": fieldName, "fielddesc": fieldDesc}
+
+
 def createProductDirectory(request, userID, projectID, product):
     try:
         if p.product_found(product):

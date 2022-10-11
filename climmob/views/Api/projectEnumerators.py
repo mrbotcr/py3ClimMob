@@ -18,6 +18,7 @@ from climmob.processes import (
 from climmob.products import stopTasksByProcess
 from climmob.products.fieldagents.fieldagents import create_fieldagents_report
 from climmob.views.classes import apiView
+import climmob.plugins as p
 
 
 class addProjectEnumerator_view(apiView):
@@ -79,40 +80,58 @@ class addProjectEnumerator_view(apiView):
                                 dataworking["enum_id"],
                                 self.request,
                             ):
-                                added, message = addEnumeratorToProject(
-                                    activeProjectId,
-                                    dataworking["enum_id"],
-                                    dataworking["enum_user_name"],
-                                    self.request,
-                                )
-                                if not added:
-                                    response = Response(status=401, body=message)
-                                    return response
-                                else:
-                                    # EDITED FOR CREATE THE REPORT
-                                    stopTasksByProcess(
-                                        self.request,
-                                        activeProjectId,
-                                        "create_fieldagents",
+                                project_enumerator_data = {"project_id": activeProjectId,
+                                                           "enum_user": dataworking["enum_id"],
+                                                           "enum_id": dataworking["enum_user_name"]}
+                                continue_adding = True
+                                message = ""
+                                for plugin in p.PluginImplementations(p.IProjectEnumerator):
+                                    if continue_adding:
+                                        continue_clone, message = plugin.before_adding_enumerator_to_project(
+                                            self.request, project_enumerator_data
+                                        )
+                                if continue_adding:
+                                    added, message = addEnumeratorToProject(
+                                        self.request, project_enumerator_data
                                     )
-                                    locale = self.request.locale_name
-                                    create_fieldagents_report(
-                                        locale,
-                                        self.request,
-                                        dataworking["user_owner"],
-                                        dataworking["project_cod"],
-                                        activeProjectId,
-                                        getProjectEnumerators(
-                                            activeProjectId,
+                                    if not added:
+                                        response = Response(status=401, body=message)
+                                        return response
+                                    else:
+                                        for plugin in p.PluginImplementations(p.IProjectEnumerator):
+                                            plugin.after_adding_enumerator_to_project(
+                                                self.request, project_enumerator_data
+                                            )
+                                        # EDITED FOR CREATE THE REPORT
+                                        stopTasksByProcess(
                                             self.request,
-                                        ),
-                                        getProjectData(activeProjectId, self.request),
-                                    )
+                                            activeProjectId,
+                                            "create_fieldagents",
+                                        )
+                                        locale = self.request.locale_name
+                                        create_fieldagents_report(
+                                            locale,
+                                            self.request,
+                                            dataworking["user_owner"],
+                                            dataworking["project_cod"],
+                                            activeProjectId,
+                                            getProjectEnumerators(
+                                                activeProjectId,
+                                                self.request,
+                                            ),
+                                            getProjectData(activeProjectId, self.request),
+                                        )
+                                        response = Response(
+                                            status=200,
+                                            body=self._(
+                                                "The field agent has been added to the project."
+                                            ),
+                                        )
+                                        return response
+                                else:
                                     response = Response(
-                                        status=200,
-                                        body=self._(
-                                            "The field agent has been added to the project."
-                                        ),
+                                        status=401,
+                                        body=message,
                                     )
                                     return response
                             else:

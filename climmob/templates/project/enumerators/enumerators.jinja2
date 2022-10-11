@@ -135,14 +135,18 @@
                                                         <p style="margin: 0px; display: inline-block; font-size: 10px; color: #1ab394">&nbsp;{{ _("by") }} {{ enumerator.user_fullname[0:12] }}{% if enumerator.user_fullname|length > 12 %}...{% endif %} </p>
                                                     </span>
                                                 </div>
-                                                {% if enumerator.enum_active != 1 %}
-                                                    <span class="label label-danger">{{ _("Can not submit data") }}</span>
-                                                {% endif %}
+                                                {% block prj_enumerator_labels %}
+                                                    {% if enumerator.enum_active != 1 %}
+                                                        <span class="label label-danger">{{ _("Can not submit data") }}</span>
+                                                    {% endif %}
+                                                {% endblock %}
                                             </td>
                                             {%  if not onlySee %}
-                                                <td class="text-center" style="vertical-align: middle;">
-                                                    <button onclick="showDelete('{{ request.route_url('removeprjenumerator', user=activeProject["owner"]["user_name"] , project= activeProject["project_cod"],enumeratorid=enumerator.enum_id) }}','{{ _("Do you really want to delete this field agent?") }}','{{ request.session.get_csrf_token() }}')" type="button" class="btn btn-danger" title="{{_("Delete field agent")}}"><i class="fa fa-trash"></i> {{ _("Delete") }}</button>
-                                                </td>
+                                                {% block prj_enum_actions %}
+                                                    <td class="text-center" style="vertical-align: middle;">
+                                                        <button onclick="showDelete('{{ request.route_url('removeprjenumerator', user=activeProject["owner"]["user_name"] , project= activeProject["project_cod"],enumeratorid=enumerator.enum_id) }}','{{ _("Do you really want to delete this field agent?") }}','{{ request.session.get_csrf_token() }}')" type="button" class="btn btn-danger" title="{{_("Delete field agent")}}"><i class="fa fa-trash"></i> {{ _("Delete") }}</button>
+                                                    </td>
+                                                {% endblock prj_enum_actions %}
                                             {% endif %}
                                         </tr>
                                     {% endfor %}
@@ -170,6 +174,11 @@
                 radioClass: 'iradio_square-green',
             });
         })
+    </script>
+    <script>
+        {% block prj_enum_script_extra %}
+
+        {% endblock prj_enum_script_extra %}
     </script>
 
     {% include 'snippets/loading.jinja2' %}

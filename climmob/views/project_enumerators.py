@@ -13,6 +13,7 @@ from climmob.processes import (
 from climmob.products import stopTasksByProcess
 from climmob.products.fieldagents.fieldagents import create_fieldagents_report
 from climmob.views.classes import privateView
+import climmob.plugins as p
 
 
 class projectEnumerators_view(privateView):
@@ -85,11 +86,29 @@ class addProjectEnumerators_view(privateView):
                             enumData[0], activeProjectId, self.request
                         )
                         if not alreadyExists:
-                            added, message = addEnumeratorToProject(
-                                activeProjectId, enumData[0], enumData[1], self.request
-                            )
-                            if added:
-                                itsNecessaryCreateTheProduct = True
+                            project_enumerator_data = {"project_id": activeProjectId,
+                                                       "enum_user":  enumData[0],
+                                                       "enum_id": enumData[1]}
+                            continue_adding = True
+                            message = ""
+                            for plugin in p.PluginImplementations(p.IProjectEnumerator):
+                                if continue_adding:
+                                    continue_clone, message = plugin.before_adding_enumerator_to_project(
+                                        self.request, project_enumerator_data
+                                    )
+                            if continue_adding:
+                                added, message = addEnumeratorToProject(
+                                    self.request, project_enumerator_data
+                                )
+                                if added:
+                                    for plugin in p.PluginImplementations(p.IProjectEnumerator):
+                                        plugin.after_adding_enumerator_to_project(
+                                                self.request, project_enumerator_data
+                                            )
+                                    itsNecessaryCreateTheProduct = True
+                            else:
+                                error_summary["error" + str(errorCount)] = message
+                                errorCount += 1
                         else:
                             error_summary["error" + str(errorCount)] = self._(
                                 "The user {} cannot be added because there is another user with the same username"

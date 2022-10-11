@@ -3,7 +3,7 @@ from sqlalchemy import or_, tuple_
 from climmob.config.encdecdata import decodeData
 from climmob.models import userProject, Assessment, User, Enumerator, PrjEnumerator
 from climmob.models.repository import sql_fetch_all
-from climmob.models.schema import mapFromSchema
+from climmob.models.schema import mapFromSchema, mapToSchema
 from climmob.processes.db.enumerator import getEnumeratorByProject
 
 __all__ = [
@@ -20,7 +20,7 @@ __all__ = [
 def getProjectEnumerators(projectId, request):
 
     result = (
-        request.dbsession.query(Enumerator, User.user_fullname)
+        request.dbsession.query(Enumerator, PrjEnumerator, User.user_fullname)
         .filter(PrjEnumerator.enum_user == Enumerator.user_name)
         .filter(PrjEnumerator.enum_id == Enumerator.enum_id)
         .filter(PrjEnumerator.project_id == projectId)
@@ -141,12 +141,11 @@ def thereIsAnEqualEnumIdInTheProject(enumId, projectId, request):
     return False
 
 
-def addEnumeratorToProject(projectId, enumeratorId, userOwner, request):
-    newEnumerator = PrjEnumerator(
-        project_id=projectId, enum_user=userOwner, enum_id=enumeratorId
-    )
+def addEnumeratorToProject(request, project_enumerator_data):
+    mapped_data = mapToSchema(PrjEnumerator, project_enumerator_data)
+    new_enumerator = PrjEnumerator(**mapped_data)
     try:
-        request.dbsession.add(newEnumerator)
+        request.dbsession.add(new_enumerator)
         return True, ""
     except Exception as e:
         return False, e

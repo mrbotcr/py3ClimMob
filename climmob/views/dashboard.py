@@ -55,10 +55,10 @@ class dashboard_view(privateView):
                     self.request, activeProjectId
                 )
 
-                for plugin in p.PluginImplementations(p.IRhomis):
-                    progress["usableAssessments"] = plugin.get_usable_assessments(
-                        self.request, activeProjectId
-                    )
+                # for plugin in p.PluginImplementations(p.IRhomis):
+                #     progress["usableAssessments"] = plugin.get_usable_assessments(
+                #         self.request, activeProjectId
+                #     )
 
                 progress["analysisControl"] = getAnalysisControl(
                     self.request,
@@ -78,7 +78,7 @@ class dashboard_view(privateView):
                     else:
                         all_ass_closed = False
 
-                return {
+                context = {
                     "activeUser": self.user,
                     "activeProject": activeProjectData,
                     "hasActiveProject": hasActiveProject,
@@ -100,6 +100,9 @@ class dashboard_view(privateView):
                         self.request,
                     ),
                 }
+                for plugin in p.PluginImplementations(p.IDashBoard):
+                    context = plugin.before_returning_dashboard_context(self.request, context)
+                return context
         else:
             activeProjectData = getActiveProject(self.user.login, self.request)
 
@@ -115,7 +118,7 @@ class dashboard_view(privateView):
                     )
                 )
             else:
-                return {
+                context = {
                     "activeUser": self.user,
                     "activeProject": activeProjectData,
                     "hasActiveProject": False,
@@ -123,6 +126,9 @@ class dashboard_view(privateView):
                     "pcompleted": 0,
                     "allassclosed": False,
                 }
+                for plugin in p.PluginImplementations(p.IDashBoard):
+                    context = plugin.before_returning_dashboard_context(self.request, context)
+                return context
 
 
 class projectInformation_view(publicView):

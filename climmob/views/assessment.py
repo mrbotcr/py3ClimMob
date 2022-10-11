@@ -231,10 +231,10 @@ class assessmenthead_view(privateView):
                                 data, "ass_rhomis"
                             )
 
-                        for plugin in p.PluginImplementations(p.IRhomis):
-                            data = plugin.before_process_modify(
-                                activeProjectUser, activeProjectCod, data, self.request
-                            )
+                        # for plugin in p.PluginImplementations(p.IRhomis):
+                        #     data = plugin.before_process_modify(
+                        #         activeProjectUser, activeProjectCod, data, self.request
+                        #     )
 
                         error, msg = modifyProjectAssessment(data, self.request)
                         if data["ass_final"] == 1:
@@ -443,27 +443,27 @@ class startAssessments_view(privateView):
                 assessInfo = getProjectAssessmentInfo(
                     activeProjectId, assessment_id, self.request
                 )
-                for plugin in p.PluginImplementations(p.IRhomis):
-                    if "ass_rhomis" in assessInfo.keys():
-                        if assessInfo["ass_rhomis"] == 1:
-                            isExternal = True
-                            for plugin in p.PluginImplementations(p.IRhomis):
-                                (
-                                    checkPass,
-                                    error_summary,
-                                ) = plugin.start_external_data_collection_form(
-                                    self.request,
-                                    activeProjectUser,
-                                    activeProjectId,
-                                    activeProjectCod,
-                                    assessment_id,
-                                )
-
-                                if checkPass:
-                                    self.returnRawViewResult = True
-                                    return HTTPFound(
-                                        location=self.request.route_url("dashboard")
-                                    )
+                # for plugin in p.PluginImplementations(p.IRhomis):
+                #     if "ass_rhomis" in assessInfo.keys():
+                #         if assessInfo["ass_rhomis"] == 1:
+                #             isExternal = True
+                #             for plugin in p.PluginImplementations(p.IRhomis):
+                #                 (
+                #                     checkPass,
+                #                     error_summary,
+                #                 ) = plugin.start_external_data_collection_form(
+                #                     self.request,
+                #                     activeProjectUser,
+                #                     activeProjectId,
+                #                     activeProjectCod,
+                #                     assessment_id,
+                #                 )
+                #
+                #                 if checkPass:
+                #                     self.returnRawViewResult = True
+                #                     return HTTPFound(
+                #                         location=self.request.route_url("dashboard")
+                #                     )
 
                 if not isExternal:
 

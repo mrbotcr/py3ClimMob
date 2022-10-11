@@ -24,9 +24,13 @@ __all__ = [
     "IUpload",
     "IDataColletionProgress",
     "IpackagesWithTechnologiesExtension",
-    "IRhomis",
+    # "IRhomis",
     "IEnumerator",
+    "IProject",
+    "ICloneProject",
+    "IProjectEnumerator",
     "IQRPackagesEditable",
+    "IDashBoard",
 ]
 
 
@@ -440,30 +444,44 @@ class IUpload(Interface):
         """ """
 
 
-class IRhomis(Interface):
-    def start_external_data_collection_form(
-        self, request, userOwner, projectId, projectCod, assCod
-    ):
-        """ """
+# class IRhomis(Interface):
+#     def start_external_data_collection_form(
+#         self, request, userOwner, projectId, projectCod, assCod
+#     ):
+#         """ """
+#
+#     def get_usable_assessments(self, request, project_id):
+#         """ """
+#
+#     def before_process_modify(self, userOwner, projectCod, data, request):
+#         """ """
+#
+#     def generate_XLS_of_data_from_an_external_form(
+#         self, request, userOwner, projectId, projectCod, assessmentId, create_xml
+#     ):
+#         """ """
+#
+#     def before_clean_errors(self, request, projectId, assCod, dic):
+#         """ """
+#
+#     def get_questions_by_type_external(
+#         self, request, projectId, assCod, assessmentData, dic
+#     ):
+#         """ """
 
-    def get_usable_assessments(self, request, project_id):
-        """ """
 
-    def before_process_modify(self, userOwner, projectCod, data, request):
-        """ """
+class IDashBoard(Interface):
+    """
+    Allows to hook into the process that renders the Dashboard
+    """
 
-    def generate_XLS_of_data_from_an_external_form(
-        self, request, userOwner, projectId, projectCod, assessmentId, create_xml
-    ):
-        """ """
-
-    def before_clean_errors(self, request, projectId, assCod, dic):
-        """ """
-
-    def get_questions_by_type_external(
-        self, request, projectId, assCod, assessmentData, dic
-    ):
-        """ """
+    def before_returning_dashboard_context(self, request, context):
+        """
+        Called by ClimMob so plugins can perform actions before returning the context to Jinja
+        :param request: ``pyramid.request`` object
+        :param context: Context for rendering Jinja
+        :return: Modified version of context
+        """
 
 
 class IEnumerator(Interface):
@@ -531,12 +549,128 @@ class IEnumerator(Interface):
         :return: None
         """
 
-    def before_returning_context(self, request, context):
+    def before_returning_enumerator_context(self, request, context):
         """
         Called by ClimMob so plugins can perform actions before returning the context to Jinja
         :param request: ``pyramid.request`` object
         :param context: Context for rendering Jinja
         :return: Modified version of context
+        """
+
+
+class IProject(Interface):
+    """
+    Allows to hook into the processes that create, update and delete projects
+    """
+
+    def before_adding_project(self, request, user_name, project_data):
+        """
+        Called by ClimMob so plugins can perform actions before ClimMob adds a project
+        :param request: ``pyramid.request`` object
+        :param user_name: User owner of the project
+        :param project_data: Project data
+        :return: True,"" if the project should be created or False,message
+        """
+
+    def after_adding_project(self, request, user_name, project_data):
+        """
+        Called by ClimMob so plugins can perform actions after ClimMob adds a project
+        :param request: ``pyramid.request`` object
+        :param user_name: User owner of the project
+        :param project_data: Project data
+        :return: None
+        """
+
+    def before_updating_project(self, request, user_name, project_id, project_data):
+        """
+        Called by ClimMob so plugins can perform actions before ClimMob updates a project
+        :param request: ``pyramid.request`` object
+        :param user_name: The user owner of the project
+        :param project_id: The id of the project
+        :param project_data: Project data
+        :return: True,"" if the project should be updated or False,message
+        """
+
+    def after_updating_project(self, request, user_name, project_id, project_data):
+        """
+        Called by ClimMob so plugins can perform actions after ClimMob updates a project
+        :param request: ``pyramid.request`` object
+        :param user_name: The user owner of the project
+        :param project_id: The id of the project
+        :param project_data: Project data
+        :return: None
+        """
+
+    def before_deleting_project(self, request, user_name, project_id):
+        """
+        Called by ClimMob so plugins can perform actions before ClimMob deletes a project
+        :param request: ``pyramid.request`` object
+        :param user_name: The user owner of the project
+        :param project_id: The id of the project
+        :return: True,"" if the project should be deleted or False,message
+        """
+
+    def after_deleting_project(self, request, user_name, project_id):
+        """
+        Called by ClimMob so plugins can perform actions after ClimMob deletes a project
+        :param request: ``pyramid.request`` object
+        :param user_name: The user owner of the project
+        :param project_id: The id of the project
+        :return: None
+        """
+
+    def before_returning_project_context(self, request, context):
+        """
+        Called by ClimMob so plugins can perform actions before returning the context of a project to Jinja
+        :param request: ``pyramid.request`` object
+        :param context: Context for rendering Jinja
+        :return: Modified version of context
+        """
+
+
+class ICloneProject(Interface):
+    """
+    Allows to hook into the processes that clones projects
+    """
+
+    def before_cloning_enumerator(self, request, enumerator_data, clone_data):
+        """
+        Called by ClimMob so plugins can perform actions before ClimMob clones the enumerator
+        :param request: ``pyramid.request`` object
+        :param enumerator_data: The data of the enumerator to clone
+        :param clone_data: The data that will be cloned
+        :return: True if the enumerators should be cloned or False
+        """
+
+    def after_cloning_enumerator(self, request, enumerator_data, clone_data):
+        """
+        Called by ClimMob so plugins can perform actions after ClimMob clones the enumerator
+        :param request: ``pyramid.request`` object
+        :param enumerator_data: The data of the enumerator to clone
+        :param clone_data: The data that will be cloned
+        :return: None
+        """
+
+
+class IProjectEnumerator(Interface):
+    """
+    Allows to hook into the processes that clones projects
+    """
+
+    def before_adding_enumerator_to_project(self, request, project_enumerator_data):
+        """
+        Called by ClimMob so plugins can perform actions before ClimMob clones the enumerator
+        :param request: ``pyramid.request`` object
+        :param project_enumerator_data: The data of the enumerator added to a project
+        :return: True,"" if the enumerators should be cloned or False,"Message why"
+        """
+
+    def after_adding_enumerator_to_project(self, request, project_enumerator_data):
+        """
+        Called by ClimMob so plugins can perform actions after ClimMob clones the enumerator
+        :param request: ``pyramid.request`` object
+        :param project_enumerator_data: The data of the enumerator added to a project
+        :return: None
         """
 
 

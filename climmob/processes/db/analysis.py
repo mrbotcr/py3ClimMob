@@ -100,14 +100,14 @@ def getQuestionsByType(projectId, request):
 
         isExternal = False
 
-        if "ass_rhomis" in assessment.keys():
-            if assessment["ass_rhomis"] == 1:
-                isExternal = True
-                for plugin in p.PluginImplementations(p.IRhomis):
-                    # print("Esta activo el plugin de externos")
-                    dic = plugin.get_questions_by_type_external(
-                        request, projectId, assessment["ass_cod"], assessment, dic
-                    )
+        # if "ass_rhomis" in assessment.keys():
+        #     if assessment["ass_rhomis"] == 1:
+        #         isExternal = True
+        #         for plugin in p.PluginImplementations(p.IRhomis):
+        #             # print("Esta activo el plugin de externos")
+        #             dic = plugin.get_questions_by_type_external(
+        #                 request, projectId, assessment["ass_cod"], assessment, dic
+        #             )
 
         if not isExternal:
             sections = mapFromSchema(
@@ -556,9 +556,9 @@ def getQuestionsStructure(projectId, ass_cod, request):
 
                 dic.append(questInfo)
 
-    if ass_cod != "":
-
-        for plugin in p.PluginImplementations(p.IRhomis):
-            dic = plugin.before_clean_errors(request, projectId, ass_cod, dic)
+    # if ass_cod != "":
+    #
+    #     for plugin in p.PluginImplementations(p.IRhomis):
+    #         dic = plugin.before_clean_errors(request, projectId, ass_cod, dic)
 
     return dic

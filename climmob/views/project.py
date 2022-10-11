@@ -3,7 +3,7 @@
 import datetime
 
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
-
+import climmob.plugins as p
 from climmob.processes import (
     projectInDatabase,
     addProject,
@@ -90,25 +90,39 @@ class newProject_view(privateView):
 
         if self.request.method == "POST":
             if "btn_addNewProject" in self.request.POST:
-
                 dataworking = self.getPostDict()
-                dataworking, error_summary, added = createProjectFunction(
-                    dataworking, error_summary, self
-                )
-                if added:
-                    self.request.session.flash(
-                        self._("The project was created successfully")
-                    )
-                    self.returnRawViewResult = True
-                    return HTTPFound(
-                        location=self.request.route_url(
-                            "dashboard",
-                            _query={
-                                "user": self.user.login,
-                                "project": dataworking["project_cod"],
-                            },
+
+                continue_add = True
+                message = ""
+                for plugin in p.PluginImplementations(p.IProject):
+                    if continue_add:
+                        continue_add, message = plugin.before_adding_project(
+                            self.request, self.user.login, dataworking
                         )
+                if continue_add:
+                    dataworking, error_summary, added = createProjectFunction(
+                        dataworking, error_summary, self
                     )
+                    if added:
+                        for plugin in p.PluginImplementations(p.IProject):
+                            plugin.after_adding_project(
+                                self.request, self.user.login, dataworking
+                            )
+                        self.request.session.flash(
+                            self._("The project was created successfully")
+                        )
+                        self.returnRawViewResult = True
+                        return HTTPFound(
+                            location=self.request.route_url(
+                                "dashboard",
+                                _query={
+                                    "user": self.user.login,
+                                    "project": dataworking["project_cod"],
+                                },
+                            )
+                        )
+                else:
+                    error_summary = {"plugin_error": message}
 
         return {
             "activeProject": getActiveProject(self.user.login, self.request),
@@ -224,9 +238,21 @@ def functionCreateClone(self, projectId, newProjectId, structureToBeCloned):
         )
         for participant in enumerators:
             for fieldAgent in enumerators[participant]:
-                addEnumeratorToProject(
-                    newProjectId, fieldAgent["enum_id"], participant, self.request
-                )
+                project_enumerator_data = {"project_id": newProjectId,
+                                           "enum_user": fieldAgent["enum_id"],
+                                           "enum_id": participant}
+                continue_clone = True
+                for plugin in p.PluginImplementations(p.ICloneProject):
+                    if continue_clone:
+                        continue_clone = plugin.before_cloning_enumerator(
+                            self.request, enumerators[participant], project_enumerator_data
+                        )
+                if continue_clone:
+                    addEnumeratorToProject(self.request, project_enumerator_data)
+                    for plugin in p.PluginImplementations(p.ICloneProject):
+                        plugin.after_cloning_enumerator(
+                            self.request, enumerators[participant], project_enumerator_data
+                        )
 
     if (
         "technologies" in structureToBeCloned
@@ -404,61 +430,82 @@ class modifyProject_view(privateView):
                     if isNecessarygenerateCombinations:
                         changeTheStateOfCreateComb(activeProjectId, self.request)
 
-                    modified, message = modifyProject(
-                        activeProjectId, data, self.request
-                    )
-                    if not modified:
-                        error_summary = {"dberror": message}
-                    else:
-                        if (
-                            cdata["project_registration_and_analysis"] == 1
-                            and data["project_registration_and_analysis"] == 0
-                        ):
-                            deleteRegistryByProjectId(activeProjectId, self.request)
-
-                        if "usingTemplate" in data.keys():
-                            if data["usingTemplate"] != "":
-                                deleteRegistryByProjectId(activeProjectId, self.request)
-                                deleteProjectAssessments(activeProjectId, self.request)
-
-                                listOfElementToInclude = ["registry"]
-
-                                assessments = getProjectAssessments(
-                                    data["usingTemplate"], self.request
-                                )
-                                for assess in assessments:
-                                    listOfElementToInclude.append(assess["ass_cod"])
-
-                                newProjectId = getTheProjectIdForOwner(
-                                    self.user.login,
-                                    data["project_cod"],
-                                    self.request,
-                                )
-
-                                functionCreateClone(
-                                    self,
-                                    data["usingTemplate"],
-                                    newProjectId,
-                                    listOfElementToInclude,
-                                )
-
-                        self.request.session.flash(
-                            self._("The project was modified successfully")
+                    continue_modify = True
+                    message = ""
+                    for plugin in p.PluginImplementations(p.IProject):
+                        if continue_modify:
+                            continue_modify, message = plugin.before_updating_project(
+                                self.request, self.user.login, activeProjectId, data
+                            )
+                    if continue_modify:
+                        modified, message = modifyProject(
+                            activeProjectId, data, self.request
                         )
-                        self.returnRawViewResult = True
-                        return HTTPFound(location=self.request.route_url("dashboard"))
+                        if not modified:
+                            error_summary = {"dberror": message}
+                        else:
+                            for plugin in p.PluginImplementations(p.IProject):
+                                plugin.after_updating_project(
+                                    self.request, self.user.login, activeProjectId, data
+                                )
 
-                    if int(data["project_localvariety"]) == 1:
-                        data["project_localvariety"] = "on"
+                            if (
+                                cdata["project_registration_and_analysis"] == 1
+                                and data["project_registration_and_analysis"] == 0
+                            ):
+                                deleteRegistryByProjectId(activeProjectId, self.request)
+
+                            if "usingTemplate" in data.keys():
+                                if data["usingTemplate"] != "":
+                                    deleteRegistryByProjectId(
+                                        activeProjectId, self.request
+                                    )
+                                    deleteProjectAssessments(
+                                        activeProjectId, self.request
+                                    )
+
+                                    listOfElementToInclude = ["registry"]
+
+                                    assessments = getProjectAssessments(
+                                        data["usingTemplate"], self.request
+                                    )
+                                    for assess in assessments:
+                                        listOfElementToInclude.append(assess["ass_cod"])
+
+                                    newProjectId = getTheProjectIdForOwner(
+                                        self.user.login,
+                                        data["project_cod"],
+                                        self.request,
+                                    )
+
+                                    functionCreateClone(
+                                        self,
+                                        data["usingTemplate"],
+                                        newProjectId,
+                                        listOfElementToInclude,
+                                    )
+
+                            self.request.session.flash(
+                                self._("The project was modified successfully")
+                            )
+                            self.returnRawViewResult = True
+                            return HTTPFound(
+                                location=self.request.route_url("dashboard")
+                            )
+
+                        if int(data["project_localvariety"]) == 1:
+                            data["project_localvariety"] = "on"
+                        else:
+                            data["project_localvariety"] = "off"
                     else:
-                        data["project_localvariety"] = "off"
+                        error_summary = {"dberror": message}
                 else:
                     error_summary = {
                         "repeatitem": self._(
                             "The names that the items will receive should be different."
                         )
                     }
-        return {
+        context = {
             "activeProject": getActiveProject(self.user.login, self.request),
             "indashboard": True,
             "data": data,
@@ -469,6 +516,12 @@ class modifyProject_view(privateView):
                 self.request, data["project_registration_and_analysis"]
             ),
         }
+        for plugin in p.PluginImplementations(p.IProject):
+            context = plugin.before_returning_project_context(
+                    self.request, context
+                )
+        return context
+
 
 
 class deleteProject_view(privateView):
@@ -488,17 +541,31 @@ class deleteProject_view(privateView):
         error_summary = {}
         data = getProjectData(activeProjectId, self.request)
         if self.request.method == "POST":
-            deleted, message = deleteProject(activeProjectId, self.request)
-            if not deleted:
-                error_summary = {"dberror": message}
-                self.returnRawViewResult = True
-                return {"status": 400, "error": message}
+            continue_delete = True
+            message = ""
+            for plugin in p.PluginImplementations(p.IProject):
+                if continue_delete:
+                    continue_delete, message = plugin.before_deleting_project(
+                        self.request, self.user.login, activeProjectId
+                    )
+            if continue_delete:
+                deleted, message = deleteProject(activeProjectId, self.request)
+                if not deleted:
+                    self.returnRawViewResult = True
+                    return {"status": 400, "error": message}
+                else:
+                    for plugin in p.PluginImplementations(p.IProject):
+                        if continue_delete:
+                            plugin.after_deleting_project(
+                                self.request, self.user.login, activeProjectId
+                            )
+                    self.returnRawViewResult = True
+                    self.request.session.flash(
+                        self._("The project was deleted successfully")
+                    )
+                    return {"status": 200}
             else:
-                self.returnRawViewResult = True
-                self.request.session.flash(
-                    self._("The project was deleted successfully")
-                )
-                return {"status": 200}
+                return {"status": 400, "error": message}
 
         return {
             "activeUser": self.user,
