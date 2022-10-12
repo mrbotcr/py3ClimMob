@@ -107,6 +107,7 @@ class productsView(climmobPrivateView):
                         "multimediadownloads",
                         "uploaddata",
                         "dataxlsx",
+                        "observationcards"
                     ]:
                         assessId = product["process_name"].split("_")[3]
                         if product["product_id"] == "dataxlsx":
@@ -128,6 +129,7 @@ class productsView(climmobPrivateView):
             "activeProject": activeProjectData,
             "hasActiveProject": hasActiveProject,
             "Products": products,
+            "assessments": getProjectAssessments(activeProjectData["project_id"], self.request),
             "sectionActive": "productlist",
         }
 
@@ -297,7 +299,6 @@ class generateProductView(privateView):
 
         if productid == "dataxlsx":
             infoProduct = processname.split("_")
-            print(infoProduct)
             create_XLSXToDownload(
                 activeProjectData["owner"]["user_name"],
                 activeProjectData["project_id"],
@@ -525,6 +526,20 @@ class generateProductView(privateView):
                         "assessment",
                         assessment_id,
                     )
+
+        if productid == "observationcards":
+            locale = self.request.locale_name
+            assessment_id = processname.split("_")[3]
+            for plugin in p.PluginImplementations(p.IObservationCards):
+                plugin.create_observation_cards(
+                    self.request,
+                    locale,
+                    activeProjectData["owner"]["user_name"],
+                    activeProjectData["project_id"],
+                    activeProjectData["project_cod"],
+                    assessment_id,
+                    []
+                )
 
         self.returnRawViewResult = True
         return HTTPFound(

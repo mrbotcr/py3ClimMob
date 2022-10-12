@@ -36,6 +36,10 @@
 
         {% endblock qr_packages_editable_variable %}
 
+        {% block observation_cards_variables scoped %}
+
+        {% endblock observation_cards_variables %}
+
         {% for product in Products %}
             {% set color = '#1c84c6' %}
             <tr class="{% if product.process_name in request.url %}{% if changes.update({'productToFocus': product.process_name }) %} {% endif %}requiredProduct{% endif %}" id="{{ product.process_name }}">
@@ -134,7 +138,15 @@
                                                                                             {% if changes.update({'QRPackagesEditable': false }) %} {% endif %}
                                                                                             {{ _("List of packages with QR for the participant registration form") }} ({{ _("Editable") }})
                                                                                         {% else %}
-                                                                                            {{ product.product_id }}
+                                                                                            {% if product.product_id == "observationcards" %}
+
+                                                                                                {% block observation_cards_row scoped %}
+
+                                                                                                {% endblock observation_cards_row %}
+
+                                                                                            {% else %}
+                                                                                                {{ product.product_id }}
+                                                                                            {% endif %}
                                                                                         {% endif %}
                                                                                     {% endif %}
                                                                                 {% endif %}
@@ -239,6 +251,10 @@
 
                             {% endblock qr_packages_editable_update %}
 
+                            {% block observation_cards_update scoped%}
+
+                            {% endblock observation_cards_update %}
+
                         {% endif %}
                     {% endif %}
                 </td>
@@ -289,6 +305,10 @@
         {% block qr_packages_editable_create scoped%}
 
         {% endblock qr_packages_editable_create %}
+
+        {% block observation_cards_create scoped%}
+
+        {% endblock observation_cards_create %}
 
         {% if changes.productToFocus %}
             <script>
