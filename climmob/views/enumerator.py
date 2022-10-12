@@ -48,8 +48,10 @@ class enumerators_view(privateView):
                 if not enumeratorExists(
                     self.user.login, dataworking["enum_id"], self.request
                 ):
-                    if validators.email(dataworking["enum_email"]) and re.match(
-                        r"^[A-Za-z0-9._@-]+$", dataworking["enum_email"]
+                    if (
+                        validators.email(dataworking["enum_email"])
+                        and re.match(r"^[A-Za-z0-9._@-]+$", dataworking["enum_email"])
+                        or dataworking["enum_email"] == ""
                     ):
                         continue_add = True
                         message = ""
