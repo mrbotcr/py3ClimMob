@@ -65,6 +65,80 @@
         <div class="col-lg-6 ">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
+                    <h5>{{ _("Add field agents using Excel") }}</h5>
+                </div>
+                <div class="ibox-content" >
+
+                    {% if not reportUpload %}
+
+                        <p>{{ _("1. Download the following template with the fields needed to add field agents:") }}</p>
+                        <div style="width: 100%; text-align: center">
+                            <form class="form-horizontal " role="form" method="post" action="{{ request.path }}" enctype="multipart/form-data">
+                                <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                                <button class="btn btn-primary " type="submit" name="btn_download_fieldagents_template" id="btn_download_fieldagents_template"> {{ _('Download template') }}</button>
+                            </form>
+                        </div>
+
+                        <p>{{ _("2. Fill in the template with the field agent information.") }}</p>
+
+                        <p>{{ _("3. Browse and select the template with the information and then click on the 'Upload' button.") }}</p>
+
+
+                        <form class="form-horizontal " role="form" method="post" action="{{ request.path }}" enctype="multipart/form-data">
+                            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+
+                            <div class="form-group">
+                                <label class="col-sm-6 control-label"><b>{{ _('Data file in .xlsx format') }}</b></label>
+                                <div class="col-sm-6 ">
+                                    <div class="custom-file">
+                                        <input id="xlsxFieldAgents" accept="*.xlsx" name="xlsxFieldAgents" type="file" class="custom-file-input" required>
+                                        <label for="xlsxFieldAgents" class="custom-file-label">{{ _('Select the Excel') }}</label>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div style="text-align: center">
+                                <button class="btn btn-primary " type="submit" name="btn_upload_field_agents" id="btn_upload_field_agents"> {{ _('Upload') }}</button>
+                            </div>
+                            <br>
+                        </form>
+                    {% else %}
+
+                        <h5>{{ _("Result of data upload") }}</h5>
+                        <br>
+
+                        <table class="table table-striped">
+                            <tbody>
+                                <tr>
+                                    <th>{{ _("Number of line") }}</th>
+                                    <th>{{ _("Username") }}</th>
+                                    <th style="text-align: center">{{ _("Status") }}</th>
+                                    <th>{{ _("Message") }}</th>
+                                </tr>
+                                {% for info in reportUpload %}
+                                    <tr>
+                                        <th>{{ info.line_number }}</th>
+                                        <th>{{ info.enum_id }}</th>
+                                        <td style="text-align: center;{% if info.status == 200 %}color: green;{% else %} color: red; {% endif %} text-align: center" >{% if info.status == 200 %} {{ _("Success") }} {% else %} {{ _("Error") }} {% endif %}</td>
+                                        <td style="text-align: left">{{ info.message }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                        <div style="text-align: center; width: 100%">
+                            <button class="btn btn-primary " type="button" onclick="window.location = window.location.href"> {{ _('Close') }}</button>
+                        </div>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-12 ">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
                     <h5>{{ _("Registered field agents") }}</h5>
                     <div class="ibox-tools">
                         {% if nextPage %}
