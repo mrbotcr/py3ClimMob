@@ -31,6 +31,7 @@ __all__ = [
     "IProjectEnumerator",
     "IQRPackagesEditable",
     "IDashBoard",
+    "IObservationCards",
 ]
 
 
@@ -679,4 +680,10 @@ class IQRPackagesEditable(Interface):
         self, request, locale, userOwner, projectId, projectCod, options, packages
     ):
 
+        """ """
+
+class IObservationCards(Interface):
+    def create_observation_cards(
+        self, request,locale, userOwner, projectId, projectCod, assCod, questions
+    ):
         """ """
