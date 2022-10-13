@@ -109,7 +109,7 @@
         <div class="col-lg-6 " style="height: 100%">
             <div class="ibox float-e-margins" style="height: 100%; margin-bottom: 0px">
                 <div class="ibox-title">
-                    <h5>{{ _("Field agents assigned to the project") }}</h5>
+                    {% block assigned_title %}<h5>{{ _("Field agents assigned to the project") }}</h5>{% endblock assigned_title %}
                     <div class="ibox-tools">
 
                     </div>

@@ -52,8 +52,8 @@
                             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                             {% include 'snippets/enumerators/enumerator-form.jinja2'%}
 
-                            <button type="submit" class="btn btn-primary pull-right btnsEnumerator" id="btn_add_enumerator" name="btn_add_enumerator"> {{ _('Add') }}</button>
-                            <button type="submit" class="btn btn-primary pull-right btnsEnumerator" id="btn_modify_enumerator" name="btn_modify_enumerator" style="display: none"> {{ _('Save') }}</button>
+                            <button type="submit" class="btn btn-primary pull-right btnsEnumerator" id="btn_add_enumerator" name="btn_add_enumerator" style="{% if modify %}display:none;{% else %}display: block{% endif %}"> {{ _('Add') }}</button>
+                            <button type="submit" class="btn btn-primary pull-right btnsEnumerator" id="btn_modify_enumerator" name="btn_modify_enumerator" style="{% if modify %}display:block;{% else %}display: none{% endif %}"> {{ _('Save') }}</button>
                         </form>
                     </div>
                     <br>
@@ -111,7 +111,7 @@
                         <table class="table table-striped">
                             <tbody>
                                 <tr>
-                                    <th>{{ _("Number of line") }}</th>
+                                    <th>{{ _("Line number") }}</th>
                                     <th>{{ _("Username") }}</th>
                                     <th style="text-align: center">{{ _("Status") }}</th>
                                     <th>{{ _("Message") }}</th>
@@ -154,6 +154,7 @@
                                 <th class="text-center">{{ _('Full name') }}</th>
                                 <th class="text-center">{{ _('Username') }}</th>
                                 <th class="text-center">{{ _('Telephone') }}</th>
+                                <th class="text-center">{{ _('Email') }}</th>
                                 <th class="text-center">{{ _('Password') }}</th>
                                 <th class="text-center">{{ _('Status') }}</th>
                                 <th class="text-center" style="min-width: 81px;"></th>
@@ -164,6 +165,7 @@
                                     <td style="vertical-align: middle;"> {{ enumerator.enum_name }}</td>
                                     <td style="vertical-align: middle;"> {{ enumerator.enum_id }}</td>
                                     <td style="vertical-align: middle;"> {{ enumerator.enum_telephone }}</td>
+                                    <td style="vertical-align: middle;"> {{ enumerator.enum_email }}</td>
                                     <td style="vertical-align: middle;"> {{ enumerator.enum_password }}</td>
                                     <td style="vertical-align: middle;">
 
@@ -203,7 +205,6 @@
 
         $('#enum_id').on('input',function()
         {
-            console.log("aquiii")
             var value = $(this).val();
             
                 var value_without_space = value.replace(/[^a-z0-9_]/gi,'')
@@ -246,6 +247,7 @@
             $("#enum_id").val(dataJson["enum_id"])
             $("#enum_telephone").val(dataJson["enum_telephone"])
             $("#enum_password").val(dataJson["enum_password"])
+            $("#enum_email").val(dataJson["enum_email"])
             $("#enum_id").attr('readonly', true);
 
             $("#btn_modify_enumerator").css('display', 'initial')

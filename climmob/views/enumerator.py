@@ -1,7 +1,7 @@
 import re
 
 from pyramid.httpexceptions import HTTPNotFound
-
+import validators
 from climmob.config.encdecdata import encodeData, decodeData
 from climmob.processes import (
     searchEnumerator,
@@ -129,7 +129,7 @@ class enumerators_view(privateView):
                             dataReport["enum_id"] = record["username"]
                             if not error_upload:
                                 dataReport["status"] = 200
-                                dataReport["message"] = ""
+                                dataReport["message"] = self._("The field agent was created successfully.")
                             else:
                                 dataReport["status"] = 401
                                 dataReport["message"] = error_upload["error"]
@@ -153,34 +153,43 @@ class enumerators_view(privateView):
                 else:
                     dataworking["enum_active"] = 0
 
-                continue_update = True
-                message = ""
-                for plugin in p.PluginImplementations(p.IEnumerator):
-                    if continue_update:
-                        continue_update, message = plugin.before_updating_enumerator(
-                            self.request, self.user.login, enumeratorid, dataworking
-                        )
-                if continue_update:
-                    mdf, message = modifyEnumerator(
-                        self.user.login, enumeratorid, dataworking, self.request
-                    )
-                    if not mdf:
-                        error_summary = {"dberror": message}
-                        dataworking["enum_password"] = decodeData(
-                            self.request, dataworking["enum_password"]
-                        ).decode("utf-8")
-
-                    else:
-                        for plugin in p.PluginImplementations(p.IEnumerator):
-                            plugin.after_updating_enumerator(
+                if (
+                        validators.email(dataworking["enum_email"])
+                        and re.match(r"^[A-Za-z0-9._@-]+$", dataworking["enum_email"])
+                        or dataworking["enum_email"] == ""
+                ):
+                    continue_update = True
+                    message = ""
+                    for plugin in p.PluginImplementations(p.IEnumerator):
+                        if continue_update:
+                            continue_update, message = plugin.before_updating_enumerator(
                                 self.request, self.user.login, enumeratorid, dataworking
                             )
-                        dataworking = {}
-                        self.request.session.flash(
-                            self._("The field agent was modified successfully.")
+                    if continue_update:
+                        mdf, message = modifyEnumerator(
+                            self.user.login, enumeratorid, dataworking, self.request
                         )
+                        if not mdf:
+                            error_summary = {"dberror": message}
+                        else:
+                            for plugin in p.PluginImplementations(p.IEnumerator):
+                                plugin.after_updating_enumerator(
+                                    self.request, self.user.login, enumeratorid, dataworking
+                                )
+                            dataworking = {}
+                            self.request.session.flash(
+                                self._("The field agent was modified successfully.")
+                            )
+                            modify =False
+                    else:
+                        error_summary = {"dberror": message}
+
                 else:
-                    error_summary = {"dberror": message}
+                    error_summary = {
+                        "error": self._("The email is invalid.")
+                    }
+
+                if error_summary:
                     dataworking["enum_password"] = decodeData(
                         self.request, dataworking["enum_password"]
                     ).decode("utf-8")
@@ -198,9 +207,7 @@ class enumerators_view(privateView):
         }
 
 def functionForAddFieldAgents(dataworking, self, error_summary, showMessage=True):
-    # dataworking["enum_id"] = re.sub(
-    #     "[^A-Za-z0-9\-]+", "", dataworking["enum_id"]
-    # )
+
     if dataworking["enum_id"] != "":
 
         reg = re.compile(r"^[A-Za-z0-9]+$")
@@ -211,32 +218,43 @@ def functionForAddFieldAgents(dataworking, self, error_summary, showMessage=True
             ):
 
                 if dataworking["enum_name"] != "":
+
                     if dataworking["enum_password"] != "":
-                        continue_add = True
-                        message = ""
-                        for plugin in p.PluginImplementations(p.IEnumerator):
-                            if continue_add:
-                                continue_add, message = plugin.before_adding_enumerator(
-                                    self.request, self.user.login, dataworking
-                                )
-                        if continue_add:
-                            added, message = addEnumerator(
-                                self.user.login, dataworking, self.request
-                            )
-                            if not added:
-                                error_summary = {"error": message}
-                            else:
-                                for plugin in p.PluginImplementations(p.IEnumerator):
-                                    plugin.after_adding_enumerator(
+
+                        if (
+                                validators.email(dataworking["enum_email"])
+                                and re.match(r"^[A-Za-z0-9._@-]+$", dataworking["enum_email"])
+                                or dataworking["enum_email"] == ""
+                        ):
+                            continue_add = True
+                            message = ""
+                            for plugin in p.PluginImplementations(p.IEnumerator):
+                                if continue_add:
+                                    continue_add, message = plugin.before_adding_enumerator(
                                         self.request, self.user.login, dataworking
                                     )
-                                dataworking = {}
-                                if showMessage:
-                                    self.request.session.flash(
-                                        self._("The field agent was created successfully.")
-                                    )
+                            if continue_add:
+                                added, message = addEnumerator(
+                                    self.user.login, dataworking, self.request
+                                )
+                                if not added:
+                                    error_summary = {"error": message}
+                                else:
+                                    for plugin in p.PluginImplementations(p.IEnumerator):
+                                        plugin.after_adding_enumerator(
+                                            self.request, self.user.login, dataworking
+                                        )
+                                    dataworking = {}
+                                    if showMessage:
+                                        self.request.session.flash(
+                                            self._("The field agent was created successfully.")
+                                        )
+                            else:
+                                error_summary = {"error": message}
                         else:
-                            error_summary = {"error": message}
+                            error_summary = {
+                                "error": self._("The email is invalid.")
+                            }
                     else:
                         error_summary ={
                             "error": self._("Password is required")
@@ -245,7 +263,6 @@ def functionForAddFieldAgents(dataworking, self, error_summary, showMessage=True
                     error_summary ={
                         "error": self._("Full name is required")
                     }
-
             else:
                 error_summary = {
                     "error": self._("This field agent username already exists.")
