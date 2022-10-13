@@ -682,8 +682,10 @@ class IQRPackagesEditable(Interface):
 
         """ """
 
+
 class IObservationCards(Interface):
     def create_observation_cards(
-        self, request,locale, userOwner, projectId, projectCod, assCod, questions
+        self, request, locale, userOwner, projectId, projectCod, assCod, questions
     ):
+
         """ """

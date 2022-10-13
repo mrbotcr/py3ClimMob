@@ -27,9 +27,11 @@
             <th></th>
         </tr>
         {% set productToFocus = "xx" %}
-        {% set changes = {'projectSummary': true, 'DataCollectionProgress': false, 'QRPackagesEditable':false,'projectDataCollectedCSV':true,'projectDataCollectedXLSX': true, 'productToFocus':""} %}
+        {% set changes = {'projectSummary': true, 'DataCollectionProgress': false, 'QRPackagesEditable':false,'projectDataCollectedCSV':false,'projectDataCollectedXLSX': false, 'productToFocus':""} %}
         {% if activeProject.project_regstatus > 0 %}
             {% if changes.update({'DataCollectionProgress': true }) %} {% endif %}
+            {% if changes.update({'projectDataCollectedCSV': true }) %} {% endif %}
+            {% if changes.update({'projectDataCollectedXLSX': true }) %} {% endif %}
         {% endif %}
 
         {% block qr_packages_editable_variable scoped%}

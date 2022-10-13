@@ -107,7 +107,7 @@ class productsView(climmobPrivateView):
                         "multimediadownloads",
                         "uploaddata",
                         "dataxlsx",
-                        "observationcards"
+                        "observationcards",
                     ]:
                         assessId = product["process_name"].split("_")[3]
                         if product["product_id"] == "dataxlsx":
@@ -129,7 +129,9 @@ class productsView(climmobPrivateView):
             "activeProject": activeProjectData,
             "hasActiveProject": hasActiveProject,
             "Products": products,
-            "assessments": getProjectAssessments(activeProjectData["project_id"], self.request),
+            "assessments": getProjectAssessments(
+                activeProjectData["project_id"], self.request
+            ),
             "sectionActive": "productlist",
         }
 
@@ -538,7 +540,7 @@ class generateProductView(privateView):
                     activeProjectData["project_id"],
                     activeProjectData["project_cod"],
                     assessment_id,
-                    []
+                    [],
                 )
 
         self.returnRawViewResult = True

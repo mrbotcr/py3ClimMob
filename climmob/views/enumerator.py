@@ -22,6 +22,7 @@ import os
 import glob
 import json
 
+
 class getEnumeratorDetails_view(privateView):
     def processView(self):
         if self.request.method == "GET":
@@ -49,22 +50,26 @@ class enumerators_view(privateView):
             dataworking = self.getPostDict()
             if "btn_add_enumerator" in self.request.POST:
                 modify = False
-                dataworking, error_summary = functionForAddFieldAgents(dataworking, self, error_summary)
+                dataworking, error_summary = functionForAddFieldAgents(
+                    dataworking, self, error_summary
+                )
 
             if "btn_download_fieldagents_template" in self.request.POST:
 
                 locale = self.request.locale_name
                 pathOfClimMob = os.path.dirname(os.path.dirname(__file__))
-                pathOfTemplatesForFieldAgents = os.path.join(pathOfClimMob, *["products", "addfieldagents"])
+                pathOfTemplatesForFieldAgents = os.path.join(
+                    pathOfClimMob, *["products", "addfieldagents"]
+                )
 
                 try:
                     pathWithLocale = os.path.join(pathOfTemplatesForFieldAgents, locale)
                     theTemplateIsHere = glob.glob(pathWithLocale + "/*.xlsx")[0]
                 except Exception as e:
                     pathWithLocale = os.path.join(pathOfTemplatesForFieldAgents, "en")
-                    theTemplateIsHere = glob.glob(pathWithLocale+"/*.xlsx")[0]
+                    theTemplateIsHere = glob.glob(pathWithLocale + "/*.xlsx")[0]
 
-                #Split and get the last position -> the filename
+                # Split and get the last position -> the filename
                 filename = theTemplateIsHere.split("/")[-1]
 
                 response = FileResponse(
@@ -76,11 +81,16 @@ class enumerators_view(privateView):
                 self.returnRawViewResult = True
                 return response
 
-
             if "btn_upload_field_agents" in self.request.POST:
 
-                columnsInFile =[]
-                possibleColumns =["fullname","username","telephone","email","password"]
+                columnsInFile = []
+                possibleColumns = [
+                    "fullname",
+                    "username",
+                    "telephone",
+                    "email",
+                    "password",
+                ]
                 filePath = getTheFileInPOST(self.request, self.user.login)
 
                 try:
@@ -123,20 +133,24 @@ class enumerators_view(privateView):
                             dataworking["enum_email"] = record["email"]
                             dataworking["enum_telephone"] = record["telephone"]
 
-                            dataworking, error_upload = functionForAddFieldAgents(dataworking, self, error_summary, showMessage=False)
+                            dataworking, error_upload = functionForAddFieldAgents(
+                                dataworking, self, error_summary, showMessage=False
+                            )
 
                             dataReport["line_number"] = countLine
                             dataReport["enum_id"] = record["username"]
                             if not error_upload:
                                 dataReport["status"] = 200
-                                dataReport["message"] = self._("The field agent was created successfully.")
+                                dataReport["message"] = self._(
+                                    "The field agent was created successfully."
+                                )
                             else:
                                 dataReport["status"] = 401
                                 dataReport["message"] = error_upload["error"]
                             reportUpload.append(dataReport)
 
                             countLine += 1
-                            dataworking ={}
+                            dataworking = {}
 
             if "btn_modify_enumerator" in self.request.POST:
                 modify = True
@@ -154,15 +168,18 @@ class enumerators_view(privateView):
                     dataworking["enum_active"] = 0
 
                 if (
-                        validators.email(dataworking["enum_email"])
-                        and re.match(r"^[A-Za-z0-9._@-]+$", dataworking["enum_email"])
-                        or dataworking["enum_email"] == ""
+                    validators.email(dataworking["enum_email"])
+                    and re.match(r"^[A-Za-z0-9._@-]+$", dataworking["enum_email"])
+                    or dataworking["enum_email"] == ""
                 ):
                     continue_update = True
                     message = ""
                     for plugin in p.PluginImplementations(p.IEnumerator):
                         if continue_update:
-                            continue_update, message = plugin.before_updating_enumerator(
+                            (
+                                continue_update,
+                                message,
+                            ) = plugin.before_updating_enumerator(
                                 self.request, self.user.login, enumeratorid, dataworking
                             )
                     if continue_update:
@@ -174,20 +191,21 @@ class enumerators_view(privateView):
                         else:
                             for plugin in p.PluginImplementations(p.IEnumerator):
                                 plugin.after_updating_enumerator(
-                                    self.request, self.user.login, enumeratorid, dataworking
+                                    self.request,
+                                    self.user.login,
+                                    enumeratorid,
+                                    dataworking,
                                 )
                             dataworking = {}
                             self.request.session.flash(
                                 self._("The field agent was modified successfully.")
                             )
-                            modify =False
+                            modify = False
                     else:
                         error_summary = {"dberror": message}
 
                 else:
-                    error_summary = {
-                        "error": self._("The email is invalid.")
-                    }
+                    error_summary = {"error": self._("The email is invalid.")}
 
                 if error_summary:
                     dataworking["enum_password"] = decodeData(
@@ -206,6 +224,7 @@ class enumerators_view(privateView):
             "sectionActive": "fieldagents",
         }
 
+
 def functionForAddFieldAgents(dataworking, self, error_summary, showMessage=True):
 
     if dataworking["enum_id"] != "":
@@ -214,7 +233,7 @@ def functionForAddFieldAgents(dataworking, self, error_summary, showMessage=True
         if reg.match(dataworking["enum_id"]):
 
             if not enumeratorExists(
-                    self.user.login, dataworking["enum_id"], self.request
+                self.user.login, dataworking["enum_id"], self.request
             ):
 
                 if dataworking["enum_name"] != "":
@@ -222,15 +241,20 @@ def functionForAddFieldAgents(dataworking, self, error_summary, showMessage=True
                     if dataworking["enum_password"] != "":
 
                         if (
-                                validators.email(dataworking["enum_email"])
-                                and re.match(r"^[A-Za-z0-9._@-]+$", dataworking["enum_email"])
-                                or dataworking["enum_email"] == ""
+                            validators.email(dataworking["enum_email"])
+                            and re.match(
+                                r"^[A-Za-z0-9._@-]+$", dataworking["enum_email"]
+                            )
+                            or dataworking["enum_email"] == ""
                         ):
                             continue_add = True
                             message = ""
                             for plugin in p.PluginImplementations(p.IEnumerator):
                                 if continue_add:
-                                    continue_add, message = plugin.before_adding_enumerator(
+                                    (
+                                        continue_add,
+                                        message,
+                                    ) = plugin.before_adding_enumerator(
                                         self.request, self.user.login, dataworking
                                     )
                             if continue_add:
@@ -240,48 +264,47 @@ def functionForAddFieldAgents(dataworking, self, error_summary, showMessage=True
                                 if not added:
                                     error_summary = {"error": message}
                                 else:
-                                    for plugin in p.PluginImplementations(p.IEnumerator):
+                                    for plugin in p.PluginImplementations(
+                                        p.IEnumerator
+                                    ):
                                         plugin.after_adding_enumerator(
                                             self.request, self.user.login, dataworking
                                         )
                                     dataworking = {}
                                     if showMessage:
                                         self.request.session.flash(
-                                            self._("The field agent was created successfully.")
+                                            self._(
+                                                "The field agent was created successfully."
+                                            )
                                         )
                             else:
                                 error_summary = {"error": message}
                         else:
-                            error_summary = {
-                                "error": self._("The email is invalid.")
-                            }
+                            error_summary = {"error": self._("The email is invalid.")}
                     else:
-                        error_summary ={
-                            "error": self._("Password is required")
-                        }
+                        error_summary = {"error": self._("Password is required")}
                 else:
-                    error_summary ={
-                        "error": self._("Full name is required")
-                    }
+                    error_summary = {"error": self._("Full name is required")}
             else:
                 error_summary = {
                     "error": self._("This field agent username already exists.")
                 }
         else:
             error_summary = {
-                "error": self._("The username can only use lowercase letters and numbers.")
+                "error": self._(
+                    "The username can only use lowercase letters and numbers."
+                )
             }
     else:
-        error_summary = {
-            "error": self._("Username is required")
-        }
+        error_summary = {"error": self._("Username is required")}
 
     return dataworking, error_summary
 
 
-def getTheFileInPOST(request, userInLogin ):
+def getTheFileInPOST(request, userInLogin):
     pathOfTheUser = os.path.join(
-        request.registry.settings["user.repository"], *[userInLogin, "data", "addFieldAgents"]
+        request.registry.settings["user.repository"],
+        *[userInLogin, "data", "addFieldAgents"]
     )
     if not os.path.exists(pathOfTheUser):
         os.makedirs(pathOfTheUser)
