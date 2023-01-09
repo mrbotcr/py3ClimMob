@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 MAINTAINER Alianza Bioversity-CIAT
 ENV CR=America/Costa_Rica
@@ -6,24 +6,48 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN ln -snf /usr/share/zoneinfo/$CR /etc/localtime && echo $CR > /etc/timezone
 RUN apt-get update && apt-get -y upgrade
 RUN apt-get install -y software-properties-common
-RUN add-apt-repository universe && add-apt-repository multiverse
+RUN add-apt-repository universe
+RUN add-apt-repository multiverse
+
+RUN apt-get install -y wget tzdata
+
+# R
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
 RUN add-apt-repository -y 'deb https://cloud.r-project.org/bin/linux/ubuntu focal-cran40/'
+
+RUN wget http://archive.ubuntu.com/ubuntu/pool/main/i/icu/libicu66_66.1-2ubuntu2_amd64.deb
+RUN dpkg -i ./libicu66_66.1-2ubuntu2_amd64.deb
+
+# Mongo
+RUN wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc |  gpg --dearmor | tee /usr/share/keyrings/mongodb.gpg > /dev/null
+RUN echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+
 RUN apt-get update
 
-RUN apt-get install -y build-essential qt5-default qtbase5-private-dev qtdeclarative5-dev libqt5sql5-mysql libqt5webkit5-dev libqt5svg5-dev libqt5xmlpatterns5-dev cmake mongodb nano jq libboost-all-dev unzip zlib1g-dev automake npm redis-server libmysqlclient-dev mysql-client-8.0 git python3-venv texlive-extra-utils r-base libcurl4-openssl-dev pandoc pandoc-citeproc libfontconfig1-dev libcairo2-dev libudunits2-dev libgdal-dev xvfb sqlite3 libqt5sql5-sqlite libgmp3-dev libmpfr-dev tidy golang-go firefox wget
+RUN apt-get install -y build-essential qtbase5-dev qtbase5-private-dev qtdeclarative5-dev libqt5sql5-mysql libqt5webkit5-dev libqt5svg5-dev libqt5xmlpatterns5-dev cmake mongodb-org nano jq libboost-all-dev unzip zlib1g-dev automake npm redis-server libmysqlclient-dev git python3-venv texlive-extra-utils r-base libcurl4-openssl-dev pandoc pandoc-citeproc libfontconfig1-dev libcairo2-dev libudunits2-dev libgdal-dev xvfb sqlite3 libqt5sql5-sqlite libgmp3-dev libmpfr-dev tidy golang-go mysql-client-8.0 openjdk-17-jre-headless
 
-COPY ./docker_files/sqldriver/libqsqlmysql.s_o /usr/lib/x86_64-linux-gnu/qt5/plugins/sqldrivers/libqsqlmysql.so
+# Firefox
+RUN apt-get install -y libdbus-glib-1-2 libgtk2.0-0
 
-#JDK-18
-RUN apt install -y libc6-x32 libc6-i386
-RUN wget https://download.oracle.com/java/18/latest/jdk-18_linux-x64_bin.deb
-RUN apt-get install -y libasound2
-RUN DEBIAN_FRONTEND=noninteractive dpkg -i jdk-18_linux-x64_bin.deb
-RUN update-alternatives --install /usr/bin/java java /usr/lib/jvm/jdk-18/bin/java 1
+RUN wget -O ~/Firefox.tar.bz2 "https://download.mozilla.org/?product=firefox-latest&os=linux64"
+RUN tar xjf ~/Firefox.tar.bz2 -C /opt/
 
+RUN ln -s /opt/firefox/firefox /usr/bin/
+
+#RUN echo "export MOZ_HEADLESS=1" >> /etc/bash.bashrc
+
+# MySQL Shell
+RUN wget https://dev.mysql.com/get/mysql-apt-config_0.8.24-1_all.deb
+RUN dpkg -i ./mysql-apt-config_0.8.24-1_all.deb
+
+RUN apt-get update
+
+RUN apt-get install -y mysql-shell
+
+# Svg2png
 RUN npm install svg2png -g --unsafe-perm
 
+# Json2csv
 RUN npm install -g json2csv
 
 #WebKit's
@@ -32,11 +56,6 @@ RUN tar xvfz geckodriver-v0.31.0-linux64.tar.gz
 RUN cp geckodriver /bin
 
 #ODKTOOLS
-RUN wget https://dev.mysql.com/get/mysql-apt-config_0.8.22-1_all.deb
-RUN dpkg -i ./mysql-apt-config_0.8.22-1_all.deb
-RUN apt-get update
-RUN apt-get install mysql-shell
-
 RUN wget https://github.com/BurntSushi/xsv/releases/download/0.13.0/xsv-0.13.0-x86_64-unknown-linux-musl.tar.gz
 RUN tar xvfz xsv-0.13.0-x86_64-unknown-linux-musl.tar.gz
 RUN cp xsv /bin
@@ -48,7 +67,7 @@ RUN cp csv2xlsx /bin
 
 WORKDIR /opt
 RUN mkdir odktools-deps
-RUN git clone https://github.com/qlands/odktools.git
+RUN git clone https://github.com/qlands/odktools.git -b stable-2.1
 
 WORKDIR /opt/odktools-deps
 RUN wget https://github.com/mongodb/mongo-c-driver/releases/download/1.21.1/mongo-c-driver-1.21.1.tar.gz
@@ -124,9 +143,72 @@ RUN apt-get update \
 ENV LANG en_US.UTF-8
 ENV LC_ALL en_US.UTF-8
 
-WORKDIR /opt
+WORKDIR /root
+RUN mkdir R_packages_installation
 
-COPY ./docker_files/verificationFile.txt /opt
-RUN Rscript ./new_r_code/modules/00_check_packages.R
-COPY ./docker_files/check_R_libraries.R /opt
-RUN Rscript /opt/check_R_libraries.R
+COPY ./docker_files/verificationFile.txt /root
+
+COPY ./docker_files/R_packages_installation /root/R_packages_installation
+
+RUN ls --recursive /root/R_packages_installation
+
+RUN Rscript /root/R_packages_installation/caret.R
+
+RUN Rscript /root/R_packages_installation/climatrends.R
+
+RUN Rscript /root/R_packages_installation/ClimMobTools.R
+
+RUN Rscript /root/R_packages_installation/ggparty.R
+
+RUN Rscript /root/R_packages_installation/ggplot2.R
+
+RUN Rscript /root/R_packages_installation/gosset.R
+
+RUN Rscript /root/R_packages_installation/gridExtra.R
+
+RUN Rscript /root/R_packages_installation/gtools.R
+
+RUN Rscript /root/R_packages_installation/igraph.R
+
+RUN Rscript /root/R_packages_installation/janitor.R
+
+RUN Rscript /root/R_packages_installation/jsonlite.R
+
+RUN Rscript /root/R_packages_installation/knitr.R
+
+RUN Rscript /root/R_packages_installation/leaflet.R
+
+RUN Rscript /root/R_packages_installation/mapview.R
+
+RUN Rscript /root/R_packages_installation/multcompView.R
+
+RUN Rscript /root/R_packages_installation/nasapower.R
+
+RUN Rscript /root/R_packages_installation/partykit.R
+
+RUN Rscript /root/R_packages_installation/patchwork.R
+
+RUN Rscript /root/R_packages_installation/PlackettLuce.R
+
+RUN Rscript /root/R_packages_installation/plotrix.R
+
+RUN Rscript /root/R_packages_installation/pls.R
+
+RUN Rscript /root/R_packages_installation/png.R
+
+RUN Rscript /root/R_packages_installation/psychotools.R
+
+RUN Rscript /root/R_packages_installation/qvcalc.R
+
+RUN Rscript /root/R_packages_installation/remotes.R
+
+RUN Rscript /root/R_packages_installation/rmarkdown.R
+
+RUN Rscript /root/R_packages_installation/phantomjs.R
+
+RUN Rscript /root/R_packages_installation/check_R_libraries.R
+
+#RUN Rscript ./new_r_code/modules/00_check_packages.R
+
+
+

@@ -1,4 +1,4 @@
-FROM alliancecostarica/climmob_base:20221002
+FROM alliancecostarica/climmob_base:20230106
 
 MAINTAINER Alliance Bioversity-CIAT
 
@@ -35,9 +35,7 @@ COPY ./docker_files/docker-entrypoint.sh /
 
 EXPOSE 5900
 
-RUN chmod +x /docker-entrypoint.sh
-RUN chmod +x /etc/init.d/celery_climmob
-RUN chmod +x /opt/climmob_gunicorn/run_server.sh
-RUN chmod 640 /etc/default/celery_climmob
+RUN chmod +x /docker-entrypoint.sh && chmod +x /etc/init.d/celery_climmob && chmod +x /opt/climmob_gunicorn/run_server.sh && chmod 640 /etc/default/celery_climmob
+
 RUN ldconfig
 ENTRYPOINT ["/docker-entrypoint.sh"]

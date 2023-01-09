@@ -1,9 +1,9 @@
 version: '3'
 services:
-  cmmysql_20221005:
+  cmmysql_20230110:
     image: mysql:8.0.23
     command: --default-authentication-plugin=mysql_native_password
-    container_name: climmob_mysql_20221005
+    container_name: climmob_mysql_20230110
     cap_add:
       - SYS_NICE
     environment:
@@ -13,9 +13,9 @@ services:
     networks:
       cmnet:
         ipv4_address: 172.28.1.1
-  climmob_20221005:
-    image: alliancecostarica/climmob:20221005
-    container_name: climmob_20221005
+  climmob_20230110:
+    image: alliancecostarica/climmob:20230110
+    container_name: climmob_20230110
     environment:
       MYSQL_HOST_NAME: 172.28.1.1
       MYSQL_USER_NAME: root

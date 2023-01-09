@@ -1,1 +1,1 @@
-sudo docker build --no-cache --rm -t alliancecostarica/climmob:20221005 -f ./stable.Dockerfile .
+sudo docker build --no-cache --rm -t alliancecostarica/climmob:20230110 -f ./stable.Dockerfile .
