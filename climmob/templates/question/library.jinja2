@@ -13,6 +13,7 @@
     {% cssresource request,'coreresources','switch' %}
     {% cssresource request,'coreresources','select2' %}
     {% cssresource request,'coreresources','datatimepicker' %}
+    {% cssresource request,'coreresources','switchery' %}
 
 {% endblock css %}
 
@@ -28,6 +29,8 @@
     {% jsresource request,'coreresources','validate' %}
     {% jsresource request,'coreresources','metro' %}
     {% jsresource request,'coreresources','datatimepicker' %}
+    {% jsresource request,'coreresources','switchery' %}
+
 {% endblock topScripts %}
 
 {% block pageheading %}
@@ -176,7 +179,28 @@
 
     <script>
 
+        var elem_ckb_required_value = document.querySelector('#ckb_required_value');
+        var ckb_required_value = new Switchery(elem_ckb_required_value, { color: '#1AB394' });
+
+        var elem_ckb_tricot_quantitative = document.querySelector('#ckb_tricot_quantitative');
+        var ckb_tricot_quantitative = new Switchery(elem_ckb_tricot_quantitative, { color: '#1AB394' });
+
+        var elem_ckb_answer_tied = document.querySelector('#ckb_answer_tied');
+        var ckb_answer_tied = new Switchery(elem_ckb_answer_tied, { color: '#1AB394' });
+
+        var elem_ckb_answer_notobserved = document.querySelector('#ckb_answer_notobserved');
+        var ckb_answer_notobserved = new Switchery(elem_ckb_answer_notobserved, { color: '#1AB394' });
+
+        {% if activeUser.login == "bioversity" %}
+            var elem_ckb_question_visible = document.querySelector('#ckb_question_visible');
+            var ckb_question_visible = new Switchery(elem_ckb_question_visible, { color: '#1AB394' });
+        {% endif %}
+
+
+
         $(document).ready(function() {
+
+
 
             $('input#question_code').maxlength(
                 {
@@ -223,8 +247,8 @@
             $("#question_dtype").select2();
             var type = $('#question_dtype').val();
 
-            var objQRequired = $("#ckb_required_value");
             var question_requiredvalue = 0;
+            var objQRequired = $("#ckb_required_value");
             if (objQRequired.is(':checked'))
                 question_requiredvalue = 1;
 
@@ -236,9 +260,11 @@
             }
 
             if (question_requiredvalue == 1)
-                objQRequired.bootstrapSwitch('state',true);
+                //objQRequired.bootstrapSwitch('state',true);
+                setSwitchery(ckb_required_value, true);
             else
-                objQRequired.bootstrapSwitch('state',false);
+                //objQRequired.bootstrapSwitch('state',false);
+                setSwitchery(ckb_required_value, false);
 
 
 
@@ -254,7 +280,8 @@
                     $("#extraQuantitative").css("display","block")
                     $("#form_simple_question").css('display', 'initial')
                 }else{
-                    $("#ckb_tricot_quantitative").bootstrapSwitch('state', false);
+                    //$("#ckb_tricot_quantitative").bootstrapSwitch('state', false);
+                    setSwitchery(ckb_tricot_quantitative, false);
                 }
 
                 if(value==2 || value==3)
@@ -270,6 +297,9 @@
                     $("#extraForCharacteristics").css("display","initial");
                     $(".inputForQuestionChar").prop('disabled',false);
                     $("#question_desc").val("-")
+                }else{
+                    setSwitchery(ckb_answer_notobserved, false)
+                    setSwitchery(ckb_answer_tied, false)
                 }
 
                 if(value == 10)
@@ -289,7 +319,9 @@
                     "<td class='text-center'></td>" +
                     "</tr>")
                     $(".inputForOption").prop('disabled',false)
-                    $(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
+                    //$(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
+                    enableSwitchery();
+
                     $("#btn_add_option").css('display', 'initial');
                     $("#btn_add_option_other").prop('disabled', false);
                     $("#btn_add_option_na").prop('disabled', false);
@@ -547,7 +579,8 @@
             "<td class='text-center'> <a class='btn_delete_option btn btn-danger btnsQuestion' style='margin: 5px'> <i class='fa fa-trash'></i></a></td>" +
             "</tr>")
 
-            $(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
+            //$(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
+            enableSwitchery();
 
             $(".btn_delete_option").click(function () {
                 $(this).parent().parent().remove();
@@ -565,7 +598,8 @@
             "<td class='text-center'><div class='bg-success p-xs b-r-sm'> {{ _("Other") }}</div><div style='display:none'><label class='control-label'>{{ _("Value is other") }}</label><br><input type='checkbox' disabled  class='inputForQuestionCheck' id='checkOtherOptions"+(rowCount+1)+"' data-on-color='success' data-off-color='danger' data-on-text='Yes' data-off-text='No' checked=''><br><br></div></td>" +
             "<td class='text-center'> <a class='btn_delete_option_other btn btn-danger btnsQuestion' style='margin: 5px'> <i class='fa fa-trash'></i></a></td>" +
             "</tr>")
-            $(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
+            //$(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
+            enableSwitchery();
             $("#checkOtherOptions"+(rowCount+1)).hide()
 
             $(".btn_delete_option_other").click(function () {
@@ -587,7 +621,8 @@
             "<td class='text-center'> <a class='btn_delete_option_na btn btn-danger btnsQuestion' style='margin: 5px'> <i class='fa fa-trash'></i></a></td>" +
             "</tr>")
 
-            $(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
+            //$(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
+            enableSwitchery();
 
             $(".btn_delete_option_na").click(function (event) {
                 $(this).parent().parent().remove();
@@ -692,15 +727,24 @@
             $("#question1").css("display",'initial');
 
 
-            $(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
+            //$(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
+            enableSwitchery();
 
-            $("#ckb_required_value").bootstrapSwitch('state',true);
-            $("#ckb_tricot_quantitative").bootstrapSwitch('state',false);
-            $("#ckb_answer_tied").bootstrapSwitch('state',false);
-            $("#ckb_answer_notobserved").bootstrapSwitch('state',false);
+            //$("#ckb_required_value").bootstrapSwitch('state',true);
+            setSwitchery(ckb_required_value, true);
+
+            //$("#ckb_tricot_quantitative").bootstrapSwitch('state',false);
+            setSwitchery(ckb_tricot_quantitative, false)
+
+            //$("#ckb_answer_tied").bootstrapSwitch('state',false);
+            setSwitchery(ckb_answer_tied, false)
+
+            //$("#ckb_answer_notobserved").bootstrapSwitch('state',false);
+            setSwitchery(ckb_answer_notobserved, false)
 
             {% if activeUser.login == "bioversity" %}
-                $("#ckb_question_visible").bootstrapSwitch('state',true);
+                //$("#ckb_question_visible").bootstrapSwitch('state',true);
+                setSwitchery(ckb_question_visible, true)
             {% endif %}
 
             {% block dataprivacy_function_create_question %}
@@ -715,7 +759,8 @@
             $(".inputForQuestion").attr('readonly', false);
             $(".inputForOption").attr('readonly', false);
             $(".inputForQuestionSelect").select2({disabled:false});
-            $(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
+            //$(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
+            enableSwitchery();
 
             $("#btn_add_question").prop('disabled', false);
             $("#btn_add_question").css('display','initial')
@@ -764,34 +809,45 @@
 
                 {% endblock function_open_questions_extra_field %}
 
-                $(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
-
+                //$(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
+                enableSwitchery();
 
                 if (dataJson["question_requiredvalue"] == 1)
-                    $("#ckb_required_value").bootstrapSwitch('state',true);
+                    //$("#ckb_required_value").bootstrapSwitch('state',true);
+                    setSwitchery(ckb_required_value, true);
                 else
-                    $("#ckb_required_value").bootstrapSwitch('state',false);
+                    //$("#ckb_required_value").bootstrapSwitch('state',false);
+                    setSwitchery(ckb_required_value, false)
 
                 if (dataJson["question_tied"] == 1)
-                    $("#ckb_answer_tied").bootstrapSwitch('state',true);
+                    //$("#ckb_answer_tied").bootstrapSwitch('state',true);
+                    setSwitchery(ckb_answer_tied, true)
                 else
-                    $("#ckb_answer_tied").bootstrapSwitch('state',false);
+                    //$("#ckb_answer_tied").bootstrapSwitch('state',false);
+                    setSwitchery(ckb_answer_tied, false)
 
                 if (dataJson["question_notobserved"] == 1)
-                    $("#ckb_answer_notobserved").bootstrapSwitch('state',true);
+                    //$("#ckb_answer_notobserved").bootstrapSwitch('state',true);
+                    setSwitchery(ckb_answer_notobserved, true)
                 else
-                    $("#ckb_answer_notobserved").bootstrapSwitch('state',false);
+                    //$("#ckb_answer_notobserved").bootstrapSwitch('state',false);
+                    setSwitchery(ckb_answer_notobserved, false)
+
 
                 if (dataJson["question_quantitative"] == 1)
-                    $("#ckb_tricot_quantitative").bootstrapSwitch('state',true);
+                    //$("#ckb_tricot_quantitative").bootstrapSwitch('state',true);
+                    setSwitchery(ckb_tricot_quantitative, true)
                 else
-                    $("#ckb_tricot_quantitative").bootstrapSwitch('state',false);
+                    //$("#ckb_tricot_quantitative").bootstrapSwitch('state',false);
+                    setSwitchery(ckb_tricot_quantitative, false)
 
                 {% if activeUser.login == "bioversity" %}
                     if (dataJson["question_visible"] == 1)
-                        $("#ckb_question_visible").bootstrapSwitch('state',true);
+                        //$("#ckb_question_visible").bootstrapSwitch('state',true);
+                        setSwitchery(ckb_question_visible, true)
                     else
-                        $("#ckb_question_visible").bootstrapSwitch('state',false);
+                        //$("#ckb_question_visible").bootstrapSwitch('state',false);
+                        setSwitchery(ckb_question_visible, false)
                 {% endif %}
 
                 {% block dataprivacy_function_open_questions %}
@@ -884,7 +940,8 @@
                     $(".inputForQuestion").attr('readonly', false);
                     $(".inputForOption").attr('readonly', false);
                     $(".inputForQuestionSelect").select2({disabled:false});
-                    $(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
+                    //$(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
+                    enableSwitchery();
 
 
                     $("#question_code").attr('readonly',true)
@@ -914,14 +971,16 @@
                     $(".inputForQuestion").attr('readonly', true);
                     $(".inputForOption").attr('readonly', true);
                     $(".inputForQuestionSelect").select2({disabled:'readonly'});
-                    $(".inputForQuestionCheck").bootstrapSwitch('readonly', true);
+                    //$(".inputForQuestionCheck").bootstrapSwitch('readonly', true);
+                    disableSwitchery();
                 }
 
                 {% if activeUser.login == "bioversity" %}
 
                     if(jQuery.inArray(dataJson["question_id"], [162,163,199]) == -1)
                     {
-                        $("#ckb_question_visible").bootstrapSwitch('readonly', false);
+                        //$("#ckb_question_visible").bootstrapSwitch('readonly', false);
+                        ckb_question_visible.enable();
                         $("#question_desc").attr('readonly',false);
                         $("#btn_update_question").prop('disabled', false);
                         $("#btn_update_question").css('display', 'initial');
@@ -979,6 +1038,35 @@
         function clean_buttoms_question()
         {
             $(".btnsQuestion").css('display','none')
+        }
+
+        function enableSwitchery()
+        {
+            ckb_required_value.enable();
+            ckb_tricot_quantitative.enable();
+            ckb_answer_tied.enable();
+            ckb_answer_notobserved.enable();
+            {% if activeUser.login == "bioversity" %}
+                ckb_question_visible.enable();
+            {% endif %}
+        }
+
+        function disableSwitchery()
+        {
+            ckb_required_value.disable();
+            ckb_tricot_quantitative.disable();
+            ckb_answer_tied.disable();
+            ckb_answer_notobserved.disable();
+            {% if activeUser.login == "bioversity" %}
+                ckb_question_visible.disable();
+            {% endif %}
+        }
+
+        function setSwitchery(switchElement, checkedBool)
+        {
+            if((checkedBool && !switchElement.isChecked()) || (!checkedBool && switchElement.isChecked())) {
+                switchElement.setPosition(true);
+            }
         }
 
     </script>

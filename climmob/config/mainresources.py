@@ -147,6 +147,15 @@ def createResources(apppath, config):
         "inspinia/css/plugins/footable/footable.core.css",
         "jqueryui",
     )
+
+    r.add_css_resource(
+        "coreresources",
+        "switchery",
+        "inspinia/css/plugins/switchery/switchery.css",
+        "jqueryui",
+    )
+
+
     # Progress
     r.add_css_resource("coreresources", "c3", "inspinia/css/plugins/c3/c3.min.css")
     r.add_library("progress", os.path.join(apppath, "templates/progress"), config)
@@ -416,5 +425,12 @@ def createResources(apppath, config):
         "coreresources",
         "footable",
         "inspinia/js/plugins/footable/footable.all.min.js",
+        "jquery",
+    )
+
+    r.add_js_resource(
+        "coreresources",
+        "switchery",
+        "inspinia/js/plugins/switchery/switchery.js",
         "jquery",
     )
