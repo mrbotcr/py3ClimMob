@@ -664,6 +664,23 @@
 
                                 {% endblock communityLink %}
 
+                                {% block supportTicketLink %}
+
+                                    <div class="ibox float-e-margins" >
+                                        <div class="ibox-title">
+                                            <h5>{{ _("ClimMob support ticket system") }}</h5>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <br>
+                                            <h3> {{ _("Any doubt, question or comment related to the ClimMob platform can be made through the support ticket system.") }}</h3>
+                                            <br>
+                                            <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" onclick="window.open('https://support.climmob.net/','_blank');"><i class="fa fa-ticket"></i> {{ _("Go to the support ticket system") }}</a>
+
+                                        </div>
+                                    </div>
+
+                                {% endblock supportTicketLink %}
+
                             </div>
                         </div>
 
