@@ -1,5 +1,6 @@
 import os
 import sys
+import climmob.plugins as p
 
 if (
     os.environ.get("CLIMMOB_PYTEST_RUNNING", "false") == "false"
@@ -34,7 +35,7 @@ def main(global_config, **settings):
     """This function returns a Pyramid WSGI application."""
     auth_policy = AuthenticationStackPolicy()
     policy_array = []
-
+    p.load_all(settings)
     main_policy = AuthTktAuthenticationPolicy(
         settings["auth.secret"],
         timeout=settings.get("auth.secret.cookie.timeout", 7200),
@@ -42,6 +43,17 @@ def main(global_config, **settings):
     )
     auth_policy.add_policy("main", main_policy)
     policy_array.append({"name": "main", "policy": main_policy})
+
+    for plugin in p.PluginImplementations(p.IAuthenticationPolicy):
+        new_policies = plugin.get_new_authentication_policy_details(settings)
+        for a_policy in new_policies:
+            new_policy = AuthTktAuthenticationPolicy(
+                a_policy["secret"],
+                timeout=a_policy["cookie_timeout"],
+                cookie_name=a_policy["cookie_name"],
+            )
+            auth_policy.add_policy(a_policy["policy_name"], new_policy)
+            policy_array.append({"name": a_policy["policy_name"], "policy": new_policy})
 
     authz_policy = ACLAuthorizationPolicy()
 

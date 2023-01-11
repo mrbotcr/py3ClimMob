@@ -32,6 +32,7 @@ __all__ = [
     "IQRPackagesEditable",
     "IDashBoard",
     "IObservationCards",
+    "IAuthenticationPolicy",
 ]
 
 
@@ -689,3 +690,20 @@ class IObservationCards(Interface):
     ):
 
         """ """
+
+
+class IAuthenticationPolicy(Interface):
+    """
+    Allows to hook up into the process that creates Authentication Policies so plugins can have custom
+    authentication pages
+    """
+
+    def get_new_authentication_policy_details(self, settings):
+        """
+        :param settings: Pyramid settings
+        :return: Returns a dict array of new authentication policies. The dict must have the following keys:
+            'secret': The secret code to encode the policy
+            'cookie_timeout': The timeout of the cookie
+            'cookie_name': The name if the cookie
+            'policy_name': The name of the new policy
+        """
