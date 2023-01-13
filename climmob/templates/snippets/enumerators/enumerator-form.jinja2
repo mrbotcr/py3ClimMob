@@ -33,10 +33,23 @@
 
 <script>
 
-    if ( "{{ dataworking["enum_active"] }}" == "1")
-        $("[name='ckb_modify_status']").bootstrapSwitch('state', true);
-    else
-        $("[name='ckb_modify_status']").bootstrapSwitch('state', false);
+    var elem_modify_status = document.querySelector('#ckb_modify_status');
+    var ckb_modify_status = new Switchery(elem_modify_status, { color: '#1AB394' });
+
+    if ( "{{ dataworking["enum_active"] }}" == "1") {
+        //$("[name='ckb_modify_status']").bootstrapSwitch('state', true);
+        setSwitchery(ckb_modify_status, true);
+    }else {
+        //$("[name='ckb_modify_status']").bootstrapSwitch('state', false);
+        setSwitchery(ckb_modify_status, false);
+    }
+
+    function setSwitchery(switchElement, checkedBool)
+    {
+        if((checkedBool && !switchElement.isChecked()) || (!checkedBool && switchElement.isChecked())) {
+            switchElement.setPosition(true);
+        }
+    }
 
 </script>
 

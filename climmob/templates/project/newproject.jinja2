@@ -10,6 +10,7 @@
     {% cssresource request,'coreresources','chosen' %}
     {% cssresource request,'coreresources','icheck' %}
     {% cssresource request,'coreresources','tour' %}
+    {% cssresource request,'coreresources','switchery' %}
 {% endblock css %}
 
 {% block topScripts %}
@@ -19,6 +20,7 @@
     {% jsresource request,'coreresources','chosen' %}
     {% jsresource request,'coreresources','icheck' %}
     {% jsresource request,'coreresources','tour' %}
+    {% jsresource request,'coreresources','switchery' %}
 {% endblock topScripts %}
 
 {% block pageheading %}
@@ -63,6 +65,10 @@
         </form>
 
         <script>
+
+            var elem_project_template = document.querySelector('#project_template');
+            var ckb_project_template = new Switchery(elem_project_template, { color: '#1AB394' });
+
             $(document).ready(function () {
 
                 $('.i-checks').iCheck({
@@ -74,9 +80,11 @@
                     var valueOfProjectTemplate = "{{ dataworking["project_template"] }}"
 
                     if (valueOfProjectTemplate == "0") {
-                        $("[name='project_template']").bootstrapSwitch('state', false);
+                        //$("[name='project_template']").bootstrapSwitch('state', false);
+                        setSwitchery(ckb_project_template, false);
                     }else {
-                        $("[name='project_template']").bootstrapSwitch('state', true);
+                        //$("[name='project_template']").bootstrapSwitch('state', true);
+                        setSwitchery(ckb_project_template, true);
                     }
 
                 {% else %}
@@ -101,6 +109,14 @@
 
 
             })
+
+            function setSwitchery(switchElement, checkedBool)
+            {
+                if((checkedBool && !switchElement.isChecked()) || (!checkedBool && switchElement.isChecked())) {
+                    switchElement.setPosition(true);
+                }
+            }
+
         </script>
         <script>
             {% block js_script_extra %}
