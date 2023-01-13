@@ -8,8 +8,8 @@
     {% cssresource request,'coreresources','icheck' %}
     {% cssresource request,'coreresources','switch' %}
     {% cssresource request,'coreresources','footable' %}
-
     {% cssresource request,'coreresources','steps' %}
+    {% cssresource request,'coreresources','switchery' %}
 {% endblock css %}
 
 {% block topScripts %}
@@ -18,6 +18,7 @@
     {% jsresource request,'coreresources','switch' %}
     {% jsresource request,'coreresources','footable' %}
     {% jsresource request,'coreresources','steps'%}
+    {% jsresource request,'coreresources','switchery' %}
 {% endblock topScripts %}
 
 {% block pageheading %}
@@ -188,12 +189,10 @@
                             <div class="step-content" style="border: 2px solid #1AB394; background-color: white">
                                 <p>{{ _("Do you want to do an extra analysis, separating by the values of the selection questions?") }}</p>
 
-                                <div class="col-lg-offset-2 col-lg-10">
+                                <input type="checkbox" id="ckb_Splits" name="ckb_Splits" data-on-color="success" data-off-color="danger" data-on-text="{{ _('Yes') }}" data-off-text="{{ _('No') }}" >
 
-                                    <div class="form-group">
-                                        <input type="checkbox" id="ckb_Splits" name="ckb_Splits" data-on-color="success" data-off-color="danger" data-on-text="{{ _('Yes') }}" data-off-text="{{ _('No') }}" >
-                                    </div>
-                                </div>
+                                <br>
+                                <br>
 
                                 <div class="alert alert-danger alert-dismissable" id="alert1" style="display: none">
                                     {{ _("You must select at least one variable") }}
@@ -294,7 +293,11 @@
     {% include 'snippets/loading.jinja2' %}
 
     <script>
+
+
         $(document).ready(function(){
+
+            numberOfExplanatoryAllowed = 10;
 
             $("#wizard").steps({
                 labels: {
@@ -349,6 +352,12 @@
                 }
             });
 
+            var elem_Infosheets = document.querySelector('#ckb_Infosheets');
+            var ckb_Infosheets = new Switchery(elem_Infosheets, { color: '#1AB394' });
+
+            var elem_Splits = document.querySelector('#ckb_Splits');
+            var ckb_Splits = new Switchery(elem_Splits, { color: '#1AB394' });
+
 
             $('.i-checks').iCheck({
                 checkboxClass: 'icheckbox_square-green',
@@ -360,29 +369,60 @@
                 radioClass: 'iradio_square-green',
             });
 
-            $('.i-checksAll').on('ifChanged', function()
-            {
+            $('.i-checksAll').on('ifChanged', function() {
+
                 id = $(this).attr("id")
+                var divs = $("." + id).toArray().length;
+
                 if ($(this).prop('checked')) {
-                    $("." + id).iCheck('check');
+
+                    if ((id == "explanatorySelect" & divs <= numberOfExplanatoryAllowed) || id != "explanatorySelect") {
+                        $("." + id).iCheck('check');
+                    }else{
+                        var errorMessage = "{{ _("{} is the maximum number of explanatory variables you can analyze at the same time. Not all variables can be selected at the same time") }}";
+                        errorMessage = errorMessage.replace("{}", numberOfExplanatoryAllowed)
+                        toastr.error(errorMessage);
+                    }
+
                 }else{
                     $("." + id).iCheck('uncheck');
                 }
+
             });
 
 
-            $('.i-checks').on('ifChanged', function()
+            $('.i-checks').on('ifChecked', function()
             {
+                forCheckAndUncheck($(this));
+            });
 
-                id = $(this).attr("id")
-                if ($(this).prop('checked')) {
+            $('.i-checks').on('ifUnchecked', function()
+            {
+                forCheckAndUncheck($(this));
+            });
+
+            function forCheckAndUncheck(element){
+
+                if(element.attr("class").includes("explanatorySelect"))
+                {
+                    var checkboxes = $(".explanatorySelect");
+
+                    if (checkboxes.filter(":checked").length >= numberOfExplanatoryAllowed) {
+                        checkboxes.not(":checked").iCheck('disable');
+                        toastr.warning("{{ _("You have reached the maximum number of explanatory variables allowed for the analysis.") }}")
+                    } else {
+                        checkboxes.not(":checked").iCheck('enable');
+                    }
+                }
+
+                id = element.attr("id")
+                if (element.prop('checked')) {
 
                     $('#txt_included_in_analysis').val($('#txt_included_in_analysis').val()+id+",");
                 } else {
                     $('#txt_included_in_analysis').val($('#txt_included_in_analysis').val().replace(id+",",""));
                 }
-
-            });
+            }
 
             $('.explanatorySplit').on('ifChanged', function()
             {
@@ -397,9 +437,9 @@
 
             });
 
-            $("[name='ckb_Infosheets']").bootstrapSwitch('state',true);
+            //$("[name='ckb_Infosheets']").bootstrapSwitch('state',true);
 
-            $("#ckb_Infosheets").on('switchChange.bootstrapSwitch', function(event, state) {
+            /*$("#ckb_Infosheets").on('switchChange.bootstrapSwitch', function(event, state) {
 
                 if($(this).is(':checked')) {
                     $("#txt_infosheets").val('true');
@@ -407,11 +447,24 @@
                 else{
                     $("#txt_infosheets").val('false');
                 }
-            });
+            });*/
 
-            $("[name='ckb_Splits']").bootstrapSwitch('state',true);
+            setSwitchery(ckb_Infosheets, true);
 
-            $("#ckb_Splits").on('switchChange.bootstrapSwitch', function(event, state) {
+            elem_Infosheets.onchange = function() {
+
+                if($(this).is(':checked')) {
+                    $("#txt_infosheets").val('true');
+                }
+                else{
+                    $("#txt_infosheets").val('false');
+                }
+
+            };
+
+            //$("[name='ckb_Splits']").bootstrapSwitch('state',true);
+
+            /*$("#ckb_Splits").on('switchChange.bootstrapSwitch', function(event, state) {
 
                 if($(this).is(':checked')) {
                     values = $("#txt_splits").val().substring(6);
@@ -425,7 +478,27 @@
                     $("#tableOfSplits").css("display","none");
                 }
 
-            });
+            });*/
+
+            setSwitchery(ckb_Splits, true);
+
+            elem_Splits.onchange = function() {
+
+                if($(this).is(':checked')) {
+                    values = $("#txt_splits").val().substring(6);
+                    $("#txt_splits").val('true,'+ values);
+                    $("#tableOfSplits").css("display","inline-table");
+                }
+                else{
+                    values = $("#txt_splits").val().substring(5);
+                    $("#txt_splits").val('false,'+values);
+                    $("#alert1").css("display","none");
+                    $("#tableOfSplits").css("display","none");
+                }
+
+            }
+
+
 
             $('.i-checks2').iCheck({
                 radioClass: 'iradio_square-green',
@@ -449,7 +522,14 @@
                     });
                 });
             });
-                });
+        });
+
+        function setSwitchery(switchElement, checkedBool)
+        {
+            if((checkedBool && !switchElement.isChecked()) || (!checkedBool && switchElement.isChecked())) {
+                switchElement.setPosition(true);
+            }
+        }
     </script>
 
 {% endblock pagecontent%}
