@@ -155,7 +155,6 @@ def createResources(apppath, config):
         "jqueryui",
     )
 
-
     # Progress
     r.add_css_resource("coreresources", "c3", "inspinia/css/plugins/c3/c3.min.css")
     r.add_library("progress", os.path.join(apppath, "templates/progress"), config)
