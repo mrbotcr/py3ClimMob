@@ -1,7 +1,8 @@
 import arrow
 import hashlib
 import urllib
-
+import datetime
+from dateutil.relativedelta import relativedelta
 from climmob.config.encdecdata import decodeData
 from climmob.models import User as userModel, Country, Sector, mapFromSchema
 
@@ -160,3 +161,38 @@ def getSectorName(sector_cod, request):
     if not result is None:
         res = result.sector_name
     return res
+
+
+def setPasswordResetToken(request, userName, reset_key, reset_token):
+    token_expires_on = datetime.datetime.now() + relativedelta(hours=+24)
+    request.dbsession.query(userModel).filter(userModel.user_name == userName).update(
+        {
+            "user_password_reset_key": reset_key,
+            "user_password_reset_token": reset_token,
+            "user_password_reset_expires_on": token_expires_on,
+        }
+    )
+
+
+def resetKeyExists(request, reset_key):
+    res = (
+        request.dbsession.query(userModel)
+        .filter(userModel.user_password_reset_key == reset_key)
+        .first()
+    )
+    if res is not None:
+        return True
+    return False
+
+
+def resetPassword(request, user_id, reset_key, reset_token, new_password):
+    request.dbsession.query(userModel).filter(userModel.user_name == user_id).filter(
+        userModel.user_password_reset_key == reset_key
+    ).filter(userModel.user_password_reset_token == reset_token).update(
+        {
+            "user_password_reset_key": None,
+            "user_password_reset_token": None,
+            "user_password_reset_expires_on": None,
+            "user_password": new_password,
+        }
+    )

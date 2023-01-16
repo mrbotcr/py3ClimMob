@@ -1,5 +1,6 @@
 import datetime
 import smtplib
+import logging
 from email import utils
 from email.header import Header
 from email.mime.text import MIMEText
@@ -8,8 +9,15 @@ from time import time
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 from pyramid.security import forget
 from pyramid.security import remember
-
-from climmob.config.auth import getUserData, getUserByEmail
+from climmob.config.encdecdata import encodeData
+from formencode.variabledecode import variable_decode
+from climmob.config.auth import (
+    getUserData,
+    getUserByEmail,
+    setPasswordResetToken,
+    resetKeyExists,
+    resetPassword,
+)
 from climmob.processes import (
     addUser,
     addToLog,
@@ -20,6 +28,19 @@ from climmob.processes import (
 )
 from climmob.utility import valideRegisterForm
 from climmob.views.classes import publicView
+from pyramid.session import check_csrf_token
+import secrets
+import uuid
+
+from jinja2 import ext
+from climmob.config.jinja_extensions import jinjaEnv, extendThis
+from climmob.utility.helpers import readble_date
+
+log = logging.getLogger("climmob")
+
+
+def render_template(template_filename, context):
+    return jinjaEnv.get_template(template_filename).render(context)
 
 
 class home_view(publicView):
@@ -131,10 +152,9 @@ class login_view(publicView):
 
 
 class RecoverPasswordView(publicView):
-    def send_password_by_emial(self, body, target_name, target_email):
-        mail_from = self.request.registry.settings.get("email.from")
+    def send_password_by_email(self, body, target_name, target_email, mail_from):
         msg = MIMEText(body.encode("utf-8"), "plain", "utf-8")
-        ssubject = self._("ClimMob Version 3 - Password recovery")
+        ssubject = self._("ClimMob - Password reset request")
         subject = Header(ssubject.encode("utf-8"), "utf-8")
         msg["Subject"] = subject
         msg["From"] = "{} <{}>".format("ClimMob", mail_from)
@@ -159,6 +179,33 @@ class RecoverPasswordView(publicView):
         except Exception as e:
             print(str(e))
 
+    def send_password_email(self, email_to, reset_token, reset_key, user_dict):
+        jinjaEnv.add_extension(ext.i18n)
+        jinjaEnv.add_extension(extendThis)
+        _ = self.request.translate
+        email_from = self.request.registry.settings.get("email.from", None)
+        if email_from is None:
+            log.error(
+                "ClimMob has no email settings in place. Email service is disabled."
+            )
+            return False
+        if email_from == "":
+            return False
+        date_string = readble_date(datetime.datetime.now(), self.request.locale_name)
+        reset_url = self.request.route_url("reset_password", reset_key=reset_key)
+        text = render_template(
+            "email/recover_email.jinja2",
+            {
+                "recovery_date": date_string,
+                "reset_token": reset_token,
+                "user_dict": user_dict,
+                "reset_url": reset_url,
+                "_": _,
+            },
+        )
+
+        self.send_password_by_email(text, user_dict.fullName, email_to, email_from)
+
     def processView(self):
 
         # If we logged in then go to dashboard
@@ -167,27 +214,22 @@ class RecoverPasswordView(publicView):
         currentUser = getUserData(login, self.request)
         if currentUser is not None:
             raise HTTPNotFound()
+
         error_summary = {}
         if "submit" in self.request.POST:
             email = self.request.POST.get("user_email", None)
             if email is not None:
                 user, password = getUserByEmail(email, self.request)
                 if user is not None:
-                    message = self._("Hello, \n\n")
-                    message = message + self._(
-                        "You requested ClimMob Version 3 to send you your password.\n\n"
+
+                    reset_key = str(uuid.uuid4())
+                    reset_token = secrets.token_hex(16)
+                    setPasswordResetToken(
+                        self.request, user.login, reset_key, reset_token
                     )
-                    message = message + self._("Your account is: {} \n").format(
-                        user.login
-                    )
-                    message = message + self._("Your password is: {} \n\n").format(
-                        password
-                    )
-                    message = message + self._("Regards,\n")
-                    message = message + self._("The ClimMob team.\n")
-                    self.send_password_by_emial(message, user.fullName, email)
-                    response = HTTPFound(location=self.request.route_url("home"))
-                    return response
+                    self.send_password_email(user.email, reset_token, reset_key, user)
+                    self.returnRawViewResult = True
+                    return HTTPFound(location=self.request.route_url("login"))
                 else:
                     error_summary["email"] = self._(
                         "Cannot find an user with such email address"
@@ -196,6 +238,83 @@ class RecoverPasswordView(publicView):
                 error_summary["email"] = self._("You need to provide an email address")
 
         return {"error_summary": error_summary}
+
+
+class ResetPasswordView(publicView):
+    def processView(self):
+        error_summary = {}
+        dataworking = {}
+
+        reset_key = self.request.matchdict["reset_key"]
+
+        if not resetKeyExists(self.request, reset_key):
+            raise HTTPNotFound()
+
+        if self.request.method == "POST":
+
+            safe = check_csrf_token(self.request, raises=False)
+            if not safe:
+                raise HTTPNotFound()
+
+            dataworking = self.getPostDict()
+            login = dataworking["user"]
+            token = dataworking["token"]
+            new_password = dataworking["password"].strip()
+            new_password2 = dataworking["password2"].strip()
+            user = dataworking["user"]
+            if user != "":
+                log.error(
+                    "Suspicious bot password recovery from IP: {}. Agent: {}. Email: {}".format(
+                        self.request.remote_addr,
+                        self.request.user_agent,
+                        dataworking["email"],
+                    )
+                )
+            user = getUserData(login, self.request)
+
+            if user is not None:
+                if user.userData["user_password_reset_key"] == reset_key:
+                    if user.userData["user_password_reset_token"] == token:
+                        if (
+                            user.userData["user_password_reset_expires_on"]
+                            > datetime.datetime.now()
+                        ):
+                            if new_password != "":
+                                if new_password == new_password2:
+                                    new_password = encodeData(
+                                        self.request, new_password
+                                    )
+                                    resetPassword(
+                                        self.request,
+                                        user.userData["user_name"],
+                                        reset_key,
+                                        token,
+                                        new_password,
+                                    )
+                                    self.returnRawViewResult = True
+                                    return HTTPFound(
+                                        location=self.request.route_url("login")
+                                    )
+                                else:
+                                    error_summary = {
+                                        "Error": self._(
+                                            "The password and the confirmation are not the same"
+                                        )
+                                    }
+                            else:
+                                error_summary = {
+                                    "Error": self._("The password cannot be empty")
+                                }
+                        else:
+                            error_summary = {"Error": self._("Invalid token")}
+                    else:
+                        error_summary = {"Error": self._("Invalid token")}
+                else:
+                    error_summary = {"Error": self._("Invalid key")}
+            else:
+                error_summary = {"Error": self._("User does not exist")}
+
+        return {"error_summary": error_summary, "dataworking": dataworking}
 
 
 def logout_view(request):
