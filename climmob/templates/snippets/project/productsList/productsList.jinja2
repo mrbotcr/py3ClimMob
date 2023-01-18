@@ -17,6 +17,8 @@
 
 </style>
 
+{% set params = [request.params.get('product1'),request.params.get('product2'), request.params.get('product3')] %}
+
 <table class="table table-bordered" style="background-color: #f9f9f9;">
     <tbody>
         <tr>
@@ -44,7 +46,7 @@
 
         {% for product in Products %}
             {% set color = '#1c84c6' %}
-            <tr class="{% if product.process_name in request.url %}{% if changes.update({'productToFocus': product.process_name }) %} {% endif %}requiredProduct{% endif %}" id="{{ product.process_name }}">
+            <tr class="{% if product.process_name in params %}{% if changes.update({'productToFocus': product.process_name }) %} {% endif %}requiredProduct{% endif %}" id="{{ product.process_name }}">
                 <td style="vertical-align: middle;">
                     {% if product.product_id == "qrpackage" %}
                         {{ _("List of packages with QR for the participant registration form") }}
@@ -111,7 +113,7 @@
                                                                             {{ _("Multimedia content collected in the trial data collection moment form") }}: {{ product.extraInformation.ass_desc }}
                                                                         {% endif %}
                                                                     {% else %}
-                                                                        {% if product.product_id == "infosheets" %}
+                                                                        {% if product.product_id in ["infosheets","infosheetszip"] %}
                                                                             {{ _("Individual feedback reports for participants") }}
                                                                         {% else %}
                                                                             {% if product.product_id == "uploaddata" %}
@@ -147,7 +149,11 @@
                                                                                                 {% endblock observation_cards_row %}
 
                                                                                             {% else %}
-                                                                                                {{ product.product_id }}
+                                                                                                {% if product.product_id == "extraoutputszip" %}
+                                                                                                    {{ _("extraoutputszip") }}
+                                                                                                {% else %}
+                                                                                                    {{ product.product_id }}
+                                                                                                {% endif %}
                                                                                             {% endif %}
                                                                                         {% endif %}
                                                                                     {% endif %}
@@ -203,7 +209,7 @@
                                 <a id="{{product.celery_taskid}}$#%%#${{product.output_id}}" class="btn btn-primary btn_datadesk" style="background-color:{{ color }}; border-color: {{ color }}"><i class="fa fa-download"></i> {{ _("Download") }}</a>
                             {% endif %}
                         {% else %}
-                            {% if  product.product_id == "reports" or product.product_id == "infosheets"%}
+                            {% if  product.product_id == "reports" or product.product_id == "infosheets" or product.product_id == "infosheetszip" or product.product_id == "extraoutputszip" %}
                                 <a href="{{ request.route_url('createAnalysis') }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
                             {% else %}
                                 {% if  product.product_id != "datadesk" and product.product_id != "cards"%}
@@ -218,7 +224,7 @@
                             <a  onclick=" location.reload(); " class="btn btn-primary" style="background-color: #f8ac59; border-color: #f8ac59" ><i class="fa fa-refresh"></i> {{ _("Pending") }}</a>
                         {% else %}
 
-                            {% if  product.product_id == "reports" or product.product_id == "infosheets"%}
+                            {% if  product.product_id == "reports" or product.product_id == "infosheets" or product.product_id == "infosheetszip" or product.product_id == "extraoutputszip"%}
                                 <a href="{{ request.route_url('createAnalysis') }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
                             {% else %}
                                 {% if  product.product_id != "datadesk" and product.product_id != "cards"%}

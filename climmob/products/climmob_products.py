@@ -179,6 +179,28 @@ def register_products(config):
     )
     products.append(infosheetsProduct)
 
+    infosheetsZipProduct = addProduct("infosheetszip", "Create a .zip file for participant reports.")
+    addMetadataToProduct(infosheetsZipProduct, "author", "Brandon Madriz")
+    addMetadataToProduct(infosheetsZipProduct, "version", "1.0")
+    addMetadataToProduct(
+        infosheetsZipProduct,
+        "Licence",
+        "Copyright 2023, MrBot Software Solutions",
+    )
+    products.append(infosheetsZipProduct)
+
+    extraOutputsZipProduct = addProduct(
+        "extraoutputszip", "Create a .zip file with the extra outputs of the report."
+    )
+    addMetadataToProduct(extraOutputsZipProduct, "author", "Brandon Madriz")
+    addMetadataToProduct(extraOutputsZipProduct, "version", "1.0")
+    addMetadataToProduct(
+        extraOutputsZipProduct,
+        "Licence",
+        "Copyright 2023, MrBot Software Solutions",
+    )
+    products.append(extraOutputsZipProduct)
+
     # FIELD AGENTS
     fieldagents = addProduct("fieldagents", "Create report of field agents.")
     addMetadataToProduct(fieldagents, "author", "Brandon Madriz")
