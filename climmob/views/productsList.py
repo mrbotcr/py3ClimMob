@@ -81,6 +81,7 @@ class productsView(climmobPrivateView):
         hasActiveProject = False
         activeProjectData = getActiveProject(self.user.login, self.request)
         productsAvailable = []
+        assessments = []
 
         if activeProjectData:
 
@@ -127,14 +128,16 @@ class productsView(climmobPrivateView):
             if activeProjectData["project_active"] == 1:
                 hasActiveProject = True
 
+            assessments = getProjectAssessments(
+                activeProjectData["project_id"], self.request
+            )
+
         return {
             "activeUser": self.user,
             "activeProject": activeProjectData,
             "hasActiveProject": hasActiveProject,
             "Products": productsAvailable,
-            "assessments": getProjectAssessments(
-                activeProjectData["project_id"], self.request
-            ),
+            "assessments": assessments,
             "sectionActive": "productlist",
         }
 
