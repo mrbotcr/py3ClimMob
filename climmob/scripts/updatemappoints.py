@@ -27,7 +27,11 @@ def getProjectWithGeoPointInRegistry(dbsession):
 
     result = (
         dbsession.query(
-            Project.project_id, Project.project_cod, User.user_fullname, User.user_organization, User.user_name
+            Project.project_id,
+            Project.project_cod,
+            User.user_fullname,
+            User.user_organization,
+            User.user_name,
         )
         .filter(Project.project_id == Registry.project_id)
         .filter(userProject.project_id == Project.project_id)
@@ -61,7 +65,11 @@ def getProjectWithGeoPointInAssessment(dbsession):
     )
     result = (
         dbsession.query(
-            Project.project_id, Project.project_cod, User.user_fullname, User.user_organization, User.user_name
+            Project.project_id,
+            Project.project_cod,
+            User.user_fullname,
+            User.user_organization,
+            User.user_name,
         )
         .filter(tuple_(Project.project_cod, userProject.user_name).notin_(subquery))
         .filter(Project.project_id == Assessment.project_id)
