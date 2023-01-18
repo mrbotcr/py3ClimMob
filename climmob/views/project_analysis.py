@@ -50,7 +50,9 @@ class analysisDataView(privateView):
 
                         combinationRerence = -1
                         if "txt_reference" in dataworking:
-                            combinationRerence = dataworking["txt_reference"]
+                            combinationRerence = dataworking["txt_reference"].replace(
+                                "reference_", ""
+                            )
 
                         infosheet = dataworking["txt_infosheets"].upper()
                         dataworking["project_id"] = activeProjectData["project_id"]

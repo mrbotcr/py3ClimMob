@@ -211,7 +211,7 @@
                                                     {%for c in dataForAnalysis.Explanatory%}
                                                         {% if c.dtype in [5,6] %}
                                                             {% if c.code == None %}
-                                                                <label style="font-weight: inherit"> <input class="checkbox i-checks explanatorySplit" type="checkbox" id="explanatory_REG__{{c.id}}_add" variable="{{ c.vars }}"><i></i> {{ c.name }}</label><br>
+                                                                <label style="font-weight: inherit"> <input class="checkbox  explanatorySplit" type="checkbox" id="explanatory_REG__{{c.id}}_add" variable="{{ c.vars }}"><i></i> {{ c.name }}</label><br>
                                                             {% endif%}
                                                         {% endif%}
                                                     {%endfor%}
@@ -225,7 +225,7 @@
                                                     {% if dataForAnalysis.Explanatory %}
                                                         {%for c in dataForAnalysis.Explanatory%}
                                                             {% if c.code.ass_cod == assess.ass_cod %}
-                                                                <label style="font-weight: inherit"> <input class="checkbox i-checks explanatorySplit" type="checkbox" id="explanatory_ASS_{{ assess.ass_cod }}_{{c.id}}_add" variable="{{ c.vars }}"><i></i> {{ c.name }}</label><br>
+                                                                <label style="font-weight: inherit"> <input class="checkbox explanatorySplit" type="checkbox" id="explanatory_ASS_{{ assess.ass_cod }}_{{c.id}}_add" variable="{{ c.vars }}"><i></i> {{ c.name }}</label><br>
                                                             {% endif%}
                                                         {%endfor%}
                                                     {% endif %}
@@ -250,7 +250,7 @@
                             <div class="step-content" style="border: 2px solid #1AB394; background-color: white">
 
                                 <div class="alert alert-danger alert-dismissable" id="alert3" style="display: none">
-                                    {{ _("You must select one combination") }}
+                                    {{ _("You must select at least one combination") }}
                                 </div>
 
                                 <input type="text" class="form-control form-control-sm m-b-xs" id="filter" placeholder="{{ _("Search technology") }}">
@@ -262,10 +262,14 @@
                                     {% for combination in combinations %}
                                         <tr  id="comb{{ combination.combination_code }}">
                                             <td style="vertical-align: middle; text-align: center;">
-                                                <div class="i-checks2"><label>
-                                                    <input type="radio" name="radioReference"  value="{{ combination.combination_code }}">
-                                                    <i></i></label>
-                                                </div>
+{#                                                <div class="i-checks2"><label>#}
+{#                                                    <input type="radio" name="radioReference"  value="{{ combination.combination_code }}">#}
+{#                                                    <i></i></label>#}
+{#                                                </div>#}
+
+                                                <label style="font-weight: inherit"> <input class="checkbox referenceCombination" type="checkbox" id="reference_{{ combination.combination_code}}"><i></i></label><br>
+
+
                                             </td>
                                             <td>
                                             {% for element in combination.elements %}
@@ -360,6 +364,16 @@
 
 
             $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+
+            $('.explanatorySplit').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+
+            $('.referenceCombination').iCheck({
                 checkboxClass: 'icheckbox_square-green',
                 radioClass: 'iradio_square-green',
             });
@@ -504,9 +518,22 @@
                 radioClass: 'iradio_square-green',
             });
 
-            $('input[name="radioReference"]').on('ifClicked', function (event) {
+            /*$('input[name="radioReference"]').on('ifClicked', function (event) {
 
                 $("#txt_reference").val(this.value);
+            });*/
+
+            $('.referenceCombination').on('ifChanged', function()
+            {
+                id = $(this).attr("id")
+
+                if ($(this).prop('checked')) {
+
+                    $('#txt_reference').val($('#txt_reference').val()+id+",");
+                } else {
+                    $('#txt_reference').val($('#txt_reference').val().replace(id+",",""));
+                }
+
             });
 
             $("#filter").keyup(function () {
