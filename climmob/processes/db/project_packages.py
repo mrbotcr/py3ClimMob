@@ -67,7 +67,7 @@ def getPackages(userOwner, projectId, request):
         "          SELECT"
         "          user.user_name,user.user_fullname, project.project_name,project.project_pi,project.project_piemail,project.project_numobs,project.project_lat,project.project_lon,project.project_creationdate,project.project_numcom,"
         "          pkgcomb.package_id,package.package_code,"
-        "          COALESCE(t.tech_name,technology.tech_name) as tech_name,COALESCE(i.alias_name,techalias.alias_name) as alias_name,pkgcomb.comb_order, technology.tech_id FROM "
+        "          COALESCE(t.tech_name,technology.tech_name) as tech_name,COALESCE(i.alias_name,techalias.alias_name) as alias_name,pkgcomb.comb_order, technology.tech_id, prjalias.alias_used FROM "
         "          pkgcomb,package,prjcombination,prjcombdet,prjalias,"
         "          user,project, technology,techalias"
         "          LEFT JOIN i18n_techalias i "
@@ -101,7 +101,7 @@ def getPackages(userOwner, projectId, request):
         "          SELECT"
         "          user.user_name,user.user_fullname, project.project_name,project.project_pi,project.project_piemail,project.project_numobs,project.project_lat,project.project_lon,project.project_creationdate, project.project_numcom,"
         "          pkgcomb.package_id,package.package_code,"
-        "          COALESCE(t.tech_name,technology.tech_name) as tech_name,prjalias.alias_name,pkgcomb.comb_order, technology.tech_id FROM"
+        "          COALESCE(t.tech_name,technology.tech_name) as tech_name,prjalias.alias_name,pkgcomb.comb_order, technology.tech_id, prjalias.alias_used FROM"
         "          pkgcomb,package,prjcombination,prjcombdet,prjalias,"
         "          user,project,technology "
         "          LEFT JOIN i18n_technology t "
@@ -156,6 +156,7 @@ def getPackages(userOwner, projectId, request):
                     "tech_id": pkg.tech_id,
                     "tech_name": pkg.tech_name,
                     "alias_name": pkg.alias_name,
+                    "alias_used": pkg.alias_used,
                 }
             )
             packages.append(aPackage)
@@ -171,6 +172,7 @@ def getPackages(userOwner, projectId, request):
                         "tech_id": pkg.tech_id,
                         "tech_name": pkg.tech_name,
                         "alias_name": pkg.alias_name,
+                        "alias_used": pkg.alias_used,
                     }
                 )
             except:
@@ -184,6 +186,7 @@ def getPackages(userOwner, projectId, request):
                         "tech_id": pkg.tech_id,
                         "tech_name": pkg.tech_name,
                         "alias_name": pkg.alias_name,
+                        "alias_used": pkg.alias_used,
                     }
                 )
 

@@ -32,6 +32,7 @@ __all__ = [
     "IQRPackagesEditable",
     "IDashBoard",
     "IObservationCards",
+    "IExplanationKit",
 ]
 
 
@@ -686,6 +687,23 @@ class IQRPackagesEditable(Interface):
 class IObservationCards(Interface):
     def create_observation_cards(
         self, request, locale, userOwner, projectId, projectCod, assCod, questions
+    ):
+
+        """ """
+
+
+class IExplanationKit(Interface):
+    def create_observation_cards(
+        self,
+        request,
+        locale,
+        userOwner,
+        projectId,
+        projectCod,
+        assCod,
+        questions,
+        packages,
+        listOfLabels,
     ):
 
         """ """

@@ -44,6 +44,10 @@
 
         {% endblock observation_cards_variables %}
 
+        {% block explanation_kit_variables scoped %}
+
+        {% endblock explanation_kit_variables %}
+
         {% for product in Products %}
             {% set color = '#1c84c6' %}
             <tr class="{% if product.process_name in params %}{% if changes.update({'productToFocus': product.process_name }) %} {% endif %}requiredProduct{% endif %}" id="{{ product.process_name }}">
@@ -150,9 +154,17 @@
 
                                                                                             {% else %}
                                                                                                 {% if product.product_id == "extraoutputszip" %}
-                                                                                                    {{ _("extraoutputszip") }}
+                                                                                                    {{ _("Extra outputs of the report") }}
                                                                                                 {% else %}
-                                                                                                    {{ product.product_id }}
+                                                                                                    {% if product.product_id == "climmobexplanationkit" %}
+
+                                                                                                        {% block explanation_kit_row scoped %}
+
+                                                                                                        {% endblock explanation_kit_row %}
+
+                                                                                                    {% else %}
+                                                                                                        {{ product.product_id }}
+                                                                                                    {% endif %}
                                                                                                 {% endif %}
                                                                                             {% endif %}
                                                                                         {% endif %}
@@ -263,6 +275,10 @@
 
                             {% endblock observation_cards_update %}
 
+                            {% block explanation_kit_update scoped%}
+
+                            {% endblock explanation_kit_update %}
+
                         {% endif %}
                     {% endif %}
                 </td>
@@ -317,6 +333,10 @@
         {% block observation_cards_create scoped%}
 
         {% endblock observation_cards_create %}
+
+        {% block explanation_kit_create scoped%}
+
+        {% endblock explanation_kit_create %}
 
         {% if changes.productToFocus %}
             <script>

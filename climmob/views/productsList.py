@@ -80,6 +80,8 @@ class productsView(climmobPrivateView):
 
         hasActiveProject = False
         activeProjectData = getActiveProject(self.user.login, self.request)
+        productsAvailable = []
+
         if activeProjectData:
 
             products = getDataProduct(activeProjectData["project_id"], self.request)
@@ -108,6 +110,7 @@ class productsView(climmobPrivateView):
                         "uploaddata",
                         "dataxlsx",
                         "observationcards",
+                        "climmobexplanationkit",
                     ]:
                         assessId = product["process_name"].split("_")[3]
                         if product["product_id"] == "dataxlsx":
@@ -119,16 +122,16 @@ class productsView(climmobPrivateView):
                             self.request,
                         )
 
+                    productsAvailable.append(product)
+
             if activeProjectData["project_active"] == 1:
                 hasActiveProject = True
-        else:
-            products = []
 
         return {
             "activeUser": self.user,
             "activeProject": activeProjectData,
             "hasActiveProject": hasActiveProject,
-            "Products": products,
+            "Products": productsAvailable,
             "assessments": getProjectAssessments(
                 activeProjectData["project_id"], self.request
             ),
@@ -541,6 +544,36 @@ class generateProductView(privateView):
                     activeProjectData["project_cod"],
                     assessment_id,
                     [],
+                )
+
+        if productid == "climmobexplanationkit":
+            locale = self.request.locale_name
+            assessment_id = processname.split("_")[3]
+
+            ncombs, packages = getPackages(
+                activeProjectData["owner"]["user_name"],
+                activeProjectData["project_id"],
+                self.request,
+            )
+
+            data, finalCloseQst = getDataFormPreview(
+                self,
+                activeProjectData["owner"]["user_name"],
+                activeProjectData["project_id"],
+                assessment_id,
+            )
+
+            for plugin in p.PluginImplementations(p.IExplanationKit):
+                plugin.create_explanation_kit(
+                    self.request,
+                    locale,
+                    activeProjectData["owner"]["user_name"],
+                    activeProjectData["project_id"],
+                    activeProjectData["project_cod"],
+                    assessment_id,
+                    data,
+                    packages,
+                    listOfLabels,
                 )
 
         self.returnRawViewResult = True
