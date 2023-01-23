@@ -6,7 +6,6 @@ from email.mime.text import MIMEText
 from time import time
 from ast import literal_eval
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
-from pyramid.security import forget
 from pyramid.security import remember
 
 from climmob.config.auth import getUserData, getUserByEmail
