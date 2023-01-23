@@ -138,9 +138,6 @@ def load_environment(settings, config, apppath, policy_array):
 
     config.add_jinja2_search_path(templatesPath)
 
-    # Load all connected plugins
-    p.load_all(settings)
-
     # Add a series of helper functions to the request like pluralize
     helpers.load_plugin_helpers()
     config.add_request_method(__helper, "h", reify=True)

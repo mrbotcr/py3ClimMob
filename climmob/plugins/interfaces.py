@@ -24,7 +24,6 @@ __all__ = [
     "IUpload",
     "IDataColletionProgress",
     "IpackagesWithTechnologiesExtension",
-    # "IRhomis",
     "IEnumerator",
     "IProject",
     "ICloneProject",
@@ -32,6 +31,7 @@ __all__ = [
     "IQRPackagesEditable",
     "IDashBoard",
     "IObservationCards",
+    "IAuthenticationPolicy",
     "IExplanationKit",
 ]
 
@@ -446,32 +446,6 @@ class IUpload(Interface):
         """ """
 
 
-# class IRhomis(Interface):
-#     def start_external_data_collection_form(
-#         self, request, userOwner, projectId, projectCod, assCod
-#     ):
-#         """ """
-#
-#     def get_usable_assessments(self, request, project_id):
-#         """ """
-#
-#     def before_process_modify(self, userOwner, projectCod, data, request):
-#         """ """
-#
-#     def generate_XLS_of_data_from_an_external_form(
-#         self, request, userOwner, projectId, projectCod, assessmentId, create_xml
-#     ):
-#         """ """
-#
-#     def before_clean_errors(self, request, projectId, assCod, dic):
-#         """ """
-#
-#     def get_questions_by_type_external(
-#         self, request, projectId, assCod, assessmentData, dic
-#     ):
-#         """ """
-
-
 class IDashBoard(Interface):
     """
     Allows to hook into the process that renders the Dashboard
@@ -692,6 +666,23 @@ class IObservationCards(Interface):
         """ """
 
 
+class IAuthenticationPolicy(Interface):
+    """
+    Allows to hook up into the process that creates Authentication Policies so plugins can have custom
+    authentication pages
+    """
+
+    def get_new_authentication_policy_details(self, settings):
+        """
+        :param settings: Pyramid settings
+        :return: Returns a dict array of new authentication policies. The dict must have the following keys:
+            'secret': The secret code to encode the policy
+            'cookie_timeout': The timeout of the cookie
+            'cookie_name': The name if the cookie
+            'policy_name': The name of the new policy
+        """
+
+
 class IExplanationKit(Interface):
     def create_observation_cards(
         self,
@@ -707,3 +698,4 @@ class IExplanationKit(Interface):
     ):
 
         """ """
+

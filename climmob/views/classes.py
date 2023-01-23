@@ -3,7 +3,7 @@ import json
 import logging
 import uuid
 from hashlib import md5
-
+from ast import literal_eval
 from formencode.variabledecode import variable_decode
 from pyramid.httpexceptions import HTTPFound
 from pyramid.httpexceptions import HTTPNotFound
@@ -223,11 +223,17 @@ class privateView(object):
 
     def __call__(self):
         policy = self.get_policy("main")
-        login = policy.authenticated_userid(self.request)
-        self.user = getUserData(login, self.request)
-        self.classResult["activeUser"] = self.user
-
-        if self.user == None:
+        login_data = policy.authenticated_userid(self.request)
+        if login_data is not None:
+            login_data = literal_eval(login_data)
+            if login_data["group"] == "mainApp":
+                self.user = getUserData(login_data["login"], self.request)
+                self.classResult["activeUser"] = self.user
+                if self.user == None:
+                    return HTTPFound(location=self.request.route_url("login"))
+            else:
+                return HTTPFound(location=self.request.route_url("login"))
+        else:
             return HTTPFound(location=self.request.route_url("login"))
 
         self.classResult["counterChat"] = counterChat(self.user.login, self.request)

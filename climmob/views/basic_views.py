@@ -5,9 +5,8 @@ from email import utils
 from email.header import Header
 from email.mime.text import MIMEText
 from time import time
-
+from ast import literal_eval
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
-from pyramid.security import forget
 from pyramid.security import remember
 from climmob.config.encdecdata import encodeData
 from formencode.variabledecode import variable_decode
@@ -124,11 +123,14 @@ class login_view(publicView):
 
         # If we logged in then go to dashboard
         policy = get_policy(self.request, "main")
-        login = policy.authenticated_userid(self.request)
-        currentUser = getUserData(login, self.request)
-        if currentUser is not None:
-            self.returnRawViewResult = True
-            return HTTPFound(location=self.request.route_url("dashboard"))
+        login_data = policy.authenticated_userid(self.request)
+        if login_data:
+            login_data = literal_eval(login_data)
+            if login_data["group"] == "mainApp":
+                currentUser = getUserData(login_data["login"], self.request)
+                if currentUser is not None:
+                    self.returnRawViewResult = True
+                    return HTTPFound(location=self.request.route_url("dashboard"))
 
         next = self.request.params.get("next") or self.request.route_url("dashboard")
         login = ""
@@ -138,7 +140,8 @@ class login_view(publicView):
             passwd = self.request.POST.get("passwd", "")
             user = getUserData(login, self.request)
             if not user == None and user.check_password(passwd, self.request):
-                headers = remember(self.request, login)
+                login_data = {"login": login, "group": "mainApp"}
+                headers = remember(self.request, str(login_data), policies=["main"])
                 response = HTTPFound(location=next, headers=headers)
                 return response
             did_fail = True
@@ -318,7 +321,8 @@ class ResetPasswordView(publicView):
 
 
 def logout_view(request):
-    headers = forget(request)
+    policy = get_policy(request, "main")
+    headers = policy.forget(request)
     loc = request.route_url("home")
     return HTTPFound(location=loc, headers=headers)
 
@@ -328,11 +332,14 @@ class register_view(publicView):
 
         # If we logged in then go to dashboard
         policy = get_policy(self.request, "main")
-        login = policy.authenticated_userid(self.request)
-        currentUser = getUserData(login, self.request)
-        if currentUser is not None:
-            self.returnRawViewResult = True
-            return HTTPFound(location=self.request.route_url("dashboard"))
+        login_data = policy.authenticated_userid(self.request)
+        if login_data is not None:
+            login_data = literal_eval(login_data)
+            if login_data["group"] == "mainApp":
+                currentUser = getUserData(login_data["login"], self.request)
+                if currentUser is not None:
+                    self.returnRawViewResult = True
+                    return HTTPFound(location=self.request.route_url("dashboard"))
 
         data = {}
         error_summary = {}
@@ -371,7 +378,13 @@ class register_view(publicView):
                                 datetime.datetime.now(),
                                 self.request,
                             )
-                            headers = remember(self.request, data["user_name"])
+                            login_data = {
+                                "login": data["user_name"],
+                                "group": "mainApp",
+                            }
+                            headers = remember(
+                                self.request, str(login_data), policies=["main"]
+                            )
                             self.returnRawViewResult = True
                             return HTTPFound(
                                 location=self.request.route_url("dashboard"),
