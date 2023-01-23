@@ -30,7 +30,9 @@ __all__ = [
 ]
 
 
-def buildDatabase(cnfFile, createFile, insertFile, schema, dropSchema):
+def buildDatabase(
+    cnfFile, createFile, insertFile, schema, dropSchema, settings, outputDir
+):
     error = False
 
     if dropSchema:
@@ -106,7 +108,72 @@ def buildDatabase(cnfFile, createFile, insertFile, schema, dropSchema):
                 log.error(msg)
                 error = True
 
+    if not error:
+        print("****buildDatabase**Creating triggers******")
+        functionForCreateTheTriggers(schema, settings, outputDir, cnfFile)
+
     return error
+
+
+def functionForCreateTheTriggers(schema, settings, form_repository_path, my_cnf_file):
+
+    create_xml_file = os.path.join(form_repository_path, "create.xml")
+    create_file = os.path.join(form_repository_path, "mysql_create_audit.sql")
+    print(schema)
+    print(form_repository_path)
+    print(my_cnf_file)
+    print(create_xml_file)
+
+    if os.path.exists(create_xml_file):
+
+        parser = etree.XMLParser(remove_blank_text=True)
+        tree_create = etree.parse(create_xml_file, parser)
+        root_create = tree_create.getroot()
+        tables = root_create.findall(".//table")
+        table_array = []
+        if tables:
+            for a_table in tables:
+                table_array.append(a_table.get("name"))
+
+        create_audit_triggers = os.path.join(
+            settings["odktools.path"],
+            *["utilities", "createAuditTriggers", "createaudittriggers"]
+        )
+
+        args = [
+            create_audit_triggers,
+            "-H " + settings.get("odktools.mysql.host"),
+            "-P " + settings.get("odktools.mysql.port", "3306"),
+            "-u " + settings.get("odktools.mysql.user"),
+            "-p " + settings.get("odktools.mysql.password"),
+            "-s " + schema,
+            "-o " + form_repository_path,
+            "-t " + ",".join(table_array),
+        ]
+        p = Popen(args, stdout=PIPE, stderr=PIPE)
+        stdout, stderr = p.communicate()
+
+        if p.returncode == 0:
+            args = ["mysql", "--defaults-file=" + my_cnf_file, schema]
+
+            with open(create_file) as input_create_file:
+                proc = Popen(args, stdin=input_create_file, stderr=PIPE, stdout=PIPE)
+                output, error = proc.communicate()
+                if proc.returncode != 0:
+                    print(
+                        "Cannot create new triggers for schema {} with file {}. Error:{}-{}".format(
+                            schema,
+                            create_file,
+                            output.decode(),
+                            error.decode(),
+                        )
+                    )
+        else:
+            print(
+                "Cannot create new triggers. Error: {}-{}".format(
+                    stdout.decode(), stderr.decode()
+                )
+            )
 
 
 def createDatabase(
@@ -248,6 +315,8 @@ def createDatabase(
             insertFile,
             schema,
             dropSchema,
+            request.registry.settings,
+            outputDir,
         ),
         b"",
     )
