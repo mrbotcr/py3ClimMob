@@ -8,14 +8,15 @@
 {% block css %}
     {% cssresource request,'coreresources','sweet' %}
     {% cssresource request,'coreresources','switch' %}
+    {% cssresource request,'coreresources','switchery' %}
 {% endblock css %}
 
 {% block topScripts %}
     {% jsresource request,'coreresources','switch' %}
     {% jsresource request,'coreresources','sweet' %}
-
     {% jsresource request,'coreresources','toastr' %}
     {% include 'snippets/delete.jinja2' %}
+    {% jsresource request,'coreresources','switchery' %}
 {% endblock topScripts %}
 
 
@@ -238,10 +239,13 @@
             cleanButtons()
             cleanInputs()
 
-            if (dataJson["enum_active"] == 1)
-                $("[name='ckb_modify_status']").bootstrapSwitch('state', true);
-            else
-                $("[name='ckb_modify_status']").bootstrapSwitch('state', false);
+            if (dataJson["enum_active"] == 1) {
+                //$("[name='ckb_modify_status']").bootstrapSwitch('state', true);
+                setSwitchery(ckb_modify_status, true);
+            }else {
+                //$("[name='ckb_modify_status']").bootstrapSwitch('state', false);
+                setSwitchery(ckb_modify_status, false);
+            }
 
             $("#enum_name").val(dataJson["enum_name"])
             $("#enum_id").val(dataJson["enum_id"])

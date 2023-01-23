@@ -22,9 +22,13 @@ def create_analysis(
     # The path user.repository in development.ini/user/project/products/product and
     # user.repository in development.ini/user/project/products/product/outputs
     path = createProductDirectory(request, userOwner, projectCod, "reports")
+    pathExtraOutputs = createProductDirectory(
+        request, userOwner, projectCod, "extraoutputszip"
+    )
+
     if infosheet == "TRUE":
         pathInfosheets = createProductDirectory(
-            request, userOwner, projectCod, "infosheets"
+            request, userOwner, projectCod, "infosheetszip"
         )
     else:
         pathInfosheets = ""
@@ -34,6 +38,7 @@ def create_analysis(
             locale,
             path,
             pathInfosheets,
+            pathExtraOutputs,
             userOwner,
             projectCod,
             data,
@@ -62,11 +67,22 @@ def create_analysis(
     if infosheet == "TRUE":
         registerProductInstance(
             projectId,
-            "infosheets",
-            "Infosheets_" + projectCod + ".docx",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            "infosheets",
+            "infosheetszip",
+            "Infosheets_" + projectCod + ".zip",
+            "application/zip",
+            "infosheetszip",
             task.id,
             request,
             newTask=False,
         )
+
+    registerProductInstance(
+        projectId,
+        "extraoutputszip",
+        "Extra_outputs_" + projectCod + ".zip",
+        "application/zip",
+        "extraoutputszip",
+        task.id,
+        request,
+        newTask=False,
+    )

@@ -24,21 +24,33 @@ from climmob.models.repository import sql_execute
 
 
 def getProjectWithGeoPointInRegistry(dbsession):
+    exclude = dbsession.query(Prjtech.project_id).filter(Prjtech.tech_id.in_([78, 76]))
+
+    searchGeoPoint = (
+        dbsession.query(Registry.project_id)
+        .filter(Registry.question_id == Question.question_id)
+        .filter(Question.question_dtype == 4)
+    )
 
     result = (
         dbsession.query(
-            Project, User.user_fullname, User.user_organization, User.user_name
+            Project.project_id,
+            Project.project_cod,
+            Project.project_name,
+            Project.project_numobs,
+            Project.project_pi,
+            Project.project_piemail,
+            Project.project_creationdate,
+            User.user_fullname,
+            User.user_organization,
+            User.user_name,
         )
-        .filter(Project.project_id == Registry.project_id)
         .filter(userProject.project_id == Project.project_id)
         .filter(userProject.access_type == 1)
         .filter(userProject.user_name == User.user_name)
-        .filter(Registry.question_id == Question.question_id)
-        .filter(Question.question_dtype == 4)
+        .filter(Project.project_id.in_(searchGeoPoint))
         .filter(Project.project_regstatus > 0)
-        .filter(Prjtech.project_id == Project.project_id)
-        .filter(Prjtech.tech_id != 76)
-        .filter(Prjtech.tech_id != 78)
+        .filter(Project.project_id.not_in(exclude))
         .all()
     )
 
@@ -46,39 +58,56 @@ def getProjectWithGeoPointInRegistry(dbsession):
 
 
 def getProjectWithGeoPointInAssessment(dbsession):
+    exclude = dbsession.query(Prjtech.project_id).filter(Prjtech.tech_id.in_([78, 76]))
+
+    searchGeoPointRegistry = (
+        dbsession.query(Registry.project_id)
+        .filter(Registry.question_id == Question.question_id)
+        .filter(Question.question_dtype == 4)
+    )
+
+    searchGeoPointAssessment = (
+        dbsession.query(AssDetail.project_id)
+        .filter(AssDetail.question_id == Question.question_id)
+        .filter(Question.question_dtype == 4)
+    )
+
+    searchAssessmentsOpen = (
+        dbsession.query(Assessment.project_id)
+        .filter(Assessment.ass_status > 0)
+        .filter(Assessment.project_id.in_(searchGeoPointAssessment))
+    )
 
     subquery = (
         dbsession.query(Project.project_cod, userProject.user_name)
-        .filter(Project.project_id == Registry.project_id)
         .filter(userProject.project_id == Project.project_id)
         .filter(userProject.access_type == 1)
-        .filter(Registry.question_id == Question.question_id)
-        .filter(Question.question_dtype == 4)
+        .filter(Project.project_id.in_(searchGeoPointRegistry))
         .filter(Project.project_regstatus > 0)
-        .filter(Prjtech.project_id == Project.project_id)
-        .filter(Prjtech.tech_id != 76)
-        .filter(Prjtech.tech_id != 78)
+        .filter(Project.project_id.not_in(exclude))
+        .all()
     )
     result = (
         dbsession.query(
-            Project, User.user_fullname, User.user_organization, User.user_name
+            Project.project_id,
+            Project.project_cod,
+            Project.project_name,
+            Project.project_numobs,
+            Project.project_pi,
+            Project.project_piemail,
+            Project.project_creationdate,
+            User.user_fullname,
+            User.user_organization,
+            User.user_name,
         )
         .filter(tuple_(Project.project_cod, userProject.user_name).notin_(subquery))
-        .filter(Project.project_id == Assessment.project_id)
         .filter(userProject.project_id == Project.project_id)
         .filter(userProject.access_type == 1)
         .filter(userProject.user_name == User.user_name)
-        .filter(Assessment.ass_cod == AssDetail.ass_cod)
-        .filter(Assessment.project_id == AssDetail.project_id)
-        .filter(Assessment.ass_status > 0)
-        .filter(AssDetail.question_id == Question.question_id)
-        .filter(Question.question_dtype == 4)
-        .filter(Prjtech.project_id == Project.project_id)
-        .filter(Prjtech.tech_id != 76)
-        .filter(Prjtech.tech_id != 78)
+        .filter(Project.project_id.in_(searchAssessmentsOpen))
+        .filter(Project.project_id.not_in(exclude))
         .all()
     )
-
     return mapFromSchema(result)
 
 
@@ -228,7 +257,6 @@ def main(raw_args=None):
         dbsession = get_tm_session(session_factory, transaction.manager)
         try:
             listOfProyects = []
-            # print(len(getProjectWithGeoPointInRegistry(dbsession)))
             for project in getProjectWithGeoPointInRegistry(dbsession):
                 info, infoInTheProject = getTheFirstGeoPointQuestionCodeInRegistry(
                     project["project_id"],
@@ -241,7 +269,6 @@ def main(raw_args=None):
                     if result:
                         listOfProyects.append(result)
 
-            # print(len(getProjectWithGeoPointInAssessment(dbsession)))
             for project in getProjectWithGeoPointInAssessment(dbsession):
                 info, infoInTheProject = getTheFirstGeoPointQuestionCodeInAssessment(
                     project["project_id"],

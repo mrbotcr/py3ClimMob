@@ -169,6 +169,9 @@ def register_products(config):
     )
     products.append(analysysProduct)
 
+    """
+    This product was removed because the participant report is now a .zip file.
+    
     infosheetsProduct = addProduct("infosheets", "Create infosheets.")
     addMetadataToProduct(infosheetsProduct, "author", "Brandon Madriz")
     addMetadataToProduct(infosheetsProduct, "version", "1.0")
@@ -177,7 +180,31 @@ def register_products(config):
         "Licence",
         "Copyright 2021, MrBot Software Solutions",
     )
-    products.append(infosheetsProduct)
+    products.append(infosheetsProduct)"""
+
+    infosheetsZipProduct = addProduct(
+        "infosheetszip", "Create a .zip file for participant reports."
+    )
+    addMetadataToProduct(infosheetsZipProduct, "author", "Brandon Madriz")
+    addMetadataToProduct(infosheetsZipProduct, "version", "1.0")
+    addMetadataToProduct(
+        infosheetsZipProduct,
+        "Licence",
+        "Copyright 2023, MrBot Software Solutions",
+    )
+    products.append(infosheetsZipProduct)
+
+    extraOutputsZipProduct = addProduct(
+        "extraoutputszip", "Create a .zip file with the extra outputs of the report."
+    )
+    addMetadataToProduct(extraOutputsZipProduct, "author", "Brandon Madriz")
+    addMetadataToProduct(extraOutputsZipProduct, "version", "1.0")
+    addMetadataToProduct(
+        extraOutputsZipProduct,
+        "Licence",
+        "Copyright 2023, MrBot Software Solutions",
+    )
+    products.append(extraOutputsZipProduct)
 
     # FIELD AGENTS
     fieldagents = addProduct("fieldagents", "Create report of field agents.")

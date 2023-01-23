@@ -148,6 +148,7 @@ from climmob.views.basic_views import (
     register_view,
     logout_view,
     RecoverPasswordView,
+    ResetPasswordView,
     StoreCookieView,
     TermsView,
     PrivacyView,
@@ -331,6 +332,15 @@ def loadRoutes(config):
             "renderer": "recover.jinja2",
         }
     )
+    routes.append(
+        addRoute(
+            "reset_password",
+            "/reset/{reset_key}/password",
+            ResetPasswordView,
+            "reset_password.jinja2",
+        )
+    )
+
     routes.append(
         {
             "name": "dashboard",

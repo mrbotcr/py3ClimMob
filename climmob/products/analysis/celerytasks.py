@@ -18,6 +18,7 @@ def createReports(
     locale,
     path,
     pathInfosheets,
+    pathExtraOutputs,
     user,
     projectid,
     data,
@@ -151,23 +152,42 @@ def createReports(
 
         os.makedirs(pathInfosheets)
 
-        pathout = os.path.join(pathInfosheets, "outputs")
-        os.makedirs(pathout)
+        pathoutinfosheets = os.path.join(pathInfosheets, "outputs")
+        os.makedirs(pathoutinfosheets)
 
-        infosheetsDoc = pathouttemp + "/participants_report.docx"
+        infosheetsDir = pathouttemp + "/participant-report"
 
-        if os.path.exists(infosheetsDoc):
-            os.system(
-                "mv "
-                + infosheetsDoc
-                + " "
-                + pathout
-                + "/Infosheets_"
-                + projectid
-                + ".docx"
+        if os.path.exists(infosheetsDir):
+
+            sh.make_archive(
+                pathoutinfosheets + "/Infosheets_" + projectid,
+                format="zip",
+                root_dir=infosheetsDir,
             )
+
         else:
-            print("No existe el archivo")
+            print("The participant-report directory does not exist")
+
+    if os.path.exists(pathExtraOutputs):
+        sh.rmtree(pathExtraOutputs)
+
+    os.makedirs(pathExtraOutputs)
+
+    pathoutextra = os.path.join(pathExtraOutputs, "outputs")
+    os.makedirs(pathoutextra)
+
+    extraOutputsDir = pathouttemp + "/extra-outputs"
+
+    if os.path.exists(extraOutputsDir):
+
+        sh.make_archive(
+            pathoutextra + "/Extra_outputs_" + projectid,
+            format="zip",
+            root_dir=extraOutputsDir,
+        )
+
+    else:
+        print("The extra-outputs directory does not exist")
 
     sh.rmtree(pathouttemp)
 

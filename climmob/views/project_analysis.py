@@ -50,7 +50,9 @@ class analysisDataView(privateView):
 
                         combinationRerence = -1
                         if "txt_reference" in dataworking:
-                            combinationRerence = dataworking["txt_reference"]
+                            combinationRerence = dataworking["txt_reference"].replace(
+                                "reference_", ""
+                            )
 
                         infosheet = dataworking["txt_infosheets"].upper()
                         dataworking["project_id"] = activeProjectData["project_id"]
@@ -70,14 +72,19 @@ class analysisDataView(privateView):
                                 "productList",
                                 _query={
                                     "product1": "reports",
-                                    "product2": "infosheets",
+                                    "product2": "infosheetszip",
+                                    "product3": "extraoutputszip",
                                 },
                             )
                         )
                     else:
                         return HTTPFound(
                             location=self.request.route_url(
-                                "productList", _query={"product1": "reports"}
+                                "productList",
+                                _query={
+                                    "product1": "reports",
+                                    "product2": "extraoutputszip",
+                                },
                             )
                         )
 

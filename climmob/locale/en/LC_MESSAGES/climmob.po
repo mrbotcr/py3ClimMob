@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: climmob 3.3.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-10-13 09:59-0600\n"
+"POT-Creation-Date: 2023-01-16 16:08-0600\n"
 "PO-Revision-Date: 2021-06-01 09:47+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -16,7 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.10.1\n"
+"Generated-By: Babel 2.11.0\n"
 
 #: climmob/processes/db/assessment.py:192
 msgid ""
@@ -41,9 +41,9 @@ msgstr ""
 
 #: climmob/processes/db/assessment.py:1163
 #: climmob/processes/odk/generator.py:988
-#: climmob/templates/question/library.jinja2:564
-#: climmob/templates/question/library.jinja2:565
-#: climmob/templates/question/library.jinja2:843
+#: climmob/templates/question/library.jinja2:597
+#: climmob/templates/question/library.jinja2:598
+#: climmob/templates/question/library.jinja2:899
 #: climmob/templates/snippets/question/question-form.jinja2:408
 msgid "Other"
 msgstr ""
@@ -263,9 +263,11 @@ msgstr ""
 
 #: climmob/products/cards/celerytasks.py:67
 #: climmob/templates/dashboard/editprofile.jinja2:80
-#: climmob/templates/enumerators/enumerators.jinja2:157
+#: climmob/templates/enumerators/enumerators.jinja2:158
 #: climmob/templates/recover.jinja2:23 climmob/templates/recover.jinja2:24
 #: climmob/templates/register.jinja2:39 climmob/templates/register.jinja2:40
+#: climmob/templates/reset_password.jinja2:25
+#: climmob/templates/reset_password.jinja2:26
 #: climmob/templates/snippets/enumerators/enumerator-form.jinja2:14
 msgid "Email"
 msgstr ""
@@ -277,7 +279,7 @@ msgstr ""
 
 #: climmob/products/errorLogDocument/celerytasks.py:43
 #: climmob/templates/dashboard/dashboard.jinja2:230
-#: climmob/templates/enumerators/enumerators.jinja2:123
+#: climmob/templates/enumerators/enumerators.jinja2:124
 #: climmob/templates/project/CleanErrors/clean.jinja2:38
 msgid "Error"
 msgstr ""
@@ -294,17 +296,19 @@ msgid "Name"
 msgstr ""
 
 #: climmob/products/fieldagents/celerytasks.py:111
-#: climmob/templates/enumerators/enumerators.jinja2:115
-#: climmob/templates/enumerators/enumerators.jinja2:155
+#: climmob/templates/enumerators/enumerators.jinja2:116
+#: climmob/templates/enumerators/enumerators.jinja2:156
 #: climmob/templates/login.jinja2:55
 #: climmob/templates/projectHelp/projectHelp.jinja2:74
 #: climmob/templates/register.jinja2:64 climmob/templates/register.jinja2:65
+#: climmob/templates/reset_password.jinja2:41
+#: climmob/templates/reset_password.jinja2:42
 #: climmob/templates/snippets/enumerators/enumerator-form.jinja2:6
 msgid "Username"
 msgstr ""
 
 #: climmob/products/fieldagents/celerytasks.py:112
-#: climmob/templates/enumerators/enumerators.jinja2:158
+#: climmob/templates/enumerators/enumerators.jinja2:159
 #: climmob/templates/login.jinja2:58 climmob/templates/register.jinja2:69
 #: climmob/templates/register.jinja2:70
 #: climmob/templates/snippets/enumerators/enumerator-form.jinja2:18
@@ -411,7 +415,8 @@ msgstr ""
 msgid "Home"
 msgstr ""
 
-#: climmob/templates/landing.jinja2:14
+#: climmob/templates/landing.jinja2:14 climmob/templates/recover.jinja2:8
+#: climmob/templates/reset_password.jinja2:8
 msgid "Welcome to ClimMob"
 msgstr ""
 
@@ -501,12 +506,12 @@ msgstr ""
 #: climmob/templates/cloneProjects/cloneProjects.jinja2:201
 #: climmob/templates/cloneProjects/cloneProjects.jinja2:224
 #: climmob/templates/landing.jinja2:101
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:305
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:308
 msgid "Previous"
 msgstr ""
 
 #: climmob/templates/landing.jinja2:105
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:304
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:307
 msgid "Next"
 msgstr ""
 
@@ -593,12 +598,12 @@ msgstr ""
 msgid "Or follow us on social media"
 msgstr ""
 
-#: climmob/templates/dashboard/dashboard.jinja2:802
+#: climmob/templates/dashboard/dashboard.jinja2:819
 #: climmob/templates/landing.jinja2:682 climmob/templates/login.jinja2:71
 msgid "Copyright"
 msgstr ""
 
-#: climmob/templates/dashboard/dashboard.jinja2:802
+#: climmob/templates/dashboard/dashboard.jinja2:819
 #: climmob/templates/landing.jinja2:682 climmob/templates/login.jinja2:71
 msgid "2021, Alliance of Bioversity International and CIAT"
 msgstr ""
@@ -694,16 +699,17 @@ msgstr ""
 msgid "Privacy policy"
 msgstr ""
 
-#: climmob/templates/recover.jinja2:4
-msgid "ClimMob | Username and password recovery"
+#: climmob/templates/recover.jinja2:4 climmob/templates/reset_password.jinja2:4
+msgid "ClimMob | Reset my password"
 msgstr ""
 
-#: climmob/templates/recover.jinja2:8
-msgid "Recover your ClimMob username and password"
+#: climmob/templates/recover.jinja2:28
+msgid "We will send you an email with instructions"
 msgstr ""
 
-#: climmob/templates/recover.jinja2:26
-msgid "Recover my username and password"
+#: climmob/templates/recover.jinja2:31
+#: climmob/templates/reset_password.jinja2:44
+msgid "Reset"
 msgstr ""
 
 #: climmob/templates/register.jinja2:16
@@ -714,7 +720,7 @@ msgstr ""
 msgid "Register as user"
 msgstr ""
 
-#: climmob/templates/enumerators/enumerators.jinja2:154
+#: climmob/templates/enumerators/enumerators.jinja2:155
 #: climmob/templates/register.jinja2:35
 #: climmob/templates/snippets/enumerators/enumerator-form.jinja2:2
 msgid "Full name"
@@ -783,7 +789,7 @@ msgstr ""
 msgid "You agree with our"
 msgstr ""
 
-#: climmob/templates/dashboard/dashboard.jinja2:964
+#: climmob/templates/dashboard/dashboard.jinja2:981
 #: climmob/templates/register.jinja2:78 climmob/templates/register.jinja2:92
 #: climmob/templates/register.jinja2:96
 msgid "Terms of service"
@@ -801,11 +807,11 @@ msgstr ""
 msgid "Do you already have an account?"
 msgstr ""
 
-#: climmob/templates/dashboard/dashboard.jinja2:963
-#: climmob/templates/dashboard/dashboard.jinja2:1046
-#: climmob/templates/dashboard/dashboard.jinja2:1067
-#: climmob/templates/dashboard/dashboard.jinja2:1093
-#: climmob/templates/enumerators/enumerators.jinja2:131
+#: climmob/templates/dashboard/dashboard.jinja2:980
+#: climmob/templates/dashboard/dashboard.jinja2:1063
+#: climmob/templates/dashboard/dashboard.jinja2:1084
+#: climmob/templates/dashboard/dashboard.jinja2:1110
+#: climmob/templates/enumerators/enumerators.jinja2:132
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:363
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:384
 #: climmob/templates/project/projectList.jinja2:173
@@ -821,6 +827,24 @@ msgstr ""
 
 #: climmob/templates/register.jinja2:93
 msgid "You will use ClimMob under the following terms"
+msgstr ""
+
+#: climmob/templates/reset_password.jinja2:29
+msgid "Token"
+msgstr ""
+
+#: climmob/templates/reset_password.jinja2:30
+msgid "Password reset token"
+msgstr ""
+
+#: climmob/templates/reset_password.jinja2:33
+#: climmob/templates/reset_password.jinja2:34
+msgid "New password"
+msgstr ""
+
+#: climmob/templates/reset_password.jinja2:37
+#: climmob/templates/reset_password.jinja2:38
+msgid "New password confirmation"
 msgstr ""
 
 #: climmob/templates/terms.jinja2:13
@@ -937,28 +961,28 @@ msgid "Library"
 msgstr ""
 
 #: climmob/templates/dashboard/dashboard.jinja2:91
-#: climmob/templates/dashboard/dashboard.jinja2:1023
-#: climmob/templates/enumerators/enumerators.jinja2:24
+#: climmob/templates/dashboard/dashboard.jinja2:1040
+#: climmob/templates/enumerators/enumerators.jinja2:25
 #: climmob/templates/snippets/cloneProjects/fieldAgents.jinja2:4
 #: climmob/templates/snippets/project/project_form.jinja2:226
 msgid "Field agents"
 msgstr ""
 
 #: climmob/templates/dashboard/dashboard.jinja2:92
-#: climmob/templates/dashboard/dashboard.jinja2:1029
+#: climmob/templates/dashboard/dashboard.jinja2:1046
 #: climmob/templates/snippets/project/project_form.jinja2:227
 #: climmob/templates/technologies/technologies.jinja2:28
 msgid "Technologies"
 msgstr ""
 
 #: climmob/templates/dashboard/dashboard.jinja2:93
-#: climmob/templates/dashboard/dashboard.jinja2:1035
-#: climmob/templates/question/library.jinja2:35
+#: climmob/templates/dashboard/dashboard.jinja2:1052
+#: climmob/templates/question/library.jinja2:38
 msgid "Questions"
 msgstr ""
 
 #: climmob/templates/dashboard/dashboard.jinja2:97
-#: climmob/templates/dashboard/dashboard.jinja2:1041
+#: climmob/templates/dashboard/dashboard.jinja2:1058
 #: climmob/templates/project/productsList/productsList.jinja2:14
 #: climmob/templates/project/productsList/productsList.jinja2:16
 msgid "Downloads"
@@ -974,7 +998,7 @@ msgid "Log out"
 msgstr ""
 
 #: climmob/templates/dashboard/dashboard.jinja2:159
-#: climmob/templates/dashboard/dashboard.jinja2:791
+#: climmob/templates/dashboard/dashboard.jinja2:808
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:48
 #: climmob/templates/project/projectList.jinja2:41
 #: climmob/templates/project/registry/registry.jinja2:68
@@ -1020,7 +1044,7 @@ msgstr ""
 #: climmob/templates/dashboard/dashboard.jinja2:239
 #: climmob/templates/dashboard/dashboard.jinja2:259
 #: climmob/templates/dashboard/dashboard.jinja2:276
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:216
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:218
 msgid "Pending"
 msgstr ""
 
@@ -1146,8 +1170,8 @@ msgstr ""
 
 #: climmob/templates/dashboard/dashboard.jinja2:439
 #: climmob/templates/dashboard/dashboard.jinja2:570
-#: climmob/templates/dashboard/dashboard.jinja2:688
-#: climmob/templates/dashboard/dashboard.jinja2:744
+#: climmob/templates/dashboard/dashboard.jinja2:705
+#: climmob/templates/dashboard/dashboard.jinja2:761
 msgid "Number of submissions"
 msgstr ""
 
@@ -1221,108 +1245,122 @@ msgstr ""
 msgid "Start analysis"
 msgstr ""
 
-#: climmob/templates/dashboard/dashboard.jinja2:787
+#: climmob/templates/dashboard/dashboard.jinja2:671
+msgid "ClimMob support ticket system"
+msgstr ""
+
+#: climmob/templates/dashboard/dashboard.jinja2:675
+msgid ""
+"Any doubt, question or comment related to the ClimMob platform can be "
+"made through the support ticket system."
+msgstr ""
+
+#: climmob/templates/dashboard/dashboard.jinja2:677
+msgid "Go to the support ticket system"
+msgstr ""
+
+#: climmob/templates/dashboard/dashboard.jinja2:804
 msgid "Let's start!"
 msgstr ""
 
-#: climmob/templates/dashboard/dashboard.jinja2:788
+#: climmob/templates/dashboard/dashboard.jinja2:805
 msgid "Create a new project"
 msgstr ""
 
-#: climmob/templates/dashboard/dashboard.jinja2:812
+#: climmob/templates/dashboard/dashboard.jinja2:829
 msgid "Send us feedback"
 msgstr ""
 
-#: climmob/templates/dashboard/dashboard.jinja2:822
+#: climmob/templates/dashboard/dashboard.jinja2:839
 msgid "Write the feedback message."
 msgstr ""
 
-#: climmob/templates/dashboard/dashboard.jinja2:824
+#: climmob/templates/dashboard/dashboard.jinja2:841
 msgid "Send"
 msgstr ""
 
-#: climmob/templates/dashboard/dashboard.jinja2:835
+#: climmob/templates/dashboard/dashboard.jinja2:852
 msgid "Chat"
 msgstr ""
 
-#: climmob/templates/dashboard/dashboard.jinja2:897
-#: climmob/templates/dashboard/dashboard.jinja2:908
-#: climmob/templates/dashboard/dashboard.jinja2:915
+#: climmob/templates/dashboard/dashboard.jinja2:914
+#: climmob/templates/dashboard/dashboard.jinja2:925
+#: climmob/templates/dashboard/dashboard.jinja2:932
 msgid "ClimMob Team"
 msgstr ""
 
-#: climmob/templates/dashboard/dashboard.jinja2:905
+#: climmob/templates/dashboard/dashboard.jinja2:922
 msgid "Unread messages"
 msgstr ""
 
-#: climmob/templates/dashboard/dashboard.jinja2:915
+#: climmob/templates/dashboard/dashboard.jinja2:932
 msgid "Hi there! Any question or feedback?"
 msgstr ""
 
-#: climmob/templates/dashboard/dashboard.jinja2:975
+#: climmob/templates/dashboard/dashboard.jinja2:992
 msgid "Something here"
 msgstr ""
 
-#: climmob/templates/dashboard/dashboard.jinja2:1017
+#: climmob/templates/dashboard/dashboard.jinja2:1034
 msgid "Libraries"
 msgstr ""
 
-#: climmob/templates/dashboard/dashboard.jinja2:1018
+#: climmob/templates/dashboard/dashboard.jinja2:1035
 msgid ""
 "Libraries allow you to save information that can be assigned to different"
 " projects."
 msgstr ""
 
-#: climmob/templates/dashboard/dashboard.jinja2:1024
+#: climmob/templates/dashboard/dashboard.jinja2:1041
 msgid "Create a list of field agents that you can later use in projects"
 msgstr ""
 
-#: climmob/templates/dashboard/dashboard.jinja2:1030
+#: climmob/templates/dashboard/dashboard.jinja2:1047
 msgid ""
 "Add or check if the ClimMob library has the necessary technologies for "
 "your project"
 msgstr ""
 
-#: climmob/templates/dashboard/dashboard.jinja2:1036
+#: climmob/templates/dashboard/dashboard.jinja2:1053
 msgid "Create the questions that you want to use to evaluate in your projects"
 msgstr ""
 
-#: climmob/templates/dashboard/dashboard.jinja2:1042
+#: climmob/templates/dashboard/dashboard.jinja2:1059
 msgid ""
 "ClimMob generates different output documents per project, in this menu "
 "option you could download the information"
 msgstr ""
 
-#: climmob/templates/dashboard/dashboard.jinja2:1046
+#: climmob/templates/dashboard/dashboard.jinja2:1063
 msgid "« Prev"
 msgstr ""
 
-#: climmob/templates/dashboard/dashboard.jinja2:1046
+#: climmob/templates/dashboard/dashboard.jinja2:1063
 msgid "Next »"
 msgstr ""
 
-#: climmob/templates/dashboard/dashboard.jinja2:1062
+#: climmob/templates/dashboard/dashboard.jinja2:1079
 msgid "Update libraries"
 msgstr ""
 
-#: climmob/templates/dashboard/dashboard.jinja2:1063
+#: climmob/templates/dashboard/dashboard.jinja2:1080
 msgid ""
 "Remember that the libraries contain useful information for your projects,"
 " update them in the event that necessary information is missing for your "
 "new project"
 msgstr ""
 
-#: climmob/templates/dashboard/dashboard.jinja2:1088
+#: climmob/templates/dashboard/dashboard.jinja2:1105
 msgid "Before assign field agents"
 msgstr ""
 
-#: climmob/templates/dashboard/dashboard.jinja2:1089
+#: climmob/templates/dashboard/dashboard.jinja2:1106
 msgid ""
 "First you have to add your field agents to the library then assign them "
 "to the project"
 msgstr ""
 
-#: climmob/templates/dashboard/dashboard.jinja2:1093
+#: climmob/templates/dashboard/dashboard.jinja2:1110
 msgid "Go to add field agents"
 msgstr ""
 
@@ -1331,7 +1369,7 @@ msgid "ClimMob | Edit Profile"
 msgstr ""
 
 #: climmob/templates/dashboard/editprofile.jinja2:19
-#: climmob/templates/enumerators/enumerators.jinja2:180
+#: climmob/templates/enumerators/enumerators.jinja2:181
 #: climmob/templates/project/assessment/assessment.jinja2:116
 #: climmob/templates/project/editData/editData.jinja2:66
 msgid "Edit"
@@ -1406,28 +1444,64 @@ msgstr ""
 msgid "API Key"
 msgstr ""
 
+#: climmob/templates/email/recover_email.jinja2:3
+msgid "Dear ClimMob's user"
+msgstr ""
+
+#: climmob/templates/email/recover_email.jinja2:6
+msgid "You have received this email because you requested us on"
+msgstr ""
+
+#: climmob/templates/email/recover_email.jinja2:6
+#: climmob/templates/email/recover_email.jinja2:10
+msgid "to reset your password"
+msgstr ""
+
+#: climmob/templates/email/recover_email.jinja2:8
+msgid "Your password reset token is"
+msgstr ""
+
+#: climmob/templates/email/recover_email.jinja2:10
+msgid "Go to this URL"
+msgstr ""
+
+#: climmob/templates/email/recover_email.jinja2:12
+msgid ""
+"If you did not request us to reset your password then someone or "
+"something is trying to get into our account. Please change your password "
+"immediately!"
+msgstr ""
+
+#: climmob/templates/email/recover_email.jinja2:15
+msgid "Regards"
+msgstr ""
+
+#: climmob/templates/email/recover_email.jinja2:17
+msgid "The ClimMob team"
+msgstr ""
+
 #: climmob/templates/enumerators/enumerators.jinja2:4
 msgid "ClimMob | Field agents"
 msgstr ""
 
-#: climmob/templates/enumerators/enumerators.jinja2:35
+#: climmob/templates/enumerators/enumerators.jinja2:36
 msgid "Field agent details"
 msgstr ""
 
-#: climmob/templates/enumerators/enumerators.jinja2:37
+#: climmob/templates/enumerators/enumerators.jinja2:38
 #: climmob/templates/project/assessment/assessment.jinja2:52
 #: climmob/templates/projectHelp/projectHelp.jinja2:30
 msgid "Clear form"
 msgstr ""
 
-#: climmob/templates/enumerators/enumerators.jinja2:55
+#: climmob/templates/enumerators/enumerators.jinja2:56
 #: climmob/templates/project/assessment/assessment.jinja2:64
 #: climmob/templates/project/technologies/technologies.jinja2:222
 #: climmob/templates/snippets/project/technologies/techgroup.jinja2:31
 msgid "Add"
 msgstr ""
 
-#: climmob/templates/enumerators/enumerators.jinja2:56
+#: climmob/templates/enumerators/enumerators.jinja2:57
 #: climmob/templates/project/assessment/assessment.jinja2:65
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:116
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:117
@@ -1437,102 +1511,102 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-#: climmob/templates/enumerators/enumerators.jinja2:68
+#: climmob/templates/enumerators/enumerators.jinja2:69
 msgid "Add field agents using Excel"
 msgstr ""
 
-#: climmob/templates/enumerators/enumerators.jinja2:74
+#: climmob/templates/enumerators/enumerators.jinja2:75
 msgid ""
 "1. Download the following template with the fields needed to add field "
 "agents:"
 msgstr ""
 
-#: climmob/templates/enumerators/enumerators.jinja2:78
+#: climmob/templates/enumerators/enumerators.jinja2:79
 msgid "Download template"
 msgstr ""
 
-#: climmob/templates/enumerators/enumerators.jinja2:82
+#: climmob/templates/enumerators/enumerators.jinja2:83
 msgid "2. Fill in the template with the field agent information."
 msgstr ""
 
-#: climmob/templates/enumerators/enumerators.jinja2:84
+#: climmob/templates/enumerators/enumerators.jinja2:85
 msgid ""
 "3. Browse and select the template with the information and then click on "
 "the 'Upload' button."
 msgstr ""
 
-#: climmob/templates/enumerators/enumerators.jinja2:91
+#: climmob/templates/enumerators/enumerators.jinja2:92
 msgid "Data file in .xlsx format"
 msgstr ""
 
-#: climmob/templates/enumerators/enumerators.jinja2:95
+#: climmob/templates/enumerators/enumerators.jinja2:96
 msgid "Select the Excel"
 msgstr ""
 
-#: climmob/templates/enumerators/enumerators.jinja2:102
+#: climmob/templates/enumerators/enumerators.jinja2:103
 msgid "Upload"
 msgstr ""
 
-#: climmob/templates/enumerators/enumerators.jinja2:108
+#: climmob/templates/enumerators/enumerators.jinja2:109
 msgid "Result of data upload"
 msgstr ""
 
-#: climmob/templates/enumerators/enumerators.jinja2:114
+#: climmob/templates/enumerators/enumerators.jinja2:115
 msgid "Line number"
 msgstr ""
 
-#: climmob/templates/enumerators/enumerators.jinja2:116
-#: climmob/templates/enumerators/enumerators.jinja2:159
+#: climmob/templates/enumerators/enumerators.jinja2:117
+#: climmob/templates/enumerators/enumerators.jinja2:160
 msgid "Status"
 msgstr ""
 
-#: climmob/templates/enumerators/enumerators.jinja2:117
+#: climmob/templates/enumerators/enumerators.jinja2:118
 msgid "Message"
 msgstr ""
 
-#: climmob/templates/enumerators/enumerators.jinja2:123
+#: climmob/templates/enumerators/enumerators.jinja2:124
 msgid "Success"
 msgstr ""
 
-#: climmob/templates/enumerators/enumerators.jinja2:142
+#: climmob/templates/enumerators/enumerators.jinja2:143
 msgid "Registered field agents"
 msgstr ""
 
-#: climmob/templates/enumerators/enumerators.jinja2:145
+#: climmob/templates/enumerators/enumerators.jinja2:146
 msgid "Back to assign field agents to the project"
 msgstr ""
 
-#: climmob/templates/enumerators/enumerators.jinja2:156
+#: climmob/templates/enumerators/enumerators.jinja2:157
 #: climmob/templates/snippets/enumerators/enumerator-form.jinja2:10
 msgid "Telephone"
 msgstr ""
 
-#: climmob/templates/enumerators/enumerators.jinja2:173
+#: climmob/templates/enumerators/enumerators.jinja2:174
 #: climmob/templates/snippets/cloneProjects/fieldAgents.jinja2:17
 #: climmob/templates/snippets/enumerators/enumerator-form.jinja2:26
 msgid "Can submit data"
 msgstr ""
 
-#: climmob/templates/enumerators/enumerators.jinja2:175
+#: climmob/templates/enumerators/enumerators.jinja2:176
 #: climmob/templates/snippets/cloneProjects/fieldAgents.jinja2:19
 msgid "Cannot submit data"
 msgstr ""
 
-#: climmob/templates/enumerators/enumerators.jinja2:180
+#: climmob/templates/enumerators/enumerators.jinja2:181
 msgid "Edit field agent"
 msgstr ""
 
-#: climmob/templates/enumerators/enumerators.jinja2:181
+#: climmob/templates/enumerators/enumerators.jinja2:182
 #: climmob/templates/project/enumerators/enumerators.jinja2:147
 msgid "Do you really want to delete this field agent?"
 msgstr ""
 
-#: climmob/templates/enumerators/enumerators.jinja2:181
+#: climmob/templates/enumerators/enumerators.jinja2:182
 #: climmob/templates/project/enumerators/enumerators.jinja2:147
 msgid "Delete field agent"
 msgstr ""
 
-#: climmob/templates/enumerators/enumerators.jinja2:181
+#: climmob/templates/enumerators/enumerators.jinja2:182
 #: climmob/templates/project/assessment/assessment.jinja2:117
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:118
 #: climmob/templates/project/enumerators/enumerators.jinja2:147
@@ -1542,7 +1616,7 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-#: climmob/templates/enumerators/enumerators.jinja2:190
+#: climmob/templates/enumerators/enumerators.jinja2:191
 msgid "No field agents to display"
 msgstr ""
 
@@ -1749,32 +1823,32 @@ msgstr ""
 msgid "ClimMob | Project profile"
 msgstr ""
 
-#: climmob/templates/project/modifyproject.jinja2:30
+#: climmob/templates/project/modifyproject.jinja2:32
 #: climmob/templates/projectHelp/projectHelp.jinja2:83
 #: climmob/templates/snippets/cloneProjects/projectDetails.jinja2:4
 msgid "Project profile"
 msgstr ""
 
-#: climmob/templates/project/modifyproject.jinja2:64
+#: climmob/templates/project/modifyproject.jinja2:66
 msgid "Do you really want to delete this project?"
 msgstr ""
 
-#: climmob/templates/project/modifyproject.jinja2:64
+#: climmob/templates/project/modifyproject.jinja2:66
 msgid "Delete project"
 msgstr ""
 
-#: climmob/templates/project/modifyproject.jinja2:70
-#: climmob/templates/question/library.jinja2:95
-#: climmob/templates/question/library.jinja2:96
-#: climmob/templates/question/library.jinja2:123
-#: climmob/templates/question/library.jinja2:124
+#: climmob/templates/project/modifyproject.jinja2:72
+#: climmob/templates/question/library.jinja2:98
+#: climmob/templates/question/library.jinja2:99
+#: climmob/templates/question/library.jinja2:126
+#: climmob/templates/question/library.jinja2:127
 #: climmob/templates/technologies/technologies.jinja2:113
 #: climmob/templates/technologies/technologies.jinja2:172
 msgid "Save and close"
 msgstr ""
 
-#: climmob/templates/project/modifyproject.jinja2:111
-#: climmob/templates/project/newproject.jinja2:91
+#: climmob/templates/project/modifyproject.jinja2:118
+#: climmob/templates/project/newproject.jinja2:99
 #: climmob/templates/snippets/project/project_form.jinja2:185
 msgid "Select a template"
 msgstr ""
@@ -1783,8 +1857,8 @@ msgstr ""
 msgid "ClimMob | New project"
 msgstr ""
 
-#: climmob/templates/project/newproject.jinja2:25
-#: climmob/templates/project/newproject.jinja2:50
+#: climmob/templates/project/newproject.jinja2:27
+#: climmob/templates/project/newproject.jinja2:52
 msgid "Create project"
 msgstr ""
 
@@ -1969,72 +2043,72 @@ msgstr ""
 msgid "ClimMob | Analysis"
 msgstr ""
 
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:24
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:25
 msgid "Analize data"
 msgstr ""
 
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:47
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:48
 msgid "Create the analysis"
 msgstr ""
 
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:59
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:60
 msgid "Select your variables to analyze"
 msgstr ""
 
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:62
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:199
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:63
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:198
 msgid "You must select at least one variable"
 msgstr ""
 
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:67
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:205
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:68
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:204
 msgid "Data collection moments"
 msgstr ""
 
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:68
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:69
 msgid "Explanatory"
 msgstr ""
 
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:69
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:70
 msgid "Linear regression"
 msgstr ""
 
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:71
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:72
 #: climmob/templates/snippets/question/question-form.jinja2:25
 msgid "Ranking of options"
 msgstr ""
 
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:72
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:73
 #: climmob/templates/project/assessment/assessment.jinja2:101
 #: climmob/templates/project/assessment/assessment.jinja2:106
 #: climmob/templates/snippets/question/question-form.jinja2:26
 msgid "Comparison with check"
 msgstr ""
 
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:76
 #: climmob/templates/project/analysis/projectAnalysis.jinja2:77
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:79
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:78
 #: climmob/templates/project/analysis/projectAnalysis.jinja2:80
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:81
 msgid "Select all"
 msgstr ""
 
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:83
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:209
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:84
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:208
 msgid "Registration"
 msgstr ""
 
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:187
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:188
 msgid "Splits"
 msgstr ""
 
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:189
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:190
 msgid ""
 "Do you want to do an extra analysis, separating by the values of the "
 "selection questions?"
 msgstr ""
 
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:194
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:246
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:192
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:245
 #: climmob/templates/snippets/enumerators/enumerator-form.jinja2:27
 #: climmob/templates/snippets/project/project_form.jinja2:171
 #: climmob/templates/snippets/question/question-form.jinja2:430
@@ -2045,8 +2119,8 @@ msgstr ""
 msgid "Yes"
 msgstr ""
 
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:194
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:246
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:192
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:245
 #: climmob/templates/snippets/enumerators/enumerator-form.jinja2:27
 #: climmob/templates/snippets/project/project_form.jinja2:171
 #: climmob/templates/snippets/question/question-form.jinja2:431
@@ -2057,57 +2131,69 @@ msgstr ""
 msgid "No"
 msgstr ""
 
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:206
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:205
 msgid "Make split by variable"
 msgstr ""
 
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:240
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:239
 msgid "Infosheets"
 msgstr ""
 
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:244
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:243
 msgid ""
 "Do you want to generate an individual feedback report for the "
 "participants ?"
 msgstr ""
 
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:250
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:249
 msgid "Select the reference combination"
 msgstr ""
 
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:254
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:253
 msgid "You must select one combination"
 msgstr ""
 
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:257
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:256
 #: climmob/templates/project/technologies/technologies.jinja2:65
 #: climmob/templates/technologies/technologies.jinja2:55
 msgid "Search technology"
 msgstr ""
 
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:260
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:259
 msgid "Select"
 msgstr ""
 
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:261
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:260
 msgid "Combination"
 msgstr ""
 
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:284
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:303
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:283
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:306
 msgid "Perform analysis"
 msgstr ""
 
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:301
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:304
 msgid "current step"
 msgstr ""
 
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:302
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:305
 msgid "Pagination"
 msgstr ""
 
-#: climmob/templates/project/analysis/projectAnalysis.jinja2:306
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:309
 msgid "Loading"
+msgstr ""
+
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:382
+msgid ""
+"{} is the maximum number of explanatory variables you can analyze at the "
+"same time. Not all variables can be selected at the same time"
+msgstr ""
+
+#: climmob/templates/project/analysis/projectAnalysis.jinja2:412
+msgid ""
+"You have reached the maximum number of explanatory variables allowed for "
+"the analysis."
 msgstr ""
 
 #: climmob/templates/project/assessment/assessment.jinja2:4
@@ -2205,8 +2291,8 @@ msgstr ""
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:106
 #: climmob/templates/project/registry/registry.jinja2:129
 #: climmob/templates/project/technologies/technologies.jinja2:204
-#: climmob/templates/question/library.jinja2:81
-#: climmob/templates/question/library.jinja2:112
+#: climmob/templates/question/library.jinja2:84
+#: climmob/templates/question/library.jinja2:115
 #: climmob/templates/technologies/technologies.jinja2:101
 #: climmob/templates/technologies/technologies.jinja2:141
 msgid "Clear and close form"
@@ -2216,7 +2302,7 @@ msgstr ""
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:379
 #: climmob/templates/project/registry/registry.jinja2:159
 #: climmob/templates/project/registry/registry.jinja2:420
-#: climmob/templates/question/library.jinja2:137
+#: climmob/templates/question/library.jinja2:140
 msgid "Preview"
 msgstr ""
 
@@ -2801,64 +2887,64 @@ msgstr ""
 msgid "ClimMob | Questions library"
 msgstr ""
 
-#: climmob/templates/question/library.jinja2:49
+#: climmob/templates/question/library.jinja2:52
 msgid "Questions available in the library by category"
 msgstr ""
 
-#: climmob/templates/question/library.jinja2:53
+#: climmob/templates/question/library.jinja2:56
 msgid "Go back to prepare participant registration form"
 msgstr ""
 
-#: climmob/templates/question/library.jinja2:55
+#: climmob/templates/question/library.jinja2:58
 msgid "Go back to prepare trial data collection moment"
 msgstr ""
 
-#: climmob/templates/question/library.jinja2:79
+#: climmob/templates/question/library.jinja2:82
 msgid "Category details"
 msgstr ""
 
-#: climmob/templates/question/library.jinja2:86
+#: climmob/templates/question/library.jinja2:89
 msgid "Category name:"
 msgstr ""
 
-#: climmob/templates/question/library.jinja2:97
+#: climmob/templates/question/library.jinja2:100
 msgid "Delete category"
 msgstr ""
 
-#: climmob/templates/question/library.jinja2:110
+#: climmob/templates/question/library.jinja2:113
 msgid "Question details"
 msgstr ""
 
-#: climmob/templates/question/library.jinja2:125
+#: climmob/templates/question/library.jinja2:128
 msgid "Delete question"
 msgstr ""
 
-#: climmob/templates/question/library.jinja2:187
-#: climmob/templates/question/library.jinja2:198
+#: climmob/templates/question/library.jinja2:211
+#: climmob/templates/question/library.jinja2:222
 #: climmob/templates/snippets/project/project_form.jinja2:251
 #: climmob/templates/snippets/project/project_form.jinja2:262
 msgid "Used"
 msgstr ""
 
-#: climmob/templates/question/library.jinja2:187
-#: climmob/templates/question/library.jinja2:198
+#: climmob/templates/question/library.jinja2:211
+#: climmob/templates/question/library.jinja2:222
 #: climmob/templates/snippets/project/project_form.jinja2:251
 #: climmob/templates/snippets/project/project_form.jinja2:262
 msgid "of"
 msgstr ""
 
-#: climmob/templates/question/library.jinja2:187
-#: climmob/templates/question/library.jinja2:198
+#: climmob/templates/question/library.jinja2:211
+#: climmob/templates/question/library.jinja2:222
 #: climmob/templates/snippets/project/project_form.jinja2:251
 #: climmob/templates/snippets/project/project_form.jinja2:262
 msgid "chars"
 msgstr ""
 
-#: climmob/templates/question/library.jinja2:286
-#: climmob/templates/question/library.jinja2:545
-#: climmob/templates/question/library.jinja2:564
-#: climmob/templates/question/library.jinja2:585
-#: climmob/templates/question/library.jinja2:838
+#: climmob/templates/question/library.jinja2:316
+#: climmob/templates/question/library.jinja2:577
+#: climmob/templates/question/library.jinja2:597
+#: climmob/templates/question/library.jinja2:619
+#: climmob/templates/question/library.jinja2:894
 #: climmob/templates/snippets/project/previewForm.jinja2:74
 #: climmob/templates/snippets/project/previewForm.jinja2:75
 #: climmob/templates/snippets/project/previewForm.jinja2:76
@@ -2870,36 +2956,36 @@ msgstr ""
 msgid "Option"
 msgstr ""
 
-#: climmob/templates/question/library.jinja2:286
-#: climmob/templates/question/library.jinja2:545
-#: climmob/templates/question/library.jinja2:564
-#: climmob/templates/question/library.jinja2:585
-#: climmob/templates/question/library.jinja2:838
+#: climmob/templates/question/library.jinja2:316
+#: climmob/templates/question/library.jinja2:577
+#: climmob/templates/question/library.jinja2:597
+#: climmob/templates/question/library.jinja2:619
+#: climmob/templates/question/library.jinja2:894
 msgid "Write the option value."
 msgstr ""
 
-#: climmob/templates/question/library.jinja2:415
+#: climmob/templates/question/library.jinja2:447
 msgid "Do you really want to remove this question ?"
 msgstr ""
 
-#: climmob/templates/question/library.jinja2:565
-#: climmob/templates/question/library.jinja2:843
+#: climmob/templates/question/library.jinja2:598
+#: climmob/templates/question/library.jinja2:899
 msgid "Value is other"
 msgstr ""
 
-#: climmob/templates/question/library.jinja2:585
-#: climmob/templates/question/library.jinja2:586
-#: climmob/templates/question/library.jinja2:850
+#: climmob/templates/question/library.jinja2:619
+#: climmob/templates/question/library.jinja2:620
+#: climmob/templates/question/library.jinja2:906
 #: climmob/templates/snippets/question/question-form.jinja2:413
 msgid "Not applicable"
 msgstr ""
 
-#: climmob/templates/question/library.jinja2:586
-#: climmob/templates/question/library.jinja2:850
+#: climmob/templates/question/library.jinja2:620
+#: climmob/templates/question/library.jinja2:906
 msgid "Value is not applicable"
 msgstr ""
 
-#: climmob/templates/question/library.jinja2:638
+#: climmob/templates/question/library.jinja2:673
 msgid "Write the name of the category"
 msgstr ""
 
@@ -3266,148 +3352,148 @@ msgstr ""
 msgid "Format"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:48
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:139
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:50
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:141
 msgid "List of packages with QR for the participant registration form"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:51
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:53
 msgid "List with randomized trial packages"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:54
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:56
 msgid "List with field agents and their QR codes to configure ODK Collect"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:57
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:59
 msgid "Color cards to explain ClimMob"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:63
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:278
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:65
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:280
 msgid "Information collected in all the project in .CSV format"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:66
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:68
 msgid "Information collected in the participant registration form in .CSV format"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:68
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:133
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:70
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:135
 msgid "Information collected in the trial data collection moment form"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:68
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:70
 msgid "in .CSV format"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:75
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:77
 msgid "Report generated in the analysis of the information"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:78
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:80
 msgid "Data collected in "
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:82
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:84
 msgid "Participant registration form to fill by hand"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:84
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:86
 msgid "Trial data collection moment form to fill by hand"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:89
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:290
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:91
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:292
 msgid "Project summary"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:93
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:95
 msgid "Progress report on trial data collection"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:96
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:98
 msgid "Stickers for each variety pack"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:100
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:102
 msgid ""
 "Document of submissions with conflicts in the participant registration "
 "form"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:102
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:104
 msgid ""
 "Document of submissions with conflicts in the trial data collection "
 "moment form"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:107
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:109
 msgid "Multimedia content collected in the participant registration form"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:109
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:111
 msgid "Multimedia content collected in the trial data collection moment form"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:113
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:115
 msgid "Individual feedback reports for participants"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:117
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:119
 msgid "Excel template for uploading participant registration form data"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:119
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:121
 msgid "Excel template for uploading trial data collection moment form data"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:123
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:125
 msgid ""
 "List of packages with QR for the participant registration form (Showing "
 "technology options)."
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:128
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:266
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:130
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:268
 msgid "Information collected in all the project in .XLSX format"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:131
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:133
 msgid "Information collected in the participant registration form in .XLSX format"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:133
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:135
 msgid "in .XLSX format"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:139
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:141
 msgid "Editable"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:199
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:201
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:203
 msgid "Download"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:205
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:208
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:220
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:223
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:270
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:282
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:294
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:207
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:210
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:222
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:225
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:272
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:284
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:296
 msgid "Create"
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:212
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:226
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:214
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:228
 msgid "There was a problem creating the product."
 msgstr ""
 
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:235
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:239
-#: climmob/templates/snippets/project/productsList/productsList.jinja2:243
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:237
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:241
+#: climmob/templates/snippets/project/productsList/productsList.jinja2:245
 msgid "Update"
 msgstr ""
 
@@ -4004,7 +4090,7 @@ msgstr ""
 msgid "Email cannot be emtpy"
 msgstr ""
 
-#: climmob/utility/validators.py:42 climmob/views/enumerator.py:272
+#: climmob/utility/validators.py:42 climmob/views/enumerator.py:294
 msgid "The username can only use lowercase letters and numbers."
 msgstr ""
 
@@ -4041,102 +4127,93 @@ msgid ""
 " problem:"
 msgstr ""
 
-#: climmob/views/basic_views.py:137
-msgid "ClimMob Version 3 - Password recovery"
+#: climmob/views/basic_views.py:157
+msgid "ClimMob - Password reset request"
 msgstr ""
 
-#: climmob/views/basic_views.py:176
-msgid ""
-"Hello, \n"
-"\n"
-msgstr ""
-
-#: climmob/views/basic_views.py:177
-msgid ""
-"You requested ClimMob Version 3 to send you your password.\n"
-"\n"
-msgstr ""
-
-#: climmob/views/basic_views.py:180
-msgid "Your account is: {} \n"
-msgstr ""
-
-#: climmob/views/basic_views.py:183
-msgid ""
-"Your password is: {} \n"
-"\n"
-msgstr ""
-
-#: climmob/views/basic_views.py:186
-msgid "Regards,\n"
-msgstr ""
-
-#: climmob/views/basic_views.py:187
-msgid "The ClimMob team.\n"
-msgstr ""
-
-#: climmob/views/basic_views.py:192
+#: climmob/views/basic_views.py:234
 msgid "Cannot find an user with such email address"
 msgstr ""
 
-#: climmob/views/basic_views.py:196
+#: climmob/views/basic_views.py:238
 msgid "You need to provide an email address"
 msgstr ""
 
-#: climmob/views/basic_views.py:263
+#: climmob/views/basic_views.py:300
+msgid "The password and the confirmation are not the same"
+msgstr ""
+
+#: climmob/views/basic_views.py:306
+msgid "The password cannot be empty"
+msgstr ""
+
+#: climmob/views/basic_views.py:309 climmob/views/basic_views.py:311
+msgid "Invalid token"
+msgstr ""
+
+#: climmob/views/basic_views.py:313
+msgid "Invalid key"
+msgstr ""
+
+#: climmob/views/basic_views.py:315
+msgid "User does not exist"
+msgstr ""
+
+#: climmob/views/basic_views.py:382
 msgid "Password does not match {}"
 msgstr ""
 
-#: climmob/views/basic_views.py:268
+#: climmob/views/basic_views.py:387
 msgid "User is None!"
 msgstr ""
 
-#: climmob/views/basic_views.py:270
+#: climmob/views/basic_views.py:389
 msgid "Unable to create user"
 msgstr ""
 
-#: climmob/views/enumerator.py:95
+#: climmob/views/enumerator.py:105
 msgid ""
 "The Excel file used does not contain a sheet called Data. Please use the "
 "template generated by ClimMob in Field agents section."
 msgstr ""
 
-#: climmob/views/enumerator.py:105
+#: climmob/views/enumerator.py:115
 msgid ""
 "The Excel file used does not contain the necessary formatting to be "
 "processed. Please use the template generated by ClimMob in Field agents "
 "section."
 msgstr ""
 
-#: climmob/views/Api/enumerators.py:191 climmob/views/enumerator.py:181
-msgid "The field agent was modified successfully."
-msgstr ""
-
-#: climmob/views/enumerator.py:189 climmob/views/enumerator.py:256
-msgid "The email is invalid."
-msgstr ""
-
-#: climmob/views/Api/enumerators.py:76 climmob/views/enumerator.py:250
+#: climmob/views/Api/enumerators.py:76 climmob/views/enumerator.py:144
+#: climmob/views/enumerator.py:276
 msgid "The field agent was created successfully."
 msgstr ""
 
-#: climmob/views/enumerator.py:260
+#: climmob/views/Api/enumerators.py:191 climmob/views/enumerator.py:201
+msgid "The field agent was modified successfully."
+msgstr ""
+
+#: climmob/views/enumerator.py:208 climmob/views/enumerator.py:283
+msgid "The email is invalid."
+msgstr ""
+
+#: climmob/views/enumerator.py:285
 msgid "Password is required"
 msgstr ""
 
-#: climmob/views/enumerator.py:264
+#: climmob/views/enumerator.py:287
 msgid "Full name is required"
 msgstr ""
 
-#: climmob/views/enumerator.py:268
+#: climmob/views/enumerator.py:290
 msgid "This field agent username already exists."
 msgstr ""
 
-#: climmob/views/enumerator.py:276
+#: climmob/views/enumerator.py:299
 msgid "Username is required"
 msgstr ""
 
-#: climmob/views/enumerator.py:326
+#: climmob/views/enumerator.py:349
 msgid "The field agent was successfully removed"
 msgstr ""
 
@@ -6487,5 +6564,44 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Information collected in all the project"
+#~ msgstr ""
+
+#~ msgid "ClimMob | Username and password recovery"
+#~ msgstr ""
+
+#~ msgid "Recover your ClimMob username and password"
+#~ msgstr ""
+
+#~ msgid "Recover my username and password"
+#~ msgstr ""
+
+#~ msgid "ClimMob Version 3 - Password recovery"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Hello, \n"
+#~ "\n"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "You requested ClimMob Version 3 to send you your password.\n"
+#~ "\n"
+#~ msgstr ""
+
+#~ msgid "Your account is: {} \n"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Your password is: {} \n"
+#~ "\n"
+#~ msgstr ""
+
+#~ msgid "Regards,\n"
+#~ msgstr ""
+
+#~ msgid "The ClimMob team.\n"
+#~ msgstr ""
+
+#~ msgid "Dear ClimMob'user"
 #~ msgstr ""
 
