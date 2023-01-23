@@ -85,8 +85,10 @@
         </form>
 
         <script>
-            var elem_project_template = document.querySelector('#project_template');
-            var ckb_project_template = new Switchery(elem_project_template, { color: '#1AB394' });
+            {% if activeUser.login == "bioversity" %}
+                var elem_project_template = document.querySelector('#project_template');
+                var ckb_project_template = new Switchery(elem_project_template, { color: '#1AB394' });
+            {% endif %}
 
             $(document).ready(function () {
 
