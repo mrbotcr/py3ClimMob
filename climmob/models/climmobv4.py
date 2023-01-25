@@ -860,13 +860,13 @@ class Techalia(Base):
     tech = relationship("Technology")
 
 
-# class Crop(Base):
-#     __tablename__ = "crop"
-#
-#     __table_args__ = ({"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"},)
-#
-#     crop_code = Column(Integer, primary_key=True, autoincrement=False)
-#     crop_name = Column(Unicode(45))
+class CropTaxonomy(Base):
+    __tablename__ = "croptaxonomy"
+
+    __table_args__ = ({"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"},)
+
+    taxonomy_code = Column(Integer, primary_key=True, autoincrement=False)
+    taxonomy_name = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
 
 
 class Technology(Base):
