@@ -869,6 +869,22 @@ class CropTaxonomy(Base):
     taxonomy_name = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
 
 
+class I18nCropTaxonomy(Base):
+    __tablename__ = "i18n_croptaxonomy"
+    __table_args__ = (
+        ForeignKeyConstraint(["taxonomy_code"], ["croptaxonomy.taxonomy_code"]),
+    )
+
+    taxonomy_code = Column(Integer, primary_key=True, nullable=False)
+    lang_code = Column(
+        ForeignKey("i18n.lang_code"), primary_key=True, nullable=False, index=True
+    )
+    crop_name = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
+
+    i18n = relationship("I18n")
+    croptaxonomy = relationship("CropTaxonomy")
+
+
 class Technology(Base):
     __tablename__ = "technology"
 
