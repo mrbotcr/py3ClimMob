@@ -20,10 +20,16 @@ depends_on = None
 
 def upgrade():
 
-    languages = [
+    language_en = [
         {"lang_code": "en", "lang_name": "English"},
+    ]
+    language_es = [
         {"lang_code": "es", "lang_name": "Español"},
+    ]
+    language_fr = [
         {"lang_code": "fr", "lang_name": "Française"},
+    ]
+    language_pt = [
         {"lang_code": "pt", "lang_name": "Portugues"},
     ]
 
@@ -9363,13 +9369,27 @@ def upgrade():
         ["lang_code"],
         unique=False,
     )
-
     i18n_table = table(
         "i18n",
         column("lang_code", String),
         column("lang_name", String),
     )
-    op.bulk_insert(i18n_table, languages)
+    try:
+        op.bulk_insert(i18n_table, language_en)
+    except:
+        pass
+    try:
+        op.bulk_insert(i18n_table, language_es)
+    except:
+        pass
+    try:
+        op.bulk_insert(i18n_table, language_fr)
+    except:
+        pass
+    try:
+        op.bulk_insert(i18n_table, language_pt)
+    except:
+        pass
 
     crops_table = table(
         "i18n_croptaxonomy",
