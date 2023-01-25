@@ -9322,6 +9322,18 @@ def upgrade():
         {"taxonomy_code": 1412, "lang_code": "en", "crop_name": "shipova"},
         {"taxonomy_code": 1413, "lang_code": "en", "crop_name": "triticale"},
         {"taxonomy_code": 1413, "lang_code": "fr", "crop_name": "triticale"},
+        {"taxonomy_code": 1415, "lang_code": "en", "crop_name": "Dill"},
+        {"taxonomy_code": 1415, "lang_code": "es", "crop_name": "Eneldo"},
+        {"taxonomy_code": 1415, "lang_code": "fr", "crop_name": "Aneth"},
+        {"taxonomy_code": 1415, "lang_code": "pt", "crop_name": "Aneto"},
+        {"taxonomy_code": 1416, "lang_code": "en", "crop_name": "Hardneck Garlic"},
+        {"taxonomy_code": 1416, "lang_code": "es", "crop_name": "Ajo Hardneck"},
+        {"taxonomy_code": 1416, "lang_code": "fr", "crop_name": "Ail Hardneck"},
+        {"taxonomy_code": 1416, "lang_code": "pt", "crop_name": "Alho Hardneck"},
+        {"taxonomy_code": 1417, "lang_code": "en", "crop_name": "Softneck Garlic"},
+        {"taxonomy_code": 1417, "lang_code": "es", "crop_name": "Ajo Softneck"},
+        {"taxonomy_code": 1417, "lang_code": "fr", "crop_name": "Ail Softneck"},
+        {"taxonomy_code": 1417, "lang_code": "pt", "crop_name": "Alho Softneck"},
     ]
 
     op.create_table(

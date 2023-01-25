@@ -2647,6 +2647,9 @@ def upgrade():
             "taxonomy_name": "×Sorbopyrus auricularis (Knoop) C. K. Schneid.",
         },
         {"taxonomy_code": 1413, "taxonomy_name": "×Triticosecale  spp."},
+        {"taxonomy_code": 1415, "taxonomy_name": "Anethum graveolens"},
+        {"taxonomy_code": 1416, "taxonomy_name": "Allium sativum var. ophioscorodon"},
+        {"taxonomy_code": 1417, "taxonomy_name": "Allium sativum var. sativum"},
     ]
 
     op.create_table(
