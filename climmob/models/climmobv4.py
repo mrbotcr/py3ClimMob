@@ -875,15 +875,15 @@ class Technology(Base):
     tech_id = Column(Integer, primary_key=True)
     tech_name = Column(Unicode(45))
     user_name = Column(ForeignKey("user.user_name", ondelete="CASCADE"), index=True)
-    # crop_code = Column(
-    #     ForeignKey("crop.crop_code", ondelete="RESTRICT"),
-    #     index=True,
-    #     nullable=False,
-    #     server_default=text("'0'"),
-    # )
+    croptaxonomy_code = Column(
+        ForeignKey("croptaxonomy.taxonomy_code", ondelete="RESTRICT"),
+        index=True,
+        nullable=False,
+        server_default=text("'0'"),
+    )
 
     user = relationship("User")
-    # crop = relationship("Crop")
+    crop = relationship("CropTaxonomy")
 
 
 class User(Base):
