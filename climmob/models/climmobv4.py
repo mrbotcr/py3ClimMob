@@ -860,13 +860,29 @@ class Techalia(Base):
     tech = relationship("Technology")
 
 
-class Crop(Base):
-    __tablename__ = "crop"
+class CropTaxonomy(Base):
+    __tablename__ = "croptaxonomy"
 
     __table_args__ = ({"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"},)
 
-    crop_code = Column(Integer, primary_key=True, autoincrement=False)
-    crop_name = Column(Unicode(45))
+    taxonomy_code = Column(Integer, primary_key=True, autoincrement=False)
+    taxonomy_name = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
+
+
+class I18nCropTaxonomy(Base):
+    __tablename__ = "i18n_croptaxonomy"
+    __table_args__ = (
+        ForeignKeyConstraint(["taxonomy_code"], ["croptaxonomy.taxonomy_code"]),
+    )
+
+    taxonomy_code = Column(Integer, primary_key=True, nullable=False)
+    lang_code = Column(
+        ForeignKey("i18n.lang_code"), primary_key=True, nullable=False, index=True
+    )
+    crop_name = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
+
+    i18n = relationship("I18n")
+    croptaxonomy = relationship("CropTaxonomy")
 
 
 class Technology(Base):
@@ -875,15 +891,15 @@ class Technology(Base):
     tech_id = Column(Integer, primary_key=True)
     tech_name = Column(Unicode(45))
     user_name = Column(ForeignKey("user.user_name", ondelete="CASCADE"), index=True)
-    crop_code = Column(
-        ForeignKey("crop.crop_code", ondelete="RESTRICT"),
+    croptaxonomy_code = Column(
+        ForeignKey("croptaxonomy.taxonomy_code", ondelete="RESTRICT"),
         index=True,
         nullable=False,
         server_default=text("'0'"),
     )
 
     user = relationship("User")
-    crop = relationship("Crop")
+    crop = relationship("CropTaxonomy")
 
 
 class User(Base):
