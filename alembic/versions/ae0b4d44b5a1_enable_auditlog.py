@@ -88,7 +88,7 @@ def upgrade():
             "This migration needs parameter 'climmob.ini.file' in the alembic ini file."
         )
         print(
-            "The parameter 'climmob.ini.file' must point to the full path of the FormShare ini file"
+            "The parameter 'climmob.ini.file' must point to the full path of the ClimMob ini file"
         )
         exit(1)
 
@@ -207,7 +207,7 @@ def downgrade():
             "This migration needs parameter 'climmob.ini.file' in the alembic ini file."
         )
         print(
-            "The parameter 'climmob.ini.file' must point to the full path of the FormShare ini file"
+            "The parameter 'climmob.ini.file' must point to the full path of the ClimMob ini file"
         )
         exit(1)
 
