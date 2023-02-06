@@ -260,7 +260,7 @@ class editDataView(privateView):
                     dataworking["msg"] = False
 
                     if json_data[0] != "":
-                        dataworking["msg_flag"] = update_edited_data(
+                        dataworking["msg_flag"], message = update_edited_data(
                             activeProjectUser,
                             activeProjectCod,
                             formId,

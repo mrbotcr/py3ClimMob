@@ -134,7 +134,7 @@ def fillDataTable(
     }
     sql = "select "
 
-    columns.insert(0, "surveyid$%*ID$%*string")
+    columns.insert(0, "rowuuid$%*ID$%*string")
     if form == "reg":
         columns.insert(1, "qst162$%*" + self._("Package code") + "$%*string")
 
@@ -260,16 +260,28 @@ def fillDataTable(
                                 }
                             )
                         else:
-                            ret["colModel"].append(
-                                {
-                                    "align": "center",
-                                    "label": col[1],
-                                    "name": col[0],
-                                    "index": col[0],
-                                    "editable": True,
-                                    "edittype": "text",
-                                }
-                            )
+                            if "rowuuid" in col[0]:
+                                ret["colModel"].append(
+                                    {
+                                        "align": "center",
+                                        "label": col[1],
+                                        "name": col[0],
+                                        "index": col[0],
+                                        "editable": "False",
+                                        "edittype": "text",
+                                    }
+                                )
+                            else:
+                                ret["colModel"].append(
+                                    {
+                                        "align": "center",
+                                        "label": col[1],
+                                        "name": col[0],
+                                        "index": col[0],
+                                        "editable": True,
+                                        "edittype": "text",
+                                    }
+                                )
 
         # formatter formatter:'date'
         # print "**********************77"
@@ -357,12 +369,12 @@ def update_edited_data(userOwner, projectCod, form, data, file, code):
                     query_update += key + "=" + val + ", "
 
             query_update = (
-                query_update[:-2] + " where surveyid ='" + str(row["surveyid"]) + "';"
+                query_update[:-2] + " where rowuuid ='" + str(row["rowuuid"]) + "';"
             )
 
             # print query_update
             try:
                 sql_execute(query_update)
-            except:
-                return 0
-    return 1
+            except Exception as e:
+                return 0, str(e)
+    return 1, ""

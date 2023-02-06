@@ -874,3 +874,123 @@ class readAssessmentData_view(apiView):
         else:
             response = Response(status=401, body=self._("Only accepts GET method."))
             return response
+
+
+from climmob.views.Api.projectRegistryStart import functionForProcessAndValidateUpdate
+
+
+class assessmentDataCleaning_view(apiView):
+    def processView(self):
+        if self.request.method == "POST":
+            obligatory = ["project_cod", "user_owner", "ass_cod", "json"]
+            dataworking = json.loads(self.body)
+
+            if sorted(obligatory) == sorted(dataworking.keys()):
+                dataworking["user_name"] = self.user.login
+
+                dataInParams = True
+                for key in dataworking.keys():
+                    if dataworking[key] == "":
+                        dataInParams = False
+
+                if dataInParams:
+                    exitsproject = projectExists(
+                        self.user.login,
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
+                    )
+                    if exitsproject:
+
+                        activeProjectId = getTheProjectIdForOwner(
+                            dataworking["user_owner"],
+                            dataworking["project_cod"],
+                            self.request,
+                        )
+                        accessType = getAccessTypeForProject(
+                            self.user.login, activeProjectId, self.request
+                        )
+
+                        if accessType in [4]:
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "The access assigned for this project does not allow you to push information."
+                                ),
+                            )
+                            return response
+
+                        if assessmentExists(
+                            activeProjectId,
+                            dataworking["ass_cod"],
+                            self.request,
+                        ):
+                            if not projectAsessmentStatus(
+                                activeProjectId,
+                                dataworking["ass_cod"],
+                                self.request,
+                            ):
+                                if isAssessmentOpen(
+                                    activeProjectId,
+                                    dataworking["ass_cod"],
+                                    self.request,
+                                ):
+                                    structure = generateStructureForInterfaceForms(
+                                        dataworking["user_owner"],
+                                        activeProjectId,
+                                        dataworking["project_cod"],
+                                        "assessment",
+                                        self.request,
+                                        ass_cod=dataworking["ass_cod"],
+                                    )
+
+                                    return functionForProcessAndValidateUpdate(
+                                        self,
+                                        structure,
+                                        dataworking,
+                                        activeProjectId,
+                                        dataworking["user_owner"],
+                                        dataworking["project_cod"],
+                                        "ass",
+                                        code=dataworking["ass_cod"],
+                                    )
+
+                                else:
+                                    response = Response(
+                                        status=401,
+                                        body=self._(
+                                            "Data collection is closed. After you close data collection, no more data can be entered."
+                                        ),
+                                    )
+                                    return response
+                            else:
+                                response = Response(
+                                    status=401,
+                                    body=self._("Data collection has not started."),
+                                )
+                                return response
+                        else:
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "There is no data collection with that code."
+                                ),
+                            )
+                            return response
+                    else:
+                        response = Response(
+                            status=401,
+                            body=self._("There is no project with that code."),
+                        )
+                        return response
+                else:
+                    response = Response(
+                        status=401, body=self._("Not all parameters have data.")
+                    )
+                    return response
+            else:
+                response = Response(status=401, body=self._("Error in the JSON."))
+                return response
+        else:
+            response = Response(status=401, body=self._("Only accepts POST method."))
+            return response

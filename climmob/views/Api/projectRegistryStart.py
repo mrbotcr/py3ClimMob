@@ -1370,3 +1370,333 @@ class readRegistryData_view(apiView):
         else:
             response = Response(status=401, body=self._("Only accepts GET method."))
             return response
+
+
+class registryDataCleaning_view(apiView):
+    def processView(self):
+
+        if self.request.method == "POST":
+            obligatory = ["project_cod", "user_owner", "json"]
+            dataworking = json.loads(self.body)
+
+            if sorted(obligatory) == sorted(dataworking.keys()):
+                dataworking["user_name"] = self.user.login
+
+                dataInParams = True
+                for key in dataworking.keys():
+                    if dataworking[key] == "":
+                        dataInParams = False
+
+                if dataInParams:
+                    exitsproject = projectExists(
+                        self.user.login,
+                        dataworking["user_owner"],
+                        dataworking["project_cod"],
+                        self.request,
+                    )
+                    if exitsproject:
+
+                        activeProjectId = getTheProjectIdForOwner(
+                            dataworking["user_owner"],
+                            dataworking["project_cod"],
+                            self.request,
+                        )
+                        accessType = getAccessTypeForProject(
+                            self.user.login, activeProjectId, self.request
+                        )
+
+                        if accessType in [4]:
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "The access assigned for this project does not allow you to push information to the project."
+                                ),
+                            )
+                            return response
+
+                        if not projectRegStatus(activeProjectId, self.request):
+                            if not isRegistryClose(
+                                activeProjectId,
+                                self.request,
+                            ):
+                                structure = generateStructureForInterfaceForms(
+                                    dataworking["user_owner"],
+                                    activeProjectId,
+                                    dataworking["project_cod"],
+                                    "registry",
+                                    self.request,
+                                )
+
+                                # hasta acá voy desarrollando
+
+                                return functionForProcessAndValidateUpdate(
+                                    self,
+                                    structure,
+                                    dataworking,
+                                    activeProjectId,
+                                    dataworking["user_owner"],
+                                    dataworking["project_cod"],
+                                    "reg",
+                                )
+
+                            else:
+                                response = Response(
+                                    status=401,
+                                    body=self._(
+                                        "Registration has closed. You cannot edit the information."
+                                    ),
+                                )
+                                return response
+                        else:
+                            response = Response(
+                                status=401, body=self._("Registration has not started.")
+                            )
+                            return response
+                    else:
+                        response = Response(
+                            status=401,
+                            body=self._("There is no project with that code."),
+                        )
+                        return response
+                else:
+                    response = Response(
+                        status=401, body=self._("Not all parameters have data.")
+                    )
+                    return response
+            else:
+                response = Response(status=401, body=self._("Error in the JSON."))
+                return response
+        else:
+            response = Response(status=401, body=self._("Only accepts POST method."))
+            return response
+
+
+from climmob.views.editDataDB import (
+    update_edited_data,
+)
+from climmob.models.repository import sql_fetch_one
+
+
+def functionForProcessAndValidateUpdate(
+    self,
+    structure,
+    dataworking,
+    activeProjectId,
+    user_owner,
+    project_cod,
+    formId,
+    code="",
+):
+
+    if structure:
+
+        possibleObligatoryQuestions = ["rowuuid"]
+        possibleQuestions = ["rowuuid"]
+        obligatoryQuestions = ["rowuuid"]
+        searchQST163 = ""
+        searchQST162 = ""
+        groupsForValidation = {}
+        for section in structure:
+            for question in section["section_questions"]:
+
+                questionDataField = question["question_datafield"]
+
+                if len(question["question_datafield"].split("/")) == 2:
+                    questionDataField = question["question_datafield"].split("/")[1]
+
+                possibleQuestions.append(questionDataField)
+
+                if question["question_requiredvalue"] == 1:
+                    possibleObligatoryQuestions.append(questionDataField)
+
+                if question["question_dtype2"] == 9:
+                    if question["question_code"] not in groupsForValidation.keys():
+                        groupsForValidation[question["question_code"]] = []
+
+                    groupsForValidation[question["question_code"]].append(
+                        questionDataField
+                    )
+
+        # try
+        _json = json.loads(dataworking["json"])
+        _newJson = {}
+        for key in _json.keys():
+
+            if len(key.split("/")) == 2:
+                _newJson[key.split("/")[1]] = _json[key]
+            else:
+                _newJson[key] = _json[key]
+
+        _json = _newJson
+
+        permitedKeys = True
+        for key in _json.keys():
+            if key not in possibleQuestions:
+                permitedKeys = False
+
+        if permitedKeys:
+            # Ya no valido las obligatorias por que posiblemente no manden todos los valores, solo es obligatorio el rowuuid
+            obligatoryKeys = True
+            for key in obligatoryQuestions:
+                if key not in _json.keys():
+                    obligatoryKeys = False
+
+            if obligatoryKeys:
+
+                dataInParams = True
+                for key in _json:
+                    if key in possibleObligatoryQuestions:
+                        if _json[key].strip(" ") == "":
+                            dataInParams = False
+
+                if dataInParams:
+
+                    sql = (
+                        "SELECT * FROM "
+                        + user_owner
+                        + "_"
+                        + project_cod
+                        + "."
+                        + formId.upper()
+                        + code
+                        + "_geninfo where rowuuid='"
+                        + _json["rowuuid"]
+                        + "'"
+                    )
+
+                    rowInTheDatabase = sql_fetch_one(sql)
+
+                    if rowInTheDatabase:
+
+                        path = os.path.join(
+                            self.request.registry.settings["user.repository"],
+                            *[user_owner, project_cod]
+                        )
+                        if code == "":
+                            paths = ["db", formId, "create.xml"]
+                        else:
+                            paths = ["db", formId, code, "create.xml"]
+
+                        path = os.path.join(path, *paths)
+
+                        # Validation for repeat response
+                        for _groupOfCharacteristics in groupsForValidation:
+
+                            valuesAlreadySelected = []
+                            getColumnValue = []
+                            atLeastOneHasBeenSent = False
+
+                            for characteristicField in groupsForValidation[
+                                _groupOfCharacteristics
+                            ]:
+
+                                if characteristicField in _json.keys():
+                                    if (
+                                        _json[characteristicField]
+                                        not in valuesAlreadySelected
+                                    ):
+                                        valuesAlreadySelected.append(
+                                            _json[characteristicField]
+                                        )
+                                    else:
+                                        response = Response(
+                                            status=401,
+                                            body=self._(
+                                                "You have repeated data in the next column: "
+                                                + characteristicField
+                                                + ". Remember that the options can not be repeated."
+                                            ),
+                                        )
+                                        return response
+                                    atLeastOneHasBeenSent = True
+                                else:
+                                    getColumnValue.append(characteristicField)
+
+                                if atLeastOneHasBeenSent:
+                                    for column in getColumnValue:
+                                        print(
+                                            "Debo de obtener el valor en la base de datos de la columna: "
+                                            + column
+                                        )
+
+                                        if (
+                                            str(rowInTheDatabase[column])
+                                            not in valuesAlreadySelected
+                                        ):
+                                            valuesAlreadySelected.append(
+                                                rowInTheDatabase[column]
+                                            )
+                                        else:
+                                            response = Response(
+                                                status=401,
+                                                body=self._(
+                                                    "You have repeated data in the next column: "
+                                                    + column
+                                                    + ". Remember that the options can not be repeated."
+                                                ),
+                                            )
+                                            return response
+
+                        print("***********Esta permitido intentar el update***********")
+                        _json["id"] = 0
+                        _json["flag_update"] = "true"
+                        result, message = update_edited_data(
+                            user_owner,
+                            project_cod,
+                            formId,
+                            [json.dumps([_json])],
+                            path,
+                            code,
+                        )
+
+                        if result == 1:
+
+                            response = Response(
+                                status=200,
+                                body=self._("Data registered."),
+                            )
+                            return response
+                        else:
+                            response = Response(
+                                status=401,
+                                body=message,
+                            )
+
+                            return response
+
+                    else:
+
+                        response = Response(
+                            status=401,
+                            body=self._("There is no record with this identifier"),
+                        )
+
+                        return response
+
+                else:
+
+                    response = Response(
+                        status=401,
+                        body=self._(
+                            "Error in the JSON. Not all the obligatory parameters have data."
+                        ),
+                    )
+
+                    return response
+            else:
+
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "Error in the JSON sent by parameter. Check the obligatory Keys."
+                    ),
+                )
+                return response
+        else:
+            response = Response(
+                status=401,
+                body=self._(
+                    "Error in the JSON sent by parameter. Check the permitted Keys."
+                ),
+            )
+            return response

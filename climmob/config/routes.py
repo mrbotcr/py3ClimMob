@@ -19,6 +19,7 @@ from climmob.views.Api.projectAssessmentStart import (
     closeAssessmentApi_view,
     readAssessmentStructure_view,
     pushJsonToAssessment_view,
+    assessmentDataCleaning_view,
     readAssessmentData_view,
 )
 from climmob.views.Api.projectAssessments import (
@@ -73,6 +74,7 @@ from climmob.views.Api.projectRegistryStart import (
     closeRegistryApi_view,
     readRegistryStructure_view,
     pushJsonToRegistry_view,
+    registryDataCleaning_view,
     readRegistryData_view,
 )
 from climmob.views.Api.projectTechnologies import (
@@ -1470,6 +1472,15 @@ def loadRoutes(config):
 
     routes.append(
         addRoute(
+            "registrydatacleaning",
+            "/api/registryDataCleaning",
+            registryDataCleaning_view,
+            None,
+        )
+    )
+
+    routes.append(
+        addRoute(
             "readregistrydata",
             "/api/readRegistryData",
             readRegistryData_view,
@@ -1618,6 +1629,15 @@ def loadRoutes(config):
             "pushjsontoassessment",
             "/api/pushJsonToAssessment",
             pushJsonToAssessment_view,
+            None,
+        )
+    )
+
+    routes.append(
+        addRoute(
+            "assessmentdatacleaning",
+            "/api/assessmentDataCleaning",
+            assessmentDataCleaning_view,
             None,
         )
     )
