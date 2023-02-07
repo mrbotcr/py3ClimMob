@@ -302,6 +302,7 @@
         $(document).ready(function(){
 
             numberOfExplanatoryAllowed = 10;
+            numberOfReferenceAllowed = 4;
 
             $("#wizard").steps({
                 labels: {
@@ -535,6 +536,32 @@
                 }
 
             });
+
+            $('.referenceCombination').on('ifChecked', function () {
+
+                forCheckAndUncheckReference();
+
+            });
+
+            $('.referenceCombination').on('ifUnchecked', function () {
+
+                forCheckAndUncheckReference();
+
+            });
+
+
+            function forCheckAndUncheckReference(){
+
+                var checkboxes = $(".referenceCombination");
+
+                if (checkboxes.filter(":checked").length >= numberOfReferenceAllowed) {
+                    checkboxes.not(":checked").iCheck('disable');
+                    toastr.warning("{{ _("You have reached the maximum number of reference combinations allowed for the analysis.") }}")
+                } else {
+                    checkboxes.not(":checked").iCheck('enable');
+                }
+
+            }
 
             $("#filter").keyup(function () {
                 var value = this.value.toLowerCase().trim();
