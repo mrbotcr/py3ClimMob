@@ -110,7 +110,7 @@ RUN sudo pip install setuptools==57.5.0
 # -------------------------------
 
 # This is a patched MySQL Driver to allow connections between Client 8.0 and Server 5.7.X
-COPY ./docker_files/sqldriver/libqsqlmysql.s_o /usr/lib/x86_64-linux-gnu/qt5/plugins/sqldrivers/libqsqlmysql.so
+# COPY ./docker_files/sqldriver/libqsqlmysql.s_o /usr/lib/x86_64-linux-gnu/qt5/plugins/sqldrivers/libqsqlmysql.so
 
 RUN npm install svg2png -g --unsafe-perm
 
