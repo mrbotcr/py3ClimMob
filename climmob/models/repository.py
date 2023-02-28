@@ -29,3 +29,13 @@ def sql_execute(sql):
     connection.invalidate()
     engine.dispose()
     return res
+
+
+def execute_two_sqls(sql1, sql2):
+    engine = create_engine(get_ini_value("sqlalchemy.url"), poolclass=NullPool)
+    connection = engine.connect()
+    res1 = connection.execute(sql1)
+    res2 = connection.execute(sql2)
+    connection.invalidate()
+    engine.dispose()
+    return res2

@@ -1647,6 +1647,7 @@ def functionForProcessAndValidateUpdate(
                             [json.dumps([_json])],
                             path,
                             code,
+                            self.user.login,
                         )
 
                         if result == 1:

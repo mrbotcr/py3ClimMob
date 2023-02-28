@@ -1,7 +1,7 @@
 import json
 import xml.etree.ElementTree as ET
 
-from climmob.models.repository import sql_execute
+from climmob.models.repository import sql_execute, execute_two_sqls
 from climmob.processes import getProjectData, getQuestionOptionsByQuestionCode
 
 
@@ -329,7 +329,7 @@ def fillDataTable(
     return json.dumps(ret)
 
 
-def update_edited_data(userOwner, projectCod, form, data, file, code):
+def update_edited_data(userOwner, projectCod, form, data, file, code, by):
 
     data = json.loads(data[0])
 
@@ -374,7 +374,10 @@ def update_edited_data(userOwner, projectCod, form, data, file, code):
 
             # print query_update
             try:
-                sql_execute(query_update)
+                execute_two_sqls(
+                    "SET @odktools_current_user = '" + by + "'; ", query_update
+                )
             except Exception as e:
+                print(str(e))
                 return 0, str(e)
     return 1, ""

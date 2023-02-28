@@ -267,6 +267,7 @@ class editDataView(privateView):
                             json_data,
                             path,
                             code,
+                            self.user.login,
                         )
 
             dataXML = getNamesEditByColums(path)

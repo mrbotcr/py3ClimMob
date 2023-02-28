@@ -4,7 +4,7 @@ import xml.etree.ElementTree as ET
 
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 
-from climmob.models.repository import sql_execute
+from climmob.models.repository import sql_execute, execute_two_sqls
 from climmob.processes import (
     get_registry_logs,
     get_registry_log_by_log,
@@ -107,7 +107,12 @@ class cleanErrorLogs_view(privateView):
                                             + dataworking["newqst"].split("-")[1]
                                             + "'"
                                         )
-                                        sql_execute(query)
+                                        execute_two_sqls(
+                                            "SET @odktools_current_user = '"
+                                            + self.user.login
+                                            + "';",
+                                            query,
+                                        )
 
                                     storeJSONInMySQL(
                                         self.user.login,
@@ -168,7 +173,12 @@ class cleanErrorLogs_view(privateView):
                                             + dataworking["newqst2"]
                                             + "'"
                                         )
-                                        sql_execute(query)
+                                        execute_two_sqls(
+                                            "SET @odktools_current_user = '"
+                                            + self.user.login
+                                            + "'; ",
+                                            query,
+                                        )
 
                                     storeJSONInMySQL(
                                         self.user.login,
@@ -255,7 +265,12 @@ class cleanErrorLogs_view(privateView):
                                             + dataworking["newqst"].split("-")[1]
                                             + "'"
                                         )
-                                        sql_execute(query)
+                                        execute_two_sqls(
+                                            "SET @odktools_current_user = '"
+                                            + self.user.login
+                                            + "'; ",
+                                            query,
+                                        )
 
                                     update_registry_status_log(
                                         self.request,
@@ -289,7 +304,12 @@ class cleanErrorLogs_view(privateView):
                                             + dataworking["newqst2"]
                                             + "'"
                                         )
-                                        sql_execute(query)
+                                        execute_two_sqls(
+                                            "SET @odktools_current_user = '"
+                                            + self.user.login
+                                            + "'; ",
+                                            query,
+                                        )
 
                                     update_assessment_status_log(
                                         self.request,
