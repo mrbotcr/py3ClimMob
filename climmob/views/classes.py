@@ -19,6 +19,7 @@ from climmob.processes import (
     counterChat,
     getLastActivityLogByUser,
     addToLog,
+    update_last_login,
 )
 
 # ODKView is a Digest Authorization view. It automates all the Digest work
@@ -289,6 +290,8 @@ class privateView(object):
 
         self.viewResult = self.processView()
 
+        update_last_login(self.request, self.user.login)
+
         if not self.returnRawViewResult:
             self.classResult.update(self.viewResult)
             return self.classResult
@@ -354,8 +357,6 @@ class apiView(object):
                 )
                 return response
 
-            # EDITED BY BRANDON MADRIZ
-            # if self.request.method == "POST":
             try:
                 self.body = self.request.params["Body"]
             except:
@@ -366,18 +367,7 @@ class apiView(object):
 
                 self.body = json.dumps(body)
 
-                """
-                try:
-                    self.body = self.request.params["Body"]
-                except:
-                    response = Response(
-                        status=401,
-                        body=self.request.translate(
-                            "Error in the JSON, It does not have the 'body' parameter."
-                        ),
-                    )
-                    return response
-                """
+            update_last_login(self.request, self.user.login)
         except:
             response = Response(
                 status=401, body=self.request.translate("Apikey non-existent")

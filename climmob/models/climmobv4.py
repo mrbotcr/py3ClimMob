@@ -916,6 +916,7 @@ class User(Base):
     user_sector = Column(ForeignKey("sector.sector_cod"), nullable=False, index=True)
     user_active = Column(Integer, server_default=text("'1'"))
     user_joindate = Column(DateTime, default=datetime.datetime.now())
+    user_last_login = Column(DateTime)
 
     user_password_reset_key = Column(Unicode(64))
     user_password_reset_token = Column(Unicode(64))
