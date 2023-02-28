@@ -2,20 +2,21 @@ FROM alliancecostarica/climmob_base:20230106
 
 MAINTAINER Alliance Bioversity-CIAT
 
+WORKDIR /opt/new_r_code
+RUN git pull origin master
+
 WORKDIR /opt
-RUN mkdir climmob_repository
+RUN mkdir climmob_repository && mkdir climmob_log && mkdir climmob_celery && mkdir climmob_plugins && mkdir climmob_gunicorn && mkdir climmob_config
 VOLUME /opt/climmob_repository
 
-RUN mkdir climmob_log
 VOLUME /opt/climmob_log
 
-RUN mkdir climmob_celery
 VOLUME /opt/climmob_celery
 
-RUN mkdir climmob_plugins
 VOLUME /opt/climmob_plugins
 
-RUN mkdir climmob_gunicorn
+VOLUME /opt/climmob_config
+
 RUN python3 -m venv climmob_env
 
 RUN git clone https://github.com/BioversityCostaRica/py3ClimMob.git climmob
@@ -23,10 +24,6 @@ RUN . ./climmob_env/bin/activate && pip install wheel && pip install -r /opt/cli
 
 ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.6.0/wait /wait
 RUN chmod +x /wait
-
-WORKDIR /opt
-RUN mkdir climmob_config
-VOLUME /opt/climmob_config
 
 COPY docker_files/etc/default/celery_climmob /etc/default/celery_climmob
 COPY docker_files/etc/init.d/celery_climmob /etc/init.d/celery_climmob
