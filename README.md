@@ -47,7 +47,7 @@ The current stable release is 3.8.0 and it is available [here](https://github.co
 
 The database signature for stable 3.8.0 is 48af04ae8c55
 
-The Docker image for stable 3.8.0 is 20230110
+The Docker image for stable 3.8.0 is 20230304
 
 ### Installation
 
@@ -65,8 +65,8 @@ sudo apt-get install -y docker-compose
 
 # Get the Docker Compose file
 cd /opt
-sudo mkdir climmob_docker_compose_20230110
-cd climmob_docker_compose_20230110
+sudo mkdir climmob_docker_compose_20230304
+cd climmob_docker_compose_20230304
 sudo wget https://raw.githubusercontent.com/BioversityCostaRica/py3ClimMob/stable-3.8.0/docker_compose/docker-compose.yml
 
 # Make the directory structure for ClimMob
@@ -82,11 +82,11 @@ mkdir /opt/climmob/plugins
 sudo chmod -R g+w /opt/climmob
 
 # Download all the required Docker Images
-cd /opt/climmob_docker_compose_20230110
+cd /opt/climmob_docker_compose_20230304
 sudo docker-compose pull
 
 # Edit the docker-compose.yml file to set the MySQL root password
-sudo nano /opt/climmob_docker_compose_20230110/docker-compose.yml
+sudo nano /opt/climmob_docker_compose_20230304/docker-compose.yml
 # Press Alt+Shit+3 to show the line numbers in Nano
 
 Edit line 7: Change the root password from "my_secure_password" to your password
@@ -131,7 +131,7 @@ sudo service apache2 start
 # Subsequent start will take about 2 minutes. You can check the status with "sudo docker stats". 
 # ClimMob will be ready for usage when the container reaches more than 700 kB of MEM USAGE
 # This is the only two commands you need to start ClimMob after a server restart
-cd /opt/climmob_docker_compose_20230110
+cd /opt/climmob_docker_compose_20230304
 sudo docker-compose up -d
 
 # Browse to ClimMob
