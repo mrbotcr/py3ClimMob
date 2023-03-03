@@ -45,7 +45,7 @@ ClimMob is a Web-based App created using Python, MySQL, [R](https://github.com/A
 
 The current stable release is 3.8.0 and it is available [here](https://github.com/BioversityCostaRica/py3ClimMob/tree/stable-3.8.0)
 
-The database signature for stable 3.8.0 is 48af04ae8c55
+The database signature for stable 3.8.0 is 0202a70622fb
 
 The Docker image for stable 3.8.0 is 20230304
 
