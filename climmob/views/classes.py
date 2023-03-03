@@ -288,9 +288,9 @@ class privateView(object):
                         )
                         raise HTTPNotFound()
 
-        self.viewResult = self.processView()
-
         update_last_login(self.request, self.user.login)
+
+        self.viewResult = self.processView()
 
         if not self.returnRawViewResult:
             self.classResult.update(self.viewResult)
