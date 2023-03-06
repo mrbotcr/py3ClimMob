@@ -1,6 +1,7 @@
 import os
 import shutil
 import uuid
+import cairosvg
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -129,7 +130,8 @@ def createColors(self, path, projectid, packages, listOfLabels):
         # Changed by Carlos
         png = pathpng + "/" + str(package["package_id"]) + ".png"
         # Changed by Carlos
-        os.system("svg2png " + svg + " -o " + png + " -w 406 -h 209")
+        # os.system("svg2png " + svg + " -o " + png + " -w 406 -h 209")
+        cairosvg.svg2png(url=svg, write_to=png, parent_width=406, parent_height=209)
         # Multi PDFs to One PDF
         # png+= str(tec["package_id"])+".png"
 
