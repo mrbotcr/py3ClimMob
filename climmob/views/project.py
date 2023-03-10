@@ -240,8 +240,8 @@ def functionCreateClone(self, projectId, newProjectId, structureToBeCloned):
             for fieldAgent in enumerators[participant]:
                 project_enumerator_data = {
                     "project_id": newProjectId,
-                    "enum_user": fieldAgent["enum_id"],
-                    "enum_id": participant,
+                    "enum_user": participant,
+                    "enum_id": fieldAgent["enum_id"],
                 }
                 continue_clone = True
                 for plugin in p.PluginImplementations(p.ICloneProject):
