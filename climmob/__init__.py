@@ -19,6 +19,9 @@ from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid_authstack import AuthenticationStackPolicy
 
+import sentry_sdk
+from sentry_sdk.integrations.pyramid import PyramidIntegration
+
 
 def main(global_config, **settings):
 
@@ -68,5 +71,18 @@ def main(global_config, **settings):
     config.include(".models")
     # Load and configure the host application
     load_environment(settings, config, apppath, policy_array)
+
+    sentry = settings.get("sentry_sdk.dsn", "")
+    if sentry != "":
+        sentry_sdk.init(
+            dsn=sentry,
+            integrations=[
+                PyramidIntegration(),
+            ],
+            # Set traces_sample_rate to 1.0 to capture 100%
+            # of transactions for performance monitoring.
+            # We recommend adjusting this value in production.
+            traces_sample_rate=1.0,
+        )
 
     return config.make_wsgi_app()

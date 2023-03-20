@@ -171,11 +171,11 @@ def createResources(apppath, config):
 
     # Add core JS
     r.add_js_resource(
-        "coreresources", "jquery", "inspinia/js/jquery-3.1.1.min.js", None
+        "coreresources", "jquery", "inspinia/js/jquery-3.5.1.min.js", None
     )
     r.add_js_resource("map", "leaflet", "leaflet.js")
     r.add_js_resource(
-        "coreresources", "bootstrap", "inspinia/js/bootstrap.js", "jquery"
+        "coreresources", "bootstrap", "inspinia/js/bootstrap-4.1.3.js", "jquery"
     )
 
     # JS for landing page

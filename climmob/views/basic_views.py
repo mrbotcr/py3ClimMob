@@ -329,6 +329,11 @@ def logout_view(request):
 
 class register_view(publicView):
     def processView(self):
+        if (
+            self.request.registry.settings.get("auth.register_users_via_web", "true")
+            == "false"
+        ):
+            raise HTTPNotFound()
 
         # If we logged in then go to dashboard
         policy = get_policy(self.request, "main")

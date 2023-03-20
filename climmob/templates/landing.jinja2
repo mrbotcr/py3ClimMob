@@ -40,7 +40,11 @@
                         <span class="icon-bar"></span>
                     </button>
                     {% block mainbutton %}
-                        <a class="navbar-brand" href="{{ request.route_url('login') }}">{{ _("Login or request an account") }}</a>
+                        {% if request.registry.settings.get('auth.register_users_via_web', "true") == 'true' %}
+                            <a class="navbar-brand" href="{{ request.route_url('login') }}">{{ _("Login or request an account") }}</a>
+                        {% else %}
+                            <a class="navbar-brand" href="{{ request.route_url('login') }}">{{ _("Login") }}</a>
+                        {% endif %}
                     {% endblock mainbutton %}
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">

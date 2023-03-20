@@ -230,7 +230,7 @@ from climmob.views.technologies import (
     getUserTechnologyDetails_view,
     getUserTechnologyAliasDetails_view,
 )
-from climmob.views.test import test_view
+from climmob.views.test import test_view, sentry_debug_view
 
 # -------Api-------#
 
@@ -418,6 +418,15 @@ def loadRoutes(config):
             "/user/{user}/question/{questionid}",
             getUserQuestionDetails_view,
             "json",
+        )
+    )
+
+    routes.append(
+        addRoute(
+            "sentry-debug",
+            "/sentry-debug",
+            sentry_debug_view,
+            None,
         )
     )
 
