@@ -680,7 +680,7 @@
                         {% block piesFieldAgents %}
                             {% if progress.regtotal > 0 %}
 
-                                <script type="text/javascript">
+                                <script>
                                     c3.generate({
                                             bindto: '#pieRegistry',
                                             size: {
@@ -736,7 +736,7 @@
 
                             {% for fieldAgentAssess in fieldagents["Assessments"] %}
                                 {% if fieldAgentAssess["Values"] %}
-                                <script type="text/javascript">
+                                <script>
                                     c3.generate({
                                             bindto: '#pie{{ fieldAgentAssess["Name"] }}',
                                             size: {

@@ -378,3 +378,30 @@ def getDataFormPreview(
         finalCloseQst = data[len(data) - 1]["hasQuestions"]
 
     return data, finalCloseQst
+
+
+class getRegistrySection_view(privateView):
+    def processView(self):
+
+        activeProjectUser = self.request.matchdict["user"]
+        activeProjectCod = self.request.matchdict["project"]
+        section = self.request.matchdict["section"]
+        self.returnRawViewResult = True
+
+        if not projectExists(
+            self.user.login, activeProjectUser, activeProjectCod, self.request
+        ):
+            raise HTTPNotFound()
+        else:
+            activeProjectId = getTheProjectIdForOwner(
+                activeProjectUser, activeProjectCod, self.request
+            )
+            if self.request.method == "GET":
+
+                section = getRegistryGroupInformation(
+                    activeProjectId, section, self.request
+                )
+
+                return section
+
+        return {}

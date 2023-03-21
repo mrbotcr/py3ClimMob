@@ -390,7 +390,7 @@ def createResources(apppath, config):
     r.add_js_resource(
         "coreresources",
         "tour",
-        "inspinia/js/plugins/bootstrapTour/bootstrap-tour.min.js",
+        "inspinia/js/plugins/bootstrapTour/bootstrap-tour-standalone.min.js",
         "jquery",
     )
     r.add_js_resource(

@@ -25,6 +25,8 @@ from sentry_sdk.integrations.pyramid import PyramidIntegration
 
 def main(global_config, **settings):
 
+    apppath = os.path.dirname(os.path.abspath(__file__))
+
     if global_config is not None:  # pragma: no cover
         config = ConfigParser()
         config.read(global_config["__file__"])
@@ -32,6 +34,7 @@ def main(global_config, **settings):
             threads = config.get("server:main", "threads")
         except NoOptionError:
             threads = "1"
+        settings["apppath"] = apppath
         settings["server:threads"] = threads
         settings["global:config:file"] = global_config["__file__"]
 
@@ -65,8 +68,6 @@ def main(global_config, **settings):
         authentication_policy=auth_policy,
         authorization_policy=authz_policy,
     )
-
-    apppath = os.path.dirname(os.path.abspath(__file__))
 
     config.include(".models")
     # Load and configure the host application
