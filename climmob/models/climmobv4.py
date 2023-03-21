@@ -843,6 +843,8 @@ class Sector(Base):
 
     sector_cod = Column(Integer, primary_key=True)
     sector_name = Column(Unicode(120))
+    section_order = Column(Integer, nullable=True)
+    section_available = Column(Integer, nullable=True)
 
 
 class Techalia(Base):

@@ -37,7 +37,12 @@ def existsCountryByCode(request, code):
 
 def getSectorList(request):
     sectors = []
-    results = request.dbsession.query(Sector).all()
+    results = (
+        request.dbsession.query(Sector)
+        .filter(Sector.section_available == 1)
+        .order_by(Sector.section_order)
+        .all()
+    )
     for result in results:
         sectors.append({"code": str(result.sector_cod), "name": result.sector_name})
 
