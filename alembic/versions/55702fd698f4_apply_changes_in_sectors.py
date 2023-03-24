@@ -47,7 +47,7 @@ def upgrade():
         "INSERT INTO sector (sector_cod, sector_name, section_order, section_available) VALUES ('9', 'Service provision to farmers', '5', '1');"
     )
     conn.execute(
-        "INSERT INTO sector (sector_cod, sector_name, section_order, section_available) VALUES ('10', 'Public agricultural reearch', '8', '1');"
+        "INSERT INTO sector (sector_cod, sector_name, section_order, section_available) VALUES ('10', 'Public agricultural research', '8', '1');"
     )
     conn.execute(
         "INSERT INTO sector (sector_cod, sector_name, section_order, section_available) VALUES ('11', 'Other', '10', '1');"
