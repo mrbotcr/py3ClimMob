@@ -6,8 +6,7 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN ln -snf /usr/share/zoneinfo/$CR /etc/localtime && echo $CR > /etc/timezone
 RUN apt-get update && apt-get -y upgrade
 RUN apt-get install -y software-properties-common
-RUN add-apt-repository universe
-RUN add-apt-repository multiverse
+RUN add-apt-repository universe && add-apt-repository multiverse
 
 RUN apt-get install -y wget tzdata
 
@@ -24,7 +23,8 @@ RUN echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb.gpg ] htt
 
 RUN apt-get update
 
-RUN apt-get install -y build-essential qtbase5-dev qtbase5-private-dev qtdeclarative5-dev libqt5sql5-mysql libqt5webkit5-dev libqt5svg5-dev libqt5xmlpatterns5-dev cmake mongodb-org nano jq libboost-all-dev unzip zlib1g-dev automake npm redis-server libmysqlclient-dev git python3-venv texlive-extra-utils r-base libcurl4-openssl-dev pandoc pandoc-citeproc libfontconfig1-dev libcairo2-dev libudunits2-dev libgdal-dev xvfb sqlite3 libqt5sql5-sqlite libgmp3-dev libmpfr-dev tidy golang-go mysql-client-8.0 openjdk-17-jre-headless
+RUN apt-get install -y build-essential qtbase5-dev qtbase5-private-dev qtdeclarative5-dev libqt5sql5-mysql libqt5webkit5-dev libqt5svg5-dev libqt5xmlpatterns5-dev
+RUN apt-get install -y cmake mongodb-org nano jq libboost-all-dev unzip zlib1g-dev automake npm redis-server libmysqlclient-dev git python3-venv texlive-extra-utils r-base libcurl4-openssl-dev pandoc pandoc-citeproc libfontconfig1-dev libcairo2-dev libudunits2-dev libgdal-dev xvfb sqlite3 libqt5sql5-sqlite libgmp3-dev libmpfr-dev tidy golang-go mysql-client-8.0 openjdk-17-jre-headless
 
 # Firefox
 RUN apt-get install -y libdbus-glib-1-2 libgtk2.0-0
@@ -67,7 +67,7 @@ RUN cp csv2xlsx /bin
 
 WORKDIR /opt
 RUN mkdir odktools-deps
-RUN git clone https://github.com/qlands/odktools.git -b stable-2.1
+RUN git clone https://github.com/qlands/odktools.git -b stable-2.2
 
 WORKDIR /opt/odktools-deps
 RUN wget https://github.com/mongodb/mongo-c-driver/releases/download/1.21.1/mongo-c-driver-1.21.1.tar.gz
