@@ -110,7 +110,7 @@ def register_products(config):
     addMetadataToProduct(
         qrProduct,
         "Licence",
-        "Copyright 2020, Alliance of Bioversity International and CIAT",
+        "Copyright 2023, MrBot Software Solutions",
     )
     products.append(qrProduct)
 
@@ -121,7 +121,7 @@ def register_products(config):
     addMetadataToProduct(
         packagesProduct,
         "Licence",
-        "Copyright 2020, Alliance of Bioversity International and CIAT",
+        "Copyright 2023, MrBot Software Solutions",
     )
     products.append(packagesProduct)
 
@@ -132,7 +132,7 @@ def register_products(config):
     addMetadataToProduct(
         dataProduct,
         "Licence",
-        "Copyright 2020, Alliance of Bioversity International and CIAT",
+        "Copyright 2023, MrBot Software Solutions",
     )
     products.append(dataProduct)
 
@@ -143,7 +143,7 @@ def register_products(config):
     addMetadataToProduct(
         cardsProduct,
         "Licence",
-        "Copyright 2020, Alliance of Bioversity International and CIAT",
+        "Copyright 2023, MrBot Software Solutions",
     )
     products.append(cardsProduct)
 
@@ -154,7 +154,7 @@ def register_products(config):
     addMetadataToProduct(
         colorsProduct,
         "Licence",
-        "Copyright 2020, Alliance of Bioversity International and CIAT",
+        "Copyright 2023, MrBot Software Solutions",
     )
     products.append(colorsProduct)
 
@@ -165,7 +165,7 @@ def register_products(config):
     addMetadataToProduct(
         analysysProduct,
         "Licence",
-        "Copyright 2020, Alliance of Bioversity International and CIAT",
+        "Copyright 2023, MrBot Software Solutions",
     )
     products.append(analysysProduct)
 
@@ -213,7 +213,7 @@ def register_products(config):
     addMetadataToProduct(
         fieldagents,
         "Licence",
-        "Copyright 2020, Alliance of Bioversity International and CIAT",
+        "Copyright 2023, MrBot Software Solutions",
     )
     products.append(fieldagents)
 
@@ -224,7 +224,7 @@ def register_products(config):
     addMetadataToProduct(
         datacsv,
         "Licence",
-        "Copyright 2020, Alliance of Bioversity International and CIAT",
+        "Copyright 2023, MrBot Software Solutions",
     )
     products.append(datacsv)
 
@@ -237,7 +237,7 @@ def register_products(config):
     addMetadataToProduct(
         documentform,
         "Licence",
-        "Copyright 2020, Alliance of Bioversity International and CIAT",
+        "Copyright 2023, MrBot Software Solutions",
     )
     products.append(documentform)
 
@@ -251,7 +251,7 @@ def register_products(config):
     addMetadataToProduct(
         generalreport,
         "Licence",
-        "Copyright 2020, Alliance of Bioversity International and CIAT",
+        "Copyright 2023, MrBot Software Solutions",
     )
     products.append(generalreport)
 
@@ -262,7 +262,7 @@ def register_products(config):
     addMetadataToProduct(
         stickersProduct,
         "Licence",
-        "Copyright 2020, Alliance of Bioversity International and CIAT",
+        "Copyright 2023, MrBot Software Solutions",
     )
     products.append(stickersProduct)
 
@@ -277,7 +277,7 @@ def register_products(config):
     addMetadataToProduct(
         datacollectionprogressProduct,
         "Licence",
-        "Copyright 2020, Alliance of Bioversity International and CIAT",
+        "Copyright 2023, MrBot Software Solutions",
     )
     products.append(datacollectionprogressProduct)
 
@@ -291,7 +291,7 @@ def register_products(config):
     addMetadataToProduct(
         errorLogDocument,
         "Licence",
-        "Copyright 2020, Alliance of Bioversity International and CIAT",
+        "Copyright 2023, MrBot Software Solutions",
     )
     products.append(errorLogDocument)
 
