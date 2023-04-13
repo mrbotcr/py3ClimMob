@@ -776,6 +776,7 @@ class Question(Base):
     question_forms = Column(Integer, server_default=text("'3'"))
     qstgroups_user = Column(Unicode(80), nullable=True)
     qstgroups_id = Column(Unicode(80), nullable=True)
+    question_sensitive = Column(Integer, server_default=text("'0'"))
     extra = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
     user = relationship("User")
 
