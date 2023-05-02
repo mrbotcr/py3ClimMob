@@ -191,6 +191,10 @@
         var elem_ckb_answer_notobserved = document.querySelector('#ckb_answer_notobserved');
         var ckb_answer_notobserved = new Switchery(elem_ckb_answer_notobserved, { color: '#1AB394' });
 
+        {% block dataprivacy_set_switchery %}
+
+        {% endblock dataprivacy_set_switchery %}
+
         {% if activeUser.login == "bioversity" %}
             var elem_ckb_question_visible = document.querySelector('#ckb_question_visible');
             var ckb_question_visible = new Switchery(elem_ckb_question_visible, { color: '#1AB394' });
@@ -995,6 +999,16 @@
                 showPreview(user_name, question_id);
 
                 $("#question_code").focus()
+
+                {% if "dataprivacyExtension" in request.registry.settings.get("climmob.plugins","").split(" ") %}
+
+                    if (userInSession == dataJson["user_name"])
+                    {
+                        $("#btn_update_question").prop('disabled', false);
+                        $("#btn_update_question").css('display', 'block');
+                        ckb_question_sensitive.enable();
+                    }
+                {% endif %}
             });
 
         }
@@ -1049,6 +1063,10 @@
             {% if activeUser.login == "bioversity" %}
                 ckb_question_visible.enable();
             {% endif %}
+
+            {% block dataprivacy_enable_switchery %}
+
+            {% endblock dataprivacy_enable_switchery %}
         }
 
         function disableSwitchery()
@@ -1060,6 +1078,10 @@
             {% if activeUser.login == "bioversity" %}
                 ckb_question_visible.disable();
             {% endif %}
+
+            {% block dataprivacy_disable_switchery %}
+
+            {% endblock dataprivacy_disable_switchery %}
         }
 
         function setSwitchery(switchElement, checkedBool)

@@ -413,6 +413,7 @@
 
         function showScrollInPreview()
         {
+            alert
             var tour = new Tour({
                 steps: [
                         {
@@ -440,34 +441,42 @@
             $(".inputSection").val("")
         }
 
-        function seeSection(id, section_name, section_content)
+        function seeSection(id)
         {
-            var currentNode = $("#jstree1").jstree().get_node("GRP"+id);
-            var childrens = $("#jstree1").jstree("get_children_dom",currentNode);
 
-            cleanBtns()
-            $("#txt_group_name").val(section_name)
-            $("#txt_group_desc").val(section_content)
-            $("#txt_section_id").val(id)
+            var URL = "{{ request.route_url('getRegistrySection', user=activeProject["owner"].user_name, project=activeProject.project_cod, section="__sectionid__") }}"
+            URL = URL.replace("__sectionid__", id)
 
-            $("#btnUpdateSection").css('display','initial')
+            $.get(URL, function (dataJson, status) {
 
-            canDelete = true
-            for(var i=0;i<childrens.length;i++)
-            {
-                if(JSON.parse(childrens[i].attributes[2].nodeValue)["icon"].search('youCanDelete') != -1)
+                var currentNode = $("#jstree1").jstree().get_node("GRP"+id);
+                var childrens = $("#jstree1").jstree("get_children_dom",currentNode);
+
+                cleanBtns()
+                $("#txt_group_name").val(dataJson["section_name"])
+                $("#txt_group_desc").val(dataJson["section_content"])
+                $("#txt_section_id").val(id)
+
+                $("#btnUpdateSection").css('display','initial')
+
+                canDelete = true
+                for(var i=0;i<childrens.length;i++)
                 {
-                    canDelete = false
+                    if(JSON.parse(childrens[i].attributes[2].nodeValue)["icon"].search('youCanDelete') != -1)
+                    {
+                        canDelete = false
+                    }
                 }
-            }
 
-            if(canDelete == true)
-            {
-                $("#btnDeleteSection").css('display', 'initial')
-            }
+                if(canDelete == true)
+                {
+                    $("#btnDeleteSection").css('display', 'initial')
+                }
 
-            $("#form_section").css("display","initial")
-            $("#txt_section_id").focus()
+                $("#form_section").css("display","initial")
+                $("#txt_section_id").focus()
+
+            });
         }
 
         $("#btnCancelSection").click(function () {

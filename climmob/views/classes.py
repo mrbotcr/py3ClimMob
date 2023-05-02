@@ -1,15 +1,16 @@
-import datetime
+import os
+import io
 import json
-import logging
 import uuid
+import logging
+import datetime
 from hashlib import md5
 from ast import literal_eval
-from formencode.variabledecode import variable_decode
-from pyramid.httpexceptions import HTTPFound
-from pyramid.httpexceptions import HTTPNotFound
 from pyramid.response import Response
 from pyramid.session import check_csrf_token
-
+from pyramid.httpexceptions import HTTPFound
+from pyramid.httpexceptions import HTTPNotFound
+from formencode.variabledecode import variable_decode
 from climmob.config.auth import getUserData, getUserByApiKey
 
 log = logging.getLogger(__name__)
@@ -21,6 +22,63 @@ from climmob.processes import (
     addToLog,
     update_last_login,
 )
+
+
+def resource_callback(request, response):
+    """
+    This function moves all script code in a html to an ephemeral js file.
+    This is important to deny any inline JS as part of Content-Security-Policy while
+    keeping the flexibility of having scripts in the jinja2 templates
+    """
+    if response.content_type == "text/html":
+        js_file_id = str(uuid.uuid4())
+        paths = ["static", "ephemeral", js_file_id + ".js"]
+        repo_dir = request.registry.settings["apppath"]
+        js_file = os.path.join(repo_dir, *paths)
+
+        html_content = ""
+        js_content = ""
+        in_html = True
+
+        f = io.StringIO(response.body.decode())
+        lines = f.readlines()
+        f.close()
+        for a_line in lines:
+            ignore_line = False
+            a_line = a_line.strip()
+            if a_line.find("<script>") >= 0:
+                in_html = False
+                ignore_line = True
+            if a_line.find("</script>") >= 0:
+                in_html = True
+                ignore_line = True
+            if a_line.find("<script ") >= 0:
+                ignore_line = False
+            if a_line.find("</body>") >= 0:
+                a_line = (
+                    '<script src="'
+                    + request.application_url
+                    + "/static/ephemeral/"
+                    + js_file_id
+                    + ".js"
+                    + '"></script>\n'
+                    + a_line
+                )
+            if not ignore_line:
+                if in_html:
+                    if a_line != "":
+                        html_content = html_content + a_line + "\n"
+                else:
+                    if a_line != "":
+                        js_content = js_content + a_line + "\n"
+
+        with open(js_file, "w") as jf:
+            if not js_content:
+                jf.write("console.log('');")
+            else:
+                jf.write(js_content)
+        response.body = html_content.encode()
+
 
 # ODKView is a Digest Authorization view. It automates all the Digest work
 class odkView(object):
@@ -175,6 +233,8 @@ class odkView(object):
 # This is the most basic public view. Used for 404 and 500. But then used for others more advanced classes
 class publicView(object):
     def __init__(self, request):
+        if request.registry.settings.get("secure.javascript", "false") == "true":
+            request.add_response_callback(resource_callback)
         self.request = request
         self._ = self.request.translate
 
@@ -206,6 +266,8 @@ class publicView(object):
 
 class privateView(object):
     def __init__(self, request):
+        if request.registry.settings.get("secure.javascript", "false") == "true":
+            request.add_response_callback(resource_callback)
         self.request = request
         self.user = None
         self._ = self.request.translate

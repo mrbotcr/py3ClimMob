@@ -31,6 +31,7 @@ class User(object):
         self.apikey = userData["user_apikey"]
         self.country = userData["user_cnty"]
         self.sector = str(userData["user_sector"])
+        self.admin = userData["user_admin"]
         self.gravatarURL = gravatar_url
         if userData["user_about"] is None:
             self.about = ""

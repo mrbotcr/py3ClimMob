@@ -40,7 +40,11 @@
                         <span class="icon-bar"></span>
                     </button>
                     {% block mainbutton %}
-                        <a class="navbar-brand" href="{{ request.route_url('login') }}">{{ _("Login or request an account") }}</a>
+                        {% if request.registry.settings.get('auth.register_users_via_web', "true") == 'true' %}
+                            <a class="navbar-brand" href="{{ request.route_url('login') }}">{{ _("Login or request an account") }}</a>
+                        {% else %}
+                            <a class="navbar-brand" href="{{ request.route_url('login') }}">{{ _("Login") }}</a>
+                        {% endif %}
                     {% endblock mainbutton %}
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
@@ -130,7 +134,7 @@
                     <div class="col-sm-3">
                         <h2>{{ _("Dual license") }}</h2>
                         <p>{{ _("ClimMob is free for research and development projects where data eventually becomes public. However if you are a private sector you can use the platform privately.") }}</p>
-                        <p><a class="navy-link" href="mailto:j.vanetten@cgiar.org" role="button">{{ _("Details") }} &raquo;</a></p>
+                        <p><a class="navy-link" href="mailto:climmob@mrbotcr.com" role="button">{{ _("Details") }} &raquo;</a></p>
                     </div>
                 {% endblock feature_items %}
             </div>
@@ -622,39 +626,51 @@
                     </div>
                 </div>
                 <div class="row m-b-lg">
-                    <div class="col-lg-3 col-lg-offset-3">
-                        <address>
-                            {% block contact_address %}
-                                <strong><span class="navy">Bioversity International<br/>Costa Rica</span></strong><br/>
-                                c/o CATIE 7170<br/>
-                                Turrialba, Costa Rica<br/>
-                                <abbr title="Phone">P:</abbr> (+506) 2556 2431
-                            {% endblock contact_address %}
-                        </address>
+                    <div class="col-lg-4 col-lg-offset-2" style="text-align: center">
+                        <div style="width: 100%; height: 65px">
+                            <address>
+                                {% block contact_address %}
+                                    <strong><span class="navy">MrBot Software Solutions</span></strong><br/>
+                                    <i class="fa fa-location-arrow"></i> Cartago, Costa Rica<br/>
+                                    <i class="fa fa-envelope"></i> info@mrbotcr.com
+                                {% endblock contact_address %}
+                            </address>
+                        </div>
+                        <div style="text-align: center">
+                            <img src="{{ request.url_for_static('landing/MrBot.png') }}" style="height: 150px">
+                        </div>
+
                     </div>
-                    <div class="col-lg-4">
-                        <p class="text-color">
-                            {% block contact_info %}
-                                {{ _("The ClimMob platform has very specific terms of service") }}. {{ _("Click") }} <a target="blank" href="{{ request.route_url('terms') }}"><span class="navy">{{ _("here") }}</span></a> {{ _("for more details") }}.
-                            {% endblock contact_info %}
-                        </p>
+                    <div class="col-lg-4" style="text-align: center">
+                        <div style="width: 100%; height: 65px">
+                            <p class="text-color">
+                                {% block contact_info %}
+                                    {{ _("The ClimMob platform has very specific terms of service") }}. {{ _("Click") }} <a target="blank" href="{{ request.route_url('terms') }}"><span class="navy">{{ _("here") }}</span></a> {{ _("for more details") }}.
+                                {% endblock contact_info %}
+                            </p>
+                        </div>
+                        <div style="text-align: center; height: 150px; margin-top: 10px">
+                            <img src="{{ request.url_for_static('landing/climmob2.png') }}" style="height: 130px">
+                        </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-lg-12 text-center">
                         {% block contact_email %}
-                            <a href="mailto:j.vanetten@cgiar.org" class="btn btn-primary">{{ _("Send us mail") }}</a>
+                            <a href="mailto:climmob@mrbotcr.com" class="btn btn-primary">{{ _("Send us mail") }}</a>
                         {% endblock contact_email %}
                         {% block contact_social %}
                             <p class="m-t-sm">
                                 {{ _("Or follow us on social media") }}
                             </p>
                             <ul class="list-inline social-icon">
-                                <li><a target="blank" href="https://twitter.com/BioversityInt"><i class="fa fa-twitter"></i></a>
+                                <li><a target="blank" href="https://www.twitter.com/ClimMob"><i class="fa fa-twitter"></i></a>
                                 </li>
-                                <li><a target="blank" href="https://www.facebook.com/bioversityinternational"><i class="fa fa-facebook"></i></a>
+                                <li><a target="blank" href="https://www.facebook.com/ClimMob"><i class="fa fa-facebook"></i></a>
                                 </li>
-                                <li><a target="blank" href="https://www.linkedin.com/company/bioversity-international"><i class="fa fa-linkedin"></i></a>
+                                <li><a target="blank" href="https://www.linkedin.com/company/climmobnet/"><i class="fa fa-linkedin"></i></a>
+                                </li>
+                                <li><a target="blank" href="https://www.instagram.com/climmob_/"><i class="fa fa-instagram"></i></a>
                                 </li>
                             </ul>
                         {% endblock contact_social %}
@@ -679,7 +695,7 @@
                 {% block contact_footer %}
                     <div class="row">
                         <div class="col-lg-8 col-lg-offset-2 text-center m-t-lg m-b-lg">
-                            <strong>{{ _("Copyright") }}</strong> {{ _("2021, Alliance of Bioversity International and CIAT") }}
+                            <strong>{{ _("Copyright") }}</strong> {{ _("2023, MrBot Software Solutions") }}
                             <br/>{{ _('Version') }}: {{ request.h.get_version() }}
                         </div>
                     </div>

@@ -52,23 +52,29 @@
                 <form class="m-t" role="form" method="post" action="{{ request.path }}">
                     {% block loginform %}
                         <div class="form-group">
-                            <input type="text" name="login" class="form-control" placeholder="{{ _("Username") }}" required="">
+                            <input type="text" name="login" class="form-control" placeholder="{{ _("Username") }}" required="" autocomplete="off">
                         </div>
                         <div class="form-group">
-                            <input type="password" name="passwd" class="form-control" placeholder="{{ _("Password") }}" required="">
+                            <input type="password" name="passwd" class="form-control" placeholder="{{ _("Password") }}" required="" autocomplete="off">
                         </div>
                         <input type="hidden" name="next" value="{{ next }}">
                         <button type="submit" name="submit" class="btn btn-primary block full-width m-b">{{ _("Login") }}</button>
 
                         <a href="{{ request.route_url('recover') }}"><small>{{ _("Forgot username or password?") }}</small></a>
-                        <p class="text-muted text-center"><small>{{ _("Do not have an account?") }}</small></p>
-                        <a class="btn btn-sm btn-white btn-block" href="{{ request.route_url('register') }}">{{ _("Create an account") }}</a>
+
+                        {% if request.registry.settings.get('auth.register_users_via_web', "true") == 'true'%}
+
+                            <p class="text-muted text-center"><small>{{ _("Do not have an account?") }}</small></p>
+                            <a class="btn btn-sm btn-white btn-block" href="{{ request.route_url('register') }}">{{ _("Create an account") }}</a>
+
+                        {% endif %}
+
                     {% endblock loginform %}
                 </form>
             {% endblock logincontent %}
             {% block loginfooter %}
                 <br>
-                <strong>{{ _("Copyright") }}</strong> {{ _("2021, Alliance of Bioversity International and CIAT") }}
+                <strong>{{ _("Copyright") }}</strong> {{ _("2023, MrBot Software Solutions") }}
             {% endblock loginfooter %}
         </div>
     </div>

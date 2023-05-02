@@ -776,6 +776,7 @@ class Question(Base):
     question_forms = Column(Integer, server_default=text("'3'"))
     qstgroups_user = Column(Unicode(80), nullable=True)
     qstgroups_id = Column(Unicode(80), nullable=True)
+    question_sensitive = Column(Integer, server_default=text("'0'"))
     extra = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
     user = relationship("User")
 
@@ -843,6 +844,8 @@ class Sector(Base):
 
     sector_cod = Column(Integer, primary_key=True)
     sector_name = Column(Unicode(120))
+    section_order = Column(Integer, nullable=True)
+    section_available = Column(Integer, nullable=True)
 
 
 class Techalia(Base):
@@ -921,6 +924,8 @@ class User(Base):
     user_password_reset_key = Column(Unicode(64))
     user_password_reset_token = Column(Unicode(64))
     user_password_reset_expires_on = Column(DateTime)
+
+    user_admin = Column(Integer, server_default=text("'0'"))
 
     extra = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
 
@@ -1018,6 +1023,7 @@ class userProject(Base):
     user_name = Column(Unicode(80), primary_key=True, nullable=False)
     access_type = Column(Integer, nullable=False)  # 1=Owner,2=Admin,3=Editor,4=Member.
     project_dashboard = Column(Integer, server_default=text("'1'"))
+    collaboration_accepted = Column(Integer, server_default=text("'1'"))
 
     project = relationship("Project")
     user = relationship("User")

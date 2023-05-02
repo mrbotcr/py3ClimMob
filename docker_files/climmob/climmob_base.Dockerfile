@@ -4,10 +4,7 @@ MAINTAINER Alianza Bioversity-CIAT
 ENV CR=America/Costa_Rica
 ENV DEBIAN_FRONTEND noninteractive
 RUN ln -snf /usr/share/zoneinfo/$CR /etc/localtime && echo $CR > /etc/timezone
-RUN apt-get update && apt-get -y upgrade
-RUN apt-get install -y software-properties-common
-RUN add-apt-repository universe
-RUN add-apt-repository multiverse
+RUN apt-get update && apt-get -y upgrade && apt-get install -y software-properties-common && add-apt-repository universe && add-apt-repository multiverse
 
 RUN apt-get install -y wget tzdata
 
@@ -15,8 +12,7 @@ RUN apt-get install -y wget tzdata
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
 RUN add-apt-repository -y 'deb https://cloud.r-project.org/bin/linux/ubuntu focal-cran40/'
 
-RUN wget http://archive.ubuntu.com/ubuntu/pool/main/i/icu/libicu66_66.1-2ubuntu2_amd64.deb
-RUN dpkg -i ./libicu66_66.1-2ubuntu2_amd64.deb
+RUN wget http://archive.ubuntu.com/ubuntu/pool/main/i/icu/libicu66_66.1-2ubuntu2_amd64.deb && dpkg -i ./libicu66_66.1-2ubuntu2_amd64.deb
 
 # Mongo
 RUN wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc |  gpg --dearmor | tee /usr/share/keyrings/mongodb.gpg > /dev/null
@@ -52,22 +48,19 @@ RUN npm install -g json2csv
 
 #WebKit's
 RUN wget https://github.com/mozilla/geckodriver/releases/download/v0.31.0/geckodriver-v0.31.0-linux64.tar.gz
-RUN tar xvfz geckodriver-v0.31.0-linux64.tar.gz
-RUN cp geckodriver /bin
+RUN tar xvfz geckodriver-v0.31.0-linux64.tar.gz && cp geckodriver /bin
 
 #ODKTOOLS
 RUN wget https://github.com/BurntSushi/xsv/releases/download/0.13.0/xsv-0.13.0-x86_64-unknown-linux-musl.tar.gz
-RUN tar xvfz xsv-0.13.0-x86_64-unknown-linux-musl.tar.gz
-RUN cp xsv /bin
+RUN tar xvfz xsv-0.13.0-x86_64-unknown-linux-musl.tar.gz && cp xsv /bin
 
 RUN git clone https://github.com/qlands/csv2xlsx.git
 WORKDIR csv2xlsx
-RUN go build
-RUN cp csv2xlsx /bin
+RUN go build && cp csv2xlsx /bin
 
 WORKDIR /opt
 RUN mkdir odktools-deps
-RUN git clone https://github.com/qlands/odktools.git -b stable-2.1
+RUN git clone https://github.com/qlands/odktools.git -b stable-2.2
 
 WORKDIR /opt/odktools-deps
 RUN wget https://github.com/mongodb/mongo-c-driver/releases/download/1.21.1/mongo-c-driver-1.21.1.tar.gz
@@ -103,8 +96,7 @@ RUN make
 RUN make install
 WORKDIR /opt/odktools-deps
 
-RUN ln -s /usr/bin/aclocal-1.16 /usr/bin/aclocal-1.14
-RUN ln -s /usr/bin/automake-1.16 /usr/bin/automake-1.14
+RUN ln -s /usr/bin/aclocal-1.16 /usr/bin/aclocal-1.14 && ln -s /usr/bin/automake-1.16 /usr/bin/automake-1.14
 
 RUN tar xvfz RELEASE_1.1.4.tar.gz
 WORKDIR /opt/odktools-deps/libxlsxwriter-RELEASE_1.1.4
@@ -154,57 +146,21 @@ RUN ls --recursive /root/R_packages_installation
 
 RUN Rscript /root/R_packages_installation/caret.R
 
-RUN Rscript /root/R_packages_installation/climatrends.R
+RUN Rscript /root/R_packages_installation/climatrends.R && Rscript /root/R_packages_installation/ClimMobTools.R
 
-RUN Rscript /root/R_packages_installation/ClimMobTools.R
+RUN Rscript /root/R_packages_installation/ggparty.R  && Rscript /root/R_packages_installation/ggplot2.R Rscript /root/R_packages_installation/gosset.R && Rscript /root/R_packages_installation/gridExtra.R
 
-RUN Rscript /root/R_packages_installation/ggparty.R
+RUN Rscript /root/R_packages_installation/gtools.R && Rscript /root/R_packages_installation/igraph.R && Rscript /root/R_packages_installation/janitor.R && Rscript /root/R_packages_installation/jsonlite.R
 
-RUN Rscript /root/R_packages_installation/ggplot2.R
+RUN Rscript /root/R_packages_installation/knitr.R && Rscript /root/R_packages_installation/leaflet.R && Rscript /root/R_packages_installation/mapview.R && Rscript /root/R_packages_installation/multcompView.R
+
+RUN Rscript /root/R_packages_installation/nasapower.R && Rscript /root/R_packages_installation/partykit.R && Rscript /root/R_packages_installation/patchwork.R && Rscript /root/R_packages_installation/PlackettLuce.R
+
+RUN Rscript /root/R_packages_installation/plotrix.R && Rscript /root/R_packages_installation/pls.R && Rscript /root/R_packages_installation/png.R && Rscript /root/R_packages_installation/psychotools.R
+
+RUN Rscript /root/R_packages_installation/qvcalc.R && Rscript /root/R_packages_installation/remotes.R && Rscript /root/R_packages_installation/rmarkdown.R && Rscript /root/R_packages_installation/phantomjs.R
 
 RUN Rscript /root/R_packages_installation/gosset.R
-
-RUN Rscript /root/R_packages_installation/gridExtra.R
-
-RUN Rscript /root/R_packages_installation/gtools.R
-
-RUN Rscript /root/R_packages_installation/igraph.R
-
-RUN Rscript /root/R_packages_installation/janitor.R
-
-RUN Rscript /root/R_packages_installation/jsonlite.R
-
-RUN Rscript /root/R_packages_installation/knitr.R
-
-RUN Rscript /root/R_packages_installation/leaflet.R
-
-RUN Rscript /root/R_packages_installation/mapview.R
-
-RUN Rscript /root/R_packages_installation/multcompView.R
-
-RUN Rscript /root/R_packages_installation/nasapower.R
-
-RUN Rscript /root/R_packages_installation/partykit.R
-
-RUN Rscript /root/R_packages_installation/patchwork.R
-
-RUN Rscript /root/R_packages_installation/PlackettLuce.R
-
-RUN Rscript /root/R_packages_installation/plotrix.R
-
-RUN Rscript /root/R_packages_installation/pls.R
-
-RUN Rscript /root/R_packages_installation/png.R
-
-RUN Rscript /root/R_packages_installation/psychotools.R
-
-RUN Rscript /root/R_packages_installation/qvcalc.R
-
-RUN Rscript /root/R_packages_installation/remotes.R
-
-RUN Rscript /root/R_packages_installation/rmarkdown.R
-
-RUN Rscript /root/R_packages_installation/phantomjs.R
 
 RUN Rscript /root/R_packages_installation/check_R_libraries.R
 

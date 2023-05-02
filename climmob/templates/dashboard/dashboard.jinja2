@@ -682,7 +682,7 @@
                         {% block piesFieldAgents %}
                             {% if progress.regtotal > 0 %}
 
-                                <script type="text/javascript">
+                                <script>
                                     c3.generate({
                                             bindto: '#pieRegistry',
                                             size: {
@@ -738,7 +738,7 @@
 
                             {% for fieldAgentAssess in fieldagents["Assessments"] %}
                                 {% if fieldAgentAssess["Values"] %}
-                                <script type="text/javascript">
+                                <script>
                                     c3.generate({
                                             bindto: '#pie{{ fieldAgentAssess["Name"] }}',
                                             size: {
@@ -810,7 +810,7 @@
                         {{ request.h.get_version() }}
                     </div>
                     <div>
-                        <strong>{{ _("Copyright") }}</strong> {{ _("2021, Alliance of Bioversity International and CIAT") }}
+                        <strong>{{ _("Copyright") }}</strong> {{ _("2023, MrBot Software Solutions") }}
                     </div>
                 {% endblock footer %}
             </div>

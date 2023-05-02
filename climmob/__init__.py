@@ -19,8 +19,13 @@ from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid_authstack import AuthenticationStackPolicy
 
+import sentry_sdk
+from sentry_sdk.integrations.pyramid import PyramidIntegration
+
 
 def main(global_config, **settings):
+
+    apppath = os.path.dirname(os.path.abspath(__file__))
 
     if global_config is not None:  # pragma: no cover
         config = ConfigParser()
@@ -29,6 +34,7 @@ def main(global_config, **settings):
             threads = config.get("server:main", "threads")
         except NoOptionError:
             threads = "1"
+        settings["apppath"] = apppath
         settings["server:threads"] = threads
         settings["global:config:file"] = global_config["__file__"]
 
@@ -63,10 +69,21 @@ def main(global_config, **settings):
         authorization_policy=authz_policy,
     )
 
-    apppath = os.path.dirname(os.path.abspath(__file__))
-
     config.include(".models")
     # Load and configure the host application
     load_environment(settings, config, apppath, policy_array)
+
+    sentry = settings.get("sentry_sdk.dsn", "")
+    if sentry != "":
+        sentry_sdk.init(
+            dsn=sentry,
+            integrations=[
+                PyramidIntegration(),
+            ],
+            # Set traces_sample_rate to 1.0 to capture 100%
+            # of transactions for performance monitoring.
+            # We recommend adjusting this value in production.
+            traces_sample_rate=1.0,
+        )
 
     return config.make_wsgi_app()

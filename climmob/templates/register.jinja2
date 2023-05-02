@@ -10,6 +10,7 @@
 {#    {% jsresource request,'coreresources','register' %}#}
     {% jsresource request,'coreresources','select2' %}
     {% jsresource request,'coreresources','icheck' %}
+    {% jsresource request,'coreresources','validate' %}
 {% endblock topScripts %}
 
 {% block logintitle %}
@@ -30,18 +31,18 @@
     {% endfor %}
 
     <div class="text-left">
-        <form class="m-t" role="form" method="post" action="{{ request.path }}">
+        <form class="m-t" role="form" method="post" action="{{ request.path }}" id="formAddUser">
             <div class="form-group">
                 <label>{{ _("Full name") }}</label>
-                <input type="text" class="form-control" id="user_fullname" name="user_fullname" placeholder="{{ _("Full Name") }}" required="" value="{{ data.user_fullname }}" oninvalid="this.setCustomValidity('{{ _("Write the full name.") }}')" onchange="this.setCustomValidity('')">
+                <input type="text" class="form-control" id="user_fullname" name="user_fullname" placeholder="{{ _("Full Name") }}" required="" value="{{ data.user_fullname }}" oninvalid="this.setCustomValidity('{{ _("Write the full name.") }}')" onchange="this.setCustomValidity('')" autocomplete="off">
             </div>
             <div class="form-group">
                 <label>{{ _("Email") }}</label>
-                <input type="email" id="user_email" name="user_email" class="form-control" placeholder="{{ _("Email") }}" required="" value="{{ data.user_email }}" oninvalid="this.setCustomValidity('{{ _("Write the email.") }}')" onchange="this.setCustomValidity('')">
+                <input type="email" id="user_email" name="user_email" class="form-control" placeholder="{{ _("Email") }}" required="" value="{{ data.user_email }}" oninvalid="this.setCustomValidity('{{ _("Write the email.") }}')" onchange="this.setCustomValidity('')" autocomplete="off">
             </div>
             <div class="form-group">
                 <label>{{ _("Organization") }}</label>
-                <input type="text" id="user_organization" name="user_organization" class="form-control" placeholder="{{ _("Organization") }}" required="" value="{{ data.user_organization }}" oninvalid="this.setCustomValidity('{{ _("Write the organization.") }}')" onchange="this.setCustomValidity('')">
+                <input type="text" id="user_organization" name="user_organization" class="form-control" placeholder="{{ _("Organization") }}" required="" value="{{ data.user_organization }}" oninvalid="this.setCustomValidity('{{ _("Write the organization.") }}')" onchange="this.setCustomValidity('')" autocomplete="off">
             </div>
             <div class="form-group">
                 <label>{{ _("Country") }}</label>
@@ -62,16 +63,16 @@
             <hr>
             <div class="form-group">
                 <label>{{ _("Username") }}</label>
-                <input type="text" class="form-control" id="user_name" name="user_name" placeholder="{{ _("Username") }}" required="" value="{{ data.user_name }}" oninvalid="this.setCustomValidity('{{ _("Write the username.") }}')" onchange="this.setCustomValidity('')">
+                <input type="text" class="form-control" id="user_name" name="user_name" placeholder="{{ _("Username") }}" required="" value="{{ data.user_name }}" oninvalid="this.setCustomValidity('{{ _("Write the username.") }}')" onchange="this.setCustomValidity('')" autocomplete="off">
                 <p style="color: grey">{{ _("You can only use lowercase letters and numbers.") }}</p>
             </div>
             <div class="form-group">
                 <label>{{ _("Password") }}</label>
-                <input type="password" id="user_password" name="user_password" class="form-control" placeholder="{{ _("Password") }}" required="" oninvalid="this.setCustomValidity('{{ _("Write the password.") }}')" onchange="this.setCustomValidity('')">
+                <input type="password" id="user_password" name="user_password" class="form-control" placeholder="{{ _("Password") }}" required="" oninvalid="this.setCustomValidity('{{ _("Write the password.") }}')" onchange="this.setCustomValidity('')" autocomplete="off">
             </div>
             <div class="form-group">
                 <label>{{ _("Retype password") }}</label>
-                <input type="password" id="user_password2" name="user_password2" class="form-control" placeholder="{{ _("Retype password") }}" required="" oninvalid="this.setCustomValidity('{{ _("Retype password") }}')" onchange="this.setCustomValidity('')">
+                <input type="password" id="user_password2" name="user_password2" class="form-control" placeholder="{{ _("Retype password") }}" required="" oninvalid="this.setCustomValidity('{{ _("Retype password") }}')" onchange="this.setCustomValidity('')" autocomplete="off">
             </div>
 
             <div class="form-group">
@@ -105,7 +106,7 @@
     <script>
 
         $(document).ready(function(){
-            
+
             function isNumeric(value)
             {
                 return /^\d+$/.test(value);
@@ -138,6 +139,72 @@
 
 
 
+        });
+
+        $.validator.addMethod(
+            "regex",
+            function(value, element, regexp) {
+                var check = false;
+                return this.optional(element) || regexp.test(value);
+            },
+            "{{ _("Only letters and numbers are allowed and the first character must be a lower case letter.") }}"
+        );
+
+        $.validator.addMethod(
+            "regexpass",
+            function(value, element, regexp) {
+                var check = false;
+                return this.optional(element) || regexp.test(value);
+            },
+            "{{ _("Enter a stronger password. It must contain at least one lowercase letter, one uppercase letter, one digit and a minimum length of 10 characters.") }}"
+        );
+
+
+        $('#formAddUser').validate({
+            rules: {
+                user_fullname: {
+                    required: true
+                },
+                user_email: {
+                    required: true
+                },
+                user_organization: {
+                    required: true
+                },
+                user_name: {
+                    required: true,
+                    regex : /^[a-z][a-z0-9]+$/,
+                    minlength: 5
+                },
+                user_password:{
+                    required: true,
+                    regexpass: /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/,
+                    minlength: 10
+                },
+                user_password2:{
+                    required: true
+                }
+            },
+            messages: {
+                user_fullname:{
+                  required: "{{ _("Write the full name.") }}"
+                },
+                user_email: {
+                  required: "{{ _("Write the email") }}"
+                },
+                user_organization: {
+                    required: "{{ _("Write the organization") }}"
+                },
+                user_name:{
+                    required: "{{ _("Write the username") }}"
+                },
+                user_password:{
+                    required: "{{ _("Enter the password") }}"
+                },
+                user_password2:{
+                    required: "{{ _("Retype password") }}"
+                }
+            },
         });
 
     </script>

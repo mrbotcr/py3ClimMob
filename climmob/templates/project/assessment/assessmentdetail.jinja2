@@ -399,34 +399,37 @@
             $(".inputSection").val("")
         }
 
-        function seeSection(id, section_name, section_content)
+        function seeSection(id)
         {
-            var currentNode = $("#jstree1").jstree().get_node("GRP"+id);
-            var childrens = $("#jstree1").jstree("get_children_dom",currentNode);
+            var URL = "{{ request.route_url('getAssessmentSection', user=activeProject["owner"].user_name, project=activeProject.project_cod, assessmentid=assessmentid, section="__sectionid__") }}"
+            URL = URL.replace("__sectionid__", id)
 
-            cleanBtns()
-            $("#txt_group_name").val(section_name)
-            $("#txt_group_desc").val(section_content)
-            $("#txt_section_id").val(id)
+            $.get(URL, function (dataJson, status) {
 
-            $("#btnUpdateSection").css('display','initial')
+                var currentNode = $("#jstree1").jstree().get_node("GRP" + id);
+                var childrens = $("#jstree1").jstree("get_children_dom", currentNode);
 
-            canDelete = true
-            for(var i=0;i<childrens.length;i++)
-            {
-                if(JSON.parse(childrens[i].attributes[2].nodeValue)["icon"].search('youCanDelete') != -1)
-                {
-                    canDelete = false
+                cleanBtns()
+                $("#txt_group_name").val(dataJson["section_name"])
+                $("#txt_group_desc").val(dataJson["section_content"])
+                $("#txt_section_id").val(id)
+
+                $("#btnUpdateSection").css('display', 'initial')
+
+                canDelete = true
+                for (var i = 0; i < childrens.length; i++) {
+                    if (JSON.parse(childrens[i].attributes[2].nodeValue)["icon"].search('youCanDelete') != -1) {
+                        canDelete = false
+                    }
                 }
-            }
 
-            if(canDelete == true)
-            {
-                $("#btnDeleteSection").css('display', 'initial')
-            }
+                if (canDelete == true) {
+                    $("#btnDeleteSection").css('display', 'initial')
+                }
 
-            $("#form_section").css("display","initial")
-            $("#txt_group_name").focus()
+                $("#form_section").css("display", "initial")
+                $("#txt_group_name").focus()
+            });
         }
 
         $("#btnCancelSection").click(function () {

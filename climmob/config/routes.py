@@ -141,6 +141,7 @@ from climmob.views.assessment import (
     CancelAssessmentView,
     assessmentFormCreation_view,
     assessmentSectionActions_view,
+    getAssessmentSection_view,
 )
 from climmob.views.basic_views import (
     home_view,
@@ -222,6 +223,7 @@ from climmob.views.registry import (
     closeRegistry_view,
     registryFormCreation_view,
     registrySectionActions_view,
+    getRegistrySection_view,
 )
 from climmob.views.techaliases import deletealias_view
 from climmob.views.technologies import (
@@ -231,7 +233,7 @@ from climmob.views.technologies import (
     getUserTechnologyAliasDetails_view,
     APICropsView,
 )
-from climmob.views.test import test_view
+from climmob.views.test import test_view, sentry_debug_view
 
 # -------Api-------#
 
@@ -432,6 +434,15 @@ def loadRoutes(config):
 
     routes.append(
         addRoute(
+            "sentry-debug",
+            "/sentry-debug",
+            sentry_debug_view,
+            None,
+        )
+    )
+
+    routes.append(
+        addRoute(
             "getUserQuestionPreview",
             "/user/{user}/question/{questionid}/Preview",
             getUserQuestionPreview_view,
@@ -585,6 +596,14 @@ def loadRoutes(config):
     )
     routes.append(
         addRoute(
+            "getRegistrySection",
+            "/user/{user}/project/{project}/section/{section}/getRegistrySection",
+            getRegistrySection_view,
+            "json",
+        )
+    )
+    routes.append(
+        addRoute(
             "registrySaveChanges",
             "/user/{user}/project/{project}/registry/savechanges",
             registryFormCreation_view,
@@ -707,6 +726,14 @@ def loadRoutes(config):
             "view": assessmentSectionActions_view,
             "renderer": "json",
         }
+    )
+    routes.append(
+        addRoute(
+            "getAssessmentSection",
+            "/user/{user}/project/{project}/assessment/{assessmentid}/section/{section}/getAssessmentSection",
+            getAssessmentSection_view,
+            "json",
+        )
     )
     # Project technologies and aliases
     routes.append(
