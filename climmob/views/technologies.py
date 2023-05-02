@@ -143,6 +143,10 @@ class newtechnology_view(privateView):
                         existInPersLibrary = findTechInLibrary(formdata, self.request)
                         if existInPersLibrary == False:
                             formdata["user_name"] = self.user.login
+                            if "croptaxonomy_code" in formdata.keys():
+                                formdata["croptaxonomy_code"] = formdata[
+                                    "croptaxonomy_code"
+                                ].replace("'", "")
                             added, message = addTechnology(formdata, self.request)
                             if not added:
                                 error_summary = {"dberror": message}
@@ -201,13 +205,23 @@ class modifytechnology_view(privateView):
                 if formdata["tech_name"] != "":
 
                     formdata["user_name"] = "bioversity"
-                    existInGenLibrary = findTechInLibrary(formdata, self.request)
+                    existInGenLibrary = findTechInLibrary(
+                        formdata, self.request, formdata["tech_id"]
+                    )
                     if existInGenLibrary == False:
 
                         formdata["user_name"] = self.user.login
-                        existInPersLibrary = findTechInLibrary(formdata, self.request)
+                        existInPersLibrary = findTechInLibrary(
+                            formdata, self.request, formdata["tech_id"]
+                        )
                         if existInPersLibrary == False:
                             formdata["user_name"] = self.user.login
+
+                            if "croptaxonomy_code" in formdata.keys():
+                                formdata["croptaxonomy_code"] = formdata[
+                                    "croptaxonomy_code"
+                                ].replace("'", "")
+
                             update, message = updateTechnology(formdata, self.request)
                             if not update:
                                 error_summary = {"dberror": message}
@@ -310,7 +324,7 @@ class APICropsView(publicView):
                 for result in query_result:
                     select2_result.append(
                         {
-                            "id": result["taxonomy_code"],
+                            "id": "'{}'".format(result["taxonomy_code"]),
                             "text": result["crop_name"],
                         }
                     )

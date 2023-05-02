@@ -89,26 +89,50 @@ def getUserTechById(tech_id, request):
         .one()
     )
 
+    crop_name = (
+        request.dbsession.query(I18nCropTaxonomy.crop_name)
+        .filter(I18nCropTaxonomy.taxonomy_code == result["croptaxonomy_code"])
+        .filter(I18nCropTaxonomy.lang_code == "en")
+        .first()
+    )
+
+    result["crop_name"] = crop_name.crop_name
     result["tech_alias"] = getTechsAlias(tech_id, request)
     result["found"] = res3.found
 
     return result
 
 
-def findTechInLibrary(data, request):
-    result = (
-        request.dbsession.query(Technology)
-        .filter(
-            Technology.user_name == data["user_name"],
-            Technology.tech_name == data["tech_name"],
+def findTechInLibrary(data, request, tech_id=None):
+    if tech_id is None:
+        result = (
+            request.dbsession.query(Technology)
+            .filter(
+                Technology.user_name == data["user_name"],
+                Technology.tech_name == data["tech_name"],
+            )
+            .all()
         )
-        .all()
-    )
 
-    if not result:
-        return False
+        if not result:
+            return False
+        else:
+            return True
     else:
-        return True
+        result = (
+            request.dbsession.query(Technology)
+            .filter(
+                Technology.user_name == data["user_name"],
+                Technology.tech_name == data["tech_name"],
+                Technology.tech_id != tech_id,
+            )
+            .all()
+        )
+
+        if not result:
+            return False
+        else:
+            return True
 
 
 def addTechnology(data, request):
@@ -229,13 +253,22 @@ def deleteTechnology(data, request):
 def query_crops(request, q, query_from, query_size, lang_code="en"):
     query = q.replace("*", "")
 
+    total = (
+        request.dbsession.query(I18nCropTaxonomy)
+        .filter(I18nCropTaxonomy.lang_code == lang_code)
+        .filter(I18nCropTaxonomy.crop_name.ilike("%" + query + "%"))
+        .order_by(I18nCropTaxonomy.crop_name)
+        .all()
+    )
+
     result = (
         request.dbsession.query(I18nCropTaxonomy)
         .filter(I18nCropTaxonomy.lang_code == lang_code)
         .filter(I18nCropTaxonomy.crop_name.ilike("%" + query + "%"))
+        .order_by(I18nCropTaxonomy.crop_name)
         .offset(query_from)
         .limit(query_size)
         .all()
     )
 
-    return mapFromSchema(result), len(result)
+    return mapFromSchema(result), len(total)

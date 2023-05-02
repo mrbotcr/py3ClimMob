@@ -40,7 +40,15 @@
     }
 
     $(document).ajaxStart(function() {
-        $("#carga").show();
+        if (typeof show_carga === 'undefined') {
+            console.log("undefined");
+            $("#carga").show();
+        } else {
+            if (show_carga === true) {
+                console.log("true");
+                $("#carga").show();
+            }
+        }
     })
     .ajaxStop(function() {
         $("#carga").hide();
