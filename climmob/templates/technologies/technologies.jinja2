@@ -10,6 +10,7 @@
     {% cssresource request,'coreresources','sweet' %}
     {% cssresource request,'coreresources','footable' %}
     {% cssresource request,'coreresources','tour' %}
+    {% cssresource request,'coreresources','select2' %}
 {% endblock css %}
 
 {% block topScripts %}
@@ -20,6 +21,7 @@
     {% jsresource request,'coreresources','sweet' %}
     {% include 'snippets/delete.jinja2' %}
     {% jsresource request,'coreresources','tour' %}
+    {% jsresource request,'coreresources','select2' %}
 {% endblock topScripts %}
 
 {% block pageheading %}
@@ -216,6 +218,44 @@
         });
 
         $(document).ready(function () {
+
+
+            function formatCrop (crop) {
+                if (!crop.id) {
+                    return crop.text;
+                }
+                let $state = $(
+                    '<span>' + crop.text + '</span>'
+                );
+                return $state;
+            }
+
+
+            $("#select_crop").select2({
+                templateResult: formatCrop,
+                ajax: {
+                    url: "{{ request.route_url('APICrops') }}",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term, // search term
+                            page: params.page
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: data.results,
+                            pagination: {
+                                more: (params.page * 10) < data.total
+                            }
+                        };
+                    },
+                    cache: true
+                }
+            });
+
 
             $('.footable').footable();
 

@@ -50,6 +50,8 @@ from climmob.models.climmobv4 import (
     storageErrors,
     Chat,
     userProject,
+    CropTaxonomy,
+    I18nCropTaxonomy,
 )
 from climmob.models.schema import *
 

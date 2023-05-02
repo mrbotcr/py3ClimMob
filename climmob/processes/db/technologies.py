@@ -1,6 +1,12 @@
-from sqlalchemy import func, and_
-
-from climmob.models.climmobv4 import Technology, Techalia, Prjtech, I18nTechnology, User
+from sqlalchemy import func, and_, or_
+from climmob.models.climmobv4 import (
+    Technology,
+    Techalia,
+    Prjtech,
+    I18nTechnology,
+    User,
+    I18nCropTaxonomy,
+)
 from climmob.models.schema import mapToSchema, mapFromSchema
 from climmob.processes.db.techaliases import getTechsAlias
 
@@ -17,6 +23,7 @@ __all__ = [
     "isTechnologyAssigned",
     "getTechnologyByName",
     "getUserTechById",
+    "query_crops",
 ]
 
 
@@ -217,3 +224,18 @@ def deleteTechnology(data, request):
 
     except Exception as e:
         return False, e
+
+
+def query_crops(request, q, query_from, query_size, lang_code="en"):
+    query = q.replace("*", "")
+
+    result = (
+        request.dbsession.query(I18nCropTaxonomy)
+        .filter(I18nCropTaxonomy.lang_code == lang_code)
+        .filter(I18nCropTaxonomy.crop_name.ilike("%" + query + "%"))
+        .offset(query_from)
+        .limit(query_size)
+        .all()
+    )
+
+    return mapFromSchema(result), len(result)
