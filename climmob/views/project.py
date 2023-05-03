@@ -38,6 +38,9 @@ from climmob.processes import (
     deleteRegistryByProjectId,
     deleteProjectAssessments,
     getUserProjects,
+    getListOfLanguagesByUser,
+    addPrjLang,
+    deleteAllPrjLang,
 )
 from climmob.views.classes import privateView
 
@@ -134,6 +137,7 @@ class newProject_view(privateView):
             "listOfTemplates": getProjectTemplates(
                 self.request, dataworking["project_registration_and_analysis"]
             ),
+            "listOfLanguages": getListOfLanguagesByUser(self.request, self.user.login),
         }
 
 
@@ -169,9 +173,9 @@ def createProjectFunction(dataworking, error_summary, self):
                     self.user.login, dataworking["project_cod"], self.request
                 )
                 if not exitsproject:
-                    added, message = addProject(dataworking, self.request)
+                    added, idormessage = addProject(dataworking, self.request)
                     if not added:
-                        error_summary = {"dberror": message}
+                        error_summary = {"dberror": idormessage}
                     else:
                         addToLog(
                             self.user.login,
@@ -180,6 +184,21 @@ def createProjectFunction(dataworking, error_summary, self):
                             datetime.datetime.now(),
                             self.request,
                         )
+
+                        if "project_languages" in dataworking.keys():
+                            if dataworking["project_languages"]:
+
+                                if isinstance(dataworking["project_languages"], str):
+                                    dataworking["project_languages"] = [
+                                        dataworking["project_languages"]
+                                    ]
+
+                                for lang in dataworking["project_languages"]:
+                                    langInfo = {}
+                                    langInfo["lang_code"] = lang
+                                    langInfo["project_id"] = idormessage
+
+                                    apl, aplmessage = addPrjLang(langInfo, self.request)
 
                         if "usingTemplate" in dataworking.keys():
                             if dataworking["usingTemplate"] != "":
@@ -450,6 +469,28 @@ class modifyProject_view(privateView):
                         if not modified:
                             error_summary = {"dberror": message}
                         else:
+
+                            deleted, message = deleteAllPrjLang(
+                                activeProjectId, self.request
+                            )
+
+                            if "project_languages" in data.keys():
+                                if data["project_languages"]:
+
+                                    if isinstance(data["project_languages"], str):
+                                        data["project_languages"] = [
+                                            data["project_languages"]
+                                        ]
+
+                                    for lang in data["project_languages"]:
+                                        langInfo = {}
+                                        langInfo["lang_code"] = lang
+                                        langInfo["project_id"] = activeProjectId
+
+                                        apl, aplmessage = addPrjLang(
+                                            langInfo, self.request
+                                        )
+
                             for plugin in p.PluginImplementations(p.IProject):
                                 plugin.after_updating_project(
                                     self.request, self.user.login, activeProjectId, data
@@ -521,6 +562,7 @@ class modifyProject_view(privateView):
             "listOfTemplates": getProjectTemplates(
                 self.request, data["project_registration_and_analysis"]
             ),
+            "listOfLanguages": getListOfLanguagesByUser(self.request, self.user.login),
         }
         for plugin in p.PluginImplementations(p.IProject):
             context = plugin.before_returning_project_context(self.request, context)

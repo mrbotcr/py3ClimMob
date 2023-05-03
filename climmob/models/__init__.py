@@ -19,6 +19,7 @@ from climmob.models.climmobv4 import (
     I18nTechalia,
     I18nTechnology,
     I18nQstoption,
+    I18nUser,
     Package,
     Pkgcomb,
     Prjalia,

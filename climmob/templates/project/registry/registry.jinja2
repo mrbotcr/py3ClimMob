@@ -34,7 +34,7 @@
 {% block pagecontent %}
 
     <div class="row" style="text-align: center">
-        <div class="col-lg-12">
+        <div class="col-lg-12" style="padding-left: 10px;padding-right: 15px;">
             <div class="ibox-content" style="padding: 10px">
                 <p style="margin: 0px">
                     {{ _("Here you add and manage the administrative questions that field agents will ask the participants during the registration at the start of the project. This information is important for administrative reasons (who is participating, where do they live etc.) and for data analysis (e.g. to understand if all female participants preferred a certain technology option). Once you defined the list of questions, they will become available through the ODK Collect app. Field agents can input the information directly into the app, when registering the participants.") }}
@@ -42,6 +42,8 @@
             </div>
         </div>
     </div>
+
+    {% include 'snippets/project/registry/changeLanguages.jinja2' %}
 
     {% set onlySee = False %}
 
@@ -76,6 +78,7 @@
                                         {% set classByRegRequired=False %}
                                         {% set showCreator=True %}
                                         {% set colorsUserCategories=False %}
+                                        {% set showTranslate=False %}
                                         {% include 'snippets/jstreeQuestions.jinja2' %}
                                     </div>
                                 </div>
@@ -110,6 +113,7 @@
                                         {% set jstreeName="jstree1" %}
                                         {% set showCreator=True %}
                                         {% set colorsUserCategories=False %}
+                                        {% set validateLanguage=True %}
                                         {% include 'snippets/jstreeForm.jinja2' %}
                                         <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}" id="formFoSendInformation" style="display: none">
                                             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
@@ -204,7 +208,14 @@
 
     </style>
 
+
     <script>
+        $(document).ready(function (){
+           $(".btnSwitchLanguage").click(function (){
+               window.location.href = "{{ request.route_url('registry', user=activeProject["owner"].user_name, project=activeProject.project_cod) }}?language="+$(this).attr("idOfLanguage")
+           }) ;
+        });
+
         $(document).ready(function () {
 
             cleanBtns();

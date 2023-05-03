@@ -216,7 +216,11 @@ def checkAssessments(projectId, assessment, request):
 
 
 def formattingQuestions(
-    questions, request, projectLabels, onlyShowTheBasicQuestions=False
+    questions,
+    request,
+    projectLabels,
+    language="default",
+    onlyShowTheBasicQuestions=False,
 ):
     _ = request.translate
     result = []
@@ -225,7 +229,7 @@ def formattingQuestions(
         dct = dict(qst)
         options = []
         if dct["question_dtype"] == 5 or dct["question_dtype"] == 6:
-            options = getQuestionOptions(dct["question_id"], request)
+            options = getQuestionOptions(dct["question_id"], request, language=language)
             dct["question_options"] = options
 
         if not onlyShowTheBasicQuestions:
@@ -273,7 +277,7 @@ def formattingQuestions(
                         or newQuestion["question_dtype"] == 6
                     ):
                         options = getQuestionOptions(
-                            newQuestion["question_id"], request
+                            newQuestion["question_id"], request, language=language
                         )
                         newQuestion["question_options"] = options
                     newQuestion["isParentQuestion"] = 0
@@ -575,7 +579,7 @@ def deleteProjectAssessment(userOwner, projectId, projectCod, assessment, reques
         return False, e
 
 
-def availableAssessmentQuestions(projectId, assessment, request):
+def availableAssessmentQuestions(projectId, assessment, request, language="default"):
     projectCollaborators = (
         request.dbsession.query(userProject.user_name)
         .filter(userProject.project_id == projectId)
@@ -601,7 +605,7 @@ def availableAssessmentQuestions(projectId, assessment, request):
     sql = (
         "SELECT question.*, user.user_fullname, COALESCE(i18n_question.question_name, question.question_name) as question_name FROM user, question "
         " LEFT JOIN i18n_question ON question.question_id = i18n_question.question_id AND i18n_question.lang_code = '"
-        + request.locale_name
+        + language
         + "' "
         " WHERE (" + stringForFilterQuestionByCollaborators + ") AND "
         " question.question_reqinreg = 0 AND question.question_alwaysinreg = 0 AND question.question_visible = 1 AND question.question_id NOT IN (SELECT distinct question_id "
@@ -715,6 +719,7 @@ def getAssessmentQuestions(
     assessment,
     request,
     projectLabels,
+    language="default",
     onlyShowTheBasicQuestions=False,
 ):
     hasSections = (
@@ -728,12 +733,12 @@ def getAssessmentQuestions(
 
     sql = (
         "SELECT asssection.section_id,asssection.section_name,asssection.section_content,asssection.section_order,asssection.section_private,"
-        "question.question_id,COALESCE(i18n_question.question_desc,question.question_desc) as question_desc,COALESCE(i18n_question.question_name, question.question_name) as question_name,question.question_notes,question.question_dtype, "
+        "question.question_id,COALESCE(i18n_question.lang_code,question.question_lang) as language, COALESCE(i18n_question.question_desc,question.question_desc) as question_desc,COALESCE(i18n_question.question_name, question.question_name) as question_name,question.question_notes,question.question_dtype, "
         " COALESCE(i18n_question.question_posstm, question.question_posstm) as question_posstm, COALESCE(i18n_question.question_negstm ,question.question_negstm) as question_negstm, COALESCE(i18n_question.question_perfstmt, question.question_perfstmt) as question_perfstmt,IFNULL(assdetail.question_order,0) as question_order,"
         "question.question_reqinasses, question.question_tied, question.question_notobserved, question.question_requiredvalue, question.question_quantitative, question.user_name, (select user_fullname from user where user_name=question.user_name) as user_fullname FROM asssection LEFT JOIN assdetail ON assdetail.section_project_id = asssection.project_id "
         " AND assdetail.section_assessment = asssection.ass_cod AND assdetail.section_id = asssection.section_id "
         " LEFT JOIN i18n_question ON assdetail.question_id = i18n_question.question_id  AND i18n_question.lang_code = '"
-        + request.locale_name
+        + language
         + "'"
         " LEFT JOIN question ON assdetail.question_id = question.question_id WHERE "
         "asssection.project_id = '"
@@ -748,6 +753,7 @@ def getAssessmentQuestions(
         questions,
         request,
         projectLabels,
+        language=language,
         onlyShowTheBasicQuestions=onlyShowTheBasicQuestions,
     )
 

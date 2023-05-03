@@ -30,3 +30,8 @@ from climmob.processes.db.validators import *
 from climmob.processes.odk.api import *
 from climmob.processes.odk.generator import *
 from climmob.processes.r.packages import *
+from climmob.processes.db.i18n import *
+from climmob.processes.db.i18n_user import *
+from climmob.processes.db.i18n_question import *
+from climmob.processes.db.i18n_qstoption import *
+from climmob.processes.db.prjlang import *

@@ -1,0 +1,11 @@
+
+
+<div class="row" style="text-align: center">
+    <div class="col-md-12" style="padding-left: 10px;padding-right: 15px;">
+        <div class="ibox-content" style="padding: 10px; background-color: #f3f3f4">
+            {% for lang in activeProject["languages"] %}
+                <button class="btn {% if languageActive == lang.lang_code %} btn-primary {% else %} btn-success btn-outline {% endif %}  btnSwitchLanguage" idOfLanguage="{{ lang.lang_code }}" type="button" style="margin-bottom: 0px !important;"><i class="fa fa-language"></i> {{ lang.lang_name }} {% if lang.lang_default == 1 %} {{ _("(default)") }} {% endif %}</button>
+            {% endfor %}
+        </div>
+    </div>
+</div>

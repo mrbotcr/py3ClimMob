@@ -29,6 +29,8 @@
 
 {% block pagecontent %}
 
+    {% include 'snippets/project/registry/changeLanguages.jinja2' %}
+
     {% set onlySee = False %}
 
     {% if activeProject["access_type"] in [4] or assinfo["ass_status"] > 0 %}
@@ -58,6 +60,7 @@
                                         {% set classByRegRequired=False %}
                                         {% set showCreator=True %}
                                         {% set colorsUserCategories=False %}
+                                        {% set showTranslate=False %}
                                         {% include 'snippets/jstreeQuestions.jinja2' %}
                                     </div>
                                 </div>
@@ -87,6 +90,7 @@
                                         {% set jstreeName="jstree1" %}
                                         {% set showCreator=True %}
                                         {% set colorsUserCategories=False %}
+                                        {% set validateLanguage=True %}
                                         {% include 'snippets/jstreeForm.jinja2'  %}
                                         <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}" id="formFoSendInformation" style="display: none">
                                             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
@@ -179,6 +183,12 @@
     </style>
 
     <script>
+        $(document).ready(function (){
+           $(".btnSwitchLanguage").click(function (){
+               window.location.href = "{{ request.route_url('assessmentdetail', user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assinfo.ass_cod) }}?language="+$(this).attr("idOfLanguage")
+           }) ;
+        });
+
         $(document).ready(function () {
 
             cleanBtns();

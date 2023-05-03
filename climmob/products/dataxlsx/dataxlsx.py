@@ -21,16 +21,27 @@ def create_XLSXToDownload(userOwner, projectId, projectCod, request, form, code)
 
     path = createProductDirectory(request, userOwner, projectCod, "dataxlsx")
     # We call the Celery task that will generate the output packages.pdf
+    nameOutput = form + "_data"
+    if code != "":
+        nameOutput += "_" + code
+
     task = create_XLSX.apply_async(
-        (settings, path, userOwner, projectCod, projectId, form, code), queue="ClimMob"
+        (
+            settings,
+            path,
+            userOwner,
+            projectCod,
+            projectId,
+            form,
+            code,
+            nameOutput + "_" + projectCod + ".xlsx",
+        ),
+        queue="ClimMob",
     )
     # We register the instance of the output with the task ID of celery
     # This will go to the products table that then you can monitor and use
     # in the nice product interface
     # u.registerProductInstance(user, project, 'cards', 'cards.pdf', task.id, request)
-    nameOutput = form + "_data"
-    if code != "":
-        nameOutput += "_" + code
 
     registerProductInstance(
         projectId,

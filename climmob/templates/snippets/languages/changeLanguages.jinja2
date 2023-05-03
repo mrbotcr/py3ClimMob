@@ -1,0 +1,80 @@
+<div class="ibox">
+    <div class="ibox-title text-center" >
+        <h5> {{ _("Define the languages to be used") }}</h5>
+
+        <div class="ibox-tools">
+            <a class="collapse-link">
+                <i class="fa fa-chevron-down"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="ibox-content" >
+
+        <select id="select_lang" name="select_lang" class="form-control chosen-select" tabindex="2">
+            <option value="">{{ _("Select a language") }}</option>
+            {% for lang in listOfLanguages %}
+                <option value="{{ lang.lang_code }}">{{ lang.lang_name }}</option>
+            {% endfor %}
+        </select>
+
+        <br>
+
+        <div id="result_of_the_languages" style="margin-bottom: 20px; margin-top: 30px">
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function() {
+
+        $('.chosen-select').chosen({width: "100%"});
+
+        updateUserLanguages();
+
+        $("#select_lang").change(function (){
+            var value = $(this).val();
+
+            if (value !="")
+            {
+                $.ajax({
+                    url: '{{ request.route_url('addUserLanguage', user=activeUser.login) }}',
+                    datatype: "json",
+                    type: "POST",
+                    data: {
+                        "csrf_token": '{{ request.session.get_csrf_token() }}',
+                        "lang_code": value,
+                    },
+                    success: function (response) {
+                        if (response["result"] == "success")
+                        {
+                            toastr.success(response["message"]);
+                            $("#select_lang").val("");
+                            $("#select_lang option[value='"+value+"']").remove();
+                            $("#select_lang").trigger("chosen:updated");
+                            updateUserLanguages();
+                        }else{
+                            toastr.error(response["message"]);
+                        }
+
+                    },
+                    error: function (response) {
+                        toastr.error("{{ _("There was a problem updating the languages") }}");
+                    }
+                });
+            }
+        });
+
+    });
+
+    function updateUserLanguages(){
+
+        $.get("{{ request.route_url('getUserLanguagesPreview', user=activeUser.login) }}", function (dataJson, status) {
+
+            $("#result_of_the_languages").html(dataJson)
+        })
+    }
+</script>

@@ -11,6 +11,7 @@ from climmob.models import (
     AssDetail,
     I18nQuestion,
     I18nQstoption,
+    I18n,
 )
 
 __all__ = [
@@ -34,6 +35,7 @@ __all__ = [
     "opcionNAinQuestion",
     "opcionOtherInQuestion",
     "userQuestionDetailsById",
+    "getDefaultQuestionLanguage",
 ]
 
 
@@ -115,6 +117,9 @@ def deleteOption(id_question, value, request):
 
 def deleteAllOptionsForQuestion(id_question, request):
     try:
+        request.dbsession.query(I18nQstoption).filter(
+            I18nQstoption.question_id == id_question
+        ).delete()
         request.dbsession.query(Qstoption).filter(
             Qstoption.question_id == id_question
         ).delete()
@@ -125,6 +130,12 @@ def deleteAllOptionsForQuestion(id_question, request):
 
 def deleteQuestion(data, request):
     try:
+        request.dbsession.query(I18nQstoption).filter(
+            I18nQstoption.question_id == data["question_id"]
+        ).delete()
+        request.dbsession.query(I18nQuestion).filter(
+            I18nQuestion.question_id == data["question_id"]
+        ).delete()
         request.dbsession.query(Question).filter(
             Question.question_id == data["question_id"]
         ).delete()
@@ -186,7 +197,7 @@ def UserQuestionMoreBioversity(user, request):
             I18nQuestion,
             and_(
                 Question.question_id == I18nQuestion.question_id,
-                I18nQuestion.lang_code == request.locale_name,
+                I18nQuestion.lang_code == Question.question_lang,
             ),
             isouter=True,
         )
@@ -221,7 +232,11 @@ def UserQuestionMoreBioversity(user, request):
     return result
 
 
-def userQuestionDetailsById(userOwner, questionId, request):
+def userQuestionDetailsById(userOwner, questionId, request, language="default"):
+
+    if language == "default":
+        language = getDefaultQuestionLanguage(request, questionId)["question_lang"]
+
     data = mapFromSchema(
         request.dbsession.query(
             Question,
@@ -245,7 +260,7 @@ def userQuestionDetailsById(userOwner, questionId, request):
             I18nQuestion,
             and_(
                 Question.question_id == I18nQuestion.question_id,
-                I18nQuestion.lang_code == request.locale_name,
+                I18nQuestion.lang_code == language,
             ),
             isouter=True,
         )
@@ -265,10 +280,19 @@ def userQuestionDetailsById(userOwner, questionId, request):
         .filter(AssDetail.question_id == data["question_id"])
         .one()
     )
+
+    if data and data["question_lang"]:
+        i18n = mapFromSchema(
+            request.dbsession.query(I18n)
+            .filter(I18n.lang_code == data["question_lang"])
+            .first()
+        )
+        data["lang_name"] = i18n["lang_name"]
+
     data["isIndividual"] = 1
     data["assigned"] = assessment.found + registry.found
     if data["question_dtype"] == 5 or data["question_dtype"] == 6:
-        options = getQuestionOptions(data["question_id"], request)
+        options = getQuestionOptions(data["question_id"], request, language=language)
         data["num_options"] = len(options)
         data["question_options"] = options
 
@@ -335,7 +359,11 @@ def getOptionData(question, value, request):
     return questionData
 
 
-def getQuestionOptions(question, request):
+def getQuestionOptions(question, request, language="default"):
+
+    if language == "default":
+        language = getDefaultQuestionLanguage(request, question)["question_lang"]
+
     return mapFromSchema(
         request.dbsession.query(
             Qstoption,
@@ -348,7 +376,7 @@ def getQuestionOptions(question, request):
             and_(
                 Qstoption.question_id == I18nQstoption.question_id,
                 Qstoption.value_code == I18nQstoption.value_code,
-                I18nQstoption.lang_code == request.locale_name,
+                I18nQstoption.lang_code == language,
             ),
             isouter=True,
         )
@@ -426,3 +454,12 @@ def opcionOtherInQuestion(question, request):
     if res:
         return True
     return False
+
+
+def getDefaultQuestionLanguage(request, questionId):
+
+    return mapFromSchema(
+        request.dbsession.query(Question.question_lang)
+        .filter(Question.question_id == questionId)
+        .first()
+    )

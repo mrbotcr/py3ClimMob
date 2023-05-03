@@ -29,6 +29,7 @@ from climmob.processes import (
     getPackages,
     getTheProjectIdForOwner,
     getActiveProject,
+    getPrjLangDefaultInProject,
 )
 from climmob.products.forms.form import create_document_form
 from climmob.views.classes import privateView
@@ -319,8 +320,17 @@ class assessment_view(privateView):
                 activeProjectUser, activeProjectCod, self.request
             )
 
+            if "language" in self.request.params.keys():
+                langActive = self.request.params["language"]
+            else:
+                langActive = getPrjLangDefaultInProject(activeProjectId, self.request)
+                if langActive:
+                    langActive = langActive["lang_code"]
+                else:
+                    langActive = ""
+
             data, finalCloseQst = getDataFormPreview(
-                self, activeProjectUser, activeProjectId, assessmentid
+                self, activeProjectUser, activeProjectId, langActive, assessmentid
             )
 
             return {
@@ -334,13 +344,12 @@ class assessment_view(privateView):
                     activeProjectId, assessmentid, self.request
                 ),
                 "UserQuestion": availableAssessmentQuestions(
-                    activeProjectId,
-                    assessmentid,
-                    self.request,
+                    activeProjectId, assessmentid, self.request, language=langActive
                 ),
                 "Categories": getCategoriesFromUserCollaborators(
                     activeProjectId, self.request
                 ),
+                "languageActive": langActive,
             }
 
 
@@ -361,6 +370,15 @@ class assessmentFormCreation_view(privateView):
             activeProjectId = getTheProjectIdForOwner(
                 activeProjectUser, activeProjectCod, self.request
             )
+
+            if "language" in self.request.params.keys():
+                langActive = self.request.params["language"]
+            else:
+                langActive = getPrjLangDefaultInProject(activeProjectId, self.request)
+                if langActive:
+                    langActive = langActive["lang_code"]
+                else:
+                    langActive = ""
 
             if self.request.method == "POST":
                 newOrder = d = json.loads(self.request.POST.get("neworder", "{}"))
@@ -392,7 +410,7 @@ class assessmentFormCreation_view(privateView):
                 template = env.get_template("previewForm.jinja2")
 
                 data, finalCloseQst = getDataFormPreview(
-                    self, activeProjectUser, activeProjectId, assessmentid
+                    self, activeProjectUser, activeProjectId, langActive, assessmentid
                 )
                 info = {
                     "img1": self.request.url_for_static("landing/odk.png"),

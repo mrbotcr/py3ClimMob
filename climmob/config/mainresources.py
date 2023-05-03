@@ -13,9 +13,6 @@ def createResources(apppath, config):
         "coreresources", "fontawesome", "inspinia/font-awesome/css/font-awesome.css"
     )
     r.add_css_resource(
-        "coreresources", "chosen", "inspinia/css/plugins/chosen/bootstrap-chosen.css"
-    )
-    r.add_css_resource(
         "coreresources", "toastr", "inspinia/css/plugins/toastr/toastr.min.css"
     )
     r.add_css_resource("coreresources", "animate", "inspinia/css/animate.css")
@@ -154,6 +151,12 @@ def createResources(apppath, config):
         "inspinia/css/plugins/switchery/switchery.css",
         "jqueryui",
     )
+    r.add_css_resource(
+        "coreresources",
+        "chosen",
+        "inspinia/css/plugins/chosen/bootstrap-chosen.css",
+        "jqueryui",
+    )
 
     # Progress
     r.add_css_resource("coreresources", "c3", "inspinia/css/plugins/c3/c3.min.css")
@@ -174,8 +177,9 @@ def createResources(apppath, config):
         "coreresources", "jquery", "inspinia/js/jquery-3.5.1.min.js", None
     )
     r.add_js_resource("map", "leaflet", "leaflet.js")
+    r.add_js_resource("coreresources", "poppers", "inspinia/js/popper.js", "jquery")
     r.add_js_resource(
-        "coreresources", "bootstrap", "inspinia/js/bootstrap-4.1.3.js", "jquery"
+        "coreresources", "bootstrap", "inspinia/js/bootstrap-4.1.3.js", "poppers"
     )
 
     # JS for landing page

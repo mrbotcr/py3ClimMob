@@ -14,6 +14,7 @@
     {% cssresource request,'coreresources','select2' %}
     {% cssresource request,'coreresources','datatimepicker' %}
     {% cssresource request,'coreresources','switchery' %}
+    {% cssresource request,'coreresources','chosen' %}
 
 {% endblock css %}
 
@@ -30,6 +31,7 @@
     {% jsresource request,'coreresources','metro' %}
     {% jsresource request,'coreresources','datatimepicker' %}
     {% jsresource request,'coreresources','switchery' %}
+    {% jsresource request,'coreresources','chosen' %}
 
 {% endblock topScripts %}
 
@@ -69,10 +71,14 @@
                         {% set classByUser=True %}
                         {% set colorsUserCategories=True %}
                         {% set redForVisible=True %}
+                        {% set showTranslate=True %}
                         {% include 'snippets/jstreeQuestions.jinja2' %}
                     </div>
                 </div>
             </div>
+
+            {% include 'snippets/languages/changeLanguages.jinja2' %}
+
         </div>
 
 
@@ -528,6 +534,7 @@
                     "question_group": $("#question_group").val(),
                     "question_forms": $("#question_forms").val(),
                     "question_dtype": parseInt($("#question_dtype").val()),
+                    "question_lang": $("#question_lang").val(),
                     "question_requiredvalue": question_requiredvalue,
                     "question_tied": question_tied,
                     "question_notobserved": question_notobserved,
@@ -716,11 +723,34 @@
             })
         }
 
+        function loadLanguages()
+        {
+            var URL = "{{ request.route_url('getUserLanguages') }}"
+
+            $("#question_lang").empty().append('<option value=""> {{ _("Select a language") }}</option>');
+
+            $.get(URL, function (dataJson, status) {
+
+                for (var i = 0; i < dataJson.length; i++){
+                    var info = dataJson[i]
+
+                    $('#question_lang').append('<option value="'+info.lang_code+'">'+info.lang_name+'</option>');
+                    $("#question_lang").trigger("chosen:updated");
+                }
+
+            })
+
+            $("#question_lang").val("");
+            $("#question_lang").trigger("chosen:updated");
+        }
+
         function createQuestion(category)
         {
             clean_extra_fields();
             clean_extra_section();
             clean_buttoms_question();
+
+            loadLanguages();
 
             $(".inputForQuestion").val("")
             $("#question_group").val(category);
@@ -785,6 +815,9 @@
             clean_extra_fields();
             clean_extra_section();
             clean_buttoms_question();
+
+            loadLanguages();
+
             var userInSession = "{{ activeUser.login }}"
 
             var URL = "{{ request.route_url('getUserQuestionDetails',user="__user_name__", questionid="__questionid__") }}"
@@ -806,6 +839,9 @@
                 $("#question_forms").trigger('change.select2');
                 $("#question_dtype").val(dataJson["question_dtype"])
                 $('#question_dtype').trigger('change.select2');
+
+                $("#question_lang").val(dataJson["question_lang"])
+                $('#question_lang').trigger("chosen:updated");
 
                 $("#question"+dataJson["question_dtype"]).css("display",'initial');
 
@@ -1000,15 +1036,22 @@
 
                 $("#question_code").focus()
 
-                {% if "dataprivacyExtension" in request.registry.settings.get("climmob.plugins","").split(" ") %}
 
                     if (userInSession == dataJson["user_name"])
                     {
-                        $("#btn_update_question").prop('disabled', false);
-                        $("#btn_update_question").css('display', 'block');
-                        ckb_question_sensitive.enable();
+
+                        if (dataJson["question_lang"] == null){
+                            $("#question_lang").select2({disabled:false});
+                            $("#btn_update_question").prop('disabled', false);
+                            $("#btn_update_question").css('display', 'block');
+                        }
+
+                        {% if "dataprivacyExtension" in request.registry.settings.get("climmob.plugins","").split(" ") %}
+                            $("#btn_update_question").prop('disabled', false);
+                            $("#btn_update_question").css('display', 'block');
+                            ckb_question_sensitive.enable();
+                        {% endif %}
                     }
-                {% endif %}
             });
 
         }

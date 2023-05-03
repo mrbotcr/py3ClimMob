@@ -180,6 +180,11 @@
                                     <div class="col-sm-8">
                                         <table style="width: 100%">
                                             <tr>
+                                                <td style="vertical-align: middle; text-align: center">
+                                                    <a class="btn btn-success btn-rounded  btn-xs" style="color: white" onclick="showHelp()"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a>
+                                                </td>
+                                            </tr>
+                                            <tr>
                                                 <td style="width: 80%">
                                                     <select id="usingTemplate" name="usingTemplate" class="form-control chosen-select" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} {% if not permissionForChanges %} disabled {% endif %} style="width:0px;" >
                                                         <option value="">{{ _("Select a template") }}</option>
@@ -187,9 +192,6 @@
                                                             <option value="{{ template.project_id }}" {% if dataworking["usingTemplate"] == template.project_id %}selected{% endif %}>{{ template.project_name }}</option>
                                                         {% endfor %}
                                                     </select>
-                                                </td>
-                                                <td style="vertical-align: middle; text-align: center">
-                                                    <a class="btn btn-success btn-rounded  btn-xs" style="color: white" onclick="showHelp()"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a>
                                                 </td>
                                             </tr>
                                         </table>
@@ -208,6 +210,42 @@
                     {% block type_project_extra %}
 
                     {% endblock type_project_extra %}
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12" style="padding: 0px">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{{ _("5. Languages") }}</h5>
+                </div>
+                <div class="ibox-content">
+
+                    <div class="form-group" style="margin: 5px">
+
+                        <label class="col-sm-4 control-label">{{ _("Select the languages in which you want to provide the form") }}</label>
+                        <div class="col-sm-8">
+
+                            <table style="width: 100%">
+{#                                <tr>#}
+{#                                    <td style="vertical-align: middle; text-align: center">#}
+{#                                        <a class="btn btn-success btn-rounded  btn-xs" style="color: white" onclick="showHelp()"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a>#}
+{#                                    </td>#}
+{#                                </tr>#}
+                                <tr>
+                                    <td style="width: 80%">
+                                        <select data-placeholder="{{ _("Choose languages..") }}" class="chosen-select" multiple style="width:100%;" tabindex="4" name="project_languages" id="project_languages" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} {% if not permissionForChanges %} disabled {% endif %}>
+                                            {% for lang in listOfLanguages %}
+                                                <option value="{{ lang.lang_code }}" {% for selectedLang in dataworking["languages"] %} {% if lang.lang_code == selectedLang["lang_code"] %}selected{% endif %} {% endfor %}>{{ lang.lang_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </div>
+                    </div>
 
                 </div>
             </div>

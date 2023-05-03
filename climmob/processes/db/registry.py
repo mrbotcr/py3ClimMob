@@ -138,7 +138,9 @@ def isRegistryClose(projectId, request):
         return False
 
 
-def availableRegistryQuestions(projectId, request, registration_and_analysis):
+def availableRegistryQuestions(
+    projectId, request, registration_and_analysis, language="default"
+):
     projectCollaborators = (
         request.dbsession.query(userProject.user_name)
         .filter(userProject.project_id == projectId)
@@ -160,7 +162,7 @@ def availableRegistryQuestions(projectId, request, registration_and_analysis):
         startWith
         + "SELECT * FROM question WHERE (question_dtype=5 or question_dtype=6) AND question_id in (SELECT DISTINCT(question_id) FROM qstoption)) AS question "
         "LEFT JOIN i18n_question ON question.question_id = i18n_question.question_id AND       i18n_question.lang_code = '"
-        + request.locale_name
+        + language
         + "'"
         " WHERE (" + stringForFilterQuestionByCollaborators + ") AND "
         "question_reqinasses = 0 AND "
@@ -233,6 +235,7 @@ def getRegistryQuestions(
     projectId,
     request,
     projectLabels,
+    language="default",
     createAutoRegistry=True,
     onlyShowTheBasicQuestions=False,
 ):
@@ -250,12 +253,12 @@ def getRegistryQuestions(
 
     sql = (
         " SELECT regsection.section_id,regsection.section_name,regsection.section_content,regsection.section_order,regsection.section_private,"
-        " question.question_id,COALESCE(i18n_question.question_desc,question.question_desc) as question_desc, COALESCE(i18n_question.question_name, question.question_name) as question_name,question.question_notes,question.question_dtype, "
+        " question.question_id,COALESCE(i18n_question.lang_code,question.question_lang) as language, COALESCE(i18n_question.question_desc,question.question_desc) as question_desc, COALESCE(i18n_question.question_name, question.question_name) as question_name,question.question_notes,question.question_dtype, "
         " COALESCE(i18n_question.question_posstm, question.question_posstm) as question_posstm, COALESCE(i18n_question.question_negstm ,question.question_negstm) as question_negstm, COALESCE(i18n_question.question_perfstmt, question.question_perfstmt) as question_perfstmt,IFNULL(registry.question_order,0) as question_order,"
         " question.question_reqinreg,question.question_tied, question.question_notobserved, question.question_requiredvalue, question.question_quantitative, question.user_name, (select user_fullname from user where user_name=question.user_name) as user_fullname FROM regsection "
         " LEFT JOIN registry ON  registry.section_project_id = regsection.project_id AND registry.section_id = regsection.section_id "
         " LEFT JOIN i18n_question ON registry.question_id = i18n_question.question_id  AND i18n_question.lang_code = '"
-        + request.locale_name
+        + language
         + "'"
         " LEFT JOIN question ON registry.question_id = question.question_id WHERE "
         " regsection.project_id = '"
@@ -268,6 +271,7 @@ def getRegistryQuestions(
         questions,
         request,
         projectLabels,
+        language=language,
         onlyShowTheBasicQuestions=onlyShowTheBasicQuestions,
     )
 

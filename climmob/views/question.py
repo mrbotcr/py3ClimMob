@@ -30,6 +30,10 @@ from climmob.processes import (
     getActiveProject,
     userQuestionDetailsById,
     getCategoryByIdAndUser,
+    getListOfUnusedLanguagesByUser,
+    getListOfLanguagesByUser,
+    addI18nUser,
+    deleteI18nUser,
 )
 from climmob.views.classes import privateView
 
@@ -452,7 +456,7 @@ def actionsInquestion(self, formdata):
         formdata["question_perfstmt"] = None
 
     formdata["question_dtype"] = int(formdata["question_dtype"])
-    formdata["user_name"] = self.user.login
+
     formdata["question_code"] = re.sub(
         "[^A-Za-z0-9_\-]+", "", formdata["question_code"]
     )
@@ -570,6 +574,7 @@ class questionsActions_view(privateView):
 
         if self.request.method == "POST":
             postdata = self.getPostDict()
+            postdata["user_name"] = self.user.login
             self.returnRawViewResult = True
 
             if postdata["action"] == "btn_add_question":
@@ -592,7 +597,14 @@ class getUserQuestionPreview_view(privateView):
             userOwner = self.request.matchdict["user"]
             questionId = self.request.matchdict["questionid"]
 
-            question = userQuestionDetailsById(userOwner, questionId, self.request)
+            try:
+                language = self.request.matchdict["language"]
+            except:
+                language = "default"
+
+            question = userQuestionDetailsById(
+                userOwner, questionId, self.request, language=language
+            )
             listOfQuestions = []
             if question["question_quantitative"] == 1:
                 for opt in range(0, 3):
@@ -685,6 +697,9 @@ class qlibrary_view(privateView):
             "seeQuestion": seeQuestion,
             "nextPage": nextPage,
             "sectionActive": "questions",
+            "listOfLanguages": getListOfUnusedLanguagesByUser(
+                self.request, self.user.login
+            ),
         }
 
         return regularDict
@@ -772,3 +787,111 @@ class categories_view(privateView):
                                 ),
                             }
         return {}
+
+
+class getUserLanguages_view(privateView):
+    def processView(self):
+        self.returnRawViewResult = True
+
+        try:
+            question_id = self.request.matchdict["questionid"]
+        except:
+            question_id = None
+
+        if self.request.method == "GET":
+
+            return getListOfLanguagesByUser(
+                self.request, self.user.login, questionId=question_id
+            )
+
+        return ""
+
+
+class getUserLanguagesPreview_view(privateView):
+    def processView(self):
+        self.returnRawViewResult = True
+
+        if self.request.method == "GET":
+
+            PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+            env = Environment(
+                autoescape=False,
+                loader=FileSystemLoader(
+                    os.path.join(PATH, "templates", "snippets", "languages")
+                ),
+                trim_blocks=False,
+            )
+
+            template = env.get_template("selected_languages.jinja2")
+
+            info = {
+                "listOfLanguagesByUser": getListOfLanguagesByUser(
+                    self.request, self.user.login
+                ),
+                "_": self._,
+                "request": self.request,
+            }
+
+            render_temp = template.render(info)
+
+            return render_temp
+
+        return ""
+
+
+class addUserLanguage_view(privateView):
+    def processView(self):
+        self.returnRawViewResult = True
+
+        if self.request.method == "POST":
+
+            postdata = self.getPostDict()
+            postdata["user_name"] = self.user.login
+
+            added, message = addI18nUser(postdata, self.request)
+
+            if added:
+                return {
+                    "result": "success",
+                    "message": self._("Language successfully added"),
+                }
+            else:
+                return {
+                    "result": "error",
+                    "message": self._("There was an error adding the language"),
+                }
+
+
+class deleteUserLanguage_view(privateView):
+    def processView(self):
+
+        self.returnRawViewResult = True
+        lang_code = self.request.matchdict["lang"]
+
+        if self.request.method == "POST":
+            data = {}
+            data["lang_code"] = lang_code
+            data["user_name"] = self.user.login
+            dlt, message = deleteI18nUser(data, self.request)
+
+            if not dlt:
+                return {"status": 400, "error": message}
+            else:
+                self.request.session.flash(
+                    self._("The language was successfully removed")
+                )
+
+                return {"status": 200}
+
+
+# class getQuestionTranslations_view(privateView):
+#     def processView(self):
+#
+#         self.returnRawViewResult = True
+#         question_id = self.request.matchdict["questionid"]
+#         lang_code = self.request.matchdict["lang"]
+#
+#         if self.request.method == "GET":
+#
+#             return getQuestionTranslation(self.request, question_id, lang_code)

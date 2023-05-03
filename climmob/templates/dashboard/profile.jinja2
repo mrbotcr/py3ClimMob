@@ -4,6 +4,21 @@
     <title>{{ _("ClimMob | Profile") }}</title>
 {% endblock title %}
 
+{% block css %}
+    {% cssresource request,'coreresources','sweet' %}
+    {% cssresource request,'coreresources','toastr' %}
+    {% cssresource request,'coreresources','chosen' %}
+
+{% endblock css %}
+
+{% block topScripts %}
+    {% jsresource request,'coreresources','sweet' %}
+    {% jsresource request,'coreresources','toastr' %}
+    {% jsresource request,'coreresources','chosen' %}
+    {% include 'snippets/delete.jinja2' %}
+
+{% endblock topScripts %}
+
 {% block pageheading %}
     {% set _title= _("Profile")%}
     {% set _linkWiki="https://climmob.net/blog/wiki/profile/"%}
@@ -111,6 +126,11 @@
                     </div>
                 {% endblock profiledetails %}
             </div>
+
+            <div class="col-lg-6">
+                {% include 'snippets/languages/changeLanguages.jinja2' %}
+            </div>
+
 {#            <div class="col-lg-4 m-b-lg">#}
 {#                {% block profiletline %}#}
 {#                    <div id="vertical-timeline" class="vertical-container light-timeline no-margins">#}

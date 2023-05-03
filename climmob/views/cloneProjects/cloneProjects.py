@@ -12,6 +12,7 @@ from climmob.processes import (
     projectExists,
     getActiveProject,
     getTheProjectIdForOwner,
+    getListOfLanguagesByUser,
 )
 from climmob.views.classes import privateView
 from climmob.views.project import createProjectFunction, functionCreateClone
@@ -150,6 +151,9 @@ class cloneProjects_view(privateView):
                 "showForm": showForm,
                 "error_summary": error_summary,
                 "stage": stage,
+                "listOfLanguages": getListOfLanguagesByUser(
+                    self.request, self.user.login
+                ),
             }
 
         if stage == 4:

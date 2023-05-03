@@ -10,7 +10,17 @@ import multiprocessing
 
 
 @celeryApp.task(base=climmobCeleryTask)
-def create_XLSX(settings, path, userOwner, projectCod, projectId, form, code):
+def create_XLSX(
+    settings,
+    path,
+    userOwner,
+    projectCod,
+    projectId,
+    form,
+    code,
+    finalName,
+    sensitive=False,
+):
 
     num_workers = (
         multiprocessing.cpu_count() - int(settings.get("server:threads", "1")) - 1
@@ -100,6 +110,9 @@ def create_XLSX(settings, path, userOwner, projectCod, projectId, form, code):
             "-w {}".format(num_workers),
             "-r {}".format(3),
         ]
+        if sensitive:
+            args.append("-c")
+
         commandToExec = " ".join(map(str, args))
 
         # p = Popen(args, stdout=PIPE, stderr=PIPE, shell=True)
@@ -132,14 +145,14 @@ def create_XLSX(settings, path, userOwner, projectCod, projectId, form, code):
                 )
 
     if len(listOfGeneratedXLSX) > 0:
-        mergeXLSXForms(listOfGeneratedXLSX, projectCod, pathtmpout, pathout, form, code)
+        mergeXLSXForms(listOfGeneratedXLSX, pathout, finalName)
 
     sh.rmtree(pathtmpout)
     if os.path.exists(pathtmp):
         sh.rmtree(pathtmp)
 
 
-def mergeXLSXForms(listOfGeneratedXLSX, projectCod, pathtmpout, pathout, form, code):
+def mergeXLSXForms(listOfGeneratedXLSX, pathout, finalName):
 
     merged_inner = pd.DataFrame()
 
@@ -168,13 +181,7 @@ def mergeXLSXForms(listOfGeneratedXLSX, projectCod, pathtmpout, pathout, form, c
                     right_on="qst163_ass_" + str(index),
                     how="left",
                 )
-    additional = ""
-    if form == "Assessment":
-        additional = code + "_"
 
-    xlsx_file = os.path.join(
-        pathtmpout, *["{}_data_{}{}.xlsx".format(form, additional, projectCod)]
-    )
-    merged_inner.to_excel(xlsx_file, sheet_name="Sheet1", index=False)
+    merged_inner.to_excel(finalName, sheet_name="Sheet1", index=False)
 
-    os.system("mv " + xlsx_file + " " + pathout)
+    os.system("mv " + finalName + " " + pathout)

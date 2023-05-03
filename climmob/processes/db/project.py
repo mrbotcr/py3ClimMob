@@ -28,6 +28,7 @@ from climmob.models.repository import sql_fetch_all, sql_fetch_one
 from climmob.processes.db.enumerator import countEnumeratorsOfAllCollaborators
 from climmob.processes.db.project_technologies import numberOfCombinationsForTheProject
 from climmob.processes.db.question import getQuestionOptions
+from climmob.processes.db.prjlang import getPrjLangInProject
 
 __all__ = [
     "addProject",
@@ -305,7 +306,7 @@ def addProject(data, request):
         try:
             request.dbsession.add(newProject)
             request.dbsession.add(newUserProject)
-            return True, ""
+            return True, data["project_id"]
         except Exception as e:
             return False, str(e)
 
@@ -338,6 +339,9 @@ def getProjectData(projectId, request):
     mappedData = mapFromSchema(
         request.dbsession.query(Project).filter(Project.project_id == projectId).first()
     )
+    if mappedData:
+        mappedData["languages"] = getPrjLangInProject(projectId, request)
+
     return mappedData
 
 
@@ -412,6 +416,10 @@ def getActiveProject(userName, request):
             .filter(userProject.project_id == activeProject["project_id"])
             .filter(userProject.access_type == 1)
             .one()
+        )
+
+        activeProject["languages"] = getPrjLangInProject(
+            activeProject["project_id"], request
         )
 
     return activeProject

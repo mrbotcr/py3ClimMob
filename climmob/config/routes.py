@@ -215,6 +215,10 @@ from climmob.views.question import (
     categories_view,
     deleteQuestion_view,
     questionsActions_view,
+    getUserLanguages_view,
+    addUserLanguage_view,
+    deleteUserLanguage_view,
+    getUserLanguagesPreview_view,
 )
 from climmob.views.registry import (
     registry_view,
@@ -233,6 +237,8 @@ from climmob.views.technologies import (
     getUserTechnologyAliasDetails_view,
 )
 from climmob.views.test import test_view, sentry_debug_view
+
+from climmob.views.questionTranslations import questionTranslations_view
 
 # -------Api-------#
 
@@ -443,6 +449,15 @@ def loadRoutes(config):
 
     routes.append(
         addRoute(
+            "getUserQuestionPreviewInCustomLanguage",
+            "/user/{user}/question/{questionid}/language/{language}/Preview",
+            getUserQuestionPreview_view,
+            "string",
+        )
+    )
+
+    routes.append(
+        addRoute(
             "getUserCategoryDetails",
             "/user/{user}/category/{categoryid}",
             getUserCategoryDetails_view,
@@ -483,6 +498,60 @@ def loadRoutes(config):
             "renderer": "json",
         }
     )
+
+    routes.append(
+        {
+            "name": "questionTranslations",
+            "path": "/user/{user}/question/{questionid}/questionTranslations",
+            "view": questionTranslations_view,
+            "renderer": "question/translations.jinja2",
+        }
+    )
+
+    routes.append(
+        {
+            "name": "getUserLanguages",
+            "path": "/getUserLanguages",
+            "view": getUserLanguages_view,
+            "renderer": "json",
+        }
+    )
+
+    routes.append(
+        {
+            "name": "getUserLanguagesPreview",
+            "path": "/getUserLanguagesPreview",
+            "view": getUserLanguagesPreview_view,
+            "renderer": "string",
+        }
+    )
+
+    routes.append(
+        {
+            "name": "addUserLanguage",
+            "path": "/addUserLanguage",
+            "view": addUserLanguage_view,
+            "renderer": "json",
+        }
+    )
+
+    routes.append(
+        {
+            "name": "deleteUserLanguage",
+            "path": "/language/{lang}/delete",
+            "view": deleteUserLanguage_view,
+            "renderer": "json",
+        }
+    )
+
+    # routes.append(
+    #     {
+    #         "name": "getQuestionTranslations",
+    #         "path": "/question/{questionid}/language/{lang}/getQuestionTranslations",
+    #         "view": getQuestionTranslations_view,
+    #         "renderer": "json",
+    #     }
+    # )
 
     # Enumerators
     routes.append(

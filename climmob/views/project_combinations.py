@@ -422,7 +422,7 @@ def startTheRegistry(self, userOwner, projectId, projectCod, listOfLabelsForPack
                 packages,
             )
 
-    return correct, str(error, "utf-8")
+    return correct, str(error)
 
 
 def createSettings(request):

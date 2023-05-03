@@ -64,6 +64,18 @@ def getStorageType(tableName, fieldName):
     return storageType
 
 
+def getDictionaryOfModel(modelClass):
+
+    tableName = modelClass.__table__.name
+    dict = {}
+
+    for table in _SCHEMA:
+        if table["name"] == tableName:
+            for field in table["fields"]:
+                dict[field["name"]] = ""
+    return dict
+
+
 # This function maps a data dict to the schema
 # Data fields that are mapped to the extra storage are converted to JSON and stored in _extra
 # Data fields that are not present in the schema are discarded

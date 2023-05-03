@@ -21,6 +21,11 @@ from climmob.models import (
     AssDetail,
 )
 from climmob.processes.db.project import getProjectData, getRegisteredFarmers
+from climmob.processes.db.prjlang import getPrjLangDefaultInProject, getPrjLangInProject
+from climmob.processes.db.i18n_question import getFieldTranslationByLanguage
+from climmob.processes.db.i18n_qstoption import (
+    getFieldTranslationQuestionOptionByLanguage,
+)
 
 log = logging.getLogger(__name__)
 
@@ -185,6 +190,8 @@ def createDatabase(
     dropSchema,
     request,
     external_files=None,
+    default_language=None,
+    other_languages=None,
 ):
 
     if external_files is None:
@@ -213,6 +220,11 @@ def createDatabase(
 
     for a_file in external_files:
         args.append(a_file)
+
+    if other_languages is not None:
+        args.append("-l '" + other_languages + "'")
+    if default_language is not None:
+        args.append("-d '" + default_language + "'")
 
     paths = ["tmp"]
     tempPath = os.path.join(outputDir, *paths)
@@ -323,7 +335,7 @@ def createDatabase(
 
 
 class ODKExcelFile(object):
-    def __init__(self, xlsxFile, formID, formLabel, formInstance, _):
+    def __init__(self, xlsxFile, formID, formLabel, formInstance, _, languages):
         self.xlsxFile = xlsxFile
         self.root = etree.Element("root")
         self.log = logging.getLogger(__name__)
@@ -333,6 +345,7 @@ class ODKExcelFile(object):
         self.surveyRow = 0
         self.choicesRow = 1
         self._ = _
+        self.languages = languages
         try:
             os.remove(self.xlsxFile)
         except:
@@ -385,7 +398,16 @@ class ODKExcelFile(object):
         if not exist:
             group = etree.Element("group")
             group.set("name", name)
-            group.set("label", label)
+            if not self.languages:
+                group.set("label", label)
+            else:
+                if isinstance(label, str):
+                    for language in self.languages:
+                        group.set("label_{}".format(language["lang_code"]), label)
+                else:
+                    for language in label:
+                        group.set(language["label"], language["value"])
+
             group.set("appearance", appearance)
             if inGroup is None and inRepeat is None:
                 self.root.append(group)
@@ -405,44 +427,108 @@ class ODKExcelFile(object):
         else:
             self.log.error("The group already exists")
 
-    def addOptionToFile(self, rootElement, listName):
+    def addOptionToFile(self, rootElement, listName, dictOfColumnsChoices):
         for element in rootElement.iterchildren():
             self.sheet2.write(self.choicesRow, 0, listName)
             self.sheet2.write(self.choicesRow, 1, element.get("code"))
-            self.sheet2.write(self.choicesRow, 2, element.get("label"))
+            if self.languages:
+                for language in self.languages:
+                    print(
+                        dictOfColumnsChoices["label_{}".format(language["lang_code"])]
+                    )
+                    print(element.get("label_{}".format(language["lang_code"])))
+                    self.sheet2.write(
+                        self.choicesRow,
+                        dictOfColumnsChoices["label_{}".format(language["lang_code"])],
+                        element.get("label_{}".format(language["lang_code"])),
+                    )
+            else:
+                self.sheet2.write(
+                    self.choicesRow, dictOfColumnsChoices["label"], element.get("label")
+                )
             self.choicesRow = self.choicesRow + 1
 
-    def addNodeToFile(self, rootElement):
+    def addNodeToFile(self, rootElement, dictOfColumns, dictOfColumnsChoices):
 
         for element in rootElement.iterchildren():
             self.surveyRow = self.surveyRow + 1
             if element.tag == "group" or element.tag == "repeat":
                 if element.tag == "group":
-                    self.sheet1.write(self.surveyRow, 0, "begin group")
-                    self.sheet1.write(self.surveyRow, 1, element.get("name"))
-                    self.sheet1.write(self.surveyRow, 2, element.get("label"))
-                    self.sheet1.write(self.surveyRow, 8, element.get("appearance"))
+                    self.sheet1.write(
+                        self.surveyRow, dictOfColumns["type"], "begin group"
+                    )
+                    self.sheet1.write(
+                        self.surveyRow, dictOfColumns["name"], element.get("name")
+                    )
+
+                    if self.languages:
+                        for language in self.languages:
+                            self.sheet1.write(
+                                self.surveyRow,
+                                dictOfColumns["label_{}".format(language["lang_code"])],
+                                element.get("label_{}".format(language["lang_code"])),
+                            )
+                    else:
+                        self.sheet1.write(
+                            self.surveyRow, dictOfColumns["label"], element.get("label")
+                        )
+
+                    self.sheet1.write(
+                        self.surveyRow,
+                        dictOfColumns["appearance"],
+                        element.get("appearance"),
+                    )
                 if element.tag == "repeat":
-                    self.sheet1.write(self.surveyRow, 0, "begin repeat")
-                    self.sheet1.write(self.surveyRow, 1, element.get("name"))
-                    self.sheet1.write(self.surveyRow, 2, element.get("label"))
-                    self.sheet1.write(self.surveyRow, 8, element.get("appearance"))
-                self.addNodeToFile(element)
+                    self.sheet1.write(
+                        self.surveyRow, dictOfColumns["type"], "begin repeat"
+                    )
+                    self.sheet1.write(
+                        self.surveyRow, dictOfColumns["name"], element.get("name")
+                    )
+
+                    if self.languages:
+                        for language in self.languages:
+                            self.sheet1.write(
+                                self.surveyRow,
+                                dictOfColumns["label_{}".format(language["lang_code"])],
+                                element.get("label_{}".format(language["lang_code"])),
+                            )
+                    else:
+                        self.sheet1.write(
+                            self.surveyRow, dictOfColumns["label"], element.get("label")
+                        )
+
+                    self.sheet1.write(
+                        self.surveyRow,
+                        dictOfColumns["appearance"],
+                        element.get("appearance"),
+                    )
+                self.addNodeToFile(element, dictOfColumns, dictOfColumnsChoices)
                 if element.tag == "group":
                     self.surveyRow = self.surveyRow + 1
-                    self.sheet1.write(self.surveyRow, 0, "end group")
-                    self.sheet1.write(self.surveyRow, 1, element.get("name"))
+                    self.sheet1.write(
+                        self.surveyRow, dictOfColumns["type"], "end group"
+                    )
+                    self.sheet1.write(
+                        self.surveyRow, dictOfColumns["name"], element.get("name")
+                    )
                 if element.tag == "repeat":
                     self.surveyRow = self.surveyRow + 1
-                    self.sheet1.write(self.surveyRow, 0, "end repeat")
-                    self.sheet1.write(self.surveyRow, 1, element.get("name"))
+                    self.sheet1.write(
+                        self.surveyRow, dictOfColumns["type"], "end repeat"
+                    )
+                    self.sheet1.write(
+                        self.surveyRow, dictOfColumns["name"], element.get("name")
+                    )
             else:
                 if element.tag != "root":
                     if (
                         element.get("type") != "select_one"
                         and element.get("type") != "select_multiple"
                     ):
-                        self.sheet1.write(self.surveyRow, 0, element.get("type"))
+                        self.sheet1.write(
+                            self.surveyRow, dictOfColumns["type"], element.get("type")
+                        )
                     else:
                         duplicated_list, duplicated_name = self.get_options(
                             element.get("name"), element[0]
@@ -450,14 +536,16 @@ class ODKExcelFile(object):
                         if not duplicated_list:
                             self.sheet1.write(
                                 self.surveyRow,
-                                0,
+                                dictOfColumns["type"],
                                 element.get("type")
                                 + " "
                                 + element.get("name")
                                 + "_opts",
                             )
                             self.addOptionToFile(
-                                element[0], element.get("name") + "_opts"
+                                element[0],
+                                element.get("name") + "_opts",
+                                dictOfColumnsChoices,
                             )
                         else:
                             self.sheet1.write(
@@ -465,29 +553,91 @@ class ODKExcelFile(object):
                                 0,
                                 element.get("type") + " " + duplicated_name + "_opts",
                             )
-                    self.sheet1.write(self.surveyRow, 1, element.get("name"))
-                    self.sheet1.write(self.surveyRow, 2, element.get("label"))
-                    self.sheet1.write(self.surveyRow, 3, element.get("hint"))
-                    self.sheet1.write(self.surveyRow, 4, element.get("constraint"))
-                    self.sheet1.write(self.surveyRow, 14, element.get("calculation"))
-                    self.sheet1.write(self.surveyRow, 6, element.get("required"))
+                    self.sheet1.write(
+                        self.surveyRow, dictOfColumns["name"], element.get("name")
+                    )
+                    if self.languages:
+                        for language in self.languages:
+                            self.sheet1.write(
+                                self.surveyRow,
+                                dictOfColumns["label_{}".format(language["lang_code"])],
+                                element.get("label_{}".format(language["lang_code"])),
+                            )
+                    else:
+                        self.sheet1.write(
+                            self.surveyRow, dictOfColumns["label"], element.get("label")
+                        )
+
+                    self.sheet1.write(
+                        self.surveyRow, dictOfColumns["hint"], element.get("hint")
+                    )
+                    self.sheet1.write(
+                        self.surveyRow,
+                        dictOfColumns["constraint"],
+                        element.get("constraint"),
+                    )
+                    self.sheet1.write(
+                        self.surveyRow,
+                        dictOfColumns["calculation"],
+                        element.get("calculation"),
+                    )
+                    self.sheet1.write(
+                        self.surveyRow,
+                        dictOfColumns["required"],
+                        element.get("required"),
+                    )
+
                     if element.get("appearance") is not None:
-                        self.sheet1.write(self.surveyRow, 8, element.get("appearance"))
+                        self.sheet1.write(
+                            self.surveyRow,
+                            dictOfColumns["appearance"],
+                            element.get("appearance"),
+                        )
 
                     if element.get("type") == "barcode":
-                        self.sheet1.write(
-                            self.surveyRow,
-                            5,
-                            self._(
-                                "The scanned Qr is incorrect, it is not for this project."
-                            ),
-                        )
+                        if self.languages:
+                            for language in self.languages:
+                                self.sheet1.write(
+                                    self.surveyRow,
+                                    dictOfColumns[
+                                        "constraint_message_{}".format(
+                                            language["lang_code"]
+                                        )
+                                    ],
+                                    self._(
+                                        "The scanned Qr is incorrect, it is not for this project."
+                                    ),
+                                )
+                        else:
+                            self.sheet1.write(
+                                self.surveyRow,
+                                dictOfColumns["constraint_message"],
+                                self._(
+                                    "The scanned Qr is incorrect, it is not for this project."
+                                ),
+                            )
+
                     if element.get("required") == "True":
-                        self.sheet1.write(
-                            self.surveyRow,
-                            7,
-                            element.get("label") + self._(" requires a value"),
-                        )
+                        if self.languages:
+                            for language in self.languages:
+                                self.sheet1.write(
+                                    self.surveyRow,
+                                    dictOfColumns[
+                                        "required_message_{}".format(
+                                            language["lang_code"]
+                                        )
+                                    ],
+                                    element.get(
+                                        "label_{}".format(language["lang_code"])
+                                    )
+                                    + self._(" requires a value"),
+                                )
+                        else:
+                            self.sheet1.write(
+                                self.surveyRow,
+                                dictOfColumns["required_message"],
+                                element.get("label") + self._(" requires a value"),
+                            )
 
     def addQuestion(
         self,
@@ -537,8 +687,18 @@ class ODKExcelFile(object):
         exist = self.root.findall(".//question[@name='" + name + "']")
         if not exist:
             question = etree.Element("question")
+
             question.set("name", name)
-            question.set("label", label)
+            if not self.languages:
+                question.set("label", label)
+            else:
+                if isinstance(label, str):
+                    for language in self.languages:
+                        question.set("label_{}".format(language["lang_code"]), label)
+                else:
+                    for language in label:
+                        question.set(language["label"], language["value"])
+
             question.set("hint", hint)
             question.set("type", ODKType)
             question.set("constraint", constraint)
@@ -584,14 +744,35 @@ class ODKExcelFile(object):
                     if not codes:
                         value = etree.Element("value")
                         value.set("code", code)
-                        value.set("label", label)
+                        if not self.languages:
+                            value.set("label", label)
+                        else:
+                            if isinstance(label, str):
+                                for language in self.languages:
+                                    value.set(
+                                        "label_{}".format(language["lang_code"]), label
+                                    )
+                            else:
+                                for language in label:
+                                    value.set(language["label"], language["value"])
+
                         evalues.append(value)
                 else:
                     evalues = etree.Element("values")
                     equestion.append(evalues)
                     value = etree.Element("value")
                     value.set("code", code)
-                    value.set("label", label)
+                    if not self.languages:
+                        value.set("label", label)
+                    else:
+                        if isinstance(label, str):
+                            for language in self.languages:
+                                value.set(
+                                    "label_{}".format(language["lang_code"]), label
+                                )
+                        else:
+                            for language in label:
+                                value.set(language["label"], language["value"])
                     evalues.append(value)
             else:
                 self.log.error("This question is not a select or multiselect")
@@ -623,26 +804,126 @@ class ODKExcelFile(object):
             self.log.error("The repeat group already exists")
 
     def renderFile(self):
+        dictOfColumns = {}
+        columnsCount = 0
+        self.sheet1.write(0, columnsCount, "type")
+        dictOfColumns["type"] = columnsCount
+        columnsCount += 1
+        self.sheet1.write(0, columnsCount, "name")
+        dictOfColumns["name"] = columnsCount
+        columnsCount += 1
 
-        self.sheet1.write(0, 0, "type")
-        self.sheet1.write(0, 1, "name")
-        self.sheet1.write(0, 2, "label")
-        self.sheet1.write(0, 3, "hint")
-        self.sheet1.write(0, 4, "constraint")
-        self.sheet1.write(0, 5, "constraint_message")
-        self.sheet1.write(0, 6, "required")
-        self.sheet1.write(0, 7, "required_message")
-        self.sheet1.write(0, 8, "appearance")
-        self.sheet1.write(0, 9, "default")
-        self.sheet1.write(0, 10, "relevant")
-        self.sheet1.write(0, 11, "repeat_count")
-        self.sheet1.write(0, 12, "read_only")
-        self.sheet1.write(0, 13, "choice_filter")
-        self.sheet1.write(0, 14, "calculation")
+        if self.languages:
+            for language in self.languages:
+                self.sheet1.write(
+                    0,
+                    columnsCount,
+                    "label::{} ({})".format(
+                        language["lang_name"], language["lang_code"]
+                    ),
+                )
+                dictOfColumns["label_{}".format(language["lang_code"])] = columnsCount
+                columnsCount += 1
+            columnsCount -= 1
+        else:
+            self.sheet1.write(0, columnsCount, "label")
+            dictOfColumns["label"] = columnsCount
+        columnsCount += 1
+        self.sheet1.write(0, columnsCount, "hint")
+        dictOfColumns["hint"] = columnsCount
+        columnsCount += 1
+        self.sheet1.write(0, columnsCount, "constraint")
+        dictOfColumns["constraint"] = columnsCount
+        columnsCount += 1
 
-        self.sheet2.write(0, 0, "list_name")
-        self.sheet2.write(0, 1, "name")
-        self.sheet2.write(0, 2, "label")
+        if self.languages:
+            for language in self.languages:
+                self.sheet1.write(
+                    0,
+                    columnsCount,
+                    "constraint_message::{} ({})".format(
+                        language["lang_name"], language["lang_code"]
+                    ),
+                )
+                dictOfColumns[
+                    "constraint_message_{}".format(language["lang_code"])
+                ] = columnsCount
+                columnsCount += 1
+            columnsCount -= 1
+        else:
+            self.sheet1.write(0, columnsCount, "constraint_message")
+            dictOfColumns["constraint_message"] = columnsCount
+        columnsCount += 1
+        self.sheet1.write(0, columnsCount, "required")
+        dictOfColumns["required"] = columnsCount
+        columnsCount += 1
+
+        if self.languages:
+            for language in self.languages:
+                self.sheet1.write(
+                    0,
+                    columnsCount,
+                    "required_message::{} ({})".format(
+                        language["lang_name"], language["lang_code"]
+                    ),
+                )
+                dictOfColumns[
+                    "required_message_{}".format(language["lang_code"])
+                ] = columnsCount
+                columnsCount += 1
+            columnsCount -= 1
+        else:
+            self.sheet1.write(0, columnsCount, "required_message")
+            dictOfColumns["required_message"] = columnsCount
+
+        columnsCount += 1
+        self.sheet1.write(0, columnsCount, "appearance")
+        dictOfColumns["appearance"] = columnsCount
+        columnsCount += 1
+        self.sheet1.write(0, columnsCount, "default")
+        dictOfColumns["default"] = columnsCount
+        columnsCount += 1
+        self.sheet1.write(0, columnsCount, "relevant")
+        dictOfColumns["relevant"] = columnsCount
+        columnsCount += 1
+        self.sheet1.write(0, columnsCount, "repeat_count")
+        dictOfColumns["repeat_count"] = columnsCount
+        columnsCount += 1
+        self.sheet1.write(0, columnsCount, "read_only")
+        dictOfColumns["read_only"] = columnsCount
+        columnsCount += 1
+        self.sheet1.write(0, columnsCount, "choice_filter")
+        dictOfColumns["choice_filter"] = columnsCount
+        columnsCount += 1
+        self.sheet1.write(0, columnsCount, "calculation")
+        dictOfColumns["calculation"] = columnsCount
+
+        # CHOICES
+        dictOfColumnsChoices = {}
+        columnsCountChoices = 0
+        self.sheet2.write(0, columnsCountChoices, "list_name")
+        dictOfColumnsChoices["list_name"] = columnsCountChoices
+        columnsCountChoices += 1
+        self.sheet2.write(0, columnsCountChoices, "name")
+        dictOfColumnsChoices["name"] = columnsCountChoices
+        columnsCountChoices += 1
+        if self.languages:
+            for language in self.languages:
+                self.sheet2.write(
+                    0,
+                    columnsCountChoices,
+                    "label::{} ({})".format(
+                        language["lang_name"], language["lang_code"]
+                    ),
+                )
+                dictOfColumnsChoices[
+                    "label_{}".format(language["lang_code"])
+                ] = columnsCountChoices
+                columnsCountChoices += 1
+            columnsCountChoices -= 1
+        else:
+            self.sheet2.write(0, columnsCountChoices, "label")
+            dictOfColumnsChoices["label"] = columnsCountChoices
 
         sheet3 = self.book.add_worksheet("settings")
         sheet3.write(0, 0, "form_id")
@@ -653,8 +934,90 @@ class ODKExcelFile(object):
         sheet3.write(1, 1, self.formLabel)
         sheet3.write(1, 2, self.formInstance)
 
-        self.addNodeToFile(self.root)
+        self.addNodeToFile(self.root, dictOfColumns, dictOfColumnsChoices)
         self.book.close()
+
+
+def renderQuestion(question, fielName, option):
+    renderedString = (
+        Environment().from_string(question[fielName]).render(pos=option + 1)
+    )
+
+    return renderedString
+
+
+def translateQuestion(
+    prjLanguages,
+    question,
+    request,
+    fieldName,
+    descExtra="",
+    requireRender=False,
+    optionRender="",
+):
+
+    if prjLanguages:
+        qstDesc = []
+
+        for language in prjLanguages:
+            dictTraduction = {}
+            dictTraduction["label"] = "label_{}".format(language["lang_code"])
+            if language["lang_default"] == 1:
+                if not requireRender:
+                    dictTraduction["value"] = question[fieldName]
+                else:
+                    dictTraduction["value"] = renderQuestion(
+                        question, fieldName, optionRender
+                    )
+            else:
+                traduction, value = getFieldTranslationByLanguage(
+                    request, question.question_id, language["lang_code"], fieldName
+                )
+                if not requireRender:
+                    if traduction:
+                        dictTraduction["value"] = value
+                    else:
+                        dictTraduction["value"] = question[fieldName]
+                else:
+                    dictTraduction["value"] = renderQuestion(
+                        question, fieldName, optionRender
+                    )
+
+            qstDesc.append(dictTraduction)
+    else:
+        if not requireRender:
+            qstDesc = question[fieldName] + descExtra
+        else:
+            qstDesc = renderQuestion(question, fieldName, optionRender)
+
+    return qstDesc
+
+
+def translateQuestionOption(prjLanguages, questionId, option, request):
+
+    if prjLanguages:
+        optionDesc = []
+
+        for language in prjLanguages:
+            dictTraduction = {}
+            dictTraduction["label"] = "label_{}".format(language["lang_code"])
+            if language["lang_default"] == 1:
+                dictTraduction["value"] = option["value_desc"]
+            else:
+                traduction, value = getFieldTranslationQuestionOptionByLanguage(
+                    request, questionId, language["lang_code"], option["value_code"]
+                )
+                if traduction:
+                    dictTraduction["value"] = value
+                else:
+                    dictTraduction["value"] = option["value_desc"]
+
+            optionDesc.append(dictTraduction)
+
+    else:
+        optionDesc = option["value_desc"]
+
+    return optionDesc
 
 
 def generateODKFile(
@@ -671,10 +1034,13 @@ def generateODKFile(
     request,
     selectedPackageQuestionGroup,
     listOfLabelsForPackages,
+    language="default",
 ):
     _ = request.translate
 
-    excelFile = ODKExcelFile(xlsxFile, formID, formLabel, formInstance, _)
+    prjLanguages = getPrjLangInProject(projectId, request)
+
+    excelFile = ODKExcelFile(xlsxFile, formID, formLabel, formInstance, _, prjLanguages)
 
     excelFile.addQuestion("clm_deviceimei", _("Device IMEI"), 23, "")
     excelFile.addQuestion("clm_start", _("Start of survey"), 20, "")
@@ -746,9 +1112,18 @@ def generateODKFile(
                 and question.question_dtype != 10
             ):
                 if question.question_dtype != 7:
+
+                    qstDesc = translateQuestion(
+                        prjLanguages,
+                        question,
+                        request,
+                        "question_desc",
+                        descExtra=descExtra,
+                    )
+
                     excelFile.addQuestion(
                         question.question_code + nameExtra,
-                        question.question_desc + descExtra,
+                        qstDesc,
                         question.question_dtype,
                         question.question_unit,
                         question.question_requiredvalue,
@@ -757,9 +1132,13 @@ def generateODKFile(
                 else:
                     # print "EL PACKAGE CODE"
                     lenuser = len(userOwner) + 1
+                    qstDesc = translateQuestion(
+                        prjLanguages, question, request, "question_desc"
+                    )
+
                     excelFile.addQuestion(
                         question.question_code,
-                        question.question_desc,
+                        qstDesc,
                         question.question_dtype,
                         question.question_unit,
                         question.question_requiredvalue,
@@ -784,9 +1163,13 @@ def generateODKFile(
                         inGroup="grp_" + str(question.section_id),
                     )
 
+                    qstDesc = translateQuestion(
+                        prjLanguages, question, request, "question_desc"
+                    )
+
                     excelFile.addQuestion(
                         question.question_code,
-                        question.question_desc,
+                        qstDesc,
                         question.question_dtype,
                         question.question_unit,
                         question.question_requiredvalue,
@@ -846,9 +1229,13 @@ def generateODKFile(
                             )
 
                     if numComb == 3:
+                        qstDesc = translateQuestion(
+                            prjLanguages, question, request, "question_posstm"
+                        )
+
                         excelFile.addQuestion(
                             "char_" + question.question_code + "_pos",
-                            question.question_posstm,
+                            qstDesc,
                             5,
                             "",
                             question.question_requiredvalue,
@@ -882,9 +1269,13 @@ def generateODKFile(
                                 + "}"
                             )
                         # END EDITED
+                        qstDesc = translateQuestion(
+                            prjLanguages, question, request, "question_negstm"
+                        )
+
                         excelFile.addQuestion(
                             "char_" + question.question_code + "_neg",
-                            question.question_negstm,
+                            qstDesc,
                             5,
                             "",
                             question.question_requiredvalue,
@@ -1001,11 +1392,16 @@ def generateODKFile(
 
                 if question.question_dtype == 10:
                     for opt in range(0, numComb):
-                        renderedString = (
-                            Environment()
-                            .from_string(question.question_perfstmt)
-                            .render(option=listOfLabelsForPackages[opt])
+
+                        renderedString = translateQuestion(
+                            prjLanguages,
+                            question,
+                            request,
+                            "question_perfstmt",
+                            requireRender=True,
+                            optionRender=listOfLabelsForPackages[opt],
                         )
+
                         excelFile.addQuestion(
                             "perf_" + question.question_code + "_" + str(opt + 1),
                             renderedString,
@@ -1033,7 +1429,7 @@ def generateODKFile(
                     "LEFT JOIN i18n_qstoption "
                     " ON i18n_qstoption.question_id = qstoption.question_id "
                     " AND i18n_qstoption.value_code = qstoption.value_code "
-                    " AND i18n_qstoption.lang_code = '" + request.locale_name + "' "
+                    " AND i18n_qstoption.lang_code = '" + language + "' "
                     " WHERE qstoption.question_id = question.question_id "
                     " AND (question.question_dtype = 5 or question.question_dtype = 6) "
                     " AND question.question_code = '" + question.question_code + "' "
@@ -1046,15 +1442,28 @@ def generateODKFile(
                 for value in values:
                     if value.value_isother == 1:
                         other = True
+
+                    optionDesc = translateQuestionOption(
+                        prjLanguages, question.question_id, value, request
+                    )
+
                     excelFile.addOption(
                         question.question_code + nameExtra,
                         value.value_code,
-                        value.value_desc,
+                        optionDesc,
                     )
                 if other:
+                    qstDesc = translateQuestion(
+                        prjLanguages,
+                        question,
+                        request,
+                        "question_desc",
+                        descExtra=descExtra + " " + _("Other"),
+                    )
+
                     excelFile.addQuestion(
                         question.question_code + nameExtra + "_oth",
-                        question.question_desc + descExtra + " " + _("Other"),
+                        qstDesc,
                         1,
                         _("Add the other value here"),
                         0,
@@ -1134,7 +1543,12 @@ def generateRegistry(
         .order_by(Regsection.section_order)
         .all()
     )
-    # Terminan los cambios
+
+    langDefault = getPrjLangDefaultInProject(projectId, request)
+    if langDefault:
+        langDefault = langDefault["lang_code"]
+    else:
+        langDefault = "default"
 
     sql = (
         "SELECT q.question_code,COALESCE(i.question_desc,q.question_desc) as question_desc,COALESCE(i.question_unit,q.question_unit) as question_unit, q.question_dtype, q.question_twoitems, "
@@ -1143,7 +1557,7 @@ def generateRegistry(
         "FROM registry r,question q "
         " LEFT JOIN i18n_question i "
         " ON        q.question_id = i.question_id "
-        " AND       i.lang_code = '" + request.locale_name + "' "
+        " AND       i.lang_code = '" + langDefault + "' "
         " WHERE q.question_id = r.question_id "
         " AND r.project_id = '" + projectId + "'"
         "ORDER BY r.question_order"
@@ -1169,6 +1583,7 @@ def generateRegistry(
         request,
         sectionOfThePackageCode,
         listOfLabelsForPackages,
+        language=langDefault,
     )
 
     print("****generateRegistry**Convert XLSX to XML******")

@@ -22,6 +22,7 @@ from climmob.processes import (
     getActiveProject,
     getTheProjectIdForOwner,
     getProjectLabels,
+    getPrjLangDefaultInProject,
 )
 from climmob.products import stopTasksByProcess
 from climmob.views.classes import privateView
@@ -237,8 +238,17 @@ class registry_view(privateView):
             activeProjectUser, activeProjectCod, self.request
         )
 
+        if "language" in self.request.params.keys():
+            langActive = self.request.params["language"]
+        else:
+            langActive = getPrjLangDefaultInProject(activeProjectId, self.request)
+            if langActive:
+                langActive = langActive["lang_code"]
+            else:
+                langActive = ""
+
         data, finalCloseQst = getDataFormPreview(
-            self, activeProjectUser, activeProjectId
+            self, activeProjectUser, activeProjectId, langActive
         )
 
         activeProjectData = getActiveProject(self.user.login, self.request)
@@ -252,10 +262,12 @@ class registry_view(privateView):
                 activeProjectId,
                 self.request,
                 activeProjectData["project_registration_and_analysis"],
+                language=langActive,
             ),
             "Categories": getCategoriesFromUserCollaborators(
                 activeProjectId, self.request
             ),
+            "languageActive": langActive,
         }
 
 
@@ -273,6 +285,15 @@ class registryFormCreation_view(privateView):
             activeProjectId = getTheProjectIdForOwner(
                 activeProjectUser, activeProjectCod, self.request
             )
+
+            if "language" in self.request.params.keys():
+                langActive = self.request.params["language"]
+            else:
+                langActive = getPrjLangDefaultInProject(activeProjectId, self.request)
+                if langActive:
+                    langActive = langActive["lang_code"]
+                else:
+                    langActive = ""
 
             if self.request.method == "POST":
                 # if "saveorder" in self.request.POST:
@@ -302,7 +323,7 @@ class registryFormCreation_view(privateView):
                 template = env.get_template("previewForm.jinja2")
 
                 data, finalCloseQst = getDataFormPreview(
-                    self, activeProjectUser, activeProjectId
+                    self, activeProjectUser, activeProjectId, langActive
                 )
 
                 info = {
@@ -324,17 +345,32 @@ class registryFormCreation_view(privateView):
 
 
 def getDataFormPreview(
-    self, userOwner, projectId, assessmentid=None, createAutoRegistry=True
+    self,
+    userOwner,
+    projectId,
+    language="default",
+    assessmentid=None,
+    createAutoRegistry=True,
 ):
     projectLabels = getProjectLabels(projectId, self.request)
 
     if not assessmentid:
         data = getRegistryQuestions(
-            userOwner, projectId, self.request, projectLabels, createAutoRegistry
+            userOwner,
+            projectId,
+            self.request,
+            projectLabels,
+            language=language,
+            createAutoRegistry=createAutoRegistry,
         )
     else:
         data = getAssessmentQuestions(
-            userOwner, projectId, assessmentid, self.request, projectLabels
+            userOwner,
+            projectId,
+            assessmentid,
+            self.request,
+            projectLabels,
+            language=language,
         )
     # The following is to help jinja2 to render the groups and questions
     # This because the scope constraint makes it difficult to control

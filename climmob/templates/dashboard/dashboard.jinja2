@@ -473,6 +473,10 @@
                                                                         <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry', formatid='csv') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data in .CSV format") }}</a>
                                                                         <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry', formatid='xlsx') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data in .XLSX format") }}</a>
 
+                                                                        {% block dataprivacy_download_data_registry %}
+
+                                                                        {% endblock dataprivacy_download_data_registry %}
+
                                                                     {% endif %}
                                                                     {% if progress.regerrors > 0 and progress.regsubmissions == 1%}
                                                                         <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;white-space: normal !important;word-wrap: break-word !important;" href="{{request.route_url('CleanErrorLogs',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry') }}"><i class="fa fa-bug"></i> {{ _("Show submissions with conflicts") }}</a>
@@ -605,6 +609,10 @@
                                                                                     <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('EditDataAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}" href="#"><i class="fa fa-table"></i> {{ _("View and edit data") }}</a>
                                                                                     <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod, formatid='csv') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data in .CSV format") }}</a>
                                                                                     <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod, formatid='xlsx') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data in .XLSX format") }}</a>
+
+                                                                                    {% block dataprivacy_download_data_assessment scoped%}
+
+                                                                                    {% endblock dataprivacy_download_data_assessment %}
 
                                                                                     {% if assessment.ass_status == 1%}
                                                                                     {% endif %}

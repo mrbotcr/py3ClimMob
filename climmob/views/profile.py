@@ -11,6 +11,7 @@ from climmob.processes import (
     addToLog,
     getActiveProject,
     changeUserPassword,
+    getListOfUnusedLanguagesByUser,
 )
 from climmob.views.classes import privateView
 
@@ -27,6 +28,9 @@ class profile_view(privateView):
             "activeProject": getActiveProject(self.user.login, self.request),
             "activities": activities,
             "userstats": userstats,
+            "listOfLanguages": getListOfUnusedLanguagesByUser(
+                self.request, self.user.login
+            ),
         }
 
 
