@@ -917,6 +917,7 @@ class Technology(Base):
         nullable=False,
         server_default=text("'0'"),
     )
+    tech_accession_id = Column(Unicode(255))
 
     user = relationship("User")
     crop = relationship("CropTaxonomy")
