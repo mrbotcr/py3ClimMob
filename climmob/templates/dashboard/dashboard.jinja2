@@ -157,12 +157,14 @@
                             <div class="ibox-content" style="padding: 5px 20px 10px 20px;">
                                 <table width="100%">
                                     <tr>
-                                        <td width="95%">
-                                            <h2 ><strong>{{ activeProject.project_name }}</strong></h2>
-                                        </td>
-                                        <td rowspan="2" class="text-center">
-                                            <a class="btn btn-success btn-rounded  btn-xs" style="color: white" href="https://climmob.net/blog/wiki/4-project-definition-navigate-the-project/" target="_blank"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a>
-                                        </td>
+                                        {% block project_heading_info %}
+                                            <td width="95%">
+                                                <h2 ><strong>{{ activeProject.project_name }}</strong></h2>
+                                            </td>
+                                            <td rowspan="2" class="text-center">
+                                                <a class="btn btn-success btn-rounded  btn-xs" style="color: white" href="https://climmob.net/blog/wiki/4-project-definition-navigate-the-project/" target="_blank"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a>
+                                            </td>
+                                        {% endblock project_heading_info %}
                                     </tr>
                                     <tr>
                                         <td style="vertical-align: middle">
@@ -1152,6 +1154,10 @@
     </script>
 
 {% endblock script %}
+
+{% block script_extra %}
+
+{% endblock script_extra %}
 
 {% include 'snippets/loading.jinja2' %}
 

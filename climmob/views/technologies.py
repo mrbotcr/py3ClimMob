@@ -1,5 +1,5 @@
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
-
+import paginate
 from climmob.processes import (
     getUserTechs,
     findTechInLibrary,
@@ -10,8 +10,9 @@ from climmob.processes import (
     getUserTechById,
     getActiveProject,
     getTechnologyByName,
+    query_crops,
 )
-from climmob.views.classes import privateView
+from climmob.views.classes import privateView, publicView
 from climmob.views.techaliases import newalias_view, modifyalias_view
 
 
@@ -142,6 +143,10 @@ class newtechnology_view(privateView):
                         existInPersLibrary = findTechInLibrary(formdata, self.request)
                         if existInPersLibrary == False:
                             formdata["user_name"] = self.user.login
+                            if "croptaxonomy_code" in formdata.keys():
+                                formdata["croptaxonomy_code"] = formdata[
+                                    "croptaxonomy_code"
+                                ].replace("'", "")
                             added, message = addTechnology(formdata, self.request)
                             if not added:
                                 error_summary = {"dberror": message}
@@ -200,13 +205,23 @@ class modifytechnology_view(privateView):
                 if formdata["tech_name"] != "":
 
                     formdata["user_name"] = "bioversity"
-                    existInGenLibrary = findTechInLibrary(formdata, self.request)
+                    existInGenLibrary = findTechInLibrary(
+                        formdata, self.request, formdata["tech_id"]
+                    )
                     if existInGenLibrary == False:
 
                         formdata["user_name"] = self.user.login
-                        existInPersLibrary = findTechInLibrary(formdata, self.request)
+                        existInPersLibrary = findTechInLibrary(
+                            formdata, self.request, formdata["tech_id"]
+                        )
                         if existInPersLibrary == False:
                             formdata["user_name"] = self.user.login
+
+                            if "croptaxonomy_code" in formdata.keys():
+                                formdata["croptaxonomy_code"] = formdata[
+                                    "croptaxonomy_code"
+                                ].replace("'", "")
+
                             update, message = updateTechnology(formdata, self.request)
                             if not update:
                                 error_summary = {"dberror": message}
@@ -282,3 +297,50 @@ class deletetechnology_view(privateView):
             "redirect": redirect,
             "formdata": formdata,
         }
+
+
+class APICropsView(publicView):
+    def processView(self):
+        q = self.request.params.get("q", "")
+        current_page = self.request.params.get("page")
+
+        if q == "":
+            q = None
+
+        if current_page is None:
+            current_page = 1
+
+        query_size = 10
+        if q is not None:
+            q = q.lower()
+            query_result, total = query_crops(self.request, q, 0, query_size, "en")
+            if total > 0:
+                collection = list(range(total))
+                page = paginate.Page(collection, current_page, 10)
+                query_result, total = query_crops(
+                    self.request, q, page.first_item - 1, query_size, "en"
+                )
+                select2_result = []
+                for result in query_result:
+                    select2_result.append(
+                        {
+                            "id": "'{}'".format(result["taxonomy_code"]),
+                            "text": result["crop_name"],
+                        }
+                    )
+                with_pagination = False
+                if page.page_count > 1:
+                    with_pagination = True
+
+                if not with_pagination:
+                    return {"total": total, "results": select2_result}
+                else:
+                    return {
+                        "total": total,
+                        "results": select2_result,
+                        "pagination": {"more": True},
+                    }
+            else:
+                return {"total": 0, "results": []}
+        else:
+            return {"total": 0, "results": []}

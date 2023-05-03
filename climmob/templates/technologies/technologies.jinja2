@@ -10,6 +10,7 @@
     {% cssresource request,'coreresources','sweet' %}
     {% cssresource request,'coreresources','footable' %}
     {% cssresource request,'coreresources','tour' %}
+    {% cssresource request,'coreresources','select2' %}
 {% endblock css %}
 
 {% block topScripts %}
@@ -20,6 +21,7 @@
     {% jsresource request,'coreresources','sweet' %}
     {% include 'snippets/delete.jinja2' %}
     {% jsresource request,'coreresources','tour' %}
+    {% jsresource request,'coreresources','select2' %}
 {% endblock topScripts %}
 
 {% block pageheading %}
@@ -179,6 +181,34 @@
 
     </div>
 
+    <div class="modal inmodal" id="CropModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div id="CropParent" style="position: absolute; z-index: 10000">
+        </div>
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content animated bounceInRight">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">{{ _('Close') }}</span></button>
+                    <i class="fa fa-leaf modal-icon"></i>
+                    <h4 class="modal-title">{{ _('Select a crop') }}</h4>
+                    <small class="font-bold">{{ _('If this technology is a crop, please select the crop') }}.</small>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label>{{ _('Crop') }}</label>
+                            <select id="select_crop" name="croptaxonomy_code" style="width: 100%; !important;" class="form-control"></select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">{{ _('Cancel') }}</button>
+                    <button id="set_crop" type="button" data-dismiss="modal" class="btn btn-primary">{{ _('Set crop') }}</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <style>
 
         .tableHover tbody tr:hover
@@ -205,7 +235,7 @@
     </style>
 
     <script>
-
+        let show_carga = true;
         $(document).on('ifChecked', '.i-checkTech', function(event) {
             id = $(this).attr("id")
             $("#tech"+id.replace("radio","")).click()
@@ -216,6 +246,64 @@
         });
 
         $(document).ready(function () {
+
+
+            function formatCrop (crop) {
+                if (!crop.id) {
+                    return crop.text;
+                }
+                let $state = $(
+                    '<span>' + crop.text + '</span>'
+                );
+                return $state;
+            }
+
+
+            $("#select_crop").select2({
+                templateResult: formatCrop,
+                dropdownParent: $('#CropParent'),
+                ajax: {
+                    url: "{{ request.route_url('APICrops') }}",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term, // search term
+                            page: params.page
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: data.results,
+                            pagination: {
+                                more: (params.page * 10) < data.total
+                            }
+                        };
+                    },
+                    cache: true
+                }
+            });
+
+            $( "#show_crops" ).on( "click", function() {
+                show_carga = false;
+                $('#select_crop').val(null).trigger('change');
+            });
+
+            $( "#set_crop" ).on( "click", function() {
+                let selected = $('#select_crop').find(':selected')
+                if (typeof selected.val() !== 'undefined') {
+                    $("#croptaxonomy_code").val(selected.val());
+                    $('#crop_label').html('');
+                    $('#crop_label').append(selected.text());
+                    if($("#tech_id").val() != "") {
+                        $("#btn_modify_technology").css('display', 'initial');
+                    }
+                } else {
+                    alert('{{ _('You did not select a crop') }}');
+                }
+                show_carga = true;
+            } );
 
             $('.footable').footable();
 
@@ -275,6 +363,11 @@
             $("#tech_name").prop('readonly',false)
             $("#tech_name").val("")
             $(".tech_id").val("")
+
+            $("#croptaxonomy_code").val('0');
+            $('#crop_label').html('');
+            $('#crop_label').append("Not a crop");
+
             $("#div_create_technology").css('display','initial')
             $("#div_create_technology_option").css('display','none')
             $("#div_show_create_alias").css('display','none')
@@ -327,6 +420,10 @@
                 cleanBtsTechnology()
                 $(".tech_id").val(tech.tech_id)
                 $("#tech_name").val(tech.tech_name)
+
+                $("#croptaxonomy_code").val(tech.croptaxonomy_code);
+                $('#crop_label').html('');
+                $('#crop_label').append(tech.crop_name);
 
                 allHTML = ""
                 for(var i=0; i<tech.tech_alias.length; i++)
@@ -383,10 +480,16 @@
 
                 if(tech.found == 0 & tech.user_name == "{{ activeUser.login }}"){
                     //$("#btn_modify_technology").css('display','initial')
-                    $("#btn_delete_technology").css('display','initial')
-                    $("#tech_name").prop('readonly',false)
+                    $("#btn_delete_technology").css('display','initial');
+                    $("#tech_name").prop('readonly',false);
+                    $("#show_crops").prop('disabled', false);
+                    $("#show_crops").addClass('btn-success');
+                    $("#show_crops").removeClass('btn-default');
                 }else{
                     $("#tech_name").prop('readonly',true)
+                    $("#show_crops").prop('disabled', true);
+                    $("#show_crops").removeClass('btn-success');
+                    $("#show_crops").addClass('btn-default');
                 }
 
                 $("#div_create_technology").css('display','initial')

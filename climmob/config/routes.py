@@ -235,6 +235,7 @@ from climmob.views.technologies import (
     deletetechnology_view,
     getUserTechnologyDetails_view,
     getUserTechnologyAliasDetails_view,
+    APICropsView,
 )
 from climmob.views.test import test_view, sentry_debug_view
 
@@ -311,6 +312,14 @@ def loadRoutes(config):
             "path": "/usage",
             "view": PrivacyView,
             "renderer": "usage.jinja2",
+        }
+    )
+    routes.append(
+        {
+            "name": "APICrops",
+            "path": "/crops",
+            "view": APICropsView,
+            "renderer": "json",
         }
     )
     routes.append(
