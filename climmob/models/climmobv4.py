@@ -244,6 +244,21 @@ class I18n(Base):
     lang_name = Column(Unicode(120))
 
 
+class I18nUser(Base):
+    __tablename__ = "i18n_user"
+
+    lang_code = Column(
+        ForeignKey("i18n.lang_code"), primary_key=True, nullable=False, index=True
+    )
+    user_name = Column(
+        ForeignKey("user.user_name"), primary_key=True, nullable=False, index=True
+    )
+    lang_default = Column(Integer, server_default=text("'0'"))
+
+    i18n = relationship("I18n")
+    user = relationship("User")
+
+
 class I18nAsssection(Base):
     __tablename__ = "i18n_asssection"
     __table_args__ = (
@@ -777,7 +792,9 @@ class Question(Base):
     qstgroups_user = Column(Unicode(80), nullable=True)
     qstgroups_id = Column(Unicode(80), nullable=True)
     question_sensitive = Column(Integer, server_default=text("'0'"))
+    question_lang = Column(ForeignKey("i18n.lang_code"), nullable=True)
     extra = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
+    i18n = relationship("I18n")
     user = relationship("User")
 
 
