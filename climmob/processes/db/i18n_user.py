@@ -14,6 +14,7 @@ __all__ = [
     "getListOfLanguagesByUser",
     "getListOfUnusedLanguagesByUser",
     "addI18nUser",
+    "modifyI18nUserDefaultLanguage",
     "deleteI18nUser",
 ]
 
@@ -83,6 +84,20 @@ def addI18nUser(data, request):
         return True, ""
     except Exception as e:
         return False, str(e)
+
+
+def modifyI18nUserDefaultLanguage(user, language, request):
+    try:
+        request.dbsession.query(I18nUser).filter(I18nUser.user_name == user).update(
+            {"lang_default": 0}
+        )
+
+        request.dbsession.query(I18nUser).filter(I18nUser.user_name == user).filter(
+            I18nUser.lang_code == language
+        ).update({"lang_default": 1})
+        return True, ""
+    except Exception as e:
+        return False, e
 
 
 def deleteI18nUser(data, request):

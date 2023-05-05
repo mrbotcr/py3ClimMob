@@ -217,6 +217,7 @@ from climmob.views.question import (
     questionsActions_view,
     getUserLanguages_view,
     addUserLanguage_view,
+    changeDefaultLanguage_view,
     deleteUserLanguage_view,
     getUserLanguagesPreview_view,
 )
@@ -540,6 +541,15 @@ def loadRoutes(config):
             "name": "addUserLanguage",
             "path": "/addUserLanguage",
             "view": addUserLanguage_view,
+            "renderer": "json",
+        }
+    )
+
+    routes.append(
+        {
+            "name": "changeDefaultLanguage",
+            "path": "/changeDefaultLanguage",
+            "view": changeDefaultLanguage_view,
             "renderer": "json",
         }
     )

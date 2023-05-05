@@ -11,6 +11,7 @@ from climmob.processes import (
     addI18nQstoption,
     modifyI18nQstoption,
     deleteI18nQstoption,
+    getListOfUnusedLanguagesByUser,
 )
 
 
@@ -65,6 +66,9 @@ class questionTranslations_view(privateView):
             "questionDetails": question,
             "translations": getAllTranslationsOfQuestion(
                 self.request, userOwner, questionId
+            ),
+            "listOfLanguages": getListOfUnusedLanguagesByUser(
+                self.request, self.user.login
             ),
         }
 

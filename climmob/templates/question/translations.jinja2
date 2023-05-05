@@ -15,6 +15,7 @@
     {% cssresource request,'coreresources','datatimepicker' %}
     {% cssresource request,'coreresources','switchery' %}
     {% cssresource request,'coreresources','chosen' %}
+    {% cssresource request,'coreresources','icheck' %}
 
 {% endblock css %}
 
@@ -32,14 +33,15 @@
     {% jsresource request,'coreresources','datatimepicker' %}
     {% jsresource request,'coreresources','switchery' %}
     {% jsresource request,'coreresources','chosen' %}
+    {% jsresource request,'coreresources','icheck' %}
 
 {% endblock topScripts %}
 
 {% block pageheading %}
     {% set iconOfLibrary="fa-language" %}
-    {% set _title= _("Question translations") %}
-    {% set extra=[[_("Library questions"),request.route_url('qlibrary', user_name=activeUser.login)]] %}
-    {% set otherTitle=_("Question")+" : "+ questionDetails["question_name"] %}
+    {% set _title= _("Add other languages") %}
+    {% set extra=[[_("Library questions"),request.route_url('qlibrary', user_name=activeUser.login)],[_("Question")+" : "+ questionDetails["question_name"], request.route_url('qlibrary', user_name=activeUser.login,_query={'questionId':questionDetails["question_id"]})]] %}
+    {% set otherTitle=_("Add other languages") %}
 
     {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
@@ -58,7 +60,11 @@
         <div class="col-md-12 ">
             <div class="ibox">
                 <div class="ibox-title" >
-                    <h5>{{ _("Translation of the texts required by the question") }}</h5>
+                    <h5>{{ _("Add other languages") }}</h5>
+
+                    <div class="ibox-tools">
+                        <a class="btn btn-success btn-rounded  btn-xs" style="color: white" data-toggle="modal" data-target="#languagesModal"><i class="fa fa-plus"></i> {{ _("Add more languages") }}</a>
+                    </div>
                 </div>
                 <div class="ibox-content " >
                     <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}">
@@ -338,6 +344,8 @@
         </div>
 
     </div>
+
+    {% include 'snippets/languages/addMoreLanguages.jinja2' %}
 
     <style>
 

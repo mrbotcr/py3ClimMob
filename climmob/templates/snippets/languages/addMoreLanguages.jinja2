@@ -1,0 +1,26 @@
+<div class="modal inmodal" id="languagesModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div id="CropParent" style="position: absolute; z-index: 10000">
+    </div>
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content animated bounceInRight">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">{{ _('Close') }}</span></button>
+                <i class="fa fa-language modal-icon"></i>
+            </div>
+            <div class="modal-body">
+                {% set limiteHeight =True %}
+                {% include 'snippets/languages/changeLanguages.jinja2' %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">{{ _('Cancel') }}</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#languagesModal').on('hidden.bs.modal', function () {
+      location.href = window.location.href;
+    })
+</script>

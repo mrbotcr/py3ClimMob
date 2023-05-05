@@ -34,6 +34,7 @@ from climmob.processes import (
     getListOfLanguagesByUser,
     addI18nUser,
     deleteI18nUser,
+    modifyI18nUserDefaultLanguage,
 )
 from climmob.views.classes import privateView
 
@@ -849,6 +850,11 @@ class addUserLanguage_view(privateView):
             postdata = self.getPostDict()
             postdata["user_name"] = self.user.login
 
+            userLanguages = getListOfLanguagesByUser(self.request, self.user.login)
+
+            if not userLanguages:
+                postdata["lang_default"] = 1
+
             added, message = addI18nUser(postdata, self.request)
 
             if added:
@@ -860,6 +866,32 @@ class addUserLanguage_view(privateView):
                 return {
                     "result": "error",
                     "message": self._("There was an error adding the language"),
+                }
+
+
+class changeDefaultLanguage_view(privateView):
+    def processView(self):
+        self.returnRawViewResult = True
+
+        if self.request.method == "POST":
+
+            postdata = self.getPostDict()
+
+            added, message = modifyI18nUserDefaultLanguage(
+                self.user.login, postdata["lang_code"], self.request
+            )
+
+            if added:
+                return {
+                    "result": "success",
+                    "message": self._("Default language successfully updated"),
+                }
+            else:
+                return {
+                    "result": "error",
+                    "message": self._(
+                        "There was an error updating the default language"
+                    ),
                 }
 
 
