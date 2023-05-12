@@ -1,4 +1,5 @@
-from climmob.views.classes import privateView
+from climmob.views.classes import privateView, publicView
+from pyramid.httpexceptions import HTTPNotFound
 from climmob.processes import (
     userQuestionDetailsById,
     getListOfLanguagesByUser,
@@ -11,8 +12,13 @@ from climmob.processes import (
     addI18nQstoption,
     modifyI18nQstoption,
     deleteI18nQstoption,
-    getListOfUnusedLanguagesByUser,
+    # getListOfUnusedLanguagesByUser,
+    query_languages,
+    updateQuestion,
+    deleteI18nQuestion,
+    deleteAllI18nQstoption,
 )
+import paginate
 
 
 class questionTranslations_view(privateView):
@@ -21,6 +27,10 @@ class questionTranslations_view(privateView):
         questionId = self.request.matchdict["questionid"]
 
         if self.request.method == "POST":
+
+            if userOwner != self.user.login:
+                raise HTTPNotFound
+
             postdata = self.getPostDict()
 
             languages = getListOfLanguagesByUser(self.request, userOwner, questionId)
@@ -67,9 +77,9 @@ class questionTranslations_view(privateView):
             "translations": getAllTranslationsOfQuestion(
                 self.request, userOwner, questionId
             ),
-            "listOfLanguages": getListOfUnusedLanguagesByUser(
-                self.request, self.user.login
-            ),
+            # "listOfLanguages": getListOfUnusedLanguagesByUser(
+            #    self.request, self.user.login
+            # ),
         }
 
 
@@ -153,3 +163,94 @@ def actionInTheTranslationOfQuestionOptions(self, formdata):
             if isThereTranslation:
                 deleted, message = deleteI18nQstoption(option, self.request)
     return {}
+
+
+class APILanguagesView(publicView):
+    def processView(self):
+
+        userName = self.request.matchdict["user"]
+
+        q = self.request.params.get("q", "")
+        current_page = self.request.params.get("page")
+
+        if q == "":
+            q = None
+
+        if current_page is None:
+            current_page = 1
+
+        query_size = 10
+        if q is not None:
+            q = q.lower()
+            query_result, total = query_languages(
+                self.request, userName, q, 0, query_size
+            )
+            if total > 0:
+                collection = list(range(total))
+                page = paginate.Page(collection, current_page, 10)
+                query_result, total = query_languages(
+                    self.request,
+                    userName,
+                    q,
+                    page.first_item - 1,
+                    query_size,
+                )
+                select2_result = []
+                for result in query_result:
+                    select2_result.append(
+                        {
+                            "id": "{}".format(result["lang_code"]),
+                            "text": result["lang_name"],
+                        }
+                    )
+                with_pagination = False
+                if page.page_count > 1:
+                    with_pagination = True
+
+                if not with_pagination:
+                    return {"total": total, "results": select2_result}
+                else:
+                    return {
+                        "total": total,
+                        "results": select2_result,
+                        "pagination": {"more": True},
+                    }
+            else:
+                return {"total": 0, "results": []}
+        else:
+            return {"total": 0, "results": []}
+
+
+class changeDefaultQuestionLanguage_view(privateView):
+    def processView(self):
+        userOwner = self.request.matchdict["user"]
+        questionId = self.request.matchdict["questionid"]
+        message = ""
+        self.returnRawViewResult = True
+
+        if self.request.method == "POST":
+
+            if userOwner != self.user.login:
+                return {
+                    "status": 400,
+                    "error": self._(
+                        "You cannot change the default language of this question."
+                    ),
+                }
+
+            postdata = self.getPostDict()
+
+            formdata = {}
+            formdata["user_name"] = userOwner
+            formdata["question_id"] = questionId
+            formdata["question_lang"] = postdata["lang_code"]
+            formdata["lang_code"] = postdata["lang_code"]
+            updt, message = updateQuestion(formdata, self.request)
+            if updt:
+                dlt, meesage = deleteI18nQuestion(formdata, self.request)
+                if dlt:
+                    opt, message = deleteAllI18nQstoption(formdata, self.request)
+                    if opt:
+                        return {"status": 200}
+
+        return {"status": 400, "error": message}

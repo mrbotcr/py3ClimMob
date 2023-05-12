@@ -7,6 +7,7 @@ __all__ = [
     "addI18nQstoption",
     "modifyI18nQstoption",
     "deleteI18nQstoption",
+    "deleteAllI18nQstoption",
 ]
 
 
@@ -77,6 +78,19 @@ def deleteI18nQstoption(data, request):
         ).filter(
             I18nQstoption.lang_code == data["lang_code"]
         ).delete()
+        return True, ""
+    except IntegrityError as e:
+        return False, e
+    except Exception as e:
+        # print(str(e))
+        return False, e
+
+
+def deleteAllI18nQstoption(data, request):
+    try:
+        request.dbsession.query(I18nQstoption).filter(
+            I18nQstoption.question_id == data["question_id"]
+        ).filter(I18nQstoption.lang_code == data["lang_code"]).delete()
         return True, ""
     except IntegrityError as e:
         return False, e

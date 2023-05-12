@@ -11,13 +11,19 @@ from climmob.processes import (
     addToLog,
     getActiveProject,
     changeUserPassword,
-    getListOfUnusedLanguagesByUser,
+    # getListOfUnusedLanguagesByUser,
 )
 from climmob.views.classes import privateView
 
 
 class profile_view(privateView):
     def processView(self):
+
+        try:
+            help = self.request.params["help"]
+        except:
+            help = None
+
         limit = True
         if "all" in self.request.params:
             if self.request.params["all"] == "True":
@@ -28,9 +34,10 @@ class profile_view(privateView):
             "activeProject": getActiveProject(self.user.login, self.request),
             "activities": activities,
             "userstats": userstats,
-            "listOfLanguages": getListOfUnusedLanguagesByUser(
-                self.request, self.user.login
-            ),
+            # "listOfLanguages": getListOfUnusedLanguagesByUser(
+            #    self.request, self.user.login
+            # ),
+            "help": help,
         }
 
 

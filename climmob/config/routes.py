@@ -240,7 +240,11 @@ from climmob.views.technologies import (
 )
 from climmob.views.test import test_view, sentry_debug_view
 
-from climmob.views.questionTranslations import questionTranslations_view
+from climmob.views.questionTranslations import (
+    questionTranslations_view,
+    APILanguagesView,
+    changeDefaultQuestionLanguage_view,
+)
 
 # -------Api-------#
 
@@ -520,8 +524,17 @@ def loadRoutes(config):
 
     routes.append(
         {
+            "name": "changeDefaultQuestionLanguage",
+            "path": "/user/{user}/question/{questionid}/changeDefaultQuestionLanguage",
+            "view": changeDefaultQuestionLanguage_view,
+            "renderer": "json",
+        }
+    )
+
+    routes.append(
+        {
             "name": "getUserLanguages",
-            "path": "/getUserLanguages",
+            "path": "/user/{user}/getUserLanguages",
             "view": getUserLanguages_view,
             "renderer": "json",
         }
@@ -559,6 +572,15 @@ def loadRoutes(config):
             "name": "deleteUserLanguage",
             "path": "/language/{lang}/delete",
             "view": deleteUserLanguage_view,
+            "renderer": "json",
+        }
+    )
+
+    routes.append(
+        {
+            "name": "APIlanguages",
+            "path": "/user/{user}/languages",
+            "view": APILanguagesView,
             "renderer": "json",
         }
     )

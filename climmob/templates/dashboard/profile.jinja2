@@ -7,16 +7,18 @@
 {% block css %}
     {% cssresource request,'coreresources','sweet' %}
     {% cssresource request,'coreresources','toastr' %}
-    {% cssresource request,'coreresources','chosen' %}
+    {% cssresource request,'coreresources','select2' %}
     {% cssresource request,'coreresources','icheck' %}
+    {% cssresource request,'coreresources','tour' %}
 
 {% endblock css %}
 
 {% block topScripts %}
     {% jsresource request,'coreresources','sweet' %}
     {% jsresource request,'coreresources','toastr' %}
-    {% jsresource request,'coreresources','chosen' %}
+    {% jsresource request,'coreresources','select2' %}
     {% jsresource request,'coreresources','icheck' %}
+    {% jsresource request,'coreresources','tour' %}
     {% include 'snippets/delete.jinja2' %}
 
 {% endblock topScripts %}
@@ -130,6 +132,7 @@
             </div>
 
             <div class="col-lg-6">
+                {% set isModal = False %}
                 {% include 'snippets/languages/changeLanguages.jinja2' %}
             </div>
 

@@ -5,6 +5,7 @@ import datetime
 from dateutil.relativedelta import relativedelta
 from climmob.config.encdecdata import decodeData
 from climmob.models import User as userModel, Country, Sector, mapFromSchema
+from climmob.processes.db.i18n_user import getListOfLanguagesByUser
 
 
 # User class Used to store information about the user
@@ -37,6 +38,7 @@ class User(object):
             self.about = ""
         else:
             self.about = userData["user_about"]
+        self.languages = userData["languages"]
 
     def check_password(self, passwd, request):
         return checkLogin(self.login, passwd, request)
@@ -97,7 +99,9 @@ def getUserData(user, request):
         .first()
     )
     if not result is None:
-        res = User(mapFromSchema(result))
+        result = mapFromSchema(result)
+        result["languages"] = getListOfLanguagesByUser(request, user)
+        res = User(result)
 
     return res
 

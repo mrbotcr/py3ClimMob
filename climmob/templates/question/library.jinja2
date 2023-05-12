@@ -14,7 +14,6 @@
     {% cssresource request,'coreresources','select2' %}
     {% cssresource request,'coreresources','datatimepicker' %}
     {% cssresource request,'coreresources','switchery' %}
-    {% cssresource request,'coreresources','chosen' %}
 
 {% endblock css %}
 
@@ -31,7 +30,6 @@
     {% jsresource request,'coreresources','metro' %}
     {% jsresource request,'coreresources','datatimepicker' %}
     {% jsresource request,'coreresources','switchery' %}
-    {% jsresource request,'coreresources','chosen' %}
 
 {% endblock topScripts %}
 
@@ -721,25 +719,34 @@
             })
         }
 
-        function loadLanguages()
+        function loadLanguages(userName="{{ activeUser.login }}")
         {
-            var URL = "{{ request.route_url('getUserLanguages') }}"
+            var URL = "{{ request.route_url('getUserLanguages', user="__user__") }}"
+            URL = URL.replace("__user__", userName)
 
             $("#question_lang").empty().append('<option value=""> {{ _("Select a language") }}</option>');
-
+            var selected = ""
             $.get(URL, function (dataJson, status) {
 
                 for (var i = 0; i < dataJson.length; i++){
                     var info = dataJson[i]
 
+                    if (info.lang_default == 1)
+                    {
+                        selected = info.lang_code
+                    }
+
                     $('#question_lang').append('<option value="'+info.lang_code+'">'+info.lang_name+'</option>');
-                    $("#question_lang").trigger("chosen:updated");
+
+                    $("#question_lang").trigger("change.select2");
                 }
+
+                $("#question_lang").val(selected);
+                $("#question_lang").trigger("change.select2");
 
             })
 
-            $("#question_lang").val("");
-            $("#question_lang").trigger("chosen:updated");
+
         }
 
         function createQuestion(category)
@@ -814,7 +821,7 @@
             clean_extra_section();
             clean_buttoms_question();
 
-            loadLanguages();
+            loadLanguages(user_name);
 
             var userInSession = "{{ activeUser.login }}"
 
@@ -839,7 +846,7 @@
                 $('#question_dtype').trigger('change.select2');
 
                 $("#question_lang").val(dataJson["question_lang"])
-                $('#question_lang').trigger("chosen:updated");
+                $('#question_lang').trigger("change.select2");
 
                 $("#question"+dataJson["question_dtype"]).css("display",'initial');
 

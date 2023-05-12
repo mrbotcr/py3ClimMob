@@ -1,5 +1,5 @@
-<div class="modal inmodal" id="languagesModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div id="CropParent" style="position: absolute; z-index: 10000">
+<div class="modal inmodal" id="languagesModal"  role="dialog" aria-hidden="true">
+    <div id="languagesParent" style="position: absolute; z-index: 10000">
     </div>
     <div class="modal-dialog modal-sm">
         <div class="modal-content animated bounceInRight">
@@ -8,7 +8,8 @@
                 <i class="fa fa-language modal-icon"></i>
             </div>
             <div class="modal-body">
-                {% set limiteHeight =True %}
+                {% set limiteHeight = True %}
+                {% set isModal = True %}
                 {% include 'snippets/languages/changeLanguages.jinja2' %}
             </div>
             <div class="modal-footer">

@@ -30,11 +30,12 @@ from climmob.processes import (
     getActiveProject,
     userQuestionDetailsById,
     getCategoryByIdAndUser,
-    getListOfUnusedLanguagesByUser,
+    # getListOfUnusedLanguagesByUser,
     getListOfLanguagesByUser,
     addI18nUser,
     deleteI18nUser,
     modifyI18nUserDefaultLanguage,
+    getQuestionOwner,
 )
 from climmob.views.classes import privateView
 
@@ -681,9 +682,13 @@ class qlibrary_view(privateView):
 
         try:
             questionId = int(self.request.params["questionId"])
-            seeQuestion = {"question_id": questionId, "user_name": user_name}
+            owner = getQuestionOwner(self.request, questionId)
+            seeQuestion = {"question_id": questionId, "user_name": owner}
         except:
             seeQuestion = {}
+
+        if user_name != self.user.login:
+            raise HTTPNotFound
 
         nextPage = self.request.params.get("next")
 
@@ -698,9 +703,6 @@ class qlibrary_view(privateView):
             "seeQuestion": seeQuestion,
             "nextPage": nextPage,
             "sectionActive": "questions",
-            "listOfLanguages": getListOfUnusedLanguagesByUser(
-                self.request, self.user.login
-            ),
         }
 
         return regularDict
@@ -794,6 +796,8 @@ class getUserLanguages_view(privateView):
     def processView(self):
         self.returnRawViewResult = True
 
+        userName = self.request.matchdict["user"]
+
         try:
             question_id = self.request.matchdict["questionid"]
         except:
@@ -802,7 +806,7 @@ class getUserLanguages_view(privateView):
         if self.request.method == "GET":
 
             return getListOfLanguagesByUser(
-                self.request, self.user.login, questionId=question_id
+                self.request, userName, questionId=question_id
             )
 
         return ""
@@ -910,20 +914,8 @@ class deleteUserLanguage_view(privateView):
             if not dlt:
                 return {"status": 400, "error": message}
             else:
-                self.request.session.flash(
-                    self._("The language was successfully removed")
-                )
+                # self.request.session.flash(
+                #    self._("The language was successfully removed")
+                # )
 
                 return {"status": 200}
-
-
-# class getQuestionTranslations_view(privateView):
-#     def processView(self):
-#
-#         self.returnRawViewResult = True
-#         question_id = self.request.matchdict["questionid"]
-#         lang_code = self.request.matchdict["lang"]
-#
-#         if self.request.method == "GET":
-#
-#             return getQuestionTranslation(self.request, question_id, lang_code)

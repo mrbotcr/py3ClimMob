@@ -299,6 +299,15 @@ class privateView(object):
         else:
             return HTTPFound(location=self.request.route_url("login"))
 
+        if (
+            self.request.matched_route.name
+            not in ["profile", "getUserLanguagesPreview", "addUserLanguage"]
+            and not self.user.languages
+        ):
+            return HTTPFound(
+                location=self.request.route_url("profile", _query={"help": "languages"})
+            )
+
         self.classResult["counterChat"] = counterChat(self.user.login, self.request)
         activeProjectData = getActiveProject(self.user.login, self.request)
         if activeProjectData:

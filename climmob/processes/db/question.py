@@ -36,6 +36,7 @@ __all__ = [
     "opcionOtherInQuestion",
     "userQuestionDetailsById",
     "getDefaultQuestionLanguage",
+    "getQuestionOwner",
 ]
 
 
@@ -48,6 +49,20 @@ def addQuestion(data, request):
         return True, newQuestion.question_id
     except Exception as e:
         return False, str(e)
+
+
+def getQuestionOwner(request, questionId):
+
+    result = mapFromSchema(
+        request.dbsession.query(Question.user_name)
+        .filter(Question.question_id == questionId)
+        .first()
+    )
+    if result:
+
+        return result["user_name"]
+
+    return ""
 
 
 def questionExists(user, code, request):
