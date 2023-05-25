@@ -880,6 +880,36 @@ class Techalia(Base):
     tech = relationship("Technology")
 
 
+class generalPhrases(Base):
+    __tablename__ = "general_phrases"
+
+    __table_args__ = ({"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"},)
+
+    phrase_id = Column(Integer, primary_key=True, autoincrement=True)
+    phrase_desc = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
+
+
+class I18nGeneralPhrases(Base):
+    __tablename__ = "i18n_general_phrases"
+
+    phrase_id = Column(
+        ForeignKey("general_phrases.phrase_id", ondelete="CASCADE"), primary_key=True
+    )
+    user_name = Column(
+        ForeignKey("user.user_name", ondelete="CASCADE"), primary_key=True
+    )
+    lang_code = Column(
+        ForeignKey("i18n.lang_code", ondelete="CASCADE"),
+        primary_key=True,
+        nullable=False,
+    )
+    phrase_desc = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
+
+    i18n = relationship("I18n")
+    user = relationship("User")
+    generalPhrases = relationship("generalPhrases")
+
+
 class CropTaxonomy(Base):
     __tablename__ = "croptaxonomy"
 

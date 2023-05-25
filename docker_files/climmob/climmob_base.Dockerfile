@@ -60,7 +60,7 @@ RUN go build && cp csv2xlsx /bin
 
 WORKDIR /opt
 RUN mkdir odktools-deps
-RUN git clone https://github.com/qlands/odktools.git -b stable-2.2
+RUN git clone https://github.com/qlands/odktools.git -b stable-2.4
 
 WORKDIR /opt/odktools-deps
 RUN wget https://github.com/mongodb/mongo-c-driver/releases/download/1.21.1/mongo-c-driver-1.21.1.tar.gz

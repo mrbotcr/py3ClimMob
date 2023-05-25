@@ -246,6 +246,8 @@ from climmob.views.questionTranslations import (
     changeDefaultQuestionLanguage_view,
 )
 
+from climmob.views.otherLanguages import otherLanguages_view
+
 # -------Api-------#
 
 route_list = []
@@ -397,7 +399,15 @@ def loadRoutes(config):
             "renderer": "dashboard/editprofile.jinja2",
         }
     )
-
+    # Other languages
+    routes.append(
+        addRoute(
+            "otherLanguages",
+            "/otherLanguages",
+            otherLanguages_view,
+            "otherLanguages/otherLanguages.jinja2",
+        )
+    )
     # Project routes
     routes.append(
         addRoute(

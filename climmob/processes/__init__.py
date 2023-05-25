@@ -35,3 +35,5 @@ from climmob.processes.db.i18n_user import *
 from climmob.processes.db.i18n_question import *
 from climmob.processes.db.i18n_qstoption import *
 from climmob.processes.db.prjlang import *
+from climmob.processes.db.general_phrases import *
+from climmob.processes.db.i18n_general_phrases import *

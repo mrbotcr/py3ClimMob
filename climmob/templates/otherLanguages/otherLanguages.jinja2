@@ -1,0 +1,141 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob | Other languages library") }}</title>
+{% endblock title %}
+
+{% block css %}
+    {% cssresource request,'coreresources','metro' %}
+    {% cssresource request,'coreresources','sweet' %}
+    {% cssresource request,'coreresources','toastr' %}
+    {% cssresource request,'coreresources','switch' %}
+    {% cssresource request,'coreresources','select2' %}
+    {% cssresource request,'coreresources','switchery' %}
+    {% cssresource request,'coreresources','tour' %}
+    {% cssresource request,'coreresources','icheck' %}
+
+{% endblock css %}
+
+{% block topScripts %}
+    {% jsresource request,'coreresources','sweet' %}
+    {% include 'snippets/delete.jinja2' %}
+    {% jsresource request,'coreresources','switch' %}
+    {% jsresource request,'coreresources','toastr' %}
+    {% jsresource request,'coreresources','select2' %}
+    {% jsresource request,'coreresources','switchery' %}
+    {% jsresource request,'coreresources','tour' %}
+    {% jsresource request,'coreresources','icheck' %}
+
+{% endblock topScripts %}
+
+{% block pageheading %}
+    {% set svgOfTranslations=True %}
+    {% set _title= _("Other languages") %}
+{#    {% set _linkWiki="https://climmob.net/blog/wiki/prepare-data-collection/" %}#}
+    {% include 'snippets/menuheading.jinja2' %}
+{% endblock %}
+
+{% block pagecontent %}
+
+    <style>
+
+    .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+      color: #495057;
+      background-color: #fff;
+      border-color: #dee2e6 #dee2e6 #fff;
+    }
+
+    </style>
+
+    <div class="row">
+        <div class="col-md-12 " >
+            <div class="ibox" >
+                <div class="ibox-title" >
+                    <h5>{{ _("Other languages") }}</h5>
+
+                    <div class="ibox-tools">
+                        <a class="btn btn-success btn-rounded  btn-xs modalLang" style="color: white" data-toggle="modal" data-target="#languagesModal"><i class="fa fa-plus"></i> {{ _("Add more languages") }}</a>
+                    </div>
+                </div>
+                <div class="ibox-content" >
+                    <div class="row">
+
+                        <div class="col-md-12" >
+                            <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}">
+                                <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                                <h3>{{ _("Indications") }}</h3>
+                                <p>1. {{ _("The following is a list of phrases that ClimMob uses to make indications in ODK Collect, which must be indicated in its multiple languages for a correct execution of the form in the corresponding language") }}.</p>
+                                <p>2. {{ _("For some languages there is a text suggestion, you can edit it") }}.</p>
+                                <br>
+                                <div class="tabs-container">
+                                    <ul class="nav nav-tabs" role="tablist">
+                                        {% for translation in translations %}
+                                            <li><a class="nav-link {% if loop.index ==1 %}active{% endif %}" data-toggle="tab" href="#tab{{ translation.lang_code }}">{{ translation.lang_name}}</a></li>
+                                        {% endfor %}
+                                    </ul>
+                                    <div class="tab-content" id="div_for_translations">
+
+                                        {% for translation in translations %}
+                                            <div role="tabpanel" id="tab{{ translation.lang_code }}" class="tab-pane {% if loop.index ==1 %}active{% endif %}">
+                                                <div class="panel-body">
+
+                                                    <table class="table table-striped table-bordered">
+                                                        <tr>
+                                                            <th style="max-width: 60px; width: 60px">{{ _('Phrase ID') }}</th>
+                                                            <th style="width:20%; max-width: 20%; vertical-align: middle">{{ _('Original') }}</th>
+                                                            <th style="vertical-align: middle">{{ _('Write here your personalized phrase') }}</th>
+                                                        </tr>
+
+                                                        {% for phrase in translation["translations"] %}
+                                                            <tr>
+                                                                <td>{{ phrase.id }}</td>
+                                                                <td>{{ phrase.desc }}</td>
+                                                                <td>
+                                                                    {% if phrase.id not in [16,17] %}
+                                                                        <input class="form-control txt_{{ translation.lang_code }}_{{ phrase.id }}" type="text" id="phrase_{{ translation.lang_code }}_{{ phrase.id }}" name="phrase_{{ translation.lang_code }}_{{ phrase.id }}" value="{% if phrase["translations"]["user"]["phrase_desc"] %}{{ phrase["translations"]["user"]["phrase_desc"] }}{% else %}{{ phrase["translations"]["climmob"]["phrase_desc"] }}{% endif %}" oninvalid="this.setCustomValidity('{{ _("Write the phrase.") }}')" onchange="this.setCustomValidity('')">
+                                                                    {% else %}
+                                                                        <textarea rows="4" style="width: 100%">
+                                                                            {% if phrase["translations"]["user"]["phrase_desc"] %}
+                                                                                {{ phrase["translations"]["user"]["phrase_desc"] }}
+                                                                            {% else %}
+                                                                                {{ phrase["translations"]["climmob"]["phrase_desc"] }}
+                                                                            {% endif %}
+                                                                        </textarea>
+                                                                    {% endif %}
+                                                                </td>
+                                                            </tr>
+                                                        {% endfor %}
+
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+
+                                        <div class="row text-center">
+                                            <br>
+                                            <button class="btn btn-primary" name="btn_save_translations" type="submit" id="btn_save_translations">{{ _("Save translations") }}</button>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% include 'snippets/languages/addMoreLanguages.jinja2' %}
+
+    <script>
+
+        $(".modalLang").click(function (){
+            show_carga = false;
+        })
+
+    </script>
+
+{% endblock pagecontent %}

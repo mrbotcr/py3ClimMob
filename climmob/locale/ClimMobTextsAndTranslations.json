@@ -1,0 +1,62 @@
+{
+	"1": {
+		"languages": {"en":"Tied","es": "Empate"}
+	},
+	"2": {
+		"languages": {"en":"Worse","es": "Peor"}
+	},
+	"3": {
+		"languages": {"en":"Other","es": "Otro"}
+	},
+	"4": {
+		"languages": {"en":"Better","es": "Mejor"}
+	},
+	"5": {
+		"languages": {"en":"Device IMEI", "es": "Dispositivo IMEI"}
+	},
+	"6": {
+		"languages": {"en":"Not observed","es": "No observada"}
+	},
+	"7": {
+		"languages": {"en":"End of survey", "es": "Final de la encuesta"}
+	},
+	"8": {
+		"languages": {"en":"Registration"}
+	},
+	"9": {
+		"languages": {"en":"Start of survey", "es": "Inicio de encuesta"}
+	},
+	"10": {
+		"languages": {"en":"requires a value", "es": "requiere un valor"}
+	},
+	"11": {
+		"languages": {"en":"Data collection"}
+	},
+	"12": {
+		"languages": {"en":"Add the other value here","es": "Agrega aquí el otro valor"}
+	},
+	"13": {
+		"languages": {"en":"Validation of the selected participant", "es": "Validación del participante seleccionado"}
+	},
+	"14": {
+		"languages": {"en":"The scanned Qr is incorrect, it is not for this project","es": "El Qr escaneado es incorrecto, no es para este proyecto"}
+	},
+	"15": {
+		"languages": {
+			"en":"In the following field try to write the name of the participant to filter the information and find him/her more easily.",
+			"es":"En el siguiente campo intenta escribir el nombre del participante para filtrar la información y encontrarlo más fácilmente."
+		}
+	},
+	"16": {
+		"languages": {
+			"en":"You selected package number <span style=\"color:#009551; font-weight:bold\">${QST163}</span>.<br>This package belongs to <span style=\"color:#009551; font-weight:bold\">${clc_after}</span>.",
+			"es":"Usted seleccionó el paquete número: <span style=\"color:#009551; font-weight:bold\">${QST163}</span>.<br>Este paquete pertenece a: <span style=\"color:#009551; font-weight:bold\">${clc_after}</span>."
+		}
+	},
+	"17": {
+		"languages": {
+			"en":"You scanned package number: <span style=\"color:#009551; font-weight:bold\">${clc_after}</span>.<br>This package belongs to: <span style=\"color:#009551; font-weight:bold\">${farmername}</span>.",
+			"es":"Usted escaneó el paquete número: <span style=\"color:#009551; font-weight:bold\">${clc_after}</span>.<br>Este paquete pertenece a: <span style=\"color:#009551; font-weight:bold\">${farmername}</span>."
+		}
+	}
+}

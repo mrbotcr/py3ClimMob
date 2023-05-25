@@ -54,7 +54,7 @@ def getListOfLanguagesByUser(request, userName, questionId=None):
         )
         .filter(I18nUser.lang_code == I18n.lang_code)
         .filter(I18nUser.user_name == userName)
-        .order_by(I18n.lang_name)
+        .order_by(I18nUser.lang_default.desc(), I18n.lang_name)
         .all()
     )
 

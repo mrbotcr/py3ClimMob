@@ -20,6 +20,7 @@ from climmob.models.climmobv4 import (
     I18nTechnology,
     I18nQstoption,
     I18nUser,
+    I18nGeneralPhrases,
     Package,
     Pkgcomb,
     Prjalia,
@@ -53,6 +54,7 @@ from climmob.models.climmobv4 import (
     userProject,
     CropTaxonomy,
     I18nCropTaxonomy,
+    generalPhrases,
 )
 from climmob.models.schema import *
 
