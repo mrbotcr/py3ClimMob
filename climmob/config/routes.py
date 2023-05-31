@@ -246,7 +246,11 @@ from climmob.views.questionTranslations import (
     changeDefaultQuestionLanguage_view,
 )
 
-from climmob.views.otherLanguages import otherLanguages_view
+from climmob.views.otherLanguages import (
+    otherLanguages_view,
+    saveOtherLanguages_view,
+    getOtherLanguages_view,
+)
 
 # -------Api-------#
 
@@ -406,6 +410,23 @@ def loadRoutes(config):
             "/otherLanguages",
             otherLanguages_view,
             "otherLanguages/otherLanguages.jinja2",
+        )
+    )
+    routes.append(
+        addRoute(
+            "saveOtherLanguages",
+            "/saveOtherLanguages",
+            saveOtherLanguages_view,
+            "json",
+        )
+    )
+
+    routes.append(
+        addRoute(
+            "getOtherLanguage",
+            "/language/{language}/getOtherLanguage",
+            getOtherLanguages_view,
+            "string",
         )
     )
     # Project routes

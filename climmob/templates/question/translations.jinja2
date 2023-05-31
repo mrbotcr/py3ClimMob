@@ -28,6 +28,7 @@
 {% endblock topScripts %}
 
 {% block pageheading %}
+    {% set _linkWiki="https://climmob.net/blog/wiki/other-languages/" %}
     {% set svgOfTranslations=True %}
     {% set _title= _("Add other languages") %}
     {% set extra=[[_("Library questions"),request.route_url('qlibrary', user_name=activeUser.login)],[_("Question")+" : "+ questionDetails["question_name"], request.route_url('qlibrary', user_name=activeUser.login,_query={'questionId':questionDetails["question_id"]})]] %}
@@ -162,6 +163,9 @@
                                                     {% endif %}
 
                                                     <tr>
+                                                    <td colspan="2" style="text-align: center">
+                                                        <button type="button" class="btn btn-primary" onclick="showPreview('{{ questionDetails["user_name"] }}',{{ questionDetails["question_id"] }},'{{ questionDetails["question_lang"] }}')">{{ _("Show preview") }}</button>
+                                                    </td>
                                                 </table>
                                             </div>
                                         </div>
@@ -243,26 +247,34 @@
                                                             {% if questionDetails["question_dtype"] in [5,6] %}
 
                                                                 {% for option in questionDetails["question_options"] %}
-                                                                <tr>
-                                                                    <th>{{ _('Option') }} {{ option.value_code }}</th>
-                                                                            {% set vars = {'value': ""} %}
+                                                                    <tr>
+                                                                        <th>{{ _('Option') }} {{ option.value_code }}</th>
+                                                                        {% set vars = {'value': ""} %}
 
-                                                                            {% for optionT in lang["translations"]["question_options"] %}
-                                                                                {% if optionT["value_code"] == option.value_code %}
-                                                                                    {% if vars.update({'value': optionT["value_desc"]}) %} {% endif %}
+                                                                        {% for optionT in lang["translations"]["question_options"] %}
+                                                                            {% if optionT["value_code"] == option.value_code %}
+                                                                                {% if vars.update({'value': optionT["value_desc"]}) %} {% endif %}
 
-                                                                                {% endif %}
-                                                                            {% endfor %}
+                                                                            {% endif %}
+                                                                        {% endfor %}
 
-                                                                            <td><input class="form-control txt{{ lang.lang_code }}" type="text" id="value_desc_{{ option.value_code }}_{{ lang.lang_code }}" name="value_desc_{{ option.value_code }}_{{ lang.lang_code }}" value="{{ vars.value }}" oninvalid="this.setCustomValidity('{{ _("Write the option.") }}')" onchange="this.setCustomValidity('')"></td>
+                                                                        <td><input class="form-control txt{{ lang.lang_code }}" type="text" id="value_desc_{{ option.value_code }}_{{ lang.lang_code }}" name="value_desc_{{ option.value_code }}_{{ lang.lang_code }}" value="{{ vars.value }}" oninvalid="this.setCustomValidity('{{ _("Write the option.") }}')" onchange="this.setCustomValidity('')"></td>
 
-                                                                </tr>
-                                                            {% endfor %}
+                                                                    </tr>
+                                                                {% endfor %}
 
                                                             {% endif %}
 
                                                             <tr>
+                                                            <tr>
+                                                                <td colspan="2" style="text-align: center">
+                                                                    <button type="button" class="btn btn-primary" onclick="showPreview('{{ questionDetails["user_name"] }}',{{ questionDetails["question_id"] }},'{{ lang.lang_code }}')">{{ _("Show preview") }}</button>
+                                                                </td>
+                                                            </tr>
                                                         </table>
+
+
+
                                                     </div>
                                                 </div>
                                             {% endif %}

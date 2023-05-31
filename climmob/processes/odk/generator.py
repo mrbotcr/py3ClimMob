@@ -1010,7 +1010,14 @@ def getI18nGeneralPhrase(language, textId, userName, request):
 
 
 def getTranslationOrText(
-    prjLanguages, textId, text, userOwner, request, specificLanguage=None
+    prjLanguages,
+    textId,
+    text,
+    userOwner,
+    request,
+    specificLanguage=None,
+    additionalOne=None,
+    additionalTwo=None,
 ):
 
     if not specificLanguage:
@@ -1021,9 +1028,21 @@ def getTranslationOrText(
                 dictTraduction = {}
                 dictTraduction["label"] = "label_{}".format(language["lang_code"])
                 try:
-                    dictTraduction["value"] = getI18nGeneralPhrase(
-                        language["lang_code"], textId, userOwner, request
+                    dictTraduction["value"] = (
+                        getI18nGeneralPhrase(
+                            language["lang_code"], textId, userOwner, request
+                        )
+                        + additionalOne
                     )
+
+                    if textId in ["16", "17"]:
+                        dictTraduction["value"] = (
+                            dictTraduction["value"]
+                            + getI18nGeneralPhrase(
+                                language["lang_code"], 18, userOwner, request
+                            )
+                            + additionalTwo
+                        )
                 except:
                     dictTraduction["value"] = text
 
@@ -1182,9 +1201,11 @@ def generateODKFile(
             getTranslationOrText(
                 prjLanguages,
                 "17",
-                'You scanned package number <span style="color:#009551; font-weight:bold">${clc_after}</span>.<br>This package belongs to <span style="color:#009551; font-weight:bold">${farmername}</span>.',
+                "You scanned package number:",
                 userOwner,
                 request,
+                additionalOne=' <span style="color:#009551; font-weight:bold">${clc_after}</span>.<br>',
+                additionalTwo=' <span style="color:#009551; font-weight:bold">${farmername}</span>.',
             ),
             29,
             inGroup="grp_validation",
@@ -1202,9 +1223,11 @@ def generateODKFile(
             getTranslationOrText(
                 prjLanguages,
                 "16",
-                'You selected package number <span style="color:#009551; font-weight:bold">${QST163}</span>.<br>This package belongs to <span style="color:#009551; font-weight:bold">${clc_after}</span>.',
+                "You selected package number:",
                 userOwner,
                 request,
+                additionalOne=' <span style="color:#009551; font-weight:bold">${QST163}</span>.<br>',
+                additionalTwo=' <span style="color:#009551; font-weight:bold">${clc_after}</span>',
             ),
             29,
             inGroup="grp_validation",
@@ -1886,6 +1909,12 @@ def generateAssessmentFiles(
         )
         # End
 
+        langDefault = getPrjLangDefaultInProject(projectId, request)
+        if langDefault:
+            langDefault = langDefault["lang_code"]
+        else:
+            langDefault = "default"
+
         sql = (
             " SELECT q.question_code, COALESCE(i.question_desc,q.question_desc) as question_desc,COALESCE(i.question_unit,q.question_unit) as question_unit, q.question_dtype, q.question_twoitems, "
             " a.section_id, COALESCE(i.question_posstm, q.question_posstm) as question_posstm, COALESCE(i.question_negstm ,q.question_negstm) as question_negstm, q.question_moreitems, COALESCE(i.question_perfstmt, q.question_perfstmt) as question_perfstmt, "
@@ -1893,7 +1922,7 @@ def generateAssessmentFiles(
             " FROM assdetail a, question q "
             " LEFT JOIN i18n_question i "
             " ON        q.question_id = i.question_id "
-            " AND       i.lang_code = '" + request.locale_name + "' "
+            " AND       i.lang_code = '" + langDefault + "' "
             " WHERE q.question_id = a.question_id "
             " AND a.project_id = '" + projectId + "' "
             " AND a.ass_cod = '" + assessment.ass_cod + "' "
@@ -1924,6 +1953,7 @@ def generateAssessmentFiles(
             request,
             sectionOfThePackageCode,
             listOfLabelsForPackages,
+            language=langDefault,
         )
 
         try:

@@ -89,11 +89,15 @@ def upgrade():
         },
         {
             "phrase_id": "16",
-            "phrase_desc": 'You selected package number <span style="color:#009551; font-weight:bold">${QST163}</span>.<br>This package belongs to <span style="color:#009551; font-weight:bold">${clc_after}</span>.',
+            "phrase_desc": "You selected package number:",
         },
         {
             "phrase_id": "17",
-            "phrase_desc": 'You scanned package number: <span style="color:#009551; font-weight:bold">${clc_after}</span>.<br>This package belongs to: <span style="color:#009551; font-weight:bold">${farmername}</span>.',
+            "phrase_desc": "You scanned package number:",
+        },
+        {
+            "phrase_id": "18",
+            "phrase_desc": "This package belongs to:",
         },
     ]
 
@@ -187,13 +191,19 @@ def upgrade():
             "phrase_id": "16",
             "user_name": "bioversity",
             "lang_code": "es",
-            "phrase_desc": 'Usted seleccionó el paquete número: <span style="color:#009551; font-weight:bold">${QST163}</span>.<br>Este paquete pertenece a: <span style="color:#009551; font-weight:bold">${clc_after}</span>.',
+            "phrase_desc": "Usted seleccionó el paquete número:",
         },
         {
             "phrase_id": "17",
             "user_name": "bioversity",
             "lang_code": "es",
-            "phrase_desc": 'Usted escaneó el paquete número: <span style="color:#009551; font-weight:bold">${clc_after}</span>.<br>Este paquete pertenece a: <span style="color:#009551; font-weight:bold">${farmername}</span>.',
+            "phrase_desc": "Usted escaneó el paquete número:",
+        },
+        {
+            "phrase_id": "18",
+            "user_name": "bioversity",
+            "lang_code": "es",
+            "phrase_desc": "Este paquete pertenece a:",
         },
     ]
 

@@ -193,8 +193,13 @@ def createProjectFunction(dataworking, error_summary, self):
                                         dataworking["project_languages"]
                                     ]
 
-                                for lang in dataworking["project_languages"]:
+                                for index, lang in enumerate(
+                                    dataworking["project_languages"]
+                                ):
                                     langInfo = {}
+                                    if index == 1:
+                                        langInfo["lang_default"] = 1
+
                                     langInfo["lang_code"] = lang
                                     langInfo["project_id"] = idormessage
 
@@ -482,8 +487,13 @@ class modifyProject_view(privateView):
                                             data["project_languages"]
                                         ]
 
-                                    for lang in data["project_languages"]:
+                                    for index, lang in enumerate(
+                                        data["project_languages"]
+                                    ):
                                         langInfo = {}
+                                        if index == 1:
+                                            langInfo["lang_default"] = 1
+
                                         langInfo["lang_code"] = lang
                                         langInfo["project_id"] = activeProjectId
 
