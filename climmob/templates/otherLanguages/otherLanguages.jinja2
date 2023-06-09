@@ -71,7 +71,7 @@
                             <div class="tabs-container">
                                 <ul class="nav nav-tabs" role="tablist">
                                     {% for lang in listOflanguages %}
-                                        <li><a class="nav-link {% if loop.index ==1 %}active{% endif %}" data-toggle="tab" href="#tab{{ lang.lang_code }}">{{ lang.lang_name}} {% if lang.lang_default ==1 %}({{ _("Main language") }}){% endif %}</a></li>
+                                        <li><a class="nav-link {% if loop.index ==1 %}active{% endif %}" data-toggle="tab" href="#tab{{ lang.lang_code }}">{{ lang.lang_name}}</a></li>
                                     {% endfor %}
                                 </ul>
                                 <div class="tab-content" id="div_for_translations">
@@ -85,9 +85,9 @@
                                         </div>
                                     {% endfor %}
 
-                                    <div class="row text-center">
+                                    <div class="row text-right">
                                         <br>
-                                        <button class="btn btn-primary" name="btn_save_translations" type="submit" id="btn_save_translations">{{ _("Save translations") }}</button>
+                                        <button class="btn btn-primary" name="btn_save_translations" type="submit" id="btn_save_translations" style="margin-right: 15px">{{ _("Save") }}</button>
                                     </div>
 
                                 </div>

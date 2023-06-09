@@ -7,6 +7,7 @@ __all__ = [
     "deletePrjLang",
     "deleteAllPrjLang",
     "getPrjLangDefaultInProject",
+    "languageExistInTheProject",
 ]
 
 
@@ -21,6 +22,21 @@ def getPrjLangInProject(projectId, request):
     )
 
     return mappedData
+
+
+def languageExistInTheProject(projectId, language, request):
+
+    mappedData = mapFromSchema(
+        request.dbsession.query(Prjlang)
+        .filter(Prjlang.project_id == projectId)
+        .filter(Prjlang.lang_code == language)
+        .first()
+    )
+
+    if mappedData:
+        return True
+    else:
+        return False
 
 
 def getPrjLangDefaultInProject(projectId, request):

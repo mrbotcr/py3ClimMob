@@ -160,7 +160,7 @@ RUN Rscript /root/R_packages_installation/plotrix.R && Rscript /root/R_packages_
 
 RUN Rscript /root/R_packages_installation/qvcalc.R && Rscript /root/R_packages_installation/remotes.R && Rscript /root/R_packages_installation/rmarkdown.R && Rscript /root/R_packages_installation/phantomjs.R
 
-RUN Rscript /root/R_packages_installation/gosset.R
+RUN Rscript /root/R_packages_installation/gosset.R && Rscript /root/R_packages_installation/lubridate.R && Rscript /root/R_packages_installation/ggchicklet.R
 
 RUN Rscript /root/R_packages_installation/check_R_libraries.R
 

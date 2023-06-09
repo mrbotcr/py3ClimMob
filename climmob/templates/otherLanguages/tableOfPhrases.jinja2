@@ -1,15 +1,10 @@
 
 <table class="table table-striped table-bordered">
-    <tr>
-        <th style="max-width: 60px; width: 60px">{{ _('Text ID') }}</th>
-        <th style="width:20%; max-width: 20%; vertical-align: middle">{{ _('Original (English)') }}</th>
-        <th style="vertical-align: middle">{{ _('Write here your customized text') }}</th>
-    </tr>
+
 
     {% for phrase in translations %}
         <tr>
-            <td>{{ phrase.phrase_id }}</td>
-            <td>{{ phrase.phrase_desc }}</td>
+            <td style="max-width: 400px; width: 400px">{{ phrase.phrase_desc }}</td>
             <td>
                 <input class="checksOfPhrases" type="checkbox" id="check_{{ phrase.language }}_{{ phrase.phrase_id }}" style="display: none">
                 <input class="form-control translationOfText txt_{{ phrase.language }}_{{ phrase.phrase_id }}" type="text" id="phrase_{{ phrase.language }}_{{ phrase.phrase_id }}" name="phrase_{{ phrase.language }}_{{ phrase.phrase_id }}" value="{% if phrase["translations"]["user"]["phrase_desc"] %}{{ phrase["translations"]["user"]["phrase_desc"] }}{% else %}{{ phrase["translations"]["climmob"]["phrase_desc"] }}{% endif %}" oninvalid="this.setCustomValidity('{{ _("Write the phrase.") }}')" onchange="this.setCustomValidity('')">

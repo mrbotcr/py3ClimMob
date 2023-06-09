@@ -30,6 +30,7 @@ from climmob.processes import (
     getTheProjectIdForOwner,
     getActiveProject,
     getPrjLangDefaultInProject,
+    languageExistInTheProject,
 )
 from climmob.products.forms.form import create_document_form
 from climmob.views.classes import privateView
@@ -322,6 +323,12 @@ class assessment_view(privateView):
 
             if "language" in self.request.params.keys():
                 langActive = self.request.params["language"]
+
+                if not languageExistInTheProject(
+                    activeProjectId, langActive, self.request
+                ):
+                    raise HTTPNotFound()
+
             else:
                 langActive = getPrjLangDefaultInProject(activeProjectId, self.request)
                 if langActive:

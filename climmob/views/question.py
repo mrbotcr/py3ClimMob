@@ -888,14 +888,12 @@ class changeDefaultLanguage_view(privateView):
             if added:
                 return {
                     "result": "success",
-                    "message": self._("Default language successfully updated"),
+                    "message": self._("Main language successfully updated"),
                 }
             else:
                 return {
                     "result": "error",
-                    "message": self._(
-                        "There was an error updating the default language"
-                    ),
+                    "message": self._("There was an error updating the main language"),
                 }
 
 

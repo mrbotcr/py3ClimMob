@@ -279,7 +279,7 @@
             swal(
                 {
                     title: "{{ _("Are you sure") }}?",
-                    text: "{{ _("If you change the default language, you will lose the texts of the selected language.")}}",
+                    text: "{{ _("If you change the main language, you will lose the texts of the selected language.")}}",
                     type: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#DD6B55",
@@ -300,11 +300,11 @@
                                 if (respuesta.status === 200) {
                                     location.href = window.location.href;
                                 }else{
-                                    swal("{{ _("Cancelled") }}", "{{ _("The default language is not changed") }}", "error");
+                                    swal("{{ _("Cancelled") }}", "{{ _("The main language is not changed") }}", "error");
                                 }
                             },
                             error: function (respuesta) {
-                                swal("{{ _("Cancelled") }}", "{{ _("The default language is not changed") }}", "error");
+                                swal("{{ _("Cancelled") }}", "{{ _("The main language is not changed") }}", "error");
                             }
                         });
 
@@ -356,8 +356,8 @@
                 steps: [
                         {
                             element: "#div_for_translations",
-                            title: "{{ _("Set the default language for this question") }}",
-                            content: "- {{ _("Select the default language for the displayed question") }}.<br><br>- {{ _("If the corresponding language is not in the list, click on:") }} <a class='btn btn-success btn-rounded  btn-xs modalLang' style='color: white' data-toggle='modal' data-target='#languagesModal'><i class='fa fa-plus'></i> {{ _("Add more languages") }}</a><br><br>- {{ _("Once you set the default language, you can add texts in another language.") }}",
+                            title: "{{ _("Set the main language for this question") }}",
+                            content: "- {{ _("Select the main language for the displayed question") }}.<br><br>- {{ _("If the corresponding language is not in the list, click on:") }} <a class='btn btn-success btn-rounded  btn-xs modalLang' style='color: white' data-toggle='modal' data-target='#languagesModal'><i class='fa fa-plus'></i> {{ _("Add more languages") }}</a><br><br>- {{ _("Once you set the default language, you can add texts in another language.") }}",
                             placement: "bottom"
                         }
                        ],

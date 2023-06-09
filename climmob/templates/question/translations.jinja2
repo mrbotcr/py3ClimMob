@@ -103,7 +103,7 @@
                                                 <table class="table table-striped table-bordered">
                                                     <tr>
                                                         <th style="max-width: 120px; width: 120px">{{ _('Field') }}</th>
-                                                        <th>{{ _('Description') }}</th>
+                                                        <th>{{ _('Text') }}</th>
                                                     </tr>
 
                                                     <tr>
@@ -162,11 +162,12 @@
 
                                                     {% endif %}
 
-                                                    <tr>
-                                                    <td colspan="2" style="text-align: center">
-                                                        <button type="button" class="btn btn-primary" onclick="showPreview('{{ questionDetails["user_name"] }}',{{ questionDetails["question_id"] }},'{{ questionDetails["question_lang"] }}')">{{ _("Show preview") }}</button>
-                                                    </td>
                                                 </table>
+
+                                                <div class="text-center">
+                                                    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#previewModal" onclick="showPreview('{{ questionDetails["user_name"] }}',{{ questionDetails["question_id"] }},'{{ questionDetails["question_lang"] }}')">{{ _("Preview ODK") }}</button>
+                                                </div>
+
                                             </div>
                                         </div>
                                     </div>
@@ -196,7 +197,7 @@
                                                         <table class="table table-striped table-bordered">
                                                             <tr>
                                                                 <th style="max-width: 120px; width: 120px">{{ _('Field') }}</th>
-                                                                <th>{{ _("Description") }}</th>
+                                                                <th>{{ _("Text") }}</th>
                                                             </tr>
 
                                                             <tr>
@@ -265,15 +266,11 @@
 
                                                             {% endif %}
 
-                                                            <tr>
-                                                            <tr>
-                                                                <td colspan="2" style="text-align: center">
-                                                                    <button type="button" class="btn btn-primary" onclick="showPreview('{{ questionDetails["user_name"] }}',{{ questionDetails["question_id"] }},'{{ lang.lang_code }}')">{{ _("Show preview") }}</button>
-                                                                </td>
-                                                            </tr>
                                                         </table>
 
-
+                                                        <div class="text-center">
+                                                            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#previewModal" onclick="showPreview('{{ questionDetails["user_name"] }}',{{ questionDetails["question_id"] }},'{{ lang.lang_code }}')">{{ _("Preview ODK") }}</button>
+                                                        </div>
 
                                                     </div>
                                                 </div>
@@ -282,10 +279,10 @@
                                     </div>
                                 </div>
 
-                                <div class="row text-center">
+                                <div class="row text-right">
                                     {% if questionDetails["question_lang"] and allowEditing %}
                                         <br>
-                                        <button class="btn btn-primary" name="btn_save_translations" type="submit" id="btn_save_translations">{{ _("Save translations") }}</button>
+                                        <button class="btn btn-primary" name="btn_save_translations" type="submit" id="btn_save_translations" style="margin-right: 15px">{{ _("Save") }}</button>
                                     {% endif %}
                                 </div>
                             </div>
@@ -297,19 +294,23 @@
         </div>
     </div>
 
-    <div class="row">
+    <div class="modal inmodal" id="previewModal"  role="dialog" aria-hidden="true">
 
-        <div class="col-md-3 " id="ibox_preview" style="display: none">
-            <div class="ibox">
-                <div class="ibox-title" >
-                    <h5>{{ _("Preview") }}</h5>
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content animated bounceInRight">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">{{ _('Close') }}</span></button>
+                    <h4 class="modal-title">{{  _("Preview ODK") }}</h4>
                 </div>
-                <div class="ibox-content " >
+                <div class="modal-body">
                     <div  class="text-center" id="divForPreview"></div>
                 </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">{{ _('Close') }}</button>
+                </div>
+
             </div>
         </div>
-
     </div>
 
     {% include 'snippets/languages/addMoreLanguages.jinja2' %}

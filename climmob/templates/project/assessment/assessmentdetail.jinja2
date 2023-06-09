@@ -28,8 +28,15 @@
 {% endblock %}
 
 {% block pagecontent %}
+    <style>
 
-    {% include 'snippets/project/registry/changeLanguages.jinja2' %}
+    .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+      color: #495057;
+      background-color: #fff;
+      border-color: #dee2e6 #dee2e6 #fff;
+    }
+
+    </style>
 
     {% set onlySee = False %}
 
@@ -80,22 +87,36 @@
                                     </div>
                                 </div>
                                 <div class="ibox-content" >
-                                    <div style="overflow-x: hidden; overflow-y: scroll; min-height: 375px; max-height: calc(100vh - 270px);">
-                                        {% include 'snippets/error.jinja2' %}
-                                        {% set eventClick=False %}
-                                        {% set classByUser=False %}
-                                        {% set classByRegRequired=False %}
-                                        {% set classByAssesRequired=True %}
-                                        {% set createSection=True %}
-                                        {% set jstreeName="jstree1" %}
-                                        {% set showCreator=True %}
-                                        {% set colorsUserCategories=False %}
-                                        {% set validateLanguage=True %}
-                                        {% include 'snippets/jstreeForm.jinja2'  %}
-                                        <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}" id="formFoSendInformation" style="display: none">
-                                            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
-                                            <textarea id="nestable-output" name="neworder" class="form-control" style="display:none;"></textarea>
-                                        </form>
+                                    <div class="tabs-container">
+
+                                        <ul class="nav nav-tabs" role="tablist">
+                                            {% for lang in activeProject["languages"] %}
+                                                <li><a class="nav-link {% if lang.lang_code == languageActive %}active{% endif %} btnSwitchLanguage" idOfLanguage="{{ lang.lang_code }}" data-toggle="tab" href="#tab{{ lang.lang_code }}">{{ lang.lang_name}} {% if lang.lang_default == 1 %}({{ _("Main language") }}){% endif %}</a></li>
+                                            {% endfor %}
+                                        </ul>
+                                        <div class="tab-content" >
+                                            <div role="tabpanel" id="tab{{ languageActive }}" class="tab-pane active">
+                                                <div class="panel-body">
+                                                    <div style="overflow-x: hidden; overflow-y: scroll; min-height: 375px; max-height: calc(100vh - 270px);">
+                                                        {% include 'snippets/error.jinja2' %}
+                                                        {% set eventClick=False %}
+                                                        {% set classByUser=False %}
+                                                        {% set classByRegRequired=False %}
+                                                        {% set classByAssesRequired=True %}
+                                                        {% set createSection=True %}
+                                                        {% set jstreeName="jstree1" %}
+                                                        {% set showCreator=True %}
+                                                        {% set colorsUserCategories=False %}
+                                                        {% set validateLanguage=True %}
+                                                        {% include 'snippets/jstreeForm.jinja2'  %}
+                                                        <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}" id="formFoSendInformation" style="display: none">
+                                                            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                                                            <textarea id="nestable-output" name="neworder" class="form-control" style="display:none;"></textarea>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
 
                                 </div>

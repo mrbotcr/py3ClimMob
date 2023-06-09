@@ -23,6 +23,7 @@ from climmob.processes import (
     getTheProjectIdForOwner,
     getProjectLabels,
     getPrjLangDefaultInProject,
+    languageExistInTheProject,
 )
 from climmob.products import stopTasksByProcess
 from climmob.views.classes import privateView
@@ -240,6 +241,10 @@ class registry_view(privateView):
 
         if "language" in self.request.params.keys():
             langActive = self.request.params["language"]
+
+            if not languageExistInTheProject(activeProjectId, langActive, self.request):
+                raise HTTPNotFound()
+
         else:
             langActive = getPrjLangDefaultInProject(activeProjectId, self.request)
             if langActive:

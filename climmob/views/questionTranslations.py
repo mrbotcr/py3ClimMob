@@ -234,7 +234,7 @@ class changeDefaultQuestionLanguage_view(privateView):
                 return {
                     "status": 400,
                     "error": self._(
-                        "You cannot change the default language of this question."
+                        "You cannot change the main language of this question."
                     ),
                 }
 
