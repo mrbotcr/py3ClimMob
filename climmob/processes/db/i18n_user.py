@@ -17,7 +17,25 @@ __all__ = [
     "modifyI18nUserDefaultLanguage",
     "deleteI18nUser",
     "query_languages",
+    "languageExistInI18nUser",
 ]
+
+
+def languageExistInI18nUser(language, userName, request):
+
+    mappedData = mapFromSchema(
+        request.dbsession.query(
+            I18nUser,
+        )
+        .filter(I18nUser.user_name == userName)
+        .filter(I18nUser.lang_code == language)
+        .all()
+    )
+
+    if mappedData:
+        return True
+
+    return False
 
 
 def getListOfLanguagesByUser(request, userName, questionId=None):

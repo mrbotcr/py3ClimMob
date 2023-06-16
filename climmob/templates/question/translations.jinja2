@@ -80,13 +80,13 @@
                             <div class="col-md-4 " >
                                 <div class="tabs-container">
                                     <ul class="nav nav-tabs" role="tablist">
-                                        <li><a class="nav-link active" data-toggle="tab" href="#tab{{ questionDetails["question_lang"] }}"> {{ questionDetails["lang_name"] }} ({{ _("Main language") }})</a></li>
+                                        <li><a class="nav-link active" data-toggle="tab" href="#tab{{ questionDetails["question_lang"] }}">{{ _("Main language") }}</a></li>
                                     </ul>
                                     <div class="tab-content" id="div_for_translations">
                                         <div role="tabpanel" id="tab{{ questionDetails["question_lang"] }}" class="tab-pane active">
                                             <div class="panel-body">
 
-                                                <h5>{{ _("You can change the main language here:") }}</h5>
+                                                <h5>{{ _("Change the main language here:") }}</h5>
                                                 <select id="default_lang" name="default_lang" class="form-control" style="width: 100%; !important;" {% if not allowEditing %}disabled{% endif %}>
 
                                                     {% if not questionDetails["question_lang"] %}

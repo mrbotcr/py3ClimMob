@@ -105,6 +105,8 @@ from climmob.views.Api.questions import (
     updateQuestionPerformance_view,
     updateQuestion_view,
     deleteQuestion_viewApi,
+    multiLanguageQuestion_view,
+    readMultiLanguagesFromQuestion_view,
 )
 from climmob.views.Api.questionsGroups import (
     readGroupsOfQuestions_view,
@@ -250,6 +252,15 @@ from climmob.views.otherLanguages import (
     otherLanguages_view,
     saveOtherLanguages_view,
     getOtherLanguages_view,
+)
+
+from climmob.views.Api.languages import (
+    readListOfLanguages_view,
+    addLanguageForUse_view,
+    deleteLanguage_view,
+    readListOfUnusedLanguages_view,
+    readAllGeneralPhrases_view,
+    changeGeneralPhrases_view,
 )
 
 # -------Api-------#
@@ -1157,6 +1168,35 @@ def loadRoutes(config):
 
     # --------------------------------------------------------ClimMob API--------------------------------------------------------#
 
+    # Languages
+    routes.append(
+        addRoute(
+            "readListOfLanguages",
+            "/api/readListOfLanguages",
+            readListOfLanguages_view,
+            None,
+        )
+    )
+
+    routes.append(
+        addRoute(
+            "readListOfUnusedLanguages",
+            "/api/readListOfUnusedLanguages",
+            readListOfUnusedLanguages_view,
+            None,
+        )
+    )
+
+    routes.append(
+        addRoute(
+            "addLanguageForUse", "/api/addLanguageForUse", addLanguageForUse_view, None
+        )
+    )
+
+    routes.append(
+        addRoute("deleteLanguage", "/api/deleteLanguage", deleteLanguage_view, None)
+    )
+
     # Create Project
     routes.append(
         addRoute(
@@ -1379,6 +1419,44 @@ def loadRoutes(config):
             "updatequestioncharacteristics_api",
             "/api/updateQuestionCharacteristics",
             updateQuestionCharacteristics_view,
+            None,
+        )
+    )
+
+    routes.append(
+        addRoute(
+            "readMultiLanguagesFromQuestion",
+            "/api/readMultiLanguagesFromQuestion",
+            readMultiLanguagesFromQuestion_view,
+            None,
+        )
+    )
+
+    routes.append(
+        addRoute(
+            "multiLanguageQuestion",
+            "/api/multiLanguageQuestion",
+            multiLanguageQuestion_view,
+            None,
+        )
+    )
+
+    # General phrases
+
+    routes.append(
+        addRoute(
+            "readAllGeneralPhrases",
+            "/api/readAllGeneralPhrases",
+            readAllGeneralPhrases_view,
+            None,
+        )
+    )
+
+    routes.append(
+        addRoute(
+            "changeGeneralPhrases",
+            "/api/changeGeneralPhrases",
+            changeGeneralPhrases_view,
             None,
         )
     )

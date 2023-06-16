@@ -20,8 +20,14 @@ from climmob.processes import (
     optionExistsWithName,
     opcionNAinQuestion,
     opcionOtherInQuestion,
+    languageExistInI18nUser,
+    getAllTranslationsOfQuestion,
 )
 from climmob.views.classes import apiView
+from climmob.views.questionTranslations import (
+    actionInTheTranslationOfQuestion,
+    actionInTheTranslationOfQuestionOptions,
+)
 
 
 class createQuestion_view(apiView):
@@ -43,6 +49,7 @@ class createQuestion_view(apiView):
                 "question_tied",
                 "question_notobserved",
                 "question_quantitative",
+                "question_lang",
                 "user_name",
             ]
             obligatory = [
@@ -52,6 +59,7 @@ class createQuestion_view(apiView):
                 "question_dtype",
                 "qstgroups_id",
                 "question_requiredvalue",
+                "question_lang",
             ]
             zeroOrTwo = [
                 "question_alwaysinreg",
@@ -68,6 +76,7 @@ class createQuestion_view(apiView):
             permitedKeys = True
             for key in dataworking.keys():
                 if key not in possibles:
+                    print(key)
                     permitedKeys = False
 
             obligatoryKeys = True
@@ -85,6 +94,18 @@ class createQuestion_view(apiView):
                             dataInParams = False
 
                     if dataInParams:
+
+                        if not languageExistInI18nUser(
+                            dataworking["question_lang"], self.user.login, self.request
+                        ):
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "The language does not belong to your list of languages to be used.."
+                                ),
+                            )
+                            return response
+
                         if "question_alwaysinreg" not in dataworking.keys():
                             dataworking["question_alwaysinreg"] = 0
 
@@ -309,6 +330,7 @@ class updateQuestion_view(apiView):
                 "question_notobserved",
                 "question_quantitative",
                 "qstgroups_id",
+                "question_lang",
                 "user_name",
             ]
             obligatory = ["question_id"]
@@ -350,6 +372,21 @@ class updateQuestion_view(apiView):
                         )
                         if data:
                             if editable:
+
+                                if "question_lang" in dataworking.keys():
+
+                                    if not languageExistInI18nUser(
+                                        dataworking["question_lang"],
+                                        self.user.login,
+                                        self.request,
+                                    ):
+                                        response = Response(
+                                            status=401,
+                                            body=self._(
+                                                "The language does not belong to your list of languages to be used.."
+                                            ),
+                                        )
+                                        return response
 
                                 if "question_alwaysinreg" not in dataworking.keys():
                                     dataworking["question_alwaysinreg"] = data[
@@ -1288,4 +1325,247 @@ class updateQuestionPerformance_view(apiView):
                 return response
         else:
             response = Response(status=401, body=self._("Only accepts POST method."))
+            return response
+
+
+class multiLanguageQuestion_view(apiView):
+    def processView(self):
+
+        if self.request.method == "POST":
+
+            possibles = ["question_id", "question_name", "lang_code", "user_name"]
+            obligatory = ["question_id", "question_name", "lang_code", "user_name"]
+
+            dataworking = json.loads(self.body)
+            dataworking["user_name"] = self.user.login
+
+            if not "question_id" in dataworking.keys():
+                response = Response(
+                    status=401,
+                    body=self._("The question_id parameter is required."),
+                )
+                return response
+
+            data, editable = getQuestionData(
+                self.user.login, dataworking["question_id"], self.request
+            )
+
+            if data:
+
+                if not data["question_lang"]:
+                    response = Response(
+                        status=401,
+                        body=self._(
+                            "It is not possible to translate a question without first assigning a language to it."
+                        ),
+                    )
+                    return response
+
+                if data["user_name"] != self.user.login:
+                    response = Response(
+                        status=401,
+                        body=self._(
+                            "The question is from the ClimMob library. You cannot edit it."
+                        ),
+                    )
+                    return response
+
+                if data["question_lang"] == dataworking["lang_code"]:
+                    response = Response(
+                        status=401,
+                        body=self._(
+                            "The question cannot be translated into the same language that has been defined as the main language."
+                        ),
+                    )
+                    return response
+
+                if "question_perfstmt" in dataworking.keys():
+                    if dataworking["question_perfstmt"].find("{{option}}") == -1:
+                        response = Response(
+                            status=401,
+                            body=self._(
+                                "The parameter question_perfstmt must contain the value: {{option}} in the text."
+                            ),
+                        )
+                        return response
+
+                if data["question_dtype"] not in [9, 10]:
+                    possibles.append("question_desc")
+                    obligatory.append("question_desc")
+
+                if data["question_dtype"] in [2, 3, 8]:
+                    possibles.append("question_unit")
+                    obligatory.append("question_unit")
+
+                if data["question_dtype"] in [9]:
+                    possibles.append("question_posstm")
+                    obligatory.append("question_posstm")
+                    possibles.append("question_negstm")
+                    obligatory.append("question_negstm")
+
+                if data["question_dtype"] in [10]:
+                    possibles.append("question_perfstmt")
+                    obligatory.append("question_perfstmt")
+
+                if data["question_dtype"] in [5, 6]:
+                    print("Hay que ver")
+                    options = getQuestionOptions(
+                        dataworking["question_id"], self.request
+                    )
+
+                    for op in options:
+                        possibles.append("option_{}".format(op["value_code"]))
+                        obligatory.append("option_{}".format(op["value_code"]))
+
+                permitedKeys = True
+                for key in dataworking.keys():
+                    if key not in possibles:
+                        permitedKeys = False
+
+                obligatoryKeys = True
+
+                for key in obligatory:
+                    if key not in dataworking.keys():
+                        obligatoryKeys = False
+
+                if obligatoryKeys:
+                    if permitedKeys:
+
+                        dataInParams = True
+                        for key in dataworking.keys():
+                            if dataworking[key] == "":
+                                dataInParams = False
+
+                        if dataInParams:
+
+                            if not languageExistInI18nUser(
+                                dataworking["lang_code"],
+                                self.user.login,
+                                self.request,
+                            ):
+                                response = Response(
+                                    status=401,
+                                    body=self._(
+                                        "The language does not belong to your list of languages to be used."
+                                    ),
+                                )
+                                return response
+
+                            result = actionInTheTranslationOfQuestion(self, dataworking)
+
+                            questionOptions = []
+                            for key in dataworking.keys():
+                                keyS = key.split("_")
+                                if keyS[0] == "option":
+                                    info = {}
+                                    info["question_id"] = dataworking["question_id"]
+                                    info["lang_code"] = dataworking["lang_code"]
+                                    try:
+                                        info["value_code"] = keyS[1]
+                                        info["value_desc"] = dataworking[key]
+                                        questionOptions.append(info)
+                                    except:
+                                        va = ""
+                            if questionOptions:
+                                actionInTheTranslationOfQuestionOptions(
+                                    self, questionOptions
+                                )
+
+                            if result["result"] == "success":
+                                response = Response(status=200, body=result["success"])
+                                return response
+                            else:
+                                response = Response(status=401, body=result["error"])
+                                return response
+
+                        else:
+                            response = Response(
+                                status=401, body=self._("Not all parameters have data.")
+                            )
+                            return response
+                    else:
+                        response = Response(
+                            status=401,
+                            body=self._(
+                                "Error in the parameters that you want to add."
+                            ),
+                        )
+                        return response
+                else:
+                    response = Response(
+                        status=401,
+                        body=self._(
+                            "It is not complying with the obligatory keys: {}".format(
+                                ", ".join(obligatory)
+                            )
+                        ),
+                    )
+                    return response
+            else:
+                response = Response(
+                    status=401,
+                    body=self._("You do not have a question with this ID."),
+                )
+                return response
+
+        else:
+            response = Response(status=401, body=self._("Only accepts POST method."))
+            return response
+
+
+class readMultiLanguagesFromQuestion_view(apiView):
+    def processView(self):
+
+        if self.request.method == "GET":
+            obligatory = ["question_id", "user_name"]
+
+            try:
+                dataworking = json.loads(self.body)
+            except:
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "Error in the JSON, It does not have the 'body' parameter."
+                    ),
+                )
+                return response
+            dataworking["user_name"] = self.user.login
+
+            if sorted(obligatory) == sorted(dataworking.keys()):
+                dataworking, editable = getQuestionData(
+                    dataworking["user_name"], dataworking["question_id"], self.request
+                )
+                if dataworking:
+
+                    if not dataworking["question_lang"]:
+                        response = Response(
+                            status=401,
+                            body=self._(
+                                "This question does not have a main language configured, so it does not have translations."
+                            ),
+                        )
+                        return response
+
+                    translations = getAllTranslationsOfQuestion(
+                        self.request,
+                        dataworking["user_name"],
+                        dataworking["question_id"],
+                    )
+
+                    dataworking["translations"] = translations
+
+                    response = Response(status=200, body=json.dumps(dataworking))
+                    return response
+
+                else:
+                    response = Response(
+                        status=401,
+                        body=self._("You do not have a question with this ID."),
+                    )
+                    return response
+            else:
+                response = Response(status=401, body=self._("Error in the JSON."))
+                return response
+        else:
+            response = Response(status=401, body=self._("Only accepts GET method."))
             return response

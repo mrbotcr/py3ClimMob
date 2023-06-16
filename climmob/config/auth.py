@@ -115,7 +115,9 @@ def getUserByApiKey(apiKey, request):
         .first()
     )
     if not result is None:
-        res = User(mapFromSchema(result))
+        result = mapFromSchema(result)
+        result["languages"] = getListOfLanguagesByUser(request, result["user_name"])
+        res = User(result)
 
     return res
 

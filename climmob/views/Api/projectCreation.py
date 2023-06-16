@@ -27,6 +27,8 @@ from climmob.processes import (
     deleteRegistryByProjectId,
     deleteProjectAssessments,
     getProjectTemplates,
+    addPrjLang,
+    languageExistInI18nUser,
 )
 from climmob.views.classes import apiView
 from climmob.views.project import functionCreateClone
@@ -124,6 +126,7 @@ class createProject_view(apiView):
                 "project_label_b",
                 "project_label_c",
                 "project_template",
+                "project_languages",
             ]
 
             dataworking = json.loads(self.body)
@@ -142,6 +145,19 @@ class createProject_view(apiView):
             if obligatoryKeys:
                 if permitedKeys:
 
+                    if not "project_languages" in dataworking.keys():
+                        dataworking["project_languages"] = ["en"]
+                    else:
+
+                        if type(dataworking["project_languages"]) != list:
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "The parameter project_languages must be a list."
+                                ),
+                            )
+                            return response
+
                     dataworking["user_name"] = self.user.login
                     dataworking["project_localvariety"] = 1
                     dataworking["project_regstatus"] = 0
@@ -152,7 +168,21 @@ class createProject_view(apiView):
                         if dataworking[key] == "":
                             dataInParams = False
 
-                    if dataInParams:
+                    if dataInParams and dataworking["project_languages"]:
+
+                        for lang in dataworking["project_languages"]:
+                            if not languageExistInI18nUser(
+                                lang,
+                                self.user.login,
+                                self.request,
+                            ):
+                                response = Response(
+                                    status=401,
+                                    body=self._(
+                                        "You are trying to add a language to the project that is not part of the list of languages to be used."
+                                    ),
+                                )
+                                return response
 
                         if (
                             "project_clone" in dataworking.keys()
@@ -290,11 +320,40 @@ class createProject_view(apiView):
                                             != dataworking["project_label_c"]
                                         ):
 
-                                            added, message = addProject(
+                                            added, idormessage = addProject(
                                                 dataworking, self.request
                                             )
 
                                             if added:
+
+                                                if (
+                                                    "project_languages"
+                                                    in dataworking.keys()
+                                                ):
+                                                    if dataworking["project_languages"]:
+
+                                                        for index, lang in enumerate(
+                                                            dataworking[
+                                                                "project_languages"
+                                                            ]
+                                                        ):
+                                                            langInfo = {}
+                                                            if index == 1:
+                                                                langInfo[
+                                                                    "lang_default"
+                                                                ] = 1
+
+                                                            langInfo["lang_code"] = lang
+                                                            langInfo[
+                                                                "project_id"
+                                                            ] = idormessage
+
+                                                            (
+                                                                apl,
+                                                                aplmessage,
+                                                            ) = addPrjLang(
+                                                                langInfo, self.request
+                                                            )
 
                                                 if (
                                                     "project_clone"
@@ -304,8 +363,33 @@ class createProject_view(apiView):
                                                         "slt_project_cod"
                                                     ] = dataworking["project_clone"]
 
+                                                    projectId = getTheProjectIdForOwner(
+                                                        self.user.login,
+                                                        dataworking["project_clone"],
+                                                        self.request,
+                                                    )
+
+                                                    listOfElementToInclude = [
+                                                        "registry",
+                                                        "fieldagents",
+                                                        "technologies",
+                                                        "technologyoptions",
+                                                    ]
+
+                                                    assessments = getProjectAssessments(
+                                                        projectId,
+                                                        self.request,
+                                                    )
+                                                    for assess in assessments:
+                                                        listOfElementToInclude.append(
+                                                            assess["ass_cod"]
+                                                        )
+
                                                     ok = functionCreateClone(
-                                                        self, dataworking
+                                                        self,
+                                                        projectId,
+                                                        idormessage,
+                                                        listOfElementToInclude,
                                                     )
 
                                                     response = Response(
@@ -350,7 +434,7 @@ class createProject_view(apiView):
 
                                             if not added:
                                                 response = Response(
-                                                    status=401, body=message
+                                                    status=401, body=idormessage
                                                 )
                                                 return response
                                             else:
