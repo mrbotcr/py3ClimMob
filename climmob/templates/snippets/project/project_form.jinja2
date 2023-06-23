@@ -222,7 +222,7 @@
                 </div>
                 <div class="ibox-content">
 
-                    <div class="form-group" style="margin: 5px" id="div_of_languages">
+                    <div class="form-group" style="margin: 5px" id="div_project_languages">
 
                         <label class="col-sm-4 control-label">{{ _("Select the languages in which you want to provide the form") }}</label>
                         <div class="col-sm-8">
@@ -305,7 +305,7 @@
         }
     )
 
-    $('.chosen-select').chosen({width: "100%", max_selected_options: 3});
+    $('.chosen-select').chosen({width: "100%", max_selected_options: 4});
 
     function showHelp()
     {
@@ -328,13 +328,12 @@
         tour.restart();
     }
 
-    function showHelpForLanguages(){
-        var tour = new Tour({
+    var tour2 = new Tour({
             steps: [
                     {
-                        element: "#div_of_languages",
+                        element: "#div_project_languages",
                         title: "{{ _("Define the languages for your form") }}",
-                        content: "{{ _("You can select up to 4 languages in which your users will be able to complete the information") }}",
+                        content: "{{ _("You can select up to 4 languages in which your users will be able to complete the information") }}<br><br>{{ _("If the corresponding languages are not in the list, click on:") }} <a class='btn btn-success btn-rounded  btn-xs modalLang' style='color: white' data-toggle='modal' data-target='#languagesModal'><i class='fa fa-plus'></i> {{ _("Add more languages") }}</a>",
                         placement: "top"
                     }
                    ],
@@ -343,9 +342,17 @@
             backdropContainer: 'body'
         });
 
+    function showHelpForLanguages(){
+
+        show_carga = false
         // Initialize the tour
-        tour.init();
-        tour.restart();
+        tour2.init();
+        tour2.restart();
     }
+
+    $('#languagesModal').on('show.bs.modal', function () {
+        tour2.end();
+        $("html, body").animate({ scrollTop: 0 });
+    })
 
 </script>

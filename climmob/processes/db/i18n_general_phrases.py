@@ -1,6 +1,9 @@
 from climmob.models import mapFromSchema, I18nGeneralPhrases, mapToSchema
 from climmob.processes.db.i18n_user import getListOfLanguagesByUser
-from climmob.processes.db.general_phrases import getListOfGeneralPhrases
+from climmob.processes.db.general_phrases import (
+    getListOfGeneralPhrases,
+    generalPhraseByID,
+)
 
 __all__ = [
     "getAllTranslationsOfPhrases",
@@ -69,7 +72,9 @@ def getAllTranslationsOfPhrasesByLanguage(request, userName, language):
     return phrases
 
 
-def getPhraseTranslationInLanguage(request, textId, userName, language):
+def getPhraseTranslationInLanguage(
+    request, textId, userName, language, returnSuggestion=None, returnOriginal=None
+):
 
     translation = mapFromSchema(
         request.dbsession.query(
@@ -80,6 +85,14 @@ def getPhraseTranslationInLanguage(request, textId, userName, language):
         .filter(I18nGeneralPhrases.lang_code == language)
         .first()
     )
+
+    if not translation and returnSuggestion:
+        return getPhraseTranslationInLanguage(
+            request, textId, "bioversity", language, returnOriginal=True
+        )
+
+    if not translation and returnOriginal:
+        return generalPhraseByID(request, textId)
 
     return translation
 

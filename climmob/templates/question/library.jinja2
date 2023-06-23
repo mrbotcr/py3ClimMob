@@ -62,6 +62,7 @@
                     </div>
                 </div>
                 <div class="ibox-content " >
+                    <input type="text" class="form-control form-control-sm m-b-xs" id="filterjstree1" placeholder="{{ _("Search question") }}">
                     <div id="questionsTree" style="display: none; overflow-y: scroll; max-height: calc(100vh - 310px);">
                         {% set doActions=True %}
                         {% set jstreeId="jstree1" %}
@@ -348,13 +349,22 @@
             $('#jstree1').jstree({
                 'core': {
                 },
-                'plugins': ['types'],
+                'plugins': ['types', 'dnd','search'],
                 'types' : {
                     'default': {
                         'icon': 'fa fa-folder'
                     }
+                },
+                'search':{
+                    'case_sensitive': false,
+                    'show_only_matches': true
                 }
 
+            });
+
+            $("#filterjstree1").keyup(function (){
+                var searchString = $(this).val();
+                $("#jstree1").jstree('search', searchString);
             });
 
             $('#btn_date13').datetimepicker({
@@ -845,7 +855,6 @@
                 $("#question_forms").trigger('change.select2');
                 $("#question_dtype").val(dataJson["question_dtype"])
                 $('#question_dtype').trigger('change.select2');
-
                 $("#question_lang").val(dataJson["question_lang"])
                 $('#question_lang').trigger("change.select2");
 

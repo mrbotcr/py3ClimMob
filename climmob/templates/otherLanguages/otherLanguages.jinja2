@@ -1,7 +1,7 @@
 {% extends 'dashboard/dashboard.jinja2' %}
 
 {% block title %}
-    <title>{{ _("ClimMob | Other languages library") }}</title>
+    <title>{{ _("ClimMob | Languages library") }}</title>
 {% endblock title %}
 
 {% block css %}
@@ -30,8 +30,8 @@
 
 {% block pageheading %}
     {% set svgOfTranslations=True %}
-    {% set _title= _("Other languages") %}
-    {% set _linkWiki="https://climmob.net/blog/wiki/other-languages/" %}
+    {% set _title= _("Languages") %}
+    {% set _linkWiki="https://climmob.net/blog/wiki/languages/" %}
     {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
 
@@ -51,7 +51,7 @@
         <div class="col-md-12 " >
             <div class="ibox" >
                 <div class="ibox-title" >
-                    <h5>{{ _("Other languages") }}</h5>
+                    <h5>{{ _("Languages") }}</h5>
 
                     <div class="ibox-tools">
                         <a class="btn btn-success btn-rounded  btn-xs modalLang" style="color: white" data-toggle="modal" data-target="#languagesModal"><i class="fa fa-plus"></i> {{ _("Add more languages") }}</a>

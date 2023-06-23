@@ -1,6 +1,6 @@
 from climmob.models import mapFromSchema, generalPhrases
 
-__all__ = ["getListOfGeneralPhrases", "generalPhraseExistsWithID"]
+__all__ = ["getListOfGeneralPhrases", "generalPhraseExistsWithID", "generalPhraseByID"]
 
 
 def getListOfGeneralPhrases(request):
@@ -21,3 +21,12 @@ def generalPhraseExistsWithID(request, phraseId):
         return True
 
     return False
+
+
+def generalPhraseByID(request, phraseId):
+    mappedData = mapFromSchema(
+        request.dbsession.query(generalPhrases)
+        .filter(generalPhrases.phrase_id == phraseId)
+        .first()
+    )
+    return mappedData

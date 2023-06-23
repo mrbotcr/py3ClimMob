@@ -129,10 +129,6 @@ def functionForCreateTheTriggers(schema, settings, form_repository_path, my_cnf_
 
     create_xml_file = os.path.join(form_repository_path, "create.xml")
     create_file = os.path.join(form_repository_path, "mysql_create_audit.sql")
-    print(schema)
-    print(form_repository_path)
-    print(my_cnf_file)
-    print(create_xml_file)
 
     if os.path.exists(create_xml_file):
 
@@ -198,6 +194,10 @@ def createDatabase(
     default_language=None,
     other_languages=None,
 ):
+    print("*******************3333333")
+    print(default_language)
+    print(other_languages)
+    print("**************************")
 
     if external_files is None:
         external_files = []
@@ -375,21 +375,38 @@ class ODKExcelFile(object):
     def get_options(self, option_name, new_options):
         options_to_add = []
         for element in new_options.iterchildren():
-            options_to_add.append(
-                {"code": element.get("code"), "label": element.get("label")}
-            )
+            if not self.languages:
+                options_to_add.append(
+                    {"code": element.get("code"), "label": element.get("label")}
+                )
+            else:
+                for language in self.languages:
+                    options_to_add.append(
+                        {
+                            "code": element.get("code"),
+                            "label_{}".format(language["lang_code"]): element.get(
+                                "label_{}".format(language["lang_code"])
+                            ),
+                        }
+                    )
         duplicated_list = None
         for a_list in self.option_list:
             list_same = [False] * len(options_to_add)
             if a_list["size"] == len(options_to_add) and len(options_to_add) > 0:
                 idx = 0
                 for an_option in a_list["options"]:
+                    keysao = list(an_option.keys())
+                    keysao.remove("code")
+                    keyao = keysao[0]
                     for a_new_option in options_to_add:
+                        keysano = list(a_new_option.keys())
+                        keysano.remove("code")
+                        keyano = keysano[0]
                         if (
                             an_option["code"].strip().upper()
                             == a_new_option["code"].strip().upper()
-                            and an_option["label"].strip().upper()
-                            == a_new_option["label"].strip().upper()
+                            and an_option[keyao].strip().upper()
+                            == a_new_option[keyano].strip().upper()
                         ):
                             list_same[idx] = True
                     idx = idx + 1
@@ -450,10 +467,10 @@ class ODKExcelFile(object):
             self.sheet2.write(self.choicesRow, 1, element.get("code"))
             if self.languages:
                 for language in self.languages:
-                    print(
-                        dictOfColumnsChoices["label_{}".format(language["lang_code"])]
-                    )
-                    print(element.get("label_{}".format(language["lang_code"])))
+                    # print(
+                    #     dictOfColumnsChoices["label_{}".format(language["lang_code"])]
+                    # )
+                    # print(element.get("label_{}".format(language["lang_code"])))
                     self.sheet2.write(
                         self.choicesRow,
                         dictOfColumnsChoices["label_{}".format(language["lang_code"])],
@@ -972,19 +989,28 @@ class ODKExcelFile(object):
         sheet3.write(0, 0, "form_id")
         sheet3.write(0, 1, "form_title")
         sheet3.write(0, 2, "instance_name")
+        if self.languages:
+            sheet3.write(0, 3, "default_language")
 
         sheet3.write(1, 0, self.formID)
         sheet3.write(1, 1, self.formLabel)
         sheet3.write(1, 2, self.formInstance)
+
+        if self.languages:
+            for language in self.languages:
+                if language["lang_default"] == 1:
+                    sheet3.write(
+                        1,
+                        3,
+                        "{} ({})".format(language["lang_name"], language["lang_code"]),
+                    )
 
         self.addNodeToFile(self.root, dictOfColumns, dictOfColumnsChoices)
         self.book.close()
 
 
 def renderQuestion(question, fielName, option):
-    renderedString = (
-        Environment().from_string(question[fielName]).render(pos=option + 1)
-    )
+    renderedString = Environment().from_string(question[fielName]).render(option=option)
 
     return renderedString
 
@@ -993,13 +1019,11 @@ def getI18nGeneralPhrase(language, textId, userName, request):
 
     translation = getPhraseTranslationInLanguage(request, textId, userName, language)
     if translation:
-        print("Traducción de:" + userName)
         return translation["phrase_desc"]
     else:
         if userName != "bioversity":
             return getI18nGeneralPhrase(language, textId, "bioversity", request)
         else:
-            print("Frase normal")
             translation = mapFromSchema(
                 request.dbsession.query(generalPhrases)
                 .filter(generalPhrases.phrase_id == textId)
@@ -1046,7 +1070,6 @@ def getTranslationOrText(
                 except:
                     dictTraduction["value"] = text
 
-                print(dictTraduction)
                 qstDesc.append(dictTraduction)
 
             return qstDesc
@@ -1072,6 +1095,7 @@ def translateQuestion(
         for language in prjLanguages:
             dictTraduction = {}
             dictTraduction["label"] = "label_{}".format(language["lang_code"])
+            # Esto es porque la preguntas ya vienen en el lenguaje por default, ya no hay que traducirlas
             if language["lang_default"] == 1:
                 if not requireRender:
                     dictTraduction["value"] = question[fieldName]
@@ -1741,9 +1765,13 @@ def generateRegistry(
 
     langDefault = getPrjLangDefaultInProject(projectId, request)
     if langDefault:
+        default_language = "({}){}".format(
+            langDefault["lang_code"], langDefault["lang_name"]
+        )
         langDefault = langDefault["lang_code"]
     else:
         langDefault = "default"
+        default_language = None
 
     sql = (
         "SELECT q.question_code,COALESCE(i.question_desc,q.question_desc) as question_desc,COALESCE(i.question_unit,q.question_unit) as question_unit, q.question_dtype, q.question_twoitems, "
@@ -1809,6 +1837,16 @@ def generateRegistry(
     keyQuestion = (
         request.dbsession.query(Question).filter(Question.question_regkey == 1).first()
     )
+    listLang = []
+    for lang in prjdata["languages"]:
+        if lang["lang_default"] != 1:
+            listLang.append("({}){}".format(lang["lang_code"], lang["lang_name"]))
+
+    if listLang:
+        other_languages = ",".join(listLang)
+    else:
+        other_languages = None
+
     paths = ["db", "reg"]
     state, error = createDatabase(
         xlsxFile,
@@ -1818,6 +1856,8 @@ def generateRegistry(
         "REG",
         True,
         request,
+        default_language=default_language,
+        other_languages=other_languages,
     )
 
     return not state, error
@@ -1911,6 +1951,9 @@ def generateAssessmentFiles(
 
         langDefault = getPrjLangDefaultInProject(projectId, request)
         if langDefault:
+            default_language = "({}){}".format(
+                langDefault["lang_code"], langDefault["lang_name"]
+            )
             langDefault = langDefault["lang_code"]
         else:
             langDefault = "default"
@@ -1973,6 +2016,18 @@ def generateAssessmentFiles(
             if not os.path.exists(os.path.join(path, *paths)):
                 os.makedirs(os.path.join(path, *paths))
 
+            listLang = []
+            for lang in prjdata["languages"]:
+                if lang["lang_default"] != 1:
+                    listLang.append(
+                        "({}){}".format(lang["lang_code"], lang["lang_name"])
+                    )
+
+            if listLang:
+                other_languages = ",".join(listLang)
+            else:
+                other_languages = None
+
             # Edited by Brandon -> The validation was incorrect if createDatabase
             state, error = createDatabase(
                 xlsxFile,
@@ -1982,6 +2037,8 @@ def generateAssessmentFiles(
                 "ASS" + assessment.ass_cod,
                 False,
                 request,
+                default_language=default_language,
+                other_languages=other_languages,
             )
             if not state:
                 result.append(

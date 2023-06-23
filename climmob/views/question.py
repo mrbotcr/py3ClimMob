@@ -445,6 +445,10 @@ class newQuestion_view(privateView):
 
 def actionsInquestion(self, formdata):
 
+    if "question_lang" in formdata.keys():
+        if formdata["question_lang"] == "":
+            del formdata["question_lang"]
+
     if "question_id" in formdata.keys():
         deleteAllOptionsForQuestion(formdata["question_id"], self.request)
 

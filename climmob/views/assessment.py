@@ -31,6 +31,7 @@ from climmob.processes import (
     getActiveProject,
     getPrjLangDefaultInProject,
     languageExistInTheProject,
+    getPhraseTranslationInLanguage,
 )
 from climmob.products.forms.form import create_document_form
 from climmob.views.classes import privateView
@@ -357,6 +358,12 @@ class assessment_view(privateView):
                     activeProjectId, self.request
                 ),
                 "languageActive": langActive,
+                "Better": getPhraseTranslationInLanguage(
+                    self.request, 4, self.user.login, langActive, returnSuggestion=True
+                )["phrase_desc"],
+                "Worse": getPhraseTranslationInLanguage(
+                    self.request, 2, self.user.login, langActive, returnSuggestion=True
+                )["phrase_desc"],
             }
 
 
@@ -419,6 +426,7 @@ class assessmentFormCreation_view(privateView):
                 data, finalCloseQst = getDataFormPreview(
                     self, activeProjectUser, activeProjectId, langActive, assessmentid
                 )
+
                 info = {
                     "img1": self.request.url_for_static("landing/odk.png"),
                     "img2": self.request.url_for_static("landing/odk2.png"),
@@ -428,6 +436,20 @@ class assessmentFormCreation_view(privateView):
                     "activeProject": getActiveProject(self.user.login, self.request),
                     "_": self._,
                     "showPhone": True,
+                    "Better": getPhraseTranslationInLanguage(
+                        self.request,
+                        4,
+                        self.user.login,
+                        langActive,
+                        returnSuggestion=True,
+                    )["phrase_desc"],
+                    "Worse": getPhraseTranslationInLanguage(
+                        self.request,
+                        2,
+                        self.user.login,
+                        langActive,
+                        returnSuggestion=True,
+                    )["phrase_desc"],
                 }
                 render_temp = template.render(info)
 

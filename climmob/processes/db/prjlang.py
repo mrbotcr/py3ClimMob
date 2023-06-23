@@ -42,7 +42,8 @@ def languageExistInTheProject(projectId, language, request):
 def getPrjLangDefaultInProject(projectId, request):
 
     mappedData = mapFromSchema(
-        request.dbsession.query(Prjlang)
+        request.dbsession.query(Prjlang, I18n)
+        .filter(Prjlang.lang_code == I18n.lang_code)
         .filter(Prjlang.project_id == projectId)
         .filter(Prjlang.lang_default == 1)
         .first()

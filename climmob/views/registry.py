@@ -24,6 +24,7 @@ from climmob.processes import (
     getProjectLabels,
     getPrjLangDefaultInProject,
     languageExistInTheProject,
+    getPhraseTranslationInLanguage,
 )
 from climmob.products import stopTasksByProcess
 from climmob.views.classes import privateView
@@ -273,6 +274,12 @@ class registry_view(privateView):
                 activeProjectId, self.request
             ),
             "languageActive": langActive,
+            "Better": getPhraseTranslationInLanguage(
+                self.request, 4, self.user.login, langActive, returnSuggestion=True
+            )["phrase_desc"],
+            "Worse": getPhraseTranslationInLanguage(
+                self.request, 2, self.user.login, langActive, returnSuggestion=True
+            )["phrase_desc"],
         }
 
 
@@ -340,6 +347,20 @@ class registryFormCreation_view(privateView):
                     "activeProject": getActiveProject(self.user.login, self.request),
                     "_": self._,
                     "showPhone": True,
+                    "Better": getPhraseTranslationInLanguage(
+                        self.request,
+                        4,
+                        self.user.login,
+                        langActive,
+                        returnSuggestion=True,
+                    )["phrase_desc"],
+                    "Worse": getPhraseTranslationInLanguage(
+                        self.request,
+                        2,
+                        self.user.login,
+                        langActive,
+                        returnSuggestion=True,
+                    )["phrase_desc"],
                 }
                 render_temp = template.render(info)
 
