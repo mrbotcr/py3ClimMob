@@ -26,6 +26,10 @@ def create_analysis(
         request, userOwner, projectCod, "extraoutputszip"
     )
 
+    pathDataOutput = createProductDirectory(request, userOwner, projectCod, "datajson")
+
+    pathInfoOutput = createProductDirectory(request, userOwner, projectCod, "infojson")
+
     if infosheet == "TRUE":
         pathInfosheets = createProductDirectory(
             request, userOwner, projectCod, "infosheetszip"
@@ -39,6 +43,8 @@ def create_analysis(
             path,
             pathInfosheets,
             pathExtraOutputs,
+            pathDataOutput,
+            pathInfoOutput,
             userOwner,
             projectCod,
             data,
@@ -82,6 +88,28 @@ def create_analysis(
         "Extra_outputs_" + projectCod + ".zip",
         "application/zip",
         "extraoutputszip",
+        task.id,
+        request,
+        newTask=False,
+    )
+
+    registerProductInstance(
+        projectId,
+        "datajson",
+        "Data_{}.json".format(projectCod),
+        "application/json",
+        "datajson",
+        task.id,
+        request,
+        newTask=False,
+    )
+
+    registerProductInstance(
+        projectId,
+        "infojson",
+        "Info_{}.json".format(projectCod),
+        "application/json",
+        "infojson",
         task.id,
         request,
         newTask=False,

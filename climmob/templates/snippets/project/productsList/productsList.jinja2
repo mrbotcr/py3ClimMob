@@ -156,14 +156,22 @@
                                                                                                 {% if product.product_id == "extraoutputszip" %}
                                                                                                     {{ _("Extra outputs of the report") }}
                                                                                                 {% else %}
-                                                                                                    {% if product.product_id == "climmobexplanationkit" %}
-
-                                                                                                        {% block explanation_kit_row scoped %}
-
-                                                                                                        {% endblock explanation_kit_row %}
-
+                                                                                                    {% if product.product_id == "datajson" %}
+                                                                                                        {{ _("data.json file used as input for report generation") }}
                                                                                                     {% else %}
-                                                                                                        {{ product.product_id }}
+                                                                                                        {% if product.product_id == "infojson" %}
+                                                                                                            {{ _("info.json file used as input for report generation") }}
+                                                                                                        {% else %}
+                                                                                                            {% if product.product_id == "climmobexplanationkit" %}
+
+                                                                                                                {% block explanation_kit_row scoped %}
+
+                                                                                                                {% endblock explanation_kit_row %}
+
+                                                                                                            {% else %}
+                                                                                                                {{ product.product_id }}
+                                                                                                            {% endif %}
+                                                                                                        {% endif %}
                                                                                                     {% endif %}
                                                                                                 {% endif %}
                                                                                             {% endif %}
@@ -221,7 +229,7 @@
                                 <a id="{{product.celery_taskid}}$#%%#${{product.output_id}}" class="btn btn-primary btn_datadesk" style="background-color:{{ color }}; border-color: {{ color }}"><i class="fa fa-download"></i> {{ _("Download") }}</a>
                             {% endif %}
                         {% else %}
-                            {% if  product.product_id == "reports" or product.product_id == "infosheets" or product.product_id == "infosheetszip" or product.product_id == "extraoutputszip" %}
+                            {% if  product.product_id == "reports" or product.product_id == "infosheets" or product.product_id == "infosheetszip" or product.product_id == "extraoutputszip" or product.product_id == "datajson" or product.product_id == "infojson" %}
                                 <a href="{{ request.route_url('createAnalysis') }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
                             {% else %}
                                 {% if  product.product_id != "datadesk" and product.product_id != "cards"%}
@@ -235,8 +243,7 @@
                         {% if product.state =="Pending..." %}
                             <a  onclick=" location.reload(); " class="btn btn-primary" style="background-color: #f8ac59; border-color: #f8ac59" ><i class="fa fa-refresh"></i> {{ _("Pending") }}</a>
                         {% else %}
-
-                            {% if  product.product_id == "reports" or product.product_id == "infosheets" or product.product_id == "infosheetszip" or product.product_id == "extraoutputszip"%}
+                            {% if  product.product_id == "reports" or product.product_id == "infosheets" or product.product_id == "infosheetszip" or product.product_id == "extraoutputszip" or product.product_id == "datajson" or product.product_id == "infojson"%}
                                 <a href="{{ request.route_url('createAnalysis') }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
                             {% else %}
                                 {% if  product.product_id != "datadesk" and product.product_id != "cards"%}

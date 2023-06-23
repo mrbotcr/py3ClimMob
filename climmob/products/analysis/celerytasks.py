@@ -19,6 +19,8 @@ def createReports(
     path,
     pathInfosheets,
     pathExtraOutputs,
+    pathDataOutput,
+    pathInfoOutput,
     user,
     projectid,
     data,
@@ -189,7 +191,33 @@ def createReports(
     else:
         print("The extra-outputs directory does not exist")
 
+    if os.path.exists(pathDataOutput):
+        sh.rmtree(pathDataOutput)
+
+    pathDataOutput = os.path.join(pathDataOutput, "outputs")
+    os.makedirs(pathDataOutput)
+
+    if os.path.exists(pathInfoOutput):
+        sh.rmtree(pathInfoOutput)
+
+    pathInfoOutput = os.path.join(pathInfoOutput, "outputs")
+    os.makedirs(pathInfoOutput)
+
+    os.system(
+        "mv {} {} ".format(
+            pathInputFiles + "/data.json",
+            "{}/Data_{}.json".format(pathDataOutput, projectid),
+        )
+    )
+    os.system(
+        "mv {} {} ".format(
+            pathInputFiles + "/info.json",
+            "{}/Info_{}.json".format(pathInfoOutput, projectid),
+        )
+    )
+
     sh.rmtree(pathouttemp)
+    sh.rmtree(pathInputFiles)
 
     return ""
 

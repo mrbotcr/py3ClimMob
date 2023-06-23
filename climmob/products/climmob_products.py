@@ -362,4 +362,29 @@ def register_products(config):
     )
     products.append(dataxlsx)
 
+    # INPUT FILES
+    datajson = addProduct(
+        "datajson", "data.json file used as input for report generation."
+    )
+    addMetadataToProduct(datajson, "author", "Brandon Madriz")
+    addMetadataToProduct(datajson, "version", "1.0")
+    addMetadataToProduct(
+        datajson,
+        "Licence",
+        "Copyright 2022, MrBot Software Solutions",
+    )
+    products.append(datajson)
+
+    infojson = addProduct(
+        "infojson", "info.json file used as input for report generation."
+    )
+    addMetadataToProduct(infojson, "author", "Brandon Madriz")
+    addMetadataToProduct(infojson, "version", "1.0")
+    addMetadataToProduct(
+        infojson,
+        "Licence",
+        "Copyright 2022, MrBot Software Solutions",
+    )
+    products.append(infojson)
+
     return products
