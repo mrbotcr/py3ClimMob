@@ -67,7 +67,7 @@
                                         {% set classByRegRequired=False %}
                                         {% set showCreator=True %}
                                         {% set colorsUserCategories=False %}
-{#                                        {% set showTranslate=False %}#}
+                                        {% set next =request.url %}
                                         {% include 'snippets/jstreeQuestions.jinja2' %}
                                     </div>
                                 </div>
@@ -108,6 +108,7 @@
                                                         {% set showCreator=True %}
                                                         {% set colorsUserCategories=False %}
                                                         {% set validateLanguage=True %}
+                                                        {% set next =request.url %}
                                                         {% include 'snippets/jstreeForm.jinja2'  %}
                                                         <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}" id="formFoSendInformation" style="display: none">
                                                             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">

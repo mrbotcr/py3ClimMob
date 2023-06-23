@@ -25,6 +25,7 @@ class questionTranslations_view(privateView):
     def processView(self):
         userOwner = self.request.matchdict["user"]
         questionId = self.request.matchdict["questionid"]
+        nextPage = self.request.params.get("next")
 
         if self.request.method == "POST":
 
@@ -77,9 +78,7 @@ class questionTranslations_view(privateView):
             "translations": getAllTranslationsOfQuestion(
                 self.request, userOwner, questionId
             ),
-            # "listOfLanguages": getListOfUnusedLanguagesByUser(
-            #    self.request, self.user.login
-            # ),
+            "nextPage": nextPage,
         }
 
 

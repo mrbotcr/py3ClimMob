@@ -64,6 +64,10 @@
                     <h5>{{ _("Add other languages") }}</h5>
 
                     <div class="ibox-tools">
+                        {% if nextPage %}
+                            <a class="btn btn-success btn-rounded  btn-xs" style="color: white" href="{{ nextPage }}"><i class="fa fa-reply"></i> {{ _('Back to the project') }}</a>
+                        {% endif %}
+
                         <a class="btn btn-success btn-rounded  btn-xs modalLang" style="color: white" data-toggle="modal" data-target="#languagesModal"><i class="fa fa-plus"></i> {{ _("Add more languages") }}</a>
                     </div>
                 </div>
