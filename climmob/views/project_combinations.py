@@ -281,6 +281,7 @@ class projectCombinations_view(privateView):
                         projectDetails["project_label_b"],
                         projectDetails["project_label_c"],
                     ],
+                    projectDetails["languages"],
                 )
 
                 if startIsOk:
@@ -304,7 +305,9 @@ class projectCombinations_view(privateView):
                     }
 
 
-def startTheRegistry(self, userOwner, projectId, projectCod, listOfLabelsForPackages):
+def startTheRegistry(
+    self, userOwner, projectId, projectCod, listOfLabelsForPackages, languages
+):
     locale = self.request.locale_name
 
     sectionOfThePackageCode = getTheGroupOfThePackageCode(projectId, self.request)
@@ -334,7 +337,19 @@ def startTheRegistry(self, userOwner, projectId, projectCod, listOfLabelsForPack
         )
         time.sleep(1)
 
-        data, finalCloseQst = getDataFormPreview(self, userOwner, projectId)
+        if languages:
+            for lang in languages:
+                data, finalCloseQst = getDataFormPreview(
+                    self, userOwner, projectId, language=lang["lang_code"]
+                )
+
+                lang["Data"] = data
+
+            dataPreviewInMultipleLanguages = languages
+        else:
+            data, finalCloseQst = getDataFormPreview(self, userOwner, projectId)
+            dataPreviewInMultipleLanguages = [{"lang_name": "Default", "Data": data}]
+
         create_document_form(
             self.request,
             locale,
@@ -343,7 +358,7 @@ def startTheRegistry(self, userOwner, projectId, projectCod, listOfLabelsForPack
             projectCod,
             "Registration",
             "",
-            data,
+            dataPreviewInMultipleLanguages,
             packages,
             listOfLabelsForPackages,
         )

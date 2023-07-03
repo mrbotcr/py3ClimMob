@@ -15,10 +15,14 @@ def create_document_form(
     projectCod,
     form,
     code,
-    formGroupAndQuestions,
+    dataPreviewInMultipleLanguages,
     packages,
     listOfLabels,
 ):
+    settings = {}
+    for key, value in request.registry.settings.items():
+        if isinstance(value, str):
+            settings[key] = value
     # We create the plugin directory if it does not exists and return it
     # The path user.repository in development.ini/user/project/products/product and
     # user.repository in development.ini/user/project/products/product/outputs
@@ -30,11 +34,12 @@ def create_document_form(
             userOwner,
             path,
             projectCod,
-            formGroupAndQuestions,
+            dataPreviewInMultipleLanguages,
             form,
             code,
             packages,
             listOfLabels,
+            settings,
         ),
         queue="ClimMob",
     )

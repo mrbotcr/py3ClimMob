@@ -99,6 +99,82 @@ def upgrade():
             "phrase_id": "18",
             "phrase_desc": "This package belongs to:",
         },
+        {
+            "phrase_id": "19",
+            "phrase_desc": "Get GPS point",
+        },
+        {
+            "phrase_id": "20",
+            "phrase_desc": "Latitude",
+        },
+        {
+            "phrase_id": "21",
+            "phrase_desc": "Longitude",
+        },
+        {
+            "phrase_id": "22",
+            "phrase_desc": "Altitude",
+        },
+        {
+            "phrase_id": "23",
+            "phrase_desc": "Accuracy",
+        },
+        {
+            "phrase_id": "24",
+            "phrase_desc": "Get barcode",
+        },
+        {
+            "phrase_id": "25",
+            "phrase_desc": "Note",
+        },
+        {
+            "phrase_id": "26",
+            "phrase_desc": "Take picture",
+        },
+        {
+            "phrase_id": "27",
+            "phrase_desc": "Choose image",
+        },
+        {
+            "phrase_id": "28",
+            "phrase_desc": "Record sound",
+        },
+        {
+            "phrase_id": "29",
+            "phrase_desc": "Choose sound",
+        },
+        {
+            "phrase_id": "30",
+            "phrase_desc": "Play sound",
+        },
+        {
+            "phrase_id": "31",
+            "phrase_desc": "Record video",
+        },
+        {
+            "phrase_id": "32",
+            "phrase_desc": "Choose video",
+        },
+        {
+            "phrase_id": "33",
+            "phrase_desc": "Play video",
+        },
+        {
+            "phrase_id": "34",
+            "phrase_desc": "Select date",
+        },
+        {
+            "phrase_id": "35",
+            "phrase_desc": "Date",
+        },
+        {
+            "phrase_id": "36",
+            "phrase_desc": "Select time",
+        },
+        {
+            "phrase_id": "37",
+            "phrase_desc": "Time",
+        },
     ]
 
     general_phrases = table(
@@ -204,6 +280,120 @@ def upgrade():
             "user_name": "bioversity",
             "lang_code": "es",
             "phrase_desc": "Este paquete pertenece a:",
+        },
+        {
+            "phrase_id": "19",
+            "user_name": "bioversity",
+            "lang_code": "es",
+            "phrase_desc": "Obtener punto GPS",
+        },
+        {
+            "phrase_id": "20",
+            "user_name": "bioversity",
+            "lang_code": "es",
+            "phrase_desc": "Latitud",
+        },
+        {
+            "phrase_id": "21",
+            "user_name": "bioversity",
+            "lang_code": "es",
+            "phrase_desc": "Longitud",
+        },
+        {
+            "phrase_id": "22",
+            "user_name": "bioversity",
+            "lang_code": "es",
+            "phrase_desc": "Altitud",
+        },
+        {
+            "phrase_id": "23",
+            "user_name": "bioversity",
+            "lang_code": "es",
+            "phrase_desc": "Precisión",
+        },
+        {
+            "phrase_id": "24",
+            "user_name": "bioversity",
+            "lang_code": "es",
+            "phrase_desc": "Obtener código de barras",
+        },
+        {
+            "phrase_id": "25",
+            "user_name": "bioversity",
+            "lang_code": "es",
+            "phrase_desc": "Nota",
+        },
+        {
+            "phrase_id": "26",
+            "user_name": "bioversity",
+            "lang_code": "es",
+            "phrase_desc": "Tomar una foto",
+        },
+        {
+            "phrase_id": "27",
+            "user_name": "bioversity",
+            "lang_code": "es",
+            "phrase_desc": "Elegir imagen",
+        },
+        {
+            "phrase_id": "28",
+            "user_name": "bioversity",
+            "lang_code": "es",
+            "phrase_desc": "Grabar audio",
+        },
+        {
+            "phrase_id": "29",
+            "user_name": "bioversity",
+            "lang_code": "es",
+            "phrase_desc": "Elejir audio",
+        },
+        {
+            "phrase_id": "30",
+            "user_name": "bioversity",
+            "lang_code": "es",
+            "phrase_desc": "Reproducir audio",
+        },
+        {
+            "phrase_id": "31",
+            "user_name": "bioversity",
+            "lang_code": "es",
+            "phrase_desc": "Grabar video",
+        },
+        {
+            "phrase_id": "32",
+            "user_name": "bioversity",
+            "lang_code": "es",
+            "phrase_desc": "Elejir video",
+        },
+        {
+            "phrase_id": "33",
+            "user_name": "bioversity",
+            "lang_code": "es",
+            "phrase_desc": "Reproducir video",
+        },
+        {
+            "phrase_id": "34",
+            "user_name": "bioversity",
+            "lang_code": "es",
+            "phrase_desc": "Seleccionar fecha",
+        },
+        {
+            "phrase_id": "35",
+            "user_name": "bioversity",
+            "lang_code": "es",
+            "phrase_desc": "Fecha",
+        },
+        {
+            "phrase_id": "36",
+            "user_name": "bioversity",
+            "lang_code": "es",
+            "phrase_desc": "Seleccionar hora",
+        },
+        {
+            "phrase_id": "37",
+            "user_name": "bioversity",
+            "lang_code": "es",
+            "phrase_desc": "Hora",
         },
     ]
 

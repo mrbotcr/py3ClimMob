@@ -73,11 +73,23 @@ def getAllTranslationsOfPhrasesByLanguage(request, userName, language):
 
 
 def getPhraseTranslationInLanguage(
-    request, textId, userName, language, returnSuggestion=None, returnOriginal=None
+    request,
+    textId,
+    userName,
+    language,
+    returnSuggestion=None,
+    returnOriginal=None,
+    dbsession=None,
 ):
+    _DBsession_ = None
+
+    if request and not dbsession:
+        _DBsession_ = request.dbsession
+    if dbsession and not request:
+        _DBsession_ = dbsession
 
     translation = mapFromSchema(
-        request.dbsession.query(
+        _DBsession_.query(
             I18nGeneralPhrases,
         )
         .filter(I18nGeneralPhrases.phrase_id == textId)
@@ -88,11 +100,16 @@ def getPhraseTranslationInLanguage(
 
     if not translation and returnSuggestion:
         return getPhraseTranslationInLanguage(
-            request, textId, "bioversity", language, returnOriginal=True
+            request,
+            textId,
+            "bioversity",
+            language,
+            returnOriginal=True,
+            dbsession=dbsession,
         )
 
     if not translation and returnOriginal:
-        return generalPhraseByID(request, textId)
+        return generalPhraseByID(request, textId, dbsession=dbsession)
 
     return translation
 

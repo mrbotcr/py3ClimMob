@@ -1308,6 +1308,7 @@ def generateStructureForInterfaceForms(
                 if questionData["question_dtype"] == 10:
                     for opt in range(0, numComb):
                         code = chr(65 + opt)
+                        print("Esteeeeeeeeeeeeeeeeeee*************************89")
                         renderedString = (
                             Environment()
                             .from_string(questionData["question_perfstmt"])

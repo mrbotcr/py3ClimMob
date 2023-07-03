@@ -432,7 +432,7 @@
 
         function showPreview(user_name, question_id, language)
         {
-            var URL = "{{ request.route_url('getUserQuestionPreviewInCustomLanguage',user="__user_name__", questionid="__questionid__", language="__language__") }}"
+            var URL = "{{ request.route_url('getUserQuestionPreview',user="__user_name__", questionid="__questionid__", _query={"language":"__language__"}) }}"
             URL = URL.replace("__user_name__", user_name).replace("__questionid__", question_id).replace("__language__", language)
 
             $.get(URL, function (data, status) {

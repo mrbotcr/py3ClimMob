@@ -35,15 +35,15 @@
 
                 {% if item.question_dtype == 4 or item.question_dtype == 11 or item.question_dtype == 12 or item.question_dtype == 27 %}
                     {% if showPhone %}
-                        <button type="submit" class="previewElement"  style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Get GPS point") }}</button>
+                        <button type="submit" class="previewElement"  style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ GetGPSPoint }}</button>
                     {% else %}
-                        <h4 style="font-family:sans-serif; color: #000000" >{{ _("Latitude") }}:</h4>
+                        <h4 style="font-family:sans-serif; color: #000000" >{{ Latitude }}:</h4>
                         <input type="text" style="font-family:sans-serif; font-size: 16px;width: 100%; border: none; border-bottom: 2px solid black;">
-                        <h4 style="font-family:sans-serif; color: #000000" >{{ _("Longitude") }}:</h4>
+                        <h4 style="font-family:sans-serif; color: #000000" >{{ Longitude }}:</h4>
                         <input type="text" style="font-family:sans-serif; font-size: 16px;width: 100%; border: none; border-bottom: 2px solid black;">
-                        <h4 style="font-family:sans-serif; color: #000000" >{{ _("Altitude") }}:</h4>
+                        <h4 style="font-family:sans-serif; color: #000000" >{{ Altitude }}:</h4>
                         <input type="text" style="font-family:sans-serif; font-size: 16px;width: 100%; border: none; border-bottom: 2px solid black;">
-                        <h4 style="font-family:sans-serif; color: #000000" >{{ _("Accuracy") }}:</h4>
+                        <h4 style="font-family:sans-serif; color: #000000" >{{ Accuracy }}:</h4>
                         <input type="text" style="font-family:sans-serif; font-size: 16px;width: 100%; border: none; border-bottom: 2px solid black;">
 
                     {% endif %}
@@ -75,10 +75,10 @@
                         <label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm{{ item.question_id }}' value='2'> {% if isOneProject %} {{ activeProject["project_label_b"] }}{% else %}{{ _("Option") }} B {% endif %}<hr style='margin: 10px 0px 10px 0px'></label><br>
                         <label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm{{ item.question_id }}' value='3'> {% if isOneProject %} {{ activeProject["project_label_c"] }}{% else %}{{ _("Option") }} C {% endif %}<hr style='margin: 10px 0px 10px 0px'></label><br>
                         {% if item.question_tied == 1%}
-                            <label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm{{ item.question_id }}' value='4'> {{ _("Tied") }}<hr style='margin: 10px 0px 10px 0px'></label><br>
+                            <label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm{{ item.question_id }}' value='4'> {{ Tied }}<hr style='margin: 10px 0px 10px 0px'></label><br>
                         {% endif %}
                         {% if item.question_notobserved == 1 %}
-                            <label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm{{ item.question_id }}' value='5'> {{ _("Not observed") }}<hr style='margin: 10px 0px 10px 0px'></label><br>
+                            <label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='posstm{{ item.question_id }}' value='5'> {{ NotObserved }}<hr style='margin: 10px 0px 10px 0px'></label><br>
                         {% endif %}
                         <hr style='margin: 10px 0px 10px 0px'>
                         <h3 style='font-family:sans-serif; color: #000000'>{% if item.question_reqinreg == 1 or item.question_requiredvalue ==1%}<strong style="color: red" class="preview_required">*</strong>{% endif %}<strong>{{ item.question_negstm }}</strong></h3>
@@ -86,10 +86,10 @@
                         <label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm{{ item.question_id }}' value='2'> {% if isOneProject %} {{ activeProject["project_label_b"] }}{% else %}{{ _("Option") }} B {% endif %}<hr style='margin: 10px 0px 10px 0px'></label><br>
                         <label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm{{ item.question_id }}' value='3'> {% if isOneProject %} {{ activeProject["project_label_c"] }}{% else %}{{ _("Option") }} C {% endif %}<hr style='margin: 10px 0px 10px 0px'></label><br>
                         {% if item.question_tied == 1%}
-                            <label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm{{ item.question_id }}' value='4'> {{ _("Tied") }}<hr style='margin: 10px 0px 10px 0px'></label><br>
+                            <label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm{{ item.question_id }}' value='4'> {{ Tied }}<hr style='margin: 10px 0px 10px 0px'></label><br>
                         {% endif %}
                         {% if item.question_notobserved == 1 %}
-                            <label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm{{ item.question_id }}' value='5'> {{ _("Not observed") }}<hr style='margin: 10px 0px 10px 0px'></label><br>
+                            <label class='radio-inline  control-label' for='male' style='color: black;font-family:sans-serif; font-size: 16px; width: 100%'><input type='radio' name='negstm{{ item.question_id }}' value='5'> {{ NotObserved }}<hr style='margin: 10px 0px 10px 0px'></label><br>
                         {% endif %}
                     </div>
                     <hr style='margin: 10px 0px 10px 0px'>
@@ -128,9 +128,9 @@
                         </div>
                     {% else %}
                         {% if showPhone %}
-                            <button type="submit" class="previewElement"  style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Get Barcode") }}</button>
+                            <button type="submit" class="previewElement"  style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ GetBarcode }}</button>
                         {% else %}
-                            <h4 style="font-family:sans-serif; color: #000000" >{{ _("Note") }}:</h4>
+                            <h4 style="font-family:sans-serif; color: #000000" >{{ Note }}:</h4>
                             <input type="text" style="font-family:sans-serif; font-size: 16px;width: 100%; border: none; border-bottom: 2px solid black;">
                         {% endif %}
                     {% endif %}
@@ -140,12 +140,12 @@
                 {% if item.question_dtype == 16 %}
                     {% if showPhone %}
                         <div class="previewElement" >
-                            <button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Take Picture") }}</button>
+                            <button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ TakePicture }}</button>
                             <br><br>
-                            <button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Choose Image") }}</button>
+                            <button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ ChooseImage }}</button>
                         </div>
                     {% else %}
-                        <h4 style="font-family:sans-serif; color: #000000" >{{ _("Note") }}:</h4>
+                        <h4 style="font-family:sans-serif; color: #000000" >{{ Note }}:</h4>
                         <input type="text" style="font-family:sans-serif; font-size: 16px;width: 100%; border: none; border-bottom: 2px solid black;">
                     {% endif %}
                     <hr style='margin: 10px 0px 10px 0px'>
@@ -154,14 +154,14 @@
                 {% if item.question_dtype == 17 %}
                     {% if showPhone %}
                         <div class="previewElement " >
-                            <button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Record Sound") }}</button>
+                            <button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ RecordSound }}</button>
                             <br><br>
-                            <button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Choose Sound") }}</button>
+                            <button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ ChooseSound }}</button>
                             <br><br>
-                            <button disabled type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Play Sound") }}</button>
+                            <button disabled type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ PlaySound }}</button>
                         </div>
                     {% else %}
-                        <h4 style="font-family:sans-serif; color: #000000" >{{ _("Note") }}:</h4>
+                        <h4 style="font-family:sans-serif; color: #000000" >{{ Note }}:</h4>
                         <input type="text" style="font-family:sans-serif; font-size: 16px;width: 100%; border: none; border-bottom: 2px solid black;">
                     {% endif %}
                     <hr style='margin: 10px 0px 10px 0px'>
@@ -170,14 +170,14 @@
                 {% if item.question_dtype == 18 %}
                     {% if showPhone %}
                         <div class="previewElement " >
-                            <button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Record Video") }}</button>
+                            <button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ RecordVideo }}</button>
                             <br><br>
-                            <button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Choose Video") }}</button>
+                            <button type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ ChooseVideo }}</button>
                             <br><br>
-                            <button disabled type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Play Video") }}</button>
+                            <button disabled type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ PlayVideo }}</button>
                         </div>
                     {% else %}
-                        <h4 style="font-family:sans-serif; color: #000000" >{{ _("Note") }}:</h4>
+                        <h4 style="font-family:sans-serif; color: #000000" >{{ Note }}:</h4>
                         <input type="text" style="font-family:sans-serif; font-size: 16px;width: 100%; border: none; border-bottom: 2px solid black;">
                     {% endif %}
                     <hr style='margin: 10px 0px 10px 0px'>
@@ -187,10 +187,9 @@
 
                     <div class="previewElement ">
                         {% if showPhone %}
-                            <button id="btn_date13" type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Select date") }}</button>
-                            <label id="txt_date13" style="font-family:sans-serif; font-size: 16px;font-weight: initial; width: 100%; color:#000000;">{{ _("No date selected") }}</label>
+                            <button id="btn_date13" type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ SelectDate }}</button>
                         {% else %}
-                            <h4 style="font-family:sans-serif; color: #000000" >{{ _("Date") }}:</h4>
+                            <h4 style="font-family:sans-serif; color: #000000" >{{ Date }}:</h4>
                             <input type="text" style="font-family:sans-serif; font-size: 16px;width: 100%; border: none; border-bottom: 2px solid black;">
                         {% endif %}
                     </div>
@@ -202,10 +201,9 @@
 
                     <div class="previewElement ">
                         {% if showPhone %}
-                            <button id="btn_time14" type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Select time") }}</button>
-                            <label id="txt_time14" style="font-family:sans-serif; font-size: 16px;font-weight: initial; width: 100%; color:#000000;">{{ _("No time selected") }}</label>
+                            <button id="btn_time14" type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ SelectTime }}</button>
                         {% else %}
-                            <h4 style="font-family:sans-serif; color: #000000" >{{ _("Time") }}:</h4>
+                            <h4 style="font-family:sans-serif; color: #000000" >{{ Time }}:</h4>
                             <input type="text" style="font-family:sans-serif; font-size: 16px;width: 100%; border: none; border-bottom: 2px solid black;">
                         {% endif %}
 
@@ -216,18 +214,16 @@
                 {% if item.question_dtype == 15 %}
                     <div class="previewElement ">
                         {% if showPhone %}
-                            <button id="btn_date15" type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Select date") }}</button>
-                            <label id="txt_date15" style="font-family:sans-serif; font-size: 16px;font-weight: initial; width: 100%; color:#000000;">{{ _("No date selected") }}</label>
+                            <button id="btn_date15" type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ SelectDate }}</button>
                         {% else %}
-                            <h4 style="font-family:sans-serif; color: #000000" >{{ _("Date") }}:</h4>
+                            <h4 style="font-family:sans-serif; color: #000000" >{{ Date }}:</h4>
                             <input type="text" style="font-family:sans-serif; font-size: 16px;width: 100%; border: none; border-bottom: 2px solid black;">
                         {% endif %}
 
                         {% if showPhone %}
-                            <button id="btn_time15" type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ _("Select time") }}</button>
-                            <label id="txt_time15" style="font-family:sans-serif; font-size: 16px;font-weight: initial; width: 100%; color:#000000;">{{ _("No time selected") }}</label>
+                            <button id="btn_time15" type="submit" style="font-family:sans-serif; font-size: 16px;padding: 9px 32px;border: none;width: 100%; color:#000000; background-color: #d6d7d7">{{ SelectTime }}</button>
                         {% else %}
-                            <h4 style="font-family:sans-serif; color: #000000" >{{ _("Time") }}:</h4>
+                            <h4 style="font-family:sans-serif; color: #000000" >{{ Time }}:</h4>
                             <input type="text" style="font-family:sans-serif; font-size: 16px;width: 100%; border: none; border-bottom: 2px solid black;">
                         {% endif %}
                     </div>

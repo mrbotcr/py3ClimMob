@@ -149,6 +149,7 @@ class generateProductView(privateView):
         processname = self.request.matchdict["processname"]
 
         activeProjectData = getActiveProject(self.user.login, self.request)
+        languages = activeProjectData["languages"]
 
         if not activeProjectData:
             raise HTTPNotFound()
@@ -323,11 +324,29 @@ class generateProductView(privateView):
                 self.request,
             )
             if processname == "create_from_Registration_":
-                data, finalCloseQst = getDataFormPreview(
-                    self,
-                    activeProjectData["owner"]["user_name"],
-                    activeProjectData["project_id"],
-                )
+
+                if languages:
+                    for lang in languages:
+                        data, finalCloseQst = getDataFormPreview(
+                            self,
+                            activeProjectData["owner"]["user_name"],
+                            activeProjectData["project_id"],
+                            language=lang["lang_code"],
+                        )
+
+                        lang["Data"] = data
+
+                    dataPreviewInMultipleLanguages = languages
+                else:
+                    data, finalCloseQst = getDataFormPreview(
+                        self,
+                        activeProjectData["owner"]["user_name"],
+                        activeProjectData["project_id"],
+                    )
+                    dataPreviewInMultipleLanguages = [
+                        {"lang_name": "Default", "Data": data}
+                    ]
+
                 create_document_form(
                     self.request,
                     self.request.locale_name,
@@ -336,18 +355,37 @@ class generateProductView(privateView):
                     activeProjectData["project_cod"],
                     "Registration",
                     "",
-                    data,
+                    dataPreviewInMultipleLanguages,
                     packages,
                     listOfLabels,
                 )
             else:
                 assessment_id = processname.split("_")[3]
-                data, finalCloseQst = getDataFormPreview(
-                    self,
-                    activeProjectData["owner"]["user_name"],
-                    activeProjectData["project_id"],
-                    assessment_id,
-                )
+
+                if languages:
+                    for lang in languages:
+                        data, finalCloseQst = getDataFormPreview(
+                            self,
+                            activeProjectData["owner"]["user_name"],
+                            activeProjectData["project_id"],
+                            assessmentid=assessment_id,
+                            language=lang["lang_code"],
+                        )
+
+                        lang["Data"] = data
+
+                    dataPreviewInMultipleLanguages = languages
+                else:
+                    data, finalCloseQst = getDataFormPreview(
+                        self,
+                        activeProjectData["owner"]["user_name"],
+                        activeProjectData["project_id"],
+                        assessmentid=assessment_id,
+                    )
+                    dataPreviewInMultipleLanguages = [
+                        {"lang_name": "Default", "Data": data}
+                    ]
+
                 create_document_form(
                     self.request,
                     self.request.locale_name,
@@ -356,7 +394,7 @@ class generateProductView(privateView):
                     activeProjectData["project_cod"],
                     "Assessment",
                     assessment_id,
-                    data,
+                    dataPreviewInMultipleLanguages,
                     packages,
                     listOfLabels,
                 )

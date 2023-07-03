@@ -194,10 +194,6 @@ def createDatabase(
     default_language=None,
     other_languages=None,
 ):
-    print("*******************3333333")
-    print(default_language)
-    print(other_languages)
-    print("**************************")
 
     if external_files is None:
         external_files = []
@@ -1009,8 +1005,13 @@ class ODKExcelFile(object):
         self.book.close()
 
 
-def renderQuestion(question, fielName, option):
-    renderedString = Environment().from_string(question[fielName]).render(option=option)
+def renderQuestion(question, fielName, option, value=None):
+    if value:
+        renderedString = Environment().from_string(value).render(option=option)
+    else:
+        renderedString = (
+            Environment().from_string(question[fielName]).render(option=option)
+        )
 
     return renderedString
 
@@ -1052,22 +1053,24 @@ def getTranslationOrText(
                 dictTraduction = {}
                 dictTraduction["label"] = "label_{}".format(language["lang_code"])
                 try:
-                    dictTraduction["value"] = (
-                        getI18nGeneralPhrase(
-                            language["lang_code"], textId, userOwner, request
-                        )
-                        + additionalOne
+                    val = getI18nGeneralPhrase(
+                        language["lang_code"], textId, userOwner, request
                     )
+                    if additionalOne:
+                        val = val + additionalOne
+
+                    dictTraduction["value"] = val
 
                     if textId in ["16", "17"]:
-                        dictTraduction["value"] = (
-                            dictTraduction["value"]
-                            + getI18nGeneralPhrase(
-                                language["lang_code"], 18, userOwner, request
-                            )
-                            + additionalTwo
+                        val2 = dictTraduction["value"] + getI18nGeneralPhrase(
+                            language["lang_code"], 18, userOwner, request
                         )
+                        if additionalTwo:
+                            val2 = val2 + additionalTwo
+
+                        dictTraduction["value"] = val2
                 except:
+                    print("ERROR:******************************52****************")
                     dictTraduction["value"] = text
 
                 qstDesc.append(dictTraduction)
@@ -1088,7 +1091,6 @@ def translateQuestion(
     requireRender=False,
     optionRender="",
 ):
-
     if prjLanguages:
         qstDesc = []
 
@@ -1114,7 +1116,7 @@ def translateQuestion(
                         dictTraduction["value"] = question[fieldName]
                 else:
                     dictTraduction["value"] = renderQuestion(
-                        question, fieldName, optionRender
+                        question, fieldName, optionRender, value
                     )
 
             qstDesc.append(dictTraduction)
@@ -1592,7 +1594,6 @@ def generateODKFile(
 
                 if question.question_dtype == 10:
                     for opt in range(0, numComb):
-
                         renderedString = translateQuestion(
                             prjLanguages,
                             question,

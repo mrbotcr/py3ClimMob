@@ -114,9 +114,9 @@
 
                                     <div class="tabs-container">
 
-                                        <ul class="nav nav-tabs" role="tablist">
+                                        <ul class="nav nav-tabs" role="tablist" >
                                             {% for lang in activeProject["languages"] %}
-                                                <li><a class="nav-link {% if lang.lang_code == languageActive %}active{% endif %} btnSwitchLanguage" idOfLanguage="{{ lang.lang_code }}" data-toggle="tab" href="#tab{{ lang.lang_code }}">{{ lang.lang_name}} {% if lang.lang_default == 1 %}({{ _("Main language") }}){% endif %}</a></li>
+                                                <li {% if lang.lang_default == 1 %}title="{{ _("Main language") }}" {% endif %}><a class="nav-link {% if lang.lang_code == languageActive %}active{% endif %} btnSwitchLanguage" idOfLanguage="{{ lang.lang_code }}" data-toggle="tab" href="#tab{{ lang.lang_code }}">{{ lang.lang_name}} {% if lang.lang_default == 1 %}<i class="fa fa-check" ></i>{% endif %}</a></li>
                                             {% endfor %}
                                         </ul>
 
@@ -388,8 +388,14 @@
             var timeNumber = 0;
             function refreshTheQuestions() {
 
+                {% if languageActive %}
+                    var URL = '{{ request.route_url('registrySaveChanges', user=activeProject["owner"].user_name, project=activeProject.project_cod,_query={'language': languageActive}) }}'
+                {% else %}
+                    var URL = '{{ request.route_url('registrySaveChanges', user=activeProject["owner"].user_name, project=activeProject.project_cod) }}'
+                {% endif %}
+
                 $.ajax({
-                    url: '{{ request.route_url('registrySaveChanges', user=activeProject["owner"].user_name, project=activeProject.project_cod) }}',
+                    url: URL,
                     datatype: "json",
                     type: "POST",
                     data: {
@@ -452,7 +458,6 @@
 
         function showScrollInPreview()
         {
-            alert
             var tour = new Tour({
                 steps: [
                         {

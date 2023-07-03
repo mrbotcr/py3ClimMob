@@ -7,6 +7,14 @@ from docxtpl import DocxTemplate, InlineImage
 
 from climmob.config.celery_app import celeryApp
 from climmob.config.celery_class import celeryTask
+from climmob.processes.db.i18n_general_phrases import getPhraseTranslationInLanguage
+from climmob.models import (
+    get_engine,
+    get_session_factory,
+    get_tm_session,
+)
+from climmob.models.meta import Base
+import transaction
 
 
 @celeryApp.task(bind=True, base=celeryTask, soft_time_limit=7200, time_limit=7200)
@@ -16,12 +24,18 @@ def createDocumentForm(
     user,
     path,
     projectid,
-    formGroupsAndQuestions,
+    dataPreviewInMultipleLanguages,
     form,
     code,
     packages,
     listOfLabels,
+    settings,
 ):
+
+    engine = get_engine(settings)
+    Base.metadata.create_all(engine)
+    session_factory = get_session_factory(engine)
+    dbsession = get_tm_session(session_factory, transaction.manager)
 
     # NO SE BORRA EL PATH PORQUE PUEDE TENER VARIOS ARCHIVOS
     # if os.path.exists(path):
@@ -83,7 +97,7 @@ def createDocumentForm(
         "tittle": tittle,
         "projectid": projectid,
         "Instruction": _("Please complete this form"),
-        "data": formGroupsAndQuestions,
+        "dataPreviewInMultipleLanguages": dataPreviewInMultipleLanguages,
         "imgsOfQRs": imgsOfQRs,
         "number_of_packages": 1,
         "logo": InlineImage(
@@ -91,11 +105,104 @@ def createDocumentForm(
         ),
         "_": _,
         "options": listOfLabels,
+        "language": _("Language"),
         "Indication1": _("Write the package code you are delivering to the user."),
         "Indication2": _(
             "When you are going to fill out the form digitally, scan the corresponding package code from:  'List of packages with QR for the registration form', available in the download section."
         ),
+        "Better": {},
+        "Worse": {},
+        "Tied": {},
+        "NotObserved": {},
+        "Latitude": {},
+        "Longitude": {},
+        "Altitude": {},
+        "Accuracy": {},
+        "Note": {},
+        "Date": {},
+        "Time": {},
     }
+
+    for lang in dataPreviewInMultipleLanguages:
+
+        data["Better"][lang["lang_code"]] = getPhraseTranslationInLanguage(
+            None, 4, user, lang["lang_code"], returnSuggestion=True, dbsession=dbsession
+        )["phrase_desc"]
+
+        data["Worse"][lang["lang_code"]] = getPhraseTranslationInLanguage(
+            None, 2, user, lang["lang_code"], returnSuggestion=True, dbsession=dbsession
+        )["phrase_desc"]
+
+        data["Tied"][lang["lang_code"]] = getPhraseTranslationInLanguage(
+            None, 1, user, lang["lang_code"], returnSuggestion=True, dbsession=dbsession
+        )["phrase_desc"]
+
+        data["NotObserved"][lang["lang_code"]] = getPhraseTranslationInLanguage(
+            None, 6, user, lang["lang_code"], returnSuggestion=True, dbsession=dbsession
+        )["phrase_desc"]
+
+        data["Latitude"][lang["lang_code"]] = getPhraseTranslationInLanguage(
+            None,
+            20,
+            user,
+            lang["lang_code"],
+            returnSuggestion=True,
+            dbsession=dbsession,
+        )["phrase_desc"]
+
+        data["Longitude"][lang["lang_code"]] = getPhraseTranslationInLanguage(
+            None,
+            21,
+            user,
+            lang["lang_code"],
+            returnSuggestion=True,
+            dbsession=dbsession,
+        )["phrase_desc"]
+
+        data["Altitude"][lang["lang_code"]] = getPhraseTranslationInLanguage(
+            None,
+            22,
+            user,
+            lang["lang_code"],
+            returnSuggestion=True,
+            dbsession=dbsession,
+        )["phrase_desc"]
+
+        data["Accuracy"][lang["lang_code"]] = getPhraseTranslationInLanguage(
+            None,
+            23,
+            user,
+            lang["lang_code"],
+            returnSuggestion=True,
+            dbsession=dbsession,
+        )["phrase_desc"]
+
+        data["Note"][lang["lang_code"]] = getPhraseTranslationInLanguage(
+            None,
+            25,
+            user,
+            lang["lang_code"],
+            returnSuggestion=True,
+            dbsession=dbsession,
+        )["phrase_desc"]
+
+        data["Date"][lang["lang_code"]] = getPhraseTranslationInLanguage(
+            None,
+            35,
+            user,
+            lang["lang_code"],
+            returnSuggestion=True,
+            dbsession=dbsession,
+        )["phrase_desc"]
+
+        data["Time"][lang["lang_code"]] = getPhraseTranslationInLanguage(
+            None,
+            37,
+            user,
+            lang["lang_code"],
+            returnSuggestion=True,
+            dbsession=dbsession,
+        )["phrase_desc"]
 
     if self.is_aborted():
         return ""

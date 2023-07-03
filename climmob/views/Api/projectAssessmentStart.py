@@ -127,12 +127,43 @@ class createProjectAssessment_view(apiView):
                                                 self.request,
                                             )
 
-                                            data, finalCloseQst = getDataFormPreview(
-                                                self,
-                                                dataworking["user_owner"],
-                                                activeProjectId,
-                                                dataworking["ass_cod"],
-                                            )
+                                            languages = projectDetails["languages"]
+                                            if languages:
+                                                for lang in languages:
+                                                    (
+                                                        data,
+                                                        finalCloseQst,
+                                                    ) = getDataFormPreview(
+                                                        self,
+                                                        dataworking["user_owner"],
+                                                        activeProjectId,
+                                                        assessmentid=dataworking[
+                                                            "ass_cod"
+                                                        ],
+                                                        language=lang["lang_code"],
+                                                    )
+
+                                                    lang["Data"] = data
+
+                                                dataPreviewInMultipleLanguages = (
+                                                    languages
+                                                )
+                                            else:
+                                                (
+                                                    data,
+                                                    finalCloseQst,
+                                                ) = getDataFormPreview(
+                                                    self,
+                                                    dataworking["user_owner"],
+                                                    activeProjectId,
+                                                    assessmentid=dataworking["ass_cod"],
+                                                )
+                                                dataPreviewInMultipleLanguages = [
+                                                    {
+                                                        "lang_name": "Default",
+                                                        "Data": data,
+                                                    }
+                                                ]
 
                                             create_document_form(
                                                 self.request,
@@ -142,7 +173,7 @@ class createProjectAssessment_view(apiView):
                                                 dataworking["project_cod"],
                                                 "Assessment",
                                                 dataworking["ass_cod"],
-                                                data,
+                                                dataPreviewInMultipleLanguages,
                                                 packages,
                                                 listOfLabels,
                                             )

@@ -717,6 +717,7 @@ class createProjectRegistry_view(apiView):
                                                 projectDetails["project_label_b"],
                                                 projectDetails["project_label_c"],
                                             ],
+                                            projectDetails["languages"],
                                         )
                                         if startIsOk:
                                             response = Response(

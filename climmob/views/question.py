@@ -36,6 +36,7 @@ from climmob.processes import (
     deleteI18nUser,
     modifyI18nUserDefaultLanguage,
     getQuestionOwner,
+    getPhraseTranslationInLanguage,
 )
 from climmob.views.classes import privateView
 
@@ -604,12 +605,12 @@ class getUserQuestionPreview_view(privateView):
             questionId = self.request.matchdict["questionid"]
 
             try:
-                language = self.request.matchdict["language"]
+                langActive = self.request.params["language"]
             except:
-                language = "default"
+                langActive = "default"
 
             question = userQuestionDetailsById(
-                userOwner, questionId, self.request, language=language
+                userOwner, questionId, self.request, language=langActive
             )
             listOfQuestions = []
             if question["question_quantitative"] == 1:
@@ -643,9 +644,87 @@ class getUserQuestionPreview_view(privateView):
                 "_": self._,
                 "showPhone": True,
             }
+            info.update(getDictForPreview(self.request, self.user.login, langActive))
             render_temp = template.render(info)
 
             return render_temp
+
+
+def getDictForPreview(request, userOwner, language):
+
+    dict = {
+        "Better": getPhraseTranslationInLanguage(
+            request, 4, userOwner, language, returnSuggestion=True
+        )["phrase_desc"],
+        "Worse": getPhraseTranslationInLanguage(
+            request, 2, userOwner, language, returnSuggestion=True
+        )["phrase_desc"],
+        "Tied": getPhraseTranslationInLanguage(
+            request, 1, userOwner, language, returnSuggestion=True
+        )["phrase_desc"],
+        "NotObserved": getPhraseTranslationInLanguage(
+            request, 6, userOwner, language, returnSuggestion=True
+        )["phrase_desc"],
+        "GetGPSPoint": getPhraseTranslationInLanguage(
+            request, 19, userOwner, language, returnSuggestion=True
+        )["phrase_desc"],
+        "Latitude": getPhraseTranslationInLanguage(
+            request, 20, userOwner, language, returnSuggestion=True
+        )["phrase_desc"],
+        "Longitude": getPhraseTranslationInLanguage(
+            request, 21, userOwner, language, returnSuggestion=True
+        )["phrase_desc"],
+        "Altitude": getPhraseTranslationInLanguage(
+            request, 22, userOwner, language, returnSuggestion=True
+        )["phrase_desc"],
+        "Accuracy": getPhraseTranslationInLanguage(
+            request, 23, userOwner, language, returnSuggestion=True
+        )["phrase_desc"],
+        "GetBarcode": getPhraseTranslationInLanguage(
+            request, 24, userOwner, language, returnSuggestion=True
+        )["phrase_desc"],
+        "Note": getPhraseTranslationInLanguage(
+            request, 25, userOwner, language, returnSuggestion=True
+        )["phrase_desc"],
+        "TakePicture": getPhraseTranslationInLanguage(
+            request, 26, userOwner, language, returnSuggestion=True
+        )["phrase_desc"],
+        "ChooseImage": getPhraseTranslationInLanguage(
+            request, 27, userOwner, language, returnSuggestion=True
+        )["phrase_desc"],
+        "RecordSound": getPhraseTranslationInLanguage(
+            request, 28, userOwner, language, returnSuggestion=True
+        )["phrase_desc"],
+        "ChooseSound": getPhraseTranslationInLanguage(
+            request, 29, userOwner, language, returnSuggestion=True
+        )["phrase_desc"],
+        "PlaySound": getPhraseTranslationInLanguage(
+            request, 30, userOwner, language, returnSuggestion=True
+        )["phrase_desc"],
+        "RecordVideo": getPhraseTranslationInLanguage(
+            request, 31, userOwner, language, returnSuggestion=True
+        )["phrase_desc"],
+        "ChooseVideo": getPhraseTranslationInLanguage(
+            request, 32, userOwner, language, returnSuggestion=True
+        )["phrase_desc"],
+        "PlayVideo": getPhraseTranslationInLanguage(
+            request, 33, userOwner, language, returnSuggestion=True
+        )["phrase_desc"],
+        "SelectDate": getPhraseTranslationInLanguage(
+            request, 34, userOwner, language, returnSuggestion=True
+        )["phrase_desc"],
+        "Date": getPhraseTranslationInLanguage(
+            request, 35, userOwner, language, returnSuggestion=True
+        )["phrase_desc"],
+        "SelectTime": getPhraseTranslationInLanguage(
+            request, 36, userOwner, language, returnSuggestion=True
+        )["phrase_desc"],
+        "Time": getPhraseTranslationInLanguage(
+            request, 37, userOwner, language, returnSuggestion=True
+        )["phrase_desc"],
+    }
+
+    return dict
 
 
 class getUserQuestionDetails_view(privateView):

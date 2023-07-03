@@ -1048,7 +1048,7 @@
 
                 $("#ibox_question").css('display','initial');
 
-                showPreview(user_name, question_id);
+                showPreview(user_name, question_id, dataJson["question_lang"]);
 
                 $("#question_code").focus()
 
@@ -1072,10 +1072,19 @@
 
         }
 
-        function showPreview(user_name, question_id)
+        function showPreview(user_name, question_id, language)
         {
-            var URL = "{{ request.route_url('getUserQuestionPreview',user="__user_name__", questionid="__questionid__") }}"
+            var URL;
+            if (language) {
+                URL = "{{ request.route_url('getUserQuestionPreview',user="__user_name__", questionid="__questionid__", _query={"language":"__language__"}) }}"
+            }else{
+                URL = "{{ request.route_url('getUserQuestionPreview',user="__user_name__", questionid="__questionid__") }}"
+            }
             URL = URL.replace("__user_name__", user_name).replace("__questionid__", question_id)
+
+            if (language) {
+                URL = URL.replace("__language__", language)
+            }
 
             $.get(URL, function (data, status) {
                 $("#divForPreview").html(data);

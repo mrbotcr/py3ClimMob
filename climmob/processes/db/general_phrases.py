@@ -23,9 +23,15 @@ def generalPhraseExistsWithID(request, phraseId):
     return False
 
 
-def generalPhraseByID(request, phraseId):
+def generalPhraseByID(request, phraseId, dbsession=None):
+
+    if request and not dbsession:
+        _DBsession_ = request.dbsession
+    if dbsession and not request:
+        _DBsession_ = dbsession
+
     mappedData = mapFromSchema(
-        request.dbsession.query(generalPhrases)
+        _DBsession_.query(generalPhrases)
         .filter(generalPhrases.phrase_id == phraseId)
         .first()
     )

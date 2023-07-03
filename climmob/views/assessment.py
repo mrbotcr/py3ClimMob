@@ -36,6 +36,7 @@ from climmob.processes import (
 from climmob.products.forms.form import create_document_form
 from climmob.views.classes import privateView
 from climmob.views.registry import getDataFormPreview
+from climmob.views.question import getDictForPreview
 
 
 class deleteAssessmentSection_view(privateView):
@@ -341,7 +342,7 @@ class assessment_view(privateView):
                 self, activeProjectUser, activeProjectId, langActive, assessmentid
             )
 
-            return {
+            dictreturn = {
                 "activeUser": self.user,
                 "data": data,
                 "finalCloseQst": finalCloseQst,
@@ -358,13 +359,13 @@ class assessment_view(privateView):
                     activeProjectId, self.request
                 ),
                 "languageActive": langActive,
-                "Better": getPhraseTranslationInLanguage(
-                    self.request, 4, self.user.login, langActive, returnSuggestion=True
-                )["phrase_desc"],
-                "Worse": getPhraseTranslationInLanguage(
-                    self.request, 2, self.user.login, langActive, returnSuggestion=True
-                )["phrase_desc"],
             }
+
+            dictreturn.update(
+                getDictForPreview(self.request, activeProjectUser, langActive)
+            )
+
+            return dictreturn
 
 
 class assessmentFormCreation_view(privateView):
@@ -436,21 +437,10 @@ class assessmentFormCreation_view(privateView):
                     "activeProject": getActiveProject(self.user.login, self.request),
                     "_": self._,
                     "showPhone": True,
-                    "Better": getPhraseTranslationInLanguage(
-                        self.request,
-                        4,
-                        self.user.login,
-                        langActive,
-                        returnSuggestion=True,
-                    )["phrase_desc"],
-                    "Worse": getPhraseTranslationInLanguage(
-                        self.request,
-                        2,
-                        self.user.login,
-                        langActive,
-                        returnSuggestion=True,
-                    )["phrase_desc"],
                 }
+                info.update(
+                    getDictForPreview(self.request, activeProjectUser, langActive)
+                )
                 render_temp = template.render(info)
 
                 self.returnRawViewResult = True
@@ -524,6 +514,7 @@ class startAssessments_view(privateView):
                         )
 
                         projectDetails = getActiveProject(self.user.login, self.request)
+                        languages = projectDetails["languages"]
                         listOfLabels = [
                             projectDetails["project_label_a"],
                             projectDetails["project_label_b"],
@@ -552,9 +543,30 @@ class startAssessments_view(privateView):
                                 activeProjectUser, activeProjectId, self.request
                             )
                             print("getDataFormPreview")
-                            data, finalCloseQst = getDataFormPreview(
-                                self, activeProjectUser, activeProjectId, assessment_id
-                            )
+                            if languages:
+                                for lang in languages:
+                                    data, finalCloseQst = getDataFormPreview(
+                                        self,
+                                        activeProjectUser,
+                                        activeProjectId,
+                                        assessmentid=assessment_id,
+                                        language=lang["lang_code"],
+                                    )
+
+                                    lang["Data"] = data
+
+                                dataPreviewInMultipleLanguages = languages
+                            else:
+                                data, finalCloseQst = getDataFormPreview(
+                                    self,
+                                    activeProjectUser,
+                                    activeProjectId,
+                                    assessmentid=assessment_id,
+                                )
+                                dataPreviewInMultipleLanguages = [
+                                    {"lang_name": "Default", "Data": data}
+                                ]
+
                             print("create_document_form")
                             create_document_form(
                                 self.request,
@@ -564,7 +576,7 @@ class startAssessments_view(privateView):
                                 activeProjectCod,
                                 "Assessment",
                                 assessment_id,
-                                data,
+                                dataPreviewInMultipleLanguages,
                                 packages,
                                 listOfLabels,
                             )

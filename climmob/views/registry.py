@@ -28,6 +28,7 @@ from climmob.processes import (
 )
 from climmob.products import stopTasksByProcess
 from climmob.views.classes import privateView
+from climmob.views.question import getDictForPreview
 
 
 class deleteRegistrySection_view(privateView):
@@ -259,7 +260,7 @@ class registry_view(privateView):
 
         activeProjectData = getActiveProject(self.user.login, self.request)
 
-        return {
+        dictreturn = {
             "activeUser": self.user,
             "data": data,
             "finalCloseQst": finalCloseQst,
@@ -274,13 +275,13 @@ class registry_view(privateView):
                 activeProjectId, self.request
             ),
             "languageActive": langActive,
-            "Better": getPhraseTranslationInLanguage(
-                self.request, 4, self.user.login, langActive, returnSuggestion=True
-            )["phrase_desc"],
-            "Worse": getPhraseTranslationInLanguage(
-                self.request, 2, self.user.login, langActive, returnSuggestion=True
-            )["phrase_desc"],
         }
+
+        dictreturn.update(
+            getDictForPreview(self.request, activeProjectUser, langActive)
+        )
+
+        return dictreturn
 
 
 class registryFormCreation_view(privateView):
@@ -347,21 +348,11 @@ class registryFormCreation_view(privateView):
                     "activeProject": getActiveProject(self.user.login, self.request),
                     "_": self._,
                     "showPhone": True,
-                    "Better": getPhraseTranslationInLanguage(
-                        self.request,
-                        4,
-                        self.user.login,
-                        langActive,
-                        returnSuggestion=True,
-                    )["phrase_desc"],
-                    "Worse": getPhraseTranslationInLanguage(
-                        self.request,
-                        2,
-                        self.user.login,
-                        langActive,
-                        returnSuggestion=True,
-                    )["phrase_desc"],
                 }
+
+                info.update(
+                    getDictForPreview(self.request, activeProjectUser, langActive)
+                )
                 render_temp = template.render(info)
 
                 self.returnRawViewResult = True

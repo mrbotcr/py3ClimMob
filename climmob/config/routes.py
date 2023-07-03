@@ -505,15 +505,6 @@ def loadRoutes(config):
 
     routes.append(
         addRoute(
-            "getUserQuestionPreviewInCustomLanguage",
-            "/user/{user}/question/{questionid}/language/{language}/Preview",
-            getUserQuestionPreview_view,
-            "string",
-        )
-    )
-
-    routes.append(
-        addRoute(
             "getUserCategoryDetails",
             "/user/{user}/category/{categoryid}",
             getUserCategoryDetails_view,
