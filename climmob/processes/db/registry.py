@@ -268,6 +268,7 @@ def getRegistryQuestions(
     questions = request.dbsession.execute(sql).fetchall()
 
     result = formattingQuestions(
+        userOwner,
         questions,
         request,
         projectLabels,

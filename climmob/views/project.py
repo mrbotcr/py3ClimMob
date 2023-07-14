@@ -197,7 +197,7 @@ def createProjectFunction(dataworking, error_summary, self):
                                     dataworking["project_languages"]
                                 ):
                                     langInfo = {}
-                                    if index == 1:
+                                    if index == 0:
                                         langInfo["lang_default"] = 1
 
                                     langInfo["lang_code"] = lang
@@ -491,7 +491,7 @@ class modifyProject_view(privateView):
                                         data["project_languages"]
                                     ):
                                         langInfo = {}
-                                        if index == 1:
+                                        if index == 0:
                                             langInfo["lang_default"] = 1
 
                                         langInfo["lang_code"] = lang

@@ -5,7 +5,7 @@ import uuid
 from subprocess import Popen, PIPE
 
 from jinja2 import Environment
-from sqlalchemy import func
+from sqlalchemy import func, and_
 
 from climmob.models import (
     AssDetail,
@@ -17,6 +17,8 @@ from climmob.models import (
     Regsection,
     Registry,
     userProject,
+    I18nQuestion,
+    I18nQstoption,
 )
 from climmob.models.repository import sql_fetch_one
 from climmob.models.schema import mapFromSchema, mapToSchema
@@ -28,6 +30,8 @@ from climmob.processes.db.project import (
 )
 from climmob.processes.db.question import getQuestionOptions
 from climmob.processes.odk.generator import getRegisteredFarmers
+from climmob.processes.db.i18n_general_phrases import getPhraseTranslationInLanguage
+from climmob.processes.db.prjlang import getPrjLangDefaultInProject
 
 __all__ = [
     "availableAssessmentQuestions",
@@ -216,12 +220,17 @@ def checkAssessments(projectId, assessment, request):
 
 
 def formattingQuestions(
+    userOwner,
     questions,
     request,
     projectLabels,
     language="default",
     onlyShowTheBasicQuestions=False,
 ):
+    other_ = getPhraseTranslationInLanguage(
+        request, 3, userOwner, language, returnSuggestion=True
+    )["phrase_desc"]
+
     _ = request.translate
     result = []
     for qst in questions:
@@ -245,11 +254,11 @@ def formattingQuestions(
 
                 if isOther:
                     newQuestion = dict(qst)
-                    newQuestion["question_desc"] = newQuestion["question_desc"] + _(
-                        " Other "
+                    newQuestion["question_desc"] = (
+                        newQuestion["question_desc"] + " - " + other_
                     )
-                    newQuestion["question_name"] = newQuestion["question_name"] + _(
-                        " Other "
+                    newQuestion["question_name"] = (
+                        newQuestion["question_name"] + " - " + other_
                     )
                     newQuestion["question_dtype"] = 1
                     newQuestion["question_requiredvalue"] = 0
@@ -292,10 +301,10 @@ def formattingQuestions(
                         newQuestion = dict(qst)
                         descExtra = " - " + projectLabels[questionNumber]
                         newQuestion["question_desc"] = (
-                            newQuestion["question_desc"] + descExtra + _(" Other ")
+                            newQuestion["question_desc"] + descExtra + " - " + other_
                         )
                         newQuestion["question_name"] = (
-                            newQuestion["question_name"] + descExtra + _(" Other ")
+                            newQuestion["question_name"] + descExtra + " - " + other_
                         )
                         newQuestion["question_dtype"] = 1
                         newQuestion["question_requiredvalue"] = 0
@@ -750,6 +759,7 @@ def getAssessmentQuestions(
     questions = request.dbsession.execute(sql).fetchall()
 
     result = formattingQuestions(
+        userOwner,
         questions,
         request,
         projectLabels,
@@ -1034,6 +1044,15 @@ def getAssesmentProgress(userOwner, projectId, projectCod, assessment, request):
 def generateStructureForInterfaceForms(
     userOwner, projectId, projectCod, form, request, ass_cod=""
 ):
+
+    langActive = getPrjLangDefaultInProject(projectId, request)
+    if langActive:
+        langActive = langActive["lang_code"]
+        langPhrases = langActive["lang_code"]
+    else:
+        langActive = request.locale_name
+        langPhrases = request.locale_name
+
     _ = request.translate
 
     projectDetails = getProjectData(projectId, request)
@@ -1092,7 +1111,32 @@ def generateStructureForInterfaceForms(
 
         for question in questions:
             questionData = mapFromSchema(
-                request.dbsession.query(Question)
+                request.dbsession.query(
+                    Question,
+                    func.coalesce(
+                        I18nQuestion.question_desc, Question.question_desc
+                    ).label("question_desc"),
+                    func.coalesce(
+                        I18nQuestion.question_name, Question.question_name
+                    ).label("question_name"),
+                    func.coalesce(
+                        I18nQuestion.question_posstm, Question.question_posstm
+                    ).label("question_posstm"),
+                    func.coalesce(
+                        I18nQuestion.question_negstm, Question.question_negstm
+                    ).label("question_negstm"),
+                    func.coalesce(
+                        I18nQuestion.question_perfstmt, Question.question_perfstmt
+                    ).label("question_perfstmt"),
+                )
+                .join(
+                    I18nQuestion,
+                    and_(
+                        Question.question_id == I18nQuestion.question_id,
+                        I18nQuestion.lang_code == langActive,
+                    ),
+                    isouter=True,
+                )
                 .filter(Question.question_id == question["question_id"])
                 .first()
             )
@@ -1153,7 +1197,21 @@ def generateStructureForInterfaceForms(
                         or questionData["question_dtype"] == 6
                     ):
                         options = mapFromSchema(
-                            request.dbsession.query(Qstoption)
+                            request.dbsession.query(
+                                Qstoption,
+                                func.coalesce(
+                                    I18nQstoption.value_desc, Qstoption.value_desc
+                                ).label("value_desc"),
+                            )
+                            .join(
+                                I18nQstoption,
+                                and_(
+                                    Qstoption.question_id == I18nQstoption.question_id,
+                                    Qstoption.value_code == I18nQstoption.value_code,
+                                    I18nQstoption.lang_code == langActive,
+                                ),
+                                isouter=True,
+                            )
                             .filter(Qstoption.question_id == question["question_id"])
                             .all()
                         )
@@ -1165,8 +1223,14 @@ def generateStructureForInterfaceForms(
                                     questionData["question_id"],
                                     questionData["question_desc"]
                                     + descExtra
-                                    + " "
-                                    + _("Other"),
+                                    + " - "
+                                    + getPhraseTranslationInLanguage(
+                                        request,
+                                        3,
+                                        userOwner,
+                                        langPhrases,
+                                        returnSuggestion=True,
+                                    )["phrase_desc"],
                                     1,
                                     "",
                                     "",
@@ -1201,7 +1265,13 @@ def generateStructureForInterfaceForms(
 
                     if questionData["question_tied"] == 1:
                         dataQuestionop = createOption(
-                            "Tied",
+                            getPhraseTranslationInLanguage(
+                                request,
+                                1,
+                                userOwner,
+                                langPhrases,
+                                returnSuggestion=True,
+                            )["phrase_desc"],
                             0,
                             98,
                             0,
@@ -1212,7 +1282,13 @@ def generateStructureForInterfaceForms(
 
                     if questionData["question_notobserved"] == 1:
                         dataQuestionop = createOption(
-                            "Not observed",
+                            getPhraseTranslationInLanguage(
+                                request,
+                                6,
+                                userOwner,
+                                langPhrases,
+                                returnSuggestion=True,
+                            )["phrase_desc"],
                             0,
                             99,
                             0,
@@ -1308,7 +1384,7 @@ def generateStructureForInterfaceForms(
                 if questionData["question_dtype"] == 10:
                     for opt in range(0, numComb):
                         code = chr(65 + opt)
-                        print("Esteeeeeeeeeeeeeeeeeee*************************89")
+
                         renderedString = (
                             Environment()
                             .from_string(questionData["question_perfstmt"])
@@ -1333,7 +1409,14 @@ def generateStructureForInterfaceForms(
                         )
                         # the best option
                         dataQuestionop = createOption(
-                            _("Better"),
+                            # _("Better"),
+                            getPhraseTranslationInLanguage(
+                                request,
+                                4,
+                                userOwner,
+                                langPhrases,
+                                returnSuggestion=True,
+                            )["phrase_desc"],
                             0,
                             1,
                             0,
@@ -1343,7 +1426,14 @@ def generateStructureForInterfaceForms(
                         dataQuestion["question_options"].append(dataQuestionop)
                         # the worst option
                         dataQuestionop = createOption(
-                            _("Worse"),
+                            # _("Worse"),
+                            getPhraseTranslationInLanguage(
+                                request,
+                                2,
+                                userOwner,
+                                langPhrases,
+                                returnSuggestion=True,
+                            )["phrase_desc"],
                             0,
                             2,
                             0,
@@ -1365,11 +1455,15 @@ def generateStructureForInterfaceForms(
     necessarySection["section_id"] = "None"
     necessarySection["section_questions"] = []
     # Start survey
+
+    startOfSurvey = getPhraseTranslationInLanguage(
+        request, 9, userOwner, langPhrases, returnSuggestion=True
+    )["phrase_desc"]
     dataQuestion = createQuestionForm(
         "-1",
-        _("Start of survey"),
+        startOfSurvey,
         15,
-        _("Start of survey"),
+        startOfSurvey,
         "",
         1,
         "__CLMQST1__",
@@ -1378,11 +1472,14 @@ def generateStructureForInterfaceForms(
     )
     necessarySection["section_questions"].append(dataQuestion)
     # End survey
+    endOfSurvey = getPhraseTranslationInLanguage(
+        request, 7, userOwner, langPhrases, returnSuggestion=True
+    )["phrase_desc"]
     dataQuestion = createQuestionForm(
         "-2",
-        _("End of survey"),
+        endOfSurvey,
         15,
-        _("End of survey"),
+        endOfSurvey,
         "",
         1,
         "__CLMQST2__",

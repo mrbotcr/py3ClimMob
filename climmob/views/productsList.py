@@ -342,9 +342,14 @@ class generateProductView(privateView):
                         self,
                         activeProjectData["owner"]["user_name"],
                         activeProjectData["project_id"],
+                        language=self.request.locale_name,
                     )
                     dataPreviewInMultipleLanguages = [
-                        {"lang_name": "Default", "Data": data}
+                        {
+                            "lang_code": self.request.locale_name,
+                            "lang_name": "Default",
+                            "Data": data,
+                        }
                     ]
 
                 create_document_form(
@@ -381,9 +386,14 @@ class generateProductView(privateView):
                         activeProjectData["owner"]["user_name"],
                         activeProjectData["project_id"],
                         assessmentid=assessment_id,
+                        language=self.request.locale_name,
                     )
                     dataPreviewInMultipleLanguages = [
-                        {"lang_name": "Default", "Data": data}
+                        {
+                            "lang_code": self.request.locale_name,
+                            "lang_name": "Default",
+                            "Data": data,
+                        }
                     ]
 
                 create_document_form(

@@ -336,7 +336,7 @@ class assessment_view(privateView):
                 if langActive:
                     langActive = langActive["lang_code"]
                 else:
-                    langActive = ""
+                    langActive = self.request.locale_name
 
             data, finalCloseQst = getDataFormPreview(
                 self, activeProjectUser, activeProjectId, langActive, assessmentid
@@ -393,7 +393,7 @@ class assessmentFormCreation_view(privateView):
                 if langActive:
                     langActive = langActive["lang_code"]
                 else:
-                    langActive = ""
+                    langActive = self.request.locale_name
 
             if self.request.method == "POST":
                 newOrder = d = json.loads(self.request.POST.get("neworder", "{}"))
@@ -562,9 +562,14 @@ class startAssessments_view(privateView):
                                     activeProjectUser,
                                     activeProjectId,
                                     assessmentid=assessment_id,
+                                    language=self.request.locale_name,
                                 )
                                 dataPreviewInMultipleLanguages = [
-                                    {"lang_name": "Default", "Data": data}
+                                    {
+                                        "lang_code": self.request.locale_name,
+                                        "lang_name": "Default",
+                                        "Data": data,
+                                    }
                                 ]
 
                             print("create_document_form")

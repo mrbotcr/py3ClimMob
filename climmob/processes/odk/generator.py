@@ -344,6 +344,7 @@ class ODKExcelFile(object):
         formInstance,
         _,
         languages,
+        language,
         userOwner,
         request,
     ):
@@ -357,6 +358,7 @@ class ODKExcelFile(object):
         self.choicesRow = 1
         self._ = _
         self.languages = languages
+        self.specific_language = language
         self.userOwner = userOwner
         self.request = request
         try:
@@ -598,9 +600,18 @@ class ODKExcelFile(object):
                             self.surveyRow, dictOfColumns["label"], element.get("label")
                         )
 
-                    self.sheet1.write(
-                        self.surveyRow, dictOfColumns["hint"], element.get("hint")
-                    )
+                    if self.languages:
+                        for language in self.languages:
+                            self.sheet1.write(
+                                self.surveyRow,
+                                dictOfColumns["hint_{}".format(language["lang_code"])],
+                                element.get("hint_{}".format(language["lang_code"])),
+                            )
+                    else:
+                        self.sheet1.write(
+                            self.surveyRow, dictOfColumns["hint"], element.get("hint")
+                        )
+
                     self.sheet1.write(
                         self.surveyRow,
                         dictOfColumns["constraint"],
@@ -653,7 +664,7 @@ class ODKExcelFile(object):
                                     "The scanned QR is incorrect, it is not for this project",
                                     self.userOwner,
                                     self.request,
-                                    specificLanguage="en",
+                                    specificLanguage=self.specific_language,
                                 ),
                             )
 
@@ -685,13 +696,14 @@ class ODKExcelFile(object):
                                 self.surveyRow,
                                 dictOfColumns["required_message"],
                                 element.get("label")
+                                + " "
                                 + getTranslationOrText(
                                     [],
                                     "10",
                                     "requires a value",
                                     self.userOwner,
                                     self.request,
-                                    specificLanguage="en",
+                                    specificLanguage=self.specific_language,
                                 ),
                             )
 
@@ -747,6 +759,7 @@ class ODKExcelFile(object):
             question.set("name", name)
             if not self.languages:
                 question.set("label", label)
+                question.set("hint", hint)
             else:
                 if isinstance(label, str):
                     for language in self.languages:
@@ -755,7 +768,13 @@ class ODKExcelFile(object):
                     for language in label:
                         question.set(language["label"], language["value"])
 
-            question.set("hint", hint)
+                if isinstance(hint, str):
+                    for language in self.languages:
+                        question.set("hint_{}".format(language["lang_code"]), hint)
+                else:
+                    for language in hint:
+                        question.set(language["hint"], language["value"])
+
             question.set("type", ODKType)
             question.set("constraint", constraint)
             question.set("calculation", calculation)
@@ -885,9 +904,24 @@ class ODKExcelFile(object):
             self.sheet1.write(0, columnsCount, "label")
             dictOfColumns["label"] = columnsCount
         columnsCount += 1
-        self.sheet1.write(0, columnsCount, "hint")
-        dictOfColumns["hint"] = columnsCount
+
+        if self.languages:
+            for language in self.languages:
+                self.sheet1.write(
+                    0,
+                    columnsCount,
+                    "hint::{} ({})".format(
+                        language["lang_name"], language["lang_code"]
+                    ),
+                )
+                dictOfColumns["hint_{}".format(language["lang_code"])] = columnsCount
+                columnsCount += 1
+            columnsCount -= 1
+        else:
+            self.sheet1.write(0, columnsCount, "hint")
+            dictOfColumns["hint"] = columnsCount
         columnsCount += 1
+
         self.sheet1.write(0, columnsCount, "constraint")
         dictOfColumns["constraint"] = columnsCount
         columnsCount += 1
@@ -1043,6 +1077,7 @@ def getTranslationOrText(
     specificLanguage=None,
     additionalOne=None,
     additionalTwo=None,
+    column="label",
 ):
 
     if not specificLanguage:
@@ -1051,7 +1086,8 @@ def getTranslationOrText(
 
             for language in prjLanguages:
                 dictTraduction = {}
-                dictTraduction["label"] = "label_{}".format(language["lang_code"])
+                dictTraduction["lang"] = language["lang_code"]
+                dictTraduction[column] = "{}_{}".format(column, language["lang_code"])
                 try:
                     val = getI18nGeneralPhrase(
                         language["lang_code"], textId, userOwner, request
@@ -1076,10 +1112,17 @@ def getTranslationOrText(
                 qstDesc.append(dictTraduction)
 
             return qstDesc
-        else:
-            return text
-    else:
-        return getI18nGeneralPhrase(specificLanguage, textId, userOwner, request)
+
+    val = getI18nGeneralPhrase(specificLanguage, textId, userOwner, request)
+    if additionalOne:
+        val = val + additionalOne
+
+    if textId in ["16", "17"]:
+        val2 = getI18nGeneralPhrase(specificLanguage, 18, userOwner, request)
+        if additionalTwo:
+            val += val2 + additionalTwo
+
+    return val
 
 
 def translateQuestion(
@@ -1090,12 +1133,14 @@ def translateQuestion(
     descExtra="",
     requireRender=False,
     optionRender="",
+    otherExtra=[],
 ):
     if prjLanguages:
         qstDesc = []
 
         for language in prjLanguages:
             dictTraduction = {}
+            dictTraduction["lang"] = language["lang_code"]
             dictTraduction["label"] = "label_{}".format(language["lang_code"])
             # Esto es porque la preguntas ya vienen en el lenguaje por default, ya no hay que traducirlas
             if language["lang_default"] == 1:
@@ -1118,13 +1163,28 @@ def translateQuestion(
                     dictTraduction["value"] = renderQuestion(
                         question, fieldName, optionRender, value
                     )
+            otherValueExtra = ""
+            if otherExtra:
+                for dictOtherExtra in otherExtra:
+                    if dictOtherExtra["lang"] == language["lang_code"]:
+                        otherValueExtra = " - " + dictOtherExtra["value"]
+
+            dictTraduction["value"] = (
+                dictTraduction["value"] + descExtra + otherValueExtra
+            )
 
             qstDesc.append(dictTraduction)
     else:
+
         if not requireRender:
-            qstDesc = question[fieldName] + descExtra
+            qstDesc = question[fieldName]
         else:
             qstDesc = renderQuestion(question, fieldName, optionRender)
+
+        qstDesc += descExtra
+
+        if otherExtra:
+            qstDesc += " - " + str(otherExtra)
 
     return qstDesc
 
@@ -1176,18 +1236,43 @@ def generateODKFile(
 
     prjLanguages = getPrjLangInProject(projectId, request)
 
+    if prjLanguages:
+        language = None
+
     excelFile = ODKExcelFile(
-        xlsxFile, formID, formLabel, formInstance, _, prjLanguages, userOwner, request
+        xlsxFile,
+        formID,
+        formLabel,
+        formInstance,
+        _,
+        prjLanguages,
+        language,
+        userOwner,
+        request,
     )
     excelFile.addQuestion(
         "clm_deviceimei",
-        getTranslationOrText(prjLanguages, "5", "Device IMEI", userOwner, request),
+        getTranslationOrText(
+            prjLanguages,
+            "5",
+            "Device IMEI",
+            userOwner,
+            request,
+            specificLanguage=language,
+        ),
         23,
         "",
     )
     excelFile.addQuestion(
         "clm_start",
-        getTranslationOrText(prjLanguages, "9", "Start of survey", userOwner, request),
+        getTranslationOrText(
+            prjLanguages,
+            "9",
+            "Start of survey",
+            userOwner,
+            request,
+            specificLanguage=language,
+        ),
         20,
         "",
     )
@@ -1204,6 +1289,7 @@ def generateODKFile(
                     "Validation of the selected participant",
                     userOwner,
                     request,
+                    specificLanguage=language,
                 ),
             )
 
@@ -1230,6 +1316,7 @@ def generateODKFile(
                 "You scanned package number:",
                 userOwner,
                 request,
+                specificLanguage=language,
                 additionalOne=' <span style="color:#009551; font-weight:bold">${clc_after}</span>.<br>',
                 additionalTwo=' <span style="color:#009551; font-weight:bold">${farmername}</span>.',
             ),
@@ -1252,6 +1339,7 @@ def generateODKFile(
                 "You selected package number:",
                 userOwner,
                 request,
+                specificLanguage=language,
                 additionalOne=' <span style="color:#009551; font-weight:bold">${QST163}</span>.<br>',
                 additionalTwo=' <span style="color:#009551; font-weight:bold">${clc_after}</span>',
             ),
@@ -1328,6 +1416,7 @@ def generateODKFile(
                             "In the following field try to write the name of the participant to filter the information and find him/her more easily.",
                             userOwner,
                             request,
+                            specificLanguage=language,
                         ),
                         29,
                         inGroup="grp_" + str(question.section_id),
@@ -1389,7 +1478,12 @@ def generateODKFile(
                                 "char_" + question.question_code,
                                 str(98),
                                 getTranslationOrText(
-                                    prjLanguages, "1", "Tied", userOwner, request
+                                    prjLanguages,
+                                    "1",
+                                    "Tied",
+                                    userOwner,
+                                    request,
+                                    specificLanguage=language,
                                 ),
                             )
 
@@ -1403,6 +1497,7 @@ def generateODKFile(
                                     "Not observed",
                                     userOwner,
                                     request,
+                                    specificLanguage=language,
                                 ),
                             )
 
@@ -1478,14 +1573,24 @@ def generateODKFile(
                                 "char_" + question.question_code + "_pos",
                                 str(98),
                                 getTranslationOrText(
-                                    prjLanguages, "1", "Tied", userOwner, request
+                                    prjLanguages,
+                                    "1",
+                                    "Tied",
+                                    userOwner,
+                                    request,
+                                    specificLanguage=language,
                                 ),
                             )
                             excelFile.addOption(
                                 "char_" + question.question_code + "_neg",
                                 str(98),
                                 getTranslationOrText(
-                                    prjLanguages, "1", "Tied", userOwner, request
+                                    prjLanguages,
+                                    "1",
+                                    "Tied",
+                                    userOwner,
+                                    request,
+                                    specificLanguage=language,
                                 ),
                             )
                         if question.question_notobserved == 1:
@@ -1498,6 +1603,7 @@ def generateODKFile(
                                     "Not observed",
                                     userOwner,
                                     request,
+                                    specificLanguage=language,
                                 ),
                             )
 
@@ -1510,6 +1616,7 @@ def generateODKFile(
                                     "Not observed",
                                     userOwner,
                                     request,
+                                    specificLanguage=language,
                                 ),
                             )
                         # END EDITED
@@ -1572,7 +1679,12 @@ def generateODKFile(
                                     + str(98),
                                     str(98),
                                     getTranslationOrText(
-                                        prjLanguages, "1", "Tied", userOwner, request
+                                        prjLanguages,
+                                        "1",
+                                        "Tied",
+                                        userOwner,
+                                        request,
+                                        specificLanguage=language,
                                     ),
                                 )
 
@@ -1589,6 +1701,7 @@ def generateODKFile(
                                         "Not observed",
                                         userOwner,
                                         request,
+                                        specificLanguage=language,
                                     ),
                                 )
 
@@ -1615,14 +1728,24 @@ def generateODKFile(
                             "perf_" + question.question_code + "_" + str(opt + 1),
                             "1",
                             getTranslationOrText(
-                                prjLanguages, "4", "Better", userOwner, request
+                                prjLanguages,
+                                "4",
+                                "Better",
+                                userOwner,
+                                request,
+                                specificLanguage=language,
                             ),
                         )
                         excelFile.addOption(
                             "perf_" + question.question_code + "_" + str(opt + 1),
                             "2",
                             getTranslationOrText(
-                                prjLanguages, "2", "Worse", userOwner, request
+                                prjLanguages,
+                                "2",
+                                "Worse",
+                                userOwner,
+                                request,
+                                specificLanguage=language,
                             ),
                         )
 
@@ -1663,10 +1786,14 @@ def generateODKFile(
                         question,
                         request,
                         "question_desc",
-                        descExtra=descExtra
-                        + " "
-                        + getTranslationOrText(
-                            prjLanguages, "3", "Other", userOwner, request
+                        descExtra=descExtra,
+                        otherExtra=getTranslationOrText(
+                            prjLanguages,
+                            "3",
+                            "Other",
+                            userOwner,
+                            request,
+                            specificLanguage=language,
                         ),
                     )
 
@@ -1680,6 +1807,8 @@ def generateODKFile(
                             "Add the other value here",
                             userOwner,
                             request,
+                            specificLanguage=language,
+                            column="hint",
                         ),
                         0,
                         "grp_" + str(question.section_id),
@@ -1687,7 +1816,14 @@ def generateODKFile(
 
     excelFile.addQuestion(
         "clm_end",
-        getTranslationOrText(prjLanguages, "7", "End of survey", userOwner, request),
+        getTranslationOrText(
+            prjLanguages,
+            "7",
+            "End of survey",
+            userOwner,
+            request,
+            specificLanguage=language,
+        ),
         21,
         "",
     )
@@ -1771,7 +1907,7 @@ def generateRegistry(
         )
         langDefault = langDefault["lang_code"]
     else:
-        langDefault = "default"
+        langDefault = request.locale_name
         default_language = None
 
     sql = (
@@ -1957,7 +2093,8 @@ def generateAssessmentFiles(
             )
             langDefault = langDefault["lang_code"]
         else:
-            langDefault = "default"
+            langDefault = request.locale_name
+            default_language = None
 
         sql = (
             " SELECT q.question_code, COALESCE(i.question_desc,q.question_desc) as question_desc,COALESCE(i.question_unit,q.question_unit) as question_unit, q.question_dtype, q.question_twoitems, "

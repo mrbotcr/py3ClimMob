@@ -157,9 +157,11 @@ class createProjectAssessment_view(apiView):
                                                     dataworking["user_owner"],
                                                     activeProjectId,
                                                     assessmentid=dataworking["ass_cod"],
+                                                    language="en",
                                                 )
                                                 dataPreviewInMultipleLanguages = [
                                                     {
+                                                        "lang_code": self.request.locale_name,
                                                         "lang_name": "Default",
                                                         "Data": data,
                                                     }

@@ -347,8 +347,12 @@ def startTheRegistry(
 
             dataPreviewInMultipleLanguages = languages
         else:
-            data, finalCloseQst = getDataFormPreview(self, userOwner, projectId)
-            dataPreviewInMultipleLanguages = [{"lang_name": "Default", "Data": data}]
+            data, finalCloseQst = getDataFormPreview(
+                self, userOwner, projectId, language=locale
+            )
+            dataPreviewInMultipleLanguages = [
+                {"lang_code": locale, "lang_name": "Default", "Data": data}
+            ]
 
         create_document_form(
             self.request,

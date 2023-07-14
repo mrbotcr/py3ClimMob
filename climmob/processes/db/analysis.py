@@ -15,6 +15,7 @@ from climmob.models.schema import mapFromSchema
 from climmob.processes.db.project_technologies import numberOfCombinationsForTheProject
 from climmob.processes.db.project import getProjectLabels
 from climmob.processes.db.question import opcionOtherInQuestion
+from climmob.processes.db.prjlang import getPrjLangDefaultInProject
 
 __all__ = ["getQuestionsByType", "getQuestionsStructure"]
 
@@ -385,6 +386,13 @@ def addQuestionToDictionary(projectLabels, questionData, numComb, assessment=Non
 
 
 def getQuestionsStructure(projectId, ass_cod, request):
+
+    langActive = getPrjLangDefaultInProject(projectId, request)
+    if langActive:
+        langActive = langActive["lang_code"]
+    else:
+        langActive = request.locale_name
+
     data = []
 
     dic = []
@@ -436,7 +444,7 @@ def getQuestionsStructure(projectId, ass_cod, request):
                     I18nQuestion,
                     and_(
                         Question.question_id == I18nQuestion.question_id,
-                        I18nQuestion.lang_code == request.locale_name,
+                        I18nQuestion.lang_code == langActive,
                     ),
                     isouter=True,
                 )
