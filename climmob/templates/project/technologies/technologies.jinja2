@@ -63,7 +63,7 @@
                     </div>
 
                     <input type="text" class="form-control form-control-sm m-b-xs" id="filter" placeholder="{{ _("Search technology") }}">
-                    <div style="overflow-x: hidden; overflow-y: scroll; max-height: calc(100vh - 310px);">
+                    <div class="activity-stream" style="overflow-x: hidden; overflow-y: scroll; max-height: calc(100vh - 310px);">
 
                         <table class="footable  table table-stripped tableHover" data-page-size="50000" data-filter=#filter>
                             <thead>
@@ -138,7 +138,7 @@
                     <div class="ibox-content animated fadeInRightBig" >
                         <p><b>{{ _("Select to add") }}</b></p>
                         <div style="overflow-x: hidden; overflow-y: scroll; max-height: calc(100vh - {% if onlySee == False %}385{% else %}310{% endif %}px);">
-                            <table class="footable table table-stripped" data-page-size="50000" data-filter=#filter>
+                            <table class="footable table table-stripped" data-page-size="50000">
 
                                 <tbody>
 
@@ -293,13 +293,12 @@
 
     <script>
         $(document).ready(function () {
-            //$('.footable').footable();
+            $('.footable').footable();
             if ("{{ tech_id }}" !="")
             {
                 $("#tech{{ tech_id }}").addClass("tableHover2");
             }
         });
-
 
         $('.tableHover').on('click', 'tbody tr', function(event) {
             $(this).addClass('tableHover2').siblings().removeClass('tableHover2');

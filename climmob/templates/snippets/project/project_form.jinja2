@@ -181,7 +181,7 @@
                                         <table style="width: 100%">
                                             <tr>
                                                 <td style="vertical-align: middle; text-align: center">
-                                                    <a class="btn btn-success btn-rounded  btn-xs" style="color: white" onclick="showHelp()"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a>
+                                                    <a class="btn btn-success btn-rounded  btn-xs" style="color: white" onclick="showHelpTem()"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a>
                                                 </td>
                                             </tr>
                                             <tr>
@@ -307,9 +307,9 @@
 
     $('.chosen-select').chosen({width: "100%", max_selected_options: 4});
 
-    function showHelp()
+    function showHelpTem()
     {
-        var tour = new Tour({
+        var tourtem = new Tour({
             steps: [
                     {
                         element: "#div_of_templates",
@@ -324,8 +324,8 @@
         });
 
         // Initialize the tour
-        tour.init();
-        tour.restart();
+        tourtem.init();
+        tourtem.restart();
     }
 
     var tour2 = new Tour({

@@ -13,6 +13,7 @@ from climmob.processes import (
     getActiveProject,
     getTheProjectIdForOwner,
     getListOfLanguagesByUser,
+    getPrjLangDefaultInProject,
 )
 from climmob.views.classes import privateView
 from climmob.views.project import createProjectFunction, functionCreateClone
@@ -83,6 +84,8 @@ class cloneProjects_view(privateView):
             dataworking["projectBeingCloned"] = getAllInformationForProject(
                 self, userOwner, projectId
             )
+
+            # print(dataworking["projectBeingCloned"])
 
             return {
                 "activeProject": getActiveProject(self.user.login, self.request),
@@ -211,15 +214,25 @@ def getAllInformationForProject(self, userOwner, projectId):
         )
     dataworking["project_techs"] = techInfo
 
+    langActive = getPrjLangDefaultInProject(projectId, self.request)
+    if langActive:
+        langActive = langActive["lang_code"]
+    else:
+        langActive = self.request.locale_name
+
     dataRegistry, finalCloseQst = getDataFormPreview(
-        self, userOwner, projectId, createAutoRegistry=False
+        self, userOwner, projectId, createAutoRegistry=False, language=langActive
     )
 
     dataworking["project_registry"] = dataRegistry
     dataAssessments = getProjectAssessments(projectId, self.request)
     for assessment in dataAssessments:
         dataAssessmentsQuestions, finalCloseQst = getDataFormPreview(
-            self, userOwner, projectId, assessment["ass_cod"]
+            self,
+            userOwner,
+            projectId,
+            assessmentid=assessment["ass_cod"],
+            language=langActive,
         )
         assessment["Questions"] = dataAssessmentsQuestions
     dataworking["project_assessment"] = dataAssessments

@@ -1751,13 +1751,17 @@ def generateODKFile(
 
             if question.question_dtype == 5 or question.question_dtype == 6:
                 print("****generateODKFile**Query options******")
+                bk_lang = language
+                if not bk_lang:
+                    bk_lang = "en"
+
                 sql = (
                     " SELECT qstoption.value_code, coalesce(i18n_qstoption.value_desc, qstoption.value_desc) as value_desc,qstoption.value_isother,qstoption.value_order "
                     " FROM question,qstoption "
-                    "LEFT JOIN i18n_qstoption "
+                    " LEFT JOIN i18n_qstoption "
                     " ON i18n_qstoption.question_id = qstoption.question_id "
                     " AND i18n_qstoption.value_code = qstoption.value_code "
-                    " AND i18n_qstoption.lang_code = '" + language + "' "
+                    " AND i18n_qstoption.lang_code = '" + bk_lang + "' "
                     " WHERE qstoption.question_id = question.question_id "
                     " AND (question.question_dtype = 5 or question.question_dtype = 6) "
                     " AND question.question_code = '" + question.question_code + "' "

@@ -21,6 +21,13 @@ __all__ = ["getQuestionsByType", "getQuestionsStructure"]
 
 
 def getQuestionsByType(projectId, request):
+
+    langActive = getPrjLangDefaultInProject(projectId, request)
+    if langActive:
+        langActive = langActive["lang_code"]
+    else:
+        langActive = request.locale_name
+
     data = []
 
     dic = {}
@@ -72,7 +79,7 @@ def getQuestionsByType(projectId, request):
                     I18nQuestion,
                     and_(
                         Question.question_id == I18nQuestion.question_id,
-                        I18nQuestion.lang_code == request.locale_name,
+                        I18nQuestion.lang_code == langActive,
                     ),
                     isouter=True,
                 )
@@ -155,7 +162,7 @@ def getQuestionsByType(projectId, request):
                             I18nQuestion,
                             and_(
                                 Question.question_id == I18nQuestion.question_id,
-                                I18nQuestion.lang_code == request.locale_name,
+                                I18nQuestion.lang_code == langActive,
                             ),
                             isouter=True,
                         )

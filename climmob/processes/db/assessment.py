@@ -1048,7 +1048,7 @@ def generateStructureForInterfaceForms(
     langActive = getPrjLangDefaultInProject(projectId, request)
     if langActive:
         langActive = langActive["lang_code"]
-        langPhrases = langActive["lang_code"]
+        langPhrases = langActive
     else:
         langActive = request.locale_name
         langPhrases = request.locale_name

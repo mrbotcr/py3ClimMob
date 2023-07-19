@@ -339,7 +339,11 @@ class assessment_view(privateView):
                     langActive = self.request.locale_name
 
             data, finalCloseQst = getDataFormPreview(
-                self, activeProjectUser, activeProjectId, langActive, assessmentid
+                self,
+                activeProjectUser,
+                activeProjectId,
+                language=langActive,
+                assessmentid=assessmentid,
             )
 
             dictreturn = {
@@ -425,7 +429,11 @@ class assessmentFormCreation_view(privateView):
                 template = env.get_template("previewForm.jinja2")
 
                 data, finalCloseQst = getDataFormPreview(
-                    self, activeProjectUser, activeProjectId, langActive, assessmentid
+                    self,
+                    activeProjectUser,
+                    activeProjectId,
+                    language=langActive,
+                    assessmentid=assessmentid,
                 )
 
                 info = {

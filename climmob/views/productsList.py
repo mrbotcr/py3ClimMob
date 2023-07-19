@@ -27,6 +27,7 @@ from climmob.processes import (
     generateStructureForInterfaceForms,
     get_registry_logs,
     get_assessment_logs,
+    getPrjLangDefaultInProject,
 )
 from climmob.products import product_found
 from climmob.products.analysisdata.analysisdata import create_datacsv
@@ -150,6 +151,14 @@ class generateProductView(privateView):
 
         activeProjectData = getActiveProject(self.user.login, self.request)
         languages = activeProjectData["languages"]
+
+        langDefault = getPrjLangDefaultInProject(
+            activeProjectData["project_id"], self.request
+        )
+        if langDefault:
+            langDefault = langDefault["lang_code"]
+        else:
+            langDefault = self.request.locale_name
 
         if not activeProjectData:
             raise HTTPNotFound()
@@ -494,6 +503,7 @@ class generateProductView(privateView):
                 activeProjectData["owner"]["user_name"],
                 activeProjectData["project_id"],
                 createAutoRegistry=False,
+                language=langDefault,
             )
             dataworking["project_registry"] = dataRegistry
             dataAssessments = getProjectAssessments(
@@ -504,7 +514,8 @@ class generateProductView(privateView):
                     self,
                     activeProjectData["owner"]["user_name"],
                     activeProjectData["project_id"],
-                    assessment["ass_cod"],
+                    language=langDefault,
+                    assessmentid=assessment["ass_cod"],
                 )
                 assessment["Questions"] = dataAssessmentsQuestions
             dataworking["project_assessment"] = dataAssessments
@@ -611,7 +622,7 @@ class generateProductView(privateView):
                 self,
                 activeProjectData["owner"]["user_name"],
                 activeProjectData["project_id"],
-                assessment_id,
+                assessmentid=assessment_id,
             )
 
             for plugin in p.PluginImplementations(p.IExplanationKit):

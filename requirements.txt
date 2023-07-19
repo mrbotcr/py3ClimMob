@@ -128,10 +128,10 @@ pyxform==1.11.1
 PyYAML==6.0
 qrcode==7.3.1
 qrtools==0.0.2
-redis==4.4.0
+redis==4.4.4
 regex==2022.10.31
 repoze.lru==0.7
-requests==2.28.1
+requests==2.31.0
 rutter==0.4
 scipy==1.10.0
 selectors2==2.0.2

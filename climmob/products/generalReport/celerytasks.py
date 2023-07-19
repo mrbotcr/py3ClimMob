@@ -42,6 +42,8 @@ def createGeneralReport(locale, user, path, project, projectDetails):
     _("Pending step")
     _("Combinations included in the project")
     _("Section")
+    _("Project details")
+    _("Data collection moment")
 
     data = {
         "date": datetime.today().strftime("%d-%m-%Y"),
