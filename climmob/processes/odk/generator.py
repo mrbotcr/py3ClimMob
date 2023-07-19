@@ -1753,7 +1753,9 @@ def generateODKFile(
                 print("****generateODKFile**Query options******")
                 bk_lang = language
                 if not bk_lang:
-                    bk_lang = "en"
+                    bk_lang = getPrjLangDefaultInProject(projectId, request)[
+                        "lang_code"
+                    ]
 
                 sql = (
                     " SELECT qstoption.value_code, coalesce(i18n_qstoption.value_desc, qstoption.value_desc) as value_desc,qstoption.value_isother,qstoption.value_order "

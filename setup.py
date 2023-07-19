@@ -193,7 +193,7 @@ tests_require = [
 
 setup(
     name="climmob",
-    version="3.8.1",
+    version="3.9.0",
     description="Climmob",
     long_description=README + "\n\n" + CHANGES,
     classifiers=[

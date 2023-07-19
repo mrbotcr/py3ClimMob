@@ -1,9 +1,10 @@
-FROM alliancecostarica/climmob_base:20230106
+FROM alliancecostarica/climmob_base:20230602
 
 MAINTAINER Alliance Bioversity-CIAT
 
 WORKDIR /opt/new_r_code
 RUN git pull origin master
+RUN Rscript /root/R_packages_installation/check_R_libraries.R
 
 WORKDIR /opt
 RUN mkdir climmob_repository && mkdir climmob_log && mkdir climmob_celery && mkdir climmob_plugins && mkdir climmob_gunicorn && mkdir climmob_config
