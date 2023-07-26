@@ -1,3 +1,4 @@
+import datetime
 import json
 import os
 import uuid
@@ -679,11 +680,24 @@ def ApiAssessmentPushProcess(self, structure, dataworking, activeProjectId):
                 if obligatoryKeys:
 
                     dataInParams = True
+                    paramsWithoutData = []
                     for key in obligatoryQuestions:
                         if _json[key].strip(" ") == "":
                             dataInParams = False
+                            paramsWithoutData.append(key)
 
                     if dataInParams:
+
+                        if not "clm_start" in _json.keys() or _json["clm_start"] == "":
+                            _json["clm_start"] = datetime.datetime.now().strftime(
+                                "%Y-%m-%d %H:%M:%S"
+                            )
+
+                        if not "clm_end" in _json.keys() or _json["clm_end"] == "":
+                            _json["clm_end"] = datetime.datetime.now().strftime(
+                                "%Y-%m-%d %H:%M:%S"
+                            )
+
                         if _json[searchQST163].isdigit():
                             # Validation for repeat response
                             for _group in groupsForValidation:
@@ -773,7 +787,9 @@ def ApiAssessmentPushProcess(self, structure, dataworking, activeProjectId):
                         response = Response(
                             status=401,
                             body=self._(
-                                "Error in the JSON. Not all parameters have data."
+                                "Error in the JSON. Not all parameters have data. Check the columns: {}.".format(
+                                    str(", ".join(map(str, paramsWithoutData)))
+                                )
                             ),
                         )
                         return response
@@ -781,7 +797,9 @@ def ApiAssessmentPushProcess(self, structure, dataworking, activeProjectId):
                     response = Response(
                         status=401,
                         body=self._(
-                            "Error in the JSON sent by parameter. Check the obligatory Keys."
+                            "Error in the JSON sent by parameter. Check the obligatory Keys: {}.".format(
+                                str(", ".join(map(str, obligatoryQuestions)))
+                            )
                         ),
                     )
                     return response

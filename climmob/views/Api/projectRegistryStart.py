@@ -1137,7 +1137,7 @@ class pushJsonToRegistry_view(apiView):
 
 def ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId):
     if structure:
-        obligatoryQuestions = ["clm_start", "clm_end"]
+        obligatoryQuestions = []
         possibleQuestions = ["clm_start", "clm_end"]
         searchQST162 = ""
         for section in structure:
@@ -1168,11 +1168,23 @@ def ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId):
                 if obligatoryKeys:
 
                     dataInParams = True
+                    paramsWithoutData = []
                     for key in obligatoryQuestions:
                         if _json[key].strip(" ") == "":
                             dataInParams = False
+                            paramsWithoutData.append(key)
 
                     if dataInParams:
+
+                        if not "clm_start" in _json.keys() or _json["clm_start"] == "":
+                            _json["clm_start"] = datetime.datetime.now().strftime(
+                                "%Y-%m-%d %H:%M:%S"
+                            )
+
+                        if not "clm_end" in _json.keys() or _json["clm_end"] == "":
+                            _json["clm_end"] = datetime.datetime.now().strftime(
+                                "%Y-%m-%d %H:%M:%S"
+                            )
 
                         if _json[searchQST162].isdigit():
                             if int(_json[searchQST162]) <= getProjectNumobs(
@@ -1252,7 +1264,9 @@ def ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId):
                         response = Response(
                             status=401,
                             body=self._(
-                                "Error in the JSON. Not all parameters have data."
+                                "Error in the JSON. Not all parameters have data. Check the columns: {}.".format(
+                                    str(", ".join(map(str, paramsWithoutData)))
+                                )
                             ),
                         )
                         return response
@@ -1260,8 +1274,9 @@ def ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId):
                     response = Response(
                         status=401,
                         body=self._(
-                            "Error in the JSON sent by parameter. Check the obligatory Keys: "
-                            + str(obligatoryQuestions)
+                            "Error in the JSON sent by parameter. Check the obligatory Keys: {}.".format(
+                                str(", ".join(map(str, obligatoryQuestions)))
+                            )
                         ),
                     )
                     return response
