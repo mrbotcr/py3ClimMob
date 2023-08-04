@@ -1,0 +1,170 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob | Projects summary") }}</title>
+{% endblock title %}
+
+{% block css %}
+    {% cssresource request,'coreresources','footable' %}
+{% endblock css %}
+
+{% block topScripts %}
+    {% jsresource request,'coreresources','toastr' %}
+    {% jsresource request,'coreresources','footable' %}
+{% endblock topScripts %}
+
+{% block pageheading %}
+    {% set _title= _("Projects summary") %}
+{#    {% set _linkWiki="https://climmob.net/blog/wiki/link-climmob-with-odk-collect/" %}#}
+    {% include 'snippets/menuheading.jinja2' %}
+{% endblock pageheading%}
+
+{% block pagecontent %}
+
+    <style>
+    .pagination > .active > a {
+        background-color: #1ab394 !important;
+        color: white !important;
+    }
+    .footable.breakpoint > tbody > tr > td > span.footable-toggle {
+        color: #1ab394
+    }
+    </style>
+
+    {% if not lastReport or lastReport[0]["state"] =="Success" or lastReport[0]["state"] =="Fail."%}
+        <div class="row">
+            {% if lastReport and lastReport[0]["state"] =="Success"%}
+                <div class="col-lg-6 ">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>{{ _("Download report") }}</h5>
+                        </div>
+                        <div class="ibox-content text-center" >
+                            <p>{{ _("This report was generated on {}.").format(lastReport[0].datetime_added) }}</p>
+                            <button class="btn btn-success  dim btn-large-dim btn-outline" id="btn_download_report"><i class="fa fa-download"></i></button>
+
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="col-lg-6 ">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>{{ _("Generate report") }}</h5>
+                    </div>
+                    <div class="ibox-content text-center" >
+                        {% if lastReport and lastReport[0]["state"] =="Fail."%}
+                            <div class="alert alert-danger alert-dismissable">
+                                <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button> {{ _("There was an error generating the report, try again.") }}</div>
+                        {% endif %}
+
+                        <form method="post" class="form-horizontal" action="{{ action }}">
+                            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                            <p>{{ _("This process will take several minutes, so it will run in the background and when ready the results will be displayed.") }}</p>
+                            <button class="btn btn-warning  dim btn-large-dim btn-outline" name="btn_generate_report" type="submit"><i class="fa fa-play"></i></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if lastReport and lastReport[0]["state"] =="Pending..." %}
+        <div class="row">
+            <div class="col-lg-6 ">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>{{ _("Generating report") }}</h5>
+                    </div>
+                    <div class="ibox-content text-center" >
+                        <p>{{ _("The report generation process is running, wait a moment until the process is finished, or try refreshing the screen with the following button to verify if the process has finished.") }}</p>
+                        <button class="btn btn-info  dim btn-large-dim btn-outline" id="btn_refresh_report"  ><i class="fa fa-refresh"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if lastReport and lastReport[0]["state"] =="Success"%}
+
+        <div class="row">
+            <div class="col-lg-12 ">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h5>{{ _("Projects summary") }}</h5>
+                    </div>
+                    <div class="ibox-content" >
+                        <input type="text" class="form-control form-control-sm m-b-xs" id="filter" placeholder="Search in table">
+                        <table class="footable table table-stripped" data-page-size="50" data-filter=#filter>
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th data-toggle="true" style="text-align: center">{{ _("User owner") }}</th>
+                                    <th data-hide="all" style="text-align: center">{{ _("ID (Internal)") }}</th>
+                                    <th style="text-align: center">{{ _("Project ID") }}</th>
+                                    <th style="text-align: center">{{ _("Name") }}</th>
+                                    <th style="text-align: center">{{ _("Trial coordinator") }}</th>
+                                    <th data-hide="all" style="text-align: center">{{ _("Organization") }}</th>
+                                    <th style="text-align: center">{{ _("Trial coordinator's email") }}</th>
+                                    <th style="text-align: center">{{ _("Date") }}</th>
+                                    <th style="text-align: center">{{ _("Country") }}</th>
+                                    <th data-hide="all" style="text-align: center">{{ _("Number of observations") }}</th>
+                                    <th data-hide="all" style="text-align: center">{{ _("Number of registered participants") }}</th>
+                                    <th data-hide="all" style="text-align: center">{{ _("Crop") }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for project in listOfProjects %}
+                                    <tr class="gradeA">
+                                        <th>{{ loop.index }}</th>
+                                        <td>{{ project["user_owner"] }}</td>
+                                        <td>{{ project["project_id"] }}</td>
+                                        <td>{{ project["project_cod"] }}</td>
+                                        <td>{{ project["project_name"] }}</td>
+                                        <td>{{ project["project_pi"] }}</td>
+                                        <td>{{ project["project_piorganization"] }}</td>
+                                        <td>{{ project["project_piemail"] }}</td>
+                                        <td>{{ project["project_date"] }}</td>
+                                        <td>{{ project["project_country"] }}</td>
+                                        <td>{{ project["project_numobs"] }}</td>
+                                        <td>{{ project["NumberOfRegisteredParticipants"] }}</td>
+                                        <td>{{ project["crop"] }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="13" class="text-center">
+                                        <ul class="pagination float-right"></ul>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <script>
+
+        $(document).ready(function() {
+
+            $('.footable').footable();
+
+        });
+
+        $("#btn_download_report").click(function (){
+            {% if lastReport %}
+            location.href = "{{ request.route_url('downloadProjectsSummary', celery_taskid=lastReport[0].celery_taskid, product_id= lastReport[0].product_id) }}"
+            {% endif %}
+        })
+
+        $("#btn_refresh_report").click(function (){
+            {% if lastReport %}
+            location.href = "{{ request.url }}"
+            {% endif %}
+        })
+    </script>
+{% endblock pagecontent %}

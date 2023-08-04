@@ -189,7 +189,7 @@ class Products(Base):
         {"mysql_engine": "InnoDB", "mysql_charset": "utf8"},
     )
 
-    project_id = Column(Unicode(64), nullable=False)
+    project_id = Column(Unicode(64), nullable=True)
     celery_taskid = Column(Unicode(80), primary_key=True, nullable=False)
     process_name = Column(Unicode(80), nullable=False)
     product_id = Column(Unicode(80), primary_key=True, nullable=False)

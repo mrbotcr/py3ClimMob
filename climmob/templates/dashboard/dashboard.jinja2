@@ -114,6 +114,12 @@
                                 </li>
                             {% endif %}
 
+                            {% if activeUser.admin == 1 %}
+                                <li id="nav_projectssummary" {% if sectionActive == "projectssummary" %}class="active" {% endif %}>
+                                    <a href="{{ request.route_url('projectsSummary') }}"><i class="fa fa-database"></i> <span class="nav-label">{{ _("Projects summary") }}</span></a>
+                                </li>
+                            {% endif %}
+
                             {% block extra_option_menu_user_administration %}
 
                             {% endblock extra_option_menu_user_administration %}

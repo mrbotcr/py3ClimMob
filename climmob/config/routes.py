@@ -262,6 +262,10 @@ from climmob.views.Api.languages import (
     readAllGeneralPhrases_view,
     changeGeneralPhrases_view,
 )
+from climmob.views.projectsSummary.projectsSummary import (
+    projectsSummary_view,
+    downloadProjectsSummary_view,
+)
 
 # -------Api-------#
 
@@ -1155,6 +1159,24 @@ def loadRoutes(config):
             "view": cloneProjects_view,
             "renderer": "cloneProjects/cloneProjects.jinja2",
         }
+    )
+
+    routes.append(
+        {
+            "name": "projectsSummary",
+            "path": "/projectsSummary",
+            "view": projectsSummary_view,
+            "renderer": "projectsSummary/projectsSummary.jinja2",
+        }
+    )
+
+    routes.append(
+        addRoute(
+            "downloadProjectsSummary",
+            "/download/{celery_taskid}/{product_id}/downloadProjectsSummary",
+            downloadProjectsSummary_view,
+            None,
+        )
     )
 
     # --------------------------------------------------------ClimMob API--------------------------------------------------------#

@@ -371,7 +371,7 @@ def register_products(config):
     addMetadataToProduct(
         datajson,
         "Licence",
-        "Copyright 2022, MrBot Software Solutions",
+        "Copyright 2023, MrBot Software Solutions",
     )
     products.append(datajson)
 
@@ -383,8 +383,20 @@ def register_products(config):
     addMetadataToProduct(
         infojson,
         "Licence",
-        "Copyright 2022, MrBot Software Solutions",
+        "Copyright 2023, MrBot Software Solutions",
     )
     products.append(infojson)
+
+    projectssummary = addProduct(
+        "projectssummary", "Summary of all projects registered in ClimMob."
+    )
+    addMetadataToProduct(projectssummary, "author", "Brandon Madriz")
+    addMetadataToProduct(projectssummary, "version", "1.0")
+    addMetadataToProduct(
+        projectssummary,
+        "Licence",
+        "Copyright 2023, MrBot Software Solutions",
+    )
+    products.append(projectssummary)
 
     return products
