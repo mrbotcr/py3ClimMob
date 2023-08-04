@@ -424,7 +424,13 @@ class ODKExcelFile(object):
             return False, option_name
 
     def addGroup(
-        self, name, label, appearance="field-list", inGroup=None, inRepeat=None
+        self,
+        name,
+        label,
+        appearance="field-list",
+        inGroup=None,
+        inRepeat=None,
+        relevant="",
     ):
         exist = self.root.findall(".//group[@name='" + name + "']")
         if not exist:
@@ -441,6 +447,8 @@ class ODKExcelFile(object):
                         group.set(language["label"], language["value"])
 
             group.set("appearance", appearance)
+            group.set("relevant", relevant)
+
             if inGroup is None and inRepeat is None:
                 self.root.append(group)
             else:
@@ -510,6 +518,13 @@ class ODKExcelFile(object):
                         dictOfColumns["appearance"],
                         element.get("appearance"),
                     )
+
+                    self.sheet1.write(
+                        self.surveyRow,
+                        dictOfColumns["relevant"],
+                        element.get("relevant"),
+                    )
+
                 if element.tag == "repeat":
                     self.sheet1.write(
                         self.surveyRow, dictOfColumns["type"], "begin repeat"
@@ -624,6 +639,11 @@ class ODKExcelFile(object):
                     )
                     self.sheet1.write(
                         self.surveyRow,
+                        dictOfColumns["relevant"],
+                        element.get("relevant"),
+                    )
+                    self.sheet1.write(
+                        self.surveyRow,
                         dictOfColumns["required"],
                         element.get("required"),
                     )
@@ -718,6 +738,7 @@ class ODKExcelFile(object):
         inRepeat=None,
         constraint="",
         calculation="",
+        relevant="",
     ):
         options = {
             1: "text",
@@ -772,12 +793,14 @@ class ODKExcelFile(object):
                     for language in self.languages:
                         question.set("hint_{}".format(language["lang_code"]), hint)
                 else:
-                    for language in hint:
-                        question.set(language["hint"], language["value"])
+                    if hint:
+                        for language in hint:
+                            question.set(language["hint"], language["value"])
 
             question.set("type", ODKType)
             question.set("constraint", constraint)
             question.set("calculation", calculation)
+            question.set("relevant", relevant)
 
             if type == 8:
                 question.set("appearance", "autocomplete")
@@ -1106,7 +1129,6 @@ def getTranslationOrText(
 
                         dictTraduction["value"] = val2
                 except:
-                    print("ERROR:******************************52****************")
                     dictTraduction["value"] = text
 
                 qstDesc.append(dictTraduction)
@@ -1236,6 +1258,28 @@ def generateODKFile(
 
     prjLanguages = getPrjLangInProject(projectId, request)
 
+    consentInfo = {}
+    if formID[:3] == "REG":
+        consentInfo = mapFromSchema(
+            request.dbsession.query(Registry, Question)
+            .filter(Registry.project_id == projectId)
+            .filter(Registry.question_id == 164)
+            .filter(Registry.question_id == Question.question_id)
+            .first()
+        )
+    else:
+        if formID[:3] == "ASS":
+            ass_cod = formID.split("_")[3]
+            print(ass_cod)
+            consentInfo = mapFromSchema(
+                request.dbsession.query(AssDetail, Question)
+                .filter(AssDetail.project_id == projectId)
+                .filter(AssDetail.ass_cod == ass_cod)
+                .filter(AssDetail.question_id == 164)
+                .filter(AssDetail.question_id == Question.question_id)
+                .first()
+            )
+
     if prjLanguages:
         language = None
 
@@ -1279,7 +1323,17 @@ def generateODKFile(
 
     # Edited by Brandon
     for group in groups:
-        excelFile.addGroup("grp_" + str(group.section_id), group.section_name)
+        relevant = ""
+        if (
+            consentInfo
+            and consentInfo["section_id"] != group.section_id
+            and consentInfo["section_id"] < group.section_id
+        ):
+            relevant = "${" + consentInfo["question_code"] + "} = '1'"
+
+        excelFile.addGroup(
+            "grp_" + str(group.section_id), group.section_name, relevant=relevant
+        )
         if group.section_id == selectedPackageQuestionGroup:
             excelFile.addGroup(
                 "grp_validation",
@@ -1291,6 +1345,7 @@ def generateODKFile(
                     request,
                     specificLanguage=language,
                 ),
+                relevant=relevant,
             )
 
     if formID[:3] == "REG":
@@ -1349,6 +1404,18 @@ def generateODKFile(
     # End of edition
 
     for question in questions:
+
+        relevant = ""
+        print(consentInfo)
+        print(question)
+        if (
+            consentInfo
+            and consentInfo["section_id"] == question.section_id
+            and question.question_id not in [162, 163, 164, 199]
+            and question.question_order > consentInfo["question_order"]
+        ):
+            relevant = "${" + consentInfo["question_code"] + "} = '1'"
+
         repeatQuestion = 1
         if question.question_quantitative == 1:
             repeatQuestion = numComb
@@ -1382,6 +1449,7 @@ def generateODKFile(
                         question.question_unit,
                         question.question_requiredvalue,
                         "grp_" + str(question.section_id),
+                        relevant=relevant,
                     )
                 else:
                     # print "EL PACKAGE CODE"
@@ -1405,6 +1473,7 @@ def generateODKFile(
                         + "-' and contains(.,'-"
                         + projectCod
                         + "~')",
+                        relevant=relevant,
                     )
             else:
                 if question.question_dtype == 8:
@@ -1420,6 +1489,7 @@ def generateODKFile(
                         ),
                         29,
                         inGroup="grp_" + str(question.section_id),
+                        relevant=relevant,
                     )
 
                     qstDesc = translateQuestion(
@@ -1433,6 +1503,7 @@ def generateODKFile(
                         question.question_unit,
                         question.question_requiredvalue,
                         "grp_" + str(question.section_id),
+                        relevant=relevant,
                     )
                     farmers = getRegisteredFarmers(
                         userOwner, projectId, projectCod, request
@@ -1454,6 +1525,7 @@ def generateODKFile(
                             + "}, '${"
                             + question.question_code
                             + "}')",
+                            relevant=relevant,
                         )
 
                 if question.question_dtype == 9:
@@ -1465,6 +1537,7 @@ def generateODKFile(
                             "",
                             question.question_requiredvalue,
                             "grp_" + str(question.section_id),
+                            relevant=relevant,
                         )
                         for opt in range(0, numComb):
                             excelFile.addOption(
@@ -1513,6 +1586,7 @@ def generateODKFile(
                             "",
                             question.question_requiredvalue,
                             "grp_" + str(question.section_id),
+                            relevant=relevant,
                         )
                         # EDITED BY BRANDON
                         constraintGen = ""
@@ -1554,6 +1628,7 @@ def generateODKFile(
                             question.question_requiredvalue,
                             "grp_" + str(question.section_id),
                             constraint=constraintGen,
+                            relevant=relevant,
                         )
                         for opt in range(0, numComb):
                             excelFile.addOption(
@@ -1640,6 +1715,7 @@ def generateODKFile(
                                 question.question_requiredvalue,
                                 "grp_" + str(question.section_id),
                                 constraint=constraintGen,
+                                relevant=relevant,
                             )
                             if constraintGen == "":
                                 constraintGen += (
@@ -1723,6 +1799,7 @@ def generateODKFile(
                             "",
                             question.question_requiredvalue,
                             "grp_" + str(question.section_id),
+                            relevant=relevant,
                         )
                         excelFile.addOption(
                             "perf_" + question.question_code + "_" + str(opt + 1),
@@ -1818,6 +1895,7 @@ def generateODKFile(
                         ),
                         0,
                         "grp_" + str(question.section_id),
+                        relevant=relevant,
                     )
 
     excelFile.addQuestion(
@@ -2105,7 +2183,7 @@ def generateAssessmentFiles(
         sql = (
             " SELECT q.question_code, COALESCE(i.question_desc,q.question_desc) as question_desc,COALESCE(i.question_unit,q.question_unit) as question_unit, q.question_dtype, q.question_twoitems, "
             " a.section_id, COALESCE(i.question_posstm, q.question_posstm) as question_posstm, COALESCE(i.question_negstm ,q.question_negstm) as question_negstm, q.question_moreitems, COALESCE(i.question_perfstmt, q.question_perfstmt) as question_perfstmt, "
-            " q.question_requiredvalue, q.question_id, q.question_tied, q.question_notobserved, q.question_quantitative "
+            " q.question_requiredvalue, a.question_order, q.question_id, q.question_tied, q.question_notobserved, q.question_quantitative "
             " FROM assdetail a, question q "
             " LEFT JOIN i18n_question i "
             " ON        q.question_id = i.question_id "

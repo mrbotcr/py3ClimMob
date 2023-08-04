@@ -263,7 +263,7 @@
                                                                             {% endif %}
                                                                         {% endfor %}
 
-                                                                        <td><input class="form-control txt{{ lang.lang_code }}" type="text" id="value_desc_{{ option.value_code }}_{{ lang.lang_code }}" name="value_desc_{{ option.value_code }}_{{ lang.lang_code }}" value="{{ vars.value }}" oninvalid="this.setCustomValidity('{{ _("Write the option.") }}')" onchange="this.setCustomValidity('')"></td>
+                                                                        <td><input class="form-control txt{{ lang.lang_code }}" type="text" id="value_desc_{{ option.value_code }}_{{ lang.lang_code }}" name="value_desc_{{ option.value_code }}_{{ lang.lang_code }}" value="{{ vars.value }}" oninvalid="this.setCustomValidity('{{ _("Write the option.") }}')" onchange="this.setCustomValidity('')" {% if not allowEditing %}readonly{% endif %}></td>
 
                                                                     </tr>
                                                                 {% endfor %}

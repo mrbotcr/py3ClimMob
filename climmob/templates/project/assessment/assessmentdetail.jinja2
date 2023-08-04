@@ -224,6 +224,14 @@
                             return false
                         {% endif %}
 
+                        if(node.id =="QST163" || node.id=="QST164")
+                        {
+                            if(node_parent.id !="GRP1")
+                            {
+                                return false
+                            }
+                        }
+
                         if(node.parent =="#"){
                             if(node.id.substring(0,2)=="j2")
                             return false;
