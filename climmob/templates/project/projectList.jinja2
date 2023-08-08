@@ -31,7 +31,13 @@
                     <div class="ibox-title">
                         <h5>{{ _("All projects assigned to this account") }}</h5>
                         <div class="ibox-tools">
-                            <a class="btn btn-primary" href="{{ request.route_url('newproject') }}">{{ _("Add new project") }}</a>
+                            {% set createBoton = true %}
+                            {% if request.registry.settings.get("projects.limit", "false") == "true" and numberOfProjects >= request.registry.settings.get("projects.quantity", 0)|int%}
+                                {% set createBoton = false %}
+                            {% endif %}
+                            {% if createBoton == true %}
+                                <a class="btn btn-primary" href="{{ request.route_url('newproject') }}">{{ _("Add new project") }}</a>
+                            {% endif %}
                         </div>
                     </div>
                     <div class="ibox-content">

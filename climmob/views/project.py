@@ -41,6 +41,7 @@ from climmob.processes import (
     getListOfLanguagesByUser,
     addPrjLang,
     deleteAllPrjLang,
+    getTotalNumberOfProjectsInClimMob,
 )
 from climmob.views.classes import privateView
 
@@ -64,11 +65,18 @@ class projectList_view(privateView):
             "activeProject": getActiveProject(self.user.login, self.request),
             "userProjects": getUserProjects(self.user.login, self.request),
             "sectionActive": "projectlist",
+            "numberOfProjects": getTotalNumberOfProjectsInClimMob(self.request),
         }
 
 
 class newProject_view(privateView):
     def processView(self):
+
+        if self.request.registry.settings.get("projects.limit", "false") == "true":
+            if getTotalNumberOfProjectsInClimMob(self.request) >= int(
+                self.request.registry.settings.get("projects.quantity", 0)
+            ):
+                raise HTTPNotFound()
 
         dataworking = {}
         newproject = False
