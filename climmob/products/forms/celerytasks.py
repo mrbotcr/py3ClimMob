@@ -27,7 +27,6 @@ def createDocumentForm(
     dataPreviewInMultipleLanguages,
     form,
     code,
-    packages,
     listOfLabels,
     settings,
 ):

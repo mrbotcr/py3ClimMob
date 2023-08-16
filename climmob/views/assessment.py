@@ -338,6 +338,29 @@ class assessment_view(privateView):
                 else:
                     langActive = self.request.locale_name
 
+            if "btn_download_doc" in self.request.POST:
+
+                print("Aquiii")
+                projectDetails = getActiveProject(self.user.login, self.request)
+                createDocumentForm(
+                    self,
+                    activeProjectUser,
+                    activeProjectId,
+                    activeProjectCod,
+                    assessmentid,
+                    projectDetails,
+                )
+
+                self.returnRawViewResult = True
+                return HTTPFound(
+                    location=self.request.route_url(
+                        "productList",
+                        _query={
+                            "product1": "create_from_Assessment_{}".format(assessmentid)
+                        },
+                    )
+                )
+
             data, finalCloseQst = getDataFormPreview(
                 self,
                 activeProjectUser,
@@ -547,52 +570,19 @@ class startAssessments_view(privateView):
                             )
 
                             print("getPackages")
-                            ncombs, packages = getPackages(
-                                activeProjectUser, activeProjectId, self.request
-                            )
+
                             print("getDataFormPreview")
-                            if languages:
-                                for lang in languages:
-                                    data, finalCloseQst = getDataFormPreview(
-                                        self,
-                                        activeProjectUser,
-                                        activeProjectId,
-                                        assessmentid=assessment_id,
-                                        language=lang["lang_code"],
-                                    )
 
-                                    lang["Data"] = data
-
-                                dataPreviewInMultipleLanguages = languages
-                            else:
-                                data, finalCloseQst = getDataFormPreview(
-                                    self,
-                                    activeProjectUser,
-                                    activeProjectId,
-                                    assessmentid=assessment_id,
-                                    language=self.request.locale_name,
-                                )
-                                dataPreviewInMultipleLanguages = [
-                                    {
-                                        "lang_code": self.request.locale_name,
-                                        "lang_name": "Default",
-                                        "Data": data,
-                                    }
-                                ]
-
-                            print("create_document_form")
-                            create_document_form(
-                                self.request,
-                                self.request.locale_name,
+                            createDocumentForm(
+                                self,
+                                languages,
                                 activeProjectUser,
                                 activeProjectId,
                                 activeProjectCod,
-                                "Assessment",
                                 assessment_id,
-                                dataPreviewInMultipleLanguages,
-                                packages,
-                                listOfLabels,
+                                projectDetails,
                             )
+
                             print("Returning")
 
                             for plugin in p.PluginImplementations(p.IForm):
@@ -639,6 +629,65 @@ class startAssessments_view(privateView):
                     "redirect": redirect,
                     "onlyError": onlyError,
                 }
+
+
+def createDocumentForm(
+    self,
+    activeProjectUser,
+    activeProjectId,
+    activeProjectCod,
+    assessment_id,
+    projectDetails,
+):
+    languages = projectDetails["languages"]
+
+    listOfLabels = [
+        projectDetails["project_label_a"],
+        projectDetails["project_label_b"],
+        projectDetails["project_label_c"],
+    ]
+
+    if languages:
+        for lang in languages:
+            data, finalCloseQst = getDataFormPreview(
+                self,
+                activeProjectUser,
+                activeProjectId,
+                assessmentid=assessment_id,
+                language=lang["lang_code"],
+            )
+
+            lang["Data"] = data
+
+        dataPreviewInMultipleLanguages = languages
+    else:
+        data, finalCloseQst = getDataFormPreview(
+            self,
+            activeProjectUser,
+            activeProjectId,
+            assessmentid=assessment_id,
+            language=self.request.locale_name,
+        )
+        dataPreviewInMultipleLanguages = [
+            {
+                "lang_code": self.request.locale_name,
+                "lang_name": "Default",
+                "Data": data,
+            }
+        ]
+
+    print("create_document_form")
+    create_document_form(
+        self.request,
+        self.request.locale_name,
+        activeProjectUser,
+        activeProjectId,
+        activeProjectCod,
+        "Assessment",
+        assessment_id,
+        dataPreviewInMultipleLanguages,
+        listOfLabels,
+    )
 
 
 class closeAssessment_view(privateView):

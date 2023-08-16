@@ -177,7 +177,6 @@ class createProjectAssessment_view(apiView):
                                                 "Assessment",
                                                 dataworking["ass_cod"],
                                                 dataPreviewInMultipleLanguages,
-                                                packages,
                                                 listOfLabels,
                                             )
 

@@ -28,12 +28,11 @@ from climmob.processes import (
 )
 from climmob.products.colors.colors import create_colors_cards
 from climmob.products.fieldagents.fieldagents import create_fieldagents_report
-from climmob.products.forms.form import create_document_form
 from climmob.products.packages.packages import create_packages_excell
 from climmob.products.qrpackages.qrpackages import create_qr_packages
 from climmob.products.randomization.randomization import create_randomization
 from climmob.views.classes import privateView
-from climmob.views.registry import getDataFormPreview
+from climmob.views.registry import getDataFormPreview, createDocumentForm
 
 
 class projectCombinations_view(privateView):
@@ -337,33 +336,13 @@ def startTheRegistry(
         )
         time.sleep(1)
 
-        if languages:
-            for lang in languages:
-                data, finalCloseQst = getDataFormPreview(
-                    self, userOwner, projectId, language=lang["lang_code"]
-                )
-
-                lang["Data"] = data
-
-            dataPreviewInMultipleLanguages = languages
-        else:
-            data, finalCloseQst = getDataFormPreview(
-                self, userOwner, projectId, language=locale
-            )
-            dataPreviewInMultipleLanguages = [
-                {"lang_code": locale, "lang_name": "Default", "Data": data}
-            ]
-
-        create_document_form(
-            self.request,
-            locale,
+        createDocumentForm(
+            languages,
+            self,
             userOwner,
             projectId,
+            locale,
             projectCod,
-            "Registration",
-            "",
-            dataPreviewInMultipleLanguages,
-            packages,
             listOfLabelsForPackages,
         )
 

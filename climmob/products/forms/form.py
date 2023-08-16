@@ -16,7 +16,6 @@ def create_document_form(
     form,
     code,
     dataPreviewInMultipleLanguages,
-    packages,
     listOfLabels,
 ):
     settings = {}
@@ -37,7 +36,6 @@ def create_document_form(
             dataPreviewInMultipleLanguages,
             form,
             code,
-            packages,
             listOfLabels,
             settings,
         ),

@@ -370,7 +370,6 @@ class generateProductView(privateView):
                     "Registration",
                     "",
                     dataPreviewInMultipleLanguages,
-                    packages,
                     listOfLabels,
                 )
             else:
@@ -414,7 +413,6 @@ class generateProductView(privateView):
                     "Assessment",
                     assessment_id,
                     dataPreviewInMultipleLanguages,
-                    packages,
                     listOfLabels,
                 )
 

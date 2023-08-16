@@ -190,6 +190,12 @@
                 <div class="ibox-title" >
                     <h5>{{ _("Preview") }}</h5>
                     <div class="ibox-tools">
+                        {% if not onlySee %}
+                            <form class="form-horizontal" role="form" method="post" action="{{ request.url }}">
+                                <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                                <button name="btn_download_doc" type="submit" class="btn btn-success btn-rounded  btn-xs" > <b><i class="fa fa-download"></i></b> {{ _("Download form") }}</button>
+                            </form>
+                        {% endif %}
                     </div>
                 </div>
                 <div class="ibox-content " >

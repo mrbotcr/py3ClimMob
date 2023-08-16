@@ -24,11 +24,11 @@ from climmob.processes import (
     getProjectLabels,
     getPrjLangDefaultInProject,
     languageExistInTheProject,
-    getPhraseTranslationInLanguage,
 )
 from climmob.products import stopTasksByProcess
 from climmob.views.classes import privateView
 from climmob.views.question import getDictForPreview
+from climmob.products.forms.form import create_document_form
 
 
 class deleteRegistrySection_view(privateView):
@@ -254,6 +254,33 @@ class registry_view(privateView):
             else:
                 langActive = self.request.locale_name
 
+        if "btn_download_doc" in self.request.POST:
+
+            projectDetails = getActiveProject(self.user.login, self.request)
+
+            listOfLabels = [
+                projectDetails["project_label_a"],
+                projectDetails["project_label_b"],
+                projectDetails["project_label_c"],
+            ]
+
+            createDocumentForm(
+                projectDetails["languages"],
+                self,
+                activeProjectUser,
+                activeProjectId,
+                self.request.locale_name,
+                activeProjectCod,
+                listOfLabels,
+            )
+
+            self.returnRawViewResult = True
+            return HTTPFound(
+                location=self.request.route_url(
+                    "productList", _query={"product1": "create_from_Registration_"}
+                )
+            )
+
         data, finalCloseQst = getDataFormPreview(
             self, activeProjectUser, activeProjectId, langActive
         )
@@ -458,3 +485,36 @@ class getRegistrySection_view(privateView):
                 return section
 
         return {}
+
+
+def createDocumentForm(
+    languages, self, userOwner, projectId, locale, projectCod, listOfLabelsForPackages
+):
+    if languages:
+        for lang in languages:
+            data, finalCloseQst = getDataFormPreview(
+                self, userOwner, projectId, language=lang["lang_code"]
+            )
+
+            lang["Data"] = data
+
+        dataPreviewInMultipleLanguages = languages
+    else:
+        data, finalCloseQst = getDataFormPreview(
+            self, userOwner, projectId, language=locale
+        )
+        dataPreviewInMultipleLanguages = [
+            {"lang_code": locale, "lang_name": "Default", "Data": data}
+        ]
+
+    create_document_form(
+        self.request,
+        locale,
+        userOwner,
+        projectId,
+        projectCod,
+        "Registration",
+        "",
+        dataPreviewInMultipleLanguages,
+        listOfLabelsForPackages,
+    )
