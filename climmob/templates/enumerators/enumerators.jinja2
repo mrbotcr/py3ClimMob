@@ -73,23 +73,24 @@
                     {% if not reportUpload %}
 
                         <p>{{ _("1. Download the following template with the fields needed to add field agents:") }}</p>
+                        <br>
                         <div style="width: 100%; text-align: center">
                             <form class="form-horizontal " role="form" method="post" action="{{ request.path }}" enctype="multipart/form-data">
                                 <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                                 <button class="btn btn-primary " type="submit" name="btn_download_fieldagents_template" id="btn_download_fieldagents_template"> {{ _('Download template') }}</button>
                             </form>
                         </div>
-
+                        <br>
                         <p>{{ _("2. Fill in the template with the field agent information.") }}</p>
-
+                        <br>
                         <p>{{ _("3. Browse and select the template with the information and then click on the 'Upload' button.") }}</p>
 
 
                         <form class="form-horizontal " role="form" method="post" action="{{ request.path }}" enctype="multipart/form-data">
                             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
-
+                            <br>
                             <div class="form-group">
-                                <label class="col-sm-6 control-label"><b>{{ _('Data file in .xlsx format') }}</b></label>
+                                <label class="col-sm-6 control-label"><b>{{ _('Please upload your file in .xlsx format') }}</b></label>
                                 <div class="col-sm-6 ">
                                     <div class="custom-file">
                                         <input id="xlsxFieldAgents" accept="*.xlsx" name="xlsxFieldAgents" type="file" class="custom-file-input" required>
@@ -97,7 +98,7 @@
                                     </div>
                                 </div>
                             </div>
-
+                            <br>
 
                             <div style="text-align: center">
                                 <button class="btn btn-primary " type="submit" name="btn_upload_field_agents" id="btn_upload_field_agents"> {{ _('Upload') }}</button>

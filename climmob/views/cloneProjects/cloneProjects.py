@@ -14,6 +14,7 @@ from climmob.processes import (
     getTheProjectIdForOwner,
     getListOfLanguagesByUser,
     getPrjLangDefaultInProject,
+    getTotalNumberOfProjectsInClimMob,
 )
 from climmob.views.classes import privateView
 from climmob.views.project import createProjectFunction, functionCreateClone
@@ -22,6 +23,12 @@ from climmob.views.registry import getDataFormPreview
 
 class cloneProjects_view(privateView):
     def processView(self):
+
+        if self.request.registry.settings.get("projects.limit", "false") == "true":
+            if getTotalNumberOfProjectsInClimMob(self.request) >= int(
+                self.request.registry.settings.get("projects.quantity", 0)
+            ):
+                raise HTTPNotFound()
 
         dataworking = {}
         dataworking["structureToBeCloned"] = ""

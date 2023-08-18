@@ -103,7 +103,7 @@
 
                     <div class="form-group">
                         <label class="col-sm-4 control-label">{{ _("Number of participants in the project") }}</label>
-                        <div class="col-sm-8"><input type="number" min="10" class="form-control" id="newproject_numobs" required="" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} {% if not permissionForChanges %} disabled {% endif %} {% if dataworking.project_createpkgs == 2 %} readonly {% endif %} name="project_numobs" value="{{ dataworking.project_numobs }}"></div>
+                        <div class="col-sm-8"><input type="number" min="10" {% if request.registry.settings.get("projects.limit", "false") == "true" and request.registry.settings.get("project.maximumnumberofobservations", 0)|int > 10%}max="{{ request.registry.settings.get("project.maximumnumberofobservations", 0)|int }}"{% endif %} class="form-control" id="newproject_numobs" required="" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} {% if not permissionForChanges %} disabled {% endif %} {% if dataworking.project_createpkgs == 2 %} readonly {% endif %} name="project_numobs" value="{{ dataworking.project_numobs }}"></div>
                     </div>
 
                     <div class="hr-line-dashed"></div>
@@ -237,7 +237,7 @@
                                     <td style="width: 80%">
                                         <select data-placeholder="{{ _("Choose languages..") }}" class="chosen-select" multiple style="width:100%;" tabindex="4" name="project_languages" id="project_languages" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} {% if not permissionForChanges %} disabled {% endif %}>
                                             {% for lang in listOfLanguages %}
-                                                <option value="{{ lang.lang_code }}" {% for selectedLang in dataworking["languages"] %} {% if lang.lang_code == selectedLang["lang_code"] %}selected{% endif %} {% endfor %}>{{ lang.lang_name }}</option>
+                                                <option value="{{ lang.lang_code }}" {% for selectedLang in dataworking["languages"] %} {% if lang.lang_code == selectedLang["lang_code"] %}selected{% endif %} {% endfor %} {% for selectedLang in dataworking["project_languages"] %} {% if lang.lang_code == selectedLang %}selected{% endif %} {% endfor %}>{{ lang.lang_name }}</option>
                                             {% endfor %}
                                         </select>
                                     </td>
