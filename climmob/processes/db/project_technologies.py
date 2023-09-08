@@ -12,6 +12,7 @@ from climmob.models import (
     User,
 )
 from climmob.models.schema import mapToSchema, mapFromSchema
+import climmob.plugins as p
 
 __all__ = [
     "searchTechnologies",
@@ -42,7 +43,7 @@ def searchTechnologies(projectId, request):
     subquery = request.dbsession.query(Prjtech.tech_id).filter(
         Prjtech.project_id == projectId
     )
-    result = (
+    query = (
         request.dbsession.query(
             Technology,
             request.dbsession.query(func.count(Techalia.tech_id))
@@ -70,8 +71,14 @@ def searchTechnologies(projectId, request):
         .filter(Technology.tech_id.notin_(subquery))
         .filter(Technology.user_name == User.user_name)
         .order_by(Technology.tech_name)
-        .all()
     )
+
+    for plugin in p.PluginImplementations(p.IProjectTechnologies):
+        query = plugin.filter_technologies_by_crop_taxonomy_server(
+            request, projectId, query
+        )
+
+    result = query.all()
     for technology in result:
         res.append(
             {
@@ -188,7 +195,7 @@ def AliasSearchTechnology(technologyId, projectId, request):
         .filter(Prjalia.tech_id == technologyId)
         .filter(Prjalia.alias_name == "")
     )
-    result = (
+    query = (
         request.dbsession.query(
             Technology,
             Techalia,
@@ -208,8 +215,11 @@ def AliasSearchTechnology(technologyId, projectId, request):
         .filter(Techalia.tech_id == Technology.tech_id)
         .filter(Technology.tech_id == technologyId)
         .filter(Techalia.alias_id.notin_(subquery))
-        .all()
     )
+    for plugin in p.PluginImplementations(p.IProjectTechnologyOptions):
+        query = plugin.filter_technology_options_by_server(request, projectId, query)
+
+    result = query.all()
     for technology in result:
         res.append(
             {

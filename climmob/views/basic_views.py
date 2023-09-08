@@ -9,7 +9,6 @@ from ast import literal_eval
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 from pyramid.security import remember
 from climmob.config.encdecdata import encodeData
-from formencode.variabledecode import variable_decode
 from climmob.config.auth import (
     getUserData,
     getUserByEmail,

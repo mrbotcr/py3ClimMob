@@ -84,8 +84,18 @@
                             <tbody>
                             <tr>
                                 <th class="text-center">{{ _('Trial data collection moment') }}</th>
-                                <th class="text-center">{{ _('Interval in days') }}</th>
-                                <th class="text-center" style="min-width: 113px"></th>
+
+                                {% block dataExchange_column_intervaldays %}
+
+                                    <th class="text-center">{{ _('Interval in days') }}</th>
+
+                                {% endblock dataExchange_column_intervaldays %}
+
+                                {% block dataExchange_column_event %}
+
+                                {% endblock dataExchange_column_event %}
+
+                                <th class="text-center" style="min-width: 310px"></th>
                             </tr>
 
                             {% for assessment in assessments %}
@@ -105,7 +115,17 @@
                                         <td class="text-center" style="vertical-align: middle"> {{ assessment.ass_desc }}
                                             <span class="label label-danger" style="display: inline-block; margin-top: 3px">0 {{ _("questions") }}</span> {% if assessment.ass_final == 1 %}<span class="label label-danger" title="You need to check this" style="display: inline-block; margin-top: 3px">{{ _("Overall performance") }}</span> <span class="label label-danger"  style="display: inline-block; margin-top: 3px">{{ _("Comparison with check") }}</span>{% endif %}</td>
                                     {% endif %}
-                                    <td class="text-center" style="vertical-align: middle"> {{ assessment.ass_days }}</td>
+
+                                    {% block dataExchange_row_intervaldays scoped%}
+
+                                        <td class="text-center" style="vertical-align: middle"> {{ assessment.ass_days }}</td>
+
+                                    {% endblock dataExchange_row_intervaldays%}
+
+                                    {% block dataExchange_row_event scoped%}
+
+                                    {% endblock dataExchange_row_event %}
+
                                     <td class="text-center" style="vertical-align: middle">
                                         {% block rhomis_BtnSeeAssessment scoped%}
                                             <a class="btn btn-default " href="{{ request.route_url('assessmentdetail', user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}" title="{{ _("Add questions") }}"><i class="fa fa-list-ul"></i> {{ _("Add questions") }}</a>
@@ -178,6 +198,10 @@
                     $("#check_for_final").css("display", "block")
                 }
 
+                {% block dataExchange_set_events %}
+
+                {% endblock dataExchange_set_events %}
+
                 $("#btn_modify_ass").css("display", "block")
             })
         }
@@ -205,6 +229,10 @@
             {% else %}
                 $("#check_for_final").css("display","block")
             {% endif %}
+
+            {% block dataExchange_clean_events %}
+
+            {% endblock dataExchange_clean_events %}
 
 
         }

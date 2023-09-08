@@ -7,6 +7,7 @@ from climmob.models import Regsection, Registry, Project, Question, userProject
 from climmob.models.schema import mapFromSchema, mapToSchema
 from climmob.processes import addRegistryQuestionsToProject
 from climmob.processes.db.assessment import setAssessmentStatus, formattingQuestions
+import climmob.plugins as p
 
 __all__ = [
     "availableRegistryQuestions",
@@ -153,14 +154,28 @@ def availableRegistryQuestions(
             stringForFilterQuestionByCollaborators += (
                 " OR question.user_name='" + user[0] + "' "
             )
+    filterDtype, dataExchangeAccession = "", ""
+    for plugin in p.PluginImplementations(p.IProjectRegistry):
+        (
+            filterDtype,
+            dataExchangeAccession,
+        ) = plugin.add_filters_to_get_ranking_questions_with_accession_in_registry(
+            request, registration_and_analysis, projectId
+        )
 
     if registration_and_analysis == 1:
-        startWith = "SELECT question.*, user.user_fullname, COALESCE(i18n_question.question_name, question.question_name) as question_name FROM user, (select * from question where (question_dtype!=5 and question_dtype!=6) UNION "
+        startWith = (
+            "SELECT question.*, user.user_fullname, COALESCE(i18n_question.question_name, question.question_name) as question_name FROM user, (select * from question where (question_dtype!=5 and question_dtype!=6 "
+            + filterDtype
+            + " ) UNION "
+        )
     else:
         startWith = "SELECT question.*, user.user_fullname, COALESCE(i18n_question.question_name, question.question_name) as question_name FROM user, (select * from question where (question_dtype!=5 and question_dtype!=6 and question_dtype!= 9 and question_dtype != 10) UNION "
     sql = (
         startWith
-        + "SELECT * FROM question WHERE (question_dtype=5 or question_dtype=6) AND question_id in (SELECT DISTINCT(question_id) FROM qstoption)) AS question "
+        + "SELECT * FROM question WHERE (question_dtype=5 or question_dtype=6) AND question_id in (SELECT DISTINCT(question_id) FROM qstoption) "
+        + dataExchangeAccession
+        + " ) AS question "
         "LEFT JOIN i18n_question ON question.question_id = i18n_question.question_id AND       i18n_question.lang_code = '"
         + language
         + "'"

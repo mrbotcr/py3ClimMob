@@ -120,6 +120,10 @@
                                 </li>
                             {% endif %}
 
+                            {% block extra_options_for_servers_integration %}
+
+                            {% endblock extra_options_for_servers_integration %}
+
                             {% block extra_option_menu_user_administration %}
 
                             {% endblock extra_option_menu_user_administration %}
@@ -316,6 +320,10 @@
                                             </div>
 
                                         {% endif %}
+
+                                        {% block dataExchange_additionalsection_for_synchronize_information %}
+
+                                        {% endblock dataExchange_additionalsection_for_synchronize_information %}
 
                                         {% if activeProject["project_template"] != 1 %}
                                             <div class="row">

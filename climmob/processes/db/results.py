@@ -131,7 +131,7 @@ def getPackageData(userOwner, projectId, projectCod, request):
         + projectCod
         + ".REG_geninfo."
         + qstFarmer
-        + " "
+        + " , technology.tech_id, techalias.alias_id "
         + "FROM pkgcomb,package,prjcombination,prjcombdet,prjalias,user,project,"
         + userOwner
         + "_"
@@ -178,7 +178,7 @@ def getPackageData(userOwner, projectId, projectCod, request):
         + projectCod
         + ".REG_geninfo."
         + qstFarmer
-        + " "
+        + " , technology.tech_id, prjalias.alias_used as alias_id "
         " FROM pkgcomb,package,prjcombination,prjcombdet,prjalias, technology,user,project,"
         + userOwner
         + "_"
@@ -223,7 +223,12 @@ def getPackageData(userOwner, projectId, projectCod, request):
             aPackage["comps"][pkg.comb_order - 1]["comb_order"] = pkg.comb_order
             aPackage["comps"][pkg.comb_order - 1]["technologies"] = []
             aPackage["comps"][pkg.comb_order - 1]["technologies"].append(
-                {"tech_name": pkg.tech_name, "alias_name": pkg.alias_name}
+                {
+                    "tech_name": pkg.tech_name,
+                    "tech_id": pkg.tech_id,
+                    "alias_name": pkg.alias_name,
+                    "alias_id": pkg.alias_id,
+                }
             )
             packages.append(aPackage)
         else:
@@ -233,14 +238,28 @@ def getPackageData(userOwner, projectId, projectCod, request):
                 ] = pkg.comb_order
                 packages[len(packages) - 1]["comps"][pkg.comb_order - 1][
                     "technologies"
-                ].append({"tech_name": pkg.tech_name, "alias_name": pkg.alias_name})
+                ].append(
+                    {
+                        "tech_name": pkg.tech_name,
+                        "tech_id": pkg.tech_id,
+                        "alias_name": pkg.alias_name,
+                        "alias_id": pkg.alias_id,
+                    }
+                )
             except:
                 packages[len(packages) - 1]["comps"][pkg.comb_order - 1][
                     "technologies"
                 ] = []
                 packages[len(packages) - 1]["comps"][pkg.comb_order - 1][
                     "technologies"
-                ].append({"tech_name": pkg.tech_name, "alias_name": pkg.alias_name})
+                ].append(
+                    {
+                        "tech_name": pkg.tech_name,
+                        "tech_id": pkg.tech_id,
+                        "alias_name": pkg.alias_name,
+                        "alias_id": pkg.alias_id,
+                    }
+                )
 
     return packages
 

@@ -33,6 +33,10 @@ __all__ = [
     "IObservationCards",
     "IAuthenticationPolicy",
     "IExplanationKit",
+    "IProjectTechnologies",
+    "IProjectTechnologyOptions",
+    "IAssessments",
+    "IProjectRegistry",
 ]
 
 
@@ -603,6 +607,10 @@ class IProject(Interface):
         :return: Modified version of context
         """
 
+    def get_extra_information_for_data_exchange(self, request, project_data):
+
+        """ """
+
 
 class ICloneProject(Interface):
     """
@@ -683,6 +691,18 @@ class IAuthenticationPolicy(Interface):
         """
 
 
+class IProjectTechnologies(Interface):
+    def filter_technologies_by_crop_taxonomy_server(self, request, projectId, query):
+
+        """ """
+
+
+class IProjectTechnologyOptions(Interface):
+    def filter_technology_options_by_server(self, request, projectId, query):
+
+        """ """
+
+
 class IExplanationKit(Interface):
     def create_observation_cards(
         self,
@@ -698,3 +718,20 @@ class IExplanationKit(Interface):
     ):
 
         """ """
+
+
+class IAssessments(Interface):
+    def before_assessment_data_exchange_event(self, data):
+        """"""
+
+    def add_event_descriptions(self, request, projectId, assessments):
+
+        """ """
+
+
+class IProjectRegistry(Interface):
+    def add_filters_to_get_ranking_questions_with_accession_in_registry(
+        self, request, registrationAndAnalysis, projectId, assessmentCode=None
+    ):
+
+        """"""

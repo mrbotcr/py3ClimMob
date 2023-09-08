@@ -11,6 +11,9 @@
         <span class="help-block m-b-none text-left">{{ _("The trial data collection moment refers to the stage in the planting cycle (e.g. germination, early growth.).") }}</span>
     </div>
 </div>
+
+{% block assessment_daysaftersowing scoped%}
+
 <div class="form-group">
     <label class="col-sm-4 control-label">{{ _('Days after sowing:') }}</label>
     <div class="col-sm-8">
@@ -18,6 +21,12 @@
         <span class="help-block m-b-none text-left">{{ _("This trial data collection is done after how many days from the sowing date.") }}</span>
     </div>
 </div>
+
+{% endblock assessment_daysaftersowing %}
+
+{% block dataExchange_extra_fields %}
+
+{% endblock dataExchange_extra_fields %}
 
 {% block form_extra_fields %}
 

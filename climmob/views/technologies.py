@@ -324,7 +324,7 @@ class APICropsView(publicView):
                 for result in query_result:
                     select2_result.append(
                         {
-                            "id": "'{}'".format(result["taxonomy_code"]),
+                            "id": "{}".format(result["taxonomy_code"]),
                             "text": result["crop_name"],
                         }
                     )

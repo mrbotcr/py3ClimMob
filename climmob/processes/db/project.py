@@ -29,6 +29,7 @@ from climmob.processes.db.enumerator import countEnumeratorsOfAllCollaborators
 from climmob.processes.db.project_technologies import numberOfCombinationsForTheProject
 from climmob.processes.db.question import getQuestionOptions
 from climmob.processes.db.prjlang import getPrjLangInProject
+import climmob.plugins as p
 
 __all__ = [
     "getTotalNumberOfProjectsInClimMob",
@@ -429,6 +430,11 @@ def getActiveProject(userName, request):
         activeProject["languages"] = getPrjLangInProject(
             activeProject["project_id"], request
         )
+
+        for plugin in p.PluginImplementations(p.IProjectTechnologyOptions):
+            activeProject = plugin.get_extra_information_for_data_exchange(
+                request, activeProject
+            )
 
     return activeProject
 

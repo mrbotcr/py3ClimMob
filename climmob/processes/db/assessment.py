@@ -3,7 +3,7 @@ import os
 import shutil
 import uuid
 from subprocess import Popen, PIPE
-
+import climmob.plugins as p
 from jinja2 import Environment
 from sqlalchemy import func, and_
 
@@ -458,6 +458,9 @@ def getProjectAssessments(projectId, request):
     )
     result = mapFromSchema(res)
 
+    for plugin in p.PluginImplementations(p.IAssessments):
+        result = plugin.add_event_descriptions(request, projectId, result)
+
     return result
 
 
@@ -602,6 +605,15 @@ def availableAssessmentQuestions(projectId, assessment, request, language="defau
                 " OR question.user_name='" + user[0] + "' "
             )
 
+    filterDtype, dataExchangeAccession = "", ""
+    for plugin in p.PluginImplementations(p.IProjectRegistry):
+        (
+            filterDtype,
+            dataExchangeAccession,
+        ) = plugin.add_filters_to_get_ranking_questions_with_accession_in_registry(
+            request, 1, projectId, assessment
+        )
+
     sqlOverral = (
         "select question.question_id from assessment, assdetail, question where "
         "assdetail.question_id = question.question_id "
@@ -612,7 +624,11 @@ def availableAssessmentQuestions(projectId, assessment, request, language="defau
     )
 
     sql = (
-        "SELECT question.*, user.user_fullname, COALESCE(i18n_question.question_name, question.question_name) as question_name FROM user, question "
+        "SELECT question.*, user.user_fullname, COALESCE(i18n_question.question_name, question.question_name) as question_name FROM user, (select * from question where (question_dtype!=5 and question_dtype!=6 "
+        + filterDtype
+        + ") UNION SELECT * FROM question WHERE (question_dtype=5 or question_dtype=6) AND question_id in (SELECT DISTINCT(question_id) FROM qstoption) "
+        + dataExchangeAccession
+        + ") as question  "
         " LEFT JOIN i18n_question ON question.question_id = i18n_question.question_id AND i18n_question.lang_code = '"
         + language
         + "' "
@@ -627,6 +643,7 @@ def availableAssessmentQuestions(projectId, assessment, request, language="defau
         " question.user_name = user.user_name"
         " AND question.question_forms in (2,3)"
     )
+
     questions = request.dbsession.execute(sql).fetchall()
 
     result = []

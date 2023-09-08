@@ -103,37 +103,27 @@ class newProject_view(privateView):
             if "btn_addNewProject" in self.request.POST:
                 dataworking = self.getPostDict()
 
-                continue_add = True
-                message = ""
-                for plugin in p.PluginImplementations(p.IProject):
-                    if continue_add:
-                        continue_add, message = plugin.before_adding_project(
+                dataworking, error_summary, added = createProjectFunction(
+                    dataworking, error_summary, self
+                )
+                if added:
+                    for plugin in p.PluginImplementations(p.IProject):
+                        plugin.after_adding_project(
                             self.request, self.user.login, dataworking
                         )
-                if continue_add:
-                    dataworking, error_summary, added = createProjectFunction(
-                        dataworking, error_summary, self
+                    self.request.session.flash(
+                        self._("The project was created successfully")
                     )
-                    if added:
-                        for plugin in p.PluginImplementations(p.IProject):
-                            plugin.after_adding_project(
-                                self.request, self.user.login, dataworking
-                            )
-                        self.request.session.flash(
-                            self._("The project was created successfully")
+                    self.returnRawViewResult = True
+                    return HTTPFound(
+                        location=self.request.route_url(
+                            "dashboard",
+                            _query={
+                                "user": self.user.login,
+                                "project": dataworking["project_cod"],
+                            },
                         )
-                        self.returnRawViewResult = True
-                        return HTTPFound(
-                            location=self.request.route_url(
-                                "dashboard",
-                                _query={
-                                    "user": self.user.login,
-                                    "project": dataworking["project_cod"],
-                                },
-                            )
-                        )
-                else:
-                    error_summary = {"plugin_error": message}
+                    )
 
         return {
             "activeProject": getActiveProject(self.user.login, self.request),
@@ -170,6 +160,18 @@ def createProjectFunction(dataworking, error_summary, self):
     else:
         dataworking["project_template"] = 0
 
+    continue_add = True
+
+    for plugin in p.PluginImplementations(p.IProject):
+        if continue_add:
+            continue_add, message, dataworking = plugin.before_adding_project(
+                self.request, self.user.login, dataworking
+            )
+
+            if not continue_add:
+                error_summary = {"error": message}
+                added = False
+
     if self.request.registry.settings.get("projects.limit", "false") == "true":
         if int(
             self.request.registry.settings.get("project.maximumnumberofobservations", 0)
@@ -182,88 +184,95 @@ def createProjectFunction(dataworking, error_summary, self):
 
             return dataworking, error_summary, added
 
-    if int(dataworking["project_numobs"]) > 0:
-        if dataworking["project_cod"] != "":
-            if (
-                dataworking["project_label_a"] != dataworking["project_label_b"]
-                and dataworking["project_label_a"] != dataworking["project_label_c"]
-                and dataworking["project_label_b"] != dataworking["project_label_c"]
-            ):
-                exitsproject = projectInDatabase(
-                    self.user.login, dataworking["project_cod"], self.request
-                )
-                if not exitsproject:
-                    added, idormessage = addProject(dataworking, self.request)
-                    if not added:
-                        error_summary = {"dberror": idormessage}
-                    else:
-                        addToLog(
-                            self.user.login,
-                            "PRF",
-                            "Created a new project",
-                            datetime.datetime.now(),
-                            self.request,
-                        )
+    if continue_add:
+        if int(dataworking["project_numobs"]) > 0:
+            if dataworking["project_cod"] != "":
+                if (
+                    dataworking["project_label_a"] != dataworking["project_label_b"]
+                    and dataworking["project_label_a"] != dataworking["project_label_c"]
+                    and dataworking["project_label_b"] != dataworking["project_label_c"]
+                ):
+                    exitsproject = projectInDatabase(
+                        self.user.login, dataworking["project_cod"], self.request
+                    )
+                    if not exitsproject:
+                        added, idormessage = addProject(dataworking, self.request)
+                        if not added:
+                            error_summary = {"dberror": idormessage}
+                        else:
+                            addToLog(
+                                self.user.login,
+                                "PRF",
+                                "Created a new project",
+                                datetime.datetime.now(),
+                                self.request,
+                            )
 
-                        if "project_languages" in dataworking.keys():
-                            if dataworking["project_languages"]:
+                            if "project_languages" in dataworking.keys():
+                                if dataworking["project_languages"]:
 
-                                if isinstance(dataworking["project_languages"], str):
-                                    dataworking["project_languages"] = [
+                                    if isinstance(
+                                        dataworking["project_languages"], str
+                                    ):
+                                        dataworking["project_languages"] = [
+                                            dataworking["project_languages"]
+                                        ]
+
+                                    for index, lang in enumerate(
                                         dataworking["project_languages"]
-                                    ]
+                                    ):
+                                        langInfo = {}
+                                        if index == 0:
+                                            langInfo["lang_default"] = 1
 
-                                for index, lang in enumerate(
-                                    dataworking["project_languages"]
-                                ):
-                                    langInfo = {}
-                                    if index == 0:
-                                        langInfo["lang_default"] = 1
+                                        langInfo["lang_code"] = lang
+                                        langInfo["project_id"] = idormessage
 
-                                    langInfo["lang_code"] = lang
-                                    langInfo["project_id"] = idormessage
+                                        apl, aplmessage = addPrjLang(
+                                            langInfo, self.request
+                                        )
 
-                                    apl, aplmessage = addPrjLang(langInfo, self.request)
+                            if "usingTemplate" in dataworking.keys():
+                                if dataworking["usingTemplate"] != "":
+                                    listOfElementToInclude = ["registry"]
 
-                        if "usingTemplate" in dataworking.keys():
-                            if dataworking["usingTemplate"] != "":
-                                listOfElementToInclude = ["registry"]
+                                    assessments = getProjectAssessments(
+                                        dataworking["usingTemplate"], self.request
+                                    )
+                                    for assess in assessments:
+                                        listOfElementToInclude.append(assess["ass_cod"])
 
-                                assessments = getProjectAssessments(
-                                    dataworking["usingTemplate"], self.request
-                                )
-                                for assess in assessments:
-                                    listOfElementToInclude.append(assess["ass_cod"])
+                                    newProjectId = getTheProjectIdForOwner(
+                                        self.user.login,
+                                        dataworking["project_cod"],
+                                        self.request,
+                                    )
 
-                                newProjectId = getTheProjectIdForOwner(
-                                    self.user.login,
-                                    dataworking["project_cod"],
-                                    self.request,
-                                )
+                                    functionCreateClone(
+                                        self,
+                                        dataworking["usingTemplate"],
+                                        newProjectId,
+                                        listOfElementToInclude,
+                                    )
 
-                                functionCreateClone(
-                                    self,
-                                    dataworking["usingTemplate"],
-                                    newProjectId,
-                                    listOfElementToInclude,
-                                )
-
+                    else:
+                        error_summary = {
+                            "exitsproject": self._("This project ID already exists.")
+                        }
                 else:
                     error_summary = {
-                        "exitsproject": self._("This project ID already exists.")
+                        "repeatitem": self._(
+                            "The names that the items will receive should be different."
+                        )
                     }
             else:
-                error_summary = {
-                    "repeatitem": self._(
-                        "The names that the items will receive should be different."
-                    )
-                }
+                error_summary = {"codempty": self._("The project ID can't be empty")}
         else:
-            error_summary = {"codempty": self._("The project ID can't be empty")}
-    else:
-        error_summary = {
-            "observations": self._("The number of observations must be greater than 0.")
-        }
+            error_summary = {
+                "observations": self._(
+                    "The number of observations must be greater than 0."
+                )
+            }
 
     if int(dataworking["project_localvariety"]) == 1:
         dataworking["project_localvariety"] = "on"
@@ -503,6 +512,7 @@ class modifyProject_view(privateView):
                                 (
                                     continue_modify,
                                     message,
+                                    data,
                                 ) = plugin.before_updating_project(
                                     self.request, self.user.login, activeProjectId, data
                                 )
