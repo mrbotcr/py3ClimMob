@@ -20,7 +20,8 @@ from climmob.models import (
     I18nQuestion,
     I18nQstoption,
 )
-from climmob.models.repository import sql_fetch_one
+
+from climmob.models.repository import sql_fetch_one, sql_execute
 from climmob.models.schema import mapFromSchema, mapToSchema
 from climmob.processes.db.project import (
     addQuestionsToAssessment,
@@ -75,6 +76,7 @@ __all__ = [
     "formattingQuestions",
     "assessmentHaveQuestionOfMultimediaType",
     "deleteProjectAssessments",
+    "getFinalizedAssessments",
 ]
 
 log = logging.getLogger(__name__)
@@ -458,8 +460,8 @@ def getProjectAssessments(projectId, request):
     )
     result = mapFromSchema(res)
 
-    for plugin in p.PluginImplementations(p.IAssessments):
-        result = plugin.add_event_descriptions(request, projectId, result)
+    # for plugin in p.PluginImplementations(p.IAssessments):
+    #    result = plugin.add_event_descriptions(request, projectId, result)
 
     return result
 
@@ -1627,3 +1629,22 @@ def assessmentHaveQuestionOfMultimediaType(request, projectId, ass_cod):
         return True
     else:
         return False
+
+
+def getFinalizedAssessments(request, userOwner, projectCod, projectId):
+
+    result = mapFromSchema(
+        request.dbsession.query(Assessment)
+        .filter(Assessment.project_id == projectId)
+        .filter(Assessment.ass_status == 2)
+        .all()
+    )
+
+    for assessment in result:
+        assessment["Details"] = sql_execute(
+            "select min(_submitted_date) as first_submission, max(_submitted_date) as last_submission from {}_{}.ASS{}_geninfo".format(
+                userOwner, projectCod, assessment["ass_cod"]
+            )
+        )
+
+    return result

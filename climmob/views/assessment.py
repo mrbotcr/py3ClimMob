@@ -208,8 +208,8 @@ class assessmenthead_view(privateView):
                     for plugin in p.PluginImplementations(p.ICheckBox):
                         data = plugin.before_process_checkbox_data(data, "ass_rhomis")
 
-                    for plugin in p.PluginImplementations(p.IAssessments):
-                        data = plugin.before_assessment_data_exchange_event(data)
+                    # for plugin in p.PluginImplementations(p.IAssessments):
+                    #    data = plugin.before_assessment_data_exchange_event(data)
 
                     added, msg = addProjectAssessment(data, self.request)
                     if data["ass_final"] == 1:
@@ -238,8 +238,8 @@ class assessmenthead_view(privateView):
                                 data, "ass_rhomis"
                             )
 
-                        for plugin in p.PluginImplementations(p.IAssessments):
-                            data = plugin.before_assessment_data_exchange_event(data)
+                        # for plugin in p.PluginImplementations(p.IAssessments):
+                        #    data = plugin.before_assessment_data_exchange_event(data)
 
                         # for plugin in p.PluginImplementations(p.IRhomis):
                         #     data = plugin.before_process_modify(

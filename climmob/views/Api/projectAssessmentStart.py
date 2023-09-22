@@ -640,7 +640,7 @@ def ApiAssessmentPushProcess(self, structure, dataworking, activeProjectId):
             self.request,
         )
         obligatoryQuestions = []
-        possibleQuestions = []
+        possibleQuestions = ["clm_start", "clm_end", "_submitted_date"]
         searchQST163 = ""
         groupsForValidation = {}
         for section in structure:
@@ -664,6 +664,9 @@ def ApiAssessmentPushProcess(self, structure, dataworking, activeProjectId):
 
         try:
             _json = json.loads(dataworking["json"])
+            _json["_submitted_date"] = datetime.datetime.now().strftime(
+                "%Y-%m-%d %H:%M:%S"
+            )
 
             permitedKeys = True
             for key in _json.keys():

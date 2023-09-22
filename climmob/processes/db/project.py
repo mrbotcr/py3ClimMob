@@ -329,6 +329,7 @@ def modifyProject(projectId, data, request):
         request.dbsession.query(Project).filter(Project.project_id == projectId).update(
             mappedData
         )
+        request.dbsession.flush()
         return True, ""
     except Exception as e:
         return False, str(e)

@@ -1138,7 +1138,7 @@ class pushJsonToRegistry_view(apiView):
 def ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId):
     if structure:
         obligatoryQuestions = []
-        possibleQuestions = ["clm_start", "clm_end"]
+        possibleQuestions = ["clm_start", "clm_end", "_submitted_date"]
         searchQST162 = ""
         for section in structure:
             for question in section["section_questions"]:
@@ -1153,6 +1153,9 @@ def ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId):
 
         try:
             _json = json.loads(dataworking["json"])
+            _json["_submitted_date"] = datetime.datetime.now().strftime(
+                "%Y-%m-%d %H:%M:%S"
+            )
 
             permitedKeys = True
             for key in _json.keys():
