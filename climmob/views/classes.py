@@ -9,7 +9,7 @@ from pyramid.httpexceptions import HTTPFound
 from pyramid.httpexceptions import HTTPNotFound
 from pyramid.response import Response
 from pyramid.session import check_csrf_token
-
+import climmob.plugins as p
 from climmob.config.auth import getUserData, getUserByApiKey
 
 log = logging.getLogger(__name__)
@@ -289,6 +289,12 @@ class privateView(object):
                         raise HTTPNotFound()
 
         update_last_login(self.request, self.user.login)
+
+        for plugin in p.PluginImplementations(p.IUserFlow):
+            try:
+                plugin.register_user_flow(self.user, self.request)
+            except:
+                pass
 
         self.viewResult = self.processView()
 

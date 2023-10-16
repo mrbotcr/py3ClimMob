@@ -33,6 +33,7 @@ __all__ = [
     "IObservationCards",
     "IAuthenticationPolicy",
     "IExplanationKit",
+    "IUserFlow",
 ]
 
 
@@ -696,5 +697,11 @@ class IExplanationKit(Interface):
         packages,
         listOfLabels,
     ):
+
+        """ """
+
+
+class IUserFlow(Interface):
+    def register_user_flow(self, user, request):
 
         """ """
