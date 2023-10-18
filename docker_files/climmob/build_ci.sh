@@ -1,1 +1,1 @@
-sudo docker build --rm -t alliancecostarica/climmob_base_circleci:20211117 -f ./circleci.Dockerfile .
+sudo docker build --no-cache --rm -t alliancecostarica/climmob_base_circleci:20230927 -f ./circleci.Dockerfile .

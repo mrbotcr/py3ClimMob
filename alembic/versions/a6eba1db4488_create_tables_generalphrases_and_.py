@@ -63,6 +63,9 @@ def upgrade():
         sa.PrimaryKeyConstraint(
             "phrase_id", "user_name", "lang_code", name=op.f("pk_i18n_general_phrases")
         ),
+        mysql_charset="utf8mb4",
+        mysql_engine="InnoDB",
+        mysql_collate="utf8mb4_unicode_ci"
     )
 
     phrases = [

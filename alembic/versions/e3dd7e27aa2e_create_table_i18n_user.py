@@ -32,6 +32,9 @@ def upgrade():
             ["user_name"], ["user.user_name"], name=op.f("fk_i18n_user_user_name_user")
         ),
         sa.PrimaryKeyConstraint("lang_code", "user_name", name=op.f("pk_i18n_user")),
+        mysql_charset = "utf8mb4",
+        mysql_engine = "InnoDB",
+        mysql_collate = "utf8mb4_unicode_ci"
     )
     op.create_index(
         op.f("ix_i18n_user_lang_code"), "i18n_user", ["lang_code"], unique=False
