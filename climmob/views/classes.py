@@ -5,6 +5,7 @@ import uuid
 import logging
 import datetime
 from hashlib import md5
+import climmob.plugins as p
 from ast import literal_eval
 from pyramid.response import Response
 from pyramid.session import check_csrf_token
@@ -360,6 +361,12 @@ class privateView(object):
                         raise HTTPNotFound()
 
         update_last_login(self.request, self.user.login)
+
+        for plugin in p.PluginImplementations(p.IUserFlow):
+            try:
+                plugin.register_user_flow(self.user, self.request)
+            except:
+                pass
 
         self.viewResult = self.processView()
 

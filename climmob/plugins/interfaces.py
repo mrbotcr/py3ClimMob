@@ -37,6 +37,7 @@ __all__ = [
     "IProjectTechnologyOptions",
     "IAssessments",
     "IProjectRegistry",
+    "IUserFlow",
 ]
 
 
@@ -735,3 +736,9 @@ class IProjectRegistry(Interface):
     ):
 
         """"""
+
+
+class IUserFlow(Interface):
+    def register_user_flow(self, user, request):
+
+        """ """
