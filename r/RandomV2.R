@@ -1,6 +1,6 @@
 if (!require("ClimMobTools"))
 {
-        install_github("agrdatasci/ClimMobTools", build_vignettes = TRUE)
+        install.packages("ClimMobTools")
 }
 
 library("ClimMobTools")

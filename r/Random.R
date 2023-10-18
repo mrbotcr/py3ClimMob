@@ -1,6 +1,6 @@
 if (!require("ClimMobTools"))
 {
-        install.packages("ClimMobTools",repos="http://cran.rstudio.com/")
+        install.packages("ClimMobTools")
 }
 
 library("ClimMobTools")
