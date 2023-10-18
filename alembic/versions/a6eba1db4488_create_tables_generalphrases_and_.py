@@ -65,7 +65,7 @@ def upgrade():
         ),
         mysql_charset="utf8mb4",
         mysql_engine="InnoDB",
-        mysql_collate="utf8mb4_unicode_ci"
+        mysql_collate="utf8mb4_unicode_ci",
     )
 
     phrases = [
