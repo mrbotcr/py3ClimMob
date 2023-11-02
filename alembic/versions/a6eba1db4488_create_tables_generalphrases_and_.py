@@ -88,7 +88,7 @@ def upgrade():
         },
         {
             "phrase_id": "15",
-            "phrase_desc": "In the following field try to write the name of the participant to filter the information and find him/her more easily.",
+            "phrase_desc": "Scroll or write the name of the participant.",
         },
         {
             "phrase_id": "16",

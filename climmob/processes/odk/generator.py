@@ -1482,7 +1482,7 @@ def generateODKFile(
                         getTranslationOrText(
                             prjLanguages,
                             "15",
-                            "In the following field try to write the name of the participant to filter the information and find him/her more easily.",
+                            "Scroll or write the name of the participant.",
                             userOwner,
                             request,
                             specificLanguage=language,

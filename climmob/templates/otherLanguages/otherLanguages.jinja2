@@ -1,7 +1,7 @@
 {% extends 'dashboard/dashboard.jinja2' %}
 
 {% block title %}
-    <title>{{ _("ClimMob | Languages library") }}</title>
+    <title>{{ _("ClimMob | Local languages library") }}</title>
 {% endblock title %}
 
 {% block css %}
@@ -30,7 +30,7 @@
 
 {% block pageheading %}
     {% set svgOfTranslations=True %}
-    {% set _title= _("Languages") %}
+    {% set _title= _("Local languages") %}
     {% set _linkWiki="https://climmob.net/blog/wiki/languages/" %}
     {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
@@ -51,7 +51,7 @@
         <div class="col-md-12 " >
             <div class="ibox" >
                 <div class="ibox-title" >
-                    <h5>{{ _("Languages") }}</h5>
+                    <h5>{{ _("Local languages") }}</h5>
 
                     <div class="ibox-tools">
                         <a class="btn btn-success btn-rounded  btn-xs modalLang" style="color: white" data-toggle="modal" data-target="#languagesModal"><i class="fa fa-plus"></i> {{ _("Add more languages") }}</a>
@@ -63,10 +63,10 @@
                         <div class="col-md-12" >
                             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                             <h3>{{ _("Indications") }}</h3>
-                            <p>1. {{ _("The following is a list of texts that ClimMob uses to make indications in ODK Collect") }}.</p>
-                            <p>2. {{ _("The list is shown in English language, so in the text fields, you must write the text in the language indicated by the tab. To see the different languages click on the corresponding tab, just above the language name.") }}</p>
-                            <br>
-                            <p><b>{{ _("Note") }}</b>: {{ _("For some fields there is a suggestion, you can edit it") }}.</p>
+                            <p>1. {{ _("The following is a list of texts that ClimMob uses to generate questions in ODK Collect") }}.</p>
+                            <p>2. {{ _("To see the different languages click on the corresponding tab, just above the language name. If only one language is shown, you can add more languages by clicking on “Add more languages” or going to your ClimMob user profile page.") }}</p>
+                            <p>3. {{ _("For new languages, the list of texts is shown in English. You will have to provide translations to other languages if this is not given") }}.</p>
+                            <p>4. {{ _("Some fields may be prefilled, but you can edit the texts") }}.</p>
                             <br>
                             <div class="tabs-container">
                                 <ul class="nav nav-tabs" role="tablist">
