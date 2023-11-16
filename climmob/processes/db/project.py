@@ -23,6 +23,7 @@ from climmob.models import (
     RegistryJsonLog,
     AssessmentJsonLog,
     userProject,
+    ProjectMetadata,
 )
 from climmob.models.repository import sql_fetch_all, sql_fetch_one
 from climmob.processes.db.enumerator import countEnumeratorsOfAllCollaborators
@@ -597,10 +598,10 @@ def getLastAssessmentSubmissionDate(userName, projectCode, assessment, request):
 def getProjectProgress(userName, projectCode, project, request):
     _ = request.translate
     result = {}
-    perc = 0
+    perc = 4
     result["enumerators_by_user"] = countEnumeratorsOfAllCollaborators(project, request)
     # Project Profile
-    perc = perc + 20
+    perc = perc + 16
 
     numberOfFieldAgents = (
         request.dbsession.query(PrjEnumerator)
@@ -610,7 +611,7 @@ def getProjectProgress(userName, projectCode, project, request):
     if numberOfFieldAgents > 0:
         result["enumerators"] = True
         result["numberOfFieldAgents"] = numberOfFieldAgents
-        perc = perc + 20
+        perc = perc + 16
     else:
         result["enumerators"] = False
         result["numberOfFieldAgents"] = 0
@@ -620,7 +621,7 @@ def getProjectProgress(userName, projectCode, project, request):
         is not None
     ):
         result["technology"] = True
-        perc = perc + 10
+        perc = perc + 8
 
         data = (
             request.dbsession.query(
@@ -642,7 +643,7 @@ def getProjectProgress(userName, projectCode, project, request):
 
         if total <= 50:
             if total >= necessary:
-                perc = perc + 10
+                perc = perc + 8
                 result["techalias"] = True
 
     else:
@@ -673,9 +674,9 @@ def getProjectProgress(userName, projectCode, project, request):
         )
         result["numberOfQuestionsInRegistry"] = numberOfQuestionsInRegistry
         if formType == 0:
-            perc = perc + 20
+            perc = perc + 16
         else:
-            perc = perc + 40
+            perc = perc + 32
     else:
         result["registry"] = False
         result["numberOfQuestionsInRegistry"] = 0
@@ -688,7 +689,7 @@ def getProjectProgress(userName, projectCode, project, request):
     ):
         result["assessment"] = True
         if formType == 0:
-            perc = perc + 20
+            perc = perc + 16
     else:
         result["assessment"] = False
 
@@ -839,6 +840,17 @@ def getProjectProgress(userName, projectCode, project, request):
                 }
             )
     result["assessments"] = assessmentArray
+
+    if (
+        request.dbsession.query(ProjectMetadata)
+        .filter(ProjectMetadata.project_id == project)
+        .first()
+        is not None
+    ):
+        result["metadata"] = True
+        perc = perc + 16
+    else:
+        result["metadata"] = False
 
     return result, perc
 

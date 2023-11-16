@@ -202,7 +202,7 @@ from climmob.views.project import (
     projectList_view,
 )
 from climmob.views.projectHelp.projectHelp import projectHelp_view
-from climmob.views.project_analysis import analysisDataView
+from climmob.views.project_analysis import analysisDataView, metadata_view
 from climmob.views.project_combinations import projectCombinations_view
 from climmob.views.project_enumerators import (
     projectEnumerators_view,
@@ -266,6 +266,8 @@ from climmob.views.projectsSummary.projectsSummary import (
     projectsSummary_view,
     downloadProjectsSummary_view,
 )
+
+from climmob.views.extra_form import extraFormPOST_view
 
 # -------Api-------#
 
@@ -1133,6 +1135,17 @@ def loadRoutes(config):
         )
     )
 
+    # Metadata
+
+    routes.append(
+        addRoute(
+            "Metadata",
+            "/user/{user}/project/{project}/metadata",
+            metadata_view,
+            "project/metadata/metadata.jinja2",
+        )
+    )
+
     routes.append(
         addRoute(
             "projectInformation",
@@ -1141,6 +1154,18 @@ def loadRoutes(config):
             "progress/progressInformation.jinja2",
         )
     )
+
+    # Extra form
+
+    routes.append(
+        addRoute(
+            "extraFormPOST",
+            "/extraFormPOST",
+            extraFormPOST_view,
+            None,
+        )
+    )
+
     # Specific functions
 
     routes.append(

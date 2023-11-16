@@ -22,6 +22,7 @@ from climmob.processes import (
     getLastActivityLogByUser,
     addToLog,
     update_last_login,
+    getActiveForm,
 )
 
 
@@ -280,6 +281,7 @@ class privateView(object):
             "counterChat": 0,
             "showHelp": False,
             "showRememberAfterCreateProject": False,
+            "surveyMustBeDisplayed": None,
         }
 
         self.viewResult = {}
@@ -316,6 +318,11 @@ class privateView(object):
             self.classResult["activeProject"] = activeProjectData["project_id"]
         else:
             self.classResult["hasActiveProject"] = False
+
+        hasActiveForm, formDetails = getActiveForm(self.request, self.user.login)
+
+        if hasActiveForm:
+            self.classResult["surveyMustBeDisplayed"] = formDetails["form_name"]
 
         lastActivity = getLastActivityLogByUser(self.user.login, self.request)
         if lastActivity:

@@ -1,0 +1,58 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob | Trial documentation") }}</title>
+{% endblock title %}
+
+{% block css %}
+    {% cssresource request,'coreresources','sweet' %}
+    {% cssresource request,'coreresources','switch' %}
+    {% cssresource request,'coreresources','select2' %}
+{% endblock css %}
+
+{% block topScripts %}
+    {% jsresource request,'coreresources','sweet' %}
+    {% jsresource request,'coreresources','toastr' %}
+    {% include 'snippets/delete.jinja2' %}
+    {% jsresource request,'coreresources','switch' %}
+    {% jsresource request,'coreresources','assessment_form' %}
+    {% jsresource request,'coreresources','select2' %}
+{% endblock topScripts %}
+
+{% block pageheading %}
+    {% set _title= _("Trial documentation")%}
+    {% set _linkWiki="https://climmob.net/blog/wiki/prepare-data-collection/" %}
+    {% include 'snippets/menuheading.jinja2' %}
+{% endblock %}
+
+{% block pagecontent %}
+
+    {% if activeProject["access_type"] in [4] %}
+        {% set onlySee = True %}
+    {% endif %}
+
+    <div class="row">
+
+        <div class="col-lg-8 ">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{{ _("Trial documentation") }}</h5>
+                    <div class="ibox-tools">
+{#                        <button id="btn_cancel_metadata"  class="btn btn-xs btn-default pull-right " ><i class="fa fa-undo"></i>  {{ _("Clear form") }}</button>#}
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    <form class="form-horizontal formElement" role="form" method="post" action="{{ request.url }}" >
+                        <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+
+                        {% include "project/metadata/metadata_form.jinja2" %}
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock pagecontent%}
+

@@ -1075,3 +1075,72 @@ class userProject(Base):
 
     project = relationship("Project")
     user = relationship("User")
+
+
+class ProjectMetadata(Base):
+    __tablename__ = "project_metadata"
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["project_id"],
+            ["project.project_id"],
+            ondelete="CASCADE",
+        ),
+    )
+    project_id = Column(Unicode(64), primary_key=True, nullable=False)
+    md_coordinator = Column(Unicode(100), primary_key=True, nullable=False)
+    md_crops = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
+    md_year = Column(Integer)
+    md_tricot_project = Column(Unicode(120))
+    md_objective = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
+    md_collaborators = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
+    md_experimental_design = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
+    md_steps_followed = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
+    md_special_features = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
+    md_how_varieties_were_selected = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
+    md_how_participants_were_selected = Column(
+        MEDIUMTEXT(collation="utf8mb4_unicode_ci")
+    )
+    md_geographic_areas = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
+    md_selection_criteria_used = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
+    md_how_participants_approached_recruitment = Column(
+        MEDIUMTEXT(collation="utf8mb4_unicode_ci")
+    )
+    md_where_recruidment_place = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
+    md_how_recruitment_formalised = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
+    md_participants_compensated = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
+    md_participants_approached_participate = Column(Integer)
+    md_how_tricot_explained = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
+    md_training_sessions = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
+    md_follow_up_procedures = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
+    md_how_was_data_collected = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
+    md_how_were_results_devolved = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
+    md_instructions_given = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
+    md_additional_inputs_provided = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
+    md_varieties = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
+
+    project = relationship("Project")
+
+
+class ExtraForm(Base):
+    __tablename__ = "extra_form"
+
+    form_id = Column(Integer, primary_key=True, autoincrement=True)
+    form_name = Column(Unicode(120), nullable=False)
+    form_started = Column(DateTime, nullable=False)
+    form_finished = Column(DateTime)
+    form_status = Column(Integer, default=0, nullable=False)
+
+
+class ExtraFormAnswer(Base):
+    __tablename__ = "extra_form_answers"
+
+    form_id = Column(ForeignKey("extra_form.form_id"), nullable=False, primary_key=True)
+    user_name = Column(
+        ForeignKey("user.user_name", ondelete="CASCADE"), primary_key=True
+    )
+    answer_field = Column(Unicode(120), nullable=False, primary_key=True)
+    answer_date = Column(DateTime)
+    answer_data = Column(Unicode(120), nullable=False)
+
+    extraform = relationship("ExtraForm")
+    user = relationship("User")
