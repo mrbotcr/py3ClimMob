@@ -3,6 +3,7 @@
 
 <head>
     {% block meta %}
+        {% include 'snippets/google_analytics.jinja2' %}
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="shortcut icon" href="{{ request.url_for_static('landing/icon.png') }}">

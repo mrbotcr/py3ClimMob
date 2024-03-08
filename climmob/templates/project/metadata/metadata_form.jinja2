@@ -77,14 +77,14 @@
 <div class="form-group">
     <label class="col-sm-4 control-label">{{ _('What were the objectives of the trial?') }}</label>
     <div class="col-sm-8">
-        <textarea class="form-control" name="md_objective" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_objective'] }}</textarea>
+        <textarea class="form-control" rows="10"  name="md_objective" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_objective'] }}</textarea>
     </div>
 </div>
 
 <div class="form-group">
     <label class="col-sm-4 control-label">{{ _('Who contributed to the realization of the trial? Mention full names and email addresses') }}</label>
     <div class="col-sm-8">
-        <textarea type="text" class="form-control "  name="md_collaborators" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_collaborators'] }}</textarea>
+        <textarea type="text" class="form-control "  rows="10" name="md_collaborators" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_collaborators'] }}</textarea>
         <span class="form-text m-b-none">{{ _("(Design, preparing inputs, input distribution, data collection, analysis/interpretation)") }}</span>
     </div>
 </div>
@@ -92,7 +92,7 @@
 <div class="form-group">
     <label class="col-sm-4 control-label">{{ _('What experimental design was followed?') }}</label>
     <div class="col-sm-8">
-        <textarea class="form-control " name="md_experimental_design" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_experimental_design'] }}</textarea>
+        <textarea class="form-control " rows="10" name="md_experimental_design" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_experimental_design'] }}</textarea>
         <span class="form-text m-b-none">{{ _("(tricot randomization with ClimMob, tailored design, inclusion of check(s) - specify)") }}</span>
     </div>
 </div>
@@ -100,7 +100,7 @@
 <div class="form-group">
     <label class="col-sm-4 control-label">{{ _('Which steps were followed for the trial design, and who participated in each step?') }}</label>
     <div class="col-sm-8">
-        <textarea class="form-control "  name="md_steps_followed" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_steps_followed'] }}</textarea>
+        <textarea class="form-control " rows="10"  name="md_steps_followed" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_steps_followed'] }}</textarea>
         <span class="form-text m-b-none">{{ _(" (For example, objective setting with farmers, trait selection with experts, determining sampling frame with collaborating organizations, etc.)") }}</span>
     </div>
 </div>
@@ -108,7 +108,7 @@
 <div class="form-group">
     <label class="col-sm-4 control-label">{{ _('Did the trial have any special features?') }}</label>
     <div class="col-sm-8">
-        <textarea class="form-control " name="md_special_features" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_special_features'] }}</textarea>
+        <textarea class="form-control " rows="10" name="md_special_features" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_special_features'] }}</textarea>
 {#        <span class="form-text m-b-none">{{ _("") }}</span>#}
     </div>
 </div>
@@ -116,7 +116,7 @@
 <div class="form-group">
     <label class="col-sm-4 control-label">{{ _('How the varieties were selected?') }}</label>
     <div class="col-sm-8">
-        <textarea class="form-control " name="md_how_varieties_were_selected" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_how_varieties_were_selected'] }}</textarea>
+        <textarea class="form-control " rows="10" name="md_how_varieties_were_selected" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_how_varieties_were_selected'] }}</textarea>
         <span class="form-text m-b-none">{{ _("Describe the process in selecting the varieties/genotypes tested in the trial") }}</span>
     </div>
 </div>
@@ -124,7 +124,7 @@
 <div class="form-group">
     <label class="col-sm-4 control-label">{{ _('How were participants selected? What was the process?') }}</label>
     <div class="col-sm-8">
-        <textarea class="form-control " name="md_how_participants_were_selected" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_how_participants_were_selected'] }}</textarea>
+        <textarea class="form-control " rows="10" name="md_how_participants_were_selected" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_how_participants_were_selected'] }}</textarea>
         <span class="form-text m-b-none">{{ _(" (Explain relationship between sample and target population)") }}</span>
     </div>
 </div>
@@ -132,7 +132,7 @@
 <div class="form-group">
     <label class="col-sm-4 control-label">{{ _('Which geographic areas were targeted? How were sites selected?') }}</label>
     <div class="col-sm-8">
-        <textarea class="form-control " name="md_geographic_areas" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_geographic_areas'] }}</textarea>
+        <textarea class="form-control " rows="10" name="md_geographic_areas" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_geographic_areas'] }}</textarea>
 {#        <span class="form-text m-b-none">{{ _("") }}</span>#}
     </div>
 </div>
@@ -140,7 +140,7 @@
 <div class="form-group">
     <label class="col-sm-4 control-label">{{ _('What selection criteria were used? Were any prior studies or datasets used for selection?') }}</label>
     <div class="col-sm-8">
-        <textarea class="form-control " name="md_selection_criteria_used" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_selection_criteria_used'] }}</textarea>
+        <textarea class="form-control " rows="10" name="md_selection_criteria_used" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_selection_criteria_used'] }}</textarea>
         <span class="form-text m-b-none">{{ _("(Check of knowledge and skills in executing the task, gender, experience with analysed crop, selection of households based on survey.)") }}</span>
     </div>
 </div>
@@ -148,7 +148,7 @@
 <div class="form-group">
     <label class="col-sm-4 control-label">{{ _('How were participants approached for recruitment? ') }}</label>
     <div class="col-sm-8">
-        <textarea class="form-control " name="md_how_participants_approached_recruitment" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_how_participants_approached_recruitment'] }}</textarea>
+        <textarea class="form-control " rows="10" name="md_how_participants_approached_recruitment" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_how_participants_approached_recruitment'] }}</textarea>
         <span class="form-text m-b-none">{{ _("(Open recruitment, invitation through the organization of which they are member/client, etc.)") }}</span>
     </div>
 </div>
@@ -156,7 +156,7 @@
 <div class="form-group">
     <label class="col-sm-4 control-label">{{ _('Where did recruitment take place?') }}</label>
     <div class="col-sm-8">
-        <textarea class="form-control "  name="md_where_recruidment_place" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_where_recruidment_place'] }}</textarea>
+        <textarea class="form-control " rows="10"  name="md_where_recruidment_place" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_where_recruidment_place'] }}</textarea>
         <span class="form-text m-b-none">{{ _(" (For example, cooperative meeting, community centres, markets.)") }}</span>
     </div>
 </div>
@@ -164,7 +164,7 @@
 <div class="form-group">
     <label class="col-sm-4 control-label">{{ _('How was the participant recruitment formalised?') }}</label>
     <div class="col-sm-8">
-        <textarea class="form-control " name="md_how_recruitment_formalised" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_how_recruitment_formalised'] }}</textarea>
+        <textarea class="form-control " rows="10" name="md_how_recruitment_formalised" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_how_recruitment_formalised'] }}</textarea>
         <span class="form-text m-b-none">{{ _("(Verbal consent, signed individual consent forms, consent forms signed by community representative/head, etc.)") }}</span>
     </div>
 </div>
@@ -172,7 +172,7 @@
 <div class="form-group">
     <label class="col-sm-4 control-label">{{ _('Were participants compensated? If yes, how?') }}</label>
     <div class="col-sm-8">
-        <textarea class="form-control " name="md_participants_compensated" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_participants_compensated'] }}</textarea>
+        <textarea class="form-control " rows="10" name="md_participants_compensated" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_participants_compensated'] }}</textarea>
         <span class="form-text m-b-none">{{ _(" (For example, seed gift, free technical advice, voucher, airtime.)") }}</span>
     </div>
 </div>
@@ -188,7 +188,7 @@
 <div class="form-group">
     <label class="col-sm-4 control-label">{{ _('How was tricot explained to participants? Who was in charge of this?') }}</label>
     <div class="col-sm-8">
-        <textarea class="form-control " name="md_how_tricot_explained" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_how_tricot_explained'] }}</textarea>
+        <textarea class="form-control " rows="10" name="md_how_tricot_explained" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_how_tricot_explained'] }}</textarea>
 {#        <span class="form-text m-b-none">{{ _("") }}</span>#}
     </div>
 </div>
@@ -196,7 +196,7 @@
 <div class="form-group">
     <label class="col-sm-4 control-label">{{ _('How many training sessions were provided to the participants? How were they set up?') }}</label>
     <div class="col-sm-8">
-        <textarea class="form-control " name="md_training_sessions" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_training_sessions'] }}</textarea>
+        <textarea class="form-control " rows="10" name="md_training_sessions" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_training_sessions'] }}</textarea>
         <span class="form-text m-b-none">{{ _("(One or more sessions, individual or group sessions)") }}</span>
     </div>
 </div>
@@ -204,7 +204,7 @@
 <div class="form-group">
     <label class="col-sm-4 control-label">{{ _('Were any follow-up procedures in place to ensure that participants adhered to the instructions given and did timely data collection? Which?') }}</label>
     <div class="col-sm-8">
-        <textarea class="form-control " name="md_follow_up_procedures" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_follow_up_procedures'] }}</textarea>
+        <textarea class="form-control " rows="10" name="md_follow_up_procedures" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_follow_up_procedures'] }}</textarea>
         <span class="form-text m-b-none">{{ _("(Reminders, follow-up visits, peer visits)") }}</span>
     </div>
 </div>
@@ -212,7 +212,7 @@
 <div class="form-group">
     <label class="col-sm-4 control-label">{{ _('How was data collected from participants? What communication channels were used?') }}</label>
     <div class="col-sm-8">
-        <textarea class="form-control " name="md_how_was_data_collected" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_how_was_data_collected'] }}</textarea>
+        <textarea class="form-control " rows="10" name="md_how_was_data_collected" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_how_was_data_collected'] }}</textarea>
 {#        <span class="form-text m-b-none">{{ _("") }}</span>#}
     </div>
 </div>
@@ -220,7 +220,7 @@
 <div class="form-group">
     <label class="col-sm-4 control-label">{{ _('How were results devolved to participants?') }}</label>
     <div class="col-sm-8">
-        <textarea class="form-control "  name="md_how_were_results_devolved" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_how_were_results_devolved'] }}</textarea>
+        <textarea class="form-control " rows="10"  name="md_how_were_results_devolved" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_how_were_results_devolved'] }}</textarea>
 {#        <span class="form-text m-b-none">{{ _("") }}</span>#}
     </div>
 </div>
@@ -228,7 +228,7 @@
 <div class="form-group">
     <label class="col-sm-4 control-label">{{ _('What instructions were given to participants?') }}</label>
     <div class="col-sm-8">
-        <textarea class="form-control " name="md_instructions_given" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_instructions_given'] }}</textarea>
+        <textarea class="form-control " rows="10" name="md_instructions_given" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_instructions_given'] }}</textarea>
         <span class="form-text m-b-none">{{ _("(Agronomic management - including how to set up the trial, food product preparation, or equivalent)") }}</span>
     </div>
 </div>
@@ -236,7 +236,7 @@
 <div class="form-group">
     <label class="col-sm-4 control-label">{{ _('Were additional inputs provided to participants?') }}</label>
     <div class="col-sm-8">
-        <textarea class="form-control " name="md_additional_inputs_provided" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_additional_inputs_provided'] }}</textarea>
+        <textarea class="form-control " rows="10" name="md_additional_inputs_provided" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_additional_inputs_provided'] }}</textarea>
 {#        <span class="form-text m-b-none">{{ _("") }}</span>#}
     </div>
 </div>
@@ -244,7 +244,7 @@
 <div class="form-group">
     <label class="col-sm-4 control-label">{{ _('Varieties') }}</label>
     <div class="col-sm-8">
-        <textarea class="form-control " name="md_varieties" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_varieties'] }}</textarea>
+        <textarea class="form-control " rows="10" name="md_varieties" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("") }}')" onchange="this.setCustomValidity('')" {% if onlySee %}readonly{% endif %}>{{ dataworking['md_varieties'] }}</textarea>
 {#        <span class="form-text m-b-none">{{ _("") }}</span>#}
     </div>
 </div>
