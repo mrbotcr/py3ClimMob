@@ -53,6 +53,7 @@ __all__ = [
     "getProjectTemplates",
     "getProjectIsTemplate",
     "getProjectUserAndOwner",
+    "getProjectFullDetailsById",
 ]
 
 
@@ -422,21 +423,45 @@ def getActiveProject(userName, request):
             )
 
     if activeProject:
-        activeProject["owner"] = mapFromSchema(
-            request.dbsession.query(userProject)
-            .filter(userProject.project_id == activeProject["project_id"])
-            .filter(userProject.access_type == 1)
-            .one()
+
+        activeProject = extraDetailsForProject(activeProject, request)
+
+    return activeProject
+
+
+def extraDetailsForProject(activeProject, request):
+    activeProject["owner"] = mapFromSchema(
+        request.dbsession.query(userProject)
+        .filter(userProject.project_id == activeProject["project_id"])
+        .filter(userProject.access_type == 1)
+        .one()
+    )
+
+    activeProject["languages"] = getPrjLangInProject(
+        activeProject["project_id"], request
+    )
+
+    for plugin in p.PluginImplementations(p.IProjectTechnologyOptions):
+        activeProject = plugin.get_extra_information_for_data_exchange(
+            request, activeProject
         )
 
-        activeProject["languages"] = getPrjLangInProject(
-            activeProject["project_id"], request
-        )
+    return activeProject
 
-        for plugin in p.PluginImplementations(p.IProjectTechnologyOptions):
-            activeProject = plugin.get_extra_information_for_data_exchange(
-                request, activeProject
-            )
+
+def getProjectFullDetailsById(userName, projectId, request):
+
+    activeProject = mapFromSchema(
+        request.dbsession.query(userProject, Project)
+        .filter(userProject.project_id == Project.project_id)
+        .filter(userProject.user_name == userName)
+        .filter(Project.project_id == projectId)
+        .first()
+    )
+
+    if activeProject:
+
+        activeProject = extraDetailsForProject(activeProject, request)
 
     return activeProject
 
