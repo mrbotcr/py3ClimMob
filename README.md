@@ -142,6 +142,10 @@ http://[this server IP address]/climmob
 
 Documentation and other resources about ClimMob are available at the [ClimMob Documentation Site](https://climmob.net/blog/wiki/).
 
+### ClimMob's REST API
+
+Documentation about ClimMob's API is available [here](https://documenter.getpostman.com/view/13253300/TVYGcxau).
+
 ### Customization and extension
 
 ClimMob uses [PyUtilib Component Architecture](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.616.8737&rep=rep1&type=pdf) to allow customization and extension. The best way to do it is by using the [ClimMob Plugin CookieCutter](https://github.com/BioversityCostaRica/climmob-plugin-cookiecutter) and explore the different Interfaces.
