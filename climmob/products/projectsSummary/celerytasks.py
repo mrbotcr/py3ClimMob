@@ -13,11 +13,13 @@ from climmob.models import (
     userProject,
     Country,
     Technology,
+    CropTaxonomy,
 )
 import shutil as sh
 import pandas as pd
 import numpy as np
 import transaction
+import datetime
 import json
 import os
 
@@ -25,14 +27,83 @@ from climmob.config.celery_app import celeryApp
 from climmob.config.celery_class import celeryTask
 
 
+def getTheTechOfTheProject(dbsession, projectId):
+
+    crop = (
+        dbsession.query(Technology)
+        .filter(Prjtech.project_id == projectId)
+        .filter(Technology.tech_id == Prjtech.tech_id)
+        .first()
+    )
+    return mapFromSchema(crop)
+
+
+def getTheCropOfTheProject(dbsession, projectId):
+
+    crop = (
+        dbsession.query(CropTaxonomy)
+        .filter(Prjtech.project_id == projectId)
+        .filter(Technology.tech_id == Prjtech.tech_id)
+        .filter(Technology.croptaxonomy_code == CropTaxonomy.taxonomy_code)
+        .first()
+    )
+
+    return mapFromSchema(crop)
+
+
+def getTheStartAndEndDateOfProject(projectId, user, projectCod, dbsession):
+
+    startDates = []
+    endDates = []
+
+    sqlRegistry = "select Min(clm_start), max(clm_end) FROM {}_{}.REG_geninfo".format(
+        user, projectCod
+    )
+
+    try:
+        resultR = sql_execute(sqlRegistry).one()
+        startDates.append(resultR[0])
+        endDates.append(resultR[1])
+    except Exception as e:
+        print(e)
+        pass
+
+    assessments = (
+        dbsession.query(Assessment)
+        .filter(Assessment.project_id == projectId)
+        .filter(Assessment.ass_status > 0)
+        .order_by(Assessment.ass_days)
+        .all()
+    )
+
+    for assessment in assessments:
+
+        sqlAssessments = (
+            "SELECT Min(clm_start), max(clm_end) FROM {}_{}.ASS{}_geninfo ".format(
+                user, projectCod, assessment.ass_cod
+            )
+        )
+
+        try:
+            resultA = sql_execute(sqlAssessments).one()
+            startDates.append(resultA[0])
+            endDates.append(resultA[1])
+        except Exception as e:
+            print(str(e))
+            pass
+
+    try:
+        return min(startDates), max(endDates)
+    except:
+        return "", ""
+
+
 def numberOfRegisteredParticipants(user, projectCod):
 
     sql = "SELECT count(*) as count FROM " + user + "_" + projectCod + ".REG_geninfo "
 
     try:
-        print(sql)
         result = sql_execute(sql)
-        print(result)
         count = result.one()[0]
         return count
     except Exception as e:
@@ -181,6 +252,7 @@ def getListOfProjects(dbsession):
         .filter(User.user_name == userProject.user_name)
         .filter(Project.project_active == 1)
         .filter(Project.project_id.not_in(exclude))
+        .filter(User.user_name == "us1")
         .all()
     )
 
@@ -203,22 +275,16 @@ def getListOfProjects(dbsession):
         .filter(User.user_name == userProject.user_name)
         .filter(Project.project_active == 1)
         .filter(Project.project_id.not_in(exclude))
+        .filter(User.user_name == "us1")
         .all()
     )
 
     return projectsWithCountry + projectsWithoutCountry
 
 
-def getTheCropOfTheProject(dbsession, projectId):
-
-    crop = (
-        dbsession.query(Technology)
-        .filter(Prjtech.project_id == projectId)
-        .filter(Technology.tech_id == Prjtech.tech_id)
-        .first()
-    )
-
-    return mapFromSchema(crop)
+def myconverter(o):
+    if isinstance(o, datetime.datetime):
+        return o.__str__()
 
 
 @celeryApp.task(bind=True, base=celeryTask, soft_time_limit=7200, time_limit=7200)
@@ -246,26 +312,44 @@ def createProjectsSummary(self, settings, otro):
                 project["user_name"], project["project_cod"]
             )
 
-            crop = {}
+            startDate, endDate = getTheStartAndEndDateOfProject(
+                project["project_id"],
+                project["user_name"],
+                project["project_cod"],
+                dbsession,
+            )
+
+            if startDate:
+                startDate = startDate.strftime("%d-%m-%Y")
+            if endDate:
+                endDate = endDate.strftime("%d-%m-%Y")
+
+            crop = getTheCropOfTheProject(dbsession, project["project_id"])
+            tech = getTheTechOfTheProject(dbsession, project["project_id"])
 
             if crop:
-                crop = crop["tech_name"]
+                crop = crop["taxonomy_name"]
+                tech = tech["tech_name"]
             else:
-                crop = "No crop assigned"
+                crop = "No assigned"
+                tech = ""
 
             result = {
                 "user_owner": project["user_name"],
                 "project_id": project["project_id"],
                 "project_cod": project["project_cod"],
-                "project_name": project["project_name"],
+                "projectTitle": project["project_name"],
                 "project_pi": project["project_pi"],
                 "project_piorganization": project["user_organization"],
                 "project_piemail": project["project_piemail"],
                 "project_date": project["project_creationdate"].strftime("%d-%m-%Y"),
                 "project_country": project["cnty_name"],
-                "project_numobs": project["project_numobs"],
-                "NumberOfRegisteredParticipants": num,
+                "NumberOfFarmersTarget": project["project_numobs"],
+                "NumberOfFarmersRegisteredForTheProject": num,
                 "crop": crop,
+                "technology": tech,
+                "startDate": startDate,
+                "endDate": endDate,
             }
 
             registry, infoOfCoordinates = getTheFirstGeoPointQuestionCodeInRegistry(
@@ -274,37 +358,38 @@ def createProjectsSummary(self, settings, otro):
                 project["project_cod"],
                 dbsession,
             )
-            Latitude = None
-            Longitude = None
+            LatitudeR = None
+            LongitudeR = None
             if registry:
 
-                Latitude, Longitude = processTheProjectCoordinates(infoOfCoordinates)
+                LatitudeR, LongitudeR = processTheProjectCoordinates(infoOfCoordinates)
 
-            else:
+            result["LatitudeRegistry"] = LatitudeR
+            result["LongitudeRegistry"] = LongitudeR
 
-                (
-                    assessment,
-                    infoOfCoordinates,
-                ) = getTheFirstGeoPointQuestionCodeInAssessment(
-                    project["project_id"],
-                    project["user_name"],
-                    project["project_cod"],
-                    dbsession,
-                )
+            LatitudeA = None
+            LongitudeA = None
 
-                if assessment:
-                    Latitude, Longitude = processTheProjectCoordinates(
-                        infoOfCoordinates
-                    )
+            (
+                assessment,
+                infoOfCoordinates,
+            ) = getTheFirstGeoPointQuestionCodeInAssessment(
+                project["project_id"],
+                project["user_name"],
+                project["project_cod"],
+                dbsession,
+            )
 
-            if Latitude:
-                result["Latitude"] = Latitude
-                result["Longitude"] = Longitude
+            if assessment:
+                LatitudeA, LongitudeA = processTheProjectCoordinates(infoOfCoordinates)
+
+            result["LatitudeAssessment"] = LatitudeA
+            result["LongitudeAssessment"] = LongitudeA
 
             listOfProjects.append(result)
 
         with open(os.path.join(jsonLocation, "projectsSummary.json"), "w") as json_data:
-            json.dump(listOfProjects, json_data)
+            json.dump(listOfProjects, json_data, default=myconverter)
 
         df = pd.read_json(os.path.join(jsonLocation, "projectsSummary.json"))
         df.to_excel(os.path.join(jsonLocation, "projectsSummary.xlsx"), index=False)

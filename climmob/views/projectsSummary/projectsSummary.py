@@ -36,7 +36,14 @@ def getDataProduct(request):
     return result
 
 
+import datetime
+
+
 class projectsSummary_view(privateView):
+    def myconverter(o):
+        if isinstance(o, datetime.datetime):
+            return o.__str__()
+
     def processView(self):
 
         userInSession = getUserInfo(self.request, self.user.login)

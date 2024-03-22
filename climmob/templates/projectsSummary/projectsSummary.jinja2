@@ -109,9 +109,15 @@
                                     <th style="text-align: center">{{ _("Trial coordinator's email") }}</th>
                                     <th style="text-align: center">{{ _("Date") }}</th>
                                     <th style="text-align: center">{{ _("Country") }}</th>
-                                    <th data-hide="all" style="text-align: center">{{ _("Number of observations") }}</th>
-                                    <th data-hide="all" style="text-align: center">{{ _("Number of registered participants") }}</th>
+                                    <th style="text-align: center">{{ _("Start date") }}</th>
+                                    <th style="text-align: center">{{ _("End date") }}</th>
+                                    <th data-hide="all" style="text-align: center">{{ _("Number of farmers target") }}</th>
+                                    <th data-hide="all" style="text-align: center">{{ _("Number of registered for the project") }}</th>
                                     <th data-hide="all" style="text-align: center">{{ _("Crop") }}</th>
+                                    <th data-hide="all" style="text-align: center">{{ _("Latitude - Registry") }}</th>
+                                    <th data-hide="all" style="text-align: center">{{ _("Longitude - Registry") }}</th>
+                                    <th data-hide="all" style="text-align: center">{{ _("Latitude - Assessment") }}</th>
+                                    <th data-hide="all" style="text-align: center">{{ _("Longitude - Assessment") }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -121,15 +127,21 @@
                                         <td>{{ project["user_owner"] }}</td>
                                         <td>{{ project["project_id"] }}</td>
                                         <td>{{ project["project_cod"] }}</td>
-                                        <td>{{ project["project_name"] }}</td>
+                                        <td>{{ project["projectTitle"] }}</td>
                                         <td>{{ project["project_pi"] }}</td>
                                         <td>{{ project["project_piorganization"] }}</td>
                                         <td>{{ project["project_piemail"] }}</td>
                                         <td>{{ project["project_date"] }}</td>
                                         <td>{{ project["project_country"] }}</td>
-                                        <td>{{ project["project_numobs"] }}</td>
-                                        <td>{{ project["NumberOfRegisteredParticipants"] }}</td>
+                                        <td>{{ project["startDate"] }}</td>
+                                        <td>{{ project["endDate"] }}</td>
+                                        <td>{{ project["NumberOfFarmersTarget"] }}</td>
+                                        <td>{{ project["NumberOfFarmersRegisteredForTheProject"] }}</td>
                                         <td>{{ project["crop"] }}</td>
+                                        <td>{{ project["LatitudeRegistry"] }}</td>
+                                        <td>{{ project["LongitudeRegistry"] }}</td>
+                                        <td>{{ project["LatitudeAssessment"] }}</td>
+                                        <td>{{ project["LongitudeAssessment"] }}</td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
