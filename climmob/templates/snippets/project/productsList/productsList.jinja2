@@ -169,7 +169,15 @@
                                                                                                                 {% endblock explanation_kit_row %}
 
                                                                                                             {% else %}
-                                                                                                                {{ product.product_id }}
+                                                                                                                {% if product.product_id == "dataexchangedownload" %}
+
+                                                                                                                    {% block data_exchange_download_row scoped %}
+
+                                                                                                                    {% endblock data_exchange_download_row %}
+
+                                                                                                                {% else %}
+                                                                                                                    {{ product.product_id }}
+                                                                                                                {% endif %}
                                                                                                             {% endif %}
                                                                                                         {% endif %}
                                                                                                     {% endif %}

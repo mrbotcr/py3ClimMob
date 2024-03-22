@@ -1270,7 +1270,7 @@ def generateODKFile(
     else:
         if formID[:3] == "ASS":
             ass_cod = formID.split("_")[3]
-            print(ass_cod)
+            # print(ass_cod)
             consentInfo = mapFromSchema(
                 request.dbsession.query(AssDetail, Question)
                 .filter(AssDetail.project_id == projectId)
@@ -1406,8 +1406,8 @@ def generateODKFile(
     for question in questions:
 
         relevant = ""
-        print(consentInfo)
-        print(question)
+        # print(consentInfo)
+        # print(question)
         if (
             consentInfo
             and consentInfo["section_id"] == question.section_id
