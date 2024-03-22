@@ -67,6 +67,7 @@ class technologies_view(privateView):
                 if not error_summary_add:
                     tech = getTechnologyByName(dataworking, self.request)
                     techSee = getUserTechById(tech["tech_id"], self.request)
+                    dataworking = techSee
                 if not dict_return["redirect"]:
                     action = "addTechnology"
 
@@ -325,7 +326,7 @@ class APICropsView(publicView):
                     select2_result.append(
                         {
                             "id": "{}".format(result["taxonomy_code"]),
-                            "text": result["crop_name"],
+                            "text": result["taxonomy_name"],
                         }
                     )
                 with_pagination = False

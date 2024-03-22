@@ -7,11 +7,15 @@
         <input type="text" class="form-control" value="{{ dataworking.tech_name }}" id="tech_name" name="tech_name" required="" oninvalid="this.setCustomValidity('{{ _("Write the technology name.") }}')" onchange="this.setCustomValidity('')">
     </div>
 </div>
-<hr>
+
 <div class="form-group">
-    <label class="col-sm-4 control-label">{{ _('Associated crop') }}</label>
+    <label class="col-sm-4 control-label">{{ _('Crop taxonomy') }}</label>
     <div class="col-sm-8">
-        <input type="hidden" id="croptaxonomy_code" name="croptaxonomy_code" value="{{ dataworking.croptaxonomy_code }}">
-        <span id="crop_label">Not a crop</span> <button type="button" id="show_crops" class="btn btn-success" data-toggle="modal" data-target="#CropModal">{{ _('Change') }}</button>
+        <select id="select_crop" name="croptaxonomy_code"  class="form-control" style="width: 100%; !important;" required="" oninvalid="this.setCustomValidity('{{ _("Select one crop taxonomy.") }}')" onchange="this.setCustomValidity('')">
+            {% if dataworking["taxonomy_name"] %}
+                <option value="{{ dataworking["croptaxonomy_code"] }}">{{ dataworking["taxonomy_name"] }}</option>
+            {% endif %}
+        </select>
     </div>
 </div>
+<hr>
