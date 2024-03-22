@@ -17,6 +17,7 @@
     {% jsresource request,'coreresources','switch' %}
     {% jsresource request,'coreresources','assessment_form' %}
     {% jsresource request,'coreresources','select2' %}
+    {% jsresource request,'coreresources','jqueryvalidate' %}
 {% endblock topScripts %}
 
 {% block pageheading %}
@@ -43,12 +44,227 @@
                 </div>
                 <div class="ibox-content">
 
-                    <form class="form-horizontal formElement" role="form" method="post" action="{{ request.url }}" >
+                    <form class="form-horizontal formElement"  method="post" action="{{ request.url }}" id="FormMetadata">
                         <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
 
                         {% include "project/metadata/metadata_form.jinja2" %}
 
                     </form>
+
+                    <script>
+                        $(document).ready(function () {
+
+                            $.validator.addMethod("wordCount",
+                                function(value, element, wordCount) {
+                                    if (value.split(' ').length < wordCount)
+                                    {
+                                        var message = "{{ _("You have written {}/[] words required") }}";
+                                        message = message.replace("{}", value.split(' ').length).replace("[]", wordCount)
+                                        $.validator.messages.wordCount = message;
+
+                                        return false
+                                    }else{
+                                        return true
+                                    }
+                                },
+                                $.validator.messages.wordCount
+                            )
+                            var quantityOfWords = 100
+                            $('#FormMetadata').validate({
+                                rules: {
+                                    md_coordinator:{
+                                        required:true,
+                                    },
+                                    md_objective: {
+                                        required: true,
+                                        wordCount: quantityOfWords
+                                    },
+                                    md_crops: {
+                                        required: true,
+                                    },
+                                    md_year: {
+                                        required: true,
+                                    },
+                                    md_tricot_project: {
+                                        required: true,
+                                    },
+                                    md_collaborators: {
+                                        required: true,
+                                    },
+                                    md_experimental_design: {
+                                        required: true,
+                                        wordCount: quantityOfWords
+                                    },
+                                    md_steps_followed: {
+                                        required: true,
+                                        wordCount: quantityOfWords
+                                    },
+                                    md_special_features: {
+                                        required: true,
+                                    },
+                                    md_how_varieties_were_selected: {
+                                        required: true,
+                                        wordCount: quantityOfWords
+                                    },
+                                    md_how_participants_were_selected: {
+                                        required: true,
+                                        wordCount: quantityOfWords
+                                    },
+                                    md_geographic_areas: {
+                                        required: true,
+                                        wordCount: quantityOfWords
+                                    },
+                                    md_selection_criteria_used: {
+                                        required: true,
+                                        wordCount: quantityOfWords
+                                    },
+                                    md_how_participants_approached_recruitment: {
+                                        required: true,
+                                        wordCount: quantityOfWords
+                                    },
+                                    md_where_recruidment_place: {
+                                        required: true,
+                                        wordCount: quantityOfWords
+                                    },
+                                    md_how_recruitment_formalised: {
+                                        required: true,
+                                        wordCount: quantityOfWords
+                                    },
+                                    md_participants_compensated: {
+                                        required: true
+                                    },
+                                    md_participants_approached_participate: {
+                                        required: true,
+                                    },
+                                    md_how_tricot_explained: {
+                                        required: true,
+                                        wordCount: quantityOfWords
+                                    },
+                                    md_training_sessions: {
+                                        required: true,
+                                        wordCount: quantityOfWords
+                                    },
+                                    md_follow_up_procedures: {
+                                        required: true
+                                    },
+                                    md_how_was_data_collected: {
+                                        required: true,
+                                        wordCount: quantityOfWords
+                                    },
+                                    md_how_were_results_devolved: {
+                                        required: true,
+                                        wordCount: quantityOfWords
+                                    },
+                                    md_instructions_given: {
+                                        required: true,
+                                        wordCount: quantityOfWords
+                                    },
+                                    md_additional_inputs_provided: {
+                                        required: true,
+                                    },
+                                    md_varieties: {
+                                        required: true
+                                    }
+
+                                },
+                                messages: {
+                                    md_coordinator:{
+                                        required: "{{ _("Please write the coordiantor") }}",
+                                    },
+                                    md_objective: {
+                                        required: "{{ _("Please write the objectives of the trial") }}",
+                                    },
+                                    md_crops: {
+                                        required: "{{ _("Please select the crop") }}",
+                                    },
+                                    md_year: {
+                                        required: "{{ _("Please write here") }}",
+                                    },
+                                    md_tricot_project: {
+                                        required: "{{ _("Please write the name of the tricot project") }}",
+                                    },
+                                    md_collaborators: {
+                                        required: "{{ _("Please write the collaborators") }}"
+                                    },
+                                    md_experimental_design: {
+                                        required: "{{ _("Please write what experimental design was followed") }}"
+                                    },
+                                    md_steps_followed: {
+                                        required: "{{ _("Please write here") }}",
+                                    },
+                                    md_special_features: {
+                                        required: "{{ _("Please write here") }}",
+                                    },
+                                    md_how_varieties_were_selected: {
+                                        required: "{{ _("Please write here") }}",
+                                    },
+                                    md_how_participants_were_selected: {
+                                        required: "{{ _("Please write here") }}",
+                                    },
+                                    md_geographic_areas: {
+                                        required: "{{ _("Please write here") }}",
+                                    },
+                                    md_selection_criteria_used: {
+                                        required: "{{ _("Please write here") }}",
+                                    },
+                                    md_how_participants_approached_recruitment: {
+                                        required: "{{ _("Please write here") }}",
+                                    },
+                                    md_where_recruidment_place: {
+                                        required: "{{ _("Please write here") }}",
+                                    },
+                                    md_how_recruitment_formalised: {
+                                        required: "{{ _("Please write here") }}",
+                                    },
+                                    md_participants_compensated: {
+                                        required: "{{ _("Please write here") }}",
+                                    },
+                                    md_participants_approached_participate: {
+                                        required: "{{ _("Please write here") }}",
+                                    },
+                                    md_how_tricot_explained: {
+                                        required: "{{ _("Please write here") }}",
+                                    },
+                                    md_training_sessions: {
+                                        required: "{{ _("Please write here") }}",
+                                    },
+                                    md_follow_up_procedures: {
+                                        required: "{{ _("Please write here") }}",
+                                    },
+                                    md_how_was_data_collected: {
+                                        required: "{{ _("Please write here") }}",
+                                    },
+                                    md_how_were_results_devolved: {
+                                        required: "{{ _("Please write here") }}",
+                                    },
+                                    md_instructions_given: {
+                                        required: "{{ _("Please write here") }}",
+                                    },
+                                    md_additional_inputs_provided: {
+                                        required: "{{ _("Please write here") }}",
+                                    },
+                                    md_varieties: {
+                                        required: "{{ _("Please write here") }}",
+                                    }
+                                },
+                                errorElement: 'span',
+                                errorPlacement: function (error, element) {
+                                    error.addClass('text-danger');
+                                    element.closest('.col-sm-8').append(error);
+                                },
+                                highlight: function (element, errorClass, validClass) {
+                                    $("#carga").hide();
+                                    $(element.parentElement.parentElement).addClass('row has-error');
+                                },
+                                unhighlight: function (element, errorClass, validClass) {
+                                    $("#carga").hide();
+                                    $(element.parentElement.parentElement).removeClass('row has-error');
+                                }
+                            });
+
+                        });
+
+                    </script>
 
                 </div>
             </div>

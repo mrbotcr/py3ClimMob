@@ -437,3 +437,9 @@ def createResources(apppath, config):
         "inspinia/js/plugins/switchery/switchery.js",
         "jquery",
     )
+    r.add_js_resource(
+        "coreresources",
+        "jqueryvalidate",
+        "inspinia/js/plugins/jquery-validation/jquery.validate.min.js",
+        "jquery",
+    )
