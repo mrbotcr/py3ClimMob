@@ -26,6 +26,10 @@ import os
 from climmob.config.celery_app import celeryApp
 from climmob.config.celery_class import celeryTask
 
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine
+from sqlalchemy.pool import NullPool
+
 
 def getTheTechOfTheProject(dbsession, projectId):
 
@@ -108,7 +112,7 @@ def numberOfRegisteredParticipants(user, projectCod):
         return count
     except Exception as e:
         print(str(e))
-        return "-"
+        return "0"
 
 
 def getTheFirstGeoPointQuestionCodeInRegistry(projectId, user, projectCod, dbsession):
@@ -350,6 +354,7 @@ def createProjectsSummary(self, settings, otro):
                 "technology": tech,
                 "startDate": startDate,
                 "endDate": endDate,
+                "instance_name": settings.get("analytics.instancename", ""),
             }
 
             registry, infoOfCoordinates = getTheFirstGeoPointQuestionCodeInRegistry(
@@ -398,5 +403,57 @@ def createProjectsSummary(self, settings, otro):
         #    print(str(e))
         #    error = 1
     engine.dispose()
+
+    if settings.get("analytics.active", "false") == "true":
+        if settings.get("analytics.sqlalchemy.url", "") != settings.get(
+            "sqlalchemy.url"
+        ):
+            engine = create_engine(
+                settings.get("analytics.sqlalchemy.url", ""),
+                poolclass=NullPool,
+            )
+            Session = sessionmaker(bind=engine)
+            dbsession = Session()
+
+            try:
+                dbsession.execute(
+                    "DELETE FROM {} WHERE instance_name='{}'".format(
+                        "climmob_details", settings.get("analytics.instancename", "")
+                    )
+                )
+
+                for project in listOfProjects:
+
+                    columns = project.keys()
+                    cols_comma_separated = ", ".join(columns)
+
+                    binds_comma_separated = ""
+                    for item in columns:
+                        before = ", "
+                        if binds_comma_separated == "":
+                            before = ""
+
+                        if project[item]:
+                            binds_comma_separated += (
+                                before + "'" + str(project[item]) + "'"
+                            )
+                        else:
+                            binds_comma_separated += before + "null"
+
+                    sql = "INSERT INTO {} ({}) VALUES ({})".format(
+                        "climmob_details",
+                        cols_comma_separated,
+                        binds_comma_separated,
+                    )
+                    try:
+                        dbsession.execute(sql)
+                    except Exception as e:
+                        print(str(e))
+
+            except Exception as e:
+                print(str(e))
+
+            dbsession.commit()
+            dbsession.close()
 
     return ""
