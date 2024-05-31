@@ -1,0 +1,132 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("Project setup") }}</title>
+{% endblock title %}
+
+{% block css %}
+    {% cssresource request,'coreresources','datatables' %}
+    {% cssresource request,'coreresources','footable' %}
+    {% cssresource request,'coreresources','select2' %}
+    {% cssresource request,'coreresources','tour' %}
+    {% cssresource request,'coreresources','icheck' %}
+{% endblock css %}
+
+{% block topScripts %}
+    {% jsresource request,'coreresources','footable' %}
+    {% jsresource request,'coreresources','technologies' %}
+    {% jsresource request,'coreresources','datatables' %}
+    {% jsresource request,'coreresources','tour' %}
+    {% jsresource request,'coreresources','select2' %}
+    {% jsresource request,'coreresources','icheck' %}
+{% endblock topScripts %}
+
+{% block pageheading %}
+    {% set _title= _("Project setup") %}
+    {% include 'snippets/menuheading.jinja2' %}
+{% endblock %}
+
+{% block pagecontent %}
+
+    <div class="row">
+
+        <div class="col-md-12" >
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{{ _("Projects that require a setup") }}</h5>
+                </div>
+                <div class="ibox-content" >
+
+                    <form class="form-horizontal" role="form" method="post" action="{{ request.url }}">
+
+                        <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+
+                        {% if error_summary %}
+                            {% for key, error in error_summary.items() %}
+                                <div class="alert alert-danger alert-dismissable">
+                                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <p>1. {{ _("Read about the following types of projects that have been defined for ClimMob") }}:</p>
+                        <table class="footable table table-bordered">
+                            <thead>
+                                <th>{{ _("Type") }}</th>
+                                <th>{{ _("Description") }}</th>
+                            </thead>
+                            <tbody>
+                                {% for type in listOfProjectTypes %}
+                                    <tr>
+                                        <td>{{ type.prjtype_name }}</td>
+                                        <td>{{ type.prjtype_description }}.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                        <p>2. {{ _("Use the following table to help the ClimMob team know the type that each of your projects has") }}:</p>
+
+                        <table class="footable table table-bordered ">
+                            <thead>
+                                <tr>
+                                    <th>{{ _("Project ID")}}</th>
+                                    <th>{{ _("Name") }}</th>
+                                    <th>{{ _("Description") }}</th>
+                                    <th>{{ _("Country") }}</th>
+                                    <th>{{ _("Type") }}</th>
+                                    <th>{{ _("Check this box if this project has been finished.") }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                {% for project in listOfProjects %}
+                                    <tr>
+                                        <td style="vertical-align: middle">{{ project.project_cod }}</td>
+                                        <td style="vertical-align: middle">{{ project.project_name }}</td>
+                                        <td style="vertical-align: middle">{{ project.project_abstract }}</td>
+                                        <td style="vertical-align: middle">{{ project.cnty_name }}</td>
+                                        <td style="vertical-align: middle; width: 150px ">
+                                            <select class="form-control" name="type_{{ project.project_id }}">
+                                                {% for type in listOfProjectTypes %}
+                                                    <option value="{{ type.prjtype_id }}">{{ type.prjtype_name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </td>
+                                        <td style="vertical-align: middle; width: 200px; text-align: center">
+                                            <input type="checkbox" class="i-checks" name="status_{{ project.project_id }}">
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+
+                            </tbody>
+                        </table>
+
+                        <input class="btn btn-primary pull-right" type="submit" id="btn_save_projects" name="btn_save_projects" value="{{ _('Save') }}">
+                        <br>
+                        <br>
+
+                    </form>
+
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        $(document).ready(function () {
+
+            $('.i-checks').iCheck({
+                radioClass: 'iradio_square-green',
+                checkboxClass: 'icheckbox_square-green',
+            });
+
+        });
+    </script>
+
+    {% include 'snippets/loading.jinja2' %}
+
+{% endblock pagecontent %}

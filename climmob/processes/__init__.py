@@ -40,3 +40,4 @@ from climmob.processes.db.i18n_general_phrases import *
 from climmob.processes.db.project_metadata import *
 from climmob.processes.db.extra_form import *
 from climmob.processes.db.extra_form_answers import *
+from climmob.processes.db.project_type import *

@@ -201,6 +201,7 @@ from climmob.views.project import (
     modifyProject_view,
     deleteProject_view,
     projectList_view,
+    CurationOfProjects_view,
 )
 from climmob.views.projectHelp.projectHelp import projectHelp_view
 from climmob.views.project_analysis import analysisDataView, metadata_view
@@ -715,6 +716,17 @@ def loadRoutes(config):
             "/technology/{technologyid}/alias/{aliasid}/delete",
             deletealias_view,
             "json",
+        )
+    )
+
+    # Project
+
+    routes.append(
+        addRoute(
+            "curationofprojects",
+            "/CurationOfProjects",
+            CurationOfProjects_view,
+            "project/curationofprojects.jinja2",
         )
     )
 
