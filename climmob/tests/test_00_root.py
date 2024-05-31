@@ -25,6 +25,8 @@ class FunctionalTests(unittest.TestCase):
         with open(config_file) as json_file:
             server_config = json.load(json_file)
 
+        print(server_config)
+
         from climmob import main
         from pathlib import Path
 

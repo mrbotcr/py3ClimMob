@@ -122,10 +122,12 @@
                                                         </tr>
                                                     {% endif %}
 
-                                                    <tr>
-                                                        <th>{{ _("Notes") }}</th>
-                                                        <td>{{ questionDetails["question_notes"] }}</td>
-                                                    </tr>
+{#                                                    {% if questionDetails["question_dtype"] in [2,3] %}#}
+{#                                                        <tr>#}
+{#                                                            <th>{{ _("Notes") }}</th>#}
+{#                                                            <td>{{ questionDetails["question_notes"] }}</td>#}
+{#                                                        </tr>#}
+{#                                                    {% endif %}#}
 
                                                     {% if questionDetails["question_dtype"] in [2,3,8] %}
                                                         <tr>

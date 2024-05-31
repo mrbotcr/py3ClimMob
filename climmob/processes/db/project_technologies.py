@@ -111,6 +111,7 @@ def searchTechnologiesInProject(projectId, request):
             .filter(Techalia.tech_id == Prjtech.tech_id)
             .label("quantityAlias"),
             User.user_fullname,
+            Technology.croptaxonomy_code,
         )
         .join(
             I18nTechnology,
@@ -138,6 +139,7 @@ def searchTechnologiesInProject(projectId, request):
                 "quantity": technology.quantity,
                 "quantityAlias": technology.quantityAlias,
                 "user_fullname": technology[5],
+                "croptaxonomy_code": technology.croptaxonomy_code,
             }
         )
 

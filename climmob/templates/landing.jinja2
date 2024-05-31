@@ -696,7 +696,7 @@
                 {% block contact_footer %}
                     <div class="row">
                         <div class="col-lg-8 col-lg-offset-2 text-center m-t-lg m-b-lg">
-                            <strong>{{ _("Copyright") }}</strong> {{ _("2023, MrBot Software Solutions") }}
+                            <strong>{{ _("Copyright") }}</strong> {{ _("{}, MrBot Software Solutions").format(request.h.get_year()) }}
                             <br/>{{ _('Version') }}: {{ request.h.get_version() }}
                         </div>
                     </div>

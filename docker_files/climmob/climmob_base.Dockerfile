@@ -1,6 +1,6 @@
 FROM ubuntu:22.04
 
-MAINTAINER Alianza Bioversity-CIAT
+MAINTAINER MrBot Software Solutions
 ENV CR=America/Costa_Rica
 ENV DEBIAN_FRONTEND noninteractive
 RUN ln -snf /usr/share/zoneinfo/$CR /etc/localtime && echo $CR > /etc/timezone
@@ -33,8 +33,8 @@ RUN ln -s /opt/firefox/firefox /usr/bin/
 #RUN echo "export MOZ_HEADLESS=1" >> /etc/bash.bashrc
 
 # MySQL Shell
-RUN wget https://dev.mysql.com/get/mysql-apt-config_0.8.24-1_all.deb
-RUN dpkg -i ./mysql-apt-config_0.8.24-1_all.deb
+RUN wget https://dev.mysql.com/get/mysql-apt-config_0.8.29-1_all.deb
+RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC dpkg -i ./mysql-apt-config_0.8.29-1_all.deb
 
 RUN apt-get update
 
@@ -118,7 +118,7 @@ RUN qmake
 RUN make
 
 WORKDIR /opt
-RUN git clone https://github.com/BioversityCostaRica/wkhtmltopdf.git
+RUN git clone https://github.com/mrbotcr/wkhtmltopdf.git
 WORKDIR wkhtmltopdf
 RUN qmake
 RUN make -j 4
@@ -148,7 +148,7 @@ RUN Rscript /root/R_packages_installation/caret.R
 
 RUN Rscript /root/R_packages_installation/climatrends.R && Rscript /root/R_packages_installation/ClimMobTools.R
 
-RUN Rscript /root/R_packages_installation/ggparty.R  && Rscript /root/R_packages_installation/ggplot2.R Rscript /root/R_packages_installation/gosset.R && Rscript /root/R_packages_installation/gridExtra.R
+RUN Rscript /root/R_packages_installation/ggparty.R  && Rscript /root/R_packages_installation/ggplot2.R && Rscript /root/R_packages_installation/gosset.R && Rscript /root/R_packages_installation/gridExtra.R
 
 RUN Rscript /root/R_packages_installation/gtools.R && Rscript /root/R_packages_installation/igraph.R && Rscript /root/R_packages_installation/janitor.R && Rscript /root/R_packages_installation/jsonlite.R
 
@@ -158,13 +158,13 @@ RUN Rscript /root/R_packages_installation/nasapower.R && Rscript /root/R_package
 
 RUN Rscript /root/R_packages_installation/plotrix.R && Rscript /root/R_packages_installation/pls.R && Rscript /root/R_packages_installation/png.R && Rscript /root/R_packages_installation/psychotools.R
 
-RUN Rscript /root/R_packages_installation/qvcalc.R && Rscript /root/R_packages_installation/remotes.R && Rscript /root/R_packages_installation/rmarkdown.R && Rscript /root/R_packages_installation/phantomjs.R
+RUN Rscript /root/R_packages_installation/qvcalc.R && Rscript /root/R_packages_installation/remotes.R && Rscript /root/R_packages_installation/rmarkdown.R
 
-RUN Rscript /root/R_packages_installation/gosset.R && Rscript /root/R_packages_installation/lubridate.R && Rscript /root/R_packages_installation/ggchicklet.R
+RUN Rscript /root/R_packages_installation/lubridate.R && Rscript /root/R_packages_installation/ggchicklet.R && Rscript /root/R_packages_installation/phantomjs.R
 
 RUN Rscript /root/R_packages_installation/check_R_libraries.R
 
-#RUN Rscript ./new_r_code/modules/00_check_packages.R
+#RUN Rscript /opt/new_r_code/modules/00_check_packages.R
 
 
 

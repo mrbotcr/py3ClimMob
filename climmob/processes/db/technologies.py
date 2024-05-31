@@ -25,6 +25,7 @@ __all__ = [
     "getTechnologyByName",
     "getUserTechById",
     "query_crops",
+    "getTechnologiesByUserWithoutCropTaxonomy",
 ]
 
 
@@ -270,3 +271,18 @@ def query_crops(request, q, query_from, query_size, lang_code="en"):
     )
 
     return mapFromSchema(result), len(total)
+
+
+def getTechnologiesByUserWithoutCropTaxonomy(userId, request):
+
+    result = (
+        request.dbsession.query(Technology)
+        .filter(Technology.user_name == userId)
+        .filter(Technology.croptaxonomy_code == -1)
+        .all()
+    )
+
+    if result:
+        return False, result
+
+    return True, result

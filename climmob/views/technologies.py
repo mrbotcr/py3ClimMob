@@ -11,6 +11,7 @@ from climmob.processes import (
     getActiveProject,
     getTechnologyByName,
     query_crops,
+    getTechnologiesByUserWithoutCropTaxonomy,
 )
 from climmob.views.classes import privateView, publicView
 from climmob.views.techaliases import newalias_view, modifyalias_view
@@ -345,3 +346,40 @@ class APICropsView(publicView):
                 return {"total": 0, "results": []}
         else:
             return {"total": 0, "results": []}
+
+
+class CurationOfTechnologies_view(privateView):
+    def processView(self):
+
+        error_summary = {}
+
+        if self.request.method == "POST":
+            if "btn_save_crop_taxonomies" in self.request.POST:
+
+                formdata = self.getPostDict()
+
+                for key in formdata.keys():
+
+                    info = key.split("_")
+                    if info[0] == "updatetech":
+                        data = {}
+                        data["user_name"] = self.user.login
+                        data["tech_id"] = info[1]
+                        data["croptaxonomy_code"] = formdata[key]
+
+                        update, message = updateTechnology(data, self.request)
+
+                        if not update:
+                            error_summary = {
+                                "error": "There was a problem updating crop taxonomies"
+                            }
+
+        completed, tecnologies = getTechnologiesByUserWithoutCropTaxonomy(
+            self.user.login, self.request
+        )
+
+        if completed:
+            self.returnRawViewResult = True
+            return HTTPFound(location=self.request.route_url("dashboard"))
+
+        return {"listOfTechnologies": tecnologies, "error_summary": error_summary}

@@ -6,6 +6,7 @@ from dateutil.relativedelta import relativedelta
 from climmob.config.encdecdata import decodeData
 from climmob.models import User as userModel, Country, Sector, mapFromSchema
 from climmob.processes.db.i18n_user import getListOfLanguagesByUser
+from climmob.processes.db.technologies import getTechnologiesByUserWithoutCropTaxonomy
 
 
 # User class Used to store information about the user
@@ -39,6 +40,7 @@ class User(object):
         else:
             self.about = userData["user_about"]
         self.languages = userData["languages"]
+        self.technologies = userData["technologies"]
 
     def check_password(self, passwd, request):
         return checkLogin(self.login, passwd, request)
@@ -101,6 +103,8 @@ def getUserData(user, request):
     if not result is None:
         result = mapFromSchema(result)
         result["languages"] = getListOfLanguagesByUser(request, user)
+        completed, results = getTechnologiesByUserWithoutCropTaxonomy(user, request)
+        result["technologies"] = completed
         res = User(result)
 
     return res

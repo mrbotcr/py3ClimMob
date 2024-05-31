@@ -8,6 +8,7 @@ from pattern.en import pluralize as pluralize_en
 from pattern.es import pluralize as pluralize_es
 
 import climmob.plugins as p
+import datetime
 
 
 class HelperAttributeDict(dict):
@@ -223,6 +224,15 @@ def get_version():
     :return: The version of ClimMob
     """
     return "3.9.0 (20230720)"
+
+
+@core_helper
+def get_year():
+    """
+    This returns the version of DataDelilah
+    :return: The version of DataDelilah
+    """
+    return datetime.datetime.now().year
 
 
 def load_plugin_helpers():

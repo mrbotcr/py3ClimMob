@@ -256,7 +256,6 @@ def getListOfProjects(dbsession):
         .filter(User.user_name == userProject.user_name)
         .filter(Project.project_active == 1)
         .filter(Project.project_id.not_in(exclude))
-        .filter(User.user_name == "us1")
         .all()
     )
 
@@ -279,7 +278,6 @@ def getListOfProjects(dbsession):
         .filter(User.user_name == userProject.user_name)
         .filter(Project.project_active == 1)
         .filter(Project.project_id.not_in(exclude))
-        .filter(User.user_name == "us1")
         .all()
     )
 

@@ -37,7 +37,7 @@ cssselect2==0.7.0
 decorator==5.1.1
 defusedxml==0.7.1
 Deprecated==1.2.13
-dnspython==2.2.1
+dnspython==2.6.1
 docxcompose==1.4.0
 docxtpl==0.16.4
 et-xmlfile==1.1.0
@@ -49,10 +49,10 @@ FormEncode==2.0.1
 future==0.18.3
 gevent==23.9.1
 greenlet==2.0.1
-gunicorn==20.1.0
+gunicorn==22.0.0
 html5lib==1.1
 hupper==1.11
-idna==3.4
+idna==3.7
 imgkit==1.2.2
 importlib-metadata==6.0.0
 importlib-resources==5.10.2
@@ -88,7 +88,7 @@ PasteDeploy==3.0.1
 pathspec==0.10.3
 Pattern==3.6
 pdfminer.six==20221105
-Pillow==10.2.0
+Pillow==10.3.0
 plaster==1.1.2
 plaster-pastedeploy==1.0.1
 platformdirs==2.6.2
@@ -102,7 +102,7 @@ py==1.11.0
 pycparser==2.21
 pycrypto==2.6.1
 pycryptodome==3.19.1
-pydantic==1.10.4
+pydantic==1.10.13
 pydyf==0.5.0
 Pygments==2.15.1
 pyparsing==3.0.9

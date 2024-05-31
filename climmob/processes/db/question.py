@@ -37,6 +37,7 @@ __all__ = [
     "userQuestionDetailsById",
     "getDefaultQuestionLanguage",
     "getQuestionOwner",
+    "knowIfUserHasCreatedTranslations",
 ]
 
 
@@ -478,3 +479,22 @@ def getDefaultQuestionLanguage(request, questionId):
         .filter(Question.question_id == questionId)
         .first()
     )
+
+
+def knowIfUserHasCreatedTranslations(request, userId):
+
+    userQuestionsId = request.dbsession.query(Question.question_id).filter(
+        Question.user_name == userId
+    )
+
+    translations = (
+        request.dbsession.query(I18nQuestion)
+        .filter(I18nQuestion.question_id.in_(userQuestionsId))
+        .all()
+    )
+
+    if translations:
+
+        return True
+
+    return False

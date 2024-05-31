@@ -75,7 +75,7 @@
             {% endblock logincontent %}
             {% block loginfooter %}
                 <br>
-                <strong>{{ _("Copyright") }}</strong> {{ _("2023, MrBot Software Solutions") }}
+                <strong>{{ _("Copyright") }}</strong> {{ _("{}, MrBot Software Solutions").format(request.h.get_year()) }}
             {% endblock loginfooter %}
         </div>
     </div>

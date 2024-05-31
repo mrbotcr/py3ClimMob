@@ -891,7 +891,7 @@
                         {{ request.h.get_version() }}
                     </div>
                     <div>
-                        <strong>{{ _("Copyright") }}</strong> {{ _("2023, MrBot Software Solutions") }}
+                        <strong>{{ _("Copyright") }}</strong> {{ _("{}, MrBot Software Solutions").format(request.h.get_year()) }}
                     </div>
                 {% endblock footer %}
             </div>

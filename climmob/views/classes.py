@@ -302,14 +302,32 @@ class privateView(object):
         else:
             return HTTPFound(location=self.request.route_url("login"))
 
-        if (
-            self.request.matched_route.name
-            not in ["profile", "getUserLanguagesPreview", "addUserLanguage"]
-            and not self.user.languages
-        ):
-            return HTTPFound(
-                location=self.request.route_url("profile", _query={"help": "languages"})
-            )
+        lastActivity = getLastActivityLogByUser(self.user.login, self.request)
+        if lastActivity["log_message"] != "Welcome to ClimMob":
+            if (
+                self.request.matched_route.name
+                not in ["profile", "getUserLanguagesPreview", "addUserLanguage"]
+                and not self.user.languages
+            ):
+                return HTTPFound(
+                    location=self.request.route_url(
+                        "profile", _query={"help": "languages"}
+                    )
+                )
+
+            if (
+                self.request.matched_route.name
+                not in [
+                    "curationoftechnologies",
+                    "profile",
+                    "getUserLanguagesPreview",
+                    "addUserLanguage",
+                ]
+                and not self.user.technologies
+            ):
+                return HTTPFound(
+                    location=self.request.route_url("curationoftechnologies")
+                )
 
         self.classResult["counterChat"] = counterChat(self.user.login, self.request)
         activeProjectData = getActiveProject(self.user.login, self.request)
@@ -324,7 +342,6 @@ class privateView(object):
         if hasActiveForm:
             self.classResult["surveyMustBeDisplayed"] = formDetails["form_name"]
 
-        lastActivity = getLastActivityLogByUser(self.user.login, self.request)
         if lastActivity:
             if lastActivity["log_message"] == "Created a new project":
                 self.classResult["showRememberAfterCreateProject"] = True

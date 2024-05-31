@@ -130,6 +130,7 @@ from climmob.views.Bot.bot import sendFeedbackToBot_view, readFeedback_view
 from climmob.views.Share.projectShare import (
     projectShare_view,
     API_users_view,
+    API_all_users_view,
     removeprojectShare_view,
 )
 from climmob.views.assessment import (
@@ -235,6 +236,7 @@ from climmob.views.registry import (
 from climmob.views.techaliases import deletealias_view
 from climmob.views.technologies import (
     technologies_view,
+    CurationOfTechnologies_view,
     deletetechnology_view,
     getUserTechnologyDetails_view,
     getUserTechnologyAliasDetails_view,
@@ -691,6 +693,15 @@ def loadRoutes(config):
 
     routes.append(
         addRoute(
+            "curationoftechnologies",
+            "/CurationOfTechnologies",
+            CurationOfTechnologies_view,
+            "technologies/curationoftechnologies.jinja2",
+        )
+    )
+
+    routes.append(
+        addRoute(
             "deleteusertechnology",
             "/technology/{technologyid}/delete",
             deletetechnology_view,
@@ -900,6 +911,15 @@ def loadRoutes(config):
             "api_select2_users",
             "/user/{user}/project/{project}/api/select2_user",
             API_users_view,
+            "json",
+        )
+    )
+
+    routes.append(
+        addRoute(
+            "api_select2_all_users",
+            "/api/select2_user",
+            API_all_users_view,
             "json",
         )
     )
