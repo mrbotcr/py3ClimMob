@@ -41,7 +41,7 @@ def render_template(template_filename, context):
     return jinjaEnv.get_template(template_filename).render(context)
 
 
-class home_view(publicView):
+class HomeView(publicView):
     def processView(self):
         cookies = self.request.cookies
         if "climmob_cookie_question" in cookies.keys():
@@ -83,7 +83,7 @@ class PrivacyView(publicView):
         return {}
 
 
-class notfound_view(publicView):
+class NotfoundView(publicView):
     def processView(self):
         self.request.response.status = 404
         return {}
@@ -111,7 +111,7 @@ def get_policy(request, policy_name):
     return None
 
 
-class login_view(publicView):
+class LoginView(publicView):
     def processView(self):
 
         cookies = self.request.cookies

@@ -39,6 +39,7 @@ def languageExistInI18nUser(language, userName, request):
 
 
 def getListOfLanguagesByUser(request, userName, questionId=None):
+    print("Ingresa")
     if questionId:
         default = (
             request.dbsession.query(Question.question_lang)
@@ -75,7 +76,6 @@ def getListOfLanguagesByUser(request, userName, questionId=None):
         .order_by(I18nUser.lang_default.desc(), I18n.lang_name)
         .all()
     )
-
     return mappedData
 
 
