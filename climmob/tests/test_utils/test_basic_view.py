@@ -10,7 +10,9 @@ from climmob.views.basic_views import (
     TermsView,
     PrivacyView,
     notfound_view,
-    StoreCookieView
+    StoreCookieView,
+    get_policy,
+    login_view
 )
 
 
@@ -208,6 +210,134 @@ class TestStoreCookieView(unittest.TestCase):
         self.assertIsInstance(response, HTTPFound)
         self.assertEqual(response.location, "http://example.com/next")
         self.assertIn("climmob_cookie_question=accept", response.headers.get("Set-Cookie", ""))
+
+class TestGetPolicy(unittest.TestCase):
+
+    # Enable the settings
+    def setUp(self):
+        self.mock_request = MagicMock()
+
+    # Test when the policy exists
+    def test_policy_exists(self):
+        policies = [
+            {"name": "policy1", "policy": "Policy Content 1"},
+            {"name": "policy2", "policy": "Policy Content 2"}
+        ]
+        self.mock_request.policies.return_value = policies
+
+        result = get_policy(self.mock_request, "policy1")
+        self.assertEqual(result, "Policy Content 1")
+
+    # Test when the policy does not exist
+    def test_policy_does_not_exist(self):
+        policies = [
+            {"name": "policy1", "policy": "Policy Content 1"},
+            {"name": "policy2", "policy": "Policy Content 2"}
+        ]
+        self.mock_request.policies.return_value = policies
+
+        result = get_policy(self.mock_request, "policy3")
+        self.assertIsNone(result)
+
+    # Try an empty list of policies
+    def test_empty_policies(self):
+        self.mock_request.policies.return_value = []
+
+        result = get_policy(self.mock_request, "policy1")
+        self.assertIsNone(result)
+
+    # Test when the policies method does not exist
+    def test_no_policies_method(self):
+        self.mock_request.policies.side_effect = AttributeError("No policies method")
+
+        with self.assertRaises(AttributeError):
+            get_policy(self.mock_request, "policy1")
+
+
+class TestLoginView(unittest.TestCase):
+
+    def setUp(self):
+        self.mock_request = MagicMock()
+        self.view = login_view(self.mock_request)
+
+    @patch('climmob.views.basic_views.get_policy')
+    @patch('climmob.views.basic_views.literal_eval')
+    @patch('climmob.views.basic_views.getUserData')
+    def test_process_view_logged_in(self, mock_getUserData, mock_literal_eval, mock_get_policy):
+        # Set up cookies and policy mocks
+        self.mock_request.cookies = {"climmob_cookie_question": "accept"}
+        policy = MagicMock()
+        policy.authenticated_userid.return_value = "{'login': 'test_user', 'group': 'mainApp'}"
+        mock_get_policy.return_value = policy
+        mock_literal_eval.return_value = {"login": "test_user", "group": "mainApp"}
+        mock_getUserData.return_value = {"id": 1, "name": "Test User"}
+        self.mock_request.route_url.return_value = "/dashboard"
+
+        result = self.view.processView()
+
+        self.assertIsInstance(result, HTTPFound)
+        self.assertEqual(result.location, "/dashboard")
+        self.assertTrue(self.view.returnRawViewResult)
+
+    @patch('climmob.views.basic_views.get_policy')
+    def test_process_view_not_logged_in(self, mock_get_policy):
+        self.mock_request.cookies = {}
+        policy = MagicMock()
+        policy.authenticated_userid.return_value = None
+        mock_get_policy.return_value = policy
+        self.mock_request.route_url.return_value = "/dashboard"
+        self.mock_request.params.get.return_value = "/dashboard"
+
+        result = self.view.processView()
+
+        self.assertIsInstance(result, dict)
+        self.assertEqual(result["login"], "")
+        self.assertFalse(result["failed_attempt"])
+        self.assertEqual(result["next"], "/dashboard")
+        self.assertTrue(result["ask_for_cookies"])
+
+    @patch('climmob.views.basic_views.get_policy')
+    @patch('climmob.views.basic_views.getUserData')
+    @patch('climmob.views.basic_views.remember')
+    def test_process_view_login_success(self, mock_remember, mock_getUserData, mock_get_policy):
+        self.mock_request.cookies = {}
+        self.mock_request.POST = {"submit": "submit", "login": "test_user", "passwd": "correct_password"}
+        self.mock_request.params.get.return_value = "/dashboard"
+        policy = MagicMock()
+        policy.authenticated_userid.return_value = None
+        mock_get_policy.return_value = policy
+        user = MagicMock()
+        user.check_password.return_value = True
+        mock_getUserData.return_value = user
+        self.mock_request.route_url.return_value = "/dashboard"
+        mock_remember.return_value = []
+
+        result = self.view.processView()
+
+        self.assertIsInstance(result, HTTPFound)
+        self.assertEqual(result.location, "/dashboard")
+
+    @patch('climmob.views.basic_views.get_policy')
+    @patch('climmob.views.basic_views.getUserData')
+    def test_process_view_login_failure(self, mock_getUserData, mock_get_policy):
+        self.mock_request.cookies = {}
+        self.mock_request.POST = {"submit": "submit", "login": "test_user", "passwd": "wrong_password"}
+        self.mock_request.params.get.return_value = "/dashboard"
+        policy = MagicMock()
+        policy.authenticated_userid.return_value = None
+        mock_get_policy.return_value = policy
+        user = MagicMock()
+        user.check_password.return_value = False
+        mock_getUserData.return_value = user
+        self.mock_request.route_url.return_value = "/dashboard"
+
+        result = self.view.processView()
+
+        self.assertIsInstance(result, dict)
+        self.assertEqual(result["login"], "test_user")
+        self.assertTrue(result["failed_attempt"])
+        self.assertEqual(result["next"], "/dashboard")
+        self.assertTrue(result["ask_for_cookies"])
 
 
 if __name__ == '__main__':
