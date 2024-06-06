@@ -121,6 +121,10 @@ def getUserByApiKey(apiKey, request):
     if not result is None:
         result = mapFromSchema(result)
         result["languages"] = getListOfLanguagesByUser(request, result["user_name"])
+        completed, results = getTechnologiesByUserWithoutCropTaxonomy(
+            result["user_name"], request
+        )
+        result["technologies"] = completed
         res = User(result)
 
     return res
@@ -134,9 +138,16 @@ def getUserByEmail(email, request):
         .first()
     )
     if result is not None:
+        result = mapFromSchema(result)
+        result["languages"] = getListOfLanguagesByUser(request, result["user_name"])
+        completed, results = getTechnologiesByUserWithoutCropTaxonomy(
+            result["user_name"], request
+        )
+        result["technologies"] = completed
+
         return (
-            User(mapFromSchema(result)),
-            decodeData(request, result.user_password).decode("utf-8"),
+            User(result),
+            decodeData(request, result["user_password"]).decode("utf-8"),
         )
     return None, None
 
