@@ -1,5 +1,6 @@
 import unittest
 import secrets
+from datetime import datetime, timedelta
 from unittest.mock import MagicMock, patch
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 from unittest.mock import patch, MagicMock
@@ -15,7 +16,8 @@ from climmob.views.basic_views import (
     StoreCookieView,
     get_policy,
     LoginView,
-    RecoverPasswordView
+    RecoverPasswordView,
+    ResetPasswordView
 )
 
 
@@ -341,19 +343,22 @@ class TestLoginView(unittest.TestCase):
 
 class TestRecoverPasswordView(unittest.TestCase):
 
+    # Enable the settings
     def setUp(self):
-        # Crear un objeto request simulado
+
         self.mock_request = MagicMock()
         self.mock_request.registry.settings = {
-            'email.server': 'smtp.test.com',
+            'email.server': 'smtp.gmail.com',
             'email.user': 'user',
             'email.password': 'password',
             'email.from': 'no-reply@example.com'
         }
         self.mock_request.route_url.return_value = 'http://example.com/reset_password'
         self.mock_request.translate = lambda x: x
+        self.mock_request.POST = {}
 
-    @patch('climmob.views.basic_views.smtplib.SMTP')
+    # Test send password by email success
+    @patch('smtplib.SMTP')
     def test_send_password_by_email_success(self, mock_smtp):
         view = RecoverPasswordView(self.mock_request)
 
@@ -364,7 +369,7 @@ class TestRecoverPasswordView(unittest.TestCase):
             mail_from="no-reply@example.com"
         )
 
-        mock_smtp.assert_called_with('smtp.test.com', 587)
+        mock_smtp.assert_called_with('smtp.gmail.com', 587)
         mock_smtp_instance = mock_smtp.return_value
         mock_smtp_instance.ehlo.assert_called()
         mock_smtp_instance.starttls.assert_called()
@@ -372,11 +377,11 @@ class TestRecoverPasswordView(unittest.TestCase):
         mock_smtp_instance.sendmail.assert_called()
         mock_smtp_instance.quit.assert_called()
 
+
     @patch('climmob.views.basic_views.render_template')
     @patch('climmob.views.basic_views.readble_date')
     @patch('climmob.views.basic_views.getUserByEmail')
-    @patch('climmob.views.basic_views.setPasswordResetToken')
-    def test_send_password_email(self, mock_set_token, mock_get_user, mock_readble_date, mock_render_template):
+    def test_send_password_email(self, mock_get_user, mock_readble_date, mock_render_template):
         view = RecoverPasswordView(self.mock_request)
 
         mock_user = MagicMock()
@@ -405,32 +410,226 @@ class TestRecoverPasswordView(unittest.TestCase):
             }
         )
 
-    # @patch('climmob.views.basic_views.get_policy')
-    # @patch('climmob.views.basic_views.getUserData')
-    # @patch('climmob.views.basic_views.getUserByEmail')
-    # @patch('climmob.views.basic_views.setPasswordResetToken')
-    # def test_processView(self, mock_set_token, mock_get_user_by_email, mock_get_user_data, mock_get_policy):
-    #     view = RecoverPasswordView(self.mock_request)
-    #
-    #     mock_policy = MagicMock()
-    #     mock_policy.authenticated_userid.return_value = None
-    #     mock_get_policy.return_value = mock_policy
-    #
-    #     mock_user = MagicMock()
-    #     mock_user.email = 'test@example.com'
-    #     mock_get_user_by_email.return_value = (mock_user, 'password')
-    #     mock_get_user_data.return_value = None
-    #
-    #     self.mock_request.POST = {'submit': True, 'user_email': 'test@example.com'}
-    #     self.mock_request.route_url.return_value = 'http://example.com/login'
-    #
-    #     response = view.processView()
-    #
-    #     mock_get_user_by_email.assert_called_with('test@example.com', self.mock_request)
-    #     mock_set_token.assert_called()
-    #     self.assertTrue(view.returnRawViewResult)
-    #     self.assertEqual(response.status_int, 302)
-    #     self.assertEqual(response.location, 'http://example.com/login')
+    @patch('climmob.views.basic_views.log')
+    def test_send_password_email_no_email_from(self, mock_log):
+        self.mock_request.registry.settings['email.from'] = None
+        view = RecoverPasswordView(self.mock_request)
+
+        mock_user = MagicMock()
+        mock_user.fullName = 'Test User'
+        mock_user.email = 'test@example.com'
+
+        result = view.send_password_email(
+            email_to='test@example.com',
+            reset_token='test_token',
+            reset_key='test_key',
+            user_dict=mock_user
+        )
+
+        self.assertFalse(result)
+        mock_log.error.assert_called_with("ClimMob has no email settings in place. Email service is disabled.")
+
+    @patch('climmob.views.basic_views.log')
+    def test_send_password_email_empty_email_from(self, mock_log):
+        self.mock_request.registry.settings['email.from'] = ""
+        view = RecoverPasswordView(self.mock_request)
+
+        mock_user = MagicMock()
+        mock_user.fullName = 'Test User'
+        mock_user.email = 'test@example.com'
+
+        result = view.send_password_email(
+            email_to='test@example.com',
+            reset_token='test_token',
+            reset_key='test_key',
+            user_dict=mock_user
+        )
+
+        self.assertFalse(result)
+
+    @patch('climmob.views.basic_views.log')
+    def test_send_password_email_no_or_empty_email_from(self, mock_log):
+        view = RecoverPasswordView(self.mock_request)
+
+        mock_user = MagicMock()
+        mock_user.fullName = 'Test User'
+        mock_user.email = 'test@example.com'
+
+        cases = [
+            None,
+            ""
+        ]
+
+        for email_from in cases:
+            with self.subTest(email_from=email_from):
+                self.mock_request.registry.settings['email.from'] = email_from
+
+                result = view.send_password_email(
+                    email_to='test@example.com',
+                    reset_token='test_token',
+                    reset_key='test_key',
+                    user_dict=mock_user
+                )
+
+                self.assertFalse(result)
+                mock_log.error.assert_called_with("ClimMob has no email settings in place. Email service is disabled.")
+
+    @patch('climmob.views.basic_views.get_policy')
+    @patch('climmob.views.basic_views.getUserData')
+    def test_process_view_authenticated_user(self, mock_get_user_data, mock_get_policy):
+        view = RecoverPasswordView(self.mock_request)
+
+        mock_policy = MagicMock()
+        mock_policy.authenticated_userid.return_value = 'user_id'
+        mock_get_policy.return_value = mock_policy
+        mock_get_user_data.return_value = {'user_email': 'test@example.com'}
+
+        with self.assertRaises(HTTPNotFound):
+            view.processView()
+
+    @patch('climmob.views.basic_views.get_policy')
+    @patch('climmob.views.basic_views.getUserData')
+    def test_process_view_no_email_provided(self, mock_get_user_data, mock_get_policy):
+        view = RecoverPasswordView(self.mock_request)
+        self.mock_request.POST = {'submit': 'Submit'}
+
+        mock_policy = MagicMock()
+        mock_policy.authenticated_userid.return_value = None
+        mock_get_policy.return_value = mock_policy
+
+        # Simular que getUserData devuelve None o un diccionario vacío
+        mock_get_user_data.return_value = None
+
+        result = view.processView()
+
+        self.assertIn('error_summary', result)
+        self.assertIn('email', result['error_summary'])
+        self.assertEqual(result['error_summary']['email'], 'You need to provide an email address')
+
+    @patch('climmob.views.basic_views.get_policy')
+    @patch('climmob.views.basic_views.getUserByEmail')
+    @patch('climmob.views.basic_views.getUserData')
+    def test_process_view_email_not_found(self, mock_get_user_data, mock_get_user_by_email, mock_get_policy):
+        view = RecoverPasswordView(self.mock_request)
+        self.mock_request.POST = {'submit': 'Submit', 'user_email': 'test@example.com'}
+
+        mock_policy = MagicMock()
+        mock_policy.authenticated_userid.return_value = None
+        mock_get_policy.return_value = mock_policy
+        mock_get_user_data.return_value = None  # Simulamos que no hay usuario autenticado
+
+        mock_get_user_by_email.return_value = (None, None)
+
+        result = view.processView()
+
+        self.assertIn('error_summary', result)
+        self.assertIn('email', result['error_summary'])
+        self.assertEqual(result['error_summary']['email'], 'Cannot find an user with such email address')
+
+    @patch('climmob.views.basic_views.secrets.token_hex')
+    @patch('climmob.views.basic_views.uuid.uuid4')
+    @patch('climmob.views.basic_views.setPasswordResetToken')
+    @patch('climmob.views.basic_views.getUserByEmail')
+    @patch('climmob.views.basic_views.RecoverPasswordView.send_password_email')
+    @patch('climmob.views.basic_views.get_policy')
+    @patch('climmob.views.basic_views.getUserData')
+    def test_process_view_successful(self, mock_get_user_data, mock_get_policy, mock_send_password_email, mock_get_user_by_email, mock_set_password_reset_token, mock_uuid4, mock_token_hex):
+        view = RecoverPasswordView(self.mock_request)
+        self.mock_request.POST = {'submit': 'Submit', 'user_email': 'test@example.com'}
+
+        mock_policy = MagicMock()
+        mock_policy.authenticated_userid.return_value = None
+        mock_get_policy.return_value = mock_policy
+        mock_get_user_data.return_value = None  # Simulamos que no hay usuario autenticado
+
+        mock_user = MagicMock()
+        mock_user.email = 'test@example.com'
+        mock_user.login = 'user_login'
+        mock_get_user_by_email.return_value = (mock_user, 'password')
+        mock_uuid4.return_value = 'uuid4'
+        mock_token_hex.return_value = 'token_hex'
+
+        result = view.processView()
+
+        mock_set_password_reset_token.assert_called_once_with(self.mock_request, 'user_login', 'uuid4', 'token_hex')
+        mock_send_password_email.assert_called_once_with('test@example.com', 'token_hex', 'uuid4', mock_user)
+        self.assertTrue(view.returnRawViewResult)
+        self.assertIsInstance(result, HTTPFound)
+        self.assertEqual(result.location, self.mock_request.route_url("login"))
+
+class TestResetPasswordView(unittest.TestCase):
+
+    def setUp(self):
+        self.mock_request = MagicMock()
+        self.mock_request.method = "GET"
+        self.mock_request.matchdict = {"reset_key": "test_reset_key"}
+        self.mock_request.POST = {}
+
+    def test_reset_key_does_not_exist(self):
+        with patch('climmob.views.basic_views.resetKeyExists', return_value=False):
+            view = ResetPasswordView(self.mock_request)
+            with self.assertRaises(HTTPNotFound):
+                view.processView()
+
+    def test_invalid_csrf_token(self):
+        with patch('climmob.views.basic_views.resetKeyExists', return_value=True):
+            view = ResetPasswordView(self.mock_request)
+            self.mock_request.method = "POST"
+            with patch('climmob.views.basic_views.check_csrf_token', return_value=False):
+                with self.assertRaises(HTTPNotFound):
+                    view.processView()
+
+    @patch('climmob.views.basic_views.resetKeyExists')
+    @patch('climmob.views.basic_views.getUserData')
+    @patch('climmob.views.basic_views.check_csrf_token')
+    def test_user_does_not_exist(self, mock_check_csrf, mock_get_user_data, mock_reset_key_exists):
+        view = ResetPasswordView(self.mock_request)
+        mock_reset_key_exists.return_value = True
+        self.mock_request.method = "POST"
+        self.mock_request.POST = {
+            "user": "nonexistent_user",
+            "token": "test_token",
+            "password": "new_password",
+            "password2": "new_password",
+            "email": "test@example.com",
+            "user_name": "test_username"
+        }
+        mock_check_csrf.return_value = True
+        mock_get_user_data.return_value = None
+
+        result = view.processView()
+
+        self.assertIn("error_summary", result)
+
+    # Otros casos de prueba similares...
+
+    @patch('climmob.views.basic_views.resetKeyExists')
+    @patch('climmob.views.basic_views.log')
+    def test_empty_password(self, mock_log, mock_reset_key_exists):
+
+        view = ResetPasswordView(self.mock_request)
+        mock_reset_key_exists.return_value = True
+        self.mock_request.method = "POST"
+        self.mock_request.POST = {
+            "user": "test_user",
+            "token": "test_token",
+            "password": "",
+            "password2": "",
+            "email": "test@example.com",
+            "user_name": "test_username"
+        }
+        with patch('climmob.views.basic_views.check_csrf_token', return_value=True):
+            with patch('climmob.views.basic_views.getUserData', return_value=MagicMock(userData={"user_password_reset_key": "test_reset_key", "user_password_reset_token": "test_token", "user_password_reset_expires_on": datetime.now() + timedelta(days=1)})):
+                result = view.processView()
+
+        self.assertIn("error_summary", result)
+        mock_log.error.assert_called_once_with(
+            "Suspicious bot password recovery from IP: {}. Agent: {}. Email: {}".format(
+                self.mock_request.remote_addr,
+                self.mock_request.user_agent,
+                "test@example.com",
+            )
+        )
 
 
 if __name__ == '__main__':
