@@ -246,6 +246,8 @@ def getListOfProjects(dbsession):
             Project.project_pi,
             Project.project_piemail,
             Project.project_creationdate,
+            Project.project_abstract,
+            Project.project_registration_and_analysis,
             User.user_organization,
             userProject.user_name,
             Country.cnty_name,
@@ -268,6 +270,8 @@ def getListOfProjects(dbsession):
             Project.project_pi,
             Project.project_piemail,
             Project.project_creationdate,
+            Project.project_abstract,
+            Project.project_registration_and_analysis,
             User.user_organization,
             userProject.user_name,
             Project.project_cnty.label("cnty_name"),
@@ -329,23 +333,34 @@ def createProjectsSummary(self, settings, otro):
             crop = getTheCropOfTheProject(dbsession, project["project_id"])
             tech = getTheTechOfTheProject(dbsession, project["project_id"])
 
-            if crop:
-                crop = crop["taxonomy_name"]
+            if tech:
                 tech = tech["tech_name"]
             else:
-                crop = "No assigned"
                 tech = ""
+
+            if crop:
+                crop = crop["taxonomy_name"]
+
+            else:
+                crop = "No assigned"
+
+            if project["project_registration_and_analysis"] == 0:
+                project_type = "On-farm testing"
+            else:
+                project_type = "Consumer/Market testing"
 
             result = {
                 "user_owner": project["user_name"],
                 "project_id": project["project_id"],
                 "project_cod": project["project_cod"],
                 "projectTitle": project["project_name"],
+                "projectDesc": project["project_abstract"],
                 "project_pi": project["project_pi"],
                 "project_piorganization": project["user_organization"],
                 "project_piemail": project["project_piemail"],
                 "project_date": project["project_creationdate"].strftime("%d-%m-%Y"),
                 "project_country": project["cnty_name"],
+                "project_type": project_type,
                 "NumberOfFarmersTarget": project["project_numobs"],
                 "NumberOfFarmersRegisteredForTheProject": num,
                 "crop": crop,
@@ -433,7 +448,7 @@ def createProjectsSummary(self, settings, otro):
 
                         if project[item]:
                             binds_comma_separated += (
-                                before + "'" + str(project[item]) + "'"
+                                before + "'" + str(project[item]).replace("'", "") + "'"
                             )
                         else:
                             binds_comma_separated += before + "null"
