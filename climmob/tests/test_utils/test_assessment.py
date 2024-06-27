@@ -1,6 +1,8 @@
 import unittest
 from unittest.mock import MagicMock, patch
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
+import json
+import climmob.plugins as p
 
 # Importa la clase a probar
 from climmob.views.assessment import (
@@ -326,18 +328,159 @@ class TestGetAssessmentDetailsView(unittest.TestCase):
         with self.assertRaises(HTTPNotFound):
             self.view.processView()
 
-class TestAssessmentHeadView(unittest.TestCase):
-    def setUp(self):
-        # Setup a mock request object
-        self.mock_request = MagicMock()
-        self.mock_request.method = "GET"
-        self.mock_request.matchdict = {"user": "test_user", "project": "test_project"}
-        self.mock_request.POST = {}
+# class TestAssessmentHeadView(unittest.TestCase):
+#     def setUp(self):
+#         # Setup a mock request object
+#         self.mock_request = MagicMock()
+#         self.mock_request.method = "GET"
+#         self.mock_request.matchdict = {"user": "test_user", "project": "test_project"}
+#         self.mock_request.POST = {}
+#
+#         # Initialize the view
+#         self.view = assessmenthead_view(self.mock_request)
+#         self.view.user = MagicMock()
+#         self.view.user.login = "test_login"
+#
+#     @patch('climmob.views.assessment.projectExists')
+#     @patch('climmob.views.assessment.getTheProjectIdForOwner')
+#     @patch('climmob.views.assessment.addProjectAssessment')
+#     @patch('climmob.views.assessment.modifyProjectAssessment')
+#     @patch('climmob.views.assessment.there_is_final_assessment')
+#     @patch('climmob.views.assessment.getActiveProject')
+#     @patch('climmob.views.assessment.getProjectAssessments')
+#     @patch('climmob.views.assessment.p.PluginImplementations')
+#     def test_process_view_project_not_exists(
+#         self, mock_plugins, mock_get_project_assessments, mock_get_active_project,
+#         mock_there_is_final_assessment, mock_modify_project_assessment,
+#         mock_add_project_assessment, mock_get_project_id, mock_project_exists
+#     ):
+#         # Mock the projectExists function to return False
+#         mock_project_exists.return_value = False
+#
+#         # Call the method
+#         with self.assertRaises(HTTPNotFound):
+#             self.view.processView()
+#
+#     @patch('climmob.views.assessment.projectExists')
+#     @patch('climmob.views.assessment.getTheProjectIdForOwner')
+#     @patch('climmob.views.assessment.addProjectAssessment')
+#     @patch('climmob.views.assessment.modifyProjectAssessment')
+#     @patch('climmob.views.assessment.there_is_final_assessment')
+#     @patch('climmob.views.assessment.getActiveProject')
+#     @patch('climmob.views.assessment.getProjectAssessments')
+#     @patch('climmob.views.assessment.p.PluginImplementations')
+#     def test_process_view_post_add_assessment(
+#         self, mock_plugins, mock_get_project_assessments, mock_get_active_project,
+#         mock_there_is_final_assessment, mock_modify_project_assessment,
+#         mock_add_project_assessment, mock_get_project_id, mock_project_exists
+#     ):
+#         # Mock the projectExists function to return True
+#         mock_project_exists.return_value = True
+#         mock_get_project_id.return_value = 1
+#         mock_there_is_final_assessment.return_value = False
+#
+#         # Mock plugin behavior
+#         mock_plugin = MagicMock()
+#         mock_plugin.before_process_checkbox_data.side_effect = lambda data, _: data
+#         mock_plugin.after_process_checkbox_data.side_effect = lambda data, _: data
+#         mock_plugins.return_value = [mock_plugin]
+#
+#         # Set request method to POST and add btn_add_ass to POST data
+#         self.mock_request.method = "POST"
+#         self.mock_request.POST = {"btn_add_ass": True, "ass_final": "on"}
+#
+#         # Mock getPostDict to return expected data
+#         self.view.getPostDict = MagicMock(return_value={
+#             "btn_add_ass": True,
+#             "ass_final": "on",
+#             "project_id": 1,
+#             "userOwner": "test_user"
+#         })
+#
+#         # Mock addProjectAssessment to simulate successful addition
+#         mock_add_project_assessment.return_value = (True, "")
+#
+#         # Call the method
+#         result = self.view.processView()
+#
+#         # Assertions
+#         self.assertIn('new_available', result)
+#         self.assertIn('activeProject', result)
+#         self.assertIn('assessments', result)
+#         self.assertIn('data', result)
+#         self.assertIn('error_summary', result)
+#
+#         # Check specific lines
+#         mock_plugin.before_process_checkbox_data.assert_called_once()
+#         mock_plugin.after_process_checkbox_data.assert_called_once()
+#
+#     @patch('climmob.views.assessment.projectExists')
+#     @patch('climmob.views.assessment.getTheProjectIdForOwner')
+#     @patch('climmob.views.assessment.addProjectAssessment')
+#     @patch('climmob.views.assessment.modifyProjectAssessment')
+#     @patch('climmob.views.assessment.there_is_final_assessment')
+#     @patch('climmob.views.assessment.getActiveProject')
+#     @patch('climmob.views.assessment.getProjectAssessments')
+#     @patch('climmob.views.assessment.p.PluginImplementations')
+#     def test_process_view_post_modify_assessment(
+#         self, mock_plugins, mock_get_project_assessments, mock_get_active_project,
+#         mock_there_is_final_assessment, mock_modify_project_assessment,
+#         mock_add_project_assessment, mock_get_project_id, mock_project_exists
+#     ):
+#         # Mock the projectExists function to return True
+#         mock_project_exists.return_value = True
+#         mock_get_project_id.return_value = 1
+#         mock_there_is_final_assessment.return_value = False
+#
+#         # Mock plugin behavior
+#         mock_plugin = MagicMock()
+#         mock_plugin.before_process_checkbox_data.side_effect = lambda data, _: data
+#         mock_plugin.after_process_checkbox_data.side_effect = lambda data, _: data
+#         mock_plugins.return_value = [mock_plugin]
+#
+#         # Set request method to POST and add btn_modify_ass to POST data
+#         self.mock_request.method = "POST"
+#         self.mock_request.POST = {"btn_modify_ass": True, "ass_final": "off"}
+#
+#         # Mock getPostDict to return expected data
+#         self.view.getPostDict = MagicMock(return_value={
+#             "btn_modify_ass": True,
+#             "ass_final": "off",
+#             "project_id": 1,
+#             "userOwner": "test_user"
+#         })
+#
+#         # Mock modifyProjectAssessment to simulate successful modification
+#         mock_modify_project_assessment.return_value = (True, "")
+#
+#         # Call the method
+#         result = self.view.processView()
+#
+#         # Assertions
+#         self.assertIn('new_available', result)
+#         self.assertIn('activeProject', result)
+#         self.assertIn('assessments', result)
+#         self.assertIn('data', result)
+#         self.assertIn('error_summary', result)
+#
+#         # Check specific lines
+#         mock_plugin.before_process_checkbox_data.assert_called_once()
+#         mock_plugin.after_process_checkbox_data.assert_called_once()
 
-        # Initialize the view
-        self.view = assessmenthead_view(self.mock_request)
+class TestAssessmentHeadView(unittest.TestCase):
+
+    def setUp(self):
+        # Crear un mock de request
+        self.request = MagicMock()
+        # Inicializar el view con el request mock
+        self.view = assessmenthead_view(self.request)
         self.view.user = MagicMock()
-        self.view.user.login = "test_login"
+        self.view._ = MagicMock(side_effect=lambda x: x)  # Mock translation function
+        self.view.request.matchdict = {
+            "user": "test_user",
+            "project": "test_project",
+        }
+        self.view.request.POST = {}
 
     @patch('climmob.views.assessment.projectExists')
     @patch('climmob.views.assessment.getTheProjectIdForOwner')
@@ -346,71 +489,19 @@ class TestAssessmentHeadView(unittest.TestCase):
     @patch('climmob.views.assessment.there_is_final_assessment')
     @patch('climmob.views.assessment.getActiveProject')
     @patch('climmob.views.assessment.getProjectAssessments')
-    @patch('climmob.views.assessment.p.PluginImplementations')
-    def test_process_view_project_not_exists(
-        self, mock_plugins, mock_get_project_assessments, mock_get_active_project,
-        mock_there_is_final_assessment, mock_modify_project_assessment,
-        mock_add_project_assessment, mock_get_project_id, mock_project_exists
-    ):
-        # Mock the projectExists function to return False
-        mock_project_exists.return_value = False
+    def test_process_view_project_not_exist(self, mock_getProjectAssessments, mock_getActiveProject, mock_there_is_final_assessment,
+                                            mock_modifyProjectAssessment, mock_addProjectAssessment, mock_getTheProjectIdForOwner,
+                                            mock_projectExists):
+        # Configuración de los mocks
+        mock_projectExists.return_value = False
 
-        # Call the method
+        # Verifica que se lanza HTTPNotFound si el proyecto no existe
         with self.assertRaises(HTTPNotFound):
             self.view.processView()
 
-    @patch('climmob.views.assessment.projectExists')
-    @patch('climmob.views.assessment.getTheProjectIdForOwner')
-    @patch('climmob.views.assessment.addProjectAssessment')
-    @patch('climmob.views.assessment.modifyProjectAssessment')
-    @patch('climmob.views.assessment.there_is_final_assessment')
-    @patch('climmob.views.assessment.getActiveProject')
-    @patch('climmob.views.assessment.getProjectAssessments')
-    @patch('climmob.views.assessment.p.PluginImplementations')
-    def test_process_view_post_add_assessment(
-        self, mock_plugins, mock_get_project_assessments, mock_get_active_project,
-        mock_there_is_final_assessment, mock_modify_project_assessment,
-        mock_add_project_assessment, mock_get_project_id, mock_project_exists
-    ):
-        # Mock the projectExists function to return True
-        mock_project_exists.return_value = True
-        mock_get_project_id.return_value = 1
-        mock_there_is_final_assessment.return_value = False
-
-        # Mock plugin behavior
-        mock_plugin = MagicMock()
-        mock_plugin.before_process_checkbox_data.side_effect = lambda data, _: data
-        mock_plugin.after_process_checkbox_data.side_effect = lambda data, _: data
-        mock_plugins.return_value = [mock_plugin]
-
-        # Set request method to POST and add btn_add_ass to POST data
-        self.mock_request.method = "POST"
-        self.mock_request.POST = {"btn_add_ass": True, "ass_final": "on"}
-
-        # Mock getPostDict to return expected data
-        self.view.getPostDict = MagicMock(return_value={
-            "btn_add_ass": True,
-            "ass_final": "on",
-            "project_id": 1,
-            "userOwner": "test_user"
-        })
-
-        # Mock addProjectAssessment to simulate successful addition
-        mock_add_project_assessment.return_value = (True, "")
-
-        # Call the method
-        result = self.view.processView()
-
-        # Assertions
-        self.assertIn('new_available', result)
-        self.assertIn('activeProject', result)
-        self.assertIn('assessments', result)
-        self.assertIn('data', result)
-        self.assertIn('error_summary', result)
-
-        # Check specific lines
-        mock_plugin.before_process_checkbox_data.assert_called_once()
-        mock_plugin.after_process_checkbox_data.assert_called_once()
+        mock_projectExists.assert_called_once_with(
+            self.view.user.login, "test_user", "test_project", self.view.request
+        )
 
     @patch('climmob.views.assessment.projectExists')
     @patch('climmob.views.assessment.getTheProjectIdForOwner')
@@ -419,51 +510,248 @@ class TestAssessmentHeadView(unittest.TestCase):
     @patch('climmob.views.assessment.there_is_final_assessment')
     @patch('climmob.views.assessment.getActiveProject')
     @patch('climmob.views.assessment.getProjectAssessments')
-    @patch('climmob.views.assessment.p.PluginImplementations')
-    def test_process_view_post_modify_assessment(
-        self, mock_plugins, mock_get_project_assessments, mock_get_active_project,
-        mock_there_is_final_assessment, mock_modify_project_assessment,
-        mock_add_project_assessment, mock_get_project_id, mock_project_exists
-    ):
-        # Mock the projectExists function to return True
-        mock_project_exists.return_value = True
-        mock_get_project_id.return_value = 1
+    def test_process_view_get_method(self, mock_getProjectAssessments, mock_getActiveProject, mock_there_is_final_assessment,
+                                     mock_modifyProjectAssessment, mock_addProjectAssessment, mock_getTheProjectIdForOwner,
+                                     mock_projectExists):
+        # Configuración de los mocks
+        mock_projectExists.return_value = True
+        mock_getTheProjectIdForOwner.return_value = "test_project_id"
         mock_there_is_final_assessment.return_value = False
+        mock_getActiveProject.return_value = "active_project"
+        mock_getProjectAssessments.return_value = ["assessment1", "assessment2"]
 
-        # Mock plugin behavior
-        mock_plugin = MagicMock()
-        mock_plugin.before_process_checkbox_data.side_effect = lambda data, _: data
-        mock_plugin.after_process_checkbox_data.side_effect = lambda data, _: data
-        mock_plugins.return_value = [mock_plugin]
+        # Prueba de un caso GET
+        self.view.request.method = "GET"
 
-        # Set request method to POST and add btn_modify_ass to POST data
-        self.mock_request.method = "POST"
-        self.mock_request.POST = {"btn_modify_ass": True, "ass_final": "off"}
-
-        # Mock getPostDict to return expected data
-        self.view.getPostDict = MagicMock(return_value={
-            "btn_modify_ass": True,
-            "ass_final": "off",
-            "project_id": 1,
-            "userOwner": "test_user"
-        })
-
-        # Mock modifyProjectAssessment to simulate successful modification
-        mock_modify_project_assessment.return_value = (True, "")
-
-        # Call the method
         result = self.view.processView()
 
-        # Assertions
-        self.assertIn('new_available', result)
-        self.assertIn('activeProject', result)
-        self.assertIn('assessments', result)
-        self.assertIn('data', result)
-        self.assertIn('error_summary', result)
+        # Aserciones
+        self.assertEqual(result, {
+            "new_available": True,
+            "activeProject": "active_project",
+            "assessments": ["assessment1", "assessment2"],
+            "data": {},
+            "error_summary": {},
+        })
 
-        # Check specific lines
+        mock_projectExists.assert_called_once_with(
+            self.view.user.login, "test_user", "test_project", self.view.request
+        )
+        mock_getTheProjectIdForOwner.assert_called_once_with(
+            "test_user", "test_project", self.view.request
+        )
+        mock_there_is_final_assessment.assert_called_once_with(self.view.request, "test_project_id")
+        mock_getActiveProject.assert_called_once_with(self.view.user.login, self.view.request)
+        mock_getProjectAssessments.assert_called_once_with("test_project_id", self.view.request)
+
+    @patch('climmob.views.assessment.projectExists')
+    @patch('climmob.views.assessment.getTheProjectIdForOwner')
+    @patch('climmob.views.assessment.addProjectAssessment')
+    @patch('climmob.views.assessment.modifyProjectAssessment')
+    @patch('climmob.views.assessment.there_is_final_assessment')
+    @patch('climmob.views.assessment.getActiveProject')
+    @patch('climmob.views.assessment.getProjectAssessments')
+    @patch('climmob.plugins.PluginImplementations')
+    def test_process_view_post_method_add(self, mock_pluginImplementations, mock_getProjectAssessments, mock_getActiveProject,
+                                          mock_there_is_final_assessment, mock_modifyProjectAssessment,
+                                          mock_addProjectAssessment, mock_getTheProjectIdForOwner, mock_projectExists):
+        # Configuración de los mocks
+        mock_projectExists.return_value = True
+        mock_getTheProjectIdForOwner.return_value = "test_project_id"
+        mock_addProjectAssessment.return_value = (True, "msg")
+        mock_there_is_final_assessment.return_value = False
+        mock_getActiveProject.return_value = "active_project"
+        mock_getProjectAssessments.return_value = ["assessment1", "assessment2"]
+        mock_plugin = MagicMock()
+        mock_plugin.before_process_checkbox_data.side_effect = lambda data, key: {"ass_final": 1} if data["ass_final"] == "on" else {"ass_final": 0}
+        mock_plugin.after_process_checkbox_data.side_effect = lambda data, key: {"ass_final": "on"} if data["ass_final"] == 1 else {"ass_final": "off"}
+        mock_pluginImplementations.return_value = [mock_plugin]
+
+        # Prueba de un caso POST (agregar evaluación)
+        self.view.request.method = "POST"
+        self.view.request.POST = {"btn_add_ass": True, "ass_final": "on"}
+        self.view.getPostDict = MagicMock(return_value={"ass_final": "on"})
+
+        result = self.view.processView()
+
+        # Aserciones
+        self.assertEqual(result, {
+            "new_available": True,
+            "activeProject": "active_project",
+            "assessments": ["assessment1", "assessment2"],
+            "data": {},
+            "error_summary": {},
+        })
+
+        mock_projectExists.assert_called_once_with(
+            self.view.user.login, "test_user", "test_project", self.view.request
+        )
+        mock_getTheProjectIdForOwner.assert_called_once_with(
+            "test_user", "test_project", self.view.request
+        )
         mock_plugin.before_process_checkbox_data.assert_called_once()
+        mock_addProjectAssessment.assert_called_once()
         mock_plugin.after_process_checkbox_data.assert_called_once()
+        mock_there_is_final_assessment.assert_called_once_with(self.view.request, "test_project_id")
+        mock_getActiveProject.assert_called_once_with(self.view.user.login, self.view.request)
+        mock_getProjectAssessments.assert_called_once_with("test_project_id", self.view.request)
+
+    @patch('climmob.views.assessment.projectExists')
+    @patch('climmob.views.assessment.getTheProjectIdForOwner')
+    @patch('climmob.views.assessment.addProjectAssessment')
+    @patch('climmob.views.assessment.modifyProjectAssessment')
+    @patch('climmob.views.assessment.there_is_final_assessment')
+    @patch('climmob.views.assessment.getActiveProject')
+    @patch('climmob.views.assessment.getProjectAssessments')
+    @patch('climmob.plugins.PluginImplementations')
+    def test_process_view_post_method_modify(self, mock_pluginImplementations, mock_getProjectAssessments, mock_getActiveProject,
+                                             mock_there_is_final_assessment, mock_modifyProjectAssessment,
+                                             mock_addProjectAssessment, mock_getTheProjectIdForOwner, mock_projectExists):
+        # Configuración de los mocks
+        mock_projectExists.return_value = True
+        mock_getTheProjectIdForOwner.return_value = "test_project_id"
+        mock_modifyProjectAssessment.return_value = (True, "msg")
+        mock_there_is_final_assessment.return_value = False
+        mock_getActiveProject.return_value = "active_project"
+        mock_getProjectAssessments.return_value = ["assessment1", "assessment2"]
+        mock_plugin = MagicMock()
+        mock_plugin.before_process_checkbox_data.side_effect = lambda data, key: {"ass_final": 1} if data["ass_final"] == "on" else {"ass_final": 0}
+        mock_plugin.after_process_checkbox_data.side_effect = lambda data, key: {"ass_final": "on"} if data["ass_final"] == 1 else {"ass_final": "off"}
+        mock_pluginImplementations.return_value = [mock_plugin]
+
+        # Prueba de un caso POST (modificar evaluación)
+        self.view.request.method = "POST"
+        self.view.request.POST = {"btn_modify_ass": True, "ass_final": "off"}
+        self.view.getPostDict = MagicMock(return_value={"ass_final": "off"})
+
+        result = self.view.processView()
+
+        # Aserciones
+        self.assertEqual(result, {
+            "new_available": True,
+            "activeProject": "active_project",
+            "assessments": ["assessment1", "assessment2"],
+            "data": {},
+            "error_summary": {},
+        })
+
+        mock_projectExists.assert_called_once_with(
+            self.view.user.login, "test_user", "test_project", self.view.request
+        )
+        mock_getTheProjectIdForOwner.assert_called_once_with(
+            "test_user", "test_project", self.view.request
+        )
+        mock_plugin.before_process_checkbox_data.assert_called_once()
+        mock_modifyProjectAssessment.assert_called_once()
+        mock_plugin.after_process_checkbox_data.assert_called_once()
+        mock_there_is_final_assessment.assert_called_once_with(self.view.request, "test_project_id")
+        mock_getActiveProject.assert_called_once_with(self.view.user.login, self.view.request)
+        mock_getProjectAssessments.assert_called_once_with("test_project_id", self.view.request)
+
+    @patch('climmob.views.assessment.projectExists')
+    @patch('climmob.views.assessment.getTheProjectIdForOwner')
+    @patch('climmob.views.assessment.addProjectAssessment')
+    @patch('climmob.views.assessment.modifyProjectAssessment')
+    @patch('climmob.views.assessment.there_is_final_assessment')
+    @patch('climmob.views.assessment.getActiveProject')
+    @patch('climmob.views.assessment.getProjectAssessments')
+    @patch('climmob.plugins.PluginImplementations')
+    def test_process_view_post_method_add_error(self, mock_pluginImplementations, mock_getProjectAssessments, mock_getActiveProject,
+                                                mock_there_is_final_assessment, mock_modifyProjectAssessment,
+                                                mock_addProjectAssessment, mock_getTheProjectIdForOwner, mock_projectExists):
+        # Configuración de los mocks
+        mock_projectExists.return_value = True
+        mock_getTheProjectIdForOwner.return_value = "test_project_id"
+        mock_addProjectAssessment.return_value = (False, "error_message")
+        mock_there_is_final_assessment.return_value = False
+        mock_getActiveProject.return_value = "active_project"
+        mock_getProjectAssessments.return_value = ["assessment1", "assessment2"]
+        mock_plugin = MagicMock()
+        mock_plugin.before_process_checkbox_data.side_effect = lambda data, key: {"ass_final": 1} if data["ass_final"] == "on" else {"ass_final": 0}
+        mock_plugin.after_process_checkbox_data.side_effect = lambda data, key: {"ass_final": "on"} if data["ass_final"] == 1 else {"ass_final": "off"}
+        mock_pluginImplementations.return_value = [mock_plugin]
+
+        # Prueba de un caso POST (agregar evaluación con error)
+        self.view.request.method = "POST"
+        self.view.request.POST = {"btn_add_ass": True, "ass_final": "on"}
+        self.view.getPostDict = MagicMock(return_value={"ass_final": "on"})
+
+        result = self.view.processView()
+
+        # Aserciones
+        self.assertEqual(result, {
+            "new_available": True,
+            "activeProject": "active_project",
+            "assessments": ["assessment1", "assessment2"],
+            "data": {"ass_final": "off"},
+            "error_summary": {"addAssessment": "error_message"},
+        })
+
+        mock_projectExists.assert_called_once_with(
+            self.view.user.login, "test_user", "test_project", self.view.request
+        )
+        mock_getTheProjectIdForOwner.assert_called_once_with(
+            "test_user", "test_project", self.view.request
+        )
+        mock_plugin.before_process_checkbox_data.assert_called_once()
+        mock_addProjectAssessment.assert_called_once()
+        mock_plugin.after_process_checkbox_data.assert_called_once()
+        mock_there_is_final_assessment.assert_called_once_with(self.view.request, "test_project_id")
+        mock_getActiveProject.assert_called_once_with(self.view.user.login, self.view.request)
+        mock_getProjectAssessments.assert_called_once_with("test_project_id", self.view.request)
+
+    @patch('climmob.views.assessment.projectExists')
+    @patch('climmob.views.assessment.getTheProjectIdForOwner')
+    @patch('climmob.views.assessment.addProjectAssessment')
+    @patch('climmob.views.assessment.modifyProjectAssessment')
+    @patch('climmob.views.assessment.there_is_final_assessment')
+    @patch('climmob.views.assessment.getActiveProject')
+    @patch('climmob.views.assessment.getProjectAssessments')
+    @patch('climmob.plugins.PluginImplementations')
+    def test_process_view_post_method_modify_error(self, mock_pluginImplementations, mock_getProjectAssessments, mock_getActiveProject,
+                                                   mock_there_is_final_assessment, mock_modifyProjectAssessment,
+                                                   mock_addProjectAssessment, mock_getTheProjectIdForOwner, mock_projectExists):
+        # Configuración de los mocks
+        mock_projectExists.return_value = True
+        mock_getTheProjectIdForOwner.return_value = "test_project_id"
+        mock_modifyProjectAssessment.return_value = (False, "error_message")
+        mock_there_is_final_assessment.return_value = False
+        mock_getActiveProject.return_value = "active_project"
+        mock_getProjectAssessments.return_value = ["assessment1", "assessment2"]
+        mock_plugin = MagicMock()
+        mock_plugin.before_process_checkbox_data.side_effect = lambda data, key: {"ass_final": 1} if data["ass_final"] == "on" else {"ass_final": 0}
+        mock_plugin.after_process_checkbox_data.side_effect = lambda data, key: {"ass_final": "on"} if data["ass_final"] == 1 else {"ass_final": "off"}
+        mock_pluginImplementations.return_value = [mock_plugin]
+
+        # Prueba de un caso POST (modificar evaluación con error)
+        self.view.request.method = "POST"
+        self.view.request.POST = {"btn_modify_ass": True, "ass_final": "off"}
+        self.view.getPostDict = MagicMock(return_value={"ass_final": "off"})
+
+        result = self.view.processView()
+
+        # Aserciones
+        self.assertEqual(result, {
+            "new_available": True,
+            "activeProject": "active_project",
+            "assessments": ["assessment1", "assessment2"],
+            "data": {"ass_final": "off"},
+            "error_summary": {"modifyAssessment": "error_message"},
+        })
+
+        mock_projectExists.assert_called_once_with(
+            self.view.user.login, "test_user", "test_project", self.view.request
+        )
+        mock_getTheProjectIdForOwner.assert_called_once_with(
+            "test_user", "test_project", self.view.request
+        )
+        mock_plugin.before_process_checkbox_data.assert_called_once()
+        mock_modifyProjectAssessment.assert_called_once()
+        mock_plugin.after_process_checkbox_data.assert_called_once()
+        mock_there_is_final_assessment.assert_called_once_with(self.view.request, "test_project_id")
+        mock_getActiveProject.assert_called_once_with(self.view.user.login, self.view.request)
+        mock_getProjectAssessments.assert_called_once_with("test_project_id", self.view.request)
+
 
 class TestDeleteAssessmentHeadView(unittest.TestCase):
     def setUp(self):
@@ -1252,6 +1540,192 @@ class TestStartAssessmentsView(unittest.TestCase):
             "assessment",
             "test_assessment"
         )
+
+class TestAssessmentFormCreationView(unittest.TestCase):
+
+    def setUp(self):
+        # Crear un mock de request
+        self.request = MagicMock()
+        # Inicializar el view con el request mock
+        self.view = assessmentFormCreation_view(self.request)
+        self.view.user = MagicMock()
+        self.view._ = MagicMock(side_effect=lambda x: x)  # Mock translation function
+        self.view.request.matchdict = {
+            "user": "test_user",
+            "project": "test_project",
+            "assessmentid": "test_assessment"
+        }
+        self.view.request.url_for_static = MagicMock(side_effect=lambda x: f"/static/{x}")
+
+    @patch('climmob.views.assessment.projectExists')
+    @patch('climmob.views.assessment.getTheProjectIdForOwner')
+    @patch('climmob.views.assessment.getPrjLangDefaultInProject')
+    @patch('climmob.views.assessment.saveAssessmentOrder')
+    @patch('climmob.views.assessment.getDataFormPreview')
+    @patch('climmob.views.assessment.getActiveProject')
+    @patch('climmob.views.assessment.getDictForPreview')
+    @patch('climmob.views.assessment.Environment')
+    def test_process_view_project_not_exist(self, mock_environment, mock_getDictForPreview, mock_getActiveProject,
+                                            mock_getDataFormPreview, mock_saveAssessmentOrder,
+                                            mock_getPrjLangDefaultInProject, mock_getTheProjectIdForOwner,
+                                            mock_projectExists):
+        # Configuración de los mocks
+        mock_projectExists.return_value = False
+
+        # Verifica que se lanza HTTPNotFound si el proyecto no existe
+        with self.assertRaises(HTTPNotFound):
+            self.view.processView()
+
+        mock_projectExists.assert_called_once_with(
+            self.view.user.login, "test_user", "test_project", self.view.request
+        )
+
+    @patch('climmob.views.assessment.projectExists')
+    @patch('climmob.views.assessment.getTheProjectIdForOwner')
+    @patch('climmob.views.assessment.getPrjLangDefaultInProject')
+    @patch('climmob.views.assessment.saveAssessmentOrder')
+    @patch('climmob.views.assessment.getDataFormPreview')
+    @patch('climmob.views.assessment.getActiveProject')
+    @patch('climmob.views.assessment.getDictForPreview')
+    @patch('climmob.views.assessment.Environment')
+    def test_process_view_get_method(self, mock_environment, mock_getDictForPreview, mock_getActiveProject,
+                                     mock_getDataFormPreview, mock_saveAssessmentOrder, mock_getPrjLangDefaultInProject,
+                                     mock_getTheProjectIdForOwner, mock_projectExists):
+        # Configuración de los mocks
+        mock_projectExists.return_value = True
+        mock_getTheProjectIdForOwner.return_value = "test_project_id"
+        mock_getPrjLangDefaultInProject.return_value = {"lang_code": "en"}
+
+        # Prueba de un caso GET
+        self.view.request.method = "GET"
+
+        result = self.view.processView()
+
+        # Aserciones
+        self.assertTrue(self.view.returnRawViewResult)
+        self.assertEqual(result, "")
+
+        mock_projectExists.assert_called_once_with(
+            self.view.user.login, "test_user", "test_project", self.view.request
+        )
+        mock_getTheProjectIdForOwner.assert_called_once_with(
+            "test_user", "test_project", self.view.request
+        )
+        mock_getPrjLangDefaultInProject.assert_called_once_with(
+            "test_project_id", self.view.request
+        )
+
+    @patch('climmob.views.assessment.projectExists')
+    @patch('climmob.views.assessment.getTheProjectIdForOwner')
+    @patch('climmob.views.assessment.getPrjLangDefaultInProject')
+    @patch('climmob.views.assessment.saveAssessmentOrder')
+    @patch('climmob.views.assessment.getDataFormPreview')
+    @patch('climmob.views.assessment.getActiveProject')
+    @patch('climmob.views.assessment.getDictForPreview')
+    @patch('climmob.views.assessment.Environment')
+    @patch('json.loads')
+    def test_process_view_post_method(self, mock_json_loads, mock_environment, mock_getDictForPreview,
+                                      mock_getActiveProject,
+                                      mock_getDataFormPreview, mock_saveAssessmentOrder,
+                                      mock_getPrjLangDefaultInProject, mock_getTheProjectIdForOwner,
+                                      mock_projectExists):
+        # Configuración de los mocks
+        mock_projectExists.return_value = True
+        mock_getTheProjectIdForOwner.return_value = "test_project_id"
+        mock_getPrjLangDefaultInProject.return_value = {"lang_code": "en"}
+        mock_saveAssessmentOrder.return_value = (True, None)
+        mock_getDataFormPreview.return_value = ([], False)
+        mock_getActiveProject.return_value = "active_project"
+        mock_getDictForPreview.return_value = {}
+        mock_json_loads.return_value = [{"type": "group", "id": 1}]
+
+        mock_template = MagicMock()
+        mock_environment.return_value.get_template.return_value = mock_template
+        mock_template.render.return_value = "rendered_template"
+
+        # Prueba de un caso POST sin errores
+        self.view.request.method = "POST"
+        self.view.request.POST.get.return_value = json.dumps([{"type": "group", "id": 1}])
+
+        result = self.view.processView()
+
+        # Aserciones
+        self.assertTrue(self.view.returnRawViewResult)
+        self.assertEqual(result, "rendered_template")
+
+        mock_projectExists.assert_called_once_with(
+            self.view.user.login, "test_user", "test_project", self.view.request
+        )
+        mock_getTheProjectIdForOwner.assert_called_once_with(
+            "test_user", "test_project", self.view.request
+        )
+        mock_getPrjLangDefaultInProject.assert_called_once_with(
+            "test_project_id", self.view.request
+        )
+        mock_saveAssessmentOrder.assert_called_once_with(
+            "test_project_id", "test_assessment", [{"type": "group", "id": 1}], self.view.request
+        )
+        mock_getDataFormPreview.assert_called_once_with(
+            self.view, "test_user", "test_project_id", language="en", assessmentid="test_assessment"
+        )
+        mock_getActiveProject.assert_called_once_with(
+            self.view.user.login, self.view.request
+        )
+        mock_getDictForPreview.assert_called_once_with(
+            self.view.request, "test_user", "en"
+        )
+        mock_template.render.assert_called_once()
+
+    @patch('climmob.views.assessment.projectExists')
+    @patch('climmob.views.assessment.getTheProjectIdForOwner')
+    @patch('climmob.views.assessment.getPrjLangDefaultInProject')
+    @patch('climmob.views.assessment.saveAssessmentOrder')
+    @patch('climmob.views.assessment.getDataFormPreview')
+    @patch('climmob.views.assessment.getActiveProject')
+    @patch('climmob.views.assessment.getDictForPreview')
+    @patch('climmob.views.assessment.Environment')
+    @patch('json.loads')
+    def test_process_view_post_method_with_error(self, mock_json_loads, mock_environment, mock_getDictForPreview,
+                                                 mock_getActiveProject,
+                                                 mock_getDataFormPreview, mock_saveAssessmentOrder,
+                                                 mock_getPrjLangDefaultInProject, mock_getTheProjectIdForOwner,
+                                                 mock_projectExists):
+        # Configuración de los mocks
+        mock_projectExists.return_value = True
+        mock_getTheProjectIdForOwner.return_value = "test_project_id"
+        mock_getPrjLangDefaultInProject.return_value = {"lang_code": "en"}
+        mock_getDataFormPreview.return_value = ([], False)
+
+        mock_template = MagicMock()
+        mock_environment.return_value.get_template.return_value = mock_template
+        mock_template.render.return_value = "rendered_template"
+
+        # Prueba de un caso POST con errores (pregunta sin grupo)
+        self.view.request.method = "POST"
+        mock_json_loads.return_value = [{"type": "question"}, {"type": "question"}]
+
+        with patch.object(self.view, '_', wraps=self.view._) as mock_translate:
+            with self.assertRaises(AssertionError) as context:
+                self.view.processView()
+
+                # Verificar que el mensaje de error está en `error_summary`
+                self.assertIn("Questions cannot be outside a group", self.view._("Questions cannot be outside a group"))
+
+                # Verificar que las funciones no se llamaron
+                mock_projectExists.assert_called_once_with(
+                    self.view.user.login, "test_user", "test_project", self.view.request
+                )
+                mock_getTheProjectIdForOwner.assert_called_once_with(
+                    "test_user", "test_project", self.view.request
+                )
+                mock_getPrjLangDefaultInProject.assert_called_once_with(
+                    "test_project_id", self.view.request
+                )
+                mock_saveAssessmentOrder.assert_not_called()
+                mock_getDataFormPreview.assert_not_called()
+                mock_getActiveProject.assert_not_called()
+                mock_getDictForPreview.assert_not_called()
+                mock_template.render.assert_not_called()
 
 
 if __name__ == '__main__':
