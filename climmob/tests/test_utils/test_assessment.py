@@ -1,9 +1,6 @@
 import unittest
 from unittest.mock import MagicMock, patch
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
-import json
-import os
-from jinja2 import Environment, FileSystemLoader
 
 # Importa la clase a probar
 from climmob.views.assessment import (
@@ -16,7 +13,10 @@ from climmob.views.assessment import (
     assessment_view,
     assessmentFormCreation_view,
     getAssessmentSection_view,
-    CancelAssessmentView
+    CancelAssessmentView,
+    closeAssessment_view,
+    createDocumentForm,
+    startAssessments_view
 )
 
 class TestDeleteAssessmentSectionView(unittest.TestCase):
@@ -902,6 +902,356 @@ class TestGetAssessmentSectionView(unittest.TestCase):
             "test_user", "test_project", self.view.request
         )
         mock_getAssessmentGroupInformation.assert_not_called()
+
+class TestCloseAssessmentView(unittest.TestCase):
+
+    def setUp(self):
+        # Crear un mock de request
+        self.request = MagicMock()
+        # Inicializar el view con el request mock
+        self.view = closeAssessment_view(self.request)
+        self.view.user = MagicMock()
+        self.view.request.matchdict = {
+            "user": "test_user",
+            "project": "test_project",
+            "assessmentid": "test_assessment"
+        }
+
+    @patch('climmob.views.assessment.projectExists')
+    @patch('climmob.views.assessment.getTheProjectIdForOwner')
+    @patch('climmob.views.assessment.getAssesmentProgress')
+    @patch('climmob.views.assessment.getProjectAssessmentInfo')
+    @patch('climmob.views.assessment.getActiveProject')
+    def test_process_view_project_not_exist(self, mock_getActiveProject, mock_getProjectAssessmentInfo, mock_getAssesmentProgress, mock_getTheProjectIdForOwner, mock_projectExists):
+        # Configuración de los mocks
+        mock_projectExists.return_value = False
+
+        # Verifica que se lanza HTTPNotFound si el proyecto no existe
+        with self.assertRaises(HTTPNotFound):
+            self.view.processView()
+
+        mock_projectExists.assert_called_once_with(
+            self.view.user.login, "test_user", "test_project", self.view.request
+        )
+
+    @patch('climmob.views.assessment.projectExists')
+    @patch('climmob.views.assessment.getTheProjectIdForOwner')
+    @patch('climmob.views.assessment.getAssesmentProgress')
+    @patch('climmob.views.assessment.getProjectAssessmentInfo')
+    @patch('climmob.views.assessment.setAssessmentIndividualStatus')
+    @patch('climmob.views.assessment.getActiveProject')
+    @patch('climmob.plugins.PluginImplementations')
+    def test_process_view_post_method(self, mock_PluginImplementations, mock_getActiveProject, mock_setAssessmentIndividualStatus, mock_getProjectAssessmentInfo, mock_getAssesmentProgress, mock_getTheProjectIdForOwner, mock_projectExists):
+        # Configuración de los mocks
+        mock_projectExists.return_value = True
+        mock_getTheProjectIdForOwner.return_value = "test_project_id"
+        mock_getAssesmentProgress.return_value = ("progress", "pcompleted")
+        mock_getProjectAssessmentInfo.return_value = "assessmentData"
+        mock_plugin = MagicMock()
+        mock_PluginImplementations.return_value = [mock_plugin]
+
+        # Prueba de un caso POST
+        self.view.request.method = "POST"
+        self.view.request.params = {"closeAssessment": "1"}
+
+        result = self.view.processView()
+
+        # Aserciones
+        self.assertTrue(self.view.returnRawViewResult)
+        self.assertIsInstance(result, HTTPFound)
+        self.assertEqual(result.location, self.view.request.route_url("dashboard"))
+
+        mock_projectExists.assert_called_once_with(
+            self.view.user.login, "test_user", "test_project", self.view.request
+        )
+        mock_getTheProjectIdForOwner.assert_called_once_with(
+            "test_user", "test_project", self.view.request
+        )
+        mock_getAssesmentProgress.assert_called_once_with(
+            "test_user", "test_project_id", "test_project", "test_assessment", self.view.request
+        )
+        mock_getProjectAssessmentInfo.assert_called_once_with(
+            "test_project_id", "test_assessment", self.view.request
+        )
+        mock_setAssessmentIndividualStatus.assert_called_once_with(
+            "test_project_id", "test_assessment", 2, self.view.request
+        )
+        mock_plugin.after_deleting_form.assert_called_once_with(
+            self.view.request, "test_user", "test_project_id", "test_project", "assessment", "test_assessment"
+        )
+
+    @patch('climmob.views.assessment.projectExists')
+    @patch('climmob.views.assessment.getTheProjectIdForOwner')
+    @patch('climmob.views.assessment.getAssesmentProgress')
+    @patch('climmob.views.assessment.getProjectAssessmentInfo')
+    @patch('climmob.views.assessment.getActiveProject')
+    def test_process_view_get_method(self, mock_getActiveProject, mock_getProjectAssessmentInfo, mock_getAssesmentProgress, mock_getTheProjectIdForOwner, mock_projectExists):
+        # Configuración de los mocks
+        mock_projectExists.return_value = True
+        mock_getTheProjectIdForOwner.return_value = "test_project_id"
+        mock_getAssesmentProgress.return_value = ("progress", "pcompleted")
+        mock_getProjectAssessmentInfo.return_value = "assessmentData"
+        mock_getActiveProject.return_value = "activeProject"
+
+        # Prueba de un caso GET
+        self.view.request.method = "GET"
+
+        result = self.view.processView()
+
+        # Aserciones
+        self.assertFalse(self.view.returnRawViewResult)
+        self.assertEqual(result, {
+            "activeProject": "activeProject",
+            "activeUser": self.view.user,
+            "redirect": False,
+            "progress": "progress",
+            "assessmentData": "assessmentData",
+        })
+
+        mock_projectExists.assert_called_once_with(
+            self.view.user.login, "test_user", "test_project", self.view.request
+        )
+        mock_getTheProjectIdForOwner.assert_called_once_with(
+            "test_user", "test_project", self.view.request
+        )
+        mock_getAssesmentProgress.assert_called_once_with(
+            "test_user", "test_project_id", "test_project", "test_assessment", self.view.request
+        )
+        mock_getProjectAssessmentInfo.assert_called_once_with(
+            "test_project_id", "test_assessment", self.view.request
+        )
+        mock_getActiveProject.assert_called_once_with(
+            self.view.user.login, self.view.request
+        )
+
+class TestCreateDocumentForm(unittest.TestCase):
+
+    def setUp(self):
+        # Crear un mock de self (la vista)
+        self.view = MagicMock()
+        self.view.request.locale_name = 'en'
+
+    @patch('climmob.views.assessment.getDataFormPreview')
+    @patch('climmob.views.assessment.create_document_form')
+    def test_create_document_form_with_languages(self, mock_create_document_form, mock_getDataFormPreview):
+        # Configuración de los mocks
+        mock_getDataFormPreview.return_value = ('data', 'finalCloseQst')
+
+        # Datos de prueba
+        activeProjectUser = 'test_user'
+        activeProjectId = 'test_project_id'
+        activeProjectCod = 'test_project_cod'
+        assessment_id = 'test_assessment'
+        projectDetails = {
+            "languages": [{"lang_code": "en", "lang_name": "English"}],
+            "project_label_a": "Label A",
+            "project_label_b": "Label B",
+            "project_label_c": "Label C",
+        }
+
+        # Llamar a la función
+        createDocumentForm(self.view, activeProjectUser, activeProjectId, activeProjectCod, assessment_id,
+                           projectDetails)
+
+        # Verificaciones
+        mock_getDataFormPreview.assert_called_once_with(
+            self.view,
+            activeProjectUser,
+            activeProjectId,
+            assessmentid=assessment_id,
+            language='en'
+        )
+        mock_create_document_form.assert_called_once_with(
+            self.view.request,
+            'en',
+            activeProjectUser,
+            activeProjectId,
+            activeProjectCod,
+            "Assessment",
+            assessment_id,
+            [{'lang_code': 'en', 'lang_name': 'English', 'Data': 'data'}],
+            ['Label A', 'Label B', 'Label C']
+        )
+
+    @patch('climmob.views.assessment.getDataFormPreview')
+    @patch('climmob.views.assessment.create_document_form')
+    def test_create_document_form_without_languages(self, mock_create_document_form, mock_getDataFormPreview):
+        # Configuración de los mocks
+        mock_getDataFormPreview.return_value = ('data', 'finalCloseQst')
+
+        # Datos de prueba
+        activeProjectUser = 'test_user'
+        activeProjectId = 'test_project_id'
+        activeProjectCod = 'test_project_cod'
+        assessment_id = 'test_assessment'
+        projectDetails = {
+            "languages": [],
+            "project_label_a": "Label A",
+            "project_label_b": "Label B",
+            "project_label_c": "Label C",
+        }
+
+        # Llamar a la función
+        createDocumentForm(self.view, activeProjectUser, activeProjectId, activeProjectCod, assessment_id,
+                           projectDetails)
+
+        # Verificaciones
+        mock_getDataFormPreview.assert_called_once_with(
+            self.view,
+            activeProjectUser,
+            activeProjectId,
+            assessmentid=assessment_id,
+            language='en'
+        )
+        mock_create_document_form.assert_called_once_with(
+            self.view.request,
+            'en',
+            activeProjectUser,
+            activeProjectId,
+            activeProjectCod,
+            "Assessment",
+            assessment_id,
+            [{'lang_code': 'en', 'lang_name': 'Default', 'Data': 'data'}],
+            ['Label A', 'Label B', 'Label C']
+        )
+
+class TestStartAssessmentsView(unittest.TestCase):
+
+    def setUp(self):
+        # Crear un mock de request
+        self.request = MagicMock()
+        # Inicializar el view con el request mock
+        self.view = startAssessments_view(self.request)
+        self.view.user = MagicMock()
+        self.view._ = MagicMock(side_effect=lambda x: x)  # Mock translation function
+        self.view.request.matchdict = {
+            "user": "test_user",
+            "project": "test_project"
+        }
+
+    @patch('climmob.views.assessment.projectExists')
+    @patch('climmob.views.assessment.getTheProjectIdForOwner')
+    def test_process_view_project_not_exist(self, mock_getTheProjectIdForOwner, mock_projectExists):
+        # Configuración de los mocks
+        mock_projectExists.return_value = False
+
+        # Verifica que se lanza HTTPNotFound si el proyecto no existe
+        with self.assertRaises(HTTPNotFound):
+            self.view.processView()
+
+        mock_projectExists.assert_called_once_with(
+            self.view.user.login, "test_user", "test_project", self.view.request
+        )
+
+    @patch('climmob.views.assessment.projectExists')
+    @patch('climmob.views.assessment.getTheProjectIdForOwner')
+    def test_process_view_get_method(self, mock_getTheProjectIdForOwner, mock_projectExists):
+        # Configuración de los mocks
+        mock_projectExists.return_value = True
+
+        # Prueba de un caso GET
+        self.view.request.method = "GET"
+
+        with self.assertRaises(HTTPNotFound):
+            self.view.processView()
+
+        mock_projectExists.assert_called_once_with(
+            self.view.user.login, "test_user", "test_project", self.view.request
+        )
+
+    @patch('climmob.views.assessment.projectExists')
+    @patch('climmob.views.assessment.getTheProjectIdForOwner')
+    @patch('climmob.views.assessment.getProjectAssessmentInfo')
+    @patch('climmob.views.assessment.checkAssessments')
+    @patch('climmob.views.assessment.getTheGroupOfThePackageCodeAssessment')
+    @patch('climmob.views.assessment.getActiveProject')
+    @patch('climmob.views.assessment.generateAssessmentFiles')
+    @patch('climmob.views.assessment.setAssessmentIndividualStatus')
+    @patch('climmob.views.assessment.createDocumentForm')
+    @patch('climmob.plugins.PluginImplementations')
+    @patch.object(startAssessments_view, 'getPostDict', return_value={"assessment_id": "test_assessment"})
+    def test_process_view_post_method(self, mock_getPostDict, mock_PluginImplementations, mock_createDocumentForm, mock_setAssessmentIndividualStatus, mock_generateAssessmentFiles, mock_getActiveProject, mock_getTheGroupOfThePackageCodeAssessment, mock_checkAssessments, mock_getProjectAssessmentInfo, mock_getTheProjectIdForOwner, mock_projectExists):
+        # Configuración de los mocks
+        mock_projectExists.return_value = True
+        mock_getTheProjectIdForOwner.return_value = "test_project_id"
+        mock_getProjectAssessmentInfo.return_value = {"ass_rhomis": 0}
+        mock_checkAssessments.return_value = (True, {})
+        mock_getTheGroupOfThePackageCodeAssessment.return_value = "section_code"
+        mock_getActiveProject.return_value = {
+            "languages": [{"lang_code": "en", "lang_name": "English"}],
+            "project_label_a": "Label A",
+            "project_label_b": "Label B",
+            "project_label_c": "Label C",
+        }
+        mock_generateAssessmentFiles.return_value = [{"result": True}]
+
+        mock_plugin = MagicMock()
+        mock_PluginImplementations.return_value = [mock_plugin]
+
+        # Prueba de un caso POST
+        self.view.request.method = "POST"
+
+        result = self.view.processView()
+
+        # Aserciones
+        self.assertTrue(self.view.returnRawViewResult)
+        self.assertIsInstance(result, HTTPFound)
+        self.assertEqual(result.location, self.view.request.route_url("dashboard"))
+
+        mock_projectExists.assert_called_once_with(
+            self.view.user.login, "test_user", "test_project", self.view.request
+        )
+        mock_getTheProjectIdForOwner.assert_called_once_with(
+            "test_user", "test_project", self.view.request
+        )
+        mock_getProjectAssessmentInfo.assert_called_once_with(
+            "test_project_id", "test_assessment", self.view.request
+        )
+        mock_checkAssessments.assert_called_once_with(
+            "test_project_id", "test_assessment", self.view.request
+        )
+        mock_getTheGroupOfThePackageCodeAssessment.assert_called_once_with(
+            "test_project_id", "test_assessment", self.view.request
+        )
+        mock_getActiveProject.assert_called_once_with(
+            self.view.user.login, self.view.request
+        )
+        mock_generateAssessmentFiles.assert_called_once_with(
+            "test_user",
+            "test_project_id",
+            "test_project",
+            "test_assessment",
+            self.view.request,
+            "section_code",
+            ["Label A", "Label B", "Label C"]
+        )
+        mock_setAssessmentIndividualStatus.assert_called_once_with(
+            "test_project_id", "test_assessment", 1, self.view.request
+        )
+        mock_createDocumentForm.assert_called_once_with(
+            self.view,
+            "test_user",
+            "test_project_id",
+            "test_project",
+            "test_assessment",
+            mock_getActiveProject.return_value,
+        )
+        mock_plugin.after_adding_form.assert_called_once_with(
+            self.view.request,
+            "test_user",
+            "test_project_id",
+            "test_project",
+            "assessment",
+            "test_assessment"
+        )
+        mock_plugin.create_Excel_template_for_upload_data.assert_called_once_with(
+            self.view.request,
+            "test_user",
+            "test_project_id",
+            "test_project",
+            "assessment",
+            "test_assessment"
+        )
 
 
 if __name__ == '__main__':
