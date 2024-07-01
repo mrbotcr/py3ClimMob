@@ -30,6 +30,7 @@ from climmob.processes.db.project_technologies import numberOfCombinationsForThe
 from climmob.processes.db.question import getQuestionOptions
 
 __all__ = [
+    "getTotalNumberOfProjectsInClimMob",
     "addProject",
     "getProjectData",
     "getProjectLabels",
@@ -50,6 +51,13 @@ __all__ = [
     "getProjectIsTemplate",
     "getProjectUserAndOwner",
 ]
+
+
+def getTotalNumberOfProjectsInClimMob(request):
+
+    res = request.dbsession.query(Project).count()
+
+    return res
 
 
 def getProjectTemplates(request, registrationAndAnalysis):

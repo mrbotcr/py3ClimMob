@@ -38,6 +38,7 @@ from climmob.processes import (
     deleteRegistryByProjectId,
     deleteProjectAssessments,
     getUserProjects,
+    getTotalNumberOfProjectsInClimMob,
 )
 from climmob.views.classes import privateView
 
@@ -61,11 +62,18 @@ class projectList_view(privateView):
             "activeProject": getActiveProject(self.user.login, self.request),
             "userProjects": getUserProjects(self.user.login, self.request),
             "sectionActive": "projectlist",
+            "numberOfProjects": getTotalNumberOfProjectsInClimMob(self.request),
         }
 
 
 class newProject_view(privateView):
     def processView(self):
+
+        if self.request.registry.settings.get("projects.limit", "false") == "true":
+            if getTotalNumberOfProjectsInClimMob(self.request) >= int(
+                self.request.registry.settings.get("projects.quantity", 0)
+            ):
+                raise HTTPNotFound()
 
         dataworking = {}
         newproject = False
@@ -157,6 +165,18 @@ def createProjectFunction(dataworking, error_summary, self):
             dataworking["project_template"] = 0
     else:
         dataworking["project_template"] = 0
+
+    if self.request.registry.settings.get("projects.limit", "false") == "true":
+        if int(
+            self.request.registry.settings.get("project.maximumnumberofobservations", 0)
+        ) < int(dataworking["project_numobs"]):
+            error_summary = {
+                "projectslimits": self._(
+                    "This project does not comply with the limitations on the number of participants per project."
+                )
+            }
+
+            return dataworking, error_summary, added
 
     if int(dataworking["project_numobs"]) > 0:
         if dataworking["project_cod"] != "":
@@ -415,102 +435,127 @@ class modifyProject_view(privateView):
                 )
 
                 if (
-                    data["project_label_a"] != data["project_label_b"]
-                    and data["project_label_a"] != data["project_label_c"]
-                    and data["project_label_b"] != data["project_label_c"]
+                    self.request.registry.settings.get("projects.limit", "false")
+                    == "true"
                 ):
-
-                    if cdata["project_regstatus"] != 0:
-                        data["project_numobs"] = cdata["project_numobs"]
-                        data["project_numcom"] = cdata["project_numcom"]
-
-                    data["project_localvariety"] = 1
-
-                    isNecessarygenerateCombinations = False
-                    if int(data["project_numobs"]) != int(cdata["project_numobs"]):
-                        isNecessarygenerateCombinations = True
-
-                    if int(data["project_numcom"]) != int(cdata["project_numcom"]):
-                        isNecessarygenerateCombinations = True
-
-                    if isNecessarygenerateCombinations:
-                        changeTheStateOfCreateComb(activeProjectId, self.request)
-
-                    continue_modify = True
-                    message = ""
-                    for plugin in p.PluginImplementations(p.IProject):
-                        if continue_modify:
-                            continue_modify, message = plugin.before_updating_project(
-                                self.request, self.user.login, activeProjectId, data
-                            )
-                    if continue_modify:
-                        modified, message = modifyProject(
-                            activeProjectId, data, self.request
+                    if int(
+                        self.request.registry.settings.get(
+                            "project.maximumnumberofobservations", 0
                         )
-                        if not modified:
-                            error_summary = {"dberror": message}
-                        else:
-                            for plugin in p.PluginImplementations(p.IProject):
-                                plugin.after_updating_project(
+                    ) < int(data["project_numobs"]):
+                        error_summary = {
+                            "projectslimits": self._(
+                                "This project does not comply with the limitations on the number of participants per project."
+                            )
+                        }
+                if not error_summary:
+                    if (
+                        data["project_label_a"] != data["project_label_b"]
+                        and data["project_label_a"] != data["project_label_c"]
+                        and data["project_label_b"] != data["project_label_c"]
+                    ):
+
+                        if cdata["project_regstatus"] != 0:
+                            data["project_numobs"] = cdata["project_numobs"]
+                            data["project_numcom"] = cdata["project_numcom"]
+
+                        data["project_localvariety"] = 1
+
+                        isNecessarygenerateCombinations = False
+                        if int(data["project_numobs"]) != int(cdata["project_numobs"]):
+                            isNecessarygenerateCombinations = True
+
+                        if int(data["project_numcom"]) != int(cdata["project_numcom"]):
+                            isNecessarygenerateCombinations = True
+
+                        if isNecessarygenerateCombinations:
+                            changeTheStateOfCreateComb(activeProjectId, self.request)
+
+                        continue_modify = True
+                        message = ""
+                        for plugin in p.PluginImplementations(p.IProject):
+                            if continue_modify:
+                                (
+                                    continue_modify,
+                                    message,
+                                ) = plugin.before_updating_project(
                                     self.request, self.user.login, activeProjectId, data
                                 )
+                        if continue_modify:
+                            modified, message = modifyProject(
+                                activeProjectId, data, self.request
+                            )
+                            if not modified:
+                                error_summary = {"dberror": message}
+                            else:
+                                for plugin in p.PluginImplementations(p.IProject):
+                                    plugin.after_updating_project(
+                                        self.request,
+                                        self.user.login,
+                                        activeProjectId,
+                                        data,
+                                    )
 
-                            if (
-                                cdata["project_registration_and_analysis"] == 1
-                                and data["project_registration_and_analysis"] == 0
-                            ):
-                                deleteRegistryByProjectId(activeProjectId, self.request)
-
-                            if "usingTemplate" in data.keys():
-                                if data["usingTemplate"] != "":
+                                if (
+                                    cdata["project_registration_and_analysis"] == 1
+                                    and data["project_registration_and_analysis"] == 0
+                                ):
                                     deleteRegistryByProjectId(
                                         activeProjectId, self.request
                                     )
-                                    deleteProjectAssessments(
-                                        activeProjectId, self.request
-                                    )
 
-                                    listOfElementToInclude = ["registry"]
+                                if "usingTemplate" in data.keys():
+                                    if data["usingTemplate"] != "":
+                                        deleteRegistryByProjectId(
+                                            activeProjectId, self.request
+                                        )
+                                        deleteProjectAssessments(
+                                            activeProjectId, self.request
+                                        )
 
-                                    assessments = getProjectAssessments(
-                                        data["usingTemplate"], self.request
-                                    )
-                                    for assess in assessments:
-                                        listOfElementToInclude.append(assess["ass_cod"])
+                                        listOfElementToInclude = ["registry"]
 
-                                    newProjectId = getTheProjectIdForOwner(
-                                        self.user.login,
-                                        data["project_cod"],
-                                        self.request,
-                                    )
+                                        assessments = getProjectAssessments(
+                                            data["usingTemplate"], self.request
+                                        )
+                                        for assess in assessments:
+                                            listOfElementToInclude.append(
+                                                assess["ass_cod"]
+                                            )
 
-                                    functionCreateClone(
-                                        self,
-                                        data["usingTemplate"],
-                                        newProjectId,
-                                        listOfElementToInclude,
-                                    )
+                                        newProjectId = getTheProjectIdForOwner(
+                                            self.user.login,
+                                            data["project_cod"],
+                                            self.request,
+                                        )
 
-                            self.request.session.flash(
-                                self._("The project was modified successfully")
-                            )
-                            self.returnRawViewResult = True
-                            return HTTPFound(
-                                location=self.request.route_url("dashboard")
-                            )
+                                        functionCreateClone(
+                                            self,
+                                            data["usingTemplate"],
+                                            newProjectId,
+                                            listOfElementToInclude,
+                                        )
 
-                        if int(data["project_localvariety"]) == 1:
-                            data["project_localvariety"] = "on"
+                                self.request.session.flash(
+                                    self._("The project was modified successfully")
+                                )
+                                self.returnRawViewResult = True
+                                return HTTPFound(
+                                    location=self.request.route_url("dashboard")
+                                )
+
+                            if int(data["project_localvariety"]) == 1:
+                                data["project_localvariety"] = "on"
+                            else:
+                                data["project_localvariety"] = "off"
                         else:
-                            data["project_localvariety"] = "off"
+                            error_summary = {"dberror": message}
                     else:
-                        error_summary = {"dberror": message}
-                else:
-                    error_summary = {
-                        "repeatitem": self._(
-                            "The names that the items will receive should be different."
-                        )
-                    }
+                        error_summary = {
+                            "repeatitem": self._(
+                                "The names that the items will receive should be different."
+                            )
+                        }
         context = {
             "activeProject": getActiveProject(self.user.login, self.request),
             "indashboard": True,

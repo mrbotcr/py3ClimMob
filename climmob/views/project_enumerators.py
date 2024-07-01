@@ -80,7 +80,7 @@ class addProjectEnumerators_view(privateView):
                 errorCount = 1
                 for key in self.request.params.keys():
                     if key.find("add") >= 0:
-                        enumData = key.replace("add", "").split("[___]")
+                        enumData = key[3:].split("[___]")
 
                         alreadyExists = thereIsAnEqualEnumIdInTheProject(
                             enumData[0], activeProjectId, self.request
