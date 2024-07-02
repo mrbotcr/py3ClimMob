@@ -159,7 +159,7 @@ from climmob.views.basic_views import (
     TermsView,
     PrivacyView,
 )
-from climmob.views.cleanErrorLogs import cleanErrorLogs_view
+from climmob.views.cleanErrorLogs import CleanErrorLogsView
 from climmob.views.cloneProjects.cloneProjects import cloneProjects_view
 from climmob.views.dashboard import dashboard_view, projectInformation_view
 from climmob.views.editData import (
@@ -1016,7 +1016,7 @@ def loadRoutes(config):
         addRoute(
             "CleanErrorLogs",
             "/user/{user}/project/{project}/form/{formid}/CleanErrorLogs",
-            cleanErrorLogs_view,
+            CleanErrorLogsView,
             "project/CleanErrors/clean.jinja2",
         )
     )
@@ -1025,7 +1025,7 @@ def loadRoutes(config):
         addRoute(
             "CleanErrorLogsDetails",
             "/user/{user}/project/{project}/form/{formid}/logId/{logid}/CleanErrorLogs",
-            cleanErrorLogs_view,
+            CleanErrorLogsView,
             "project/CleanErrors/clean.jinja2",
         )
     )
@@ -1043,7 +1043,7 @@ def loadRoutes(config):
         addRoute(
             "CleanErrorLogsAssessment",
             "/user/{user}/project/{project}/form/{formid}/{codeid}/CleanErrorLogs",
-            cleanErrorLogs_view,
+            CleanErrorLogsView,
             "project/CleanErrors/clean.jinja2",
         )
     )
@@ -1052,7 +1052,7 @@ def loadRoutes(config):
         addRoute(
             "CleanErrorLogsDetailsAssessment",
             "/user/{user}/project/{project}/form/{formid}/{codeid}/logId/{logid}/CleanErrorLogs",
-            cleanErrorLogs_view,
+            CleanErrorLogsView,
             "project/CleanErrors/clean.jinja2",
         )
     )
