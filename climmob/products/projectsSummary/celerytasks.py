@@ -288,6 +288,29 @@ def getListOfProjects(dbsession):
     return projectsWithCountry + projectsWithoutCountry
 
 
+def processForGetTheGenotypes(projectId):
+
+    sql = (
+        "SELECT "
+        "project.project_id, "
+        "project.project_pi as trial_pi, "
+        "project.project_piemail as pi_email, "
+        "(SELECT technology.tech_name FROM technology where technology.tech_id = prjalias.tech_id) as crop_name, "
+        "("
+        "	SELECT COALESCE((SELECT alias_name FROM techalias where tech_id=tech_used and alias_id=alias_used), alias_name) as genotype "
+        ") as genotype "
+        "FROM project, prjalias "
+        "WHERE "
+        "project.project_id = prjalias.project_id AND "
+        "project.project_id='{}';"
+    ).format(projectId)
+    try:
+        result = sql_execute(sql)
+        return True, result
+    except:
+        return False, {}
+
+
 def myconverter(o):
     if isinstance(o, datetime.datetime):
         return o.__str__()
@@ -310,6 +333,7 @@ def createProjectsSummary(self, settings, otro):
         # try:
         cantidad = 0
         listOfProjects = []
+        listOfGenotypes = []
         for project in getListOfProjects(dbsession):
             cantidad += 1
             print(cantidad)
@@ -406,11 +430,35 @@ def createProjectsSummary(self, settings, otro):
 
             listOfProjects.append(result)
 
+            resultGeno, genotypes = processForGetTheGenotypes(project["project_id"])
+
+            if resultGeno:
+                for genotype in genotypes:
+
+                    resultGenotypes = {
+                        "project_id": genotype.project_id,
+                        "trial_pi": genotype.trial_pi,
+                        "pi_email": genotype.pi_email,
+                        "country": project["cnty_name"],
+                        "crop_name": genotype.crop_name,
+                        "genotype": genotype.genotype,
+                        "instance_name": settings.get("analytics.instancename", ""),
+                    }
+                    listOfGenotypes.append(resultGenotypes)
+
         with open(os.path.join(jsonLocation, "projectsSummary.json"), "w") as json_data:
             json.dump(listOfProjects, json_data, default=myconverter)
 
         df = pd.read_json(os.path.join(jsonLocation, "projectsSummary.json"))
         df.to_excel(os.path.join(jsonLocation, "projectsSummary.xlsx"), index=False)
+
+        with open(
+            os.path.join(jsonLocation, "genotypesSummary.json"), "w"
+        ) as jsongeno_data:
+            json.dump(listOfGenotypes, jsongeno_data, default=myconverter)
+
+        df = pd.read_json(os.path.join(jsonLocation, "genotypesSummary.json"))
+        df.to_excel(os.path.join(jsonLocation, "genotypesSummary.xlsx"), index=False)
 
         # except Exception as e:
         #    print(str(e))
