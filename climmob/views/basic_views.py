@@ -83,7 +83,7 @@ class PrivacyView(publicView):
         return {}
 
 
-class NotfoundView(publicView):
+class NotFoundView(publicView):
     def processView(self):
         self.request.response.status = 404
         return {}

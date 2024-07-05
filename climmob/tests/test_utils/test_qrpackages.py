@@ -53,7 +53,3 @@ class PackagesTestCase(unittest.TestCase):
             mock_task.id,
             mock_request,
         )
-
-        # self.assertTrue(mock_createQR_apply_async.called)
-        # self.assertTrue(mock_createProductDirectory.called)
-        # self.assertTrue(mock_registerProductInstance.called)

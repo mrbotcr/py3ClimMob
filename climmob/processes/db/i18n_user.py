@@ -39,7 +39,6 @@ def languageExistInI18nUser(language, userName, request):
 
 
 def getListOfLanguagesByUser(request, userName, questionId=None):
-    print("Ingresa")
     if questionId:
         default = (
             request.dbsession.query(Question.question_lang)

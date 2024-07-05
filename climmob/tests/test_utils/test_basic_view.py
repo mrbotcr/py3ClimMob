@@ -13,7 +13,7 @@ from climmob.views.basic_views import (
     HealthView,
     TermsView,
     PrivacyView,
-    NotfoundView,
+    NotFoundView,
     StoreCookieView,
     get_policy,
     LoginView,
@@ -156,7 +156,7 @@ class TestNotFoundView(unittest.TestCase):
         self.mock_request.response = self.mock_response
 
     def test_process_view(self):
-        view = NotfoundView(self.mock_request)
+        view = NotFoundView(self.mock_request)
 
         result = view.processView()
         self.assertEqual(result, {})

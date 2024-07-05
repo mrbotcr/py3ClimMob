@@ -149,7 +149,7 @@ from climmob.views.assessment import (
 from climmob.views.basic_views import (
     HomeView,
     HealthView,
-    NotfoundView,
+    NotFoundView,
     LoginView,
     register_view,
     logout_view,
@@ -2002,7 +2002,7 @@ def loadRoutes(config):
 
     appendToRoutes(routes)
 
-    config.add_notfound_view(NotfoundView, renderer="404.jinja2")
+    config.add_notfound_view(NotFoundView, renderer="404.jinja2")
 
     # Custom mapping can happen here AFTER the host maps
     for plugin in p.PluginImplementations(p.IRoutes):
