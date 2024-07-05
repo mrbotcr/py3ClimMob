@@ -134,17 +134,17 @@ from climmob.views.Share.projectShare import (
     removeprojectShare_view,
 )
 from climmob.views.assessment import (
-    assessment_view,
-    deleteAssessmentSection_view,
-    getAssessmentDetails_view,
-    assessmenthead_view,
-    deleteassessmenthead_view,
-    startAssessments_view,
-    closeAssessment_view,
+    AssessmentView,
+    DeleteAssessmentSectionView,
+    GetAssessmentDetailsView,
+    AssessmentHeadView,
+    DeleteAssessmentHeadView,
+    StartAssessmentsView,
+    CloseAssessmentView,
     CancelAssessmentView,
-    assessmentFormCreation_view,
-    assessmentSectionActions_view,
-    getAssessmentSection_view,
+    AssessmentFormCreationView,
+    AssessmentSectionActionsView,
+    GetAssessmentSectionView,
 )
 from climmob.views.basic_views import (
     home_view,
@@ -800,7 +800,7 @@ def loadRoutes(config):
         addRoute(
             "getAssessmentDetails",
             "/user/{user}/project/{project}/assessment/{assessmentid}/details",
-            getAssessmentDetails_view,
+            GetAssessmentDetailsView,
             "json",
         )
     )
@@ -808,7 +808,7 @@ def loadRoutes(config):
         addRoute(
             "assessment",
             "/user/{user}/project/{project}/assessments",
-            assessmenthead_view,
+            AssessmentHeadView,
             "project/assessment/assessment.jinja2",
         )
     )
@@ -816,7 +816,7 @@ def loadRoutes(config):
         addRoute(
             "startassessments",
             "/user/{user}/project/{project}/assessments/start",
-            startAssessments_view,
+            StartAssessmentsView,
             "project/startassessments.jinja2",
         )
     )
@@ -824,7 +824,7 @@ def loadRoutes(config):
         addRoute(
             "deleteassessment",
             "/user/{user}/project/{project}/assessment/{assessmentid}/delete",
-            deleteassessmenthead_view,
+            DeleteAssessmentHeadView,
             "json",
         )
     )
@@ -832,7 +832,7 @@ def loadRoutes(config):
         addRoute(
             "closeassessment",
             "/user/{user}/project/{project}/assessment/{assessmentid}/close",
-            closeAssessment_view,
+            CloseAssessmentView,
             "project/closeassessment.jinja2",
         )
     )
@@ -849,7 +849,7 @@ def loadRoutes(config):
         addRoute(
             "assessmentdetail",
             "/user/{user}/project/{project}/assessment/{assessmentid}",
-            assessment_view,
+            AssessmentView,
             "project/assessment/assessmentdetail.jinja2",
         )
     )
@@ -857,7 +857,7 @@ def loadRoutes(config):
         addRoute(
             "assessmentdetailSaveChanges",
             "/user/{user}/project/{project}/assessment/{assessmentid}/savechanges",
-            assessmentFormCreation_view,
+            AssessmentFormCreationView,
             "string",
         )
     )
@@ -866,7 +866,7 @@ def loadRoutes(config):
         addRoute(
             "deleteassessmentgroup",
             "/user/{user}/project/{project}/assessment/{assessmentid}/{groupid}/delete",
-            deleteAssessmentSection_view,
+            DeleteAssessmentSectionView,
             "json",
         )
     )
@@ -874,7 +874,7 @@ def loadRoutes(config):
         {
             "name": "assessmentSectionActions",
             "path": "/user/{user}/project/{project}/assessment/{assessmentid}/assessmenrSectionActions",
-            "view": assessmentSectionActions_view,
+            "view": AssessmentSectionActionsView,
             "renderer": "json",
         }
     )
@@ -882,7 +882,7 @@ def loadRoutes(config):
         addRoute(
             "getAssessmentSection",
             "/user/{user}/project/{project}/assessment/{assessmentid}/section/{section}/getAssessmentSection",
-            getAssessmentSection_view,
+            GetAssessmentSectionView,
             "json",
         )
     )

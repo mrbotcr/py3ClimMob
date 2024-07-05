@@ -39,7 +39,7 @@ from climmob.views.registry import getDataFormPreview
 from climmob.views.question import getDictForPreview
 
 
-class deleteAssessmentSection_view(privateView):
+class DeleteAssessmentSectionView(privateView):
     def processView(self):
 
         activeProjectUser = self.request.matchdict["user"]
@@ -117,7 +117,7 @@ def actionsInSections(self, postdata):
                 }
 
 
-class assessmentSectionActions_view(privateView):
+class AssessmentSectionActionsView(privateView):
     def processView(self):
 
         activeProjectUser = self.request.matchdict["user"]
@@ -151,7 +151,7 @@ class assessmentSectionActions_view(privateView):
         return {}
 
 
-class getAssessmentDetails_view(privateView):
+class GetAssessmentDetailsView(privateView):
     def processView(self):
         if self.request.method == "GET":
             activeProjectUser = self.request.matchdict["user"]
@@ -177,7 +177,7 @@ class getAssessmentDetails_view(privateView):
         raise HTTPNotFound()
 
 
-class assessmenthead_view(privateView):
+class AssessmentHeadView(privateView):
     def processView(self):
 
         activeProjectUser = self.request.matchdict["user"]
@@ -273,7 +273,7 @@ class assessmenthead_view(privateView):
             }
 
 
-class deleteassessmenthead_view(privateView):
+class DeleteAssessmentHeadView(privateView):
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
@@ -313,7 +313,7 @@ class deleteassessmenthead_view(privateView):
             }
 
 
-class assessment_view(privateView):
+class AssessmentView(privateView):
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
@@ -401,7 +401,7 @@ class assessment_view(privateView):
             return dictreturn
 
 
-class assessmentFormCreation_view(privateView):
+class AssessmentFormCreationView(privateView):
     def processView(self):
 
         activeProjectUser = self.request.matchdict["user"]
@@ -486,7 +486,7 @@ class assessmentFormCreation_view(privateView):
         return ""
 
 
-class startAssessments_view(privateView):
+class StartAssessmentsView(privateView):
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
@@ -695,7 +695,7 @@ def createDocumentForm(
     )
 
 
-class closeAssessment_view(privateView):
+class CloseAssessmentView(privateView):
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
@@ -806,7 +806,7 @@ class CancelAssessmentView(privateView):
         }
 
 
-class getAssessmentSection_view(privateView):
+class GetAssessmentSectionView(privateView):
     def processView(self):
 
         activeProjectUser = self.request.matchdict["user"]
