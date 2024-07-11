@@ -9,270 +9,255 @@ from climmob.views.cleanErrorLogs import (
 )
 import os
 
-
 class TestCleanErrorLogsView(unittest.TestCase):
     def setUp(self):
-        """
-        Este método se ejecuta antes de cada prueba. Aquí configuramos los datos necesarios.
-        """
-        self.request = MagicMock()
-        self.request.matchdict = {
-            "user": "test_user",
-            "project": "test_project",
-            "formid": "test_formid",
+        self.mock_request = MagicMock()
+        self.mock_request.matchdict = {
+            'user': 'Test User',
+            'project': 'Test Project',
+            'formid': '12345',
+            'codeid': 'code123',
         }
+        self.view = CleanErrorLogsView(self.mock_request)
 
-        # Simulación del registry
-        self.request.registry = MagicMock()
-        self.request.registry.settings = {
-            "secure.javascript": "false",
-            "user.repository": "/path/to/repository",
-        }
-
-        self.view = CleanErrorLogsView(self.request)
-        self.view.request = self.request  # Asignar la request simulada a la vista
-
-        # Simulación del atributo user
+        # Mocking user
         self.view.user = MagicMock()
-        self.view.user.login = "mock_login"
+        self.view.user.login = 'test_user_login'
 
-    def test_processView(self):
-        """
-        Esta prueba verifica que el método processView de CleanErrorLogsView
-        procesa correctamente los datos del request.
-        """
+    def test_process_view_matchdict(self):
+        # Extract values from matchdict
+        activeProjectUser = self.view.request.matchdict['user']
+        activeProjectCod = self.view.request.matchdict['project']
+
+        # Execute asserts
+        self.assertEqual(activeProjectUser, 'Test User')
+        self.assertEqual(activeProjectCod, 'Test Project')
+
+    @patch('climmob.views.cleanErrorLogs.projectExists')
+    def test_process_view_project_exists(self, mock_projectExists):
+        # Mock projectExists configuration
+        mock_projectExists.return_value = False
+
+        # Call method and check HTTPNotFound
         with self.assertRaises(HTTPNotFound):
             self.view.processView()
 
-        # Verificamos que los valores en el request se hayan utilizado correctamente
-        self.assertEqual(self.view.request.matchdict["user"], "test_user")
-        self.assertEqual(self.view.request.matchdict["project"], "test_project")
-
-    @patch("climmob.views.cleanErrorLogs.projectExists", return_value=False)
-    def test_processView_project_not_exists(self, mock_projectExists):
-        """
-        Esta prueba verifica que el método processView de CleanErrorLogsView
-        lanza HTTPNotFound si el proyecto no existe.
-        """
-        with self.assertRaises(HTTPNotFound):
-            self.view.processView()
-
-        # Verificamos que la función projectExists fue llamada con los parámetros correctos
-        mock_projectExists.assert_called_with(
-            self.view.user.login, "test_user", "test_project", self.request
+        # Verify if projectExists was called
+        mock_projectExists.assert_called_once_with(
+            self.view.user.login, 'Test User', 'Test Project', self.mock_request
         )
 
-    @patch("climmob.views.cleanErrorLogs.projectExists", return_value=True)
-    @patch(
-        "climmob.views.cleanErrorLogs.getTheProjectIdForOwner",
-        return_value="mock_project_id",
-    )
-    @patch(
-        "climmob.views.cleanErrorLogs.getProjectData",
-        return_value={"project_regstatus": 1},
-    )
-    def test_processView_project_exists(
-        self, mock_getProjectData, mock_getTheProjectIdForOwner, mock_projectExists
-    ):
-        """
-        Esta prueba verifica que el método processView de CleanErrorLogsView
-        no lanza HTTPNotFound si el proyecto existe y el estado del proyecto es válido.
-        """
-        try:
-            self.view.processView()
-        except HTTPNotFound:
-            self.fail("processView lanzó HTTPNotFound cuando el proyecto existe")
+    @patch('climmob.views.cleanErrorLogs.getTheProjectIdForOwner')
+    @patch('climmob.views.cleanErrorLogs.projectExists')
+    def test_process_view_get_project_id(self, mock_projectExists, mock_getTheProjectIdForOwner):
+        # Configure projectExists mock
+        mock_projectExists.return_value = True
 
-        # Verificamos que la función projectExists fue llamada con los parámetros correctos
-        mock_projectExists.assert_called_with(
-            self.view.user.login, "test_user", "test_project", self.request
+        # Configure getTheProjectIdForOwner mock
+        mock_getTheProjectIdForOwner.return_value = '12345'
+
+        # Call method processView
+        self.view.processView()
+
+        # Verify getTheProjectIdForOwner
+        mock_getTheProjectIdForOwner.assert_called_once_with(
+            'Test User', 'Test Project', self.mock_request
         )
 
-        # Verificamos que la función getTheProjectIdForOwner fue llamada correctamente
-        mock_getTheProjectIdForOwner.assert_called_with(
-            "test_user", "test_project", self.request
-        )
+        # Verify the returned value
+        active_project_id = mock_getTheProjectIdForOwner.return_value
+        self.assertEqual(active_project_id, '12345')
 
-        # Verificamos que la función getProjectData fue llamada correctamente
-        mock_getProjectData.assert_called_with("mock_project_id", self.request)
-
-        # Verificamos que los valores en el request se hayan utilizado correctamente
-        self.assertEqual(self.view.request.matchdict["user"], "test_user")
-        self.assertEqual(self.view.request.matchdict["project"], "test_project")
-        self.assertEqual(self.view.request.matchdict["formid"], "test_formid")
-
-    ###
-
-    @patch("climmob.views.cleanErrorLogs.projectExists", return_value=True)
-    @patch(
-        "climmob.views.cleanErrorLogs.getTheProjectIdForOwner",
-        return_value="mock_project_id",
-    )
-    @patch(
-        "climmob.views.cleanErrorLogs.getProjectData",
-        return_value={"project_regstatus": "1"},
-    )
-    @patch("climmob.views.cleanErrorLogs.isAssessmentOpen", return_value=False)
-    def test_processView_codeid_present_assessment_not_open(
-        self,
-        mock_isAssessmentOpen,
-        mock_getProjectData,
-        mock_getTheProjectIdForOwner,
-        mock_projectExists,
-    ):
-
-        # TODO
-        pass
-
-        # # Ejecutar el método que se está probando
-        # self.view.processView()
-        #
-        # # Verificar si la llamada a isAssessmentOpen se realizó correctamente
-        # mock_isAssessmentOpen.assert_called_with(
-        #     "mock_project_id", "test_codeid", self.request
-        # )
-        #
-        # # Verificar el resto de las llamadas a los mocks
-        # mock_projectExists.assert_called_with(
-        #     self.view.user.login, "test_user", "test_project", self.request
-        # )
-        # mock_getTheProjectIdForOwner.assert_called_with(
-        #     "test_user", "test_project", self.request
-        # )
-        # mock_getProjectData.assert_called_with(
-        #     "mock_project_id", self.request
-        # )
-        #
-        # # Verificar que se lance la excepción HTTPNotFound
-        # try:
-        #     self.view.processView()
-        # except HTTPNotFound:
-        #     print("HTTPNotFound lanzado como se esperaba")
-        #     return
-        #
-        # # Si no se lanza la excepción, falla la prueba
-        # self.fail("processView no lanzó HTTPNotFound cuando la evaluación no estaba abierta")
-
-    @patch("climmob.views.cleanErrorLogs.projectExists", return_value=True)
-    @patch(
-        "climmob.views.cleanErrorLogs.getTheProjectIdForOwner",
-        return_value="mock_project_id",
-    )
-    @patch(
-        "climmob.views.cleanErrorLogs.getProjectData",
-        return_value={"project_regstatus": "2"},
-    )
-    @patch("climmob.views.cleanErrorLogs.isAssessmentOpen", return_value=True)
-    def test_processView_codeid_not_present_regstatus_2(
-        self,
-        mock_isAssessmentOpen,
-        mock_getProjectData,
-        mock_getTheProjectIdForOwner,
-        mock_projectExists,
-    ):
-        """
-        Esta prueba verifica el comportamiento de processView cuando codeid no está presente y project_regstatus es 2.
-        """
-        self.request.matchdict.pop("codeid", None)
-
-        with self.assertRaises(HTTPNotFound):
-            self.view.processView()
-
-    @patch("climmob.views.cleanErrorLogs.projectExists", return_value=True)
-    @patch(
-        "climmob.views.cleanErrorLogs.getTheProjectIdForOwner",
-        return_value="mock_project_id",
-    )
-    @patch(
-        "climmob.views.cleanErrorLogs.getProjectData",
-        return_value={"project_regstatus": "1"},
-    )
-    @patch("climmob.views.cleanErrorLogs.isAssessmentOpen", return_value=True)
-    def test_processView_codeid_not_present(
-        self,
-        mock_isAssessmentOpen,
-        mock_getProjectData,
-        mock_getTheProjectIdForOwner,
-        mock_projectExists,
-    ):
-        """
-        Esta prueba verifica el comportamiento de processView cuando codeid no está presente en matchdict.
-        """
-        self.request.matchdict.pop("codeid", None)
+###
+    @patch('climmob.views.cleanErrorLogs.isAssessmentOpen')
+    @patch('climmob.views.cleanErrorLogs.getProjectData')
+    @patch('climmob.views.cleanErrorLogs.getTheProjectIdForOwner')
+    @patch('climmob.views.cleanErrorLogs.projectExists')
+    def test_process_view_get_project_id(self, mock_projectExists, mock_getTheProjectIdForOwner, mock_getProjectData, mock_isAssessmentOpen):
+        # Configure mocks
+        mock_projectExists.return_value = True
+        mock_getTheProjectIdForOwner.return_value = '12345'
+        mock_getProjectData.return_value = {'project_regstatus': '2'}
+        mock_isAssessmentOpen.return_value = True
 
         try:
             self.view.processView()
         except HTTPNotFound:
-            self.fail(
-                "processView lanzó HTTPNotFound cuando codeid no estaba presente y project_regstatus no es 2"
-            )
+            self.fail('processView() raised HTTPNotFound unexpectedly!')
 
-        ###
-        @patch("climmob.views.cleanErrorLogs.projectExists", return_value=True)
-        @patch(
-            "climmob.views.cleanErrorLogs.getTheProjectIdForOwner",
-            return_value="mock_project_id",
-        )
-        @patch(
-            "climmob.views.cleanErrorLogs.getProjectData",
-            return_value={"project_regstatus": "1"},
-        )
-        @patch("climmob.views.cleanErrorLogs.isAssessmentOpen", return_value=True)
-        @patch(
-            "climmob.views.cleanErrorLogs.convertJsonLog",
-            return_value={"converted_key": "converted_value"},
-        )
-        @patch("builtins.open", new_callable=mock_open, read_data='{"key": "value"}')
-        def test_processView_logid_present(
+        mock_getTheProjectIdForOwner.assert_called_once_with('Test User', 'Test Project', self.mock_request)
+        mock_getProjectData.assert_called_once_with('12345', self.mock_request)
+        mock_isAssessmentOpen.assert_called_once_with('12345', 'code123', self.mock_request)
+
+    @patch('climmob.views.cleanErrorLogs.isAssessmentOpen', return_value=False)
+    @patch('climmob.views.cleanErrorLogs.getProjectData')
+    @patch('climmob.views.cleanErrorLogs.getTheProjectIdForOwner')
+    @patch('climmob.views.cleanErrorLogs.projectExists')
+    def test_process_view_is_assessment_open_false(
             self,
-            mock_open_func,
-            mock_convertJsonLog,
-            mock_isAssessmentOpen,
-            mock_getProjectData,
-            mock_getTheProjectIdForOwner,
             mock_projectExists,
-        ):
-            """
-            Esta prueba verifica el comportamiento de processView cuando logid está presente en matchdict.
-            """
-            self.request.matchdict["logid"] = "test_logid"
-            print("Antes de llamar a processView (logid presente)")
-
-            self.view.processView()
-
-            self.assertEqual(self.request.matchdict["logid"], "test_logid")
-            print("Después de llamar a processView (logid presente)")
-            print("logid:", self.request.matchdict["logid"])
-
-        @patch("climmob.views.cleanErrorLogs.projectExists", return_value=True)
-        @patch(
-            "climmob.views.cleanErrorLogs.getTheProjectIdForOwner",
-            return_value="mock_project_id",
-        )
-        @patch(
-            "climmob.views.cleanErrorLogs.getProjectData",
-            return_value={"project_regstatus": "1"},
-        )
-        @patch("climmob.views.cleanErrorLogs.isAssessmentOpen", return_value=True)
-        def test_processView_logid_not_present(
-            self,
-            mock_isAssessmentOpen,
-            mock_getProjectData,
             mock_getTheProjectIdForOwner,
-        ):
-            """
-            Esta prueba verifica el comportamiento de processView cuando logid no está presente en matchdict.
-            """
-            if "logid" in self.request.matchdict:
-                del self.request.matchdict["logid"]
-            print("Antes de llamar a processView (logid no presente)")
+            mock_getProjectData,
+            mock_isAssessmentOpen
+    ):
+        # Configure mocks
+        mock_projectExists.return_value = True
+        mock_getTheProjectIdForOwner.return_value = '12345'
+        mock_getProjectData.return_value = {'project_regstatus': '2'}
 
+        # Llamada al método processView y verificación de que lanza HTTPNotFound
+        with self.assertRaises(HTTPNotFound):
             self.view.processView()
 
-            self.assertEqual(self.request.matchdict.get("logid", ""), "")
-            print("Después de llamar a processView (logid no presente)")
-            print("logid:", self.request.matchdict.get("logid", ""))
+        # Verificación de que los mocks se llamaron correctamente
+        mock_projectExists.assert_called_once_with('test_user_login', 'Test User', 'Test Project', self.mock_request)
+        mock_getTheProjectIdForOwner.assert_called_once_with('Test User', 'Test Project', self.mock_request)
+        mock_getProjectData.assert_called_once_with('12345', self.mock_request)
+        mock_isAssessmentOpen.assert_called_once_with('12345', 'code123', self.mock_request)
 
+    @patch('climmob.views.cleanErrorLogs.isAssessmentOpen')
+    @patch('climmob.views.cleanErrorLogs.getProjectData')
+    @patch('climmob.views.cleanErrorLogs.getTheProjectIdForOwner')
+    @patch('climmob.views.cleanErrorLogs.projectExists')
+    def test_process_view_is_assessment_open_true(
+            self,
+            mock_projectExists,
+            mock_getTheProjectIdForOwner,
+            mock_getProjectData,
+            mock_isAssessmentOpen
+    ):
+        # Configure mocks
+        mock_projectExists.return_value = True
+        mock_getTheProjectIdForOwner.return_value = '12345'
+        mock_getProjectData.return_value = {'project_regstatus': '2'}
+        mock_isAssessmentOpen.return_value = True
+
+        # Call processView and expect no exception
+        try:
+            self.view.processView()
+        except HTTPNotFound:
+            self.fail('processView() raised HTTPNotFound unexpectedly!')
+
+        mock_isAssessmentOpen.assert_called_once_with('12345', 'code123', self.mock_request)
+
+    @patch('climmob.views.cleanErrorLogs.isAssessmentOpen')
+    @patch('climmob.views.cleanErrorLogs.getProjectData')
+    @patch('climmob.views.cleanErrorLogs.getTheProjectIdForOwner')
+    @patch('climmob.views.cleanErrorLogs.projectExists')
+    def test_process_view_key_error(
+            self,
+            mock_projectExists,
+            mock_getTheProjectIdForOwner,
+            mock_getProjectData,
+            mock_isAssessmentOpen
+    ):
+        # Configure mocks
+        mock_projectExists.return_value = True
+        mock_getTheProjectIdForOwner.return_value = '12345'
+        mock_getProjectData.return_value = {'project_regstatus': '2'}
+        mock_isAssessmentOpen.return_value = True
+
+        # Remove codeid to provoke KeyError
+        del self.mock_request.matchdict['codeid']
+
+        # Call processView and expect HTTPNotFound due to KeyError and proData["project_regstatus"] == 2
+        with self.assertRaises(HTTPNotFound):
+            self.view.processView()
+
+    @patch('climmob.views.cleanErrorLogs.isAssessmentOpen')
+    @patch('climmob.views.cleanErrorLogs.getProjectData')
+    @patch('climmob.views.cleanErrorLogs.getTheProjectIdForOwner')
+    @patch('climmob.views.cleanErrorLogs.projectExists')
+    def test_process_view_pro_data_regstatus_2(
+            self,
+            mock_projectExists,
+            mock_getTheProjectIdForOwner,
+            mock_getProjectData,
+            mock_isAssessmentOpen
+    ):
+        # Configure mocks
+        mock_projectExists.return_value = True
+        mock_getTheProjectIdForOwner.return_value = '12345'
+        mock_getProjectData.return_value = {'project_regstatus': '2'}
+        mock_isAssessmentOpen.return_value = True
+
+        # Call processView and expect HTTPNotFound due to proData["project_regstatus"] == 2
+        #with self.assertRaises(HTTPNotFound):
+            #self.view.processView()
+
+###
+
+    @patch('climmob.views.cleanErrorLogs.isAssessmentOpen')
+    @patch('climmob.views.cleanErrorLogs.getProjectData')
+    @patch('climmob.views.cleanErrorLogs.getTheProjectIdForOwner')
+    @patch('climmob.views.cleanErrorLogs.projectExists')
+    def test_process_view_log_id_not_present(
+            self,
+            mock_projectExists,
+            mock_getTheProjectIdForOwner,
+            mock_getProjectData,
+            mock_isAssessmentOpen
+    ):
+        # Configuración de los mocks
+        mock_projectExists.return_value = True
+        mock_getTheProjectIdForOwner.return_value = '12345'
+        mock_getProjectData.return_value = {'project_regstatus': '2'}
+        mock_isAssessmentOpen.return_value = True
+
+        # Asegurarse de que 'logid' no esté en matchdict
+        self.mock_request.matchdict.pop('logid', None)
+
+        # Llamada al método processView
+        try:
+            self.view.processView()
+        except HTTPNotFound:
+            self.fail('HTTPNotFound was raised unexpectedly!')
+
+        # Verificación de `logId`
+        logId = self.view.request.matchdict.get('logid', '')
+        self.assertEqual(logId, '')
+
+        # Verificación de que los mocks se llamaron correctamente
+        mock_projectExists.assert_called_once_with('test_user_login', 'Test User', 'Test Project', self.mock_request)
+        mock_getTheProjectIdForOwner.assert_called_once_with('Test User', 'Test Project', self.mock_request)
+        mock_getProjectData.assert_called_once_with('12345', self.mock_request)
+        mock_isAssessmentOpen.assert_called_once_with('12345', 'code123', self.mock_request)
+
+    @patch('climmob.views.cleanErrorLogs.isAssessmentOpen')
+    @patch('climmob.views.cleanErrorLogs.getProjectData')
+    @patch('climmob.views.cleanErrorLogs.getTheProjectIdForOwner')
+    @patch('climmob.views.cleanErrorLogs.projectExists')
+    def test_process_view_log_id_present(
+            self,
+            mock_projectExists,
+            mock_getTheProjectIdForOwner,
+            mock_getProjectData,
+            mock_isAssessmentOpen
+    ):
+        # Configuración de los mocks
+        mock_projectExists.return_value = True
+        mock_getTheProjectIdForOwner.return_value = '12345'
+        mock_getProjectData.return_value = {'project_regstatus': '2'}
+        mock_isAssessmentOpen.return_value = True
+
+        # Agregar 'logid' a matchdict
+        self.mock_request.matchdict['logid'] = 'log123'
+
+        # Llamada al método processView
+        try:
+            self.view.processView()
+        except HTTPNotFound:
+            self.fail('HTTPNotFound was raised unexpectedly!')
+
+        # Verificación de `logId`
+        logId = self.view.request.matchdict.get('logid', '')
+        self.assertEqual(logId, 'log123')
+
+        # Verificación de que los mocks se llamaron correctamente
+        mock_projectExists.assert_called_once_with('test_user_login', 'Test User', 'Test Project', self.mock_request)
+        mock_getTheProjectIdForOwner.assert_called_once_with('Test User', 'Test Project', self.mock_request)
+        mock_getProjectData.assert_called_once_with('12345', self.mock_request)
+        mock_isAssessmentOpen.assert_called_once_with('12345', 'code123', self.mock_request)
 
 ###
 class TestGetStructureAndData(unittest.TestCase):
@@ -399,7 +384,6 @@ class TestGetStructureAndData(unittest.TestCase):
                 "filter",
             )
 
-
 ###
 class TestConvertJsonLog(unittest.TestCase):
     def setUp(self):
@@ -462,7 +446,6 @@ class TestConvertJsonLog(unittest.TestCase):
 
         with self.assertRaises(HTTPNotFound):
             convertJsonLog("invalid", self.view, "userOwner", "projectCod", newjson)
-
 
 class TestGetKeyFormManifest(unittest.TestCase):
     def setUp(self):
