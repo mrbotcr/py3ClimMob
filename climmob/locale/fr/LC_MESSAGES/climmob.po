@@ -1099,7 +1099,7 @@ msgid "Update libraries"
 msgstr "Mettre à jour les bibliothèques"
 
 #: climmob/templates/dashboard/dashboard.jinja2:1155
-msgid "Remember that the libraries contain useful information for your projects update them in the event that necessary information is missing for your new project"
+msgid "Remember that the libraries contain useful information for your projects, update them in the event that necessary information is missing for your new project"
 msgstr "N'oubliez pas que les bibliothèques contiennent des informations utiles pour vos projets, mettez-les à jour en cas d'absence d'informations nécessaires pour votre nouveau projet"
 
 #: climmob/templates/dashboard/dashboard.jinja2:1180
