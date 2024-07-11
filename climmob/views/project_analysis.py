@@ -123,7 +123,10 @@ class metadata_view(privateView):
 
                     dataworking["md_collaborators"] = collaboratorsString
 
-                    varieties = getCombinationsData(activeProjectId, self.request)
+                    try:
+                        varieties = getCombinationsData(activeProjectId, self.request)
+                    except:
+                        varieties = []
 
                     varietiesString = ""
                     for variety in varieties:

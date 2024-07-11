@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: climmob 3.9.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2024-07-09 09:25-0600\n"
-"PO-Revision-Date: 2024-07-09 13:35-0600\n"
+"PO-Revision-Date: 2024-07-11 09:12-0600\n"
 "Last-Translator: \n"
 "Language-Team: fr <LL@li.org>\n"
 "Language: fr\n"
@@ -281,7 +281,7 @@ msgstr "Basculer la navigation"
 
 #: climmob/templates/landing.jinja2:45
 msgid "Login or request an account"
-msgstr "Connexion ou demande de compte"
+msgstr "Connexion ou créer un nouveau compte"
 
 #: climmob/templates/landing.jinja2:47 climmob/templates/login.jinja2:62 climmob/templates/register.jinja2:84
 msgid "Login"
@@ -301,7 +301,7 @@ msgstr "Contact"
 
 #: climmob/templates/landing.jinja2:76
 msgid "Welcome to "
-msgstr "Bienvenue à "
+msgstr "Bienvenue sur ClimMob "
 
 #: climmob/templates/landing.jinja2:77
 msgid "Scaling "
@@ -317,11 +317,11 @@ msgstr "test"
 
 #: climmob/templates/landing.jinja2:78
 msgid "Design and analyse agricultural trials in a"
-msgstr "Concevoir et analyser des essais agricoles de manière"
+msgstr "Développer et analyser des essais agricoles"
 
 #: climmob/templates/landing.jinja2:78
 msgid "smart way"
-msgstr "intelligente"
+msgstr "avec ingéniosité"
 
 #: climmob/templates/landing.jinja2:94
 msgid "Ready for use"
@@ -389,7 +389,7 @@ msgstr "Résumé et statistiques"
 
 #: climmob/templates/landing.jinja2:133
 msgid "Analyze your trials and report on the findings."
-msgstr "Analyser vos essais et rendre compte des résultats."
+msgstr "Analyser vos essais et présenter des résultats pertinents."
 
 #: climmob/templates/landing.jinja2:136
 msgid "Dual license"
@@ -397,7 +397,7 @@ msgstr "Licence double"
 
 #: climmob/templates/landing.jinja2:137
 msgid "ClimMob is free for research and development projects where data eventually becomes public. However if you are a private sector you can use the platform privately."
-msgstr "ClimMob est gratuit pour les projets de recherche et de développement où les données deviennent éventuellement publiques. Cependant, si vous êtes un secteur privé, vous pouvez utiliser la plateforme de manière privée."
+msgstr "ClimMob est gratuit pour les projets de recherche et de développement destinés à rendre les données publiques. Toutefois, les entreprises privées peuvent également utiliser la plateforme de manière confidentielle."
 
 #: climmob/templates/landing.jinja2:138
 msgid "Details"
@@ -405,7 +405,7 @@ msgstr "Détails"
 
 #: climmob/templates/landing.jinja2:210
 msgid "The smart way for evaluating climate-smart agriculture."
-msgstr "La manière intelligente d'évaluer l'agriculture intelligente face au climat."
+msgstr "La méthode innovante pour évaluer l'agriculture climato-intelligente.."
 
 #: climmob/templates/landing.jinja2:227
 msgid "Registered users"
@@ -1893,7 +1893,7 @@ msgstr "Préparer la collecte des données d'essai"
 
 #: climmob/templates/project/assessment/assessment.jinja2:32
 msgid "Here you will set the different data collection moments for the on-farm evaluation that participants will carry out, alongside with the questions that will be asked at each mome. It is important to know which traits will you evaluate in the selected technology options? When will each trait be evaluated during the planting cycle?"
-msgstr "Ici, vous définirez les différents moments de collecte de données pour l'évaluation sur le terrain que les participants réaliseront, ainsi que les questions qui seront posées à chaque moment. Il est important de savoir quels traits vous évaluerez dans les options technologiques sélectionnées. Quand chaque trait sera-t-il évalué pendant le cycle de plantation ?"
+msgstr "Ici, vous définirez les différentes étapes de la collecte de données pour l'évaluation sur le terrain par les participants, ainsi que les questions à poser à chaque étape. Il est crucial d'identifier les caractéristiques que vous évaluerez dans les options technologiques choisies. À quel moment chaque caractéristique sera-t-elle évaluée au cours du cycle de plantation ?"
 
 #: climmob/templates/project/assessment/assessment.jinja2:50
 msgid "Trial data collection moment details"
@@ -2109,7 +2109,7 @@ msgstr "Assigner des agents de terrain au projet"
 
 #: climmob/templates/project/enumerators/enumerators.jinja2:97
 msgid "Click to"
-msgstr "Cliquez pour"
+msgstr "Cliquez sur"
 
 #: climmob/templates/project/enumerators/enumerators.jinja2:97
 msgid "+ Add new field agent"
@@ -2278,7 +2278,7 @@ msgstr "(Vérification des connaissances et des compétences dans l'exécution d
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:148
 msgid "How were participants approached for recruitment? "
-msgstr "Comment les participants ont-ils été approchés pour le recrutement ? "
+msgstr "Comment les participants ont-ils été approchés pour le recrutement? "
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:151
 msgid "(Open recruitment, invitation through the organization of which they are member/client, etc.)"
@@ -2450,7 +2450,7 @@ msgstr "Continuer"
 
 #: climmob/templates/project/registry/create/createregistry.jinja2:169
 msgid "Opening the registration of participants. Please wait…"
-msgstr "Ouverture de l'inscription des participants. Veuillez patienter..."
+msgstr "Ouverture des inscription des participants. Veuillez patienter..."
 
 #: climmob/templates/project/registry/create/createregistry.jinja2:171 climmob/templates/snippets/project/technologies/techgroup.jinja2:31
 msgid "Modify"
@@ -3175,7 +3175,7 @@ msgstr "Écrivez les étiquettes."
 
 #: climmob/templates/snippets/project/project_form.jinja2:43
 msgid "Press comma after every word to add the tag"
-msgstr "Appuyez sur la virgule après chaque mot pour ajouter l'étiquette"
+msgstr "Appuyez sur la virgule après chaque mot pour ajouter le mot-clé"
 
 #: climmob/templates/snippets/project/project_form.jinja2:44
 msgid "e.g. beans,honduras"
@@ -4556,7 +4556,7 @@ msgstr "Vous avez des données répétées dans la colonne suivante : . Rappelez
 
 #: climmob/views/Api/projectAssessmentStart.py:771
 msgid "The data could not be saved. ERROR: "
-msgstr "Les données n'ont pas pu être enregistrées. ERREUR : "
+msgstr "Les données n'ont pas pu être enregistrées. ERREUR: "
 
 #: climmob/views/Api/projectAssessmentStart.py:778 climmob/views/Api/projectRegistryStart.py:1247 climmob/views/Api/projectRegistryStart.py:1676
 msgid "Data registered."
