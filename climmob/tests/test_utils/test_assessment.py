@@ -217,9 +217,9 @@ class TestAssessmentSectionActionsView(unittest.TestCase):
 
 class TestActionsInSections(unittest.TestCase):
     def setUp(self):
-        # Configura la instancia simulada de la clase con el método _
+        # Set up the mock instance of the class with the _ method
         self.instance = MagicMock()
-        self.instance._ = lambda x: x  # Simula la traducción
+        self.instance._ = lambda x: x  # Simulate the translation
 
     @patch("climmob.views.assessment.addAssessmentGroup")
     def test_insert_success(self, mock_addAssessmentGroup):
