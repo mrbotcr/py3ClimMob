@@ -1,13 +1,17 @@
+import json
+import os
 import unittest
 from unittest.mock import MagicMock, patch, mock_open
+
 from pyramid.httpexceptions import HTTPNotFound
+
 from climmob.views.cleanErrorLogs import (
     CleanErrorLogsView,
     getStructureAndData,
     convertJsonLog,
     get_key_form_manifest,
 )
-import os
+
 
 class TestCleanErrorLogsView(unittest.TestCase):
     def setUp(self):
@@ -17,6 +21,7 @@ class TestCleanErrorLogsView(unittest.TestCase):
             'project': 'Test Project',
             'formid': '12345',
             'codeid': 'code123',
+            'logid': 'log123'
         }
         self.view = CleanErrorLogsView(self.mock_request)
 
@@ -68,7 +73,6 @@ class TestCleanErrorLogsView(unittest.TestCase):
         active_project_id = mock_getTheProjectIdForOwner.return_value
         self.assertEqual(active_project_id, '12345')
 
-###
     @patch('climmob.views.cleanErrorLogs.isAssessmentOpen')
     @patch('climmob.views.cleanErrorLogs.getProjectData')
     @patch('climmob.views.cleanErrorLogs.getTheProjectIdForOwner')
@@ -105,11 +109,11 @@ class TestCleanErrorLogsView(unittest.TestCase):
         mock_getTheProjectIdForOwner.return_value = '12345'
         mock_getProjectData.return_value = {'project_regstatus': '2'}
 
-        # Llamada al método processView y verificación de que lanza HTTPNotFound
+        # Call the processView method and verify it raises HTTPNotFound
         with self.assertRaises(HTTPNotFound):
             self.view.processView()
 
-        # Verificación de que los mocks se llamaron correctamente
+        # Verify the mocks were called correctly
         mock_projectExists.assert_called_once_with('test_user_login', 'Test User', 'Test Project', self.mock_request)
         mock_getTheProjectIdForOwner.assert_called_once_with('Test User', 'Test Project', self.mock_request)
         mock_getProjectData.assert_called_once_with('12345', self.mock_request)
@@ -185,8 +189,6 @@ class TestCleanErrorLogsView(unittest.TestCase):
         #with self.assertRaises(HTTPNotFound):
             #self.view.processView()
 
-###
-
     @patch('climmob.views.cleanErrorLogs.isAssessmentOpen')
     @patch('climmob.views.cleanErrorLogs.getProjectData')
     @patch('climmob.views.cleanErrorLogs.getTheProjectIdForOwner')
@@ -198,26 +200,26 @@ class TestCleanErrorLogsView(unittest.TestCase):
             mock_getProjectData,
             mock_isAssessmentOpen
     ):
-        # Configuración de los mocks
+        # Configure mocks
         mock_projectExists.return_value = True
         mock_getTheProjectIdForOwner.return_value = '12345'
         mock_getProjectData.return_value = {'project_regstatus': '2'}
         mock_isAssessmentOpen.return_value = True
 
-        # Asegurarse de que 'logid' no esté en matchdict
+        # Ensure 'logid' is not in matchdict
         self.mock_request.matchdict.pop('logid', None)
 
-        # Llamada al método processView
+        # Call the processView method
         try:
             self.view.processView()
         except HTTPNotFound:
             self.fail('HTTPNotFound was raised unexpectedly!')
 
-        # Verificación de `logId`
+        # Verify `logId`
         logId = self.view.request.matchdict.get('logid', '')
         self.assertEqual(logId, '')
 
-        # Verificación de que los mocks se llamaron correctamente
+        # Verify the mocks were called correctly
         mock_projectExists.assert_called_once_with('test_user_login', 'Test User', 'Test Project', self.mock_request)
         mock_getTheProjectIdForOwner.assert_called_once_with('Test User', 'Test Project', self.mock_request)
         mock_getProjectData.assert_called_once_with('12345', self.mock_request)
@@ -234,30 +236,34 @@ class TestCleanErrorLogsView(unittest.TestCase):
             mock_getProjectData,
             mock_isAssessmentOpen
     ):
-        # Configuración de los mocks
+        # Configure mocks
         mock_projectExists.return_value = True
         mock_getTheProjectIdForOwner.return_value = '12345'
         mock_getProjectData.return_value = {'project_regstatus': '2'}
         mock_isAssessmentOpen.return_value = True
 
-        # Agregar 'logid' a matchdict
+        # Add 'logid' to matchdict
         self.mock_request.matchdict['logid'] = 'log123'
 
-        # Llamada al método processView
+        # Call the processView method
         try:
             self.view.processView()
         except HTTPNotFound:
             self.fail('HTTPNotFound was raised unexpectedly!')
 
-        # Verificación de `logId`
+        # Verify `logId`
         logId = self.view.request.matchdict.get('logid', '')
         self.assertEqual(logId, 'log123')
 
-        # Verificación de que los mocks se llamaron correctamente
+        # Verify the mocks were called correctly
         mock_projectExists.assert_called_once_with('test_user_login', 'Test User', 'Test Project', self.mock_request)
         mock_getTheProjectIdForOwner.assert_called_once_with('Test User', 'Test Project', self.mock_request)
         mock_getProjectData.assert_called_once_with('12345', self.mock_request)
         mock_isAssessmentOpen.assert_called_once_with('12345', 'code123', self.mock_request)
+
+###
+
+
 
 ###
 class TestGetStructureAndData(unittest.TestCase):
@@ -384,7 +390,6 @@ class TestGetStructureAndData(unittest.TestCase):
                 "filter",
             )
 
-###
 class TestConvertJsonLog(unittest.TestCase):
     def setUp(self):
         self.request = MagicMock()

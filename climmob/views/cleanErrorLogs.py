@@ -55,26 +55,26 @@ class CleanErrorLogsView(privateView):
             logId = self.request.matchdict["logid"]
         except:
             logId = ""
-        #
-        # # GET
-        # if logId != "":
-        #
-        #     if codeId == "":
-        #         exits, log = get_registry_log_by_log(
-        #             self.request, activeProjectId, logId
-        #         )
-        #
-        #     else:
-        #         exits, log = get_assessment_log_by_log(
-        #             self.request, activeProjectId, codeId, logId
-        #         )
-        #
-        #     if exits:
-        #         if os.path.exists(log):
-        #
-        #             with open(log, "r") as json_file:
-        #                 new_json = json.load(json_file)
-        #
+
+        # GET
+        if logId != "":
+
+            if codeId == "":
+                exits, log = get_registry_log_by_log(
+                    self.request, activeProjectId, logId
+                )
+
+            else:
+                exits, log = get_assessment_log_by_log(
+                    self.request, activeProjectId, codeId, logId
+                )
+
+            if exits:
+                if os.path.exists(log):
+
+                    with open(log, "r") as json_file:
+                        new_json = json.load(json_file)
+
         #                 # POST
         #                 if self.request.method == "POST":
         #                     dataworking = self.getPostDict()
