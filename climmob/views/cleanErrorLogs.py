@@ -75,20 +75,20 @@ class CleanErrorLogsView(privateView):
                     with open(log, "r") as json_file:
                         new_json = json.load(json_file)
 
-        #                 # POST
-        #                 if self.request.method == "POST":
-        #                     dataworking = self.getPostDict()
-        #                     if "submit" in dataworking.keys():
-        #                         if formId == "registry":
-        #                             key = get_key_form_manifest(
-        #                                 formId,
-        #                                 self,
-        #                                 activeProjectUser,
-        #                                 activeProjectCod,
-        #                                 "qst162",
-        #                                 new_json,
-        #                             )
-        #                             new_json[key] = dataworking["newqst"].split("-")[1]
+                        # POST
+                        if self.request.method == "POST":
+                            dataworking = self.getPostDict()
+                            if "submit" in dataworking.keys():
+                                if formId == "registry":
+                                    key = get_key_form_manifest(
+                                        formId,
+                                        self,
+                                        activeProjectUser,
+                                        activeProjectCod,
+                                        "qst162",
+                                        new_json,
+                                    )
+                                    new_json[key] = dataworking["newqst"].split("-")[1]
         #
         #                             if "txt_oldvalue" not in dataworking.keys():
         #                                 dataworking["txt_oldvalue"] = -999
