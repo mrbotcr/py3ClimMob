@@ -26,6 +26,9 @@ def upgrade():
         sa.Column("form_finished", sa.DateTime(), nullable=True),
         sa.Column("form_status", sa.Integer(), nullable=False),
         sa.PrimaryKeyConstraint("form_id", name=op.f("pk_extra_form")),
+        mysql_charset="utf8mb4",
+        mysql_engine="InnoDB",
+        mysql_collate="utf8mb4_unicode_ci",
     )
     op.create_table(
         "extra_form_answers",
@@ -48,6 +51,9 @@ def upgrade():
         sa.PrimaryKeyConstraint(
             "form_id", "user_name", "answer_field", name=op.f("pk_extra_form_answers")
         ),
+        mysql_charset="utf8mb4",
+        mysql_engine="InnoDB",
+        mysql_collate="utf8mb4_unicode_ci",
     )
     # ### end Alembic commands ###
 

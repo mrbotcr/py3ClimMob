@@ -144,6 +144,9 @@ def upgrade():
         sa.PrimaryKeyConstraint(
             "project_id", "md_coordinator", name=op.f("pk_project_metadata")
         ),
+        mysql_charset="utf8mb4",
+        mysql_engine="InnoDB",
+        mysql_collate="utf8mb4_unicode_ci",
     )
     # ### end Alembic commands ###
 

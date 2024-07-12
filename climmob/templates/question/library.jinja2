@@ -256,6 +256,50 @@
                 }
             )
 
+            $('textarea#question_desc').maxlength(
+                {
+                    alwaysShow: true,
+                    threshold: 0,
+                    warningClass: "label label-primary",
+                    limitReachedClass: "label label-danger",
+                    message: ' {{ _("Used") }} %charsTyped% {{ _("of") }} %charsTotal% {{ _("chars") }}.',
+                    placement: "bottom"
+                }
+            )
+
+            $('textarea#question_negstm').maxlength(
+                {
+                    alwaysShow: true,
+                    threshold: 0,
+                    warningClass: "label label-primary",
+                    limitReachedClass: "label label-danger",
+                    message: ' {{ _("Used") }} %charsTyped% {{ _("of") }} %charsTotal% {{ _("chars") }}.',
+                    placement: "bottom"
+                }
+            )
+
+            $('textarea#question_posstm').maxlength(
+                {
+                    alwaysShow: true,
+                    threshold: 0,
+                    warningClass: "label label-primary",
+                    limitReachedClass: "label label-danger",
+                    message: ' {{ _("Used") }} %charsTyped% {{ _("of") }} %charsTotal% {{ _("chars") }}.',
+                    placement: "bottom"
+                }
+            )
+
+            $('textarea#question_perfstmt').maxlength(
+                {
+                    alwaysShow: true,
+                    threshold: 0,
+                    warningClass: "label label-primary",
+                    limitReachedClass: "label label-danger",
+                    message: ' {{ _("Used") }} %charsTyped% {{ _("of") }} %charsTotal% {{ _("chars") }}.',
+                    placement: "bottom"
+                }
+            )
+
             function isNumeric(value)
             {
                 return /^\d+$/.test(value);
