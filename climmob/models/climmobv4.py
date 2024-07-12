@@ -682,6 +682,16 @@ class Project(Base):
     )
     project_template = Column(Integer, server_default=text("'0'"))
     extra = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
+    project_status = Column(
+        ForeignKey("project_status.prjstatus_id"),
+        nullable=False,
+        server_default=text("'0'"),
+    )
+    project_type = Column(
+        ForeignKey("project_type.prjtype_id"),
+        nullable=False,
+        server_default=text("'0'"),
+    )
 
     country = relationship("Country")
 
@@ -1144,3 +1154,69 @@ class ExtraFormAnswer(Base):
 
     extraform = relationship("ExtraForm")
     user = relationship("User")
+
+
+class ProjectType(Base):
+    __tablename__ = "project_type"
+
+    prjtype_id = Column(Integer, primary_key=True, autoincrement=False)
+    prjtype_name = Column(Unicode(120), nullable=False)
+    prjtype_description = Column(
+        MEDIUMTEXT(collation="utf8mb4_unicode_ci"), nullable=True
+    )
+    prjtype_lang = Column(ForeignKey("i18n.lang_code"), nullable=False)
+
+    i18n = relationship("I18n")
+
+
+class I18nProjectType(Base):
+    __tablename__ = "i18n_project_type"
+
+    prjtype_id = Column(
+        ForeignKey("project_type.prjtype_id", ondelete="CASCADE"), primary_key=True
+    )
+    lang_code = Column(
+        ForeignKey("i18n.lang_code", ondelete="CASCADE"),
+        primary_key=True,
+        nullable=False,
+    )
+    prjtype_name = Column(Unicode(120), nullable=False)
+    prjtype_description = Column(
+        MEDIUMTEXT(collation="utf8mb4_unicode_ci"), nullable=True
+    )
+
+    i18n = relationship("I18n")
+    ProjectType = relationship("ProjectType")
+
+
+class ProjectStatus(Base):
+    __tablename__ = "project_status"
+
+    prjstatus_id = Column(Integer, primary_key=True, autoincrement=False)
+    prjstatus_name = Column(Unicode(120), nullable=False)
+    prjstatus_description = Column(
+        MEDIUMTEXT(collation="utf8mb4_unicode_ci"), nullable=True
+    )
+    prjstatus_lang = Column(ForeignKey("i18n.lang_code"), nullable=False)
+
+    i18n = relationship("I18n")
+
+
+class I18nProjectStatus(Base):
+    __tablename__ = "i18n_project_status"
+
+    prjstatus_id = Column(
+        ForeignKey("project_status.prjstatus_id", ondelete="CASCADE"), primary_key=True
+    )
+    lang_code = Column(
+        ForeignKey("i18n.lang_code", ondelete="CASCADE"),
+        primary_key=True,
+        nullable=False,
+    )
+    prjstatus_name = Column(Unicode(120), nullable=False)
+    prjstatus_description = Column(
+        MEDIUMTEXT(collation="utf8mb4_unicode_ci"), nullable=True
+    )
+
+    i18n = relationship("I18n")
+    ProjectStatus = relationship("ProjectStatus")

@@ -24,6 +24,7 @@ from climmob.models import (
     AssessmentJsonLog,
     userProject,
     ProjectMetadata,
+    Country,
 )
 from climmob.models.repository import sql_fetch_all, sql_fetch_one
 from climmob.processes.db.enumerator import countEnumeratorsOfAllCollaborators
@@ -54,6 +55,7 @@ __all__ = [
     "getProjectIsTemplate",
     "getProjectUserAndOwner",
     "getProjectFullDetailsById",
+    "getProjectsByUserThatRequireSetup",
 ]
 
 
@@ -902,3 +904,22 @@ def getProjectUserAndOwner(projectId, request):
     )
 
     return mappedData
+
+
+def getProjectsByUserThatRequireSetup(userOwner, request):
+
+    res = mapFromSchema(
+        request.dbsession.query(Project, Country)
+        .filter(Project.project_id == userProject.project_id)
+        .filter(userProject.access_type == 1)
+        .filter(userProject.user_name == userOwner)
+        .filter(Project.project_cnty == Country.cnty_cod)
+        .filter(Project.project_type == 0)
+        .all()
+    )
+
+    if res:
+
+        return False, res
+
+    return True, res

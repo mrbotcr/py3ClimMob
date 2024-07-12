@@ -42,6 +42,8 @@ from climmob.processes import (
     addPrjLang,
     deleteAllPrjLang,
     getTotalNumberOfProjectsInClimMob,
+    getProjectsByUserThatRequireSetup,
+    getListOfProjectTypes,
 )
 from climmob.views.classes import privateView
 
@@ -682,5 +684,44 @@ class deleteProject_view(privateView):
             "activeUser": self.user,
             "redirect": redirect,
             "data": data,
+            "error_summary": error_summary,
+        }
+
+
+class CurationOfProjects_view(privateView):
+    def processView(self):
+        error_summary = {}
+
+        if self.request.method == "POST":
+
+            if "btn_save_projects" in self.request.POST:
+                formdata = self.getPostDict()
+
+                for key in formdata.keys():
+                    project = {}
+                    keyDetails = key.split("_")
+
+                    if keyDetails[0] == "status":
+                        project["project_status"] = 3
+
+                    if keyDetails[0] == "type" and formdata[key] != "0":
+                        project["project_type"] = formdata[key]
+
+                    if project:
+                        updated, message = modifyProject(
+                            keyDetails[1], project, self.request
+                        )
+
+        completed, projects = getProjectsByUserThatRequireSetup(
+            self.user.login, self.request
+        )
+
+        if completed:
+            self.returnRawViewResult = True
+            return HTTPFound(location=self.request.route_url("dashboard"))
+
+        return {
+            "listOfProjects": projects,
+            "listOfProjectTypes": getListOfProjectTypes(self.request),
             "error_summary": error_summary,
         }

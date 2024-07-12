@@ -58,6 +58,10 @@ from climmob.models.climmobv4 import (
     ProjectMetadata,
     ExtraForm,
     ExtraFormAnswer,
+    ProjectType,
+    ProjectStatus,
+    I18nProjectType,
+    I18nProjectStatus,
 )
 from climmob.models.schema import *
 
