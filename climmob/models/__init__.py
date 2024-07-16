@@ -62,6 +62,7 @@ from climmob.models.climmobv4 import (
     ProjectStatus,
     I18nProjectType,
     I18nProjectStatus,
+    I18nCountry,
 )
 from climmob.models.schema import *
 

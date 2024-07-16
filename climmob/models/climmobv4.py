@@ -134,6 +134,20 @@ class Country(Base):
     cnty_cod = Column(Unicode(3), primary_key=True)
     cnty_iso = Column(Unicode(3), nullable=True)
     cnty_name = Column(Unicode(120))
+    cnty_lang = Column(ForeignKey("i18n.lang_code"), server_default=text("'en'"))
+
+    i18n = relationship("I18n")
+
+
+class I18nCountry(Base):
+    __tablename__ = "i18n_country"
+
+    cnty_cod = Column(ForeignKey("country.cnty_cod"), primary_key=True, nullable=False)
+    lang_code = Column(ForeignKey("i18n.lang_code"), primary_key=True, nullable=False)
+    cnty_name = Column(Unicode(120))
+
+    i18n = relationship("I18n")
+    country = relationship("Country")
 
 
 class Enumerator(Base):
