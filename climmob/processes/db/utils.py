@@ -1,7 +1,8 @@
 import arrow
 
 from climmob.config.encdecdata import decodeData
-from climmob.models import Country, Sector, User
+from climmob.models import Country, Sector, User, I18nCountry, mapFromSchema
+from sqlalchemy import func, and_
 
 __all__ = [
     "getCountryList",
@@ -15,13 +16,28 @@ __all__ = [
 
 def getCountryList(request):
     countries = []
-    results = request.dbsession.query(Country).order_by(Country.cnty_name).all()
+    results = mapFromSchema(
+        request.dbsession.query(
+            Country,
+            func.coalesce(I18nCountry.cnty_name, Country.cnty_name).label("cnty_name"),
+        )
+        .join(
+            I18nCountry,
+            and_(
+                Country.cnty_cod == I18nCountry.cnty_cod,
+                I18nCountry.lang_code == request.locale_name,
+            ),
+            isouter=True,
+        )
+        .order_by(func.coalesce(I18nCountry.cnty_name, Country.cnty_name))
+        .all()
+    )
     for result in results:
         try:
-            name = str(result.cnty_name)
-            countries.append({"code": result.cnty_cod, "name": name})
+            name = str(result["cnty_name"])
+            countries.append({"code": result["cnty_cod"], "name": name})
         except:
-            countries.append({"code": result.cnty_cod, "name": "Unknown"})
+            countries.append({"code": result["cnty_cod"], "name": "Unknown"})
     return countries
 
 
