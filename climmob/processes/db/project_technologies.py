@@ -70,7 +70,7 @@ def searchTechnologies(projectId, request):
         )
         .filter(Technology.tech_id.notin_(subquery))
         .filter(Technology.user_name == User.user_name)
-        .order_by(Technology.tech_name)
+        .order_by(func.coalesce(I18nTechnology.tech_name, Technology.tech_name))
     )
 
     for plugin in p.PluginImplementations(p.IProjectTechnologies):
