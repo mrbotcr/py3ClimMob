@@ -4,9 +4,9 @@ from unittest.mock import MagicMock, patch
 from jinja2 import Environment
 
 from climmob.views.otherLanguages import (
-    otherLanguages_view,
-    saveOtherLanguages_view,
-    getOtherLanguages_view,
+    OtherLanguagesView,
+    SaveOtherLanguagesView,
+    GetOtherLanguagesView,
 )
 
 
@@ -18,7 +18,7 @@ class TestOtherLanguagesView(unittest.TestCase):
         self.mock_user.login = "test_user"
 
         # Create an instance of the view with the mock request and user
-        self.view = otherLanguages_view(self.mock_request)
+        self.view = OtherLanguagesView(self.mock_request)
         self.view.user = self.mock_user
 
     @patch(
@@ -46,7 +46,7 @@ class TestSaveOtherLanguagesView(unittest.TestCase):
         self.mock_user.login = "test_user"
 
         # Create an instance of the view with the mock request and user
-        self.view = saveOtherLanguages_view(self.mock_request)
+        self.view = SaveOtherLanguagesView(self.mock_request)
         self.view.user = self.mock_user
 
     @patch(
@@ -102,7 +102,7 @@ class TestGetOtherLanguagesView(unittest.TestCase):
         self.mock_user.login = "test_user"
 
         # Create an instance of the view with the mock request and user
-        self.view = getOtherLanguages_view(self.mock_request)
+        self.view = GetOtherLanguagesView(self.mock_request)
         self.view.user = self.mock_user
 
     @patch(
