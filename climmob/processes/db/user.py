@@ -24,6 +24,7 @@ def addUser(userData, request):
     userData2["user_apikey"] = str(uuid.uuid4())
     userData2["user_about"] = ""
     userData2["user_password"] = encodeData(request, userData["user_password"])
+    userData2["user_joindate"] = datetime.datetime.now()
 
     mappedData = mapToSchema(User, userData2)
     newUser = User(**mappedData)
