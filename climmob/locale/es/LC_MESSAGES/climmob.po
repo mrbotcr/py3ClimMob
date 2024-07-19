@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: climmob 4.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2024-07-09 09:25-0600\n"
-"PO-Revision-Date: 2024-07-09 13:50-0600\n"
+"PO-Revision-Date: 2024-07-19 13:50-0600\n"
 "Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
 "Language: en\n"
@@ -86,10 +86,8 @@ msgstr "El dueño del proyecto no puede ser eliminado"
 
 # | msgid "Update question"
 #: climmob/processes/db/question.py:59
-#, fuzzy
-#| msgid "Write the question."
 msgid "Error creating the question."
-msgstr "Escriba la pregunta."
+msgstr "Error al crear la pregunta."
 
 #: climmob/processes/db/registry.py:412 climmob/processes/db/registry.py:435
 msgid "This section already exists"
@@ -1138,16 +1136,12 @@ msgid "forms"
 msgstr "formularios"
 
 #: climmob/templates/dashboard/dashboard.jinja2:336
-#, fuzzy
-#| msgid "Total of combinations"
 msgid "6. Trial documentation"
-msgstr "Total de combinaciones"
+msgstr "6. Documentación del ensayo"
 
 #: climmob/templates/dashboard/dashboard.jinja2:338
-#, fuzzy
-#| msgid "Total of combinations"
 msgid "5. Trial documentation"
-msgstr "Total de combinaciones"
+msgstr "5. Documentación del ensayo"
 
 # | msgid "There is no a project with that code."
 #: climmob/templates/dashboard/dashboard.jinja2:356
@@ -1317,10 +1311,8 @@ msgstr "Para realizar el análisis de datos debes completar esta sección: "
 #: climmob/templates/dashboard/dashboard.jinja2:741
 #: climmob/templates/project/metadata/metadata.jinja2:24
 #: climmob/templates/project/metadata/metadata.jinja2:40
-#, fuzzy
-#| msgid "Total of combinations"
 msgid "Trial documentation"
-msgstr "Total de combinaciones"
+msgstr "Documentación del ensayo"
 
 #: climmob/templates/dashboard/dashboard.jinja2:879
 msgid "Let's start!"
@@ -1773,13 +1765,12 @@ msgid "Indications"
 msgstr "Indicaciones"
 
 #: climmob/templates/otherLanguages/otherLanguages.jinja2:66
-#, fuzzy
 msgid ""
 "The following is a list of texts that ClimMob uses on the questions that are "
 "deployed in ODK Collect form"
 msgstr ""
-"La siguiente es una lista de textos que ClimMob utiliza para generar preguntas "
-"en ODK Collect"
+"La siguiente es una lista de textos que ClimMob utiliza en las preguntas que se "
+"implementan en el formulario ODK Collect"
 
 #: climmob/templates/otherLanguages/otherLanguages.jinja2:67
 msgid ""
@@ -2770,30 +2761,24 @@ msgid "No field agents assigned to this project."
 msgstr "No hay agentes de campo asignados a este proyecto."
 
 #: climmob/templates/project/metadata/metadata.jinja2:4
-#, fuzzy
-#| msgid "ClimMob | Start trial data collection"
 msgid "ClimMob | Trial documentation"
-msgstr "ClimMob | Iniciar recolección de datos del ensayo"
+msgstr "ClimMob | Documentación del ensayo"
 
 #: climmob/templates/project/metadata/metadata.jinja2:61
 msgid "You have written {}/[] words required"
 msgstr "Has escrito {}/[] palabras requeridas"
 
 #: climmob/templates/project/metadata/metadata.jinja2:172
-#, fuzzy
-#| msgid "Write the organization"
 msgid "Please write the coordiantor"
-msgstr "Escriba la organización"
+msgstr "Por favor escribe el coordinador"
 
 #: climmob/templates/project/metadata/metadata.jinja2:175
 msgid "Please write the objectives of the trial"
-msgstr "Por favor escriba los objetivos del ensayo."
+msgstr "Por favor escriba los objetivos del ensayo"
 
 #: climmob/templates/project/metadata/metadata.jinja2:178
-#, fuzzy
-#| msgid "Select a crop"
 msgid "Please select the crop"
-msgstr "Seleccione un cultivo"
+msgstr "Por favor seleccione el cultivo"
 
 #: climmob/templates/project/metadata/metadata.jinja2:181
 #: climmob/templates/project/metadata/metadata.jinja2:193
@@ -2819,30 +2804,24 @@ msgid "Please write here"
 msgstr "Por favor escribe aquí"
 
 #: climmob/templates/project/metadata/metadata.jinja2:184
-#, fuzzy
-#| msgid "Write the name of the category"
 msgid "Please write the name of the tricot project"
-msgstr "Escriba el nombre de la categoría"
+msgstr "Por favor escribe el nombre del proyecto tricot"
 
 #: climmob/templates/project/metadata/metadata.jinja2:187
-#, fuzzy
-#| msgid "Delete collaborator"
 msgid "Please write the collaborators"
-msgstr "Eliminar colaborador"
+msgstr "Por favor escriba los colaboradores"
 
 #: climmob/templates/project/metadata/metadata.jinja2:190
 msgid "Please write what experimental design was followed"
-msgstr ""
+msgstr "Por favor escriba qué diseño experimental se siguió"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:3
-#, fuzzy
-#| msgid "Trial coordinator"
 msgid "Coordinator"
-msgstr "Coordinador del ensayo"
+msgstr "Coordinador"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:6
 msgid "Name of the coordinator and/or supporting staff of the tricot trial"
-msgstr ""
+msgstr "Nombre del coordinador y/o personal de apoyo del ensayo de tricot"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:11
 msgid "Crops"
@@ -2850,199 +2829,225 @@ msgstr "Cultivos"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:18
 msgid "Name of the crop tested in the tricot trial"
-msgstr ""
+msgstr "Nombre del cultivo probado en el ensayo de tricot"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:62
 msgid "Year"
-msgstr ""
+msgstr "Año"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:65
 msgid "The year where the tricot trial was implemented"
-msgstr ""
+msgstr "El año en que se implementó la prueba del tricot"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:70
-#, fuzzy
-#| msgid "Trial projects"
 msgid "Tricot project"
-msgstr "Proyectos de ensayos"
+msgstr "Proyecto tricot"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:73
 msgid "Name (code) of the tricot projects described here"
-msgstr ""
+msgstr "Nombre (código) de los proyectos de tricot aquí descritos"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:78
 msgid "What were the objectives of the trial?"
-msgstr ""
+msgstr "¿Cuáles fueron los objetivos del ensayo?"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:86
 msgid ""
 "Who contributed to the realization of the trial? Mention full names and email "
 "addresses"
 msgstr ""
+"¿Quién contribuyó a la realización del ensayo? Mencione nombres completos y "
+"direcciones de correo electrónico"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:89
 msgid ""
 "(Design, preparing inputs, input distribution, data collection, analysis/"
 "interpretation)"
 msgstr ""
+"(Diseño, preparación de insumos, distribución de insumos, recopilación de datos, "
+"análisis/interpretación)"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:94
 msgid "What experimental design was followed?"
-msgstr ""
+msgstr "¿Qué diseño experimental se siguió?"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:97
 msgid ""
 "(tricot randomization with ClimMob, tailored design, inclusion of check(s) - "
 "specify)"
 msgstr ""
+"(aleatorización tricot con ClimMob, diseño adaptado, inclusión de control(es) - "
+"especificar)"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:102
 msgid ""
 "Which steps were followed for the trial design, and who participated in each "
 "step?"
 msgstr ""
+"¿Qué pasos se siguieron para el diseño del ensayo y quiénes participaron en cada "
+"paso?"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:105
 msgid ""
 " (For example, objective setting with farmers, trait selection with experts, "
 "determining sampling frame with collaborating organizations, etc.)"
 msgstr ""
+" (Por ejemplo, establecimiento de objetivos con agricultores, selección de "
+"rasgos con expertos, determinación del marco de muestreo con organizaciones "
+"colaboradoras, etc.)"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:110
 msgid "Did the trial have any special features?"
-msgstr ""
+msgstr "¿La prueba tuvo alguna característica especial?"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:117
 msgid "How the varieties were selected?"
-msgstr ""
+msgstr "¿Cómo se seleccionaron las variedades?"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:120
 msgid ""
 "Describe the process in selecting the varieties/genotypes tested in the trial"
 msgstr ""
+"Describir el proceso de selección de las variedades/genotipos probados en el "
+"ensayo"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:125
 msgid "How were participants selected? What was the process?"
-msgstr ""
+msgstr "¿Cómo se seleccionaron los participantes? ¿Cuál fue el proceso?"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:128
 msgid " (Explain relationship between sample and target population)"
-msgstr ""
+msgstr " (Explique la relación entre la muestra y la población objetivo)"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:133
 msgid "Which geographic areas were targeted? How were sites selected?"
-msgstr ""
+msgstr "¿A qué áreas geográficas se dirigieron? ¿Cómo se seleccionaron los sitios?"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:140
 msgid ""
 "What selection criteria were used? Were any prior studies or datasets used for "
 "selection?"
 msgstr ""
+"¿Qué criterios de selección se utilizaron? ¿Se utilizaron estudios o conjuntos "
+"de datos previos para la selección?"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:143
 msgid ""
 "(Check of knowledge and skills in executing the task, gender, experience with "
 "analysed crop, selection of households based on survey.)"
 msgstr ""
+"(Verificación de conocimientos y habilidades en la ejecución de la tarea, "
+"género, experiencia con el cultivo analizado, selección de hogares en base a "
+"encuesta.)"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:148
 msgid "How were participants approached for recruitment? "
-msgstr ""
+msgstr "¿Cómo se contactó a los participantes para el reclutamiento? "
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:151
 msgid ""
 "(Open recruitment, invitation through the organization of which they are member/"
 "client, etc.)"
 msgstr ""
+"(Contratación abierta, invitación a través de la organización de la que es "
+"miembro/cliente, etc.)"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:156
 msgid "Where did recruitment take place?"
-msgstr ""
+msgstr "¿Dónde se llevó a cabo el reclutamiento?"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:159
 msgid " (For example, cooperative meeting, community centres, markets.)"
-msgstr ""
+msgstr " (Por ejemplo, reuniones cooperativas, centros comunitarios, mercados.)"
 
 # | msgid "Participant registration"
 #: climmob/templates/project/metadata/metadata_form.jinja2:164
-#, fuzzy
-#| msgid "Finish the participant registration form"
 msgid "How was the participant recruitment formalised?"
-msgstr "Completar el formulario de registro de participantes"
+msgstr "¿Cómo se formalizó el reclutamiento de participantes?"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:167
 msgid ""
 "(Verbal consent, signed individual consent forms, consent forms signed by "
 "community representative/head, etc.)"
 msgstr ""
+"(Consentimiento verbal, formularios de consentimiento individuales firmados, "
+"formularios de consentimiento firmados por el representante/jefe de la "
+"comunidad, etc.)"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:172
 msgid "Were participants compensated? If yes, how?"
-msgstr ""
+msgstr "¿Fueron compensados ​​los participantes? Si es así, ¿cómo?"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:175
 msgid " (For example, seed gift, free technical advice, voucher, airtime.)"
-msgstr ""
+msgstr " (Por ejemplo, regalo de semilla, asesoramiento técnico gratuito, vale)."
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:180
 msgid ""
 "How many of the participants that were approached did participate in the trial?"
 msgstr ""
+"¿Cuántos de los participantes a los que se contactó participaron en el ensayo?"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:187
 msgid "How was tricot explained to participants? Who was in charge of this?"
 msgstr ""
+"¿Cómo se explicó el tricot a los participantes? ¿Quién estaba a cargo de esto?"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:194
 msgid ""
 "How many training sessions were provided to the participants? How were they set "
 "up?"
 msgstr ""
+"¿Cuántas sesiones de formación se impartieron a los participantes? ¿Cómo se "
+"organizaron?"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:197
 msgid "(One or more sessions, individual or group sessions)"
-msgstr ""
+msgstr "(Una o más sesiones, sesiones individuales o grupales)"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:202
 msgid ""
 "Were any follow-up procedures in place to ensure that participants adhered to "
 "the instructions given and did timely data collection? Which?"
 msgstr ""
+"¿Se establecieron procedimientos de seguimiento para garantizar que los "
+"participantes seguían las instrucciones dadas y recogían los datos a tiempo? "
+"¿Cuáles?"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:205
 msgid "(Reminders, follow-up visits, peer visits)"
-msgstr ""
+msgstr "(Recordatorios, visitas de seguimiento, visitas de pares)"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:210
 msgid ""
 "How was data collected from participants? What communication channels were used?"
 msgstr ""
+"¿Cómo se recopilaron los datos de los participantes? ¿Qué canales de "
+"comunicación se utilizaron?"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:217
-#, fuzzy
-#| msgid "Number of registered participants"
 msgid "How were results devolved to participants?"
-msgstr "Número de participantes registrados"
+msgstr "¿Cómo se entregaron los resultados a los participantes?"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:224
-#, fuzzy
-#| msgid "Registration of participants"
 msgid "What instructions were given to participants?"
-msgstr "Registro de participantes"
+msgstr "¿Qué instrucciones se dieron a los participantes?"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:227
 msgid ""
 "(Agronomic management - including how to set up the trial, food product "
 "preparation, or equivalent)"
 msgstr ""
+"(Gestión agronómica - incluyendo cómo montar el ensayo, preparación de productos "
+"alimenticios, o equivalente)"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:232
 msgid "Were additional inputs provided to participants?"
-msgstr ""
+msgstr "¿Se proporcionaron aportes adicionales a los participantes?"
 
 #: climmob/templates/project/metadata/metadata_form.jinja2:239
 msgid "Varieties"
-msgstr ""
+msgstr "Variedades"
 
 #: climmob/templates/project/productsList/productsList.jinja2:4
 msgid "ClimMob | Products"
@@ -3537,51 +3542,41 @@ msgid "Date"
 msgstr "Fecha"
 
 #: climmob/templates/projectsSummary/projectsSummary.jinja2:112
-#, fuzzy
-#| msgid "Last updated"
 msgid "Start date"
-msgstr "Última actualización"
+msgstr "Fecha de inicio"
 
 #: climmob/templates/projectsSummary/projectsSummary.jinja2:113
-#, fuzzy
-#| msgid "Creation date"
 msgid "End date"
-msgstr "Fecha de creación"
+msgstr "Fecha final"
 
 #: climmob/templates/projectsSummary/projectsSummary.jinja2:114
-#, fuzzy
-#| msgid "Number of participants"
 msgid "Number of farmers target"
-msgstr "Número de participantes"
+msgstr "Número de agricultores objetivo"
 
 # | msgid "Select one project."
 #: climmob/templates/projectsSummary/projectsSummary.jinja2:115
-#, fuzzy
-#| msgid "Selected for the project"
 msgid "Number of registered for the project"
-msgstr "Seleccionada para el proyecto"
+msgstr "Número de inscritos para el proyecto"
 
 #: climmob/templates/projectsSummary/projectsSummary.jinja2:116
 msgid "Crop"
 msgstr "Cultivo"
 
 #: climmob/templates/projectsSummary/projectsSummary.jinja2:117
-#, fuzzy
-#| msgid "to register"
 msgid "Latitude - Registry"
-msgstr "para registrarse"
+msgstr "Latitud - Registro"
 
 #: climmob/templates/projectsSummary/projectsSummary.jinja2:118
 msgid "Longitude - Registry"
-msgstr ""
+msgstr "Longitud - Registro"
 
 #: climmob/templates/projectsSummary/projectsSummary.jinja2:119
 msgid "Latitude - Assessment"
-msgstr ""
+msgstr "Latitud - Evaluación"
 
 #: climmob/templates/projectsSummary/projectsSummary.jinja2:120
 msgid "Longitude - Assessment"
-msgstr ""
+msgstr "Longitud - Evaluación"
 
 #: climmob/templates/question/library.jinja2:4
 msgid "ClimMob | Questions library"
@@ -3602,11 +3597,11 @@ msgstr "Regresar a preparar el momento de la recolección de datos del ensayo"
 
 #: climmob/templates/question/library.jinja2:70
 msgid "Expand all categories"
-msgstr ""
+msgstr "Expandir todas las categorías"
 
 #: climmob/templates/question/library.jinja2:73
 msgid "Collapse all categories"
-msgstr ""
+msgstr "Contraer todas las categorías"
 
 # | msgid "for more details"
 #: climmob/templates/question/library.jinja2:98
@@ -3632,52 +3627,58 @@ msgid "Delete question"
 msgstr "Eliminar pregunta"
 
 #: climmob/templates/question/library.jinja2:227
-#, fuzzy
-#| msgid "Delete language"
 msgid "Multiple languages"
-msgstr "Eliminar idioma"
+msgstr "Múltiples lenguajes"
 
 #: climmob/templates/question/library.jinja2:228
 msgid ""
 "ClimMob now allows multiple languages to be added to created questions, allowing "
 "data collection in up to four languages"
 msgstr ""
+"ClimMob ahora permite agregar varios idiomas a las preguntas creadas, lo que "
+"permite la recopilación de datos en hasta cuatro idiomas"
 
 #: climmob/templates/question/library.jinja2:228
 msgid ""
 "To use this functionality, simply click on the language symbol. In the list of "
 "questions, you will find the following variations of the symbol"
 msgstr ""
+"Para utilizar esta funcionalidad, simplemente haga clic en el símbolo del "
+"idioma. En la lista de preguntas, encontrará las siguientes variaciones del "
+"símbolo"
 
 #: climmob/templates/question/library.jinja2:228
 msgid ""
 "The gray color on the icon indicates that the question does not yet have "
 "multiple languages assigned"
 msgstr ""
+"El color gris en el icono indica que la pregunta aún no tiene varios idiomas "
+"asignados"
 
 #: climmob/templates/question/library.jinja2:228
 msgid ""
 "The black color on the icon indicates that the question already has multiple "
 "languages assigned"
 msgstr ""
+"El color negro del icono indica que la pregunta ya tiene varios idiomas asignados"
 
 #: climmob/templates/question/library.jinja2:228
-#, fuzzy
-#| msgid "Indications"
 msgid "Considerations:"
-msgstr "Indicaciones"
+msgstr "Consideraciones:"
 
 #: climmob/templates/question/library.jinja2:228
 msgid ""
 "If you are the creator or owner of the question, you can generate its "
 "translations"
-msgstr ""
+msgstr "Si eres el creador o dueño de la pregunta, puedes generar sus traducciones"
 
 #: climmob/templates/question/library.jinja2:228
 msgid ""
 "If you are not the owner of the question, you can request the translation of the "
 "question in the desired language by writing in the platform's chat"
 msgstr ""
+"Si no eres el propietario de la pregunta, puedes solicitar la traducción de la "
+"pregunta al idioma deseado escribiendo en el chat de la plataforma"
 
 #: climmob/templates/question/library.jinja2:243
 #: climmob/templates/question/library.jinja2:254
@@ -4016,7 +4017,7 @@ msgstr "Escriba aquí para buscar idiomas"
 
 #: climmob/templates/snippets/languages/changeLanguages.jinja2:37
 msgid "You must indicate at least one language to continue working in ClimMob."
-msgstr "Debe de indicar al menos un idioma para continuar trabajando en ClimMob"
+msgstr "Debe de indicar al menos un idioma para continuar trabajando en ClimMob."
 
 #: climmob/templates/snippets/languages/changeLanguages.jinja2:37
 msgid ""
@@ -4030,6 +4031,8 @@ msgid ""
 "You are welcome to include as many languages as you deem necessary for your "
 "projects."
 msgstr ""
+"Le invitamos a incluir tantos idiomas como considere necesarios para sus "
+"proyectos."
 
 #: climmob/templates/snippets/languages/changeLanguages.jinja2:37
 msgid ""
@@ -5000,14 +5003,12 @@ msgstr "Escriba el nombre de tecnología."
 #: climmob/templates/snippets/technologies/technologies-form.jinja2:12
 #: climmob/templates/technologies/curationoftechnologies.jinja2:58
 msgid "Crop taxonomy"
-msgstr ""
+msgstr "Taxonomía de cultivos"
 
 #: climmob/templates/snippets/technologies/technologies-form.jinja2:14
 #: climmob/templates/technologies/curationoftechnologies.jinja2:66
-#, fuzzy
-#| msgid "Select one country."
 msgid "Select one crop taxonomy."
-msgstr "Seleccione un país."
+msgstr "Seleccione una taxonomía de cultivos."
 
 # | msgid "Select technology options"
 #: climmob/templates/snippets/technologies/technologies-stream.jinja2:3
@@ -5017,20 +5018,16 @@ msgstr "Haga clic para mostrar las opciones tecnológicas"
 #: climmob/templates/technologies/curationoftechnologies.jinja2:4
 #: climmob/templates/technologies/curationoftechnologies.jinja2:24
 #: climmob/templates/technologies/curationoftechnologies.jinja2:95
-#, fuzzy
-#| msgid "Assign technologies"
 msgid "Assigning a crop taxonomy to technologies"
-msgstr "Asignar tecnologías"
+msgstr "Asignación de una taxonomía de cultivos a las tecnologías"
 
 #: climmob/templates/technologies/curationoftechnologies.jinja2:35
 msgid "Technologies that require a crop taxonomy"
-msgstr ""
+msgstr "Tecnologías que requieren una taxonomía de cultivos"
 
 #: climmob/templates/technologies/curationoftechnologies.jinja2:67
-#, fuzzy
-#| msgid "Select a crop"
 msgid "Select a crop taxonomy"
-msgstr "Seleccione un cultivo"
+msgstr "Seleccione una taxonomía de cultivos"
 
 #: climmob/templates/technologies/technologies.jinja2:4
 msgid "ClimMob | Technology options library"
@@ -5370,14 +5367,12 @@ msgstr "El proyecto se ha eliminado correctamente"
 
 # | msgid "The question was successfully added"
 #: climmob/views/project_analysis.py:59 climmob/views/project_analysis.py:82
-#, fuzzy
-#| msgid "The section was successfully added"
 msgid "The metadata was successfully saved"
-msgstr "La sección se ha agregado con éxito"
+msgstr "Los metadatos se guardaron correctamente"
 
 #: climmob/views/project_analysis.py:71 climmob/views/project_analysis.py:94
 msgid "Error|Error saving metadata {}"
-msgstr ""
+msgstr "Error|Error al guardar metadatos {}"
 
 #: climmob/views/project_combinations.py:225
 msgid ""
@@ -7245,7 +7240,7 @@ msgstr "No hay una pregunta de tipo comparación con referencia."
 
 #: climmob/views/Api/questions.py:1345
 msgid "The question_id parameter is required."
-msgstr "El parametro question_id es requerido"
+msgstr "El parametro question_id es requerido."
 
 #: climmob/views/Api/questions.py:1358
 msgid ""

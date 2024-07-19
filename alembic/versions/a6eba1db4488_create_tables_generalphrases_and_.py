@@ -348,7 +348,7 @@ def upgrade():
             "phrase_id": "29",
             "user_name": "bioversity",
             "lang_code": "es",
-            "phrase_desc": "Elejir audio",
+            "phrase_desc": "Elegir audio",
         },
         {
             "phrase_id": "30",
@@ -366,7 +366,7 @@ def upgrade():
             "phrase_id": "32",
             "user_name": "bioversity",
             "lang_code": "es",
-            "phrase_desc": "Elejir video",
+            "phrase_desc": "Elegir video",
         },
         {
             "phrase_id": "33",
