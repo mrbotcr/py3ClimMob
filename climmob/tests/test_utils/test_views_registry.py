@@ -4,12 +4,12 @@ from unittest.mock import MagicMock, patch
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 
 from climmob.views.registry import (
-    deleteRegistrySection_view,
+    DeleteRegistrySectionView,
     actionsInSections,
-    registrySectionActions_view,
-    cancelRegistry_view,
-    closeRegistry_view,
-    getRegistrySection_view,
+    RegistrySectionActionsView,
+    CancelRegistryView,
+    CloseRegistryView,
+    GetRegistrySectionView,
     createDocumentForm
 )
 
@@ -22,7 +22,7 @@ class TestDeleteRegistrySectionView(unittest.TestCase):
             "project": "test_project",
             "groupid": "test_group"
         }
-        self.view = deleteRegistrySection_view(self.mock_request)
+        self.view = DeleteRegistrySectionView(self.mock_request)
         self.view.user = MagicMock()
         self.view.user.login = "test_user"
 
@@ -166,7 +166,7 @@ class TestRegistrySectionActionsView(unittest.TestCase):
     def setUp(self):
         self.mock_request = MagicMock()
         self.mock_request.matchdict = {"user": "test_user", "project": "test_project"}
-        self.view = registrySectionActions_view(self.mock_request)
+        self.view = RegistrySectionActionsView(self.mock_request)
         self.view.user = MagicMock()
         self.view.user.login = "test_user"
 
@@ -216,7 +216,7 @@ class TestCancelRegistryView(unittest.TestCase):
     def setUp(self):
         self.mock_request = MagicMock()
         self.mock_request.matchdict = {"user": "test_user", "project": "test_project"}
-        self.view = cancelRegistry_view(self.mock_request)
+        self.view = CancelRegistryView(self.mock_request)
         self.view.user = MagicMock()
         self.view.user.login = "test_user"
 
@@ -270,7 +270,7 @@ class TestCloseRegistryView(unittest.TestCase):
     def setUp(self):
         self.mock_request = MagicMock()
         self.mock_request.matchdict = {"user": "test_user", "project": "test_project"}
-        self.view = closeRegistry_view(self.mock_request)
+        self.view = CloseRegistryView(self.mock_request)
         self.view.user = MagicMock()
         self.view.user.login = "test_user"
 
@@ -324,7 +324,7 @@ class TestCloseRegistryView(unittest.TestCase):
     def setUp(self):
         self.mock_request = MagicMock()
         self.mock_request.matchdict = {"user": "test_user", "project": "test_project"}
-        self.view = closeRegistry_view(self.mock_request)
+        self.view = CloseRegistryView(self.mock_request)
         self.view.user = MagicMock()
         self.view.user.login = "test_user"
 
@@ -384,7 +384,7 @@ class TestGetRegistrySectionView(unittest.TestCase):
             "section": "test_section"
         }
         self.mock_request.method = "GET"
-        self.view = getRegistrySection_view(self.mock_request)
+        self.view = GetRegistrySectionView(self.mock_request)
         self.view.user = MagicMock()
         self.view.user.login = "test_user"
 
