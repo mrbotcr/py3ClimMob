@@ -1779,8 +1779,8 @@ msgid ""
 "clicking on “Add more languages” or going to your ClimMob user profile page."
 msgstr ""
 "Para ver los diferentes idiomas haz clic en la pestaña correspondiente, justo "
-"encima del nombre del idioma. Si sólo se muestra un idioma, puedes añadir más "
-"haciendo clic en \"Añadir más idiomas\" o yendo a tu página de perfil de usuario "
+"encima del nombre del idioma. Si sólo se muestra un idioma, puedes agregar más "
+"haciendo clic en \"Agregar más idiomas\" o yendo a tu página de perfil de usuario "
 "de ClimMob."
 
 #: climmob/templates/otherLanguages/otherLanguages.jinja2:68
@@ -2681,7 +2681,7 @@ msgid ""
 msgstr ""
 "Los agentes de campo son sus trabajadores de extensión en el campo que se "
 "comunicarán con los participantes y posteriormente recogerán todas las "
-"observaciones del ensayo utilizando la aplicación ODK Collect.Aquí puede añadir "
+"observaciones del ensayo utilizando la aplicación ODK Collect.Aquí puede agregar "
 "los agentes de campo que trabajarán en este proyecto en particular."
 
 # | msgid "List of field agents for the project"
@@ -6160,7 +6160,7 @@ msgstr "Los datos no tienen estructura."
 
 #: climmob/views/Api/projectAssessments.py:133
 msgid "The access assigned for this project does not allow you to add assessments."
-msgstr "El acceso asignado a este proyecto no permite añadir evaluaciones."
+msgstr "El acceso asignado a este proyecto no permite agregar evaluaciones."
 
 #: climmob/views/Api/projectAssessments.py:154
 #: climmob/views/Api/projectAssessments.py:255
@@ -6301,7 +6301,7 @@ msgid ""
 "You are trying to add a question from a user that does not belong to this "
 "project."
 msgstr ""
-"Está intentando añadir una pregunta de un usuario que no pertenece a este "
+"Está intentando agregar una pregunta de un usuario que no pertenece a este "
 "proyecto."
 
 #: climmob/views/Api/projectAssessments.py:1226
@@ -6481,7 +6481,7 @@ msgid ""
 "The access assigned for this project does not allow you to add collaborators to "
 "the project."
 msgstr ""
-"El acceso asignado a este proyecto no le permite añadir colaboradores al "
+"El acceso asignado a este proyecto no le permite agregar colaboradores al "
 "proyecto."
 
 #: climmob/views/Api/projectCreation.py:1015
@@ -6503,7 +6503,7 @@ msgstr "El colaborador que quieres agregar ya pertenece al proyecto."
 
 #: climmob/views/Api/projectCreation.py:1041
 msgid "The user you want to add as a collaborator does not exist."
-msgstr "El usuario que quieres añadir como colaborador no existe."
+msgstr "El usuario que quieres agregar como colaborador no existe."
 
 #: climmob/views/Api/projectCreation.py:1085
 msgid ""
@@ -6534,7 +6534,7 @@ msgstr "El usuario que quiere eliminar como colaborador no existe."
 #: climmob/views/Api/projectEnumerators.py:62
 msgid ""
 "The access assigned for this project does not allow you to add field agents."
-msgstr "El acceso asignado a este proyecto no permite añadir agentes de campo."
+msgstr "El acceso asignado a este proyecto no permite agregar agentes de campo."
 
 # | msgid "The enumerator has been added to the project."
 #: climmob/views/Api/projectEnumerators.py:137
@@ -6625,7 +6625,7 @@ msgstr "No puede eliminar grupos. El registro ya fue inciado."
 
 #: climmob/views/Api/projectRegistry.py:541
 msgid "The access assigned for this project does not allow you to add questions."
-msgstr "El acceso asignado para este proyecto no permite añadir preguntas."
+msgstr "El acceso asignado para este proyecto no permite agregar preguntas."
 
 # | msgid "The question was added to the record"
 #: climmob/views/Api/projectRegistry.py:583
@@ -6917,7 +6917,7 @@ msgstr "Error en el JSON enviado por parámetro. Comprobar las llaves obligatori
 #: climmob/views/Api/projectTechnologies.py:69
 msgid ""
 "The access assigned for this project does not allow you to add technologies."
-msgstr "El acceso asignado a este proyecto no permite añadir tecnologías."
+msgstr "El acceso asignado a este proyecto no permite agregar tecnologías."
 
 #: climmob/views/Api/projectTechnologies.py:97
 msgid "The technology was added correctly."
@@ -6948,7 +6948,7 @@ msgstr "No puede agregar más tecnologías. Ya inició el registro."
 msgid ""
 "You are trying to add a tech from a user that does not belong to this project."
 msgstr ""
-"Está intentando añadir una tecnología de un usuario que no pertenece a este "
+"Está intentando agregar una tecnología de un usuario que no pertenece a este "
 "proyecto."
 
 #: climmob/views/Api/projectTechnologies.py:305
