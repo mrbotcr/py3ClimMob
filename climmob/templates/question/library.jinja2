@@ -207,9 +207,12 @@
         var elem_ckb_answer_notobserved = document.querySelector('#ckb_answer_notobserved');
         var ckb_answer_notobserved = new Switchery(elem_ckb_answer_notobserved, { color: '#1AB394' });
 
-        {% block dataprivacy_set_switchery %}
+        {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
 
-        {% endblock dataprivacy_set_switchery %}
+            var elem_ckb_question_sensitive = document.querySelector('#ckb_question_as_sensitive');
+            var ckb_question_sensitive = new Switchery(elem_ckb_question_sensitive, { color: '#1AB394' });
+
+        {% endif %}
 
         {% if activeUser.login == "bioversity" %}
             var elem_ckb_question_visible = document.querySelector('#ckb_question_visible');
@@ -599,9 +602,13 @@
                     question_visible = 1;
             {% endif %}
 
-            {% block dataprivacy_ajax_post_prepare %}
+            {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
 
-            {% endblock dataprivacy_ajax_post_prepare %}
+                var question_sensitive = 0;
+                if ($("#ckb_question_as_sensitive").is(':checked'))
+                    question_sensitive = 1;
+
+            {% endif %}
 
             optionsValues = prepareOptionsValues()
 
@@ -633,9 +640,11 @@
                     "question_visible": question_visible,
                     {% endif %}
 
-                    {% block dataprivacy_ajax_post %}
+                    {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
 
-                    {% endblock dataprivacy_ajax_post %}
+                        "question_sensitive": question_sensitive,
+
+                    {% endif %}
 
                     {% block ajax_post_extra %}
 
@@ -879,9 +888,11 @@
                 setSwitchery(ckb_question_visible, true)
             {% endif %}
 
-            {% block dataprivacy_function_create_question %}
+            {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
 
-            {% endblock dataprivacy_function_create_question %}
+                setSwitchery(ckb_question_sensitive, false);
+
+            {% endif %}
 
                 $("#extraQuantitative").css("display","block")
             $("#form_simple_question").css('display', 'initial')
@@ -987,9 +998,14 @@
                         setSwitchery(ckb_question_visible, false)
                 {% endif %}
 
-                {% block dataprivacy_function_open_questions %}
+                {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
 
-                {% endblock dataprivacy_function_open_questions %}
+                    if (dataJson["question_sensitive"] == 1)
+                        setSwitchery(ckb_question_sensitive, true)
+                    else
+                        setSwitchery(ckb_question_sensitive, false)
+
+                {% endif %}
 
                 if(dataJson["question_dtype"] == '2' || dataJson["question_dtype"] == '3')
                 {
@@ -1214,9 +1230,9 @@
                 ckb_question_visible.enable();
             {% endif %}
 
-            {% block dataprivacy_enable_switchery %}
-
-            {% endblock dataprivacy_enable_switchery %}
+            {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
+                ckb_question_sensitive.enable();
+            {% endif %}
         }
 
         function disableSwitchery()
@@ -1229,9 +1245,9 @@
                 ckb_question_visible.disable();
             {% endif %}
 
-            {% block dataprivacy_disable_switchery %}
-
-            {% endblock dataprivacy_disable_switchery %}
+            {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
+                ckb_question_sensitive.disable();
+            {% endif %}
         }
 
         function setSwitchery(switchElement, checkedBool)

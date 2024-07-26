@@ -532,9 +532,21 @@
 
 {% endif %}
 
-{% block dataprivacy_question_field %}
+{% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
 
-{% endblock dataprivacy_question_field %}
+    <div class="form-group">
+        <label class="col-sm-4 control-label">{{ _("Set as sensitive") }}</label>
+        <div class="col-sm-8">
+            <div class="switch">
+                <input type="checkbox" id="ckb_question_as_sensitive" class="inputForQuestionCheck"
+                       name="question_sensitive" data-on-color="success"
+                       data-off-color="danger" data-on-text="{{ _('Yes') }}"
+                       data-off-text="{{ _('No') }}" >
+            </div>
+        </div>
+    </div>
+
+{% endif %}
 <br>
 <br>
 
