@@ -3,18 +3,17 @@ import unittest
 from unittest.mock import patch, MagicMock
 
 from climmob.views.Api.languages import (
-    readListOfLanguages_view,
-    addLanguageForUse_view,
-    deleteLanguage_view,
-    readListOfUnusedLanguages_view,
-    readAllGeneralPhrases_view,
-    changeGeneralPhrases_view,
+    ReadListOfLanguagesView,
+    AddLanguageForUseView,
+    DeleteLanguageView,
+    ReadListOfUnusedLanguagesView,
+    ReadAllGeneralPhrasesView,
+    ChangeGeneralPhrasesView,
 )
-
 
 class TestReadListOfLanguagesView(unittest.TestCase):
     def setUp(self):
-        self.view = readListOfLanguages_view(MagicMock())
+        self.view = ReadListOfLanguagesView(MagicMock())
         self.view.request.method = "GET"
         self.view.user = MagicMock(login="test_user")
 
@@ -33,6 +32,7 @@ class TestReadListOfLanguagesView(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         response_data = json.loads(response.body)
         self.assertEqual(response_data, [{"lang_code": "en", "lang_name": "English"}])
+        self.assertTrue(mock_getListOfLanguagesByUser.called)
 
     def test_process_view_post_method(self):
         self.view._ = self.mock_translation  # Mock translation function
@@ -46,7 +46,7 @@ class TestReadListOfLanguagesView(unittest.TestCase):
 
 class TestAddLanguageForUseView(unittest.TestCase):
     def setUp(self):
-        self.view = addLanguageForUse_view(MagicMock())
+        self.view = AddLanguageForUseView(MagicMock())
         self.view.request.method = "POST"
         self.view.request.body = json.dumps({"lang_code": "es"})
         self.view.user = MagicMock(login="test_user")
@@ -154,7 +154,7 @@ class TestAddLanguageForUseView(unittest.TestCase):
 
 class TestDeleteLanguageView(unittest.TestCase):
     def setUp(self):
-        self.view = deleteLanguage_view(MagicMock())
+        self.view = DeleteLanguageView(MagicMock())
         self.view.request.method = "POST"
         self.view.request.body = json.dumps({"lang_code": "es"})
         self.view.user = MagicMock(login="test_user")
@@ -248,7 +248,7 @@ class TestDeleteLanguageView(unittest.TestCase):
 
 class TestReadListOfUnusedLanguagesView(unittest.TestCase):
     def setUp(self):
-        self.view = readListOfUnusedLanguages_view(MagicMock())
+        self.view = ReadListOfUnusedLanguagesView(MagicMock())
         self.view.request.method = "GET"
         self.view.user = MagicMock(login="test_user")
 
@@ -280,7 +280,7 @@ class TestReadListOfUnusedLanguagesView(unittest.TestCase):
 
 class TestReadAllGeneralPhrasesView(unittest.TestCase):
     def setUp(self):
-        self.view = readAllGeneralPhrases_view(MagicMock())
+        self.view = ReadAllGeneralPhrasesView(MagicMock())
         self.view.request.method = "GET"
         self.view.user = MagicMock(login="test_user")
         self.view.body = json.dumps({"lang_code": "en"})
@@ -359,7 +359,7 @@ class TestReadAllGeneralPhrasesView(unittest.TestCase):
 
 class TestChangeGeneralPhrasesView(unittest.TestCase):
     def setUp(self):
-        self.view = changeGeneralPhrases_view(MagicMock())
+        self.view = ChangeGeneralPhrasesView(MagicMock())
         self.view.request.method = "POST"
         self.view.user = MagicMock(login="test_user")
         self.view.body = json.dumps(
@@ -384,6 +384,9 @@ class TestChangeGeneralPhrasesView(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("Phrase successfully saved.", response.body.decode())
+        self.assertTrue(mock_languageExistInI18nUser.called)
+        self.assertTrue(mock_generalPhraseExistsWithID.called)
+        self.assertTrue(mock_savePhraseTranslation.called)
 
     @patch("climmob.views.Api.languages.languageExistInI18nUser", return_value=False)
     def test_process_view_language_not_in_list(self, mock_languageExistInI18nUser):
