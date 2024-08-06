@@ -90,9 +90,9 @@ from climmob.views.Api.projectTechnologies import (
     addProjectTechnologyAliasExtra_view,
 )
 from climmob.views.Api.project_analysis import (
-    readDataOfProjectView_api,
-    readVariablesForAnalysisView_api,
-    generateAnalysisByApiView_api,
+    ReadDataOfProjectViewApi,
+    ReadVariablesForAnalysisViewApi,
+    GenerateAnalysisByApiViewApi,
 )
 from climmob.views.Api.questions import (
     createQuestion_view,
@@ -1972,7 +1972,7 @@ def loadRoutes(config):
         addRoute(
             "readDataOfProject",
             "/api/readDataOfProject",
-            readDataOfProjectView_api,
+            ReadDataOfProjectViewApi,
             None,
         )
     )
@@ -1982,7 +1982,7 @@ def loadRoutes(config):
         addRoute(
             "readvariablesforanalysis",
             "/api/readVariablesForAnalysis",
-            readVariablesForAnalysisView_api,
+            ReadVariablesForAnalysisViewApi,
             None,
         )
     )
@@ -1991,7 +1991,7 @@ def loadRoutes(config):
         addRoute(
             "createanalysisbyapi",
             "/api/generateAnalysisByApi",
-            generateAnalysisByApiView_api,
+            GenerateAnalysisByApiViewApi,
             None,
         )
     )
