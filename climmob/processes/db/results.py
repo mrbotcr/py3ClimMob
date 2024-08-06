@@ -1,12 +1,13 @@
 import datetime
 import decimal
 import os
-
+import random
+import math
 from lxml import etree
 
 from climmob.models import Assessment, Question, Project, mapFromSchema
 from climmob.models.repository import sql_fetch_all, sql_fetch_one
-from climmob.processes import getCombinations
+from climmob.processes import getCombinations, getQuestionsStructure
 
 __all__ = ["getJSONResult", "getCombinationsData"]
 
@@ -264,15 +265,20 @@ def getPackageData(userOwner, projectId, projectCod, request):
     return packages
 
 
-def getData(userOwner, projectCod, registry, assessments, request):
-    data = (
+def getData(
+    projectId, userOwner, projectCod, registry, assessments, request, dataPrivacy=False
+):
+
+    defOfQuestionsRegistry = getQuestionsStructure(projectId, "", request)
+
+    questionsReg = (
         request.dbsession.query(Question).filter(Question.question_regkey == 1).first()
     )
-    registryKey = data.question_code
-    data = (
+    registryKey = questionsReg.question_code
+    questionsAssess = (
         request.dbsession.query(Question).filter(Question.question_asskey == 1).first()
     )
-    assessmentKey = data.question_code
+    assessmentKey = questionsAssess.question_code
 
     fields = []
     for field in registry["fields"]:
@@ -286,7 +292,14 @@ def getData(userOwner, projectCod, registry, assessments, request):
             + "REG_"
             + field["name"]
         )
+
+    defOfQuestionAssessments = {}
     for assessment in assessments:
+
+        defOfQuestionAssessments[assessment["code"]] = getQuestionsStructure(
+            projectId, assessment["code"], request
+        )
+
         for field in assessment["fields"]:
             fields.append(
                 userOwner
@@ -366,8 +379,76 @@ def getData(userOwner, projectCod, registry, assessments, request):
                 dct[key] = str(value)
             if isinstance(value, decimal.Decimal):
                 dct[key] = str(value)
+
+            if dataPrivacy:
+                if key[:4] == "REG_":
+                    defOfQuestion = defOfQuestionsRegistry
+                else:
+                    if key[:3] == "ASS":
+                        _all = key.split("_", 1)
+                        _assessmentCode = _all[0][3:]
+
+                        defOfQuestion = defOfQuestionAssessments[_assessmentCode]
+
+                for qst in defOfQuestion:
+                    if qst["sensitive"] == 1:
+                        for var in qst["vars"]:
+                            if key.split("_", 1)[1] == var["name"]:
+                                if qst["type"] == 4:
+                                    latlong = value.split(" ")
+                                    noisy_lat, noisy_lon = add_noise_to_gps_coordinates(
+                                        float(latlong[0]), float(latlong[1]), 1000
+                                    )
+                                    dct[key] = str(noisy_lat + " " + noisy_lon)
+                                else:
+                                    dct[key] = ""
+
         result.append(dct)
     return result
+
+
+def add_noise_to_gps_coordinates(lat, lon, radius):
+    """
+    Add noise to a geographical coordinate by choosing a random point within a radius.
+
+    Parameters:
+    lat (float): Latitude of the original coordinate.
+    lon (float): Longitude of the original coordinate.
+    radius (float): Radius in meters within which to choose a random point.
+
+    Returns:
+    tuple: A tuple containing the new latitude and longitude.
+    """
+    try:
+        # Earth radius in meters
+        earth_radius = 6378137
+
+        # Convert radius from meters to degrees latitude
+        radius_lat = radius / (earth_radius * (math.pi / 180))
+
+        # Convert radius from meters to degrees longitude, adjusted by latitude
+        radius_lon = radius / (
+            earth_radius * (math.pi / 180) * math.cos(math.radians(lat))
+        )
+
+        # Random angle
+        angle = random.uniform(0, 2 * math.pi)
+
+        # Random distance within the circle
+        distance_lat = random.uniform(0, radius_lat)
+        distance_lon = random.uniform(0, radius_lon)
+
+        # Calculate deltas
+        delta_lat = distance_lat * math.cos(angle)
+        delta_lon = distance_lon * math.sin(angle)
+
+        # New latitude and longitude
+        new_lat = lat + delta_lat
+        new_lon = lon + delta_lon
+
+        return str(new_lat), str(new_lon)
+    except:
+        return "", ""
 
 
 def getImportantFields(projectId, request):
@@ -544,6 +625,7 @@ def getJSONResult(
     includeRegistry=True,
     includeAssessment=True,
     assessmentCode="",
+    dataPrivacy=False,
 ):
     data = {}
     res = (
@@ -637,22 +719,26 @@ def getJSONResult(
                     data["registry"], data["assessments"]
                 )
                 data["data"] = getData(
+                    projectId,
                     userOwner,
                     projectCod,
                     data["registry"],
                     data["assessments"],
                     request,
+                    dataPrivacy=dataPrivacy,
                 )
                 data["importantfields"] = getImportantFields(projectId, request)
 
             else:
                 data["specialfields"] = []
                 data["data"] = getData(
+                    projectId,
                     userOwner,
                     projectCod,
                     data["registry"],
                     data["assessments"],
                     request,
+                    dataPrivacy=dataPrivacy,
                 )
                 data["importantfields"] = []
 

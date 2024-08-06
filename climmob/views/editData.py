@@ -30,6 +30,12 @@ class downloadDataView(privateView):
         activeProjectCod = self.request.matchdict["project"]
         formId = self.request.matchdict["formid"]
         formatId = self.request.matchdict["formatid"]
+        dataPrivacy = self.request.matchdict["private"]
+        if dataPrivacy == "true":
+            dataPrivacy = True
+        else:
+            dataPrivacy = False
+
         includeRegistry = True
         includeAssessment = True
         code = ""
@@ -64,6 +70,7 @@ class downloadDataView(privateView):
             includeRegistry,
             includeAssessment,
             code,
+            dataPrivacy=dataPrivacy,
         )
 
         if formatId not in ["csv", "xlsx"]:
@@ -78,6 +85,7 @@ class downloadDataView(privateView):
                 self.request,
                 formId,
                 code,
+                dataPrivacy=dataPrivacy,
             )
 
         if formatId == "xlsx":
@@ -89,11 +97,25 @@ class downloadDataView(privateView):
                 self.request,
                 formId,
                 code,
+                dataPrivacy=dataPrivacy,
             )
+
+        if dataPrivacy:
+            _format = "dataprivacy"
+        else:
+            _format = "data"
 
         url = self.request.route_url(
             "productList",
-            _query={"product1": "create_data_" + formatExtra + formId + "_" + code},
+            _query={
+                "product1": "create_"
+                + _format
+                + "_"
+                + formatExtra
+                + formId
+                + "_"
+                + code
+            },
         )
         self.returnRawViewResult = True
         return HTTPFound(location=url)

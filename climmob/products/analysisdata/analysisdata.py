@@ -10,27 +10,40 @@ from climmob.products.climmob_products import (
 )
 
 
-def create_datacsv(userOwner, projectId, projectCod, info, request, form, code):
+def create_datacsv(
+    userOwner, projectId, projectCod, info, request, form, code, dataPrivacy=False
+):
     # We create the plugin directory if it does not exists and return it
     # The path user.repository in development.ini/user/project/products/product and
     # user.repository in development.ini/user/project/products/product/outputs
-    path = createProductDirectory(request, userOwner, projectCod, "datacsv")
+    if dataPrivacy:
+        nameOutput = form + "_dataprivacy"
+        productName = "dataprivacycsv"
+        productCreate = "create_dataprivacy_" + form + "_" + code
+    else:
+        nameOutput = form + "_data"
+        productName = "datacsv"
+        productCreate = "create_data_" + form + "_" + code
+
+    if code != "":
+        nameOutput += "_" + code
+
+    path = createProductDirectory(request, userOwner, projectCod, productName)
     # We call the Celery task that will generate the output packages.pdf
-    task = create_CSV.apply_async((path, info, projectCod, form, code), queue="ClimMob")
+    task = create_CSV.apply_async(
+        (path, info, projectCod, form, code, nameOutput), queue="ClimMob"
+    )
     # We register the instance of the output with the task ID of celery
     # This will go to the products table that then you can monitor and use
     # in the nice product interface
     # u.registerProductInstance(user, project, 'cards', 'cards.pdf', task.id, request)
-    nameOutput = form + "_data"
-    if code != "":
-        nameOutput += "_" + code
 
     registerProductInstance(
         projectId,
-        "datacsv",
+        productName,
         nameOutput + "_" + projectCod + ".csv",
         "text/csv",
-        "create_data_" + form + "_" + code,
+        productCreate,
         task.id,
         request,
     )

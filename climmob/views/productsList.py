@@ -107,10 +107,12 @@ class productsView(climmobPrivateView):
                     if product["product_id"] in [
                         "documentform",
                         "datacsv",
+                        "dataprivacycsv",
                         "errorlogdocument",
                         "multimediadownloads",
                         "uploaddata",
                         "dataxlsx",
+                        "dataprivacyxlsx",
                         "observationcards",
                         "climmobexplanationkit",
                     ]:
@@ -277,9 +279,13 @@ class generateProductView(privateView):
                             listOfLabels,
                         )
 
-        if productid == "datacsv":
+        if productid in ["datacsv", "dataprivacycsv"]:
             locale = self.request.locale_name
             infoProduct = processname.split("_")
+            dataPrivacy = False
+            if infoProduct[1] == "dataprivacy":
+                dataPrivacy = True
+
             if infoProduct[2] == "Registration":
                 info = getJSONResult(
                     activeProjectData["owner"]["user_name"],
@@ -287,6 +293,7 @@ class generateProductView(privateView):
                     activeProjectData["project_cod"],
                     self.request,
                     includeAssessment=False,
+                    dataPrivacy=dataPrivacy,
                 )
             else:
                 if infoProduct[2] == "Assessment":
@@ -296,6 +303,7 @@ class generateProductView(privateView):
                         activeProjectData["project_cod"],
                         self.request,
                         assessmentCode=infoProduct[3],
+                        dataPrivacy=dataPrivacy,
                     )
                 else:
                     info = getJSONResult(
@@ -303,6 +311,7 @@ class generateProductView(privateView):
                         activeProjectData["project_id"],
                         activeProjectData["project_cod"],
                         self.request,
+                        dataPrivacy=True,
                     )
 
             create_datacsv(
@@ -313,10 +322,15 @@ class generateProductView(privateView):
                 self.request,
                 infoProduct[2],
                 infoProduct[3],
+                dataPrivacy=dataPrivacy,
             )
 
-        if productid == "dataxlsx":
+        if productid in ["dataxlsx", "dataprivacyxlsx"]:
             infoProduct = processname.split("_")
+            dataPrivacy = False
+            if infoProduct[1] == "dataprivacy":
+                dataPrivacy = True
+
             create_XLSXToDownload(
                 activeProjectData["owner"]["user_name"],
                 activeProjectData["project_id"],
@@ -324,6 +338,7 @@ class generateProductView(privateView):
                 self.request,
                 infoProduct[3],
                 infoProduct[4],
+                dataPrivacy=dataPrivacy,
             )
 
         if productid == "documentform":

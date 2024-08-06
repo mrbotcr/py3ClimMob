@@ -228,6 +228,19 @@ def register_products(config):
     )
     products.append(datacsv)
 
+    # DATA PRIVACY CSV
+    dataprivacycsv = addProduct(
+        "dataprivacycsv", "Information collected in the project."
+    )
+    addMetadataToProduct(dataprivacycsv, "author", "Brandon Madriz")
+    addMetadataToProduct(dataprivacycsv, "version", "1.0")
+    addMetadataToProduct(
+        dataprivacycsv,
+        "Licence",
+        "Copyright 2024, MrBot Software Solutions",
+    )
+    products.append(dataprivacycsv)
+
     # FORM
     documentform = addProduct(
         "documentform", "Create a document pdf to collect information."
@@ -361,6 +374,20 @@ def register_products(config):
         "Copyright 2022, MrBot Software Solutions",
     )
     products.append(dataxlsx)
+
+    # DATA PRIVACY XLSX
+    dataprivacyxlsx = addProduct(
+        "dataprivacyxlsx",
+        "Information collected in the project in XLSX format with data privacy.",
+    )
+    addMetadataToProduct(dataprivacyxlsx, "author", "Brandon Madriz")
+    addMetadataToProduct(dataprivacyxlsx, "version", "1.0")
+    addMetadataToProduct(
+        dataprivacyxlsx,
+        "Licence",
+        "Copyright 2024, MrBot Software Solutions",
+    )
+    products.append(dataprivacyxlsx)
 
     # INPUT FILES
     datajson = addProduct(

@@ -32,12 +32,12 @@ def createCSV(outputPath, inputFile):
             # SACO LAS COLUMNAS DEL REGISTRY
             columns = []
             for field in data["registry"]["fields"]:
-                columns.append(field["desc"].replace(",", ""))
+                columns.append(field["name"].replace(",", ""))
 
             # SACO LAS COLUMNAS DE LOS ASSESSMENTS
             for assessment in data["assessments"]:
                 for field in assessment["fields"]:
-                    columns.append(field["desc"].replace(",", ""))
+                    columns.append(field["name"].replace(",", ""))
 
             # ESCRIBO LAS COLUMNAS
             writer.writerow(columns)

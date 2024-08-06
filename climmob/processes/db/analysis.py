@@ -462,6 +462,8 @@ def getQuestionsStructure(projectId, ass_cod, request):
             questInfo = {}
             questInfo["name"] = questionData["question_name"]
             questInfo["id"] = questionData["question_id"]
+            questInfo["sensitive"] = questionData["question_sensitive"]
+            questInfo["type"] = questionData["question_dtype"]
             questInfo["vars"] = []
 
             if (

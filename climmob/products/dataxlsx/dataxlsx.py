@@ -10,7 +10,9 @@ from climmob.products.climmob_products import (
 )
 
 
-def create_XLSXToDownload(userOwner, projectId, projectCod, request, form, code):
+def create_XLSXToDownload(
+    userOwner, projectId, projectCod, request, form, code, dataPrivacy=False
+):
     # We create the plugin directory if it does not exists and return it
     # The path user.repository in development.ini/user/project/products/product and
     # user.repository in development.ini/user/project/products/product/outputs
@@ -19,11 +21,20 @@ def create_XLSXToDownload(userOwner, projectId, projectCod, request, form, code)
         if isinstance(value, str):
             settings[key] = value
 
-    path = createProductDirectory(request, userOwner, projectCod, "dataxlsx")
-    # We call the Celery task that will generate the output packages.pdf
-    nameOutput = form + "_data"
+    if dataPrivacy:
+        nameOutput = form + "_dataprivacy"
+        productName = "dataprivacyxlsx"
+        productCreate = "create_dataprivacy_xlsx_" + form + "_" + code
+    else:
+        nameOutput = form + "_data"
+        productName = "dataxlsx"
+        productCreate = "create_data_xlsx_" + form + "_" + code
+
     if code != "":
         nameOutput += "_" + code
+
+    path = createProductDirectory(request, userOwner, projectCod, productName)
+    # We call the Celery task that will generate the output packages.pdf
 
     task = create_XLSX.apply_async(
         (
@@ -45,10 +56,10 @@ def create_XLSXToDownload(userOwner, projectId, projectCod, request, form, code)
 
     registerProductInstance(
         projectId,
-        "dataxlsx",
+        productName,
         nameOutput + "_" + projectCod + ".xlsx",
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "create_data_xlsx_" + form + "_" + code,
+        productCreate,
         task.id,
         request,
     )

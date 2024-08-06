@@ -538,8 +538,21 @@
                                                                     {% if progress.regtotal > 0 %}
                                                                         <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('EditDataRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry') }}"><i class="fa fa-table"></i> {{ _("View and edit data") }}</a>
 
-                                                                        <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry', formatid='csv') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data in .CSV format") }}</a>
-                                                                        <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry', formatid='xlsx') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data in .XLSX format") }}</a>
+                                                                        <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry', formatid='csv', private='false') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data in .CSV format") }}</a>
+
+                                                                        {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
+
+                                                                            <a class="btn btn-primary btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry', formatid='csv', private='true') }}"><i class="fa fa-lock"></i> {{ _("Download data in .CSV format") }} ({{ _("Publishable") }})</a>
+
+                                                                        {% endif %}
+
+                                                                        <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry', formatid='xlsx', private='false') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data in .XLSX format") }}</a>
+
+                                                                        {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
+
+                                                                            <a class="btn btn-primary btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry', formatid='xlsx', private='true') }}"><i class="fa fa-lock"></i> {{ _("Download data in .XLSX format") }} ({{ _("Publishable") }})</a>
+
+                                                                        {% endif %}
 
                                                                         {% block dataprivacy_download_data_registry %}
 
@@ -675,8 +688,21 @@
 
                                                                                 {% if assessment.asstotal > 0 %}
                                                                                     <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('EditDataAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}" href="#"><i class="fa fa-table"></i> {{ _("View and edit data") }}</a>
-                                                                                    <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod, formatid='csv') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data in .CSV format") }}</a>
-                                                                                    <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod, formatid='xlsx') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data in .XLSX format") }}</a>
+                                                                                    <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod, formatid='csv', private='false') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data in .CSV format") }}</a>
+
+                                                                                    {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
+
+                                                                                        <a class="btn btn-primary btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod, formatid='csv', private='true') }}"><i class="fa fa-lock"></i> {{ _("Download data in .CSV format") }} ({{ _("Publishable") }})</a>
+
+                                                                                    {% endif %}
+
+                                                                                    <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod, formatid='xlsx', private='false') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data in .XLSX format") }}</a>
+
+                                                                                    {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
+
+                                                                                        <a class="btn btn-primary btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod, formatid='xlsx', private='true') }}"><i class="fa fa-lock"></i> {{ _("Download data in .XLSX format") }} ({{ _("Publishable") }})</a>
+
+                                                                                    {% endif %}
 
                                                                                     {% block dataprivacy_download_data_assessment scoped%}
 

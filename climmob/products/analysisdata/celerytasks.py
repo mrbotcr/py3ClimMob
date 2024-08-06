@@ -8,14 +8,10 @@ from climmob.products.analysisdata.exportToCsv import createCSV
 
 
 @celeryApp.task(base=climmobCeleryTask)
-def create_CSV(path, info, projectCod, form, code):
+def create_CSV(path, info, projectCod, form, code, nameOutput):
 
     # if os.path.exists(path):
     #    sh.rmtree(path)
-
-    nameOutput = form + "_data"
-    if code != "":
-        nameOutput += "_" + code
 
     pathout = os.path.join(path, "outputs")
     if not os.path.exists(path):
