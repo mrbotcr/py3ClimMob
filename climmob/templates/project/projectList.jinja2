@@ -55,15 +55,15 @@
 
                             <input type="text" class="form-control form-control-sm m-b-xs" id="filter" placeholder="{{ _("Search project") }}">
 
-                            <div class="project-list">
+                            <div class="project-list table-responsive">
 
                                 <table class="footable table table-stripped" data-page-size="50000" data-filter=#filter>
                                     <tbody>
                                         {% for project in userProjects %}
                                             <tr onclick="window.location = '{{ request.route_url('dashboard', _query={'user':project["owner"].user_name, "project": project.project_cod}) }}';">
-                                                <td class="project-status">
+                                                <td class="project-status" style="max-width: 110px; vertical-align: middle">
                                                     {% if project.project_dashboard == 1%}
-                                                        <a class="label label-primary">{{ _("Active project in 'Project overview' section") }}</a>
+                                                        <p class="label label-primary" style="width: 100%; display: block; word-wrap: break-word; white-space: normal; margin: 0px">{{ _("Active project in 'Project overview' section") }}</p>
                                                     {% endif %}
                                                 </td>
                                                 <td class="project-title" title="{{ request.h.readble_date(project.project_creationdate) }}">
