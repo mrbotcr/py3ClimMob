@@ -390,18 +390,31 @@ def getData(
 
                         defOfQuestion = defOfQuestionAssessments[_assessmentCode]
 
-                for qst in defOfQuestion:
-                    if qst["sensitive"] == 1:
-                        for var in qst["vars"]:
-                            if key.split("_", 1)[1] == var["name"]:
-                                if qst["type"] == 4:
-                                    latlong = value.split(" ")
-                                    noisy_lat, noisy_lon = add_noise_to_gps_coordinates(
-                                        float(latlong[0]), float(latlong[1]), 1000
-                                    )
-                                    dct[key] = str(noisy_lat + " " + noisy_lon)
-                                else:
-                                    dct[key] = ""
+                if key.split("_", 1)[1] in [
+                    "clm_deviceimei",
+                    "clc_before",
+                    "clc_after",
+                    "cal_qst163",
+                    "instancename",
+                    "_submitted_by",
+                ]:
+                    dct[key] = ""
+                else:
+                    for qst in defOfQuestion:
+                        if qst["sensitive"] == 1:
+                            for var in qst["vars"]:
+                                if key.split("_", 1)[1] == var["name"].lower():
+                                    if qst["type"] == 4:
+                                        latlong = value.split(" ")
+                                        (
+                                            noisy_lat,
+                                            noisy_lon,
+                                        ) = add_noise_to_gps_coordinates(
+                                            float(latlong[0]), float(latlong[1]), 1000
+                                        )
+                                        dct[key] = str(noisy_lat + " " + noisy_lon)
+                                    else:
+                                        dct[key] = ""
 
         result.append(dct)
     return result
