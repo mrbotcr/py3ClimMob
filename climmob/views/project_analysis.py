@@ -13,6 +13,8 @@ from climmob.processes import (
     get_collaborators_in_project,
     addMetadata,
     modifyMetadata,
+    searchTechnologiesInProject,
+    getCropTaxonomyDetails,
 )
 from climmob.products.analysis.analysis import create_analysis
 from climmob.products.analysisdata.analysisdata import create_datacsv
@@ -122,6 +124,17 @@ class metadata_view(privateView):
                             )
 
                     dataworking["md_collaborators"] = collaboratorsString
+
+                    projectTechnologies = searchTechnologiesInProject(
+                        activeProjectId, self.request
+                    )
+                    if projectTechnologies:
+                        dataworking["md_crops"] = projectTechnologies[0][
+                            "croptaxonomy_code"
+                        ]
+                        dataworking["cropInfo"] = getCropTaxonomyDetails(
+                            dataworking["md_crops"], self.request
+                        )
 
                     try:
                         varieties = getCombinationsData(activeProjectId, self.request)

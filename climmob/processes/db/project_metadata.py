@@ -2,14 +2,14 @@ from climmob.models import (
     ProjectMetadata,
     mapFromSchema,
     mapToSchema,
-    I18nCropTaxonomy,
     CropTaxonomy,
 )
+from climmob.processes.db.technologies import getCropTaxonomyDetails
 
 __all__ = ["getProjectMetadata", "addMetadata", "modifyMetadata"]
 
 
-def getProjectMetadata(projectId, request, langcode="en"):
+def getProjectMetadata(projectId, request):
     mappedData = mapFromSchema(
         request.dbsession.query(ProjectMetadata)
         .filter(ProjectMetadata.project_id == projectId)
@@ -20,12 +20,8 @@ def getProjectMetadata(projectId, request, langcode="en"):
 
         if mappedData["md_crops"]:
 
-            mappedData["cropInfo"] = mapFromSchema(
-                request.dbsession.query(CropTaxonomy, I18nCropTaxonomy)
-                .filter(I18nCropTaxonomy.taxonomy_code == mappedData["md_crops"])
-                .filter(I18nCropTaxonomy.lang_code == langcode)
-                .filter(CropTaxonomy.taxonomy_code == I18nCropTaxonomy.taxonomy_code)
-                .first()
+            mappedData["cropInfo"] = getCropTaxonomyDetails(
+                mappedData["md_crops"], request
             )
 
     return mappedData

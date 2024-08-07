@@ -11,8 +11,8 @@
     <label class="col-sm-4 control-label">{{ _('Crops') }}</label>
     <div class="col-sm-8">
         <select id="select_crop" name="md_crops" style="width: 100%; !important;" class="form-control" >
-            {% if dataworking["md_crops"] %}
-              <option value="{{ dataworking["cropInfo"]["taxonomy_code"] }}" selected="selected">{{ dataworking["cropInfo"]["crop_name"] }}</option>
+            {% if dataworking["cropInfo"] %}
+              <option value="{{ dataworking["cropInfo"]["taxonomy_code"] }}" selected="selected">{{ dataworking["cropInfo"]["taxonomy_name"] }}</option>
             {% endif %}
         </select>
         <span class="form-text m-b-none">{{  _("Name of the crop tested in the tricot trial") }}</span>
