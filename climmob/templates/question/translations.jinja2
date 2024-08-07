@@ -350,7 +350,7 @@
 
                             $(".txt{{ lang.lang_code }}").each(function () {
 
-                                if ($(this).val() === "") {
+                                if ($(this).val() === "" && $(this).attr("id") !== "question_unit_{{ lang.lang_code }}") {
                                     $(this).addClass("fieldWithProblem")
                                     $("#missingInfo").css("display", "block")
                                 } else {
