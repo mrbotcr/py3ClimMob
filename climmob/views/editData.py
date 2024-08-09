@@ -12,8 +12,7 @@ from climmob.processes import (
     projectExists,
     getJSONResult,
 )
-from climmob.products.analysisdata.analysisdata import create_datacsv
-from climmob.products.dataxlsx.dataxlsx import create_XLSXToDownload
+from climmob.products.analysisdata.analysisdata import create_data_export
 from climmob.products.errorLogDocument.errorLogDocument import create_error_log_document
 from climmob.views.classes import privateView
 from climmob.views.editDataDB import (
@@ -76,29 +75,20 @@ class downloadDataView(privateView):
         if formatId not in ["csv", "xlsx"]:
             raise HTTPNotFound()
 
-        if formatId == "csv":
-            create_datacsv(
-                activeProjectUser,
-                activeProjectId,
-                activeProjectCod,
-                info,
-                self.request,
-                formId,
-                code,
-                dataPrivacy=dataPrivacy,
-            )
+        create_data_export(
+            activeProjectUser,
+            activeProjectId,
+            activeProjectCod,
+            info,
+            self.request,
+            formId,
+            code,
+            formatId,
+            dataPrivacy=dataPrivacy,
+        )
 
         if formatId == "xlsx":
             formatExtra = formatId + "_"
-            create_XLSXToDownload(
-                activeProjectUser,
-                activeProjectId,
-                activeProjectCod,
-                self.request,
-                formId,
-                code,
-                dataPrivacy=dataPrivacy,
-            )
 
         if dataPrivacy:
             _format = "dataprivacy"

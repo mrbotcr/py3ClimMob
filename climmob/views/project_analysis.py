@@ -15,7 +15,7 @@ from climmob.processes import (
     modifyMetadata,
 )
 from climmob.products.analysis.analysis import create_analysis
-from climmob.products.analysisdata.analysisdata import create_datacsv
+from climmob.products.analysisdata.analysisdata import create_data_export
 from climmob.views.classes import privateView
 
 
@@ -284,7 +284,7 @@ def processToGenerateTheReport(
         combinationRerence,
     )
 
-    create_datacsv(
+    create_data_export(
         activeProjectData["owner"]["user_name"],
         activeProjectData["project_id"],
         activeProjectData["project_cod"],
@@ -292,6 +292,8 @@ def processToGenerateTheReport(
         request,
         "Report",
         "",
+        "csv",
+        dataPrivacy=True,
     )
 
     return True

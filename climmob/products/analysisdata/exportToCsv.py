@@ -1,5 +1,6 @@
 import csv
 import json
+import openpyxl
 
 
 def getRealData(lkptables, rtable, rfield, value, isMultiSelect):
@@ -23,67 +24,88 @@ def getRealData(lkptables, rtable, rfield, value, isMultiSelect):
 
 
 def createCSV(outputPath, inputFile):
+
+    columns, allData = dataJsonToArray(inputFile)
     myFile = open(outputPath, "w")
     with myFile:
         writer = csv.writer(myFile)
+        writer.writerow(columns)
 
-        with open(inputFile) as json_file:
-            data = json.load(json_file)
-            # SACO LAS COLUMNAS DEL REGISTRY
-            columns = []
-            for field in data["registry"]["fields"]:
+        for row in allData:
+            writer.writerow(row)
+
+
+def createXLSX(outputPath, inputFile):
+
+    columns, allData = dataJsonToArray(inputFile)
+    workbook = openpyxl.Workbook()
+    sheet = workbook.active
+    sheet.append(columns)
+
+    for row in allData:
+        sheet.append(row)
+
+    workbook.save(outputPath)
+
+
+def dataJsonToArray(inputFile):
+    columns = []
+    allData = []
+    with open(inputFile) as json_file:
+        data = json.load(json_file)
+        # SACO LAS COLUMNAS DEL REGISTRY
+
+        for field in data["registry"]["fields"]:
+            columns.append(field["name"].replace(",", ""))
+
+        # SACO LAS COLUMNAS DE LOS ASSESSMENTS
+        for assessment in data["assessments"]:
+            for field in assessment["fields"]:
                 columns.append(field["name"].replace(",", ""))
 
-            # SACO LAS COLUMNAS DE LOS ASSESSMENTS
+        # EMPIEZO A SACAR LOS DATOS
+
+        for row in data["data"]:
+            fieldsDataRow = []
+            # DATOS DEL REGISTRO
+            for field in data["registry"]["fields"]:
+                # print(field)
+                if field["rtable"] != None and row["REG_" + field["name"]] != None:
+                    result = getRealData(
+                        data["registry"]["lkptables"],
+                        field["rtable"],
+                        field["rfield"],
+                        row["REG_" + field["name"]],
+                        field["isMultiSelect"],
+                    )
+                    fieldsDataRow.append(str(result).replace(",", ""))
+                else:
+                    fieldsDataRow.append(
+                        str(row["REG_" + field["name"]]).replace(",", "")
+                    )
+
             for assessment in data["assessments"]:
                 for field in assessment["fields"]:
-                    columns.append(field["name"].replace(",", ""))
-
-            # ESCRIBO LAS COLUMNAS
-            writer.writerow(columns)
-
-            # EMPIEZO A SACAR LOS DATOS
-            for row in data["data"]:
-                fieldsDataRow = []
-                # DATOS DEL REGISTRO
-                for field in data["registry"]["fields"]:
-                    # print(field)
-                    if field["rtable"] != None and row["REG_" + field["name"]] != None:
+                    if (
+                        field["rtable"] != None
+                        and row["ASS" + assessment["code"] + "_" + field["name"]]
+                        != None
+                    ):
                         result = getRealData(
-                            data["registry"]["lkptables"],
+                            assessment["lkptables"],
                             field["rtable"],
                             field["rfield"],
-                            row["REG_" + field["name"]],
+                            row["ASS" + assessment["code"] + "_" + field["name"]],
                             field["isMultiSelect"],
                         )
                         fieldsDataRow.append(str(result).replace(",", ""))
                     else:
                         fieldsDataRow.append(
-                            str(row["REG_" + field["name"]]).replace(",", "")
+                            str(
+                                row["ASS" + assessment["code"] + "_" + field["name"]]
+                            ).replace(",", "")
                         )
 
-                for assessment in data["assessments"]:
-                    for field in assessment["fields"]:
-                        if (
-                            field["rtable"] != None
-                            and row["ASS" + assessment["code"] + "_" + field["name"]]
-                            != None
-                        ):
-                            result = getRealData(
-                                assessment["lkptables"],
-                                field["rtable"],
-                                field["rfield"],
-                                row["ASS" + assessment["code"] + "_" + field["name"]],
-                                field["isMultiSelect"],
-                            )
-                            fieldsDataRow.append(str(result).replace(",", ""))
-                        else:
-                            fieldsDataRow.append(
-                                str(
-                                    row[
-                                        "ASS" + assessment["code"] + "_" + field["name"]
-                                    ]
-                                ).replace(",", "")
-                            )
+            allData.append(fieldsDataRow)
 
-                writer.writerow(fieldsDataRow)
+    return columns, allData

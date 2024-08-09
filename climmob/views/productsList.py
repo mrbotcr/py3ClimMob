@@ -30,8 +30,7 @@ from climmob.processes import (
     getPrjLangDefaultInProject,
 )
 from climmob.products import product_found
-from climmob.products.analysisdata.analysisdata import create_datacsv
-from climmob.products.dataxlsx.dataxlsx import create_XLSXToDownload
+from climmob.products.analysisdata.analysisdata import create_data_export
 from climmob.products.colors.colors import create_colors_cards
 from climmob.products.errorLogDocument.errorLogDocument import create_error_log_document
 from climmob.products.fieldagents.fieldagents import create_fieldagents_report
@@ -117,7 +116,7 @@ class productsView(climmobPrivateView):
                         "climmobexplanationkit",
                     ]:
                         assessId = product["process_name"].split("_")[3]
-                        if product["product_id"] == "dataxlsx":
+                        if product["product_id"] in ["dataxlsx", "dataprivacyxlsx"]:
                             assessId = product["process_name"].split("_")[4]
 
                         product["extraInformation"] = getProjectAssessmentInfo(
@@ -279,14 +278,27 @@ class generateProductView(privateView):
                             listOfLabels,
                         )
 
-        if productid in ["datacsv", "dataprivacycsv"]:
-            locale = self.request.locale_name
+        if productid in ["datacsv", "dataprivacycsv", "dataxlsx", "dataprivacyxlsx"]:
             infoProduct = processname.split("_")
+            _form = ""
+            _assessmentcode = ""
+
+            if infoProduct[2] == "xlsx":
+                _formatId = "xlsx"
+                _form = infoProduct[3]
+                if _form == "Assessment":
+                    _assessmentcode = infoProduct[4]
+            else:
+                _formatId = "csv"
+                _form = infoProduct[2]
+                if _form == "Assessment":
+                    _assessmentcode = infoProduct[3]
+
             dataPrivacy = False
             if infoProduct[1] == "dataprivacy":
                 dataPrivacy = True
 
-            if infoProduct[2] == "Registration":
+            if _form == "Registration":
                 info = getJSONResult(
                     activeProjectData["owner"]["user_name"],
                     activeProjectData["project_id"],
@@ -296,13 +308,13 @@ class generateProductView(privateView):
                     dataPrivacy=dataPrivacy,
                 )
             else:
-                if infoProduct[2] == "Assessment":
+                if _form == "Assessment":
                     info = getJSONResult(
                         activeProjectData["owner"]["user_name"],
                         activeProjectData["project_id"],
                         activeProjectData["project_cod"],
                         self.request,
-                        assessmentCode=infoProduct[3],
+                        assessmentCode=_assessmentcode,
                         dataPrivacy=dataPrivacy,
                     )
                 else:
@@ -311,33 +323,18 @@ class generateProductView(privateView):
                         activeProjectData["project_id"],
                         activeProjectData["project_cod"],
                         self.request,
-                        dataPrivacy=True,
+                        dataPrivacy=dataPrivacy,
                     )
 
-            create_datacsv(
+            create_data_export(
                 activeProjectData["owner"]["user_name"],
                 activeProjectData["project_id"],
                 activeProjectData["project_cod"],
                 info,
                 self.request,
-                infoProduct[2],
-                infoProduct[3],
-                dataPrivacy=dataPrivacy,
-            )
-
-        if productid in ["dataxlsx", "dataprivacyxlsx"]:
-            infoProduct = processname.split("_")
-            dataPrivacy = False
-            if infoProduct[1] == "dataprivacy":
-                dataPrivacy = True
-
-            create_XLSXToDownload(
-                activeProjectData["owner"]["user_name"],
-                activeProjectData["project_id"],
-                activeProjectData["project_cod"],
-                self.request,
-                infoProduct[3],
-                infoProduct[4],
+                _form,
+                _assessmentcode,
+                _formatId,
                 dataPrivacy=dataPrivacy,
             )
 
