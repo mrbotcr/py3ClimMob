@@ -682,12 +682,16 @@
                     <br><br>
                     <table width="100%">
                         <tr>
-                            <td></td>
-                            <td></td>
+                            <td>
+
+                            </td>
                             <td style="text-align: center">
-                                <img class="language" name="en" src="{{ request.url_for_static('landing/en.png') }}" style="height: 18px; width: 25px">
-                                <img class="language" name="es" src="{{ request.url_for_static('landing/es.png') }}" style="height: 18px; width: 25px">
-                                <img class="language" name="fr" src="{{ request.url_for_static('landing/fr.png') }}" style="height: 18px; width: 25px">
+                                {{ _('Language') }}:
+                                <select id="language">
+                                    <option id="en" value="en">{{ _("English") }}</option>
+                                    <option id="es" value="es">{{ _("Spanish") }}</option>
+                                    <option id="fr" value="fr">{{ _("French") }}</option>
+                                </select>
                             </td>
                         </tr>
                     </table>
@@ -748,8 +752,8 @@
             if (selectedLanguage != null)
                 $('#language').val(selectedLanguage);
 
-            $(".language").click(function () {
-                setCookie('_LOCALE_', this.getAttribute("name"), 365);
+            $("#language").bind('change', function() {
+                setCookie('_LOCALE_', this.value, 365);
                 location.reload();
             })
         });
