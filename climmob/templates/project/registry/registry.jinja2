@@ -78,7 +78,16 @@
                                         <a class="btn btn-success btn-rounded  btn-xs" style="color: white" onclick="showHelp()"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a>
                                     </div>
                                     <input type="text" class="form-control form-control-sm m-b-xs" id="filterjstree2" placeholder="{{ _("Search question") }}">
-                                    <div style="overflow-x: hidden; overflow-y: scroll; min-height: 300px; max-height: calc(100vh - 345px);" id="div_availables">
+                                    <div class="row" style="margin-bottom: 5px">
+                                        <div class="col-md-6 text-center">
+                                            <a class="btn btn-success btn-xs" style="color: white" id="expandJsTree"><i class="fa fa-folder-open"></i> {{ _("Expand all categories") }}</a>
+                                        </div>
+                                        <div class="col-md-6 text-center">
+                                            <a class="btn btn-success btn-xs" style="color: white" id="collapseJsTree"><i class="fa fa-folder"></i> {{ _("Collapse all categories") }}</a>
+                                        </div>
+
+                                    </div>
+                                    <div style="overflow-x: hidden; overflow-y: scroll; min-height: 300px; max-height: calc(100vh - 460px);" id="div_availables">
                                         {% set doActions=False %}
                                         {% set jstreeId="jstree2" %}
                                         {% set eventClick=False %}
@@ -248,6 +257,15 @@
            $(".btnSwitchLanguage").click(function (){
                window.location.href = "{{ request.route_url('registry', user=activeProject["owner"].user_name, project=activeProject.project_cod) }}?language="+$(this).attr("idOfLanguage")
            }) ;
+
+           $("#expandJsTree").click(function (){
+               $("#jstree2").jstree("open_all");
+           });
+
+           $("#collapseJsTree").click(function (){
+               $("#jstree2").jstree("close_all");
+           });
+
         });
 
         $(document).ready(function () {
