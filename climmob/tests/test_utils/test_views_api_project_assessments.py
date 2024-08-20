@@ -120,7 +120,7 @@ class TestAddNewAssessmentView(BaseViewTestCase):
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("There is no project with that code.", response.body.decode())
-        self.assertTrue(mock_project_exists.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
 
     @patch('climmob.views.Api.projectAssessments.getAccessTypeForProject', return_value=4)
     @patch('climmob.views.Api.projectAssessments.getTheProjectIdForOwner', return_value=1)
@@ -131,9 +131,9 @@ class TestAddNewAssessmentView(BaseViewTestCase):
         self.assertEqual(response.status_code, 401)
         self.assertIn("The access assigned for this project does not allow you to add assessments.", response.body.decode())
 
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_get_access_type_for_project.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_get_access_type_for_project.assert_called_with('test_user', 1, self.view.request)
 
     def test_process_view_invalid_json(self):
         self.view.body = '{"wrong_key": "value"}'
@@ -162,7 +162,8 @@ class TestAddNewAssessmentView(BaseViewTestCase):
         self.assertEqual(response.status_code, 401)
         self.assertIn("Error in the JSON, It does not have the 'body' parameter.", response.body.decode())
 
-        self.assertTrue(mock_json_loads.called)
+
+        mock_json_loads.assert_called_with(self.view.body)
 
         mock_project_exists.assert_not_called()
         mock_get_the_project_id_for_owner.assert_not_called()
@@ -235,10 +236,10 @@ class TestAddNewAssessmentView(BaseViewTestCase):
         self.assertIn("Error adding assessment", response.body.decode())
 
         # Verify that all the patched methods were called
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_get_access_type_for_project.called)
-        self.assertTrue(mock_add_project_assessment.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_get_access_type_for_project.assert_called_with('test_user', 1, self.view.request)
+        mock_add_project_assessment.assert_called_with({'project_cod': '123', 'user_owner': 'owner', 'ass_desc': 'Description', 'ass_days': '10', 'ass_final': 'Yes', 'user_name': 'test_user', 'userOwner': 'owner', 'project_id': 1}, self.view.request, 'API')
 
 class TestUpdateProjectAssessmentView(BaseViewTestCase):
     view_class = UpdateProjectAssessmentView
@@ -269,12 +270,11 @@ class TestUpdateProjectAssessmentView(BaseViewTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("Data collection updated successfully.", response.body.decode())
 
-        # Verify that all the patched methods were called
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_get_access_type_for_project.called)
-        self.assertTrue(mock_assessment_exists.called)
-        self.assertTrue(mock_modify_project_assessment.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_get_access_type_for_project.assert_called_with('test_user', 1, self.view.request)
+        mock_assessment_exists.assert_called_with(1, 'ass123', self.view.request)
+        mock_modify_project_assessment.assert_called_with({'project_cod': '123', 'user_owner': 'owner', 'ass_cod': 'ass123', 'ass_desc': 'Description', 'ass_days': '10', 'user_name': 'test_user', 'project_id': 1}, self.view.request)
 
     @patch('climmob.views.Api.projectAssessments.projectExists', return_value=False)
     def test_process_view_project_not_exist(self, mock_project_exists):
@@ -282,7 +282,7 @@ class TestUpdateProjectAssessmentView(BaseViewTestCase):
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("There is no project with that code.", response.body.decode())
-        self.assertTrue(mock_project_exists.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
 
     @patch('climmob.views.Api.projectAssessments.getAccessTypeForProject', return_value=4)
     @patch('climmob.views.Api.projectAssessments.getTheProjectIdForOwner', return_value=1)
@@ -293,9 +293,9 @@ class TestUpdateProjectAssessmentView(BaseViewTestCase):
         self.assertEqual(response.status_code, 401)
         self.assertIn("The access assigned for this project does not allow you to update assessments.", response.body.decode())
 
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_get_access_type_for_project.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_get_access_type_for_project.assert_called_with('test_user', 1, self.view.request)
 
     @patch('climmob.views.Api.projectAssessments.assessmentExists', return_value=False)
     @patch('climmob.views.Api.projectAssessments.getAccessTypeForProject', return_value=1)
@@ -307,10 +307,10 @@ class TestUpdateProjectAssessmentView(BaseViewTestCase):
         self.assertEqual(response.status_code, 401)
         self.assertIn("There is no data collection with that code.", response.body.decode())
 
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_get_access_type_for_project.called)
-        self.assertTrue(mock_assessment_exists.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_get_access_type_for_project.assert_called_with('test_user', 1, self.view.request)
+        mock_assessment_exists.assert_called_with(1, 'ass123', self.view.request)
 
     def test_process_view_invalid_json(self):
         self.view.body = '{"wrong_key": "value"}'
@@ -332,9 +332,9 @@ class TestUpdateProjectAssessmentView(BaseViewTestCase):
         self.assertEqual(response.status_code, 401)
         self.assertIn("Error in the JSON, It does not have the 'body' parameter.", response.body.decode())
 
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_get_access_type_for_project.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_get_access_type_for_project.assert_called_with('test_user', 1, self.view.request)
 
     def test_process_view_post_method(self):
         self.view.request.method = "GET"
@@ -404,12 +404,12 @@ class TestUpdateProjectAssessmentView(BaseViewTestCase):
         self.assertEqual(response.status_code, 401)
         self.assertIn("Error updating assessment", response.body.decode())
 
-        # Verify that all the patched methods were called
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_get_access_type_for_project.called)
-        self.assertTrue(mock_assessment_exists.called)
-        self.assertTrue(mock_modify_project_assessment.called)
+
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_get_access_type_for_project.assert_called_with('test_user', 1, self.view.request)
+        mock_assessment_exists.assert_called_with(1, 'ass123', self.view.request)
+        mock_modify_project_assessment.assert_called_with({'project_cod': '123', 'user_owner': 'owner', 'ass_cod': 'ass123', 'ass_desc': 'Description', 'ass_days': '10', 'user_name': 'test_user', 'project_id': 1}, self.view.request)
 
 class TestDeleteProjectAssessmentView(BaseViewTestCase):
     view_class = DeleteProjectAssessmentView
@@ -440,13 +440,12 @@ class TestDeleteProjectAssessmentView(BaseViewTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("Data collection moment deleted succesfully.", response.body.decode())
 
-        # Verify that all the patched methods were called
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_get_access_type_for_project.called)
-        self.assertTrue(mock_assessment_exists.called)
-        self.assertTrue(mock_project_asessment_status.called)
-        self.assertTrue(mock_delete_project_assessment.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_get_access_type_for_project.assert_called_with('test_user', 1, self.view.request)
+        mock_assessment_exists.assert_called_with(1, 'ass123', self.view.request)
+        mock_project_asessment_status.assert_called_with(1, 'ass123', self.view.request)
+        mock_delete_project_assessment.assert_called_with('owner', 1, '123', 'ass123', self.view.request)
 
     @patch('climmob.views.Api.projectAssessments.projectExists', return_value=False)
     def test_process_view_project_not_exist(self, mock_project_exists):
@@ -454,7 +453,7 @@ class TestDeleteProjectAssessmentView(BaseViewTestCase):
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("There is no project with that code.", response.body.decode())
-        self.assertTrue(mock_project_exists.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
 
     @patch('climmob.views.Api.projectAssessments.getAccessTypeForProject', return_value=4)
     @patch('climmob.views.Api.projectAssessments.getTheProjectIdForOwner', return_value=1)
@@ -465,9 +464,9 @@ class TestDeleteProjectAssessmentView(BaseViewTestCase):
         self.assertEqual(response.status_code, 401)
         self.assertIn("The access assigned for this project does not allow you to delete assessments.", response.body.decode())
 
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_get_access_type_for_project.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_get_access_type_for_project.assert_called_with('test_user', 1, self.view.request)
 
     @patch('climmob.views.Api.projectAssessments.assessmentExists', return_value=False)
     @patch('climmob.views.Api.projectAssessments.getAccessTypeForProject', return_value=1)
@@ -479,10 +478,10 @@ class TestDeleteProjectAssessmentView(BaseViewTestCase):
         self.assertEqual(response.status_code, 401)
         self.assertIn("There is no data collection with that code.", response.body.decode())
 
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_get_access_type_for_project.called)
-        self.assertTrue(mock_assessment_exists.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_get_access_type_for_project.assert_called_with('test_user', 1, self.view.request)
+        mock_assessment_exists.assert_called_with(1, 'ass123', self.view.request)
 
     @patch('climmob.views.Api.projectAssessments.projectAsessmentStatus', return_value=False)
     @patch('climmob.views.Api.projectAssessments.assessmentExists', return_value=True)
@@ -495,11 +494,11 @@ class TestDeleteProjectAssessmentView(BaseViewTestCase):
         self.assertEqual(response.status_code, 401)
         self.assertIn("You can not delete this group because you have questions required for the data collection moment.", response.body.decode())
 
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_get_access_type_for_project.called)
-        self.assertTrue(mock_assessment_exists.called)
-        self.assertTrue(mock_project_asessment_status.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_get_access_type_for_project.assert_called_with('test_user', 1, self.view.request)
+        mock_assessment_exists.assert_called_with(1, 'ass123', self.view.request)
+        mock_project_asessment_status.assert_called_with(1, 'ass123', self.view.request)
 
     def test_process_view_invalid_json(self):
         self.view.body = '{"wrong_key": "value"}'
@@ -521,9 +520,9 @@ class TestDeleteProjectAssessmentView(BaseViewTestCase):
         self.assertEqual(response.status_code, 401)
         self.assertIn("Error in the JSON, It does not have the 'body' parameter.", response.body.decode())
 
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_get_access_type_for_project.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_get_access_type_for_project.assert_called_with('test_user', 1, self.view.request)
 
     def test_process_view_post_method(self):
         self.view.request.method = "GET"
@@ -572,13 +571,12 @@ class TestDeleteProjectAssessmentView(BaseViewTestCase):
         self.assertEqual(response.status_code, 401)
         self.assertIn("Error deleting assessment", response.body.decode())
 
-        # Verify that all the patched methods were called
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_get_access_type_for_project.called)
-        self.assertTrue(mock_assessment_exists.called)
-        self.assertTrue(mock_project_asessment_status.called)
-        self.assertTrue(mock_delete_project_assessment.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_get_access_type_for_project.assert_called_with('test_user', 1, self.view.request)
+        mock_assessment_exists.assert_called_with(1, 'ass123', self.view.request)
+        mock_project_asessment_status.assert_called_with(1, 'ass123', self.view.request)
+        mock_delete_project_assessment.assert_called_with('owner', 1, '123', 'ass123', self.view.request)
 
 class TestReadProjectAssessmentStructureView(BaseViewTestCase):
     view_class = ReadProjectAssessmentStructureView
@@ -608,11 +606,11 @@ class TestReadProjectAssessmentStructureView(BaseViewTestCase):
         response_data = json.loads(response.body)
         self.assertIsInstance(response_data, list)
         self.assertEqual(response_data[0]["section_id"], 1)
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_assessment_exists.called)
-        self.assertTrue(mock_get_project_data.called)
-        self.assertTrue(mock_get_assessment_questions.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_assessment_exists.assert_called_with(1, 'ass123', self.view.request)
+        mock_get_project_data.assert_called_with(1, self.view.request)
+        mock_get_assessment_questions.assert_called_with('owner', 1, 'ass123', self.view.request, ['Label A', 'Label B', 'Label C'], onlyShowTheBasicQuestions=True)
 
     @patch('climmob.views.Api.projectAssessments.projectExists', return_value=False)
     def test_process_view_project_not_exist(self, mock_project_exists):
@@ -620,7 +618,7 @@ class TestReadProjectAssessmentStructureView(BaseViewTestCase):
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("There is no project with that code.", response.body.decode())
-        self.assertTrue(mock_project_exists.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
 
     @patch('climmob.views.Api.projectAssessments.assessmentExists', return_value=False)
     @patch('climmob.views.Api.projectAssessments.getTheProjectIdForOwner', return_value=1)
@@ -630,9 +628,9 @@ class TestReadProjectAssessmentStructureView(BaseViewTestCase):
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("There is no data collection with that code.", response.body.decode())
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_assessment_exists.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_assessment_exists.assert_called_with(1, 'ass123', self.view.request)
 
     def test_process_view_invalid_json(self):
         self.view.body = '{"wrong_key": "value"}'
@@ -653,9 +651,9 @@ class TestReadProjectAssessmentStructureView(BaseViewTestCase):
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("Error in the JSON, It does not have the 'body' parameter.", response.body.decode())
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_get_project_data.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_get_project_data.assert_called_with(1, self.view.request)
 
     def test_process_view_post_method(self):
         self.view.request.method = "POST"
@@ -718,12 +716,12 @@ class TestCreateAssessmentGroupView(BaseViewTestCase):
         self.assertIn("Group added successfully", response.body.decode())
 
         # Verify that all the patched methods were called
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_get_access_type_for_project.called)
-        self.assertTrue(mock_assessment_exists.called)
-        self.assertTrue(mock_project_asessment_status.called)
-        self.assertTrue(mock_have_the_basic_structure_assessment.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_get_access_type_for_project.assert_called_with('test_user', 1, self.view.request)
+        mock_assessment_exists.assert_called_with(1, '456', self.view.request)
+        mock_project_asessment_status.assert_called_with(1, '456', self.view.request)
+        mock_have_the_basic_structure_assessment.assert_called_with('owner', 1, '456', self.view.request)
         self.assertTrue(mock_add_assessment_group.called)
 
     @patch('climmob.views.Api.projectAssessments.projectExists', return_value=False)
@@ -732,7 +730,7 @@ class TestCreateAssessmentGroupView(BaseViewTestCase):
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("There is no project with that code.", response.body.decode())
-        self.assertTrue(mock_project_exists.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
 
     @patch('climmob.views.Api.projectAssessments.getAccessTypeForProject', return_value=4)
     @patch('climmob.views.Api.projectAssessments.getTheProjectIdForOwner', return_value=1)
@@ -743,9 +741,9 @@ class TestCreateAssessmentGroupView(BaseViewTestCase):
         self.assertEqual(response.status_code, 401)
         self.assertIn("The access assigned for this project does not allow you to create groups.", response.body.decode())
 
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_get_access_type_for_project.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_get_access_type_for_project.assert_called_with('test_user', 1, self.view.request)
 
     def test_process_view_invalid_json(self):
         self.view.body = '{"wrong_key": "value"}'
@@ -881,11 +879,11 @@ class TestUpdateAssessmentGroupView(BaseViewTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("Group updated successfully", response.body.decode())
 
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_get_access_type_for_project.called)
-        self.assertTrue(mock_assessment_exists.called)
-        self.assertTrue(mock_project_asessment_status.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_get_access_type_for_project.assert_called_with('test_user', 1, self.view.request)
+        mock_assessment_exists.assert_called_with(1, '456', self.view.request)
+        mock_project_asessment_status.assert_called_with(1, '456', self.view.request)
         self.assertTrue(mock_exits_assessment_group.called)
         self.assertTrue(mock_modify_assessment_group.called)
 
@@ -895,7 +893,7 @@ class TestUpdateAssessmentGroupView(BaseViewTestCase):
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("There is no project with that code.", response.body.decode())
-        self.assertTrue(mock_project_exists.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
 
     @patch('climmob.views.Api.projectAssessments.getAccessTypeForProject', return_value=4)
     @patch('climmob.views.Api.projectAssessments.getTheProjectIdForOwner', return_value=1)
@@ -906,9 +904,9 @@ class TestUpdateAssessmentGroupView(BaseViewTestCase):
         self.assertEqual(response.status_code, 401)
         self.assertIn("The access assigned for this project does not allow you to update groups.", response.body.decode())
 
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_get_access_type_for_project.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_get_access_type_for_project.assert_called_with('test_user', 1, self.view.request)
 
     @patch('climmob.views.Api.projectAssessments.assessmentExists', return_value=False)
     @patch('climmob.views.Api.projectAssessments.getTheProjectIdForOwner', return_value=1)
@@ -918,9 +916,9 @@ class TestUpdateAssessmentGroupView(BaseViewTestCase):
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("There is no data collection with that code.", response.body.decode())
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_assessment_exists.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_assessment_exists.assert_called_with(1, '456', self.view.request)
 
     @patch('climmob.views.Api.projectAssessments.exitsAssessmentGroup', return_value=False)
     @patch('climmob.views.Api.projectAssessments.projectAsessmentStatus', return_value=True)
@@ -940,10 +938,10 @@ class TestUpdateAssessmentGroupView(BaseViewTestCase):
         self.assertEqual(response.status_code, 401)
         self.assertIn("There is not a group with that code.", response.body.decode())
 
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_assessment_exists.called)
-        self.assertTrue(mock_project_asessment_status.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_assessment_exists.assert_called_with(1, '456', self.view.request)
+        mock_project_asessment_status.assert_called_with(1, '456', self.view.request)
         self.assertTrue(mock_exits_assessment_group.called)
 
     def test_process_view_invalid_json(self):
@@ -964,8 +962,8 @@ class TestUpdateAssessmentGroupView(BaseViewTestCase):
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("Error in the JSON, It does not have the 'body' parameter.", response.body.decode())
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
 
     def test_process_view_post_method(self):
         self.view.request.method = "GET"
@@ -997,11 +995,11 @@ class TestUpdateAssessmentGroupView(BaseViewTestCase):
         self.assertEqual(response.status_code, 401)
         self.assertIn("There is already a group with this name.", response.body.decode())
 
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_get_access_type_for_project.called)
-        self.assertTrue(mock_assessment_exists.called)
-        self.assertTrue(mock_project_asessment_status.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_get_access_type_for_project.assert_called_with('test_user', 1, self.view.request)
+        mock_assessment_exists.assert_called_with(1, '456', self.view.request)
+        mock_project_asessment_status.assert_called_with(1, '456', self.view.request)
         self.assertTrue(mock_exits_assessment_group.called)
         self.assertTrue(mock_modify_assessment_group.called)
 
@@ -1039,11 +1037,11 @@ class TestDeleteAssessmentGroupView(BaseViewTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("Group deleted successfully", response.body.decode())
 
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_get_access_type_for_project.called)
-        self.assertTrue(mock_assessment_exists.called)
-        self.assertTrue(mock_project_asessment_status.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_get_access_type_for_project.assert_called_with('test_user', 1, self.view.request)
+        mock_assessment_exists.assert_called_with(1, '456', self.view.request)
+        mock_project_asessment_status.assert_called_with(1, '456', self.view.request)
         self.assertTrue(mock_exits_assessment_group.called)
         self.assertTrue(mock_canDeleteTheAssessmentGroup.called)
         self.assertTrue(mock_deleteAssessmentGroup.called)
@@ -1054,7 +1052,7 @@ class TestDeleteAssessmentGroupView(BaseViewTestCase):
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("There is no project with that code.", response.body.decode())
-        self.assertTrue(mock_project_exists.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
 
     @patch('climmob.views.Api.projectAssessments.assessmentExists', return_value=False)
     @patch('climmob.views.Api.projectAssessments.getTheProjectIdForOwner', return_value=1)
@@ -1064,9 +1062,9 @@ class TestDeleteAssessmentGroupView(BaseViewTestCase):
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("There is no data collection with that code.", response.body.decode())
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_assessment_exists.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_assessment_exists.assert_called_with(1, '456', self.view.request)
 
     @patch('climmob.views.Api.projectAssessments.getAccessTypeForProject', return_value=4)
     @patch('climmob.views.Api.projectAssessments.getTheProjectIdForOwner', return_value=1)
@@ -1077,9 +1075,9 @@ class TestDeleteAssessmentGroupView(BaseViewTestCase):
         self.assertEqual(response.status_code, 401)
         self.assertIn("The access assigned for this project does not allow you to delete groups.", response.body.decode())
 
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_get_access_type_for_project.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_get_access_type_for_project.assert_called_with('test_user', 1, self.view.request)
 
     @patch('climmob.views.Api.projectAssessments.exitsAssessmentGroup', return_value=False)
     @patch('climmob.views.Api.projectAssessments.projectAsessmentStatus', return_value=True)
@@ -1092,10 +1090,10 @@ class TestDeleteAssessmentGroupView(BaseViewTestCase):
         self.assertEqual(response.status_code, 401)
         self.assertIn("There is not a group with that code.", response.body.decode())
 
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_assessment_exists.called)
-        self.assertTrue(mock_project_asessment_status.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_assessment_exists.assert_called_with(1, '456', self.view.request)
+        mock_project_asessment_status.assert_called_with(1, '456', self.view.request)
         self.assertTrue(mock_exits_assessment_group.called)
 
     @patch('climmob.views.Api.projectAssessments.canDeleteTheAssessmentGroup', return_value=False)
@@ -1111,10 +1109,10 @@ class TestDeleteAssessmentGroupView(BaseViewTestCase):
         self.assertEqual(response.status_code, 401)
         self.assertIn("You can not delete this group because you have questions required for the assessment.", response.body.decode())
 
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_assessment_exists.called)
-        self.assertTrue(mock_project_asessment_status.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_assessment_exists.assert_called_with(1, '456', self.view.request)
+        mock_project_asessment_status.assert_called_with(1, '456', self.view.request)
         self.assertTrue(mock_exits_assessment_group.called)
         self.assertTrue(mock_canDeleteTheAssessmentGroup.called)
 
@@ -1134,10 +1132,10 @@ class TestDeleteAssessmentGroupView(BaseViewTestCase):
         self.assertEqual(response.status_code, 401)
         self.assertIn("Deletion failed", response.body.decode())
 
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_assessment_exists.called)
-        self.assertTrue(mock_project_asessment_status.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_assessment_exists.assert_called_with(1, '456', self.view.request)
+        mock_project_asessment_status.assert_called_with(1, '456', self.view.request)
         self.assertTrue(mock_exits_assessment_group.called)
         self.assertTrue(mock_canDeleteTheAssessmentGroup.called)
         self.assertTrue(mock_deleteAssessmentGroup.called)
@@ -1162,8 +1160,8 @@ class TestDeleteAssessmentGroupView(BaseViewTestCase):
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("Error in the JSON, It does not have the 'body' parameter.", response.body.decode())
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
 
     def test_process_view_post_method(self):
         self.view.request.method = "GET"
@@ -1226,11 +1224,11 @@ class TestReadPossibleQuestionForAssessmentGroupView(BaseViewTestCase):
         response_data = json.loads(response.body)
         self.assertIn("Questions", response_data)
         self.assertIn("QuestionsOptions", response_data)
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_get_access_type_for_project.called)
-        self.assertTrue(mock_assessment_exists.called)
-        self.assertTrue(mock_project_asessment_status.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_get_access_type_for_project.assert_called_with('test_user', 1, self.view.request)
+        mock_assessment_exists.assert_called_with(1, 'ass123', self.view.request)
+        mock_project_asessment_status.assert_called_with(1, 'ass123', self.view.request)
         self.assertTrue(mock_available_assessment_questions.called)
         self.assertTrue(mock_questions_options.called)
 
@@ -1240,7 +1238,7 @@ class TestReadPossibleQuestionForAssessmentGroupView(BaseViewTestCase):
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("There is no project with that code.", response.body.decode())
-        self.assertTrue(mock_project_exists.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
 
     @patch('climmob.views.Api.projectAssessments.assessmentExists', return_value=False)
     @patch('climmob.views.Api.projectAssessments.getTheProjectIdForOwner', return_value=1)
@@ -1250,9 +1248,9 @@ class TestReadPossibleQuestionForAssessmentGroupView(BaseViewTestCase):
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("There is no data collection with that code.", response.body.decode())
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_assessment_exists.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_assessment_exists.assert_called_with(1, 'ass123', self.view.request)
 
     def test_process_view_invalid_json(self):
         self.view.body = '{"wrong_key": "value"}'
@@ -1343,12 +1341,12 @@ class TestAddQuestionToGroupAssessmentView(BaseViewTestCase):
         self.assertIn("The question was added to the data collection moment.", response.body.decode())
 
         # Verify that all the patched methods were called
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_get_access_type_for_project.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_get_access_type_for_project.assert_called_with('test_user', 1, self.view.request)
         self.assertTrue(mock_the_user_belongs_to_the_project.called)
-        self.assertTrue(mock_assessment_exists.called)
-        self.assertTrue(mock_project_asessment_status.called)
+        mock_assessment_exists.assert_called_with(1, 'ass123', self.view.request)
+        mock_project_asessment_status.assert_called_with(1, 'ass123', self.view.request)
         self.assertTrue(mock_exits_assessment_group.called)
         self.assertTrue(mock_get_question_data.called)
         self.assertTrue(mock_can_use_the_question_assessment.called)
@@ -1360,7 +1358,7 @@ class TestAddQuestionToGroupAssessmentView(BaseViewTestCase):
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("There is no project with that code.", response.body.decode())
-        self.assertTrue(mock_project_exists.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
 
     @patch('climmob.views.Api.projectAssessments.theUserBelongsToTheProject', return_value=False)
     @patch('climmob.views.Api.projectAssessments.getTheProjectIdForOwner', return_value=1)
@@ -1370,8 +1368,8 @@ class TestAddQuestionToGroupAssessmentView(BaseViewTestCase):
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("You are trying to add a question from a user that does not belong to this project.", response.body.decode())
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
         self.assertTrue(mock_the_user_belongs_to_the_project.called)
 
     @patch('climmob.views.Api.projectAssessments.assessmentExists', return_value=False)
@@ -1382,9 +1380,9 @@ class TestAddQuestionToGroupAssessmentView(BaseViewTestCase):
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("There is no data collection with that code.", response.body.decode())
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_assessment_exists.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_assessment_exists.assert_called_with(1, 'ass123', self.view.request)
 
     @patch('climmob.views.Api.projectAssessments.projectAsessmentStatus', return_value=False)
     @patch('climmob.views.Api.projectAssessments.assessmentExists', return_value=True)
@@ -1395,10 +1393,10 @@ class TestAddQuestionToGroupAssessmentView(BaseViewTestCase):
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("You cannot update data collection moments. You already started the data collection.", response.body.decode())
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_assessment_exists.called)
-        self.assertTrue(mock_project_asessment_status.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_assessment_exists.assert_called_with(1, 'ass123', self.view.request)
+        mock_project_asessment_status.assert_called_with(1, 'ass123', self.view.request)
 
     def test_process_view_invalid_json(self):
         self.view.body = '{"wrong_key": "value"}'
@@ -1478,12 +1476,12 @@ class TestAddQuestionToGroupAssessmentView(BaseViewTestCase):
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("There is not a group with that code.", response.body.decode())
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_get_access_type_for_project.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_get_access_type_for_project.assert_called_with('test_user', 1, self.view.request)
         self.assertTrue(mock_the_user_belongs_to_the_project.called)
-        self.assertTrue(mock_assessment_exists.called)
-        self.assertTrue(mock_project_asessment_status.called)
+        mock_assessment_exists.assert_called_with(1, 'ass123', self.view.request)
+        mock_project_asessment_status.assert_called_with(1, 'ass123', self.view.request)
         self.assertTrue(mock_exits_assessment_group.called)
 
 class TestDeleteQuestionFromGroupAssessmentView(BaseViewTestCase):
@@ -1523,11 +1521,11 @@ class TestDeleteQuestionFromGroupAssessmentView(BaseViewTestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("Question deleted successfully.", response.body.decode())
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_get_access_type_for_project.called)
-        self.assertTrue(mock_assessment_exists.called)
-        self.assertTrue(mock_project_asessment_status.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_get_access_type_for_project.assert_called_with('test_user', 1, self.view.request)
+        mock_assessment_exists.assert_called_with(1, 'ass123', self.view.request)
+        mock_project_asessment_status.assert_called_with(1, 'ass123', self.view.request)
         self.assertTrue(mock_exits_assessment_group.called)
         self.assertTrue(mock_get_question_data.called)
         self.assertTrue(mock_exits_question_in_group_assessment.called)
@@ -1539,7 +1537,7 @@ class TestDeleteQuestionFromGroupAssessmentView(BaseViewTestCase):
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("There is no project with that code.", response.body.decode())
-        self.assertTrue(mock_project_exists.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
 
     @patch('climmob.views.Api.projectAssessments.getAccessTypeForProject', return_value=4)
     @patch('climmob.views.Api.projectAssessments.getTheProjectIdForOwner', return_value=1)
@@ -1549,9 +1547,9 @@ class TestDeleteQuestionFromGroupAssessmentView(BaseViewTestCase):
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("The access assigned for this project does not allow you to delete questions from a group.", response.body.decode())
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_get_access_type_for_project.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_get_access_type_for_project.assert_called_with('test_user', 1, self.view.request)
 
     @patch('climmob.views.Api.projectAssessments.getQuestionData', return_value=(None, False))
     @patch('climmob.views.Api.projectAssessments.exitsAssessmentGroup', return_value=True)
@@ -1565,11 +1563,11 @@ class TestDeleteQuestionFromGroupAssessmentView(BaseViewTestCase):
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("You do not have a question with this ID.", response.body.decode())
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_get_access_type_for_project.called)
-        self.assertTrue(mock_assessment_exists.called)
-        self.assertTrue(mock_project_asessment_status.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_get_access_type_for_project.assert_called_with('test_user', 1, self.view.request)
+        mock_assessment_exists.assert_called_with(1, 'ass123', self.view.request)
+        mock_project_asessment_status.assert_called_with(1, 'ass123', self.view.request)
         self.assertTrue(mock_exits_assessment_group.called)
         self.assertTrue(mock_get_question_data.called)
 
@@ -1585,11 +1583,11 @@ class TestDeleteQuestionFromGroupAssessmentView(BaseViewTestCase):
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("You can not delete this question because is required for this data collection moment.", response.body.decode())
-        self.assertTrue(mock_project_exists.called)
-        self.assertTrue(mock_get_the_project_id_for_owner.called)
-        self.assertTrue(mock_get_access_type_for_project.called)
-        self.assertTrue(mock_assessment_exists.called)
-        self.assertTrue(mock_project_asessment_status.called)
+        mock_project_exists.assert_called_with('test_user', 'owner', '123', self.view.request)
+        mock_get_the_project_id_for_owner.assert_called_with('owner', '123', self.view.request)
+        mock_get_access_type_for_project.assert_called_with('test_user', 1, self.view.request)
+        mock_assessment_exists.assert_called_with(1, 'ass123', self.view.request)
+        mock_project_asessment_status.assert_called_with(1, 'ass123', self.view.request)
         self.assertTrue(mock_exits_assessment_group.called)
         self.assertTrue(mock_get_question_data.called)
 
