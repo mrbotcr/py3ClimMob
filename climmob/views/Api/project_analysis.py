@@ -15,7 +15,7 @@ from climmob.views.classes import apiView
 from climmob.views.project_analysis import processToGenerateTheReport
 
 
-class readDataOfProjectView_api(apiView):
+class ReadDataOfProjectViewApi(apiView):
     def processView(self):
 
         if self.request.method == "GET":
@@ -73,7 +73,7 @@ class readDataOfProjectView_api(apiView):
             return response
 
 
-class readVariablesForAnalysisView_api(apiView):
+class ReadVariablesForAnalysisViewApi(apiView):
     def processView(self):
 
         if self.request.method == "GET":
@@ -176,7 +176,7 @@ class readVariablesForAnalysisView_api(apiView):
             return response
 
 
-class generateAnalysisByApiView_api(apiView):
+class GenerateAnalysisByApiViewApi(apiView):
     def processView(self):
 
         if self.request.method == "POST":
