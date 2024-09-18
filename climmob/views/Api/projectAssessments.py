@@ -1339,7 +1339,7 @@ class DeleteQuestionFromGroupAssessmentView(apiView):
 
 
 # _________________________________________ASSESSMENTS ORDER GROUPS___________________________________________________#
-class orderAssessmentQuestions_view(apiView):
+class OrderAssessmentQuestionsView(apiView):
     def processView(self):
 
         if self.request.method == "POST":

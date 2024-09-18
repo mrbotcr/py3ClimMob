@@ -34,7 +34,7 @@ from climmob.views.Api.projectAssessments import (
     ReadPossibleQuestionForAssessmentGroupView,
     AddQuestionToGroupAssessmentView,
     DeleteQuestionFromGroupAssessmentView,
-    orderAssessmentQuestions_view,
+    OrderAssessmentQuestionsView,
 )
 from climmob.views.Api.projectCreation import (
     createProject_view,
@@ -1909,7 +1909,7 @@ def loadRoutes(config):
         addRoute(
             "orderassessmentquestion",
             "/api/orderAssessmentQuestions",
-            orderAssessmentQuestions_view,
+            OrderAssessmentQuestionsView,
             None,
         )
     )
