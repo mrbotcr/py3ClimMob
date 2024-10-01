@@ -1,22 +1,23 @@
+import datetime
 import json
 import unittest
-import datetime
-from unittest.mock import patch, MagicMock, call
+from unittest.mock import patch
+
 from climmob.tests.test_utils.common import BaseViewTestCase
 from climmob.views.Api.projectCreation import (
-    readListOfTemplates_view,
-    readListOfCountries_view,
-    createProject_view,
-    readProjects_view,
-    deleteProject_view_api,
-    readCollaborators_view,
-    addCollaborator_view,
-    deleteCollaborator_view,
+    ReadListOfTemplatesView,
+    ReadListOfCountriesView,
+    CreateProjectView,
+    ReadProjectsView,
+    DeleteProjectViewApi,
+    ReadCollaboratorsView,
+    AddCollaboratorView,
+    DeleteCollaboratorView,
 )
 
 
 class TestReadListOfTemplatesView(BaseViewTestCase):
-    view_class = readListOfTemplates_view
+    view_class = ReadListOfTemplatesView
     request_method = "GET"
     request_body = json.dumps({"project_type": "agriculture"})
 
@@ -90,7 +91,7 @@ class TestReadListOfTemplatesView(BaseViewTestCase):
 
 
 class TestReadListOfCountriesView(BaseViewTestCase):
-    view_class = readListOfCountries_view
+    view_class = ReadListOfCountriesView
     request_method = "GET"
 
     @patch(
@@ -112,7 +113,7 @@ class TestReadListOfCountriesView(BaseViewTestCase):
 
 
 class TestCreateProjectView(BaseViewTestCase):
-    view_class = createProject_view
+    view_class = CreateProjectView
     request_method = "POST"
 
     def setUp(self):
@@ -134,31 +135,36 @@ class TestCreateProjectView(BaseViewTestCase):
         }
         self.view.body = json.dumps(self.valid_data)
 
-    @patch("climmob.views.Api.projectCreation.addPrjLang", return_value=(True, ""))
+    @patch("climmob.views.Api.projectCreation.existsCountryByCode", return_value=True)
+    @patch(
+        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
+    )
+    @patch("climmob.views.Api.projectCreation.projectInDatabase", return_value=False)
     @patch(
         "climmob.views.Api.projectCreation.addProject",
         return_value=(True, "new_project_id"),
     )
-    @patch("climmob.processes.db.utils.existsCountryByCode", return_value=True)
-    @patch("climmob.views.Api.projectCreation.projectInDatabase", return_value=False)
-    @patch(
-        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
-    )
+    @patch("climmob.views.Api.projectCreation.addPrjLang", return_value=(True, ""))
     def test_process_view_success(
         self,
-        mock_language_exist,
-        mock_project_in_db,
-        mock_exists_country,
-        mock_add_project,
         mock_add_prj_lang,
+        mock_add_project,
+        mock_exists_country,
+        mock_project_in_db,
+        mock_language_exist,
     ):
         response = self.view.processView()
+
         self.assertEqual(response.status_code, 200)
         self.assertIn("Project created successfully.", response.body.decode())
-        mock_language_exist.assert_called_with("en", "test_user", self.view.request)
-        mock_project_in_db.assert_called_with("test_user", "PRJ123", self.view.request)
-        mock_exists_country.assert_called_with(self.view.request, "US")
+
+        mock_language_exist.assert_called_with(self.view.request, "US")
+        mock_project_in_db.assert_called_with("en", "test_user", self.view.request)
+        mock_exists_country.assert_called_with("test_user", "PRJ123", self.view.request)
         mock_add_project.assert_called()
+        mock_add_prj_lang.assert_called_with(
+            {"lang_code": "en", "project_id": "new_project_id"}, self.view.request
+        )
 
     def test_process_view_invalid_method(self):
         self.view.request.method = "GET"
@@ -187,6 +193,7 @@ class TestCreateProjectView(BaseViewTestCase):
             "You are trying to use a parameter that is not allowed.",
             response.body.decode(),
         )
+        mock_language_exist.assert_not_called()
 
     def test_process_view_invalid_project_languages_type(self):
         self.valid_data["project_languages"] = "en"
@@ -229,11 +236,12 @@ class TestCreateProjectView(BaseViewTestCase):
             "You cannot create a clone and use a template at the same time.",
             response.body.decode(),
         )
+        mock_language_exist.assert_called_with("en", "test_user", self.view.request)
 
     @patch(
         "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
     )
-    @patch("climmob.processes.db.project.getProjectIsTemplate", return_value=None)
+    @patch("climmob.views.Api.projectCreation.getProjectIsTemplate", return_value=None)
     @patch("climmob.views.Api.projectCreation.projectInDatabase", return_value=False)
     def test_process_view_invalid_template(
         self, mock_project_in_db, mock_get_project_is_template, mock_language_exist
@@ -248,12 +256,13 @@ class TestCreateProjectView(BaseViewTestCase):
         mock_get_project_is_template.assert_called_with(
             self.view.request, "invalid_template_id"
         )
+        mock_language_exist.assert_called_with("en", "test_user", self.view.request)
 
     @patch(
         "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
     )
     @patch(
-        "climmob.processes.db.project.getProjectIsTemplate",
+        "climmob.views.Api.projectCreation.getProjectIsTemplate",
         return_value={"project_registration_and_analysis": "0"},
     )
     @patch("climmob.views.Api.projectCreation.projectInDatabase", return_value=False)
@@ -272,6 +281,8 @@ class TestCreateProjectView(BaseViewTestCase):
         mock_get_project_is_template.assert_called_with(
             self.view.request, "template_id"
         )
+        mock_project_in_db.assert_not_called()
+        mock_language_exist.assert_called_with("en", "test_user", self.view.request)
 
     @patch(
         "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
@@ -284,6 +295,7 @@ class TestCreateProjectView(BaseViewTestCase):
         self.assertEqual(response.status_code, 401)
         self.assertIn("This project ID already exists.", response.body.decode())
         mock_project_in_db.assert_called_with("test_user", "PRJ123", self.view.request)
+        mock_language_exist.assert_called_with("en", "test_user", self.view.request)
 
     @patch(
         "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
@@ -300,6 +312,7 @@ class TestCreateProjectView(BaseViewTestCase):
             "For the project ID only letters and numbers are allowed. The project ID must start with a letter.",
             response.body.decode(),
         )
+        mock_language_exist.assert_called_with("en", "test_user", self.view.request)
 
     @patch(
         "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
@@ -315,6 +328,7 @@ class TestCreateProjectView(BaseViewTestCase):
         self.assertIn(
             "The project ID must start with a letter.", response.body.decode()
         )
+        mock_language_exist.assert_called_with("en", "test_user", self.view.request)
 
     def test_process_view_missing_data_in_parameters(self):
         self.valid_data["project_name"] = ""
@@ -323,22 +337,29 @@ class TestCreateProjectView(BaseViewTestCase):
         self.assertEqual(response.status_code, 401)
         self.assertIn("Not all parameters have data.", response.body.decode())
 
+    @patch("climmob.views.Api.projectCreation.existsCountryByCode", return_value=False)
     @patch(
         "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
     )
-    @patch("climmob.processes.db.utils.existsCountryByCode", return_value=False)
     @patch("climmob.views.Api.projectCreation.projectInDatabase", return_value=False)
     def test_process_view_invalid_country_code(
-        self, mock_project_in_db, mock_exists_country, mock_language_exist
+        self,
+        mock_project_in_db,
+        mock_language_exist,
+        mock_exists_country,
     ):
         self.valid_data["project_cnty"] = "XX"
         self.view.body = json.dumps(self.valid_data)
+
         response = self.view.processView()
+
         self.assertEqual(response.status_code, 401)
         self.assertIn(
             "The country assigned to the project does not exist in the ClimMob list.",
             response.body.decode(),
         )
+        mock_language_exist.assert_called_with("en", "test_user", self.view.request)
+
         mock_exists_country.assert_called_with(self.view.request, "XX")
         mock_project_in_db.assert_called_with("test_user", "PRJ123", self.view.request)
 
@@ -376,6 +397,10 @@ class TestCreateProjectView(BaseViewTestCase):
         self.assertEqual(response.status_code, 401)
         self.assertIn("Error adding project", response.body.decode())
         mock_add_project.assert_called()
+        mock_project_in_db.assert_called_once_with(
+            "test_user", "PRJ123", self.view.request
+        )
+        mock_language_exist.assert_called_with("en", "test_user", self.view.request)
 
     @patch(
         "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
@@ -391,6 +416,7 @@ class TestCreateProjectView(BaseViewTestCase):
         self.assertIn(
             "The parameter project_numobs must be a number.", response.body.decode()
         )
+        mock_language_exist.assert_called_with("en", "test_user", self.view.request)
 
     @patch(
         "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
@@ -426,6 +452,7 @@ class TestCreateProjectView(BaseViewTestCase):
         self.assertIn(
             "The project to be cloned does not exist.", response.body.decode()
         )
+        mock_language_exist.assert_called_with("en", "test_user", self.view.request)
 
         mock_project_in_db.assert_called_once_with(
             "test_user", "nonexistent_project", self.view.request
@@ -447,6 +474,7 @@ class TestCreateProjectView(BaseViewTestCase):
             response.body.decode(),
         )
         mock_project_in_db.assert_called_with("test_user", "PRJ123", self.view.request)
+        mock_language_exist.assert_called_with("en", "test_user", self.view.request)
 
     @patch("climmob.views.Api.projectCreation.projectInDatabase")
     @patch(
@@ -468,15 +496,15 @@ class TestCreateProjectView(BaseViewTestCase):
         mock_project_in_db.assert_called_once_with(
             "test_user", "nonexistent_project", self.view.request
         )
+        mock_language_exist.assert_called_with("en", "test_user", self.view.request)
 
 
 class TestReadProjectsView(BaseViewTestCase):
-    view_class = readProjects_view
+    view_class = ReadProjectsView
     request_method = "GET"
 
     @patch("climmob.views.Api.projectCreation.getUserProjects")
     def test_process_view_success(self, mock_get_user_projects):
-        # Simular datos de proyectos
         projects = [
             {
                 "project_id": 1,
@@ -496,7 +524,6 @@ class TestReadProjectsView(BaseViewTestCase):
         response = self.view.processView()
         self.assertEqual(response.status_code, 200)
 
-        # Convertir fechas a string para comparación
         expected_body = json.dumps(projects, default=lambda o: o.__str__())
 
         self.assertEqual(response.body.decode(), expected_body)
@@ -510,7 +537,7 @@ class TestReadProjectsView(BaseViewTestCase):
 
 
 class TestDeleteProjectViewApi(BaseViewTestCase):
-    view_class = deleteProject_view_api
+    view_class = DeleteProjectViewApi
     request_method = "POST"
 
     def setUp(self):
@@ -536,6 +563,15 @@ class TestDeleteProjectViewApi(BaseViewTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("The project was deleted successfully", response.body.decode())
 
+        mock_project_exists.assert_called_with(
+            "test_user", "owner123", "PRJ123", self.view.request
+        )
+        mock_get_project_id.assert_called_with("owner123", "PRJ123", self.view.request)
+        mock_get_access_type.assert_called_with(
+            "test_user", "project_id", self.view.request
+        )
+        mock_delete_project.assert_called_with("project_id", self.view.request)
+
     @patch("climmob.views.Api.projectCreation.projectExists", return_value=False)
     def test_process_view_project_does_not_exist(self, mock_project_exists):
         response = self.view.processView()
@@ -556,6 +592,13 @@ class TestDeleteProjectViewApi(BaseViewTestCase):
         self.assertIn(
             "The access assigned for this project does not allow you to delete the project.",
             response.body.decode(),
+        )
+        mock_project_exists.assert_called_with(
+            "test_user", "owner123", "PRJ123", self.view.request
+        )
+        mock_get_project_id.assert_called_with("owner123", "PRJ123", self.view.request)
+        mock_get_access_type.assert_called_with(
+            "test_user", "project_id", self.view.request
         )
 
     @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)
@@ -579,6 +622,15 @@ class TestDeleteProjectViewApi(BaseViewTestCase):
         self.assertEqual(response.status_code, 401)
         self.assertIn("Error deleting project", response.body.decode())
 
+        mock_project_exists.assert_called_with(
+            "test_user", "owner123", "PRJ123", self.view.request
+        )
+        mock_get_project_id.assert_called_with("owner123", "PRJ123", self.view.request)
+        mock_get_access_type.assert_called_with(
+            "test_user", "project_id", self.view.request
+        )
+        mock_delete_project.assert_called_with("project_id", self.view.request)
+
     def test_process_view_invalid_json(self):
         invalid_data = {"project_cod": "PRJ123"}
         self.view.body = json.dumps(invalid_data)
@@ -594,7 +646,7 @@ class TestDeleteProjectViewApi(BaseViewTestCase):
 
 
 class TestReadCollaboratorsView(BaseViewTestCase):
-    view_class = readCollaborators_view
+    view_class = ReadCollaboratorsView
     request_method = "GET"
 
     def setUp(self):
@@ -652,7 +704,7 @@ class TestReadCollaboratorsView(BaseViewTestCase):
 
 
 class TestAddCollaboratorView(BaseViewTestCase):
-    view_class = addCollaborator_view
+    view_class = AddCollaboratorView
     request_method = "POST"
 
     def setUp(self):
@@ -771,6 +823,15 @@ class TestAddCollaboratorView(BaseViewTestCase):
             response.body.decode(),
         )
         mock_get_user_info.assert_called_once_with(self.view.request, "collaborator123")
+        mock_project_exists.assert_called_once_with(
+            "test_user", "owner123", "PRJ123", self.view.request
+        )
+        mock_get_project_id.assert_called_once_with(
+            "owner123", "PRJ123", self.view.request
+        )
+        mock_get_access_type.assert_called_once_with(
+            "test_user", "project_id", self.view.request
+        )
 
     @patch(
         "climmob.views.Api.projectCreation.theUserBelongsToTheProject",
@@ -800,6 +861,16 @@ class TestAddCollaboratorView(BaseViewTestCase):
         mock_user_belongs.assert_called_once_with(
             "collaborator123", "project_id", self.view.request
         )
+        mock_get_user_info.assert_called_once_with(self.view.request, "collaborator123")
+        mock_project_exists.assert_called_once_with(
+            "test_user", "owner123", "PRJ123", self.view.request
+        )
+        mock_get_project_id.assert_called_once_with(
+            "owner123", "PRJ123", self.view.request
+        )
+        mock_get_access_type.assert_called_once_with(
+            "test_user", "project_id", self.view.request
+        )
 
     @patch(
         "climmob.views.Api.projectCreation.theUserBelongsToTheProject",
@@ -827,6 +898,20 @@ class TestAddCollaboratorView(BaseViewTestCase):
         self.assertIn(
             "The types of access for collaborators are as follows: 2=Admin, 3=Editor, 4=Member.",
             response.body.decode(),
+        )
+
+        mock_user_belongs.assert_called_once_with(
+            "collaborator123", "project_id", self.view.request
+        )
+        mock_get_user_info.assert_called_once_with(self.view.request, "collaborator123")
+        mock_project_exists.assert_called_once_with(
+            "test_user", "owner123", "PRJ123", self.view.request
+        )
+        mock_get_project_id.assert_called_once_with(
+            "owner123", "PRJ123", self.view.request
+        )
+        mock_get_access_type.assert_called_once_with(
+            "test_user", "project_id", self.view.request
         )
 
     @patch(
@@ -858,6 +943,20 @@ class TestAddCollaboratorView(BaseViewTestCase):
         self.assertIn("Error adding collaborator", response.body.decode())
         mock_add_collaborator.assert_called_once()
 
+        mock_user_belongs.assert_called_once_with(
+            "collaborator123", "project_id", self.view.request
+        )
+        mock_get_user_info.assert_called_once_with(self.view.request, "collaborator123")
+        mock_project_exists.assert_called_once_with(
+            "test_user", "owner123", "PRJ123", self.view.request
+        )
+        mock_get_project_id.assert_called_once_with(
+            "owner123", "PRJ123", self.view.request
+        )
+        mock_get_access_type.assert_called_once_with(
+            "test_user", "project_id", self.view.request
+        )
+
     def test_process_view_missing_obligatory_keys(self):
         del self.valid_data["user_collaborator"]
         self.view.body = json.dumps(self.valid_data)
@@ -873,7 +972,7 @@ class TestAddCollaboratorView(BaseViewTestCase):
 
 
 class TestDeleteCollaboratorView(BaseViewTestCase):
-    view_class = deleteCollaborator_view
+    view_class = DeleteCollaboratorView
     request_method = "POST"
 
     def setUp(self):
@@ -888,12 +987,17 @@ class TestDeleteCollaboratorView(BaseViewTestCase):
         self.view.body = self.request_body  # Cuerpo de la petición simulado
         self.view.request.json_body = json.loads(self.request_body)
 
-    @patch("climmob.processes.db.project.getTheProjectIdForOwner", return_value=1)
-    @patch("climmob.processes.db.project.projectExists", return_value=True)
-    @patch("climmob.processes.db.project.getAccessTypeForProject", return_value=3)
-    @patch("climmob.processes.db.project.getUserInfo", return_value=True)
-    @patch("climmob.processes.db.project.theUserBelongsToTheProject", return_value=True)
-    @patch("climmob.processes.db.project.remove_collaborator", return_value=(True, ""))
+    @patch("climmob.views.Api.projectCreation.getTheProjectIdForOwner", return_value=1)
+    @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)
+    @patch("climmob.views.Api.projectCreation.getAccessTypeForProject", return_value=3)
+    @patch("climmob.views.Api.projectCreation.getUserInfo", return_value=True)
+    @patch(
+        "climmob.views.Api.projectCreation.theUserBelongsToTheProject",
+        return_value=True,
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.remove_collaborator", return_value=(True, "")
+    )
     def test_process_view_successful_removal(
         self,
         mock_remove,
@@ -910,8 +1014,22 @@ class TestDeleteCollaboratorView(BaseViewTestCase):
         )
         mock_remove.assert_called_once()
 
-    @patch("climmob.processes.db.project.getTheProjectIdForOwner", return_value=1)
-    @patch("climmob.processes.db.project.projectExists", return_value=False)
+        mock_user_belongs.assert_called_once_with(
+            "collaborator_user", 1, self.view.request
+        )
+        mock_get_user_info.assert_called_once_with(
+            self.view.request, "collaborator_user"
+        )
+        mock_access_type.called_once_with(self.view.request)
+        mock_project_exists.assert_called_once_with(
+            "test_user", "owner_user", "PRJ123", self.view.request
+        )
+        mock_get_project_id.assert_called_once_with(
+            "owner_user", "PRJ123", self.view.request
+        )
+
+    @patch("climmob.views.Api.projectCreation.getTheProjectIdForOwner", return_value=1)
+    @patch("climmob.views.Api.projectCreation.projectExists", return_value=False)
     def test_process_view_project_does_not_exist(
         self, mock_project_exists, mock_get_project_id
     ):
@@ -919,9 +1037,14 @@ class TestDeleteCollaboratorView(BaseViewTestCase):
         self.assertEqual(response.status_code, 401)
         self.assertIn("This project does not exist.", response.body.decode())
 
-    @patch("climmob.processes.db.project.getTheProjectIdForOwner", return_value=1)
-    @patch("climmob.processes.db.project.projectExists", return_value=True)
-    @patch("climmob.processes.db.project.getAccessTypeForProject", return_value=4)
+        mock_project_exists.assert_called_once_with(
+            "test_user", "owner_user", "PRJ123", self.view.request
+        )
+        mock_get_project_id.assert_not_called()
+
+    @patch("climmob.views.Api.projectCreation.getTheProjectIdForOwner", return_value=1)
+    @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)
+    @patch("climmob.views.Api.projectCreation.getAccessTypeForProject", return_value=4)
     def test_process_view_no_permission(
         self, mock_access_type, mock_project_exists, mock_get_project_id
     ):
@@ -932,10 +1055,18 @@ class TestDeleteCollaboratorView(BaseViewTestCase):
             response.body.decode(),
         )
 
-    @patch("climmob.processes.db.project.getTheProjectIdForOwner", return_value=1)
-    @patch("climmob.processes.db.project.projectExists", return_value=True)
-    @patch("climmob.processes.db.project.getAccessTypeForProject", return_value=3)
-    @patch("climmob.processes.db.project.getUserInfo", return_value=False)
+        mock_access_type.called_once_with(self.view.request)
+        mock_project_exists.assert_called_once_with(
+            "test_user", "owner_user", "PRJ123", self.view.request
+        )
+        mock_get_project_id.assert_called_once_with(
+            "owner_user", "PRJ123", self.view.request
+        )
+
+    @patch("climmob.views.Api.projectCreation.getTheProjectIdForOwner", return_value=1)
+    @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)
+    @patch("climmob.views.Api.projectCreation.getAccessTypeForProject", return_value=3)
+    @patch("climmob.views.Api.projectCreation.getUserInfo", return_value=False)
     def test_process_view_user_does_not_exist(
         self,
         mock_get_user_info,
@@ -950,12 +1081,24 @@ class TestDeleteCollaboratorView(BaseViewTestCase):
             response.body.decode(),
         )
 
-    @patch("climmob.processes.db.project.getTheProjectIdForOwner", return_value=1)
-    @patch("climmob.processes.db.project.projectExists", return_value=True)
-    @patch("climmob.processes.db.project.getAccessTypeForProject", return_value=3)
-    @patch("climmob.processes.db.project.getUserInfo", return_value=True)
+        mock_get_user_info.assert_called_once_with(
+            self.view.request, "collaborator_user"
+        )
+        mock_access_type.called_once_with(self.view.request)
+        mock_project_exists.assert_called_once_with(
+            "test_user", "owner_user", "PRJ123", self.view.request
+        )
+        mock_get_project_id.assert_called_once_with(
+            "owner_user", "PRJ123", self.view.request
+        )
+
+    @patch("climmob.views.Api.projectCreation.getTheProjectIdForOwner", return_value=1)
+    @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)
+    @patch("climmob.views.Api.projectCreation.getAccessTypeForProject", return_value=3)
+    @patch("climmob.views.Api.projectCreation.getUserInfo", return_value=True)
     @patch(
-        "climmob.processes.db.project.theUserBelongsToTheProject", return_value=False
+        "climmob.views.Api.projectCreation.theUserBelongsToTheProject",
+        return_value=False,
     )
     def test_process_view_user_not_in_project(
         self,
@@ -972,11 +1115,28 @@ class TestDeleteCollaboratorView(BaseViewTestCase):
             response.body.decode(),
         )
 
-    @patch("climmob.processes.db.project.getTheProjectIdForOwner", return_value=1)
-    @patch("climmob.processes.db.project.projectExists", return_value=True)
-    @patch("climmob.processes.db.project.getAccessTypeForProject", return_value=3)
-    @patch("climmob.processes.db.project.getUserInfo", return_value=True)
-    @patch("climmob.processes.db.project.theUserBelongsToTheProject", return_value=True)
+        mock_user_belongs.assert_called_once_with(
+            "collaborator_user", 1, self.view.request
+        )
+        mock_get_user_info.assert_called_once_with(
+            self.view.request, "collaborator_user"
+        )
+        mock_access_type.called_once_with(self.view.request)
+        mock_project_exists.assert_called_once_with(
+            "test_user", "owner_user", "PRJ123", self.view.request
+        )
+        mock_get_project_id.assert_called_once_with(
+            "owner_user", "PRJ123", self.view.request
+        )
+
+    @patch("climmob.views.Api.projectCreation.getTheProjectIdForOwner", return_value=1)
+    @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)
+    @patch("climmob.views.Api.projectCreation.getAccessTypeForProject", return_value=3)
+    @patch("climmob.views.Api.projectCreation.getUserInfo", return_value=True)
+    @patch(
+        "climmob.views.Api.projectCreation.theUserBelongsToTheProject",
+        return_value=True,
+    )
     def test_process_view_cannot_delete_owner(
         self,
         mock_user_belongs,
@@ -998,6 +1158,16 @@ class TestDeleteCollaboratorView(BaseViewTestCase):
         self.assertEqual(response.status_code, 401)
         self.assertIn(
             "The user who owns the project cannot be deleted.", response.body.decode()
+        )
+
+        mock_user_belongs.assert_called_once_with("owner_user", 1, self.view.request)
+        mock_get_user_info.assert_called_once_with(self.view.request, "owner_user")
+        mock_access_type.called_once_with(self.view.request)
+        mock_project_exists.assert_called_once_with(
+            "test_user", "owner_user", "PRJ123", self.view.request
+        )
+        mock_get_project_id.assert_called_once_with(
+            "owner_user", "PRJ123", self.view.request
         )
 
 
