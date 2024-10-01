@@ -28,7 +28,7 @@ from climmob.processes import (
 from climmob.views.classes import apiView
 
 
-class addProjectTechnology_view(apiView):
+class AddProjectTechnologyView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -144,7 +144,7 @@ class addProjectTechnology_view(apiView):
             return response
 
 
-class readProjectTechnologies_view(apiView):
+class ReadProjectTechnologiesView(apiView):
     def processView(self):
 
         if self.request.method == "GET":
@@ -198,7 +198,7 @@ class readProjectTechnologies_view(apiView):
             return response
 
 
-class readPossibleProjectTechnologies_view(apiView):
+class ReadPossibleProjectTechnologiesView(apiView):
     def processView(self):
 
         if self.request.method == "GET":
@@ -264,7 +264,7 @@ class readPossibleProjectTechnologies_view(apiView):
             return response
 
 
-class deleteProjectTechnology_view(apiView):
+class DeleteProjectTechnologyView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -373,7 +373,7 @@ class deleteProjectTechnology_view(apiView):
 # ___________________________________________________________ALIAS_______________________________________________________#
 
 
-class addProjectTechnologyAlias_view(apiView):
+class AddProjectTechnologyAliasView(apiView):
     def processView(self):
         if self.request.method == "POST":
             obligatory = [
@@ -504,7 +504,7 @@ class addProjectTechnologyAlias_view(apiView):
             return response
 
 
-class addProjectTechnologyAliasExtra_view(apiView):
+class AddProjectTechnologyAliasExtraView(apiView):
     def processView(self):
         if self.request.method == "POST":
             obligatory = [
@@ -624,7 +624,7 @@ class addProjectTechnologyAliasExtra_view(apiView):
             return response
 
 
-class readProjectTechnologiesAlias_view(apiView):
+class ReadProjectTechnologiesAliasView(apiView):
     def processView(self):
 
         if self.request.method == "GET":
@@ -702,7 +702,7 @@ class readProjectTechnologiesAlias_view(apiView):
             return response
 
 
-class readProjectTechnologiesAliasExtra_view(apiView):
+class ReadProjectTechnologiesAliasExtraView(apiView):
     def processView(self):
 
         if self.request.method == "GET":
@@ -780,7 +780,7 @@ class readProjectTechnologiesAliasExtra_view(apiView):
             return response
 
 
-class readPossibleProjectTechnologiesAlias_view(apiView):
+class ReadPossibleProjectTechnologiesAliasView(apiView):
     def processView(self):
 
         if self.request.method == "GET":
