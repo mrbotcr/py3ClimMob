@@ -226,13 +226,13 @@ from climmob.views.question import (
     getUserLanguagesPreview_view,
 )
 from climmob.views.registry import (
-    registry_view,
-    deleteRegistrySection_view,
-    cancelRegistry_view,
-    closeRegistry_view,
-    registryFormCreation_view,
-    registrySectionActions_view,
-    getRegistrySection_view,
+    RegistryView,
+    DeleteRegistrySectionView,
+    CancelRegistryView,
+    CloseRegistryView,
+    RegistryFormCreationView,
+    RegistrySectionActionsView,
+    GetRegistrySectionView,
 )
 from climmob.views.techaliases import deletealias_view
 from climmob.views.technologies import (
@@ -753,7 +753,7 @@ def loadRoutes(config):
         addRoute(
             "registry",
             "/user/{user}/project/{project}/registry",
-            registry_view,
+            RegistryView,
             "project/registry/registry.jinja2",
         )
     )
@@ -761,7 +761,7 @@ def loadRoutes(config):
         addRoute(
             "getRegistrySection",
             "/user/{user}/project/{project}/section/{section}/getRegistrySection",
-            getRegistrySection_view,
+            GetRegistrySectionView,
             "json",
         )
     )
@@ -769,7 +769,7 @@ def loadRoutes(config):
         addRoute(
             "registrySaveChanges",
             "/user/{user}/project/{project}/registry/savechanges",
-            registryFormCreation_view,
+            RegistryFormCreationView,
             "string",
         )
     )
@@ -778,7 +778,7 @@ def loadRoutes(config):
         addRoute(
             "deleteregistrygroup",
             "/user/{user}/project/{project}/registry/{groupid}/delete",
-            deleteRegistrySection_view,
+            DeleteRegistrySectionView,
             "json",
         )
     )
@@ -786,7 +786,7 @@ def loadRoutes(config):
         {
             "name": "registrySectionActions",
             "path": "/user/{user}/project/{project}/registrySectionActions",
-            "view": registrySectionActions_view,
+            "view": RegistrySectionActionsView,
             "renderer": "json",
         }
     )
@@ -794,7 +794,7 @@ def loadRoutes(config):
         addRoute(
             "cancelregistry",
             "/user/{user}/project/{project}/registry/cancel",
-            cancelRegistry_view,
+            CancelRegistryView,
             "project/cancelregistry.jinja2",
         )
     )
@@ -802,7 +802,7 @@ def loadRoutes(config):
         addRoute(
             "closeregistry",
             "/user/{user}/project/{project}/registry/close",
-            closeRegistry_view,
+            CloseRegistryView,
             "project/closepregistry.jinja2",
         )
     )

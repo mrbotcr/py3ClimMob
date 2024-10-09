@@ -31,7 +31,7 @@ from climmob.views.question import getDictForPreview
 from climmob.products.forms.form import create_document_form
 
 
-class deleteRegistrySection_view(privateView):
+class DeleteRegistrySectionView(privateView):
     def processView(self):
 
         activeProjectUser = self.request.matchdict["user"]
@@ -101,7 +101,7 @@ def actionsInSections(self, postdata):
                 }
 
 
-class registrySectionActions_view(privateView):
+class RegistrySectionActionsView(privateView):
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
@@ -130,7 +130,7 @@ class registrySectionActions_view(privateView):
             return actionsInSections(self, postdata)
 
 
-class cancelRegistry_view(privateView):
+class CancelRegistryView(privateView):
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
@@ -178,7 +178,7 @@ class cancelRegistry_view(privateView):
         }
 
 
-class closeRegistry_view(privateView):
+class CloseRegistryView(privateView):
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
@@ -227,7 +227,7 @@ class closeRegistry_view(privateView):
         }
 
 
-class registry_view(privateView):
+class RegistryView(privateView):
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
@@ -311,7 +311,7 @@ class registry_view(privateView):
         return dictreturn
 
 
-class registryFormCreation_view(privateView):
+class RegistryFormCreationView(privateView):
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
@@ -460,7 +460,7 @@ def getDataFormPreview(
     return data, finalCloseQst
 
 
-class getRegistrySection_view(privateView):
+class GetRegistrySectionView(privateView):
     def processView(self):
 
         activeProjectUser = self.request.matchdict["user"]
