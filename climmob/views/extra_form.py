@@ -4,7 +4,7 @@ from climmob.processes import getActiveForm, addExtraFormAnswers
 import datetime
 
 
-class extraFormPOST_view(privateView):
+class ExtraFormPostView(privateView):
     def processView(self):
 
         if self.request.method == "POST":
