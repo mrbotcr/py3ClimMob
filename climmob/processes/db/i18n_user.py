@@ -75,7 +75,6 @@ def getListOfLanguagesByUser(request, userName, questionId=None):
         .order_by(I18nUser.lang_default.desc(), I18n.lang_name)
         .all()
     )
-
     return mappedData
 
 
