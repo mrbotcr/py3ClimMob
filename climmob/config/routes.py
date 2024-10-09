@@ -176,17 +176,17 @@ from climmob.views.mapForProjectVisualization.mapForProjectVisualization import 
     showMapForProjectVisualization_view,
 )
 from climmob.views.odk import (
-    formList_view,
-    formListByProject_view,
-    submission_view,
-    submissionByProject_view,
-    XMLForm_view,
-    manifest_view,
-    mediaFile_view,
-    push_view,
-    assessmentXMLForm_view,
-    assessmentMediaFile_view,
-    assessmentManifest_view,
+    FormlistView,
+    FormListByProjectView,
+    SubmissionView,
+    SubmissionByProjectView,
+    XMLFormView,
+    ManifestView,
+    MediaFileView,
+    PushView,
+    AssessmentXMLFormView,
+    AssessmentMediaFileView,
+    AssessmentManifestView,
 )
 from climmob.views.productsList import (
     productsView,
@@ -1088,46 +1088,46 @@ def loadRoutes(config):
     )
 
     # ODK forms
-    routes.append(addRoute("odkformlist", "/{userid}/formList", formList_view, None))
+    routes.append(addRoute("odkformlist", "/{userid}/formList", FormlistView, None))
 
     routes.append(
         addRoute(
             "odkFormlistByProject",
             "/user/{user}/project/{project}/collaborator/{collaborator}/formList",
-            formListByProject_view,
+            FormListByProjectView,
             None,
         )
     )
 
     routes.append(
-        addRoute("odksubmission", "/{userid}/submission", submission_view, None)
+        addRoute("odksubmission", "/{userid}/submission", SubmissionView, None)
     )
 
     routes.append(
         addRoute(
             "odkSubmissionByProject",
             "/user/{user}/project/{project}/collaborator/{collaborator}/submission",
-            submissionByProject_view,
+            SubmissionByProjectView,
             None,
         )
     )
 
-    routes.append(addRoute("odkpush", "/{userid}/push", push_view, None))
+    routes.append(addRoute("odkpush", "/{userid}/push", PushView, None))
     routes.append(
         addRoute(
-            "odkxmlform", "/{user}/{userowner}/{project}/xmlform", XMLForm_view, None
+            "odkxmlform", "/{user}/{userowner}/{project}/xmlform", XMLFormView, None
         )
     )
     routes.append(
         addRoute(
-            "odkmanifest", "/{user}/{userowner}/{project}/manifest", manifest_view, None
+            "odkmanifest", "/{user}/{userowner}/{project}/manifest", ManifestView, None
         )
     )
     routes.append(
         addRoute(
             "odkmediafile",
             "/{user}/{userowner}/{project}/manifest/mediafile/{fileid}",
-            mediaFile_view,
+            MediaFileView,
             None,
         )
     )
@@ -1136,7 +1136,7 @@ def loadRoutes(config):
         addRoute(
             "odkxmlformass",
             "/{user}/{userowner}/{project}/{assessmentid}/xmlform",
-            assessmentXMLForm_view,
+            AssessmentXMLFormView,
             None,
         )
     )
@@ -1144,7 +1144,7 @@ def loadRoutes(config):
         addRoute(
             "odkmanifestass",
             "/{user}/{userowner}/{project}/{assessmentid}/manifest",
-            assessmentManifest_view,
+            AssessmentManifestView,
             None,
         )
     )
@@ -1152,7 +1152,7 @@ def loadRoutes(config):
         addRoute(
             "odkmediafileass",
             "/{user}/{userowner}/{project}/{assessmentid}/manifest/mediafile/{fileid}",
-            assessmentMediaFile_view,
+            AssessmentMediaFileView,
             None,
         )
     )
