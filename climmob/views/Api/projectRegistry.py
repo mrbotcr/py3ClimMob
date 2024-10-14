@@ -31,7 +31,7 @@ from climmob.processes import (
 from climmob.views.classes import apiView
 
 
-class readProjectRegistry_view(apiView):
+class ReadProjectRegistryView(apiView):
     def processView(self):
 
         if self.request.method == "GET":
@@ -126,7 +126,7 @@ class readProjectRegistry_view(apiView):
             return response
 
 
-class readPossibleQuestionsForRegistryGroup_view(apiView):
+class ReadPossibleQuestionsForRegistryGroupView(apiView):
     def processView(self):
 
         if self.request.method == "GET":
@@ -201,7 +201,7 @@ class readPossibleQuestionsForRegistryGroup_view(apiView):
             return response
 
 
-class addRegistryGroup_view(apiView):
+class AddRegistryGroupView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -296,7 +296,7 @@ class addRegistryGroup_view(apiView):
             return response
 
 
-class updateRegistryGroup_view(apiView):
+class UpdateRegistryGroupView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -392,7 +392,7 @@ class updateRegistryGroup_view(apiView):
             return response
 
 
-class deleteRegistryGroup_view(apiView):
+class DeleteRegistryGroupView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -496,7 +496,7 @@ class deleteRegistryGroup_view(apiView):
             return response
 
 
-class addQuestionToGroupRegistry_view(apiView):
+class AddQuestionToGroupRegistryView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -644,7 +644,7 @@ class addQuestionToGroupRegistry_view(apiView):
             return response
 
 
-class deleteQuestionFromGroupRegistry_view(apiView):
+class DeleteQuestionFromGroupRegistryView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -784,7 +784,7 @@ class deleteQuestionFromGroupRegistry_view(apiView):
             return response
 
 
-class orderRegistryQuestions_view(apiView):
+class OrderRegistryQuestionsView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
