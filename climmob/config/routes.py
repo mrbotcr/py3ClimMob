@@ -7,11 +7,11 @@ These functions setup the routes for the host application and any plugins connec
 import climmob.plugins as p
 from climmob.plugins.utilities import addRoute
 from climmob.views.Api.enumerators import (
-    createEnumerator_view,
-    readEnumerators_view,
-    updateEnumerator_view,
-    updatePasswordEnumerator_view,
-    apiDeleteEnumerator_view,
+    CreateEnumeratorView,
+    ReadEnumeratorsView,
+    UpdateEnumeratorView,
+    UpdatePasswordEnumeratorView,
+    ApiDeleteEnumeratorView,
 )
 from climmob.views.Api.projectAssessmentStart import (
     createProjectAssessment_view,
@@ -1325,24 +1325,24 @@ def loadRoutes(config):
     # Enumerators
     routes.append(
         addRoute(
-            "addenumerator_api", "/api/createEnumerator", createEnumerator_view, None
+            "addenumerator_api", "/api/createEnumerator", CreateEnumeratorView, None
         )
     )
     routes.append(
         addRoute(
-            "readenumerators_api", "/api/readEnumerators", readEnumerators_view, None
+            "readenumerators_api", "/api/readEnumerators", ReadEnumeratorsView, None
         )
     )
     routes.append(
         addRoute(
-            "updateenumerator_api", "/api/updateEnumerator", updateEnumerator_view, None
+            "updateenumerator_api", "/api/updateEnumerator", UpdateEnumeratorView, None
         )
     )
     routes.append(
         addRoute(
             "modifypassenumerator_api",
             "/api/updatePasswordEnumerator",
-            updatePasswordEnumerator_view,
+            UpdatePasswordEnumeratorView,
             None,
         )
     )
@@ -1350,7 +1350,7 @@ def loadRoutes(config):
         addRoute(
             "deleteenumerator_api",
             "/api/deleteEnumerator",
-            apiDeleteEnumerator_view,
+            ApiDeleteEnumeratorView,
             None,
         )
     )

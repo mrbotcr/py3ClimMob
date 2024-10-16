@@ -14,7 +14,7 @@ from climmob.processes import (
 from climmob.views.classes import apiView
 
 
-class createEnumerator_view(apiView):
+class CreateEnumeratorView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -118,7 +118,7 @@ class createEnumerator_view(apiView):
             return response
 
 
-class readEnumerators_view(apiView):
+class ReadEnumeratorsView(apiView):
     def processView(self):
 
         if self.request.method == "GET":
@@ -133,7 +133,7 @@ class readEnumerators_view(apiView):
             return response
 
 
-class updateEnumerator_view(apiView):
+class UpdateEnumeratorView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -225,7 +225,7 @@ class updateEnumerator_view(apiView):
             return response
 
 
-class updatePasswordEnumerator_view(apiView):
+class UpdatePasswordEnumeratorView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -311,7 +311,7 @@ class updatePasswordEnumerator_view(apiView):
             return response
 
 
-class apiDeleteEnumerator_view(apiView):
+class ApiDeleteEnumeratorView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
