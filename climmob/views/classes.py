@@ -26,7 +26,7 @@ from climmob.processes import (
 )
 
 
-def resource_callback(request, response):
+def ResourceCallback(request, response):
     """
     This function moves all script code in a html to an ephemeral js file.
     This is important to deny any inline JS as part of Content-Security-Policy while
@@ -236,7 +236,7 @@ class odkView(object):
 class publicView(object):
     def __init__(self, request):
         if request.registry.settings.get("secure.javascript", "false") == "true":
-            request.add_response_callback(resource_callback)
+            request.add_response_callback(ResourceCallback)
         self.request = request
         self._ = self.request.translate
 
@@ -269,7 +269,7 @@ class publicView(object):
 class privateView(object):
     def __init__(self, request):
         if request.registry.settings.get("secure.javascript", "false") == "true":
-            request.add_response_callback(resource_callback)
+            request.add_response_callback(ResourceCallback)
         self.request = request
         self.user = None
         self._ = self.request.translate
