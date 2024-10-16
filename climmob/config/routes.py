@@ -258,12 +258,12 @@ from climmob.views.otherLanguages import (
 )
 
 from climmob.views.Api.languages import (
-    readListOfLanguages_view,
-    addLanguageForUse_view,
-    deleteLanguage_view,
-    readListOfUnusedLanguages_view,
-    readAllGeneralPhrases_view,
-    changeGeneralPhrases_view,
+    ReadListOfLanguagesView,
+    AddLanguageForUseView,
+    DeleteLanguageView,
+    ReadListOfUnusedLanguagesView,
+    ReadAllGeneralPhrasesView,
+    ChangeGeneralPhrasesView,
 )
 from climmob.views.projectsSummary.projectsSummary import (
     projectsSummary_view,
@@ -1243,7 +1243,7 @@ def loadRoutes(config):
         addRoute(
             "readListOfLanguages",
             "/api/readListOfLanguages",
-            readListOfLanguages_view,
+            ReadListOfLanguagesView,
             None,
         )
     )
@@ -1252,19 +1252,19 @@ def loadRoutes(config):
         addRoute(
             "readListOfUnusedLanguages",
             "/api/readListOfUnusedLanguages",
-            readListOfUnusedLanguages_view,
+            ReadListOfUnusedLanguagesView,
             None,
         )
     )
 
     routes.append(
         addRoute(
-            "addLanguageForUse", "/api/addLanguageForUse", addLanguageForUse_view, None
+            "addLanguageForUse", "/api/addLanguageForUse", AddLanguageForUseView, None
         )
     )
 
     routes.append(
-        addRoute("deleteLanguage", "/api/deleteLanguage", deleteLanguage_view, None)
+        addRoute("deleteLanguage", "/api/deleteLanguage", DeleteLanguageView, None)
     )
 
     # Create Project
@@ -1517,7 +1517,7 @@ def loadRoutes(config):
         addRoute(
             "readAllGeneralPhrases",
             "/api/readAllGeneralPhrases",
-            readAllGeneralPhrases_view,
+            ReadAllGeneralPhrasesView,
             None,
         )
     )
@@ -1526,7 +1526,7 @@ def loadRoutes(config):
         addRoute(
             "changeGeneralPhrases",
             "/api/changeGeneralPhrases",
-            changeGeneralPhrases_view,
+            ChangeGeneralPhrasesView,
             None,
         )
     )
