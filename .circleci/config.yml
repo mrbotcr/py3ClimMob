@@ -1,105 +1,54 @@
-version: 2
+version: 2.1
+
+executors:
+  docker-executor:
+    docker:
+      - image: mrbotcr/climmob_base:20240105
+        auth:
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASS
+      - image: mysql:8.0.23
+        command: "--default-authentication-plugin=mysql_native_password"
+        environment:
+          MYSQL_ROOT_PASSWORD=circleci
+    working_directory: ~/work
+
 jobs:
-  build_master: &build-template
-    docker:
-      - image: mrbotcr/climmob_base:20240105
-        auth:
-          username: $DOCKERHUB_USER
-          password: $DOCKERHUB_PASS
-      - image: mysql:8.0.23
-        command: "--default-authentication-plugin=mysql_native_password"
-        cap_add:
-          - SYS_NICE
-        environment:
-          - MYSQL_ROOT_PASSWORD=circleci
-        ports:
-          - 3306:3306
-    working_directory: ~/work
+  build_master:
+    executor: docker-executor
     steps:
       - checkout
-      - restore_cache:
-          key: requirements-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "requirements.txt" }}
       - run:
-          name: Run servers
-          command: |
-            /etc/init.d/redis-server start
-            tail -f /dev/null
-          background: true
+          name: Install curl
+          command: apt-get update && apt-get install -y curl
       - run:
-          # Install dependencies with --user to enable easier caching
-          name: Install dependencies
+          name: Update server
           command: |
-            pip install -r requirements.txt --user
-            pip install codecov --user
-            /home/circleci/.local/bin/codecov
-            mysql -h 127.0.0.1 -u root --ssl-mode=DISABLED --password=circleci --execute='CREATE SCHEMA IF NOT EXISTS climmobv4'
-            mysql -h 127.0.0.1 -u root --ssl-mode=DISABLED --password=circleci climmobv4 < ./docker_files/climmob/docker_files/base_db.sql
-            python3 create_config.py --daemon --capture_output --mysql_host 127.0.0.1 --mysql_user_name root --mysql_user_password circleci --repository_path /opt/climmob_repository --odktools_path /opt/odktools --climmob_host localhost --climmob_port 5900 --forwarded_allow_ip localhost --pid_file /opt/climmob_gunicorn/climmob.pid --error_log_file /opt/climmob_log/error_log /opt/climmob_config/development.ini
-            ln -s /opt/climmob_config/development.ini ./development.ini
-            python3 configure_celery.py ./development.ini
-            python3 download_nltk_packages.py
-            python3 setup.py install --user
-            python3 setup.py compile_catalog
-            /home/circleci/.local/bin/disable_ssl ./development.ini
-            /home/circleci/.local/bin/configure_alembic ./development.ini .
-            /home/circleci/.local/bin/configure_mysql ./development.ini .
-            /home/circleci/.local/bin/configure_tests ./development.ini .
-            /home/circleci/.local/bin/alembic upgrade head
-      - run:
-          name: Test code is well formatted
-          command: |
-            /home/circleci/.local/bin/black --version
-            /home/circleci/.local/bin/black climmob --check || exit;
-      - run:
-          name: Run Celery in the background
-          command: |
-            export COLUMNS=80
-            export CLIMMOB_PYTEST_RUNNING=true
-            /home/circleci/.local/bin/celery -A climmob.config.celery_app worker --loglevel=info -Q ClimMob
-          background: true
-      - run:
-          name: Run tests
-          command: |
-            export CLIMMOB_PYTEST_RUNNING=true
-            /home/circleci/.local/bin/pytest -s --cov=climmob
-      - run:
-          name: upload coverage report
-          command: |
-            /home/circleci/.local/bin/coverage xml
-            (/home/circleci/.local/bin/codecov --required -X search gcov pycov -f coverage.xml) || echo 'Codecov failed to upload'
-      - run:
-          name: Building artifacts
-          command: |
-            python3 setup.py sdist
-            python3 setup.py bdist_wheel
-      - store_artifacts:
-          path: dist/
-          destination: ./
-      - save_cache:
-          key: requirements-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "requirements.txt" }}
-          paths:
-            - /home/circleci/.local/lib
-            - /home/circleci/.local/bin
+            apt-get update && apt-get -y upgrade
 
-  build_develop: &build-template
-    docker:
-      - image: mrbotcr/climmob_base:20240105
-        auth:
-          username: $DOCKERHUB_USER
-          password: $DOCKERHUB_PASS
-      - image: mysql:8.0.23
-        command: "--default-authentication-plugin=mysql_native_password"
-        cap_add:
-          - SYS_NICE
-        environment:
-          - MYSQL_ROOT_PASSWORD=circleci
-        ports:
-          - 3306:3306
-          -
-    working_directory: ~/work
+      - run:
+          name: Install SSH client
+          command: |
+            apt-get update && apt-get install -y openssh-client
 
+      - run:
+          name: Deploy over SSH
+          command: |
+            ssh -o StrictHostKeyChecking=no -v $PROD_USER@$PROD_IP "./deploy.sh -o $PREV_IMAGE_VERSION -n $IMAGE_VERSION "
+
+      # SUCCESS CODE HERE
+
+  build_develop:
+    executor: docker-executor
     steps:
       - checkout
+
+      - run:
+          name: Install curl
+          command: apt-get update && apt-get install -y curl
+
+      - setup_remote_docker
+
       - restore_cache:
           key: requirements-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "requirements.txt" }}
 
@@ -135,7 +84,6 @@ jobs:
             configure_mysql ./development.ini .
             configure_tests ./development.ini .
             alembic upgrade head
-            ls -la
 
       - run:
           name: Test code is well formatted
@@ -160,27 +108,41 @@ jobs:
             export CLIMMOB_PYTEST_RUNNING=true
             pytest -s --cov=climmob
 
-#      - run:
-#          name: upload coverage report
-#          command: |
-#            /home/circleci/.local/bin/coverage xml
-#            (/home/circleci/.local/bin/codecov --required -X search gcov pycov -f coverage.xml) || echo 'Codecov failed to upload'
+      - run:
+          name: Install and Build Docker
+          command: |
+            apt-get install gnupg2 -y
+            apt-get install apt-transport-https -y
+            apt-get install ca-certificates -y
+            apt-get install curl -y
+            apt-get install gnupg-agent -y
+            apt-get install software-properties-common -y
+            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - 
+            add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" -y
+            apt-get update
+            apt-get install -y docker-ce docker-ce-cli containerd.io
+            docker --version
+            cd docker_files/ClimMob/
+            pwd
+            ls -al
+            docker build --build-arg GITHUB_USER=$GITHUB_USER --build-arg GITHUB_PASS=$GITHUB_PASS --build-arg GITHUB_OWNER=$GITHUB_OWNER --no-cache --rm -t mrbotcr/py3ClimMob:$IMAGE_VERSION -f ./stable.Dockerfile .
+            echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USER --password-stdin
+            echo '{"credsStore": "secretservice"}' > /etc/docker/config.json
+            docker tag mrbotcr/climmob:$IMAGE_VERSION mrbotcr/climmob:latest
+            echo 'Tag creado'
+            docker push mrbotcr/climmob --all-tags
+            
 
-#      - run:
-#          name: Building artifacts
-#          command: |
-#            python3 setup.py sdist
-#            python3 setup.py bdist_wheel
+      - run:
+          name: Install SSH client
+          command: |
+            apt-get update && apt-get install -y openssh-client
 
-#      - store_artifacts:
-#          path: dist/
-#          destination: ./
+      - run:
+          name: Deploy over SSH
+          command: |
+            ssh -o StrictHostKeyChecking=no -v $TEST_USER@$TEST_IP "./deploy.sh -o $PREV_IMAGE_VERSION -n $IMAGE_VERSION "
 
-#      - save_cache:
-#          key: requirements-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "requirements.txt" }}
-#          paths:
-#            - /home/circleci/.local/lib
-#            - /home/circleci/.local/bin
 
 workflows:
   version: 2
