@@ -124,10 +124,10 @@ jobs:
             docker --version
             pwd
             ls -al
-            cd docker_files
+            cd docker_files/climmob
             pwd
             ls -al
-            docker build --build-arg GITHUB_USER=$GITHUB_USER --build-arg GITHUB_PASS=$GITHUB_PASS --build-arg GITHUB_OWNER=$GITHUB_OWNER --no-cache --rm -t mrbotcr/py3ClimMob:$IMAGE_VERSION -f ./stable.Dockerfile .
+            docker build --build-arg GITHUB_USER=$GITHUB_USER --build-arg GITHUB_PASS=$GITHUB_PASS --build-arg GITHUB_OWNER=$GITHUB_OWNER --no-cache --rm -t mrbotcr/climmob:$IMAGE_VERSION -f ./stable.Dockerfile .
             echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USER --password-stdin
             echo '{"credsStore": "secretservice"}' > /etc/docker/config.json
             docker tag mrbotcr/climmob:$IMAGE_VERSION mrbotcr/climmob:latest
