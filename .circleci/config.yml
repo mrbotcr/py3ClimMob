@@ -124,7 +124,7 @@ jobs:
             docker --version
             pwd
             ls -al
-            cd docker_files/ClimMob/
+            cd docker_files
             pwd
             ls -al
             docker build --build-arg GITHUB_USER=$GITHUB_USER --build-arg GITHUB_PASS=$GITHUB_PASS --build-arg GITHUB_OWNER=$GITHUB_OWNER --no-cache --rm -t mrbotcr/py3ClimMob:$IMAGE_VERSION -f ./stable.Dockerfile .
