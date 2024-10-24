@@ -122,6 +122,8 @@ jobs:
             apt-get update
             apt-get install -y docker-ce docker-ce-cli containerd.io
             docker --version
+            pwd
+            ls -al
             cd docker_files/ClimMob/
             pwd
             ls -al
