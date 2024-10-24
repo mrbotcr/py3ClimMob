@@ -140,10 +140,10 @@ jobs:
           command: |
             apt-get update && apt-get install -y openssh-client
 
-      - run:
-          name: Deploy over SSH
-          command: |
-            ssh -o StrictHostKeyChecking=no -v $TEST_USER@$TEST_IP "./deploy.sh -o $PREV_IMAGE_VERSION -n $IMAGE_VERSION "
+      #- run:
+      #    name: Deploy over SSH
+      #    command: |
+      #      ssh -o StrictHostKeyChecking=no -v $TEST_USER@$TEST_IP "./deploy.sh -o $PREV_IMAGE_VERSION -n $IMAGE_VERSION "
 
 
 workflows:
