@@ -145,7 +145,6 @@ jobs:
           command: |
             ssh -o StrictHostKeyChecking=no -v $TEST_USER@$TEST_IP "./deploy.sh -o $PREV_IMAGE_VERSION -n $IMAGE_VERSION "
 
-
 workflows:
   version: 2
   build:
