@@ -133,7 +133,6 @@ jobs:
             docker tag mrbotcr/climmob:$IMAGE_VERSION mrbotcr/climmob:latest
             echo 'Tag creado'
             docker push mrbotcr/climmob --all-tags
-            
 
       - run:
           name: Install SSH client
