@@ -142,7 +142,7 @@ jobs:
       - run:
           name: Deploy over SSH
           command: |
-            ssh -o StrictHostKeyChecking=no -v $TEST_USER@$TEST_IP "./deploy.sh -o $PREV_IMAGE_VERSION -n $IMAGE_VERSION "
+            ssh -o StrictHostKeyChecking=no -v $TEST_USER@$TEST_IP "./deploy_testing.sh -o $PREV_IMAGE_VERSION -n $IMAGE_VERSION "
 
 workflows:
   version: 2
