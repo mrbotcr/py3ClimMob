@@ -95,18 +95,18 @@ from climmob.views.Api.project_analysis import (
     generateAnalysisByApiView_api,
 )
 from climmob.views.Api.questions import (
-    createQuestion_view,
-    readQuestions_view,
-    readQuestionValues_view,
-    addQuestionValue_viewApi,
-    updateQuestionValue_view,
-    deleteQuestionValue_viewApi,
-    updateQuestionCharacteristics_view,
-    updateQuestionPerformance_view,
-    updateQuestion_view,
-    deleteQuestion_viewApi,
-    multiLanguageQuestion_view,
-    readMultiLanguagesFromQuestion_view,
+    CreateQuestionView,
+    ReadQuestionsView,
+    ReadQuestionValuesView,
+    AddQuestionValueViewApi,
+    UpdateQuestionValueView,
+    DeleteQuestionValueViewApi,
+    UpdateQuestionCharacteristicsView,
+    UpdateQuestionPerformanceView,
+    UpdateQuestionView,
+    DeleteQuestionViewApi,
+    MultiLanguageQuestionView,
+    ReadMultiLanguagesFromQuestionView,
 )
 from climmob.views.Api.questionsGroups import (
     readGroupsOfQuestions_view,
@@ -1430,24 +1430,24 @@ def loadRoutes(config):
 
     # Questions
     routes.append(
-        addRoute("addquestion_api", "/api/createQuestion", createQuestion_view, None)
+        addRoute("addquestion_api", "/api/createQuestion", CreateQuestionView, None)
     )
     routes.append(
-        addRoute("readquestions_api", "/api/readQuestions", readQuestions_view, None)
+        addRoute("readquestions_api", "/api/readQuestions", ReadQuestionsView, None)
     )
     routes.append(
-        addRoute("updateQuestion_api", "/api/updateQuestion", updateQuestion_view, None)
+        addRoute("updateQuestion_api", "/api/updateQuestion", UpdateQuestionView, None)
     )
     routes.append(
         addRoute(
-            "deletequestion_api", "/api/deleteQuestion", deleteQuestion_viewApi, None
+            "deletequestion_api", "/api/deleteQuestion", DeleteQuestionViewApi, None
         )
     )
     routes.append(
         addRoute(
             "readquestionvalues_api",
             "/api/readQuestionValues",
-            readQuestionValues_view,
+            ReadQuestionValuesView,
             None,
         )
     )
@@ -1455,7 +1455,7 @@ def loadRoutes(config):
         addRoute(
             "addquestionvalues_api",
             "/api/addQuestionValues",
-            addQuestionValue_viewApi,
+            AddQuestionValueViewApi,
             None,
         )
     )
@@ -1463,7 +1463,7 @@ def loadRoutes(config):
         addRoute(
             "updatequestionvalues_api",
             "/api/updateQuestionValues",
-            updateQuestionValue_view,
+            UpdateQuestionValueView,
             None,
         )
     )
@@ -1471,7 +1471,7 @@ def loadRoutes(config):
         addRoute(
             "deletequestionvalues_api",
             "/api/deleteQuestionValues",
-            deleteQuestionValue_viewApi,
+            DeleteQuestionValueViewApi,
             None,
         )
     )
@@ -1480,7 +1480,7 @@ def loadRoutes(config):
         addRoute(
             "updatequestionperformance_api",
             "/api/updateQuestionPerformance",
-            updateQuestionPerformance_view,
+            UpdateQuestionPerformanceView,
             None,
         )
     )
@@ -1488,7 +1488,7 @@ def loadRoutes(config):
         addRoute(
             "updatequestioncharacteristics_api",
             "/api/updateQuestionCharacteristics",
-            updateQuestionCharacteristics_view,
+            UpdateQuestionCharacteristicsView,
             None,
         )
     )
@@ -1497,7 +1497,7 @@ def loadRoutes(config):
         addRoute(
             "readMultiLanguagesFromQuestion",
             "/api/readMultiLanguagesFromQuestion",
-            readMultiLanguagesFromQuestion_view,
+            ReadMultiLanguagesFromQuestionView,
             None,
         )
     )
@@ -1506,7 +1506,7 @@ def loadRoutes(config):
         addRoute(
             "multiLanguageQuestion",
             "/api/multiLanguageQuestion",
-            multiLanguageQuestion_view,
+            MultiLanguageQuestionView,
             None,
         )
     )
