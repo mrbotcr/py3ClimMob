@@ -1,4 +1,4 @@
-install.packages("ggchicklet", repos = "https://cinc.rud.is")
+remotes::install_gitlab("hrbrmstr/ggchicklet")
 
 print("******************************ggchicklet******************************")
 

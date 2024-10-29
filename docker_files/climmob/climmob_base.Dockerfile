@@ -20,7 +20,9 @@ RUN echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb.gpg ] htt
 
 RUN apt-get update
 
-RUN apt-get install -y build-essential qtbase5-dev qtbase5-private-dev qtdeclarative5-dev libqt5sql5-mysql libqt5webkit5-dev libqt5svg5-dev libqt5xmlpatterns5-dev cmake mongodb-org nano jq libboost-all-dev unzip zlib1g-dev automake npm redis-server libmysqlclient-dev git python3-venv texlive-extra-utils r-base libcurl4-openssl-dev pandoc pandoc-citeproc libfontconfig1-dev libcairo2-dev libudunits2-dev libgdal-dev xvfb sqlite3 libqt5sql5-sqlite libgmp3-dev libmpfr-dev tidy golang-go mysql-client-8.0 openjdk-17-jre-headless
+RUN apt-get install -y build-essential qtbase5-dev qtbase5-private-dev qtdeclarative5-dev libqt5sql5-mysql libqt5webkit5-dev libqt5svg5-dev libqt5xmlpatterns5-dev cmake mongodb-org nano jq libboost-all-dev unzip zlib1g-dev automake npm redis-server libmysqlclient-dev git python3-venv texlive-extra-utils r-base libcurl4-openssl-dev pandoc pandoc-citeproc libfontconfig1-dev libcairo2-dev libudunits2-dev libgdal-dev xvfb sqlite3 libqt5sql5-sqlite libgmp3-dev libmpfr-dev tidy golang-go mysql-client-8.0 openjdk-17-jre-headless libgfortran5 liblapack-dev libblas-dev curl
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
 
 # Firefox
 RUN apt-get install -y libdbus-glib-1-2 libgtk2.0-0
@@ -146,7 +148,7 @@ RUN ls --recursive /root/R_packages_installation
 
 RUN Rscript /root/R_packages_installation/caret.R
 
-RUN Rscript /root/R_packages_installation/climatrends.R && Rscript /root/R_packages_installation/ClimMobTools.R
+RUN Rscript /root/R_packages_installation/climatrends.R && Rscript /root/R_packages_installation/ClimMobTools.R && Rscript /root/R_packages_installation/PlackettLuce.R
 
 RUN Rscript /root/R_packages_installation/ggparty.R  && Rscript /root/R_packages_installation/ggplot2.R && Rscript /root/R_packages_installation/gosset.R && Rscript /root/R_packages_installation/gridExtra.R
 
@@ -154,13 +156,11 @@ RUN Rscript /root/R_packages_installation/gtools.R && Rscript /root/R_packages_i
 
 RUN Rscript /root/R_packages_installation/knitr.R && Rscript /root/R_packages_installation/leaflet.R && Rscript /root/R_packages_installation/mapview.R && Rscript /root/R_packages_installation/multcompView.R
 
-RUN Rscript /root/R_packages_installation/nasapower.R && Rscript /root/R_packages_installation/partykit.R && Rscript /root/R_packages_installation/patchwork.R && Rscript /root/R_packages_installation/PlackettLuce.R
+RUN Rscript /root/R_packages_installation/nasapower.R && Rscript /root/R_packages_installation/partykit.R && Rscript /root/R_packages_installation/patchwork.R && Rscript /root/R_packages_installation/remotes.R
 
 RUN Rscript /root/R_packages_installation/plotrix.R && Rscript /root/R_packages_installation/pls.R && Rscript /root/R_packages_installation/png.R && Rscript /root/R_packages_installation/psychotools.R
 
-RUN Rscript /root/R_packages_installation/qvcalc.R && Rscript /root/R_packages_installation/remotes.R && Rscript /root/R_packages_installation/rmarkdown.R
-
-RUN Rscript /root/R_packages_installation/lubridate.R && Rscript /root/R_packages_installation/ggchicklet.R && Rscript /root/R_packages_installation/phantomjs.R
+RUN Rscript /root/R_packages_installation/qvcalc.R && Rscript /root/R_packages_installation/rmarkdown.R && Rscript /root/R_packages_installation/lubridate.R && Rscript /root/R_packages_installation/ggchicklet.R && Rscript /root/R_packages_installation/phantomjs.R
 
 RUN Rscript /root/R_packages_installation/check_R_libraries.R
 

@@ -1,1 +1,1 @@
-sudo docker build --no-cache --rm -t mrbotcr/climmob:20230720 -f ./stable.Dockerfile .
+sudo docker build --no-cache --rm -t mrbotcr/climmob:3.9.0 -f ./stable.Dockerfile .
