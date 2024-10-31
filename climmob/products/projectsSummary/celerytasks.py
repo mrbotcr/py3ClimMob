@@ -55,6 +55,112 @@ def getTheCropOfTheProject(dbsession, projectId):
     return mapFromSchema(crop)
 
 
+def getNumberOfVarietiesInProject(projectId):
+
+    sql = "SELECT count(*) as prjalias FROM prjalias where project_id='{}'".format(
+        projectId
+    )
+
+    try:
+        result = sql_execute(sql).one()
+        if result:
+            count = result[0]
+            return count
+        return 0
+    except Exception as e:
+        print("getNumberOfVarietiesInProject")
+        print(str(e))
+        return "0"
+
+
+def getGender(projectId, user, projectCod, genderQuestions):
+
+    numberOfMan = 0
+    numberOfWoman = 0
+    numberOfOther = 0
+    resultGender = None
+
+    try:
+        # Search gender in the registry
+        sqlRegistry = "SELECT r.question_id, q.question_code FROM registry r, question q where r.question_id in ({}) and r.project_id='{}' and r.question_id=q.question_id LIMIT 1".format(
+            genderQuestions, projectId
+        )
+
+        result = sql_execute(sqlRegistry)
+        qst_code = result.all()
+        if qst_code:
+            qst_code = qst_code[0][1]
+            try:
+                sqlGender = "SELECT {}_opts_des as optdesc, count(*) as quantity FROM {}_{}.REG_geninfo, {}_{}.REG_lkp{}_opts WHERE {} = {}_opts_cod GROUP BY {}_opts_des;".format(
+                    qst_code,
+                    user,
+                    projectCod,
+                    user,
+                    projectCod,
+                    qst_code,
+                    qst_code,
+                    qst_code,
+                    qst_code,
+                )
+                resultGender = sql_execute(sqlGender).all()
+
+            except Exception as e:
+                print(
+                    "Error en el query de registry gender project: {}".format(projectId)
+                )
+                print(str(e))
+        else:
+            sqlAssessment = "SELECT r.ass_cod, r.question_id, q.question_code FROM assdetail r, question q where r.question_id in ({}) and r.project_id='{}' and r.question_id=q.question_id LIMIT 1".format(
+                genderQuestions, projectId
+            )
+            result = sql_execute(sqlAssessment)
+            qst_code = result.all()
+            if qst_code:
+                ass_code = qst_code[0][0]
+                qst_code = qst_code[0][2]
+                try:
+                    sqlGender = "SELECT {}_opts_des as optdesc, count(*) as quantity FROM {}_{}.ASS{}_geninfo, {}_{}.ASS{}_lkp{}_opts WHERE {} = {}_opts_cod GROUP BY {}_opts_des;".format(
+                        qst_code,
+                        user,
+                        projectCod,
+                        ass_code,
+                        user,
+                        projectCod,
+                        ass_code,
+                        qst_code,
+                        qst_code,
+                        qst_code,
+                        qst_code,
+                    )
+                    resultGender = sql_execute(sqlGender).all()
+
+                except Exception as e:
+                    print(
+                        "Error en el query de assessment gender project: {} assessment: {}".format(
+                            projectId, ass_code
+                        )
+                    )
+                    print(str(e))
+
+        if resultGender:
+            for val in resultGender:
+                if val[0] in ["Woman", "Female", "Female ", "Femelle", "Mujer"]:
+                    numberOfWoman = numberOfWoman + val[1]
+
+                else:
+                    if val[0] in ["Man", "Male", "Male ", "Mâle", "Hombre"]:
+                        numberOfMan = numberOfMan + val[1]
+
+                    else:
+                        numberOfOther = numberOfOther + val[1]
+
+    except Exception as e:
+        print("getGender")
+        print(str(e))
+
+    return numberOfMan, numberOfWoman, numberOfOther
+
+
 def getTheStartAndEndDateOfProject(projectId, user, projectCod, dbsession):
 
     startDates = []
@@ -69,6 +175,7 @@ def getTheStartAndEndDateOfProject(projectId, user, projectCod, dbsession):
         startDates.append(resultR[0])
         endDates.append(resultR[1])
     except Exception as e:
+        print("getTheStartAndEndDateOfProject")
         print(e)
         pass
 
@@ -93,9 +200,12 @@ def getTheStartAndEndDateOfProject(projectId, user, projectCod, dbsession):
             startDates.append(resultA[0])
             endDates.append(resultA[1])
         except Exception as e:
+            print("getTheStartAndEndDateOfProject")
             print(str(e))
             pass
 
+    startDates = [i for i in startDates if i is not None]
+    endDates = [i for i in endDates if i is not None]
     try:
         return min(startDates), max(endDates)
     except:
@@ -107,12 +217,53 @@ def numberOfRegisteredParticipants(user, projectCod):
     sql = "SELECT count(*) as count FROM " + user + "_" + projectCod + ".REG_geninfo "
 
     try:
-        result = sql_execute(sql)
-        count = result.one()[0]
-        return count
+        result = sql_execute(sql).one()
+        if result:
+            count = result[0]
+            return count
+        return "0"
     except Exception as e:
+        print("numberOfRegisteredParticipants")
         print(str(e))
         return "0"
+
+
+def numberOfRegisteredParticipantsByAssessment(projectId, user, projectCod, dbsession):
+
+    assessments = mapFromSchema(
+        dbsession.query(Assessment)
+        .filter(Assessment.project_id == projectId)
+        .order_by(Assessment.ass_days)
+        .all()
+    )
+
+    for assessment in assessments:
+
+        sqlAssessments = "SELECT count(*) as count FROM {}_{}.ASS{}_geninfo ".format(
+            user, projectCod, assessment["ass_cod"]
+        )
+
+        if assessment["ass_status"] == 0:
+            assessment["ass_status"] = "Not yet started"
+        else:
+            if assessment["ass_status"] == 1:
+                assessment["ass_status"] = "On going"
+            else:
+                assessment["ass_status"] = "Closed"
+
+        try:
+            result = sql_execute(sqlAssessments).one()
+            if result:
+                count = result[0]
+                assessment["number_submissions"] = count
+            else:
+                assessment["number_submissions"] = 0
+        except Exception as e:
+            print("numberOfRegisteredParticipantsByAssessment")
+            print(str(e))
+            assessment["number_submissions"] = 0
+
+    return assessments
 
 
 def getTheFirstGeoPointQuestionCodeInRegistry(projectId, user, projectCod, dbsession):
@@ -334,6 +485,7 @@ def createProjectsSummary(self, settings, otro):
         cantidad = 0
         listOfProjects = []
         listOfGenotypes = []
+        listOfDataCollectionMoments = []
         for project in getListOfProjects(dbsession):
             cantidad += 1
             print(cantidad)
@@ -356,6 +508,13 @@ def createProjectsSummary(self, settings, otro):
 
             crop = getTheCropOfTheProject(dbsession, project["project_id"])
             tech = getTheTechOfTheProject(dbsession, project["project_id"])
+            aliasNumber = getNumberOfVarietiesInProject(project["project_id"])
+            genderMan, genderWoman, genderOther = getGender(
+                project["project_id"],
+                project["user_name"],
+                project["project_cod"],
+                settings["analytics.gender"],
+            )
 
             if tech:
                 tech = tech["tech_name"]
@@ -385,13 +544,18 @@ def createProjectsSummary(self, settings, otro):
                 "project_date": project["project_creationdate"].strftime("%d-%m-%Y"),
                 "project_country": project["cnty_name"],
                 "project_type": project_type,
-                "NumberOfFarmersTarget": project["project_numobs"],
-                "NumberOfFarmersRegisteredForTheProject": num,
+                "farmers_target": project["project_numobs"],
+                "farmers_registered": num,
+                "gender_man": genderMan,
+                "gender_woman": genderWoman,
+                "gender_other": genderOther,
+                "gender_unreported": int(num) - genderMan - genderWoman - genderOther,
                 "crop": crop,
                 "technology": tech,
                 "startDate": startDate,
                 "endDate": endDate,
                 "instance_name": settings.get("analytics.instancename", ""),
+                "varieties_quantity": aliasNumber,
             }
 
             registry, infoOfCoordinates = getTheFirstGeoPointQuestionCodeInRegistry(
@@ -446,19 +610,129 @@ def createProjectsSummary(self, settings, otro):
                     }
                     listOfGenotypes.append(resultGenotypes)
 
-        with open(os.path.join(jsonLocation, "projectsSummary.json"), "w") as json_data:
-            json.dump(listOfProjects, json_data, default=myconverter)
+            infoDataCollectionMoments = numberOfRegisteredParticipantsByAssessment(
+                project["project_id"],
+                project["user_name"],
+                project["project_cod"],
+                dbsession,
+            )
 
-        df = pd.read_json(os.path.join(jsonLocation, "projectsSummary.json"))
-        df.to_excel(os.path.join(jsonLocation, "projectsSummary.xlsx"), index=False)
+            if infoDataCollectionMoments:
+
+                for dataCollectionMoment in infoDataCollectionMoments:
+
+                    resultDataCollectionMoment = {
+                        "project_id": project["project_id"],
+                        "trial_pi": project["project_pi"],
+                        "pi_email": project["project_piemail"],
+                        "country": project["cnty_name"],
+                        "code": dataCollectionMoment["ass_cod"],
+                        "description": dataCollectionMoment["ass_desc"],
+                        "status": dataCollectionMoment["ass_status"],
+                        "number_submissions": dataCollectionMoment[
+                            "number_submissions"
+                        ],
+                        "instance_name": settings.get("analytics.instancename", ""),
+                    }
+                    listOfDataCollectionMoments.append(resultDataCollectionMoment)
+
+        projectsSummary = "projectsSummary"
+        genotypesSummary = "genotypesSummary"
+        dataCollectionMomentsSummary = "dataCollectionMomentsSummary"
 
         with open(
-            os.path.join(jsonLocation, "genotypesSummary.json"), "w"
+            os.path.join(
+                jsonLocation,
+                "{}_{}.json".format(
+                    projectsSummary, settings.get("analytics.instancename", "")
+                ),
+            ),
+            "w",
+        ) as json_data:
+            json.dump(listOfProjects, json_data, default=myconverter)
+
+        df = pd.read_json(
+            os.path.join(
+                jsonLocation,
+                "{}_{}.json".format(
+                    projectsSummary, settings.get("analytics.instancename", "")
+                ),
+            )
+        )
+        df.to_excel(
+            os.path.join(
+                jsonLocation,
+                "{}_{}.xlsx".format(
+                    projectsSummary, settings.get("analytics.instancename", "")
+                ),
+            ),
+            index=False,
+        )
+
+        with open(
+            os.path.join(
+                jsonLocation,
+                "{}_{}.json".format(
+                    genotypesSummary, settings.get("analytics.instancename", "")
+                ),
+            ),
+            "w",
         ) as jsongeno_data:
             json.dump(listOfGenotypes, jsongeno_data, default=myconverter)
 
-        df = pd.read_json(os.path.join(jsonLocation, "genotypesSummary.json"))
-        df.to_excel(os.path.join(jsonLocation, "genotypesSummary.xlsx"), index=False)
+        df = pd.read_json(
+            os.path.join(
+                jsonLocation,
+                "{}_{}.json".format(
+                    genotypesSummary, settings.get("analytics.instancename", "")
+                ),
+            )
+        )
+        df.to_excel(
+            os.path.join(
+                jsonLocation,
+                "{}_{}.xlsx".format(
+                    genotypesSummary, settings.get("analytics.instancename", "")
+                ),
+            ),
+            index=False,
+        )
+
+        with open(
+            os.path.join(
+                jsonLocation,
+                "{}_{}.json".format(
+                    dataCollectionMomentsSummary,
+                    settings.get("analytics.instancename", ""),
+                ),
+            ),
+            "w",
+        ) as jsondatacollection_data:
+            json.dump(
+                listOfDataCollectionMoments,
+                jsondatacollection_data,
+                default=myconverter,
+            )
+
+        df = pd.read_json(
+            os.path.join(
+                jsonLocation,
+                "{}_{}.json".format(
+                    dataCollectionMomentsSummary,
+                    settings.get("analytics.instancename", ""),
+                ),
+            )
+        )
+        df.to_excel(
+            os.path.join(
+                jsonLocation,
+                "{}_{}.xlsx".format(
+                    dataCollectionMomentsSummary,
+                    settings.get("analytics.instancename", ""),
+                ),
+            ),
+            index=False,
+        )
 
         # except Exception as e:
         #    print(str(e))
