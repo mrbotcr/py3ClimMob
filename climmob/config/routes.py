@@ -270,7 +270,7 @@ from climmob.views.projectsSummary.projectsSummary import (
     downloadProjectsSummary_view,
 )
 
-from climmob.views.extra_form import extraFormPOST_view
+from climmob.views.extra_form import ExtraFormPostView
 
 # -------Api-------#
 
@@ -1193,7 +1193,7 @@ def loadRoutes(config):
         addRoute(
             "extraFormPOST",
             "/extraFormPOST",
-            extraFormPOST_view,
+            ExtraFormPostView,
             None,
         )
     )
