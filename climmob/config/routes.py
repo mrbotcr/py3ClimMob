@@ -37,15 +37,15 @@ from climmob.views.Api.projectAssessments import (
     OrderAssessmentQuestionsView,
 )
 from climmob.views.Api.projectCreation import (
-    createProject_view,
-    readProjects_view,
+    CreateProjectView,
+    ReadProjectsView,
     updateProject_view,
-    deleteProject_view_api,
-    readListOfCountries_view,
-    readListOfTemplates_view,
-    readCollaborators_view,
-    addCollaborator_view,
-    deleteCollaborator_view,
+    DeleteProjectViewApi,
+    ReadListOfCountriesView,
+    ReadListOfTemplatesView,
+    ReadCollaboratorsView,
+    AddCollaboratorView,
+    DeleteCollaboratorView,
 )
 from climmob.views.Api.projectEnumerators import (
     addProjectEnumerator_view,
@@ -1272,7 +1272,7 @@ def loadRoutes(config):
         addRoute(
             "readListOfCountries",
             "/api/readListOfCountries",
-            readListOfCountries_view,
+            ReadListOfCountriesView,
             None,
         )
     )
@@ -1280,23 +1280,21 @@ def loadRoutes(config):
         addRoute(
             "readListOfTemplates",
             "/api/readListOfTemplates",
-            readListOfTemplates_view,
+            ReadListOfTemplatesView,
             None,
         )
     )
     routes.append(
-        addRoute("addproject_api", "/api/createProject", createProject_view, None)
+        addRoute("addproject_api", "/api/createProject", CreateProjectView, None)
     )
     routes.append(
-        addRoute("readProjects_api", "/api/readProjects", readProjects_view, "json")
+        addRoute("readProjects_api", "/api/readProjects", ReadProjectsView, "json")
     )
     routes.append(
         addRoute("updateproject_api", "/api/updateProject", updateProject_view, None)
     )
     routes.append(
-        addRoute(
-            "deleteproject_api", "/api/deleteProject", deleteProject_view_api, None
-        )
+        addRoute("deleteproject_api", "/api/deleteProject", DeleteProjectViewApi, None)
     )
 
     # Share project
@@ -1304,20 +1302,20 @@ def loadRoutes(config):
         addRoute(
             "readcollaborators_api",
             "/api/readCollaborators",
-            readCollaborators_view,
+            ReadCollaboratorsView,
             "json",
         )
     )
     routes.append(
         addRoute(
-            "addcollaborator_api", "/api/addCollaborator", addCollaborator_view, None
+            "addcollaborator_api", "/api/addCollaborator", AddCollaboratorView, None
         )
     )
     routes.append(
         addRoute(
             "deletecollaborator_api",
             "/api/deleteCollaborator",
-            deleteCollaborator_view,
+            DeleteCollaboratorView,
             None,
         )
     )
