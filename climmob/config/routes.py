@@ -78,16 +78,16 @@ from climmob.views.Api.projectRegistryStart import (
     readRegistryData_view,
 )
 from climmob.views.Api.projectTechnologies import (
-    addProjectTechnology_view,
-    readProjectTechnologies_view,
-    readPossibleProjectTechnologies_view,
-    deleteProjectTechnology_view,
-    addProjectTechnologyAlias_view,
-    readProjectTechnologiesAlias_view,
-    readProjectTechnologiesAliasExtra_view,
-    readPossibleProjectTechnologiesAlias_view,
+    AddProjectTechnologyView,
+    ReadProjectTechnologiesView,
+    ReadPossibleProjectTechnologiesView,
+    DeleteProjectTechnologyView,
+    AddProjectTechnologyAliasView,
+    ReadProjectTechnologiesAliasView,
+    ReadProjectTechnologiesAliasExtraView,
+    ReadPossibleProjectTechnologiesAliasView,
     deleteProjectTechnologyAlias_view,
-    addProjectTechnologyAliasExtra_view,
+    AddProjectTechnologyAliasExtraView,
 )
 from climmob.views.Api.project_analysis import (
     ReadDataOfProjectViewApi,
@@ -1568,7 +1568,7 @@ def loadRoutes(config):
         addRoute(
             "addprjtechnology",
             "/api/addProjectTechnology",
-            addProjectTechnology_view,
+            AddProjectTechnologyView,
             None,
         )
     )
@@ -1576,7 +1576,7 @@ def loadRoutes(config):
         addRoute(
             "readprjtechnologies",
             "/api/readProjectTechnologies",
-            readProjectTechnologies_view,
+            ReadProjectTechnologiesView,
             None,
         )
     )
@@ -1584,7 +1584,7 @@ def loadRoutes(config):
         addRoute(
             "readprjpossibletechnologies",
             "/api/readPossibleProjectTechnologies",
-            readPossibleProjectTechnologies_view,
+            ReadPossibleProjectTechnologiesView,
             None,
         )
     )
@@ -1592,7 +1592,7 @@ def loadRoutes(config):
         addRoute(
             "deleteprjtechnology",
             "/api/deleteProjectTechnology",
-            deleteProjectTechnology_view,
+            DeleteProjectTechnologyView,
             None,
         )
     )
@@ -1601,7 +1601,7 @@ def loadRoutes(config):
         addRoute(
             "addprjtechnologyalias",
             "/api/addProjectTechnologyAlias",
-            addProjectTechnologyAlias_view,
+            AddProjectTechnologyAliasView,
             None,
         )
     )
@@ -1609,7 +1609,7 @@ def loadRoutes(config):
         addRoute(
             "addprjtechnologyaliasextra",
             "/api/addProjectTechnologyAliasExtra",
-            addProjectTechnologyAliasExtra_view,
+            AddProjectTechnologyAliasExtraView,
             None,
         )
     )
@@ -1617,7 +1617,7 @@ def loadRoutes(config):
         addRoute(
             "readprjtechnologiesalias",
             "/api/readProjectTechnologiesAlias",
-            readProjectTechnologiesAlias_view,
+            ReadProjectTechnologiesAliasView,
             None,
         )
     )
@@ -1625,7 +1625,7 @@ def loadRoutes(config):
         addRoute(
             "readprjtechnologiesaliasextra",
             "/api/readProjectTechnologiesAliasExtra",
-            readProjectTechnologiesAliasExtra_view,
+            ReadProjectTechnologiesAliasExtraView,
             None,
         )
     )
@@ -1633,7 +1633,7 @@ def loadRoutes(config):
         addRoute(
             "readprjpossibletechnologiesalias",
             "/api/readPossibleProjectTechnologiesAlias",
-            readPossibleProjectTechnologiesAlias_view,
+            ReadPossibleProjectTechnologiesAliasView,
             None,
         )
     )
