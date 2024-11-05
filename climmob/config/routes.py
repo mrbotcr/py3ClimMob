@@ -55,14 +55,14 @@ from climmob.views.Api.projectEnumerators import (
 )
 from climmob.views.Api.projectProducts import readProducts_view, downloadApi_view
 from climmob.views.Api.projectRegistry import (
-    readProjectRegistry_view,
-    readPossibleQuestionsForRegistryGroup_view,
-    addRegistryGroup_view,
-    updateRegistryGroup_view,
-    deleteRegistryGroup_view,
-    addQuestionToGroupRegistry_view,
-    deleteQuestionFromGroupRegistry_view,
-    orderRegistryQuestions_view,
+    ReadProjectRegistryView,
+    ReadPossibleQuestionsForRegistryGroupView,
+    AddRegistryGroupView,
+    UpdateRegistryGroupView,
+    DeleteRegistryGroupView,
+    AddQuestionToGroupRegistryView,
+    DeleteQuestionFromGroupRegistryView,
+    OrderRegistryQuestionsView,
 )
 from climmob.views.Api.projectRegistryStart import (
     readProjectCombinations_view,
@@ -1651,7 +1651,7 @@ def loadRoutes(config):
         addRoute(
             "readprjregistry",
             "/api/readProjectRegistry",
-            readProjectRegistry_view,
+            ReadProjectRegistryView,
             None,
         )
     )
@@ -1659,20 +1659,20 @@ def loadRoutes(config):
         addRoute(
             "readprjpossibleregistry",
             "/api/readPossibleQuestionsForRegistryGroup",
-            readPossibleQuestionsForRegistryGroup_view,
+            ReadPossibleQuestionsForRegistryGroupView,
             None,
         )
     )
     routes.append(
         addRoute(
-            "addregistrygroup", "/api/createRegistryGroup", addRegistryGroup_view, None
+            "addregistrygroup", "/api/createRegistryGroup", AddRegistryGroupView, None
         )
     )
     routes.append(
         addRoute(
             "updateregistrygroup",
             "/api/updateRegistryGroup",
-            updateRegistryGroup_view,
+            UpdateRegistryGroupView,
             None,
         )
     )
@@ -1680,7 +1680,7 @@ def loadRoutes(config):
         addRoute(
             "deleteregistrygroup2",
             "/api/deleteRegistryGroup",
-            deleteRegistryGroup_view,
+            DeleteRegistryGroupView,
             None,
         )
     )
@@ -1688,7 +1688,7 @@ def loadRoutes(config):
         addRoute(
             "addquestiontogroup",
             "/api/addQuestionToGroupRegistry",
-            addQuestionToGroupRegistry_view,
+            AddQuestionToGroupRegistryView,
             None,
         )
     )
@@ -1696,7 +1696,7 @@ def loadRoutes(config):
         addRoute(
             "deletequestionfromgroup",
             "/api/deleteQuestionFromGroupRegistry",
-            deleteQuestionFromGroupRegistry_view,
+            DeleteQuestionFromGroupRegistryView,
             None,
         )
     )
@@ -1704,7 +1704,7 @@ def loadRoutes(config):
         addRoute(
             "orderregistryquestions",
             "/api/orderRegistryQuestions",
-            orderRegistryQuestions_view,
+            OrderRegistryQuestionsView,
             None,
         )
     )
