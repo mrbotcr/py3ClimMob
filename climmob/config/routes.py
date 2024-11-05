@@ -246,9 +246,9 @@ from climmob.views.technologies import (
 from climmob.views.test import test_view, sentry_debug_view
 
 from climmob.views.questionTranslations import (
-    questionTranslations_view,
+    QuestionTranslationsView,
     APILanguagesView,
-    changeDefaultQuestionLanguage_view,
+    ChangeDefaultQuestionLanguageView,
 )
 
 from climmob.views.otherLanguages import (
@@ -559,7 +559,7 @@ def loadRoutes(config):
         {
             "name": "questionTranslations",
             "path": "/user/{user}/question/{questionid}/questionTranslations",
-            "view": questionTranslations_view,
+            "view": QuestionTranslationsView,
             "renderer": "question/translations.jinja2",
         }
     )
@@ -568,7 +568,7 @@ def loadRoutes(config):
         {
             "name": "changeDefaultQuestionLanguage",
             "path": "/user/{user}/question/{questionid}/changeDefaultQuestionLanguage",
-            "view": changeDefaultQuestionLanguage_view,
+            "view": ChangeDefaultQuestionLanguageView,
             "renderer": "json",
         }
     )
