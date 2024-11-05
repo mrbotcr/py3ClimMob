@@ -23,18 +23,18 @@ from climmob.views.Api.projectAssessmentStart import (
     readAssessmentData_view,
 )
 from climmob.views.Api.projectAssessments import (
-    readProjectAssessments_view,
-    addNewAssessment_view,
-    updateProjectAssessment_view,
-    deleteProjectAssessment_view,
-    readProjectAssessmentStructure_view,
-    createAssessmentGroup_view,
-    updateAssessmentGroup_view,
-    deleteAssessmentGroup_view,
-    readPossibleQuestionForAssessmentGroup_view,
-    addQuestionToGroupAssessment_view,
-    deleteQuestionFromGroupAssessment_view,
-    orderAssessmentQuestions_view,
+    ReadProjectAssessmentsView,
+    AddNewAssessmentView,
+    UpdateProjectAssessmentView,
+    DeleteProjectAssessmentView,
+    ReadProjectAssessmentStructureView,
+    CreateAssessmentGroupView,
+    UpdateAssessmentGroupView,
+    DeleteAssessmentGroupView,
+    ReadPossibleQuestionForAssessmentGroupView,
+    AddQuestionToGroupAssessmentView,
+    DeleteQuestionFromGroupAssessmentView,
+    OrderAssessmentQuestionsView,
 )
 from climmob.views.Api.projectCreation import (
     createProject_view,
@@ -1815,20 +1815,20 @@ def loadRoutes(config):
         addRoute(
             "readprjassessments",
             "/api/readProjectAssessments",
-            readProjectAssessments_view,
+            ReadProjectAssessmentsView,
             None,
         )
     )
     routes.append(
         addRoute(
-            "addnewassessment", "/api/createAssessment", addNewAssessment_view, None
+            "addnewassessment", "/api/createAssessment", AddNewAssessmentView, None
         )
     )
     routes.append(
         addRoute(
             "updateprjassessment",
             "/api/updateProjectAssessment",
-            updateProjectAssessment_view,
+            UpdateProjectAssessmentView,
             None,
         )
     )
@@ -1836,7 +1836,7 @@ def loadRoutes(config):
         addRoute(
             "deleteprjassessment",
             "/api/deleteProjectAssessment",
-            deleteProjectAssessment_view,
+            DeleteProjectAssessmentView,
             None,
         )
     )
@@ -1869,7 +1869,7 @@ def loadRoutes(config):
         addRoute(
             "readprjassessmentstructure",
             "/api/readProjectAssessmentStructure",
-            readProjectAssessmentStructure_view,
+            ReadProjectAssessmentStructureView,
             None,
         )
     )
@@ -1877,7 +1877,7 @@ def loadRoutes(config):
         addRoute(
             "readprjpossibleassessment",
             "/api/readPossibleQuestionForAssessmentGroup",
-            readPossibleQuestionForAssessmentGroup_view,
+            ReadPossibleQuestionForAssessmentGroupView,
             None,
         )
     )
@@ -1885,7 +1885,7 @@ def loadRoutes(config):
         addRoute(
             "addassessmentgroup",
             "/api/createAssessmentGroup",
-            createAssessmentGroup_view,
+            CreateAssessmentGroupView,
             None,
         )
     )
@@ -1893,7 +1893,7 @@ def loadRoutes(config):
         addRoute(
             "updateassessmentgroup",
             "/api/updateAssessmentGroup",
-            updateAssessmentGroup_view,
+            UpdateAssessmentGroupView,
             None,
         )
     )
@@ -1901,7 +1901,7 @@ def loadRoutes(config):
         addRoute(
             "deleteassessmentgroup2",
             "/api/deleteAssessmentGroup",
-            deleteAssessmentGroup_view,
+            DeleteAssessmentGroupView,
             None,
         )
     )
@@ -1909,7 +1909,7 @@ def loadRoutes(config):
         addRoute(
             "orderassessmentquestion",
             "/api/orderAssessmentQuestions",
-            orderAssessmentQuestions_view,
+            OrderAssessmentQuestionsView,
             None,
         )
     )
@@ -1918,7 +1918,7 @@ def loadRoutes(config):
         addRoute(
             "addquestiontogroupass",
             "/api/addQuestionToGroupAssessment",
-            addQuestionToGroupAssessment_view,
+            AddQuestionToGroupAssessmentView,
             None,
         )
     )
@@ -1926,7 +1926,7 @@ def loadRoutes(config):
         addRoute(
             "deletequestionfromgroupass",
             "/api/deleteQuestionFromGroupAssessment",
-            deleteQuestionFromGroupAssessment_view,
+            DeleteQuestionFromGroupAssessmentView,
             None,
         )
     )
