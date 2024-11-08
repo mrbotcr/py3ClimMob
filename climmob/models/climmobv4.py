@@ -1101,7 +1101,7 @@ class userProject(Base):
     user = relationship("User")
 
 
-class ProjectMetadata(Base):
+"""class ProjectMetadata(Base):
     __tablename__ = "project_metadata"
     __table_args__ = (
         ForeignKeyConstraint(
@@ -1142,7 +1142,7 @@ class ProjectMetadata(Base):
     md_additional_inputs_provided = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
     md_varieties = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
 
-    project = relationship("Project")
+    project = relationship("Project")"""
 
 
 class ExtraForm(Base):

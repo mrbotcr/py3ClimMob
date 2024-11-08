@@ -8,13 +8,7 @@ from climmob.processes import (
     getProjectProgress,
     projectExists,
     getTheProjectIdForOwner,
-    getProjectMetadata,
     getProjectData,
-    get_collaborators_in_project,
-    addMetadata,
-    modifyMetadata,
-    searchTechnologiesInProject,
-    getCropTaxonomyDetails,
 )
 from climmob.products.analysis.analysis import create_analysis
 from climmob.products.analysisdata.analysisdata import create_datacsv
@@ -50,106 +44,6 @@ class metadata_view(privateView):
 
                     if activeProject["access_type"] in [4]:
                         raise HTTPNotFound()
-
-                    if not getProjectMetadata(activeProjectId, self.request):
-
-                        dataworking["project_id"] = activeProjectId
-                        added, message = addMetadata(dataworking, self.request)
-                        if added:
-
-                            self.request.session.flash(
-                                self._("The metadata was successfully saved")
-                            )
-                            self.returnRawViewResult = True
-                            return HTTPFound(
-                                location=self.request.route_url(
-                                    "Metadata",
-                                    user=activeProjectUser,
-                                    project=activeProjectCod,
-                                )
-                            )
-                        else:
-                            self.request.session.flash(
-                                self._("Error|Error saving metadata {}".format(message))
-                            )
-                    else:
-
-                        updated, message = modifyMetadata(
-                            activeProjectId, dataworking, self.request
-                        )
-
-                        if updated:
-
-                            self.request.session.flash(
-                                self._("The metadata was successfully saved")
-                            )
-                            self.returnRawViewResult = True
-                            return HTTPFound(
-                                location=self.request.route_url(
-                                    "Metadata",
-                                    user=activeProjectUser,
-                                    project=activeProjectCod,
-                                )
-                            )
-                        else:
-                            self.request.session.flash(
-                                self._("Error|Error saving metadata {}".format(message))
-                            )
-
-            info = getProjectMetadata(activeProjectId, self.request)
-
-            if not dataworking:
-                if info:
-                    dataworking = info
-                else:
-                    dataworking["md_coordinator"] = projectInfo["project_pi"]
-                    dataworking["md_year"] = projectInfo["project_creationdate"].year
-                    dataworking["md_tricot_project"] = projectInfo["project_name"]
-
-                    collaborators = get_collaborators_in_project(
-                        self.request, activeProjectId
-                    )
-
-                    collaboratorsString = ""
-                    for collaborator in collaborators:
-                        if collaboratorsString == "":
-                            collaboratorsString += "{} ( {} )".format(
-                                collaborator["user_fullname"],
-                                collaborator["user_email"],
-                            )
-                        else:
-                            collaboratorsString += "\n{} ( {} )".format(
-                                collaborator["user_fullname"],
-                                collaborator["user_email"],
-                            )
-
-                    dataworking["md_collaborators"] = collaboratorsString
-
-                    projectTechnologies = searchTechnologiesInProject(
-                        activeProjectId, self.request
-                    )
-                    if projectTechnologies:
-                        dataworking["md_crops"] = projectTechnologies[0][
-                            "croptaxonomy_code"
-                        ]
-                        dataworking["cropInfo"] = getCropTaxonomyDetails(
-                            dataworking["md_crops"], self.request
-                        )
-
-                    try:
-                        varieties = getCombinationsData(activeProjectId, self.request)
-                    except:
-                        varieties = []
-
-                    varietiesString = ""
-                    for variety in varieties:
-                        for element in variety["elements"]:
-                            if varietiesString == "":
-                                varietiesString += element["alias_name"]
-                            else:
-                                varietiesString += "\n{}".format(element["alias_name"])
-
-                    dataworking["md_varieties"] = varietiesString
 
         return {"activeProject": activeProject, "dataworking": dataworking}
 

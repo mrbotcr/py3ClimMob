@@ -23,7 +23,6 @@ from climmob.models import (
     RegistryJsonLog,
     AssessmentJsonLog,
     userProject,
-    ProjectMetadata,
     Country,
 )
 from climmob.models.repository import sql_fetch_all, sql_fetch_one
@@ -868,7 +867,11 @@ def getProjectProgress(userName, projectCode, project, request):
             )
     result["assessments"] = assessmentArray
 
-    if (
+    """
+    METADATA
+    """
+
+    """if (
         request.dbsession.query(ProjectMetadata)
         .filter(ProjectMetadata.project_id == project)
         .first()
@@ -877,7 +880,8 @@ def getProjectProgress(userName, projectCode, project, request):
         result["metadata"] = True
         perc = perc + 16
     else:
-        result["metadata"] = False
+        result["metadata"] = False"""
+    result["metadata"] = False
 
     return result, perc
 

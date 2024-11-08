@@ -55,7 +55,6 @@ from climmob.models.climmobv4 import (
     CropTaxonomy,
     I18nCropTaxonomy,
     generalPhrases,
-    ProjectMetadata,
     ExtraForm,
     ExtraFormAnswer,
     ProjectType,

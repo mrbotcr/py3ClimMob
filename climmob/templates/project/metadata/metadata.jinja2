@@ -34,7 +34,7 @@
 
     <div class="row">
 
-        <div class="col-lg-8 ">
+        <div class="col-lg-4 ">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
                     <h5>{{ _("Trial documentation") }}</h5>
@@ -47,12 +47,11 @@
                     <form class="form-horizontal formElement"  method="post" action="{{ request.url }}" id="FormMetadata">
                         <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
 
-                        {% include "project/metadata/metadata_form.jinja2" %}
 
                     </form>
 
                     <script>
-                        $(document).ready(function () {
+                        /*$(document).ready(function () {
 
                             $.validator.addMethod("wordCount",
                                 function(value, element, wordCount) {
@@ -262,7 +261,7 @@
                                 }
                             });
 
-                        });
+                        });*/
 
                     </script>
 
