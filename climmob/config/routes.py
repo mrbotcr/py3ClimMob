@@ -204,7 +204,7 @@ from climmob.views.project import (
     CurationOfProjects_view,
 )
 from climmob.views.projectHelp.projectHelp import projectHelp_view
-from climmob.views.project_analysis import analysisDataView, metadata_view
+from climmob.views.project_analysis import analysisDataView
 from climmob.views.project_combinations import projectCombinations_view
 from climmob.views.project_enumerators import (
     projectEnumerators_view,
@@ -243,6 +243,12 @@ from climmob.views.technologies import (
     getUserTechnologyAliasDetails_view,
     APICropsView,
 )
+from climmob.views.metadata import (
+    MetadataForms_view,
+    MetadataFormDetails_view,
+    DownloadMetadataForm_view,
+    DeleteMetadataForms_view,
+)
 from climmob.views.test import test_view, sentry_debug_view
 
 from climmob.views.questionTranslations import (
@@ -268,6 +274,11 @@ from climmob.views.Api.languages import (
 from climmob.views.projectsSummary.projectsSummary import (
     projectsSummary_view,
     downloadProjectsSummary_view,
+)
+
+from climmob.views.project_metadata import (
+    ProjectMetadataForm_view,
+    ShowMetadataForm_view,
 )
 
 from climmob.views.extra_form import extraFormPOST_view
@@ -715,6 +726,44 @@ def loadRoutes(config):
             "deleteuseralias",
             "/technology/{technologyid}/alias/{aliasid}/delete",
             deletealias_view,
+            "json",
+        )
+    )
+
+    # Metadata library
+
+    routes.append(
+        addRoute(
+            "librarymetadata",
+            "/metadata",
+            MetadataForms_view,
+            "Metadata/metadata.jinja2",
+        )
+    )
+
+    routes.append(
+        addRoute(
+            "metadataFormDetails",
+            "/metadataform/{metadataform}/metadataFormDetails",
+            MetadataFormDetails_view,
+            "json",
+        )
+    )
+
+    routes.append(
+        addRoute(
+            "downloadMetadataForm",
+            "/metadataform/{metadataform}/download",
+            DownloadMetadataForm_view,
+            None,
+        )
+    )
+
+    routes.append(
+        addRoute(
+            "deletemetadataform",
+            "/metadataform/{metadataform}/delete",
+            DeleteMetadataForms_view,
             "json",
         )
     )
@@ -1167,14 +1216,23 @@ def loadRoutes(config):
         )
     )
 
-    # Metadata
+    # Project Metadata
 
     routes.append(
         addRoute(
             "Metadata",
             "/user/{user}/project/{project}/metadata",
-            metadata_view,
+            ProjectMetadataForm_view,
             "project/metadata/metadata.jinja2",
+        )
+    )
+
+    routes.append(
+        addRoute(
+            "ShowMetadataForm",
+            "/user/{user}/project/{project}/metadataform/{metadataform}/ShowMetadata",
+            ShowMetadataForm_view,
+            "string",
         )
     )
 

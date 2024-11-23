@@ -196,6 +196,16 @@ class API_all_users_view(privateView):
                 for result in query_result:
                     default = "identicon"
                     size = 45
+                    gravatar_url = (
+                        "http://www.gravatar.com/avatar/"
+                        + hashlib.md5(
+                            result["user_email"].lower().encode("utf8")
+                        ).hexdigest()
+                        + "?"
+                    )
+                    gravatar_url += urllib.parse.urlencode(
+                        {"d": default, "s": str(size)}
+                    )
                     select2_result.append(
                         {
                             "id": result["user_name"],
@@ -203,6 +213,7 @@ class API_all_users_view(privateView):
                             + " - "
                             + result["user_fullname"],
                             "user_email": result["user_email"],
+                            "gravatar": gravatar_url,
                         }
                     )
                 with_pagination = False

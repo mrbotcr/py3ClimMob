@@ -2,7 +2,7 @@ import json
 
 from future.utils import iteritems
 from sqlalchemy import inspect
-
+import inspect as inspectObject
 from climmob.models.meta import metadata
 
 __all__ = [
@@ -11,6 +11,7 @@ __all__ = [
     "mapToSchema",
     "mapFromSchema",
     "add_modules_to_schema",
+    "mapFromSchemaWithRelationships",
 ]
 
 _SCHEMA = []
@@ -210,3 +211,86 @@ def mapFromSchema(data):
 
             mapped_data.append(temp)
         return mapped_data
+
+
+def mapFromSchemaWithRelationships(data):
+    """
+    Maps a row/list of raw data from the database to the schema.
+    Data fields in the extra storage are separated into independent fields.
+    :param data: Data as stored in the database.
+    :param index: Current index for list processing.
+    :param processed: Set to keep track of processed instances to avoid recursion.
+    :return: The data in dict form or an array of dicts.
+    """
+    processed_instances = set()
+
+    def process_getMembers(data, mapped_data):
+
+        for prop, value in inspectObject.getmembers(data.__class__):
+            if isinstance(value, property):
+                mapped_data[prop] = getattr(data, prop)
+
+    def process_relationships(data, mapped_data):
+        for rel_name, rel in data.__mapper__.relationships.items():
+
+            otherProcess = True
+            if rel.backref:
+                otherProcess = False
+
+            if rel.uselist:
+                mapped_data[rel_name] = [
+                    process_instance(r, otherProcess)
+                    for r in getattr(data, rel_name)
+                    if r
+                ]
+            else:
+                mapped_data[rel_name] = process_instance(
+                    getattr(data, rel_name), otherProcess
+                )
+
+    def process_row(data, mapped_data, otherProcess):
+
+        for c in inspect(data).mapper.column_attrs:
+            if c.key != "extra":
+                mapped_data[c.key] = getattr(data, c.key)
+            else:
+                if getattr(data, c.key) is not None:
+                    jsondata = json.loads(getattr(data, c.key))
+                    if bool(jsondata):
+                        for key, value in jsondata.items():
+                            mapped_data[key] = value
+
+        process_getMembers(data, mapped_data)
+
+        if otherProcess:
+
+            process_relationships(data, mapped_data)
+
+    def process_instance(data, otherProcess=True):
+
+        mapped_data = {}
+        if data is not None:
+
+            if data.__class__.__name__ != "Row":
+
+                process_row(data, mapped_data, otherProcess)
+
+            else:
+                dict_result = data._asdict()
+                for key, value in dict_result.items():
+                    if value.__class__.__module__ in _MODULES:
+
+                        process_row(value, mapped_data, otherProcess)
+
+                    else:
+                        mapped_data[key] = value
+
+        return mapped_data
+
+    if isinstance(data, list):
+
+        return [process_instance(row) for row in data]
+
+    else:
+
+        return process_instance(data)

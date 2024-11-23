@@ -8,6 +8,8 @@
     {% cssresource request,'coreresources','sweet' %}
     {% cssresource request,'coreresources','switch' %}
     {% cssresource request,'coreresources','select2' %}
+    {% cssresource request,'coreresources','chosen' %}
+    {% cssresource request,'coreresources','datapicker' %}
 {% endblock css %}
 
 {% block topScripts %}
@@ -17,7 +19,9 @@
     {% jsresource request,'coreresources','switch' %}
     {% jsresource request,'coreresources','assessment_form' %}
     {% jsresource request,'coreresources','select2' %}
+    {% jsresource request,'coreresources','chosen' %}
     {% jsresource request,'coreresources','jqueryvalidate' %}
+    {% jsresource request,'coreresources','datapicker' %}
 {% endblock topScripts %}
 
 {% block pageheading %}
@@ -34,240 +38,130 @@
 
     <div class="row">
 
-        <div class="col-lg-4 ">
+        <div class="col-lg-4">
+
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>{{ _("Trial documentation") }}</h5>
+                    <h5>{{ _("List of forms to be completed") }}</h5>
+                    <div class="ibox-tools"></div>
+                </div>
+                <div class="ibox-content">
+
+                    <div class="table-responsive">
+
+                        <table class="footable table table-stripped" data-page-size="50000" data-filter=#filter>
+                            <tbody>
+                                <tr>
+                                    <th>
+                                        {{ _("Form name") }}
+                                    </th>
+                                    <th class="text-center">
+                                        {{ _("Status") }}
+                                    </th>
+                                    <th class="text-center">
+                                        {{ _("Actions") }}
+                                    </th>
+                                </tr>
+                                {% for metadata in listOfProjectMetadata %}
+                                    <tr>
+                                        <td>
+                                            {{ metadata.metadata_name }}
+                                        </td>
+                                        <td class="text-center">
+                                            {% if metadata.result %}
+                                                <span class="label label-success">{{ _("Completed") }}</span>
+                                            {% else %}
+                                                <span class="label label-warning">{{ _("Pending") }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            <button type="submit" class="btn btn-primary" onclick="openMetadataForm('{{ metadata.metadata_id }}')"><i class="fa fa-eye"></i> {{ _('View and edit') }}</button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-lg-8" id="div_for_show_form" style="display: none">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{{ _("Trial documentation") }} </h5>
                     <div class="ibox-tools">
-{#                        <button id="btn_cancel_metadata"  class="btn btn-xs btn-default pull-right " ><i class="fa fa-undo"></i>  {{ _("Clear form") }}</button>#}
+                        <button  class="btn btn-xs btn-default pull-right btn_cancel_metadata" ><i class="fa fa-close"></i>  {{ _("Close form") }}</button>
                     </div>
                 </div>
                 <div class="ibox-content">
 
-                    <form class="form-horizontal formElement"  method="post" action="{{ request.url }}" id="FormMetadata">
-                        <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                    <div class="form-horizontal">
+                        <div id="spaceForPutTheForm"></div>
+                    </div>
 
+                    <form class="form-horizontal" id="form_metadata" role="form" method="post" action="{{ request.url }}" >
+
+                        <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                        <input type="hidden" name="_jsonResult" id="_jsonResult">
+                        <input type="hidden" id="metadata_id" name="metadata_id">
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <button type="button" class="btn btn-default btn_cancel_metadata pull-left" name="btn_save_metadata"> {{ _('Cancel') }}</button>
+                            </div>
+                            <div class="col-md-6">
+                                <button type="submit" class="btn btn-primary pull-right" id="btn_save_netadata" name="btn_save_metadata"> {{ _('Save') }}</button>
+                            </div>
+                        </div>
 
                     </form>
 
                     <script>
-                        /*$(document).ready(function () {
 
-                            $.validator.addMethod("wordCount",
-                                function(value, element, wordCount) {
-                                    if (value.split(' ').length < wordCount)
-                                    {
-                                        var message = "{{ _("You have written {}/[] words required") }}";
-                                        message = message.replace("{}", value.split(' ').length).replace("[]", wordCount)
-                                        $.validator.messages.wordCount = message;
-
-                                        return false
-                                    }else{
-                                        return true
-                                    }
-                                },
-                                $.validator.messages.wordCount
-                            )
-                            var quantityOfWords = 100
-                            $('#FormMetadata').validate({
-                                rules: {
-                                    md_coordinator:{
-                                        required:true,
-                                    },
-                                    md_objective: {
-                                        required: true,
-                                        wordCount: quantityOfWords
-                                    },
-                                    md_crops: {
-                                        required: true,
-                                    },
-                                    md_year: {
-                                        required: true,
-                                    },
-                                    md_tricot_project: {
-                                        required: true,
-                                    },
-                                    md_collaborators: {
-                                        required: true,
-                                    },
-                                    md_experimental_design: {
-                                        required: true,
-                                        wordCount: quantityOfWords
-                                    },
-                                    md_steps_followed: {
-                                        required: true,
-                                        wordCount: quantityOfWords
-                                    },
-                                    md_special_features: {
-                                        required: true,
-                                    },
-                                    md_how_varieties_were_selected: {
-                                        required: true,
-                                        wordCount: quantityOfWords
-                                    },
-                                    md_how_participants_were_selected: {
-                                        required: true,
-                                        wordCount: quantityOfWords
-                                    },
-                                    md_geographic_areas: {
-                                        required: true,
-                                        wordCount: quantityOfWords
-                                    },
-                                    md_selection_criteria_used: {
-                                        required: true,
-                                        wordCount: quantityOfWords
-                                    },
-                                    md_how_participants_approached_recruitment: {
-                                        required: true,
-                                        wordCount: quantityOfWords
-                                    },
-                                    md_where_recruidment_place: {
-                                        required: true,
-                                        wordCount: quantityOfWords
-                                    },
-                                    md_how_recruitment_formalised: {
-                                        required: true,
-                                        wordCount: quantityOfWords
-                                    },
-                                    md_participants_compensated: {
-                                        required: true
-                                    },
-                                    md_participants_approached_participate: {
-                                        required: true,
-                                    },
-                                    md_how_tricot_explained: {
-                                        required: true,
-                                        wordCount: quantityOfWords
-                                    },
-                                    md_training_sessions: {
-                                        required: true,
-                                        wordCount: quantityOfWords
-                                    },
-                                    md_follow_up_procedures: {
-                                        required: true
-                                    },
-                                    md_how_was_data_collected: {
-                                        required: true,
-                                        wordCount: quantityOfWords
-                                    },
-                                    md_how_were_results_devolved: {
-                                        required: true,
-                                        wordCount: quantityOfWords
-                                    },
-                                    md_instructions_given: {
-                                        required: true,
-                                        wordCount: quantityOfWords
-                                    },
-                                    md_additional_inputs_provided: {
-                                        required: true,
-                                    },
-                                    md_varieties: {
-                                        required: true
-                                    }
-
-                                },
-                                messages: {
-                                    md_coordinator:{
-                                        required: "{{ _("Please write the coordiantor") }}",
-                                    },
-                                    md_objective: {
-                                        required: "{{ _("Please write the objectives of the trial") }}",
-                                    },
-                                    md_crops: {
-                                        required: "{{ _("Please select the crop") }}",
-                                    },
-                                    md_year: {
-                                        required: "{{ _("Please write here") }}",
-                                    },
-                                    md_tricot_project: {
-                                        required: "{{ _("Please write the name of the tricot project") }}",
-                                    },
-                                    md_collaborators: {
-                                        required: "{{ _("Please write the collaborators") }}"
-                                    },
-                                    md_experimental_design: {
-                                        required: "{{ _("Please write what experimental design was followed") }}"
-                                    },
-                                    md_steps_followed: {
-                                        required: "{{ _("Please write here") }}",
-                                    },
-                                    md_special_features: {
-                                        required: "{{ _("Please write here") }}",
-                                    },
-                                    md_how_varieties_were_selected: {
-                                        required: "{{ _("Please write here") }}",
-                                    },
-                                    md_how_participants_were_selected: {
-                                        required: "{{ _("Please write here") }}",
-                                    },
-                                    md_geographic_areas: {
-                                        required: "{{ _("Please write here") }}",
-                                    },
-                                    md_selection_criteria_used: {
-                                        required: "{{ _("Please write here") }}",
-                                    },
-                                    md_how_participants_approached_recruitment: {
-                                        required: "{{ _("Please write here") }}",
-                                    },
-                                    md_where_recruidment_place: {
-                                        required: "{{ _("Please write here") }}",
-                                    },
-                                    md_how_recruitment_formalised: {
-                                        required: "{{ _("Please write here") }}",
-                                    },
-                                    md_participants_compensated: {
-                                        required: "{{ _("Please write here") }}",
-                                    },
-                                    md_participants_approached_participate: {
-                                        required: "{{ _("Please write here") }}",
-                                    },
-                                    md_how_tricot_explained: {
-                                        required: "{{ _("Please write here") }}",
-                                    },
-                                    md_training_sessions: {
-                                        required: "{{ _("Please write here") }}",
-                                    },
-                                    md_follow_up_procedures: {
-                                        required: "{{ _("Please write here") }}",
-                                    },
-                                    md_how_was_data_collected: {
-                                        required: "{{ _("Please write here") }}",
-                                    },
-                                    md_how_were_results_devolved: {
-                                        required: "{{ _("Please write here") }}",
-                                    },
-                                    md_instructions_given: {
-                                        required: "{{ _("Please write here") }}",
-                                    },
-                                    md_additional_inputs_provided: {
-                                        required: "{{ _("Please write here") }}",
-                                    },
-                                    md_varieties: {
-                                        required: "{{ _("Please write here") }}",
-                                    }
-                                },
-                                errorElement: 'span',
-                                errorPlacement: function (error, element) {
-                                    error.addClass('text-danger');
-                                    element.closest('.col-sm-8').append(error);
-                                },
-                                highlight: function (element, errorClass, validClass) {
-                                    $("#carga").hide();
-                                    $(element.parentElement.parentElement).addClass('row has-error');
-                                },
-                                unhighlight: function (element, errorClass, validClass) {
-                                    $("#carga").hide();
-                                    $(element.parentElement.parentElement).removeClass('row has-error');
-                                }
-                            });
-
-                        });*/
+                        {% if metadataForm %}
+                            openMetadataForm("{{ metadataForm }}")
+                        {% endif %}
 
                     </script>
 
                 </div>
             </div>
         </div>
+
+        <script>
+
+            function openMetadataForm(formId)
+            {
+                var URL = "{{ request.route_url('ShowMetadataForm', user=activeProject["owner"].user_name, project=activeProject.project_cod, metadataform="__metadataform__" ) }}"
+                URL = URL.replace("__metadataform__",formId)
+
+                $.get(URL, function (dataString, status) {
+                    $("#spaceForPutTheForm").html(dataString)
+                    $("#metadata_id").val(formId)
+                    $("#div_for_show_form").css("display","block")
+                });
+            }
+
+            $("#btn_save_netadata" ).click(function() {
+                const rootGroup = $("#data");
+                let jsonResult = {};  // Creamos un objeto vacío donde se acumulará el resultado
+                processGroup(rootGroup, jsonResult);  // Procesamos el grupo raíz y vamos llenando jsonResult
+                $("#_jsonResult").val(JSON.stringify(jsonResult))
+                $("#output").text(JSON.stringify(jsonResult, null, 2));  // Mostramos el resultado
+                //event.preventDefault();
+            });
+
+            $(".btn_cancel_metadata").click(function (){
+                $("#spaceForPutTheForm").html("")
+                $("#metadata_id").val("")
+                $("#div_for_show_form").css("display","none")
+            });
+
+        </script>
+
     </div>
 {% endblock pagecontent%}
 

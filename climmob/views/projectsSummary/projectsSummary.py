@@ -46,9 +46,7 @@ class projectsSummary_view(privateView):
 
     def processView(self):
 
-        userInSession = getUserInfo(self.request, self.user.login)
-
-        if userInSession["user_admin"] not in [1]:
+        if self.user.admin not in [1]:
             raise HTTPNotFound()
 
         if self.request.method == "POST":

@@ -1,0 +1,41 @@
+<input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+
+<div class="form-group">
+    <label class="col-sm-4 control-label">{{ _('Form name') }}</label>
+    <div class="col-sm-8">
+        <input type="text" class="form-control" value="{{ dataworking.metadata_id }}" id="metadata_id" name="metadata_id" style="display: none">
+        <input type="text" class="form-control" value="{{ dataworking.metadata_name }}" id="metadata_name" name="metadata_name" required="" oninvalid="this.setCustomValidity('{{ _("Write the metadata name.") }}')" onchange="this.setCustomValidity('')">
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-4 control-label"><b>{{ _('Please upload your ODK file in .xlsx format') }}</b></label>
+    <div class="col-sm-8 ">
+        <div class="custom-file">
+            <input id="xlsxODK" accept="*.xlsx" name="xlsxODK" type="file" class="custom-file-input" required>
+        </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-4 control-label">{{ _('Projects to which the form will be applied according to location and unit of analysis') }}</label>
+    <div class="col-sm-8">
+        <select id="select_project_types" name="select_project_types" data-placeholder="Choose the location and unit of analysis..." class="chosen-select form-control" multiple tabindex="4" required="" oninvalid="this.setCustomValidity('{{ _("Select at least one.") }}')" onchange="this.setCustomValidity('')">
+            {% for lauoa in listOfLocationsAndUnitOfAnalysis %}
+                <option value="{{ lauoa.pluoa_id }}">{{ lauoa.plocation_name }} - {{ lauoa.puoa_name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-4 control-label">{{ _("Form active") }}</label>
+    <div class="col-sm-8">
+        <div class="switch">
+            <input type="checkbox" id="metadata_active"
+                   name="metadata_active" data-on-color="success"
+                   data-off-color="danger" data-on-text="{{ _('Yes') }}"
+                   data-off-text="{{ _('No') }}" checked>
+        </div>
+    </div>
+</div>

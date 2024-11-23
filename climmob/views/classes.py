@@ -398,7 +398,16 @@ class privateView(object):
             self.classResult.update(self.viewResult)
             return self.classResult
         else:
-            return self.viewResult
+            if isinstance(self.viewResult, dict):
+                return json.loads(
+                    json.dumps(self.viewResult, default=self.myconverter, indent=4)
+                )
+            else:
+                return self.viewResult
+
+    def myconverter(self, o):
+        if isinstance(o, datetime.datetime):
+            return o.__str__()
 
     def processView(self):
         return {"activeUser": self.user}

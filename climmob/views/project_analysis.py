@@ -6,46 +6,10 @@ from climmob.processes import (
     getJSONResult,
     getCombinationsData,
     getProjectProgress,
-    projectExists,
-    getTheProjectIdForOwner,
-    getProjectData,
 )
 from climmob.products.analysis.analysis import create_analysis
 from climmob.products.analysisdata.analysisdata import create_datacsv
 from climmob.views.classes import privateView
-
-
-class metadata_view(privateView):
-    def processView(self):
-
-        activeProjectUser = self.request.matchdict["user"]
-        activeProjectCod = self.request.matchdict["project"]
-        error_summary = {}
-
-        dataworking = {}
-
-        activeProject = getActiveProject(self.user.login, self.request)
-
-        if not projectExists(
-            self.user.login, activeProjectUser, activeProjectCod, self.request
-        ):
-            raise HTTPNotFound()
-        else:
-            activeProjectId = getTheProjectIdForOwner(
-                activeProjectUser, activeProjectCod, self.request
-            )
-
-            projectInfo = getProjectData(activeProjectId, self.request)
-
-            if self.request.method == "POST":
-                if "btn_save_metadata" in self.request.POST:
-
-                    dataworking = self.getPostDict()
-
-                    if activeProject["access_type"] in [4]:
-                        raise HTTPNotFound()
-
-        return {"activeProject": activeProject, "dataworking": dataworking}
 
 
 class analysisDataView(privateView):
