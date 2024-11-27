@@ -1396,4 +1396,4 @@ class ProjectMetadataForm(Base):
     pmf_json = Column(JSON, nullable=False)
 
     Project = relationship("Project")
-    MetadataForm = relationship("MetadataForm")
+    MetadataForm = relationship("MetadataForm", backref="project_metadata_form")

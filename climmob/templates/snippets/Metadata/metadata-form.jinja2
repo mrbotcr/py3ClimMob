@@ -22,7 +22,7 @@
     <div class="col-sm-8">
         <select id="select_project_types" name="select_project_types" data-placeholder="Choose the location and unit of analysis..." class="chosen-select form-control" multiple tabindex="4" required="" oninvalid="this.setCustomValidity('{{ _("Select at least one.") }}')" onchange="this.setCustomValidity('')">
             {% for lauoa in listOfLocationsAndUnitOfAnalysis %}
-                <option value="{{ lauoa.pluoa_id }}">{{ lauoa.plocation_name }} - {{ lauoa.puoa_name }}</option>
+                <option value="{{ lauoa.pluoa_id }}" {% if lauoa.pluoa_id|string in dataworking["select_project_types"] %}selected{% endif %}>{{ lauoa.plocation_name }} - {{ lauoa.puoa_name }}</option>
             {% endfor %}
         </select>
     </div>

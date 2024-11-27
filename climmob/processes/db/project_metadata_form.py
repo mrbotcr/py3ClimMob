@@ -1,5 +1,6 @@
 from climmob.models import (
     ProjectMetadataForm,
+    MetadataForm,
     mapToSchema,
     mapFromSchemaWithRelationships,
 )
@@ -8,6 +9,7 @@ __all__ = [
     "addProjectMetadataForm",
     "getProjectMetadataForm",
     "modifyProjectMetadataForm",
+    "knowIfTheProjectMetadataIsComplete",
 ]
 
 
@@ -40,3 +42,15 @@ def modifyProjectMetadataForm(request, projectId, metadataFormId, data):
         return True, ""
     except Exception as e:
         return False, e
+
+
+def knowIfTheProjectMetadataIsComplete(request, projectId):
+    result = mapFromSchemaWithRelationships(request.dbsession.query(MetadataForm).all())
+    quantityRequired = len(result)
+    quantityCompleted = 0
+    for metadata in result:
+        for project in metadata["project_metadata_form"]:
+            if project["project_id"] == projectId:
+                quantityCompleted = quantityCompleted + 1
+
+    return quantityRequired, quantityCompleted

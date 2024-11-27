@@ -46,42 +46,47 @@
                     <div class="ibox-tools"></div>
                 </div>
                 <div class="ibox-content">
+                    {% if listOfProjectMetadata %}
+                        <div class="table-responsive">
 
-                    <div class="table-responsive">
-
-                        <table class="footable table table-stripped" data-page-size="50000" data-filter=#filter>
-                            <tbody>
-                                <tr>
-                                    <th>
-                                        {{ _("Form name") }}
-                                    </th>
-                                    <th class="text-center">
-                                        {{ _("Status") }}
-                                    </th>
-                                    <th class="text-center">
-                                        {{ _("Actions") }}
-                                    </th>
-                                </tr>
-                                {% for metadata in listOfProjectMetadata %}
+                            <table class="footable table table-stripped" data-page-size="50000" data-filter=#filter>
+                                <tbody>
                                     <tr>
-                                        <td>
-                                            {{ metadata.metadata_name }}
-                                        </td>
-                                        <td class="text-center">
-                                            {% if metadata.result %}
-                                                <span class="label label-success">{{ _("Completed") }}</span>
-                                            {% else %}
-                                                <span class="label label-warning">{{ _("Pending") }}</span>
-                                            {% endif %}
-                                        </td>
-                                        <td class="text-center">
-                                            <button type="submit" class="btn btn-primary" onclick="openMetadataForm('{{ metadata.metadata_id }}')"><i class="fa fa-eye"></i> {{ _('View and edit') }}</button>
-                                        </td>
+                                        <th>
+                                            {{ _("Form name") }}
+                                        </th>
+                                        <th class="text-center">
+                                            {{ _("Status") }}
+                                        </th>
+                                        <th class="text-center">
+                                            {{ _("Actions") }}
+                                        </th>
                                     </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                                    {% for metadata in listOfProjectMetadata %}
+                                        <tr>
+                                            <td>
+                                                {{ metadata.metadata_name }}
+                                            </td>
+                                            <td class="text-center">
+                                                {% if metadata.result %}
+                                                    <span class="label label-success">{{ _("Completed") }}</span>
+                                                {% else %}
+                                                    <span class="label label-warning">{{ _("Pending") }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-center">
+                                                <button type="submit" class="btn btn-primary" onclick="openMetadataForm('{{ metadata.metadata_id }}')"><i class="fa fa-eye"></i> {{ _('View and edit') }}</button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div style="width: 100%; text-align: center">
+                            <h3><b>{{ _("There are no metadata forms to be filled out") }}</b></h3>
+                        </div>
+                    {% endif %}
 
                 </div>
             </div>
@@ -98,11 +103,11 @@
                 </div>
                 <div class="ibox-content">
 
-                    <div class="form-horizontal">
-                        <div id="spaceForPutTheForm"></div>
-                    </div>
-
                     <form class="form-horizontal" id="form_metadata" role="form" method="post" action="{{ request.url }}" >
+
+                        <div class="form-horizontal">
+                            <div id="spaceForPutTheForm"></div>
+                        </div>
 
                         <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                         <input type="hidden" name="_jsonResult" id="_jsonResult">

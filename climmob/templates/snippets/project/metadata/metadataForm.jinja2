@@ -49,22 +49,21 @@
                 <div class="form-group">
 
                     <div class="col-sm-12">
-                        <h3>{{ JsonInfo["label"][request.locale_name] }}</h3>
+                        <h3>{% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"].keys() and JsonInfo["bind"]["required"] == "yes" %}<strong style="color: red">*</strong> {% endif %}{{ JsonInfo["label"][request.locale_name] }}</h3>
                         {% if "hint" in JsonInfo.keys() %} <p>{{ JsonInfo["hint"][request.locale_name] }}</p>{% endif %}
 
                         {% if JsonInfo["type"] == "text" %}
 
-                            <textarea class="form-control" rows="2"  name="{{ JsonInfo["name"] }}" {% if "required" in JsonInfo.keys()%} {% if JsonInfo["required"] == "yes" %} required="" {% endif %} {% endif %}  oninvalid="this.setCustomValidity('{{ _("Write the question asked.") }}')" onchange="this.setCustomValidity('')"></textarea>
+                            <textarea class="form-control" rows="2"  name="{{ JsonInfo["name"] }}" {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %} required="" {% endif %}  oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')"></textarea>
 
                         {% elif JsonInfo["type"] == "select one" %}
 
                             {% if "climmob_users" in JsonInfo.keys()%}
-
-                                <select name="{{ JsonInfo["name"] }}" style="width: 100%; !important;" class="js-example-data-ajax form-control" {% if "required" in JsonInfo.keys()%} {% if JsonInfo["required"] == "yes" %} required="" {% endif %} {% endif %} oninvalid="this.setCustomValidity('{{ _("Select one user.") }}')" onchange="this.setCustomValidity('')"></select>
+                                <select name="{{ JsonInfo["name"] }}" style="width: 100%; !important;" class="js-example-data-ajax form-control" {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %} required="" {% endif %} oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')"></select>
 
                             {% else %}
 
-                                <select data-placeholder="" name="{{ JsonInfo["name"] }}" class="chosen-select form-control" {% if "required" in JsonInfo.keys()%} {% if JsonInfo["required"] == "yes" %} required="" {% endif %} {% endif %} oninvalid="this.setCustomValidity('{{ _("Select at least one") }}')" onchange="this.setCustomValidity('')">
+                                <select data-placeholder="" name="{{ JsonInfo["name"] }}" class="chosen-select form-control" {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %} required="" {% endif %} oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')">
                                     {% for choice in JsonInfo["choices"] %}
                                         <option value="{{ choice["label"][request.locale_name] }}">{{ choice["label"][request.locale_name] }}</option>
                                     {% endfor %}
@@ -74,7 +73,7 @@
 
                         {% elif JsonInfo["type"] == "select all that apply" %}
 
-                            <select data-placeholder="" name="{{ JsonInfo["name"] }}" class="chosen-select form-control" multiple tabindex="1" {% if "required" in JsonInfo.keys()%} {% if JsonInfo["required"] == "yes" %} required="" {% endif %} {% endif %} oninvalid="this.setCustomValidity('{{ _("Select at least one") }}')" onchange="this.setCustomValidity('')">
+                            <select data-placeholder="" name="{{ JsonInfo["name"] }}" class="chosen-select form-control" multiple tabindex="1" {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %} required="" {% endif %} oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')">
                                 {% for choice in JsonInfo["choices"] %}
                                     <option value="{{ choice["label"][request.locale_name] }}">{{ choice["label"][request.locale_name] }}</option>
                                 {% endfor %}
@@ -85,7 +84,7 @@
 
                         {% elif JsonInfo["type"] == "date" %}
                             <div class="input-group date">
-                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input type="text" name="{{ JsonInfo["name"] }}" class="form-control datepicker" value="" readonly>
+                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input type="text" name="{{ JsonInfo["name"] }}" class="form-control datepicker" value="" readonly {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %}required=""{% endif %} oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')">
                             </div>
                         {% endif %}
 
@@ -101,9 +100,6 @@
 
 
 {{ recursiveFunction(Form) }}
-
-{#<button type="button" id="generate-json">Generar JSON</button>#}
-{#<pre id="output"></pre>#}
 
 
 <script>
@@ -192,6 +188,7 @@
                 if (child.is("input, textarea, select")) {
 
                     if (child.hasClass("chosen-select")) {
+                        child.val(value);
                         child.trigger("chosen:updated");
                     }else if (child.hasClass("js-example-data-ajax")){
                         child.append($('<option>').val(value).text(value));
@@ -278,6 +275,8 @@
                 })
 
                 child.children("select").each(function () {
+                    console.log($(this))
+                    alert($(this).val())
                     repeatResult[$(this).attr("name")] = $(this).val()
                 })
 
