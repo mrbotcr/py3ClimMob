@@ -306,12 +306,12 @@ class privateView(object):
         if lastActivity["log_message"] != "Welcome to ClimMob":
             if (
                 self.request.matched_route.name
-                not in ["profile", "getUserLanguagesPreview", "addUserLanguage"]
+                not in ["otherLanguages", "getUserLanguagesPreview", "addUserLanguage"]
                 and not self.user.languages
             ):
                 return HTTPFound(
                     location=self.request.route_url(
-                        "profile", _query={"help": "languages"}
+                        "otherLanguages", _query={"help": "languages"}
                     )
                 )
 
@@ -319,7 +319,7 @@ class privateView(object):
                 self.request.matched_route.name
                 not in [
                     "curationoftechnologies",
-                    "profile",
+                    "otherLanguages",
                     "getUserLanguagesPreview",
                     "addUserLanguage",
                 ]

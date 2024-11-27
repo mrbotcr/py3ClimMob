@@ -154,9 +154,11 @@ class login_view(publicView):
 
 
 class RecoverPasswordView(publicView):
-    def send_password_by_email(self, body, target_name, target_email, mail_from):
+    def send_password_by_email(
+        self, body, subject, target_name, target_email, mail_from
+    ):
         msg = MIMEText(body.encode("utf-8"), "plain", "utf-8")
-        ssubject = self._("ClimMob - Password reset request")
+        ssubject = subject
         subject = Header(ssubject.encode("utf-8"), "utf-8")
         msg["Subject"] = subject
         msg["From"] = "{} <{}>".format("ClimMob", mail_from)
@@ -206,7 +208,13 @@ class RecoverPasswordView(publicView):
             },
         )
 
-        self.send_password_by_email(text, user_dict.fullName, email_to, email_from)
+        self.send_password_by_email(
+            text,
+            self._("ClimMob - Password reset request"),
+            user_dict.fullName,
+            email_to,
+            email_from,
+        )
 
     def processView(self):
 

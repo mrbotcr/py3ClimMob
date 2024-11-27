@@ -1,7 +1,12 @@
 import uuid
 import datetime
 from climmob.config.encdecdata import encodeData
-from climmob.models import User, mapToSchema, mapFromSchema
+from climmob.models import (
+    User,
+    mapToSchema,
+    mapFromSchema,
+    mapFromSchemaWithRelationships,
+)
 from climmob.models.repository import sql_execute
 
 __all__ = [
@@ -11,6 +16,7 @@ __all__ = [
     "getUserCount",
     "getUserInfo",
     "update_last_login",
+    "getAllUserAdmin",
 ]
 
 
@@ -67,3 +73,11 @@ def update_last_login(request, user):
     )
 
     sql_execute(sql)
+
+
+def getAllUserAdmin(request):
+    result = mapFromSchemaWithRelationships(
+        request.dbsession.query(User).filter(User.user_admin == 1).all()
+    )
+
+    return result

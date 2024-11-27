@@ -4,16 +4,27 @@ from climmob.processes import (
     getListOfLanguagesByUser,
     getAllTranslationsOfPhrasesByLanguage,
     savePhraseTranslation,
+    getListOfLanguagesInClimMob,
+    languageByLanguageCode,
+    getAllUserAdmin,
 )
+from climmob.views.basic_views import RecoverPasswordView
 import os
 
 
 class otherLanguages_view(privateView):
     def processView(self):
 
+        try:
+            help = self.request.params["help"]
+        except:
+            help = None
+
         return {
             "listOflanguages": getListOfLanguagesByUser(self.request, self.user.login),
+            "listOfLanguagesInClimMob": getListOfLanguagesInClimMob(self.request),
             "sectionActive": "otherLanguages",
+            "help": help,
         }
 
 
@@ -72,3 +83,57 @@ class getOtherLanguages_view(privateView):
             return render_temp
 
         return ""
+
+
+class requestLanguageTranslation_view(privateView):
+    def processView(self):
+
+        if self.request.method == "POST":
+            self.returnRawViewResult = True
+
+            dataworking = self.getPostDict()
+
+            language = languageByLanguageCode(dataworking["language"], self.request)
+
+            PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+            env = Environment(
+                autoescape=False,
+                loader=FileSystemLoader(os.path.join(PATH, "templates", "email")),
+                trim_blocks=False,
+            )
+            template = env.get_template("language_request.jinja2")
+
+            info = {
+                "user_fullname": self.user.fullName,
+                "user_name": self.user.login,
+                "email": self.user.userData["user_email"],
+                "language": language,
+                "contribute": dataworking["contribute"],
+            }
+
+            render_temp = template.render(info)
+
+            email_from = self.request.registry.settings.get("email.from", None)
+            if email_from is None:
+                return {
+                    "status": 400,
+                    "error": self._(
+                        "It has not been possible to request a new local language, due to email problems."
+                    ),
+                }
+
+            for user in getAllUserAdmin(self.request):
+
+                RecoverPasswordView.send_password_by_email(
+                    self,
+                    render_temp,
+                    "Request for local language in ClimMob",
+                    user["user_fullname"],
+                    user["user_email"],
+                    email_from,
+                )
+
+            return {"status": 200}
+
+        return {"status": 400, "error": self._("Only POST methods are accepted")}

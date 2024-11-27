@@ -261,6 +261,7 @@ from climmob.views.otherLanguages import (
     otherLanguages_view,
     saveOtherLanguages_view,
     getOtherLanguages_view,
+    requestLanguageTranslation_view,
 )
 
 from climmob.views.Api.languages import (
@@ -460,6 +461,15 @@ def loadRoutes(config):
             "string",
         )
     )
+
+    routes.append(
+        addRoute(
+            "requestLanguageTranslation",
+            "/requestLanguageTranslation",
+            requestLanguageTranslation_view,
+            "json",
+        )
+    )
     # Project routes
     routes.append(
         addRoute(
@@ -633,6 +643,15 @@ def loadRoutes(config):
         {
             "name": "APIlanguages",
             "path": "/user/{user}/languages",
+            "view": APILanguagesView,
+            "renderer": "json",
+        }
+    )
+
+    routes.append(
+        {
+            "name": "APIlanguagesClimMob",
+            "path": "/languages",
             "view": APILanguagesView,
             "renderer": "json",
         }

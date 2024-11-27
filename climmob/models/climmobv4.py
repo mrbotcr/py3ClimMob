@@ -258,6 +258,7 @@ class I18n(Base):
 
     lang_code = Column(Unicode(5), primary_key=True)
     lang_name = Column(Unicode(120))
+    lang_in_climmob = Column(Integer, server_default=text("'0'"))
 
 
 class I18nUser(Base):
