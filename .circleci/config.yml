@@ -111,7 +111,7 @@ jobs:
       - run:
           name: Upload coverage to Codecov
           command: |
-            curl -s https://codecov.io/bash | bash -s -- -t $CODECOV_TOKEN
+            curl -s https://codecov.io/bash | bash -s -- -t $CODECOV_TOKEN -n py3ClimMob
 
       - run:
           name: Install and Build Docker
