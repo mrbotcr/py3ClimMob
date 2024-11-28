@@ -109,9 +109,17 @@ jobs:
             pytest -s --cov=climmob --cov-report=xml
 
       - run:
+          name: Verify Coverage File
+          command: |
+            if [ ! -f coverage.xml ]; then
+              echo "Coverage file not found!"
+              exit 1
+            fi
+
+      - run:
           name: Upload coverage to Codecov
           command: |
-            curl -s https://codecov.io/bash | bash -s -- -t $CODECOV_TOKEN -n py3ClimMob
+            curl -s https://codecov.io/bash | bash -s -- -t $CODECOV_TOKEN -n py3ClimMob -B $(git rev-parse --abbrev-ref HEAD)
 
       - run:
           name: Install and Build Docker
