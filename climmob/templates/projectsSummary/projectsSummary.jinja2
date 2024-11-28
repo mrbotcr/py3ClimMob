@@ -113,6 +113,10 @@
                                     <th style="text-align: center">{{ _("End date") }}</th>
                                     <th data-hide="all" style="text-align: center">{{ _("Number of farmers target") }}</th>
                                     <th data-hide="all" style="text-align: center">{{ _("Number of registered for the project") }}</th>
+                                    <th data-hide="all" style="text-align: center">{{ _("Gender - Men") }}</th>
+                                    <th data-hide="all" style="text-align: center">{{ _("Gender - Women") }}</th>
+                                    <th data-hide="all" style="text-align: center">{{ _("Gender - Other") }}</th>
+                                    <th data-hide="all" style="text-align: center">{{ _("Gender - Unreported") }}</th>
                                     <th data-hide="all" style="text-align: center">{{ _("Crop") }}</th>
                                     <th data-hide="all" style="text-align: center">{{ _("Latitude - Registry") }}</th>
                                     <th data-hide="all" style="text-align: center">{{ _("Longitude - Registry") }}</th>
@@ -135,13 +139,18 @@
                                         <td>{{ project["project_country"] }}</td>
                                         <td>{{ project["startDate"] }}</td>
                                         <td>{{ project["endDate"] }}</td>
-                                        <td>{{ project["NumberOfFarmersTarget"] }}</td>
-                                        <td>{{ project["NumberOfFarmersRegisteredForTheProject"] }}</td>
+                                        <td>{{ project["farmers_target"] }}</td>
+                                        <td>{{ project["farmers_registered"] }}</td>
+                                        <td>{{ project["gender_man"] }}</td>
+                                        <td>{{ project["gender_woman"] }}</td>
+                                        <td>{{ project["gender_other"] }}</td>
+                                        <td>{{ project["gender_unreported"] }}</td>
                                         <td>{{ project["crop"] }}</td>
                                         <td>{{ project["LatitudeRegistry"] }}</td>
                                         <td>{{ project["LongitudeRegistry"] }}</td>
                                         <td>{{ project["LatitudeAssessment"] }}</td>
                                         <td>{{ project["LongitudeAssessment"] }}</td>
+                                        <td>{{ project["NumberOfManGender"] }}</td>
                                     </tr>
                                 {% endfor %}
                             </tbody>

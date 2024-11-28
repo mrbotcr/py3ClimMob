@@ -23,7 +23,6 @@ from climmob.models import (
     RegistryJsonLog,
     AssessmentJsonLog,
     userProject,
-    ProjectMetadata,
     Country,
 )
 from climmob.models.repository import sql_fetch_all, sql_fetch_one
@@ -31,6 +30,9 @@ from climmob.processes.db.enumerator import countEnumeratorsOfAllCollaborators
 from climmob.processes.db.project_technologies import numberOfCombinationsForTheProject
 from climmob.processes.db.question import getQuestionOptions
 from climmob.processes.db.prjlang import getPrjLangInProject
+from climmob.processes.db.project_metadata_form import (
+    knowIfTheProjectMetadataIsComplete,
+)
 import climmob.plugins as p
 
 __all__ = [
@@ -868,15 +870,19 @@ def getProjectProgress(userName, projectCode, project, request):
             )
     result["assessments"] = assessmentArray
 
-    if (
-        request.dbsession.query(ProjectMetadata)
-        .filter(ProjectMetadata.project_id == project)
-        .first()
-        is not None
-    ):
+    """
+    METADATA
+    """
+
+    quantityRequired, quantityCompleted = knowIfTheProjectMetadataIsComplete(
+        request, project
+    )
+
+    if quantityRequired == quantityCompleted:
         result["metadata"] = True
         perc = perc + 16
     else:
+        perc = perc + int((16 / quantityRequired) * quantityCompleted)
         result["metadata"] = False
 
     return result, perc

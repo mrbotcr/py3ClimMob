@@ -37,7 +37,10 @@ from climmob.processes.db.i18n_qstoption import *
 from climmob.processes.db.prjlang import *
 from climmob.processes.db.general_phrases import *
 from climmob.processes.db.i18n_general_phrases import *
-from climmob.processes.db.project_metadata import *
 from climmob.processes.db.extra_form import *
 from climmob.processes.db.extra_form_answers import *
 from climmob.processes.db.project_type import *
+from climmob.processes.db.metadata_form import *
+from climmob.processes.db.project_metadata_form import *
+from climmob.processes.db.location_unit_of_analysis import *
+from climmob.processes.db.metadata_form_location_unit_of_analysis import *

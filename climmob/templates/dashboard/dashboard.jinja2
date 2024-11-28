@@ -106,6 +106,9 @@
                                             </svg><span class="nav-label">{{ _("Local languages") }}</span>
                                         </a>
                                     </li>
+                                    {% if activeUser.admin == 1 %}
+                                        <li id="nav_librarymetadata" {% if sectionActive == "librarymetadata" %}class="active" style="border-left: 4px solid #19aa8d;background: #293846;"{% endif %}><a href="{{ request.route_url('librarymetadata') }}"><i class="fa fa-file-text"></i><span class="nav-label">{{ _("Metadata forms") }}</span></a></li>
+                                    {% endif %}
                                 </ul>
                             </li>
                             <li id="nav_downloads" {% if sectionActive == "productlist" %}class="active" {% endif %}>

@@ -306,12 +306,12 @@ class privateView(object):
         if lastActivity["log_message"] != "Welcome to ClimMob":
             if (
                 self.request.matched_route.name
-                not in ["profile", "getUserLanguagesPreview", "addUserLanguage"]
+                not in ["otherLanguages", "getUserLanguagesPreview", "addUserLanguage"]
                 and not self.user.languages
             ):
                 return HTTPFound(
                     location=self.request.route_url(
-                        "profile", _query={"help": "languages"}
+                        "otherLanguages", _query={"help": "languages"}
                     )
                 )
 
@@ -319,7 +319,7 @@ class privateView(object):
                 self.request.matched_route.name
                 not in [
                     "curationoftechnologies",
-                    "profile",
+                    "otherLanguages",
                     "getUserLanguagesPreview",
                     "addUserLanguage",
                 ]
@@ -398,7 +398,16 @@ class privateView(object):
             self.classResult.update(self.viewResult)
             return self.classResult
         else:
-            return self.viewResult
+            if isinstance(self.viewResult, dict):
+                return json.loads(
+                    json.dumps(self.viewResult, default=self.myconverter, indent=4)
+                )
+            else:
+                return self.viewResult
+
+    def myconverter(self, o):
+        if isinstance(o, datetime.datetime):
+            return o.__str__()
 
     def processView(self):
         return {"activeUser": self.user}

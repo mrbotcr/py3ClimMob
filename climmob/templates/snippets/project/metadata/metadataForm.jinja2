@@ -1,0 +1,443 @@
+
+    {% macro recursiveFunction(JsonInfo ,repeat_index=0) %}
+        {% if JsonInfo["type"] in ["group", "repeat","survey"] %}
+
+            {% if JsonInfo["name"] not in ["meta"] %}
+
+                {% if "label" in JsonInfo.keys() %}
+                    <div class="text-center">
+                        <br>
+                        <h3><b>{{ JsonInfo["label"][request.locale_name] }}</b></h3>
+                        <br>
+                    </div>
+                {% endif %}
+
+                <div class="{{ JsonInfo["type"] }} {{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}" name="{{ JsonInfo["name"] }}" {% if JsonInfo["type"] %}id="{{ JsonInfo["name"] }}"{% endif %}  style="border: 2px solid {% if JsonInfo["type"] == "repeat" %}#1ab394{% else %}#e7eaec{% endif %}; padding: 20px; margin-bottom: 20px">
+
+
+                    {% if JsonInfo["type"] == "repeat" %}
+                        <div class="ibox-tools">
+                            <button type="button" style="display: none" class="btn btn-xs btn-danger pull-right remove-repeat" onclick="removeRepeatBlock($(this),'{{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}')">
+                                <i class="fa fa-trash"></i> {{ _('Remove') }}
+                            </button>
+                        </div>
+                    {% endif %}
+
+
+                    {% if "children" in JsonInfo.keys() %}
+                        {% for child in JsonInfo["children"] recursive %}
+                            {{ recursiveFunction(child, repeat_index) }}
+                        {% endfor %}
+                    {% endif %}
+
+                </div>
+
+                {% if JsonInfo["type"] == "repeat"  %}
+
+{#                    <div class="text-center">#}
+                        <button type="button" class="btn btn-primary duplicate-repeat" onclick="duplicateRepeatBlock($(this),'{{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}')"><i class="fa fa-plus"></i> {{ _('Add other') }}</button><br>
+{#                    </div>#}
+                    <hr>
+
+                {% endif %}
+
+            {% endif %}
+        {% else %}
+
+            {% if JsonInfo["type"] in ["text","select one","integer", "select all that apply", "date"] %}
+
+                <div class="form-group">
+
+                    <div class="col-sm-12">
+                        <h3>{% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"].keys() and JsonInfo["bind"]["required"] == "yes" %}<strong style="color: red">*</strong> {% endif %}{{ JsonInfo["label"][request.locale_name] }}</h3>
+                        {% if "hint" in JsonInfo.keys() %} <p>{{ JsonInfo["hint"][request.locale_name] }}</p>{% endif %}
+
+                        {% if JsonInfo["type"] == "text" %}
+
+                            <textarea class="form-control" rows="2"  name="{{ JsonInfo["name"] }}" {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %} required="" {% endif %}  oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')"></textarea>
+
+                        {% elif JsonInfo["type"] == "select one" %}
+
+                            {% if "climmob_users" in JsonInfo.keys()%}
+                                <select name="{{ JsonInfo["name"] }}" style="width: 100%; !important;" class="js-example-data-ajax form-control" {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %} required="" {% endif %} oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')"></select>
+
+                            {% else %}
+
+                                <select data-placeholder="" name="{{ JsonInfo["name"] }}" class="chosen-select form-control" {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %} required="" {% endif %} oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')">
+                                    {% for choice in JsonInfo["choices"] %}
+                                        <option value="{{ choice["label"][request.locale_name] }}">{{ choice["label"][request.locale_name] }}</option>
+                                    {% endfor %}
+                                </select>
+
+                            {% endif %}
+
+                        {% elif JsonInfo["type"] == "select all that apply" %}
+
+                            <select data-placeholder="" name="{{ JsonInfo["name"] }}" class="chosen-select form-control" multiple tabindex="1" {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %} required="" {% endif %} oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')">
+                                {% for choice in JsonInfo["choices"] %}
+                                    <option value="{{ choice["label"][request.locale_name] }}">{{ choice["label"][request.locale_name] }}</option>
+                                {% endfor %}
+                            </select>
+
+                        {% elif JsonInfo["type"] == "integer" %}
+                            <input type="number" class="form-control" name="{{ JsonInfo["name"] }}">
+
+                        {% elif JsonInfo["type"] == "date" %}
+                            <div class="input-group date">
+                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input type="text" name="{{ JsonInfo["name"] }}" class="form-control datepicker" value="" readonly {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %}required=""{% endif %} oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')">
+                            </div>
+                        {% endif %}
+
+
+                    </div>
+                </div>
+
+            {% endif %}
+
+        {% endif %}
+    {% endmacro %}
+
+
+
+{{ recursiveFunction(Form) }}
+
+
+<script>
+    $(document).ready(function () {
+
+        $('.input-group.date').datepicker({
+            language: '{{ request.locale_name }}',
+            startView: 0,
+            //todayBtn: "linked",
+            keyboardNavigation: false,
+            forceParse: false,
+            autoclose: true,
+            format: "dd-mm-yyyy"
+        });
+
+        $('.chosen-select').chosen({width: "100%"});
+
+        $(".js-example-data-ajax").select2({
+            templateResult: formatUser,
+            ajax: {
+                url: "{{ request.route_url('api_select2_all_users') }}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term, // search term
+                        page: params.page
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+
+                    data.results.forEach(function(element)
+                    {
+                        element.id = element.text+ ' - '+ element.user_email
+                    })
+
+                    return {
+                        results: data.results,
+                        pagination: {
+                            more: (params.page * 10) < data.total
+                        }
+                    };
+                },
+                cache: true
+            }
+        });
+
+        {% if postData %}
+            showData({{ postData }})
+        {% endif %}
+
+    });
+
+    function showData(postData){
+        methodRecursiveToShowInformation(postData, $("#spaceForPutTheForm"))
+    }
+
+    function searchIntoDictionary(name){
+        dictionary = {{ dictionary }}
+        for (const key in dictionary) {
+            if (dictionary[key]["name"] === name)
+                return dictionary[key]["type"]
+        }
+    }
+
+
+    function methodRecursiveToShowInformation(postData, parentElement) {
+        if (typeof postData === "object" && postData !== null) {
+            for (const key in postData) {
+                if (!postData.hasOwnProperty(key)) continue;
+
+                // Validar que la clave es una cadena
+                if (typeof key !== "string") {
+                    continue;
+                }
+
+                // Buscar el elemento en el DOM
+                const child = parentElement.find(`[name="${key}"]`);
+                if (child.length === 0) {
+                    continue;
+                }
+
+                // Procesar el valor según el tipo de input
+                const value = postData[key];
+                if (child.is("input, textarea, select")) {
+
+                    if (child.hasClass("chosen-select")) {
+                        child.val(value);
+                        child.trigger("chosen:updated");
+                    }else if (child.hasClass("js-example-data-ajax")){
+                        child.append($('<option>').val(value).text(value));
+                        child.val(value);
+                        child.trigger('change');
+                    }else if(child.hasClass("datepicker")){
+                        child.datepicker({
+                            language: '{{ request.locale_name }}',
+                            format:'dd-mm-yyyy',
+                        });
+                        child.datepicker("update", value);
+                    }else{
+                        child.val(value);
+                    }
+                } else if (child.hasClass("repeat")) {
+                    if (Array.isArray(value)) {
+                        const repeatId = child.attr("name");
+
+                        for (let i = 0; i < value.length; i++) {
+                            if (i > 0) {
+                                var button = child.siblings(".duplicate-repeat").last()
+
+                                duplicateRepeatBlock(button, "repeat_"+repeatId); // Clonar si es necesario
+                            }
+
+                            const repeatBlocks = parentElement.find(`.repeat_${repeatId}`).last();
+                            methodRecursiveToShowInformation(value[i], repeatBlocks);
+                        }
+                    }
+                } else if (child.hasClass("group") || child.hasClass("survey")) {
+                    methodRecursiveToShowInformation(value, child);
+                }else{
+                    alert("Nada")
+                }
+            }
+        }
+    }
+
+
+
+
+    function formatUser (user) {
+        if (!user.id) {
+            return user.text;
+        }
+        let $state = $(
+            '<span><img src="' + user.gravatar + '?name=' + user.text + '&size=45" class="img-flag" /> ' + user.text+ ' - '+ user.user_email + '</span>'
+        );
+        return $state;
+    }
+
+    function processGroup(groupElement, result) {
+        const groupName = groupElement.attr("name");
+        // Recorremos todos los hijos inmediatos del grupo
+        groupElement.children().each(function () {
+            const child = $(this);
+
+            if (child.hasClass("group")) {
+
+                if (!result[groupName]) {
+                    result[groupName] = {};
+                }
+
+                processGroup(child, result[groupName]);
+
+            } else if (child.hasClass("repeat")) {
+                // Si es un repeat, procesamos los elementos dentro de este repeat
+                const repeatName = child.attr("name");
+
+                if (!result[groupName]) {
+                    result[groupName] = {};  // Inicializamos el grupo si no existe
+                }
+                if (!result[groupName][repeatName]) {
+                    result[groupName][repeatName] = [];  // Inicializamos el array para el repeat
+                }
+
+                var repeatResult = {}
+                child.children("input").each(function () {
+                    repeatResult[$(this).attr("name")] = $(this).val()
+                })
+
+                child.children("textarea").each(function () {
+                    repeatResult[$(this).attr("name")] = $(this).val()
+                })
+
+                child.children("select").each(function () {
+                    console.log($(this))
+                    alert($(this).val())
+                    repeatResult[$(this).attr("name")] = $(this).val()
+                })
+
+                child.children(".repeat").each(function () {
+                    const Repeat = $(this);
+                    const Item = [];
+                    processGroup(Repeat, Item);  // Llamada recursiva para procesar cada elemento del repeat
+                    repeatResult[$(this).attr("name")] = Item[$(this).attr("name")]  // Agregamos el item procesado al array del repeat
+                });
+
+                child.children(".group").each(function () {
+                    const Group = $(this);
+                    const Item = {};
+                    processGroup(Group, Item);  // Llamada recursiva para procesar cada elemento del repeat
+                    repeatResult[$(this).attr("name")] = Item[$(this).attr("name")]  // Agregamos el item procesado al array del repeat
+                });
+
+                child.children(":not([name])").each(function () {
+                    const parcialResult = {}
+                    if (groupName === undefined)
+                    {
+                        processGroup(child, parcialResult);
+                    }else{
+                        if (!parcialResult[groupName]) {
+                            parcialResult[groupName] = {};  // Inicializamos el grupo si no existe
+                        }
+                        processGroup(child, parcialResult);
+                        repeatResult = parcialResult[repeatName]
+                    }
+                });
+
+
+                result[groupName][repeatName].push(repeatResult)
+
+            } else if (child.is("input")) {
+                if (groupName !== undefined)
+                {
+                    result[groupName] = result[groupName] || {};
+                    result[groupName][child.attr("name")] = child.val();
+                }else{
+                    if (child.attr("name"))
+                    {
+                        result[child.attr("name")] = child.val();
+                    }
+                }
+            }else if (child.is("textarea")) {
+                if (groupName !== undefined)
+                {
+                    result[groupName] = result[groupName] || {};
+                    result[groupName][child.attr("name")] = child.val();
+                }else{
+                    result[child.attr("name")] = child.val();
+                }
+            }else if (child.is("select")) {
+                if (groupName !== undefined)
+                {
+                    result[groupName] = result[groupName] || {};
+                    result[groupName][child.attr("name")] = child.val();
+                }else{
+                    result[child.attr("name")] = child.val();
+                }
+            }else{
+
+                if (groupName === undefined)
+                {
+                    processGroup(child, result);
+                }else{
+                    if (!result[groupName]) {
+                        result[groupName] = {};  // Inicializamos el grupo si no existe
+                    }
+                    processGroup(child, result[groupName]);
+                }
+
+            }
+        });
+    }
+
+    function duplicateRepeatBlock(button, repeatId) {
+        // Encuentra el contenedor `.repeat` más cercano al botón
+        const repeatContainer = button.siblings("."+repeatId).last();
+
+        if (repeatContainer.length > 0) {
+            // Clona el `repeat` completo
+            const newRepeat = repeatContainer.clone(false, false);
+
+            newRepeat.find('.cloned').remove();
+
+            newRepeat.addClass('cloned');
+
+            newRepeat.find('.chosen-container').remove();
+            newRepeat.find('.select2-container').remove();
+            newRepeat.find('.remove-repeat').css("display","inline-block");
+
+            newRepeat.find('input, select, textarea').each(function () {
+                $(this).val(''); // Limpia valores
+            });
+
+            repeatContainer.after(newRepeat);
+
+            newRepeat.find('.chosen-select').each(function() {
+                $(this).chosen({width: "100%"});
+            });
+
+            newRepeat.find('.input-group.date').each(function() {
+                $(this).datepicker({
+                    language: '{{ request.locale_name }}',
+                    startView: 0,
+                    keyboardNavigation: false,
+                    forceParse: false,
+                    autoclose: true,
+                    format: "dd-mm-yyyy"
+                });
+            })
+
+            newRepeat.find('.js-example-data-ajax').each(function (){
+                $(this).select2({
+                    templateResult: formatUser,
+                    ajax: {
+                        url: "{{ request.route_url('api_select2_all_users') }}",
+                        dataType: 'json',
+                        delay: 250,
+                        data: function (params) {
+                            return {
+                                q: params.term, // search term
+                                page: params.page
+                            };
+                        },
+                        processResults: function (data, params) {
+                            params.page = params.page || 1;
+
+                            data.results.forEach(function(element)
+                            {
+                                element.id = element.text+ ' - '+ element.user_email
+                            })
+
+                            return {
+                                results: data.results,
+                                pagination: {
+                                    more: (params.page * 10) < data.total
+                                }
+                            };
+                        },
+                        cache: true
+                    }
+                });
+            })
+
+
+        } else {
+            console.warn('No se encontró un contenedor `.repeat` asociado al botón.');
+        }
+    }
+
+    function removeRepeatBlock(button, classes) {
+        const repeatBlock = button.closest('.'+classes);
+
+        if (repeatBlock) {
+            repeatBlock.remove();
+        }
+
+    }
+
+
+</script>

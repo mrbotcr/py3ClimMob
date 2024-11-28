@@ -55,7 +55,6 @@ from climmob.models.climmobv4 import (
     CropTaxonomy,
     I18nCropTaxonomy,
     generalPhrases,
-    ProjectMetadata,
     ExtraForm,
     ExtraFormAnswer,
     ProjectType,
@@ -63,6 +62,16 @@ from climmob.models.climmobv4 import (
     I18nProjectType,
     I18nProjectStatus,
     I18nCountry,
+    MetadataForm,
+    ProjectMetadataForm,
+    ProjectLocation,
+    I18nProjectLocation,
+    ProjectUnitOfAnalysis,
+    I18nProjectUnitOfAnalysis,
+    ProjectObjectives,
+    I18nProjectObjectives,
+    LocationUnitOfAnalysis,
+    MetadaFormLocationUnitOfAnalysis,
 )
 from climmob.models.schema import *
 

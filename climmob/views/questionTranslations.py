@@ -17,6 +17,7 @@ from climmob.processes import (
     updateQuestion,
     deleteI18nQuestion,
     deleteAllI18nQstoption,
+    query_languages_in_ClimMob,
 )
 import paginate
 
@@ -166,8 +167,10 @@ def actionInTheTranslationOfQuestionOptions(self, formdata):
 
 class APILanguagesView(publicView):
     def processView(self):
-
-        userName = self.request.matchdict["user"]
+        try:
+            userName = self.request.matchdict["user"]
+        except:
+            userName = None
 
         q = self.request.params.get("q", "")
         current_page = self.request.params.get("page")
@@ -181,19 +184,33 @@ class APILanguagesView(publicView):
         query_size = 10
         if q is not None:
             q = q.lower()
-            query_result, total = query_languages(
-                self.request, userName, q, 0, query_size
-            )
+            if userName:
+                query_result, total = query_languages(
+                    self.request, userName, q, 0, query_size
+                )
+            else:
+                query_result, total = query_languages_in_ClimMob(
+                    self.request, q, 0, query_size
+                )
             if total > 0:
                 collection = list(range(total))
                 page = paginate.Page(collection, current_page, 10)
-                query_result, total = query_languages(
-                    self.request,
-                    userName,
-                    q,
-                    page.first_item - 1,
-                    query_size,
-                )
+                if userName:
+                    query_result, total = query_languages(
+                        self.request,
+                        userName,
+                        q,
+                        page.first_item - 1,
+                        query_size,
+                    )
+                else:
+                    query_result, total = query_languages_in_ClimMob(
+                        self.request,
+                        q,
+                        page.first_item - 1,
+                        query_size,
+                    )
+
                 select2_result = []
                 for result in query_result:
                     select2_result.append(

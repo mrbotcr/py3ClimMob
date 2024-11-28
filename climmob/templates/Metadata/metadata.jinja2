@@ -1,0 +1,263 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob | Metadata forms library") }}</title>
+{% endblock title %}
+
+{% block css %}
+    {% cssresource request,'coreresources','datatables' %}
+    {% cssresource request,'coreresources','footable' %}
+    {% cssresource request,'coreresources','tour' %}
+    {% cssresource request,'coreresources','switchery' %}
+    {% cssresource request,'coreresources','toastr' %}
+    {% cssresource request,'coreresources','chosen' %}
+    {% cssresource request,'coreresources','sweet' %}
+{% endblock css %}
+
+{% block topScripts %}
+    {% jsresource request,'coreresources','footable' %}
+    {% jsresource request,'coreresources','datatables' %}
+    {% include 'snippets/delete.jinja2' %}
+    {% jsresource request,'coreresources','tour' %}
+    {% jsresource request,'coreresources','switchery' %}
+    {% jsresource request,'coreresources','toastr' %}
+    {% jsresource request,'coreresources','chosen' %}
+    {% jsresource request,'coreresources','sweet' %}
+{% endblock topScripts %}
+
+{% block pageheading %}
+    {% set iconOfLibrary="fa-file-text" %}
+    {% set _title= _("Metadata forms") %}
+    {% include 'snippets/menuheading.jinja2' %}
+{% endblock %}
+
+{% block pagecontent %}
+    <div class="row">
+
+        <div class="col-md-6">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{{ _("Metadata details") }}</h5>
+                    <div class="ibox-tools">
+                        <button id="btn_cancel_metadata_form"  class="btn btn-xs btn-default pull-right " ><i class="fa fa-undo"></i> {{ _("Clear form") }}</button>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    {% include 'snippets/error.jinja2' %}
+
+                    <form class="form-horizontal" id="form_metadata" role="form" method="post" action="{{ request.url }}" enctype="multipart/form-data">
+
+                        {% include 'snippets/Metadata/metadata-form.jinja2' %}
+
+                        <button type="submit" class="btn btn-primary pull-right btnsMetadata" id="btn_add_metadata" name="btn_add_metadata" style="{% if modify %}display:none;{% else %}display: block{% endif %}"> {{ _('Add') }}</button>
+                        <button type="submit" class="btn btn-primary pull-right btnsMetadata" id="btn_modify_metadata" name="btn_modify_metadata" style="{% if modify %}display:block;{% else %}display: none{% endif %}"> {{ _('Save') }}</button>
+
+                    </form>
+                    <br>
+                    <br>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{{ _("Registered metadata form") }}</h5>
+                    <div class="ibox-tools">
+
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    {% if listOfMetadata %}
+                        <div class="table-responsive">
+
+                            <table class="footable table table-striped table-bordered" data-page-size="50000" data-filter=#filter>
+                                <tbody>
+                                    <tr>
+                                        <th>
+                                            {{ _("Form name") }}
+                                        </th>
+                                        <th>
+                                            {{ _("Projects") }}
+                                        </th>
+                                        <th class="text-center">
+                                            {{ _("Status") }}
+                                        </th>
+                                        <th class="text-center">
+                                            {{ _("Actions") }}
+                                        </th>
+                                    </tr>
+                                    {% for metadata in listOfMetadata %}
+                                        <tr>
+                                            <td style="vertical-align: middle">{{ metadata.metadata_name }}</td>
+                                            <td>
+                                                {% for relation in metadata["metadata_form_location_unit_of_analysis"] %}
+
+                                                    {% set changes = {'plocation_name': relation["LocationUnitOfAnalysis"]["ProjectLocation"]["plocation_name"], 'puoa_lang': relation["LocationUnitOfAnalysis"]["ProjectUnitOfAnalysis"]["puoa_name"] } %}
+
+                                                    {% for lang in relation["LocationUnitOfAnalysis"]["ProjectLocation"]["i18n_project_location"] %}
+                                                        {% if lang["lang_code"] ==  request.locale_name%}
+                                                            {% if changes.update({'plocation_name': lang["plocation_name"] }) %} {% endif %}
+                                                        {% endif %}
+                                                    {% endfor %}
+
+
+                                                    {% for lang in relation["LocationUnitOfAnalysis"]["ProjectUnitOfAnalysis"]["i18n_project_unit_of_analysis"] %}
+                                                        {% if lang["lang_code"] ==  request.locale_name%}
+                                                            {% if changes.update({'puoa_lang': lang["puoa_name"] }) %} {% endif %}
+                                                        {% endif %}
+                                                    {% endfor %}
+
+                                                    <p><span class="label label-default">
+                                                        {{ changes.plocation_name }} - {{ changes.puoa_lang }}
+                                                    </span></p>
+
+
+                                                {% endfor %}
+                                            </td>
+                                            <td class="text-center" style="vertical-align: middle">
+                                                {% if metadata.metadata_active == 1 %}
+                                                    <span class="label label-primary">{{ _("Active") }}</span>
+                                                {% else %}
+                                                    <span class="label label-warning">{{ _("Inactive") }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-center" style="vertical-align: middle">
+
+                                                <button class="btn btn-success" onclick='downloadMetadataForm("{{ metadata.metadata_id }}")'  title="{{ _("Download ODK file") }}"><i class="fa fa-download"></i> {{ _("Download ODK") }}</button>
+                                                <button class="btn btn-warning" onclick='editMetadataForm("{{ metadata.metadata_id }}")'  title="{{ _("Edit metadata form") }}"><i class="fa fa-pencil"></i> {{ _("Edit") }}</button>
+                                                <button class="btn btn-danger" onclick="showDelete('{{ request.route_url('deletemetadataform',metadataform = metadata.metadata_id)}}','{{ _("Do you really want to delete this metadata form?") }}','{{ request.session.get_csrf_token() }}')" type="button" title="{{ _("Delete metadata form") }}"><i class="fa fa-trash"></i> {{ _("Delete") }}</button>
+
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+
+                        <div style="width: 100%; text-align: center">
+                            <h3><b>{{ _("No metadata forms to display") }}</b></h3>
+                        </div>
+
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <style>
+
+        .tableHover tbody tr:hover
+        {
+            background-color: #1ab394;
+            color: black;
+        }
+
+        .tableHover tbody tr:hover td  p
+        {
+            color: white !important;
+        }
+
+        .tableHover2
+        {
+            background-color: #1ab394;
+            color: white;
+        }
+
+        .tableHover2 td p
+        {
+            color: white !important;
+        }
+    </style>
+
+    <script>
+
+        var elem_ckb_metadata_active = document.querySelector('#metadata_active');
+        var ckb_metadata_active = new Switchery(elem_ckb_metadata_active, { color: '#1AB394' });
+
+        $(document).ready(function() {
+
+
+            setSwitchery(ckb_metadata_active, true)
+
+            $('.chosen-select').chosen({width: "100%"});
+
+        });
+
+        function setSwitchery(switchElement, checkedBool)
+        {
+            if((checkedBool && !switchElement.isChecked()) || (!checkedBool && switchElement.isChecked())) {
+                switchElement.setPosition(true);
+            }
+        }
+
+        function editMetadataForm(metadataId){
+
+            var URL= "{{ request.route_url('metadataFormDetails', metadataform="__metadataform__") }}"
+            URL= URL.replace("__metadataform__",metadataId)
+            data = {};
+
+            $.get(URL, function(dataJson, status) {
+
+                console.log(dataJson)
+
+                cleanButtons();
+                cleanInputs();
+                $("#metadata_id").val(dataJson["metadata_id"])
+                $("#metadata_name").val(dataJson["metadata_name"])
+                if(dataJson["metadata_active"] ==1)
+                {
+                    setSwitchery(ckb_metadata_active, true);
+                }else{
+                    setSwitchery(ckb_metadata_active, false);
+                }
+
+                var put = []
+                dataJson["metadata_form_location_unit_of_analysis"].forEach(element => {
+                    put.push(element["pluoa_id"])
+                });
+
+                $("#select_project_types").val(put).trigger('chosen:updated');
+
+                $("#btn_modify_metadata").css('display','initial')
+            });
+
+        }
+
+        $("#btn_cancel_metadata_form").click(function () {
+            cleanButtons()
+            cleanInputs()
+            $("#xlsxODK").prop('required',true);
+            $("#btn_add_metadata").css('display','initial')
+        })
+
+        function cleanButtons()
+        {
+            $(".btnsMetadata").css("display",'none')
+        }
+
+        function cleanInputs()
+        {
+            $("#metadata_id").val("");
+            $("#metadata_name").val("");
+            $("#select_project_types").val("").trigger('chosen:updated');
+            $("#xlsxODK").removeAttr('required')
+            setSwitchery(ckb_metadata_active, true);
+        }
+
+        function downloadMetadataForm(metadataId){
+            var URL= "{{ request.route_url('downloadMetadataForm', metadataform="__metadataform__") }}"
+            URL= URL.replace("__metadataform__",metadataId)
+            location.href = URL
+        }
+    </script>
+
+    {% include 'snippets/loading.jinja2' %}
+
+{% endblock pagecontent %}

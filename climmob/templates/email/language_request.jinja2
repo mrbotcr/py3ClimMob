@@ -1,0 +1,19 @@
+{% block email_body %}{% block email_hello %}
+        Dear ClimMob administrator,
+    {% endblock email_hello %}{% block email_message %}
+        You are receiving this email because a user is requesting ClimMob libraries in a local language.
+
+        Below is the information for your respective coordination:
+
+        Person who made the request: {{ user_fullname }}
+        ClimMob's user: {{ user_name }}
+        Email: {{ email }}
+        Language: {{ language.lang_name }} ({{ language.lang_code }})
+        How the user wishes to contribute: {{ contribute }}
+    {% endblock email_message %}
+    {% block email_goodbye %}
+        Regards
+
+        The ClimMob team
+    {% endblock email_goodbye %}
+{% endblock email_body %}

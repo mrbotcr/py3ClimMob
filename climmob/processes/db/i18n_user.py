@@ -18,6 +18,7 @@ __all__ = [
     "deleteI18nUser",
     "query_languages",
     "languageExistInI18nUser",
+    "query_languages_in_ClimMob",
 ]
 
 
@@ -101,6 +102,32 @@ def query_languages(request, userName, q, query_from, query_size):
     subquery = request.dbsession.query(I18nUser.lang_code).filter(
         I18nUser.user_name == userName
     )
+
+    total = (
+        request.dbsession.query(I18n)
+        .filter(I18n.lang_code.not_in(subquery))
+        .filter(I18n.lang_name.ilike("%" + query + "%"))
+        .order_by(I18n.lang_name)
+        .all()
+    )
+
+    result = (
+        request.dbsession.query(I18n)
+        .filter(I18n.lang_code.not_in(subquery))
+        .filter(I18n.lang_name.ilike("%" + query + "%"))
+        .order_by(I18n.lang_name)
+        .offset(query_from)
+        .limit(query_size)
+        .all()
+    )
+
+    return mapFromSchema(result), len(total)
+
+
+def query_languages_in_ClimMob(request, q, query_from, query_size):
+    query = q.replace("*", "")
+
+    subquery = request.dbsession.query(I18n.lang_code).filter(I18n.lang_in_climmob == 1)
 
     total = (
         request.dbsession.query(I18n)
