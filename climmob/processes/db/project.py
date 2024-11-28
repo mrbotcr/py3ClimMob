@@ -96,7 +96,7 @@ def getProjectIsTemplate(request, projectId):
 
 def getProjectCount(request):
     numProj = request.dbsession.query(Project).count()
-    return 1
+    return numProj
 
 
 def addQuestionsToAssessment(userOwner, projectId, assessment, request):

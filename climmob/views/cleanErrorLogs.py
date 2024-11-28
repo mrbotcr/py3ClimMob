@@ -24,7 +24,7 @@ from climmob.views.classes import privateView
 from climmob.views.editDataDB import getNamesEditByColums, fillDataTable
 
 
-class cleanErrorLogs_view(privateView):
+class CleanErrorLogsView(privateView):
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
