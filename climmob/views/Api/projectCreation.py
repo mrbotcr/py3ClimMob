@@ -34,7 +34,7 @@ from climmob.views.classes import apiView
 from climmob.views.project import functionCreateClone
 
 
-class readListOfTemplates_view(apiView):
+class ReadListOfTemplatesView(apiView):
     def processView(self):
         if self.request.method == "GET":
 
@@ -75,7 +75,7 @@ class readListOfTemplates_view(apiView):
             return response
 
 
-class readListOfCountries_view(apiView):
+class ReadListOfCountriesView(apiView):
     def processView(self):
 
         if self.request.method == "GET":
@@ -90,7 +90,7 @@ class readListOfCountries_view(apiView):
             return response
 
 
-class createProject_view(apiView):
+class CreateProjectView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -507,7 +507,7 @@ class createProject_view(apiView):
             return response
 
 
-class readProjects_view(apiView):
+class ReadProjectsView(apiView):
     def processView(self):
         def myconverter(o):
             if isinstance(o, datetime.datetime):
@@ -852,7 +852,7 @@ class updateProject_view(apiView):
             return response
 
 
-class deleteProject_view_api(apiView):
+class DeleteProjectViewApi(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -906,7 +906,7 @@ class deleteProject_view_api(apiView):
             return response
 
 
-class readCollaborators_view(apiView):
+class ReadCollaboratorsView(apiView):
     def processView(self):
         def myconverter(o):
             if isinstance(o, datetime.datetime):
@@ -950,7 +950,7 @@ class readCollaborators_view(apiView):
             return response
 
 
-class addCollaborator_view(apiView):
+class AddCollaboratorView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -1051,7 +1051,7 @@ class addCollaborator_view(apiView):
             return response
 
 
-class deleteCollaborator_view(apiView):
+class DeleteCollaboratorView(apiView):
     def processView(self):
 
         if self.request.method == "POST":

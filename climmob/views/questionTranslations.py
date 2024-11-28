@@ -22,7 +22,7 @@ from climmob.processes import (
 import paginate
 
 
-class questionTranslations_view(privateView):
+class QuestionTranslationsView(privateView):
     def processView(self):
         userOwner = self.request.matchdict["user"]
         questionId = self.request.matchdict["questionid"]
@@ -237,7 +237,7 @@ class APILanguagesView(publicView):
             return {"total": 0, "results": []}
 
 
-class changeDefaultQuestionLanguage_view(privateView):
+class ChangeDefaultQuestionLanguageView(privateView):
     def processView(self):
         userOwner = self.request.matchdict["user"]
         questionId = self.request.matchdict["questionid"]

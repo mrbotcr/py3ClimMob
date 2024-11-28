@@ -1,3 +1,5 @@
+import secrets
+
 import arrow
 import hashlib
 import urllib
@@ -150,6 +152,30 @@ def getUserByEmail(email, request):
             decodeData(request, result["user_password"]).decode("utf-8"),
         )
     return None, None
+
+
+def getUserEmail(email, request):
+    result = (
+        request.dbsession.query(userModel)
+        .filter_by(user_email=email)
+        .filter_by(user_active=1)
+        .first()
+    )
+    if result is not None:
+        result = mapFromSchema(result)
+        result["languages"] = getListOfLanguagesByUser(request, result["user_name"])
+        completed, results = getTechnologiesByUserWithoutCropTaxonomy(
+            result["user_name"], request
+        )
+        result["technologies"] = completed
+
+        return User(result)
+    return None
+
+
+def generateOPTCode():
+    opt = secrets.randbelow(10**6)
+    return f"{opt:06}"
 
 
 def checkLogin(user, password, request):

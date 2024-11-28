@@ -12,7 +12,7 @@ from climmob.views.basic_views import RecoverPasswordView
 import os
 
 
-class otherLanguages_view(privateView):
+class OtherLanguagesView(privateView):
     def processView(self):
 
         try:
@@ -28,7 +28,7 @@ class otherLanguages_view(privateView):
         }
 
 
-class saveOtherLanguages_view(privateView):
+class SaveOtherLanguagesView(privateView):
     def processView(self):
         self.returnRawViewResult = True
 
@@ -54,7 +54,7 @@ class saveOtherLanguages_view(privateView):
         return {"status": 400, "error": "Only POST methods are accepted"}
 
 
-class getOtherLanguages_view(privateView):
+class GetOtherLanguagesView(privateView):
     def processView(self):
 
         if self.request.method == "GET":
