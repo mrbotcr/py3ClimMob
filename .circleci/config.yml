@@ -106,7 +106,12 @@ jobs:
           command: |
             source climmob_env/bin/activate
             export CLIMMOB_PYTEST_RUNNING=true
-            pytest -s --cov=climmob
+            pytest -s --cov=climmob --cov-report=xml
+
+      - run:
+          name: Upload coverage to Codecov
+          command: |
+            curl -s https://codecov.io/bash | bash -s -- -t $CODECOV_TOKEN
 
       - run:
           name: Install and Build Docker
