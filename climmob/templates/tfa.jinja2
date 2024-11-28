@@ -1,0 +1,37 @@
+{% extends "login.jinja2" %}
+
+{% block logintitle %}
+    <title>{{ _("ClimMob | 2FA") }}</title>
+{% endblock logintitle %}
+
+{% block loginwelcome %}
+    <h3>{{ _("Welcome to ClimMob") }}</h3>
+{% endblock loginwelcome %}
+
+{% block logincontent %}
+
+    {% for key, error in error_summary.items() %}
+        <div class="alert alert-danger alert-dismissable">
+            <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+            {{ error }}
+        </div>
+    {% endfor %}
+
+    <div class="text-left">
+        <form class="m-t" role="form" method="post" action="{{ request.path }}">
+            <div class="form-group">
+                <label>{{ _("Email") }}</label>
+                <input type="email" id="user_email" name="user_email" class="form-control" placeholder="{{ _("Email") }}" required="" value="">
+            </div>
+
+            <div class="alert alert-warning">
+                {{  _("We will send you an email with OTP code") }}.
+            </div>
+
+            <button type="submit" name="submit" id="submit" class="btn btn-primary block full-width m-b">{{ _("Get OPT") }}</button>
+        </form>
+    </div>
+
+
+
+{% endblock logincontent %}

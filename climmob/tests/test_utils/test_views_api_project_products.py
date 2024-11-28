@@ -6,10 +6,7 @@ from unittest.mock import patch
 from pyramid.response import Response
 
 from climmob.tests.test_utils.common import BaseViewTestCase
-from climmob.views.Api.projectProducts import (
-    readProducts_view,
-    downloadApi_view
-)
+from climmob.views.Api.projectProducts import readProducts_view, downloadApi_view
 
 
 class TestReadProductsView(BaseViewTestCase):

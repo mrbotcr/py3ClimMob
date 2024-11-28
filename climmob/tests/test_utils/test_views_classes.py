@@ -490,8 +490,8 @@ class TestPrivateView(unittest.TestCase):
             login="test_user", languages=["en"], email="test@example.com"
         )
 
-        #with self.assertRaises(HTTPNotFound):
-            #self.view()
+        # with self.assertRaises(HTTPNotFound):
+        # self.view()
 
     @patch("climmob.views.classes.check_csrf_token", return_value=True)
     @patch("climmob.views.classes.getUserData")
@@ -516,7 +516,7 @@ class TestPrivateView(unittest.TestCase):
         # with patch("climmob.views.classes.update_last_login"), patch(
         #     "climmob.views.classes.p.PluginImplementations", return_value=[]
         # ):
-            # self.view()
+        # self.view()
 
 
 class TestApiView(unittest.TestCase):

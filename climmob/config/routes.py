@@ -154,6 +154,7 @@ from climmob.views.basic_views import (
     register_view,
     logout_view,
     RecoverPasswordView,
+    TwoFactorAuthenticationView,
     ResetPasswordView,
     StoreCookieView,
     TermsView,
@@ -394,6 +395,24 @@ def loadRoutes(config):
             "renderer": "recover.jinja2",
         }
     )
+    #
+    routes.append(
+        {
+            "name": "tfa",
+            "path": "/tfa",
+            "view": TwoFactorAuthenticationView,
+            "renderer": "tfa.jinja2",
+        }
+    )
+    routes.append(
+        addRoute(
+            "generate_opt",
+            "/generate/{reset_key}/opt",
+            TwoFactorAuthenticationView,
+            "generate_opt.jinja2",
+        )
+    )
+    #
     routes.append(
         addRoute(
             "reset_password",

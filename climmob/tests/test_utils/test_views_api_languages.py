@@ -11,6 +11,7 @@ from climmob.views.Api.languages import (
     ChangeGeneralPhrasesView,
 )
 
+
 class TestReadListOfLanguagesView(unittest.TestCase):
     def setUp(self):
         self.view = ReadListOfLanguagesView(MagicMock())

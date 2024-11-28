@@ -12,9 +12,11 @@ from climmob.config.encdecdata import encodeData
 from climmob.config.auth import (
     getUserData,
     getUserByEmail,
+    getUserEmail,
     setPasswordResetToken,
     resetKeyExists,
     resetPassword,
+    generateOPTCode,
 )
 from climmob.processes import (
     addUser,
@@ -33,6 +35,10 @@ import uuid
 from jinja2 import ext
 from climmob.config.jinja_extensions import jinjaEnv, extendThis
 from climmob.utility.helpers import readble_date
+
+from pyramid.response import Response
+import json
+
 
 log = logging.getLogger("climmob")
 
@@ -111,7 +117,82 @@ def get_policy(request, policy_name):
     return None
 
 
-class login_view(publicView):
+class LoginView(publicView):
+    def processView(self):
+        cookies = self.request.cookies
+        ask_for_cookies = "climmob_cookie_question" not in cookies.keys()
+
+        next_url = self.request.params.get("next") or self.request.route_url(
+            "dashboard"
+        )
+
+        if self.request.method == "POST":
+            if self.request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                auth_method = self.request.POST.get("auth_method")
+
+                if auth_method:
+                    code = self.request.POST.get("code")
+                    success = self._validate_otp(auth_method, code)
+
+                    if success:
+                        login = self.request.session.get("pending_user")
+                        if login:
+                            login_data = {"login": login, "group": "mainApp"}
+                            headers = remember(
+                                self.request, str(login_data), policies=["main"]
+                            )
+                            response = Response(
+                                json.dumps({"success": True, "redirect_url": next_url}),
+                                content_type="application/json; charset=UTF-8",
+                            )
+                            response.headerlist.extend(headers)
+                            return response
+
+                    return Response(
+                        json.dumps({"success": False, "error": "Invalid OTP"}),
+                        content_type="application/json; charset=UTF-8",
+                    )
+
+                if "submit" in self.request.POST:
+                    login = self.request.POST.get("login", "")
+                    passwd = self.request.POST.get("passwd", "")
+                    user = getUserData(login, self.request)
+
+                    if user and user.check_password(passwd, self.request):
+                        self.request.session["pending_user"] = login
+                        return Response(
+                            json.dumps({"success": True}),
+                            content_type="application/json; charset=UTF-8",
+                        )
+
+                    return Response(
+                        json.dumps({"success": False, "error": "Invalid credentials"}),
+                        content_type="application/json; charset=UTF-8",
+                    )
+
+        # Manejo de solicitudes GET
+        return {"ask_for_cookies": ask_for_cookies, "next": next_url}
+
+    def _validate_otp(self, method, code):
+        if method == "google_authenticator":
+            return self.verify_google_authenticator(code)
+        elif method == "email":
+            return self.verify_email_code(code)
+        elif method == "security_code":
+            return self.verify_security_code(code)
+        return False
+
+    def verify_google_authenticator(self, code):
+        return code == "123456"
+
+    def verify_email_code(self, code):
+        return code == "654321"
+
+    def verify_security_code(self, code):
+        return code == "000000"
+
+
+"""class LoginView(publicView):
     def processView(self):
 
         cookies = self.request.cookies
@@ -119,6 +200,8 @@ class login_view(publicView):
             ask_for_cookies = False
         else:
             ask_for_cookies = True
+
+        ask_for_opt = False
 
         # If we logged in then go to dashboard
         policy = get_policy(self.request, "main")
@@ -150,7 +233,8 @@ class login_view(publicView):
             "failed_attempt": did_fail,
             "next": next,
             "ask_for_cookies": ask_for_cookies,
-        }
+            "ask_for_opt": ask_for_opt
+        }"""
 
 
 class RecoverPasswordView(publicView):
@@ -238,6 +322,93 @@ class RecoverPasswordView(publicView):
                         self.request, user.login, reset_key, reset_token
                     )
                     self.send_password_email(user.email, reset_token, reset_key, user)
+                    self.returnRawViewResult = True
+                    return HTTPFound(location=self.request.route_url("login"))
+                else:
+                    error_summary["email"] = self._(
+                        "Cannot find an user with such email address"
+                    )
+            else:
+                error_summary["email"] = self._("You need to provide an email address")
+
+        return {"error_summary": error_summary}
+
+
+class TwoFactorAuthenticationView(publicView):
+    def send_otp_by_email(self, body, target_name, target_email, mail_from):
+        msg = MIMEText(body.encode("utf-8"), "plain", "utf-8")
+        ssubject = self._("ClimMob - Password reset request")
+        subject = Header(ssubject.encode("utf-8"), "utf-8")
+        msg["Subject"] = subject
+        msg["From"] = "{} <{}>".format("ClimMob", mail_from)
+        recipient = "{} <{}>".format(target_name.encode("utf-8"), target_email)
+        msg["To"] = Header(recipient, "utf-8")
+        msg["Date"] = utils.formatdate(time())
+        try:
+            smtp_server = self.request.registry.settings.get(
+                "email.server", "localhost"
+            )
+            smtp_user = self.request.registry.settings.get("email.user")
+            smtp_password = self.request.registry.settings.get("email.password")
+
+            server = smtplib.SMTP(smtp_server, 587)
+            server.ehlo()
+            server.starttls()
+            server.ehlo()
+            server.login(smtp_user, smtp_password)
+            server.sendmail(mail_from, [target_email], msg.as_string())
+            server.quit()
+
+        except Exception as e:
+            print(str(e))
+
+    def send_otp_email(self, email_to, generated_opt, user_dict):
+        jinjaEnv.add_extension(ext.i18n)
+        jinjaEnv.add_extension(extendThis)
+        _ = self.request.translate
+        email_from = self.request.registry.settings.get("email.from", None)
+        if email_from is None:
+            log.error(
+                "ClimMob has no email settings in place. Email service is disabled."
+            )
+            return False
+        if email_from == "":
+            return False
+        date_string = readble_date(datetime.datetime.now(), self.request.locale_name)
+        reset_url = self.request.route_url("generate_opt", reset_key=generated_opt)
+        text = render_template(
+            "email/recover_email.jinja2",
+            {
+                "recovery_date": date_string,
+                "generated_opt": generated_opt,
+                "user_dict": user_dict,
+                "reset_url": reset_url,
+                "_": _,
+            },
+        )
+        # self.send_otp_by_email(text, user_dict.fullName, email_to, email_from)
+
+    def processView(self):
+
+        # If we logged in then go to dashboard
+        policy = get_policy(self.request, "main")
+        login = policy.authenticated_userid(self.request)
+        currentUser = getUserData(login, self.request)
+        if currentUser is not None:
+            raise HTTPNotFound()
+
+        error_summary = {}
+        if "submit" in self.request.POST:
+            email = self.request.POST.get("user_email", None)
+            if email is not None:
+                user = getUserEmail(email, self.request)
+                if user is not None:
+
+                    generated_opt = generateOPTCode()
+
+                    print("OTP Generation")
+                    print(generated_opt)
+                    self.send_otp_email(user.email, generated_opt, user)
                     self.returnRawViewResult = True
                     return HTTPFound(location=self.request.route_url("login"))
                 else:

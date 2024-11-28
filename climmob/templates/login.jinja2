@@ -59,9 +59,11 @@
                             <input type="password" name="passwd" class="form-control" placeholder="{{ _("Password") }}" required="" autocomplete="off">
                         </div>
                         <input type="hidden" name="next" value="{{ next }}">
-                        <button type="submit" name="submit" class="btn btn-primary block full-width m-b">{{ _("Login") }}</button>
+                        <button type="button" id="loginButton" class="btn btn-primary block full-width m-b">{{ _("Login") }}</button>
 
                         <a href="{{ request.route_url('recover') }}"><small>{{ _("Forgot username or password?") }}</small></a>
+
+                        <a href="{{ request.route_url('tfa') }}"><small>{{ _("2FA") }}</small></a>
 
                         {% if request.registry.settings.get('auth.register_users_via_web', "true") == 'true'%}
 
@@ -103,20 +105,215 @@
         </div>
     {% endif %}
 
-    <script>
+    <div class="middle-box text-center loginscreen animated fadeInDown">
+        <!-- Botón para activar el modal -->
+        <button id="showModalButton" class="btn btn-primary block full-width m-b">Mostrar Modal</button>
+    </div>
 
-        {% if ask_for_cookies %}
-            $(document).ready(function() {
-                myVar = setTimeout(showCookieFunc, 500);
-                function showCookieFunc() {
-                    $('#cookieModal').modal('show');
+    <!-- Modal principal -->
+    <div class="modal inmodal" id="testModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <i class="fa fa-shield modal-icon"></i>
+                    <h4 class="modal-title">{{ _('Verification Options') }}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Elige una opción para continuar:</p>
+                    <div class="form-group">
+                        <!-- Botón para Google Authenticator -->
+                        <button id="authenticatorButton" class="btn btn-primary btn-block">
+                            {{ _('Usar Google Authenticator') }}
+                        </button>
+                        <!-- Botón para Enviar código al correo -->
+                        <button id="emailButton" class="btn btn-secondary btn-block">
+                            {{ _('Enviar código por correo') }}
+                        </button>
+                        <!-- Botón para Código de seguridad almacenado -->
+                        <button id="securityButton" class="btn btn-success btn-block">
+                            {{ _('Usar código de seguridad almacenado') }}
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Google Authenticator -->
+    <div class="modal inmodal" id="authenticatorModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <i class="fa fa-key modal-icon"></i>
+                    <h4 class="modal-title">{{ _('Google Authenticator') }}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Por favor, ingrese el código generado por su aplicación de autenticación:</p>
+                    <input type="text" id="authenticatorCode" class="form-control" placeholder="Código de la aplicación">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="verifyAuthenticatorCode">Verificar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Enviar código por correo -->
+    <div class="modal inmodal" id="emailModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <i class="fa fa-envelope modal-icon"></i>
+                    <h4 class="modal-title">{{ _('Enviar código por correo') }}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Se ha enviado un código a su correo electrónico registrado. Por favor, revíselo e ingréselo a continuación:</p>
+                    <input type="text" id="emailCode" class="form-control" placeholder="Código recibido por correo">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="verifyEmailCode">Verificar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Código de seguridad almacenado -->
+    <div class="modal inmodal" id="securityModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <i class="fa fa-lock modal-icon"></i>
+                    <h4 class="modal-title">{{ _('Código de seguridad almacenado') }}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Ingrese uno de sus códigos de seguridad almacenados:</p>
+                    <input type="text" id="securityCode" class="form-control" placeholder="Código de seguridad">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="verifySecurityCode">Verificar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    $(document).ready(function () {
+
+        $('#loginButton').on('click', function () {
+            const username = $('input[name="login"]').val();
+            const password = $('input[name="passwd"]').val();
+
+            if (!username || !password) {
+                alert('Por favor, ingrese su usuario y contraseña.');
+                return;
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '{{ request.route_url("login") }}',
+                data: {
+                    login: username,
+                    passwd: password,
+                    submit: true
+                },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        $('#testModal').modal('show');
+                    } else {
+                        alert('Credenciales incorrectas. Por favor, intente de nuevo.');
+                    }
+                },
+                error: function () {
+                    alert('Hubo un error al procesar su solicitud. Intente más tarde.');
                 }
             });
-        {% endif %}
+        });
 
-        {% block loginscript %}
-        {% endblock loginscript %}
-    </script>
+        $('#authenticatorButton').on('click', function () {
+            $('#testModal').modal('hide');
+            $('#authenticatorModal').modal('show');
+        });
+
+        $('#emailButton').on('click', function () {
+            $('#testModal').modal('hide');
+            $('#emailModal').modal('show');
+        });
+
+        $('#securityButton').on('click', function () {
+            $('#testModal').modal('hide');
+            $('#securityModal').modal('show');
+        });
+
+        $('#verifyAuthenticatorCode').on('click', function () {
+            const code = $('#authenticatorCode').val();
+            if (!code) {
+                alert('Por favor, ingrese el código.');
+                return;
+            }
+            sendCode('google_authenticator', code);
+        });
+
+        $('#verifyEmailCode').on('click', function () {
+            const code = $('#emailCode').val();
+            if (!code) {
+                alert('Por favor, ingrese el código.');
+                return;
+            }
+            sendCode('email', code);
+        });
+
+        $('#verifySecurityCode').on('click', function () {
+            const code = $('#securityCode').val();
+            if (!code) {
+                alert('Por favor, ingrese el código.');
+                return;
+            }
+            sendCode('security_code', code);
+        });
+
+        function sendCode(authMethod, code) {
+            $.ajax({
+                type: 'POST',
+                url: '{{ request.route_url("login") }}',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                data: {
+                    auth_method: authMethod,
+                    code: code
+                },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        location.href = '{{ request.route_url("dashboard") }}';
+                    } else {
+                        alert('Código incorrecto. Por favor, intente de nuevo.');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error en la verificación:', error);
+                    alert('Hubo un error en la verificación. Intente más tarde.');
+                }
+            });
+        }
+
+        {% if ask_for_cookies %}
+            setTimeout(function () {
+                $('#cookieModal').modal('show');
+            }, 500);
+        {% endif %}
+    });
+</script>
+
+
 
 {% endblock loginbody %}
 </body>
