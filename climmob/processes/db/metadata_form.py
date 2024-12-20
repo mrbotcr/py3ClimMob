@@ -22,7 +22,9 @@ def addMetadataForm(data, request):
 
 
 def getAllMetadata(request):
-    _query = request.dbsession.query(MetadataForm).order_by(MetadataForm.metadata_name).all()
+    _query = (
+        request.dbsession.query(MetadataForm).order_by(MetadataForm.metadata_name).all()
+    )
     result = mapFromSchemaWithRelationships(_query)
     return result
 
