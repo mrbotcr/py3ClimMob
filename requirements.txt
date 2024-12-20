@@ -86,7 +86,7 @@ paginate==0.5.6
 pandas==1.5.2
 PasteDeploy==3.0.1
 pathspec==0.10.3
-Pattern==3.6
+patternfork-nosql==3.6
 pdfminer.six==20221105
 Pillow==10.3.0
 plaster==1.1.2

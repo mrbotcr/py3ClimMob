@@ -22,7 +22,7 @@ def addMetadataForm(data, request):
 
 
 def getAllMetadata(request):
-    _query = request.dbsession.query(MetadataForm).all()
+    _query = request.dbsession.query(MetadataForm).order_by(MetadataForm.metadata_name).all()
     result = mapFromSchemaWithRelationships(_query)
     return result
 
@@ -48,6 +48,7 @@ def getMetadataForProject(request, projectId):
     result = mapFromSchemaWithRelationships(
         request.dbsession.query(MetadataForm)
         .filter(MetadataForm.metadata_active == 1)
+        .order_by(MetadataForm.metadata_name)
         .all()
     )
     for info in result:

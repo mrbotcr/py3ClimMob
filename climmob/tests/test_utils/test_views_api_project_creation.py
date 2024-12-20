@@ -127,14 +127,30 @@ class TestCreateProjectView(BaseViewTestCase):
             "project_piemail": "johndoe@example.com",
             "project_numobs": 5,
             "project_cnty": "US",
-            "project_registration_and_analysis": "1",
             "project_label_a": "Label A",
             "project_label_b": "Label B",
             "project_label_c": "Label C",
             "project_languages": ["en"],
+            "project_affiliation": "MrBot",
+            "project_type": 2,
+            "project_location": 0,
+            "project_unit_of_analysis": 0,
+            "project_objectives": [0, 1],
         }
         self.view.body = json.dumps(self.valid_data)
 
+    @patch("climmob.views.Api.projectCreation.add_project_location_unit_objective")
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_objectives_by_combination"
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_by_combination"
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_unit_of_analysis_by_id",
+        return_value=True,
+    )
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=True)
     @patch("climmob.views.Api.projectCreation.existsCountryByCode", return_value=True)
     @patch(
         "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
@@ -152,18 +168,42 @@ class TestCreateProjectView(BaseViewTestCase):
         mock_exists_country,
         mock_project_in_db,
         mock_language_exist,
+        mock_get_location_by_id,
+        mock_get_unit_of_analysis_by_id,
+        mock_get_location_unit_of_analysis_by_combination,
+        mock_get_location_unit_of_analysis_objectives_by_combination,
+        mock_add_project_location_unit_objective,
     ):
+        mock_get_location_unit_of_analysis_by_combination.return_value = {
+            "pluoa_id": 0,
+            "plocation_id": 0,
+            "puoa_id": 0,
+            "registration_and_analysis": 0,
+        }
+        mock_get_location_unit_of_analysis_objectives_by_combination.return_value = {
+            "pluoaobj_id": 0
+        }
         response = self.view.processView()
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("Project created successfully.", response.body.decode())
-
+        mock_get_location_by_id.assert_called_with(self.view.request, 0)
+        mock_get_unit_of_analysis_by_id.assert_called_with(self.view.request, 0)
+        mock_get_location_unit_of_analysis_by_combination.assert_called_with(
+            self.view.request, 0, 0
+        )
+        mock_get_location_unit_of_analysis_objectives_by_combination.assert_called_with(
+            self.view.request, 0, 1
+        )
         mock_language_exist.assert_called_with(self.view.request, "US")
         mock_project_in_db.assert_called_with("en", "test_user", self.view.request)
         mock_exists_country.assert_called_with("test_user", "PRJ123", self.view.request)
         mock_add_project.assert_called()
         mock_add_prj_lang.assert_called_with(
             {"lang_code": "en", "project_id": "new_project_id"}, self.view.request
+        )
+        mock_add_project_location_unit_objective.assert_called_with(
+            {"project_id": "new_project_id", "pluoaobj_id": 0}, self.view.request
         )
 
     def test_process_view_invalid_method(self):
@@ -205,6 +245,188 @@ class TestCreateProjectView(BaseViewTestCase):
         )
 
     @patch(
+        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
+    )
+    def test_process_view_invalid_project_type(self, mock_language_exist):
+        self.valid_data["project_type"] = "test"
+        self.view.body = json.dumps(self.valid_data)
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "The parameter project_type must be a number.", response.body.decode()
+        )
+        mock_language_exist.assert_called_with("en", "test_user", self.view.request)
+
+    @patch(
+        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
+    )
+    def test_process_view_invalid_value_project_type(self, mock_language_exist):
+        self.valid_data["project_type"] = 3
+        self.view.body = json.dumps(self.valid_data)
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "The parameter project_type must be [1: Real. 2: Training - This project was only used to explain the use of the ClimMob platform and was created as an example].",
+            response.body.decode(),
+        )
+        mock_language_exist.assert_called_with("en", "test_user", self.view.request)
+
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=False)
+    @patch(
+        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
+    )
+    def test_process_view_invalid_project_location(
+        self, mock_language_exist, mock_get_location_by_id
+    ):
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn("The project_location does not exist.", response.body.decode())
+        mock_get_location_by_id.assert_called_with(self.view.request, 0)
+        mock_language_exist.assert_called_with("en", "test_user", self.view.request)
+
+    @patch(
+        "climmob.views.Api.projectCreation.get_unit_of_analysis_by_id",
+        return_value=False,
+    )
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=True)
+    @patch(
+        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
+    )
+    def test_process_view_invalid_project_unit_of_analysis(
+        self,
+        mock_language_exist,
+        mock_get_location_by_id,
+        mock_get_unit_of_analysis_by_id,
+    ):
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "The project_unit_of_analysis does not exist.", response.body.decode()
+        )
+        mock_get_unit_of_analysis_by_id.assert_called_with(self.view.request, 0)
+        mock_get_location_by_id.assert_called_with(self.view.request, 0)
+        mock_language_exist.assert_called_with("en", "test_user", self.view.request)
+
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_by_combination",
+        return_value={},
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_unit_of_analysis_by_id",
+        return_value=True,
+    )
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=True)
+    @patch(
+        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
+    )
+    def test_process_view_invalid_location_unit_of_analysis_by_combination(
+        self,
+        mock_language_exist,
+        mock_get_location_by_id,
+        mock_get_unit_of_analysis_by_id,
+        mock_get_location_unit_of_analysis_by_combination,
+    ):
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "This project_location with this project_unit_of_analysis has no defined relationship.",
+            response.body.decode(),
+        )
+        mock_get_location_unit_of_analysis_by_combination.assert_called_with(
+            self.view.request, 0, 0
+        )
+        mock_get_unit_of_analysis_by_id.assert_called_with(self.view.request, 0)
+        mock_get_location_by_id.assert_called_with(self.view.request, 0)
+        mock_language_exist.assert_called_with("en", "test_user", self.view.request)
+
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_by_combination"
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_unit_of_analysis_by_id",
+        return_value=True,
+    )
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=True)
+    @patch(
+        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
+    )
+    def test_process_view_invalid_project_objectives(
+        self,
+        mock_language_exist,
+        mock_get_location_by_id,
+        mock_get_unit_of_analysis_by_id,
+        mock_get_location_unit_of_analysis_by_combination,
+    ):
+        mock_get_location_unit_of_analysis_by_combination.return_value = {
+            "pluoa_id": 0,
+            "plocation_id": 0,
+            "puoa_id": 0,
+            "registration_and_analysis": 0,
+        }
+        self.valid_data["project_objectives"] = "0"
+        self.view.body = json.dumps(self.valid_data)
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "project_objectives should be in list format.",
+            response.body.decode(),
+        )
+        mock_get_location_unit_of_analysis_by_combination.assert_called_with(
+            self.view.request, 0, 0
+        )
+        mock_get_unit_of_analysis_by_id.assert_called_with(self.view.request, 0)
+        mock_get_location_by_id.assert_called_with(self.view.request, 0)
+        mock_language_exist.assert_called_with("en", "test_user", self.view.request)
+
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_objectives_by_combination",
+        return_value={},
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_by_combination"
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_unit_of_analysis_by_id",
+        return_value=True,
+    )
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=True)
+    @patch(
+        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
+    )
+    @patch("climmob.views.Api.projectCreation.projectInDatabase", return_value=False)
+    def test_process_view_invalid_value_project_objective(
+        self,
+        mock_project_in_db,
+        mock_language_exist,
+        mock_get_location_by_id,
+        mock_get_unit_of_analysis_by_id,
+        mock_get_location_unit_of_analysis_by_combination,
+        mock_get_location_unit_of_analysis_objectives_by_combination,
+    ):
+        mock_get_location_unit_of_analysis_by_combination.return_value = {
+            "pluoa_id": 0,
+            "plocation_id": 0,
+            "puoa_id": 0,
+            "registration_and_analysis": 0,
+        }
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "The objective 0 does not correspond to the experiment site and the unit of analysis indicated.",
+            response.body.decode(),
+        )
+        mock_get_location_by_id.assert_called_with(self.view.request, 0)
+        mock_get_unit_of_analysis_by_id.assert_called_with(self.view.request, 0)
+        mock_get_location_unit_of_analysis_by_combination.assert_called_with(
+            self.view.request, 0, 0
+        )
+        mock_get_location_unit_of_analysis_objectives_by_combination.assert_called_with(
+            self.view.request, 0, 0
+        )
+        mock_project_in_db.assert_not_called()
+        mock_language_exist.assert_called_with("en", "test_user", self.view.request)
+
+    @patch(
         "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=False
     )
     def test_process_view_invalid_project_language(self, mock_language_exist):
@@ -239,13 +461,37 @@ class TestCreateProjectView(BaseViewTestCase):
         mock_language_exist.assert_called_with("en", "test_user", self.view.request)
 
     @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_objectives_by_combination"
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_by_combination"
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_unit_of_analysis_by_id",
+        return_value=True,
+    )
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=True)
+    @patch(
         "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
     )
     @patch("climmob.views.Api.projectCreation.getProjectIsTemplate", return_value=None)
     @patch("climmob.views.Api.projectCreation.projectInDatabase", return_value=False)
     def test_process_view_invalid_template(
-        self, mock_project_in_db, mock_get_project_is_template, mock_language_exist
+        self,
+        mock_project_in_db,
+        mock_get_project_is_template,
+        mock_language_exist,
+        mock_get_location_by_id,
+        mock_get_unit_of_analysis_by_id,
+        mock_get_location_unit_of_analysis_by_combination,
+        mock_get_location_unit_of_analysis_objectives_by_combination,
     ):
+        mock_get_location_unit_of_analysis_by_combination.return_value = {
+            "pluoa_id": 0,
+            "plocation_id": 0,
+            "puoa_id": 0,
+            "registration_and_analysis": 0,
+        }
         self.valid_data["project_template"] = "invalid_template_id"
         self.view.body = json.dumps(self.valid_data)
         response = self.view.processView()
@@ -256,8 +502,28 @@ class TestCreateProjectView(BaseViewTestCase):
         mock_get_project_is_template.assert_called_with(
             self.view.request, "invalid_template_id"
         )
+        mock_get_location_by_id.assert_called_with(self.view.request, 0)
+        mock_get_unit_of_analysis_by_id.assert_called_with(self.view.request, 0)
+        mock_get_location_unit_of_analysis_by_combination.assert_called_with(
+            self.view.request, 0, 0
+        )
+        mock_get_location_unit_of_analysis_objectives_by_combination.assert_called_with(
+            self.view.request, 0, 1
+        )
+        mock_project_in_db.assert_not_called()
         mock_language_exist.assert_called_with("en", "test_user", self.view.request)
 
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_objectives_by_combination"
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_by_combination"
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_unit_of_analysis_by_id",
+        return_value=True,
+    )
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=True)
     @patch(
         "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
     )
@@ -267,11 +533,23 @@ class TestCreateProjectView(BaseViewTestCase):
     )
     @patch("climmob.views.Api.projectCreation.projectInDatabase", return_value=False)
     def test_process_view_template_registration_mismatch(
-        self, mock_project_in_db, mock_get_project_is_template, mock_language_exist
+        self,
+        mock_project_in_db,
+        mock_get_project_is_template,
+        mock_language_exist,
+        mock_get_location_by_id,
+        mock_get_unit_of_analysis_by_id,
+        mock_get_location_unit_of_analysis_by_combination,
+        mock_get_location_unit_of_analysis_objectives_by_combination,
     ):
         self.valid_data["project_template"] = "template_id"
-        self.valid_data["project_registration_and_analysis"] = "1"
         self.view.body = json.dumps(self.valid_data)
+        mock_get_location_unit_of_analysis_by_combination.return_value = {
+            "pluoa_id": 0,
+            "plocation_id": 0,
+            "puoa_id": 0,
+            "registration_and_analysis": 1,
+        }
         response = self.view.processView()
         self.assertEqual(response.status_code, 401)
         self.assertIn(
@@ -281,28 +559,91 @@ class TestCreateProjectView(BaseViewTestCase):
         mock_get_project_is_template.assert_called_with(
             self.view.request, "template_id"
         )
+        mock_get_location_by_id.assert_called_with(self.view.request, 0)
+        mock_get_unit_of_analysis_by_id.assert_called_with(self.view.request, 0)
+        mock_get_location_unit_of_analysis_by_combination.assert_called_with(
+            self.view.request, 0, 0
+        )
+        mock_get_location_unit_of_analysis_objectives_by_combination.assert_called_with(
+            self.view.request, 0, 1
+        )
         mock_project_in_db.assert_not_called()
         mock_language_exist.assert_called_with("en", "test_user", self.view.request)
 
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_objectives_by_combination"
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_by_combination"
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_unit_of_analysis_by_id",
+        return_value=True,
+    )
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=True)
     @patch(
         "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
     )
     @patch("climmob.views.Api.projectCreation.projectInDatabase", return_value=True)
     def test_process_view_project_code_already_exists(
-        self, mock_project_in_db, mock_language_exist
+        self,
+        mock_project_in_db,
+        mock_language_exist,
+        mock_get_location_by_id,
+        mock_get_unit_of_analysis_by_id,
+        mock_get_location_unit_of_analysis_by_combination,
+        mock_get_location_unit_of_analysis_objectives_by_combination,
     ):
+        mock_get_location_unit_of_analysis_by_combination.return_value = {
+            "pluoa_id": 0,
+            "plocation_id": 0,
+            "puoa_id": 0,
+            "registration_and_analysis": 0,
+        }
         response = self.view.processView()
         self.assertEqual(response.status_code, 401)
         self.assertIn("This project ID already exists.", response.body.decode())
+        mock_get_location_by_id.assert_called_with(self.view.request, 0)
+        mock_get_unit_of_analysis_by_id.assert_called_with(self.view.request, 0)
+        mock_get_location_unit_of_analysis_by_combination.assert_called_with(
+            self.view.request, 0, 0
+        )
+        mock_get_location_unit_of_analysis_objectives_by_combination.assert_called_with(
+            self.view.request, 0, 1
+        )
         mock_project_in_db.assert_called_with("test_user", "PRJ123", self.view.request)
         mock_language_exist.assert_called_with("en", "test_user", self.view.request)
 
     @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_objectives_by_combination"
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_by_combination"
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_unit_of_analysis_by_id",
+        return_value=True,
+    )
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=True)
+    @patch(
         "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
     )
-    def test_process_view_project_cod_invalid_characters(self, mock_language_exist):
+    def test_process_view_project_cod_invalid_characters(
+        self,
+        mock_language_exist,
+        mock_get_location_by_id,
+        mock_get_unit_of_analysis_by_id,
+        mock_get_location_unit_of_analysis_by_combination,
+        mock_get_location_unit_of_analysis_objectives_by_combination,
+    ):
         self.valid_data["project_cod"] = "PRJ 123"
         self.view.body = json.dumps(self.valid_data)
+        mock_get_location_unit_of_analysis_by_combination.return_value = {
+            "pluoa_id": 0,
+            "plocation_id": 0,
+            "puoa_id": 0,
+            "registration_and_analysis": 0,
+        }
         with patch(
             "climmob.views.Api.projectCreation.projectInDatabase", return_value=False
         ):
@@ -312,14 +653,46 @@ class TestCreateProjectView(BaseViewTestCase):
             "For the project ID only letters and numbers are allowed. The project ID must start with a letter.",
             response.body.decode(),
         )
+        mock_get_location_by_id.assert_called_with(self.view.request, 0)
+        mock_get_unit_of_analysis_by_id.assert_called_with(self.view.request, 0)
+        mock_get_location_unit_of_analysis_by_combination.assert_called_with(
+            self.view.request, 0, 0
+        )
+        mock_get_location_unit_of_analysis_objectives_by_combination.assert_called_with(
+            self.view.request, 0, 1
+        )
         mock_language_exist.assert_called_with("en", "test_user", self.view.request)
 
     @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_objectives_by_combination"
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_by_combination"
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_unit_of_analysis_by_id",
+        return_value=True,
+    )
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=True)
+    @patch(
         "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
     )
-    def test_process_view_project_cod_starts_with_digit(self, mock_language_exist):
+    def test_process_view_project_cod_starts_with_digit(
+        self,
+        mock_language_exist,
+        mock_get_location_by_id,
+        mock_get_unit_of_analysis_by_id,
+        mock_get_location_unit_of_analysis_by_combination,
+        mock_get_location_unit_of_analysis_objectives_by_combination,
+    ):
         self.valid_data["project_cod"] = "1PRJ123"
         self.view.body = json.dumps(self.valid_data)
+        mock_get_location_unit_of_analysis_by_combination.return_value = {
+            "pluoa_id": 0,
+            "plocation_id": 0,
+            "puoa_id": 0,
+            "registration_and_analysis": 0,
+        }
         with patch(
             "climmob.views.Api.projectCreation.projectInDatabase", return_value=False
         ):
@@ -327,6 +700,14 @@ class TestCreateProjectView(BaseViewTestCase):
         self.assertEqual(response.status_code, 401)
         self.assertIn(
             "The project ID must start with a letter.", response.body.decode()
+        )
+        mock_get_location_by_id.assert_called_with(self.view.request, 0)
+        mock_get_unit_of_analysis_by_id.assert_called_with(self.view.request, 0)
+        mock_get_location_unit_of_analysis_by_combination.assert_called_with(
+            self.view.request, 0, 0
+        )
+        mock_get_location_unit_of_analysis_objectives_by_combination.assert_called_with(
+            self.view.request, 0, 1
         )
         mock_language_exist.assert_called_with("en", "test_user", self.view.request)
 
@@ -337,6 +718,17 @@ class TestCreateProjectView(BaseViewTestCase):
         self.assertEqual(response.status_code, 401)
         self.assertIn("Not all parameters have data.", response.body.decode())
 
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_objectives_by_combination"
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_by_combination"
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_unit_of_analysis_by_id",
+        return_value=True,
+    )
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=True)
     @patch("climmob.views.Api.projectCreation.existsCountryByCode", return_value=False)
     @patch(
         "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
@@ -347,9 +739,20 @@ class TestCreateProjectView(BaseViewTestCase):
         mock_project_in_db,
         mock_language_exist,
         mock_exists_country,
+        mock_get_location_by_id,
+        mock_get_unit_of_analysis_by_id,
+        mock_get_location_unit_of_analysis_by_combination,
+        mock_get_location_unit_of_analysis_objectives_by_combination,
     ):
         self.valid_data["project_cnty"] = "XX"
         self.view.body = json.dumps(self.valid_data)
+
+        mock_get_location_unit_of_analysis_by_combination.return_value = {
+            "pluoa_id": 0,
+            "plocation_id": 0,
+            "puoa_id": 0,
+            "registration_and_analysis": 0,
+        }
 
         response = self.view.processView()
 
@@ -358,30 +761,84 @@ class TestCreateProjectView(BaseViewTestCase):
             "The country assigned to the project does not exist in the ClimMob list.",
             response.body.decode(),
         )
+        mock_get_location_by_id.assert_called_with(self.view.request, 0)
+        mock_get_unit_of_analysis_by_id.assert_called_with(self.view.request, 0)
+        mock_get_location_unit_of_analysis_by_combination.assert_called_with(
+            self.view.request, 0, 0
+        )
+        mock_get_location_unit_of_analysis_objectives_by_combination.assert_called_with(
+            self.view.request, 0, 1
+        )
         mock_language_exist.assert_called_with("en", "test_user", self.view.request)
 
         mock_exists_country.assert_called_with(self.view.request, "XX")
         mock_project_in_db.assert_called_with("test_user", "PRJ123", self.view.request)
 
     @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_objectives_by_combination"
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_by_combination"
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_unit_of_analysis_by_id",
+        return_value=True,
+    )
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=True)
+    @patch(
         "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
     )
     @patch("climmob.views.Api.projectCreation.projectInDatabase", return_value=False)
     def test_process_view_labels_not_unique(
-        self, mock_project_in_db, mock_language_exist
+        self,
+        mock_project_in_db,
+        mock_language_exist,
+        mock_get_location_by_id,
+        mock_get_unit_of_analysis_by_id,
+        mock_get_location_unit_of_analysis_by_combination,
+        mock_get_location_unit_of_analysis_objectives_by_combination,
     ):
         self.valid_data["project_label_a"] = "Label"
         self.valid_data["project_label_b"] = "Label"
         self.valid_data["project_label_c"] = "Label"
         self.view.body = json.dumps(self.valid_data)
+        mock_get_location_unit_of_analysis_by_combination.return_value = {
+            "pluoa_id": 0,
+            "plocation_id": 0,
+            "puoa_id": 0,
+            "registration_and_analysis": 0,
+        }
         response = self.view.processView()
         self.assertEqual(response.status_code, 401)
         self.assertIn(
             "The names that the items will receive should be different.",
             response.body.decode(),
         )
+        mock_get_location_unit_of_analysis_objectives_by_combination.assert_called_with(
+            self.view.request, 0, 1
+        )
+        mock_get_location_unit_of_analysis_by_combination.assert_called_with(
+            self.view.request, 0, 0
+        )
+        mock_get_unit_of_analysis_by_id.assert_called_with(self.view.request, 0)
+        mock_get_location_by_id.assert_called_with(self.view.request, 0)
+        mock_project_in_db.assert_called_once_with(
+            "test_user", "PRJ123", self.view.request
+        )
+        mock_language_exist.assert_called_with("en", "test_user", self.view.request)
         mock_project_in_db.assert_called_with("test_user", "PRJ123", self.view.request)
 
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_objectives_by_combination"
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_by_combination"
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_unit_of_analysis_by_id",
+        return_value=True,
+    )
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=True)
     @patch(
         "climmob.views.Api.projectCreation.addProject",
         return_value=(False, "Error adding project"),
@@ -391,23 +848,70 @@ class TestCreateProjectView(BaseViewTestCase):
         "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
     )
     def test_process_view_add_project_fails(
-        self, mock_language_exist, mock_project_in_db, mock_add_project
+        self,
+        mock_language_exist,
+        mock_project_in_db,
+        mock_add_project,
+        mock_get_location_by_id,
+        mock_get_unit_of_analysis_by_id,
+        mock_get_location_unit_of_analysis_by_combination,
+        mock_get_location_unit_of_analysis_objectives_by_combination,
     ):
+        mock_get_location_unit_of_analysis_by_combination.return_value = {
+            "pluoa_id": 0,
+            "plocation_id": 0,
+            "puoa_id": 0,
+            "registration_and_analysis": 0,
+        }
+
         response = self.view.processView()
         self.assertEqual(response.status_code, 401)
         self.assertIn("Error adding project", response.body.decode())
         mock_add_project.assert_called()
+
+        mock_get_location_unit_of_analysis_objectives_by_combination.assert_called_with(
+            self.view.request, 0, 1
+        )
+        mock_get_location_unit_of_analysis_by_combination.assert_called_with(
+            self.view.request, 0, 0
+        )
+        mock_get_unit_of_analysis_by_id.assert_called_with(self.view.request, 0)
+        mock_get_location_by_id.assert_called_with(self.view.request, 0)
         mock_project_in_db.assert_called_once_with(
             "test_user", "PRJ123", self.view.request
         )
         mock_language_exist.assert_called_with("en", "test_user", self.view.request)
 
     @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_objectives_by_combination"
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_by_combination"
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_unit_of_analysis_by_id",
+        return_value=True,
+    )
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=True)
+    @patch(
         "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
     )
-    def test_process_view_project_numobs_invalid(self, mock_language_exist):
+    def test_process_view_project_numobs_invalid(
+        self,
+        mock_language_exist,
+        mock_get_location_by_id,
+        mock_get_unit_of_analysis_by_id,
+        mock_get_location_unit_of_analysis_by_combination,
+        mock_get_location_unit_of_analysis_objectives_by_combination,
+    ):
         self.valid_data["project_numobs"] = "invalid"
         self.view.body = json.dumps(self.valid_data)
+        mock_get_location_unit_of_analysis_by_combination.return_value = {
+            "pluoa_id": 0,
+            "plocation_id": 0,
+            "puoa_id": 0,
+            "registration_and_analysis": 0,
+        }
         with patch(
             "climmob.views.Api.projectCreation.projectInDatabase", return_value=False
         ):
@@ -416,57 +920,118 @@ class TestCreateProjectView(BaseViewTestCase):
         self.assertIn(
             "The parameter project_numobs must be a number.", response.body.decode()
         )
+        mock_get_location_unit_of_analysis_objectives_by_combination.assert_called_with(
+            self.view.request, 0, 1
+        )
+        mock_get_location_unit_of_analysis_by_combination.assert_called_with(
+            self.view.request, 0, 0
+        )
+        mock_get_unit_of_analysis_by_id.assert_called_with(self.view.request, 0)
+        mock_get_location_by_id.assert_called_with(self.view.request, 0)
         mock_language_exist.assert_called_with("en", "test_user", self.view.request)
 
-    @patch(
-        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
-    )
-    def test_process_view_registration_and_analysis_invalid_value(
-        self, mock_language_exist
-    ):
-        self.valid_data["project_registration_and_analysis"] = "2"
-        self.view.body = json.dumps(self.valid_data)
-        with patch(
-            "climmob.views.Api.projectCreation.projectInDatabase", return_value=False
-        ):
-            response = self.view.processView()
-        self.assertEqual(response.status_code, 401)
-        self.assertIn(
-            "The possible values in the parameter 'project_registration_and_analysis' are: ['0':' Registration is done first, followed by one or more data collection moments (with different forms)','1':'Requires registering participants and immediately asking questions to analyze the information']",
-            response.body.decode(),
-        )
+    # @patch(
+    #     "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
+    # )
+    # def test_process_view_registration_and_analysis_invalid_value(
+    #     self, mock_language_exist
+    # ):
+    #     self.valid_data["project_registration_and_analysis"] = "2"
+    #     self.view.body = json.dumps(self.valid_data)
+    #     with patch(
+    #         "climmob.views.Api.projectCreation.projectInDatabase", return_value=False
+    #     ):
+    #         response = self.view.processView()
+    #     self.assertEqual(response.status_code, 401)
+    #     self.assertIn(
+    #         "The possible values in the parameter 'project_registration_and_analysis' are: ['0':' Registration is done first, followed by one or more data collection moments (with different forms)','1':'Requires registering participants and immediately asking questions to analyze the information']",
+    #         response.body.decode(),
+    #     )
 
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_objectives_by_combination"
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_by_combination"
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_unit_of_analysis_by_id",
+        return_value=True,
+    )
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=True)
     @patch("climmob.views.Api.projectCreation.projectInDatabase")
     @patch(
         "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
     )
     def test_process_view_project_clone_not_exist(
-        self, mock_language_exist, mock_project_in_db
+        self,
+        mock_language_exist,
+        mock_project_in_db,
+        mock_get_location_by_id,
+        mock_get_unit_of_analysis_by_id,
+        mock_get_location_unit_of_analysis_by_combination,
+        mock_get_location_unit_of_analysis_objectives_by_combination,
     ):
         self.valid_data["project_clone"] = "nonexistent_project"
         self.view.body = json.dumps(self.valid_data)
-
+        mock_get_location_unit_of_analysis_by_combination.return_value = {
+            "pluoa_id": 0,
+            "plocation_id": 0,
+            "puoa_id": 0,
+            "registration_and_analysis": 0,
+        }
         mock_project_in_db.return_value = False
         response = self.view.processView()
         self.assertEqual(response.status_code, 401)
         self.assertIn(
             "The project to be cloned does not exist.", response.body.decode()
         )
+        mock_get_location_unit_of_analysis_objectives_by_combination.assert_called_with(
+            self.view.request, 0, 1
+        )
+        mock_get_location_unit_of_analysis_by_combination.assert_called_with(
+            self.view.request, 0, 0
+        )
+        mock_get_unit_of_analysis_by_id.assert_called_with(self.view.request, 0)
+        mock_get_location_by_id.assert_called_with(self.view.request, 0)
         mock_language_exist.assert_called_with("en", "test_user", self.view.request)
 
         mock_project_in_db.assert_called_once_with(
             "test_user", "nonexistent_project", self.view.request
         )
 
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_objectives_by_combination"
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_by_combination"
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_unit_of_analysis_by_id",
+        return_value=True,
+    )
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=True)
     @patch("climmob.views.Api.projectCreation.projectInDatabase", return_value=False)
     @patch(
         "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
     )
     def test_process_view_number_of_observations_zero(
-        self, mock_language_exist, mock_project_in_db
+        self,
+        mock_language_exist,
+        mock_project_in_db,
+        mock_get_location_by_id,
+        mock_get_unit_of_analysis_by_id,
+        mock_get_location_unit_of_analysis_by_combination,
+        mock_get_location_unit_of_analysis_objectives_by_combination,
     ):
         self.valid_data["project_numobs"] = 0
         self.view.body = json.dumps(self.valid_data)
+        mock_get_location_unit_of_analysis_by_combination.return_value = {
+            "pluoa_id": 0,
+            "plocation_id": 0,
+            "puoa_id": 0,
+            "registration_and_analysis": 0,
+        }
         response = self.view.processView()
         self.assertEqual(response.status_code, 401)
         self.assertIn(
@@ -475,28 +1040,14 @@ class TestCreateProjectView(BaseViewTestCase):
         )
         mock_project_in_db.assert_called_with("test_user", "PRJ123", self.view.request)
         mock_language_exist.assert_called_with("en", "test_user", self.view.request)
-
-    @patch("climmob.views.Api.projectCreation.projectInDatabase")
-    @patch(
-        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
-    )
-    def test_process_view_project_clone_not_exist(
-        self, mock_language_exist, mock_project_in_db
-    ):
-        self.valid_data["project_clone"] = "nonexistent_project"
-        self.view.body = json.dumps(self.valid_data)
-
-        mock_project_in_db.return_value = False
-        response = self.view.processView()
-        self.assertEqual(response.status_code, 401)
-        self.assertIn(
-            "The project to be cloned does not exist.", response.body.decode()
+        mock_get_location_unit_of_analysis_objectives_by_combination.assert_called_with(
+            self.view.request, 0, 1
         )
-
-        mock_project_in_db.assert_called_once_with(
-            "test_user", "nonexistent_project", self.view.request
+        mock_get_location_unit_of_analysis_by_combination.assert_called_with(
+            self.view.request, 0, 0
         )
-        mock_language_exist.assert_called_with("en", "test_user", self.view.request)
+        mock_get_unit_of_analysis_by_id.assert_called_with(self.view.request, 0)
+        mock_get_location_by_id.assert_called_with(self.view.request, 0)
 
 
 class TestReadProjectsView(BaseViewTestCase):

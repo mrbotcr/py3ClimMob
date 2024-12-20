@@ -11,6 +11,7 @@ from sqlalchemy import and_, func
 
 __all__ = [
     "getAllLocationUnitOfAnalysis",
+    "get_location_unit_of_analysis_by_combination",
 ]
 
 
@@ -46,6 +47,20 @@ def getAllLocationUnitOfAnalysis(request):
         .filter(LocationUnitOfAnalysis.puoa_id == ProjectUnitOfAnalysis.puoa_id)
         .order_by(LocationUnitOfAnalysis.plocation_id, LocationUnitOfAnalysis.puoa_id)
         .all()
+    )
+
+    return result
+
+
+def get_location_unit_of_analysis_by_combination(
+    request, location_id, unit_of_analysis_id
+):
+
+    result = mapFromSchemaWithRelationships(
+        request.dbsession.query(LocationUnitOfAnalysis)
+        .filter(LocationUnitOfAnalysis.plocation_id == location_id)
+        .filter(LocationUnitOfAnalysis.puoa_id == unit_of_analysis_id)
+        .first()
     )
 
     return result

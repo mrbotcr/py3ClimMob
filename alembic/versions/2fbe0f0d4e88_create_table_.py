@@ -21,8 +21,8 @@ def upgrade():
     op.create_table(
         "location_unit_of_analysis",
         sa.Column("pluoa_id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column("plocation_id", sa.Integer(), nullable=False),
-        sa.Column("puoa_id", sa.Integer(), nullable=False),
+        sa.Column("plocation_id", sa.Integer(), nullable=True),
+        sa.Column("puoa_id", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
             ["plocation_id"],
             ["project_location.plocation_id"],
@@ -35,12 +35,8 @@ def upgrade():
             name=op.f("fk_location_unit_of_analysis_puoa_id_project_unit_of_analysis"),
             ondelete="CASCADE",
         ),
-        sa.PrimaryKeyConstraint(
-            "plocation_id", "puoa_id", name=op.f("pk_location_unit_of_analysis")
-        ),
-        sa.UniqueConstraint(
-            "pluoa_id", name=op.f("uq_location_unit_of_analysis_pluoa_id")
-        ),
+        sa.PrimaryKeyConstraint("pluoa_id", name=op.f("pk_location_unit_of_analysis")),
+        sa.UniqueConstraint("plocation_id", "puoa_id", name="uq_plocation_id_puoa_id"),
     )
     # ### end Alembic commands ###
 

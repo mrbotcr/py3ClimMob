@@ -46,6 +46,9 @@ from climmob.views.Api.projectCreation import (
     ReadCollaboratorsView,
     AddCollaboratorView,
     DeleteCollaboratorView,
+    ReadListOfLocationsView,
+    ReadListOfUnitOfAnalysisView,
+    ReadListOfObjectivesView,
 )
 from climmob.views.Api.projectEnumerators import (
     addProjectEnumerator_view,
@@ -202,6 +205,8 @@ from climmob.views.project import (
     deleteProject_view,
     projectList_view,
     CurationOfProjects_view,
+    GetUnitOfAnalysisByLocationView,
+    GetObjectivesByLocationAndUnitOfAnalysisView,
 )
 from climmob.views.projectHelp.projectHelp import projectHelp_view
 from climmob.views.project_analysis import analysisDataView
@@ -501,6 +506,23 @@ def loadRoutes(config):
             "name": "deleteproject",
             "path": "/user/{user}/project/{project}/delete",
             "view": deleteProject_view,
+            "renderer": "json",
+        }
+    )
+    routes.append(
+        {
+            "name": "getunitofanalysisbylocation",
+            "path": "/location/{locationid}/getUnitOfAnalysis",
+            "view": GetUnitOfAnalysisByLocationView,
+            "renderer": "json",
+        }
+    )
+
+    routes.append(
+        {
+            "name": "getobjectivesbylocationandunitofanalysis",
+            "path": "/location/{locationid}/unitOfAnalysis/{unitofanalysisid}/getObjectives",
+            "view": GetObjectivesByLocationAndUnitOfAnalysisView,
             "renderer": "json",
         }
     )
@@ -1350,6 +1372,30 @@ def loadRoutes(config):
             "readListOfCountries",
             "/api/readListOfCountries",
             ReadListOfCountriesView,
+            None,
+        )
+    )
+    routes.append(
+        addRoute(
+            "readListOfExperimentSide",
+            "/api/readListOfExperimentSide",
+            ReadListOfLocationsView,
+            None,
+        )
+    )
+    routes.append(
+        addRoute(
+            "readListOfUnitOfAnalysis",
+            "/api/readListOfUnitOfAnalysis",
+            ReadListOfUnitOfAnalysisView,
+            None,
+        )
+    )
+    routes.append(
+        addRoute(
+            "readListOfObjectives",
+            "/api/readListOfObjectives",
+            ReadListOfObjectivesView,
             None,
         )
     )

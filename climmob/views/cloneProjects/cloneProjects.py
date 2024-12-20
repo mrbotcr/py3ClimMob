@@ -15,6 +15,9 @@ from climmob.processes import (
     getListOfLanguagesByUser,
     getPrjLangDefaultInProject,
     getTotalNumberOfProjectsInClimMob,
+    get_all_project_location,
+    get_all_unit_of_analysis_by_location,
+    get_all_objectives_by_location_and_unit_of_analysis,
 )
 from climmob.views.classes import privateView
 from climmob.views.project import createProjectFunction, functionCreateClone
@@ -163,6 +166,15 @@ class cloneProjects_view(privateView):
                 "stage": stage,
                 "listOfLanguages": getListOfLanguagesByUser(
                     self.request, self.user.login
+                ),
+                "listOfLocations": get_all_project_location(self.request),
+                "listOfUnitOfAnalysis": get_all_unit_of_analysis_by_location(
+                    self.request, dataworking["project_location"]
+                ),
+                "listOfObjectives": get_all_objectives_by_location_and_unit_of_analysis(
+                    self.request,
+                    dataworking["project_location"],
+                    dataworking["project_unit_of_analysis"],
                 ),
             }
 

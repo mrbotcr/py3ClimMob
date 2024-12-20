@@ -67,7 +67,7 @@
                                     <li><a class="nav-link active" data-toggle="tab" href="#basic-tab-1">{{ _("Local languages") }}</a></li>
                                     <li><a class="nav-link" data-toggle="tab" href="#basic-tab-2"> {{ _("ClimMob’s pre-translated questions") }}</a></li>
                                     <li><a class="nav-link" data-toggle="tab" href="#basic-tab-3"> {{ _("Creating and translating your questions") }}</a></li>
-                                    <li><a class="nav-link" data-toggle="tab" href="#basic-tab-4"> {{ _("Phrases for ODK") }}</a></li>
+                                    <li><a class="nav-link" data-toggle="tab" href="#basic-tab-4"> {{ _("Common phrases") }}</a></li>
                                 </ul>
                                 <div class="tab-content">
                                     <div role="tabpanel" id="basic-tab-1" class="tab-pane active">
@@ -219,20 +219,20 @@
 
                                             <br>
 
-                                            <p>{{ _("Take a look at this examples") }}:</p>
+                                            <p>{{ _("Take a look at these examples") }}:</p>
 
                                             <br>
 
                                             <p>- {{ _("Click to view the different local languages of a question.") }}</p>
 
-                                            <img width="700px" src='{{ request.url_for_static('gif/translation_button.gif') }}' />
+                                            <img style="width: 100%; max-width: 700px" src='{{ request.url_for_static('gif/translation_button.gif') }}' />
 
                                             <br>
                                             <br>
 
                                             <p>- {{ _("Translate your question into your local languages.") }}</p>
 
-                                            <img width="700px" src='{{ request.url_for_static('gif/questions.gif') }}' />
+                                            <img style="width: 100%; max-width: 700px" src='{{ request.url_for_static('gif/questions.gif') }}' />
 
 
 
@@ -248,10 +248,10 @@
                                                 <div class="col-md-12" >
                                                     <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                                                     <h3>{{ _("Indications") }}</h3>
-                                                    <p>1. {{ _("The following is a list of texts that ClimMob uses on the questions that are deployed in ODK Collect form.") }}.</p>
+                                                    <p>1. {{ _("The following is a list of texts that ClimMob uses on the questions that are deployed in ODK Collect form") }}.</p>
                                                     <p>2. {{ _("To see the different languages click on the corresponding tab, just above the language name. If only one language is shown, you can add more languages in") }}: <button type="button" class="btn btn-primary btn-rounded btn-sm change-tab" href="#basic-tab-1" style="display: inline" >{{ _("Local languages") }}</button></p>
-                                                    <p>3. {{ _(" For new languages, the list of texts is shown in English. You will have to provide translations to other languages if this is not given.") }}.</p>
-                                                    <p>4. {{ _("Some fields may be prefilled, but you can edit the texts.") }}.</p>
+                                                    <p>3. {{ _(" For new languages, the list of texts is shown in English. You will have to provide translations to other languages if this is not given") }}.</p>
+                                                    <p>4. {{ _("Some fields may be prefilled, but you can edit the texts") }}.</p>
                                                     <br>
                                                     <div class="tabs-container">
                                                         <ul class="nav nav-tabs" role="tablist">

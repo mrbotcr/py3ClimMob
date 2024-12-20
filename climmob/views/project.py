@@ -44,6 +44,13 @@ from climmob.processes import (
     getTotalNumberOfProjectsInClimMob,
     getProjectsByUserThatRequireSetup,
     getListOfProjectTypes,
+    get_all_project_location,
+    get_all_unit_of_analysis_by_location,
+    get_all_objectives_by_location_and_unit_of_analysis,
+    add_project_location_unit_objective,
+    get_location_unit_of_analysis_by_combination,
+    get_location_unit_of_analysis_objectives_by_combination,
+    delete_all_project_location_unit_objective,
 )
 from climmob.views.classes import privateView
 
@@ -100,6 +107,8 @@ class newProject_view(privateView):
         dataworking["project_label_c"] = self._("Option C")
         dataworking["project_template"] = 0
         dataworking["usingTemplate"] = ""
+        dataworking["project_location"] = "-1"
+        dataworking["project_unit_of_analysis"] = "-1"
 
         if self.request.method == "POST":
             if "btn_addNewProject" in self.request.POST:
@@ -138,6 +147,15 @@ class newProject_view(privateView):
                 self.request, dataworking["project_registration_and_analysis"]
             ),
             "listOfLanguages": getListOfLanguagesByUser(self.request, self.user.login),
+            "listOfLocations": get_all_project_location(self.request),
+            "listOfUnitOfAnalysis": get_all_unit_of_analysis_by_location(
+                self.request, dataworking["project_location"]
+            ),
+            "listOfObjectives": get_all_objectives_by_location_and_unit_of_analysis(
+                self.request,
+                dataworking["project_location"],
+                dataworking["project_unit_of_analysis"],
+            ),
         }
 
 
@@ -148,10 +166,6 @@ def createProjectFunction(dataworking, error_summary, self):
     dataworking["project_lat"] = ""
     dataworking["project_lon"] = ""
 
-    dataworking["project_registration_and_analysis"] = int(
-        dataworking["project_registration_and_analysis"]
-    )
-
     dataworking["project_localvariety"] = 1
 
     if "project_template" in dataworking.keys():
@@ -161,6 +175,11 @@ def createProjectFunction(dataworking, error_summary, self):
             dataworking["project_template"] = 0
     else:
         dataworking["project_template"] = 0
+
+    if "project_type" in dataworking.keys() and dataworking["project_type"] == "on":
+        dataworking["project_type"] = 2
+    else:
+        dataworking["project_type"] = 1
 
     continue_add = True
 
@@ -197,6 +216,19 @@ def createProjectFunction(dataworking, error_summary, self):
                     exitsproject = projectInDatabase(
                         self.user.login, dataworking["project_cod"], self.request
                     )
+
+                    location_unit_of_analysis = (
+                        get_location_unit_of_analysis_by_combination(
+                            self.request,
+                            dataworking["project_location"],
+                            dataworking["project_unit_of_analysis"],
+                        )
+                    )
+
+                    dataworking[
+                        "project_registration_and_analysis"
+                    ] = location_unit_of_analysis["registration_and_analysis"]
+
                     if not exitsproject:
                         added, idormessage = addProject(dataworking, self.request)
                         if not added:
@@ -209,6 +241,28 @@ def createProjectFunction(dataworking, error_summary, self):
                                 datetime.datetime.now(),
                                 self.request,
                             )
+
+                            if isinstance(dataworking["project_objectives"], str):
+                                dataworking["project_objectives"] = [
+                                    dataworking["project_objectives"]
+                                ]
+
+                            for objective in dataworking["project_objectives"]:
+                                luoao_id = get_location_unit_of_analysis_objectives_by_combination(
+                                    self.request,
+                                    location_unit_of_analysis["pluoa_id"],
+                                    objective,
+                                )[
+                                    "pluoaobj_id"
+                                ]
+
+                                infoObj = {
+                                    "project_id": idormessage,
+                                    "pluoaobj_id": luoao_id,
+                                }
+                                add_project_location_unit_objective(
+                                    infoObj, self.request
+                                )
 
                             if "project_languages" in dataworking.keys():
                                 if dataworking["project_languages"]:
@@ -280,6 +334,11 @@ def createProjectFunction(dataworking, error_summary, self):
         dataworking["project_localvariety"] = "on"
     else:
         dataworking["project_localvariety"] = "off"
+
+    if int(dataworking["project_type"]) == 2:
+        dataworking["project_type"] = "on"
+    else:
+        dataworking["project_type"] = "off"
 
     return dataworking, error_summary, added
 
@@ -461,13 +520,14 @@ class modifyProject_view(privateView):
                 else:
                     data["project_template"] = 0
 
+                if "project_type" in data.keys() and data["project_type"] == "on":
+                    data["project_type"] = 2
+                else:
+                    data["project_type"] = 1
+
                 data["project_regstatus"] = cdata["project_regstatus"]
 
                 data["project_cod"] = activeProjectCod
-
-                data["project_registration_and_analysis"] = int(
-                    data["project_registration_and_analysis"]
-                )
 
                 if (
                     self.request.registry.settings.get("projects.limit", "false")
@@ -519,12 +579,53 @@ class modifyProject_view(privateView):
                                     self.request, self.user.login, activeProjectId, data
                                 )
                         if continue_modify:
+
+                            location_unit_of_analysis = (
+                                get_location_unit_of_analysis_by_combination(
+                                    self.request,
+                                    data["project_location"],
+                                    data["project_unit_of_analysis"],
+                                )
+                            )
+                            data[
+                                "project_registration_and_analysis"
+                            ] = location_unit_of_analysis["registration_and_analysis"]
+
                             modified, message = modifyProject(
                                 activeProjectId, data, self.request
                             )
                             if not modified:
                                 error_summary = {"dberror": message}
                             else:
+
+                                (
+                                    deleted,
+                                    message,
+                                ) = delete_all_project_location_unit_objective(
+                                    activeProjectId, self.request
+                                )
+
+                                if isinstance(data["project_objectives"], str):
+                                    data["project_objectives"] = [
+                                        data["project_objectives"]
+                                    ]
+
+                                for objective in data["project_objectives"]:
+                                    luoao_id = get_location_unit_of_analysis_objectives_by_combination(
+                                        self.request,
+                                        location_unit_of_analysis["pluoa_id"],
+                                        objective,
+                                    )[
+                                        "pluoaobj_id"
+                                    ]
+
+                                    infoObj = {
+                                        "project_id": activeProjectId,
+                                        "pluoaobj_id": luoao_id,
+                                    }
+                                    add_project_location_unit_objective(
+                                        infoObj, self.request
+                                    )
 
                                 deleted, message = deleteAllPrjLang(
                                     activeProjectId, self.request
@@ -631,6 +732,13 @@ class modifyProject_view(privateView):
                 self.request, data["project_registration_and_analysis"]
             ),
             "listOfLanguages": getListOfLanguagesByUser(self.request, self.user.login),
+            "listOfLocations": get_all_project_location(self.request),
+            "listOfUnitOfAnalysis": get_all_unit_of_analysis_by_location(
+                self.request, data["project_location"]
+            ),
+            "listOfObjectives": get_all_objectives_by_location_and_unit_of_analysis(
+                self.request, data["project_location"], data["project_unit_of_analysis"]
+            ),
         }
         for plugin in p.PluginImplementations(p.IProject):
             context = plugin.before_returning_project_context(self.request, context)
@@ -725,3 +833,32 @@ class CurationOfProjects_view(privateView):
             "listOfProjectTypes": getListOfProjectTypes(self.request),
             "error_summary": error_summary,
         }
+
+
+class GetUnitOfAnalysisByLocationView(privateView):
+    def processView(self):
+        self.returnRawViewResult = True
+        if self.request.method == "GET":
+            location_id = self.request.matchdict["locationid"]
+            unit_of_analysis = get_all_unit_of_analysis_by_location(
+                self.request, location_id
+            )
+
+            return unit_of_analysis
+
+        return {}
+
+
+class GetObjectivesByLocationAndUnitOfAnalysisView(privateView):
+    def processView(self):
+        self.returnRawViewResult = True
+        if self.request.method == "GET":
+            location_id = self.request.matchdict["locationid"]
+            unit_of_analysis = self.request.matchdict["unitofanalysisid"]
+            objectives = get_all_objectives_by_location_and_unit_of_analysis(
+                self.request, location_id, unit_of_analysis
+            )
+
+            return objectives
+
+        return {}

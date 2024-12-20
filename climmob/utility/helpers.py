@@ -4,8 +4,8 @@ import urllib
 import arrow
 import timeago
 import validators
-from pattern.en import pluralize as pluralize_en
-from pattern.es import pluralize as pluralize_es
+from pattern.text.en import pluralize as pluralize_en
+from pattern.text.es import pluralize as pluralize_es
 
 import climmob.plugins as p
 import datetime

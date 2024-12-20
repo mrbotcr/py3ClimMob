@@ -33,6 +33,9 @@ from climmob.processes.db.prjlang import getPrjLangInProject
 from climmob.processes.db.project_metadata_form import (
     knowIfTheProjectMetadataIsComplete,
 )
+from climmob.processes.db.project_location_unit_objective import (
+    get_project_objectives_by_project_id,
+)
 import climmob.plugins as p
 
 __all__ = [
@@ -357,6 +360,9 @@ def getProjectData(projectId, request):
     )
     if mappedData:
         mappedData["languages"] = getPrjLangInProject(projectId, request)
+        mappedData["objectives"] = get_project_objectives_by_project_id(
+            request, projectId
+        )
 
     return mappedData
 

@@ -29,6 +29,15 @@ from climmob.processes import (
     getProjectTemplates,
     addPrjLang,
     languageExistInI18nUser,
+    get_all_project_location,
+    get_location_by_id,
+    get_all_unit_of_analysis_by_location,
+    get_unit_of_analysis_by_id,
+    get_location_unit_of_analysis_by_combination,
+    get_all_objectives_by_location_and_unit_of_analysis,
+    get_location_unit_of_analysis_objectives_by_combination,
+    add_project_location_unit_objective,
+    delete_all_project_location_unit_objective,
 )
 from climmob.views.classes import apiView
 from climmob.views.project import functionCreateClone
@@ -90,6 +99,158 @@ class ReadListOfCountriesView(apiView):
             return response
 
 
+class ReadListOfLocationsView(apiView):
+    def processView(self):
+
+        if self.request.method == "GET":
+
+            response = Response(
+                status=200,
+                body=json.dumps(
+                    get_all_project_location(self.request, method_from_schema="API")
+                ),
+            )
+            return response
+        else:
+            response = Response(status=401, body=self._("Only accepts GET method."))
+            return response
+
+
+class ReadListOfUnitOfAnalysisView(apiView):
+    def processView(self):
+
+        if self.request.method == "GET":
+
+            obligatory = ["plocation_id"]
+
+            dataworking = json.loads(self.body)
+
+            if sorted(obligatory) == sorted(dataworking.keys()):
+
+                dataInParams = True
+                for key in dataworking.keys():
+                    if dataworking[key] == "":
+                        dataInParams = False
+
+                if dataInParams:
+
+                    if get_location_by_id(self.request, dataworking["plocation_id"]):
+
+                        response = Response(
+                            status=200,
+                            body=json.dumps(
+                                get_all_unit_of_analysis_by_location(
+                                    self.request,
+                                    dataworking["plocation_id"],
+                                    method_from_schema="API",
+                                )
+                            ),
+                        )
+                        return response
+                    else:
+                        response = Response(
+                            status=401,
+                            body=self._("The experimental side does not exist."),
+                        )
+                        return response
+                else:
+
+                    response = Response(
+                        status=401, body=self._("Not all parameters have data.")
+                    )
+                    return response
+            else:
+                response = Response(
+                    status=401,
+                    body=self._("Error in the JSON. Parameter plocation_id required."),
+                )
+                return response
+        else:
+            response = Response(status=401, body=self._("Only accepts GET method."))
+            return response
+
+
+class ReadListOfObjectivesView(apiView):
+    def processView(self):
+
+        if self.request.method == "GET":
+
+            obligatory = ["plocation_id", "puoa_id"]
+
+            dataworking = json.loads(self.body)
+
+            if sorted(obligatory) == sorted(dataworking.keys()):
+
+                dataInParams = True
+                for key in dataworking.keys():
+                    if dataworking[key] == "":
+                        dataInParams = False
+
+                if dataInParams:
+
+                    if get_location_by_id(self.request, dataworking["plocation_id"]):
+
+                        if get_unit_of_analysis_by_id(
+                            self.request, dataworking["puoa_id"]
+                        ):
+
+                            if get_location_unit_of_analysis_by_combination(
+                                self.request,
+                                dataworking["plocation_id"],
+                                dataworking["puoa_id"],
+                            ):
+
+                                response = Response(
+                                    status=200,
+                                    body=json.dumps(
+                                        get_all_objectives_by_location_and_unit_of_analysis(
+                                            self.request,
+                                            dataworking["plocation_id"],
+                                            dataworking["puoa_id"],
+                                            method_from_schema="API",
+                                        )
+                                    ),
+                                )
+                                return response
+                            else:
+                                response = Response(
+                                    status=401,
+                                    body=self._(
+                                        "This experiment side with this unit of analysis has no defined relationship."
+                                    ),
+                                )
+                                return response
+                        else:
+                            response = Response(
+                                status=401,
+                                body=self._("The unit of analysis does not exist."),
+                            )
+                            return response
+                    else:
+                        response = Response(
+                            status=401,
+                            body=self._("The experimental side does not exist."),
+                        )
+                        return response
+                else:
+
+                    response = Response(
+                        status=401, body=self._("Not all parameters have data.")
+                    )
+                    return response
+            else:
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "Error in the JSON. Parameter plocation_id and puoa_id required."
+                    ),
+                )
+                return response
+        else:
+            response = Response(status=401, body=self._("Only accepts GET method."))
+            return response
+
+
 class CreateProjectView(apiView):
     def processView(self):
 
@@ -102,9 +263,13 @@ class CreateProjectView(apiView):
                 "project_tags",
                 "project_pi",
                 "project_piemail",
+                "project_affiliation",
+                "project_type",
+                "project_location",
+                "project_unit_of_analysis",
+                "project_objectives",
                 "project_numobs",
                 "project_cnty",
-                "project_registration_and_analysis",
                 "project_label_a",
                 "project_label_b",
                 "project_label_c",
@@ -118,9 +283,13 @@ class CreateProjectView(apiView):
                 "project_tags",
                 "project_pi",
                 "project_piemail",
+                "project_affiliation",
+                "project_type",
+                "project_location",
+                "project_unit_of_analysis",
+                "project_objectives",
                 "project_numobs",
                 "project_cnty",
-                "project_registration_and_analysis",
                 "project_clone",
                 "project_label_a",
                 "project_label_b",
@@ -168,7 +337,11 @@ class CreateProjectView(apiView):
                         if dataworking[key] == "":
                             dataInParams = False
 
-                    if dataInParams and dataworking["project_languages"]:
+                    if (
+                        dataInParams
+                        and dataworking["project_languages"]
+                        and dataworking["project_objectives"]
+                    ):
 
                         for lang in dataworking["project_languages"]:
                             if not languageExistInI18nUser(
@@ -195,6 +368,96 @@ class CreateProjectView(apiView):
                                 ),
                             )
                             return response
+
+                        try:
+                            dataworking["project_type"] = int(
+                                dataworking["project_type"]
+                            )
+
+                            if dataworking["project_type"] not in [1, 2]:
+                                response = Response(
+                                    status=401,
+                                    body=self._(
+                                        "The parameter project_type must be [1: Real. 2: Training - This project was only used to explain the use of the ClimMob platform and was created as an example]."
+                                    ),
+                                )
+                                return response
+
+                        except:
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "The parameter project_type must be a number."
+                                ),
+                            )
+                            return response
+
+                        if not get_location_by_id(
+                            self.request, dataworking["project_location"]
+                        ):
+                            response = Response(
+                                status=401,
+                                body=self._("The project_location does not exist."),
+                            )
+                            return response
+
+                        if not get_unit_of_analysis_by_id(
+                            self.request, dataworking["project_unit_of_analysis"]
+                        ):
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "The project_unit_of_analysis does not exist."
+                                ),
+                            )
+                            return response
+
+                        location_unit_of_analysis = (
+                            get_location_unit_of_analysis_by_combination(
+                                self.request,
+                                dataworking["project_location"],
+                                dataworking["project_unit_of_analysis"],
+                            )
+                        )
+
+                        if not location_unit_of_analysis:
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "This project_location with this project_unit_of_analysis has no defined relationship."
+                                ),
+                            )
+                            return response
+
+                        dataworking[
+                            "project_registration_and_analysis"
+                        ] = location_unit_of_analysis["registration_and_analysis"]
+
+                        if not isinstance(dataworking["project_objectives"], list):
+                            response = Response(
+                                status=401,
+                                body=self._(
+                                    "project_objectives should be in list format."
+                                ),
+                            )
+                            return response
+                        else:
+                            for obj in dataworking["project_objectives"]:
+
+                                if not get_location_unit_of_analysis_objectives_by_combination(
+                                    self.request,
+                                    location_unit_of_analysis["pluoa_id"],
+                                    obj,
+                                ):
+                                    response = Response(
+                                        status=401,
+                                        body=self._(
+                                            "The objective {} does not correspond to the experiment site and the unit of analysis indicated.".format(
+                                                obj
+                                            )
+                                        ),
+                                    )
+                                    return response
 
                         if "project_template" in dataworking.keys():
                             existsTemplate = getProjectIsTemplate(
@@ -270,21 +533,6 @@ class CreateProjectView(apiView):
                                         dataworking["project_numobs"] > 0
                                         and dataworking["project_numcom"] > 0
                                     ):
-                                        if str(
-                                            dataworking[
-                                                "project_registration_and_analysis"
-                                            ]
-                                        ) not in [
-                                            "0",
-                                            "1",
-                                        ]:
-                                            response = Response(
-                                                status=401,
-                                                body=self._(
-                                                    "The possible values in the parameter 'project_registration_and_analysis' are: ['0':' Registration is done first, followed by one or more data collection moments (with different forms)','1':'Requires registering participants and immediately asking questions to analyze the information']"
-                                                ),
-                                            )
-                                            return response
 
                                         if str(
                                             dataworking["project_localvariety"]
@@ -325,6 +573,27 @@ class CreateProjectView(apiView):
                                             )
 
                                             if added:
+
+                                                for objective in dataworking[
+                                                    "project_objectives"
+                                                ]:
+                                                    luoao_id = get_location_unit_of_analysis_objectives_by_combination(
+                                                        self.request,
+                                                        location_unit_of_analysis[
+                                                            "pluoa_id"
+                                                        ],
+                                                        objective,
+                                                    )[
+                                                        "pluoaobj_id"
+                                                    ]
+
+                                                    infoObj = {
+                                                        "project_id": idormessage,
+                                                        "pluoaobj_id": luoao_id,
+                                                    }
+                                                    add_project_location_unit_objective(
+                                                        infoObj, self.request
+                                                    )
 
                                                 if (
                                                     "project_languages"
@@ -492,7 +761,7 @@ class CreateProjectView(apiView):
                     response = Response(
                         status=401,
                         body=self._(
-                            "You are trying to use a parameter that is not allowed.."
+                            "You are trying to use a parameter that is not allowed."
                         ),
                     )
                     return response
@@ -542,13 +811,17 @@ class updateProject_view(apiView):
                 "project_piemail",
                 "project_numobs",
                 "project_cnty",
-                "project_registration_and_analysis",
                 "user_name",
                 "project_numcom",
                 "project_label_a",
                 "project_label_b",
                 "project_label_c",
                 "project_template",
+                "project_affiliation",
+                "project_type",
+                "project_location",
+                "project_unit_of_analysis",
+                "project_objectives",
             ]
             obligatory = ["project_cod", "user_owner"]
 
@@ -605,6 +878,117 @@ class updateProject_view(apiView):
                                 return response
 
                             cdata = getProjectData(activeProjectId, self.request)
+
+                            if "project_location" in dataworking.keys():
+                                if (
+                                    not "project_unit_of_analysis" in dataworking.keys()
+                                    or not "project_objectives" in dataworking.keys()
+                                ):
+                                    response = Response(
+                                        status=401,
+                                        body=self._(
+                                            "To modify project_location, the parameters: 'project_unit_of_analysis', 'project_objectives' are required."
+                                        ),
+                                    )
+                                    return response
+
+                                if not get_location_by_id(
+                                    self.request, dataworking["project_location"]
+                                ):
+                                    response = Response(
+                                        status=401,
+                                        body=self._(
+                                            "The project_location does not exist."
+                                        ),
+                                    )
+                                    return response
+
+                            if "project_unit_of_analysis" in dataworking.keys():
+
+                                if not "project_objectives" in dataworking.keys():
+                                    response = Response(
+                                        status=401,
+                                        body=self._(
+                                            "To modify project_unit_of_analysis, the parameter: 'project_objectives' is required."
+                                        ),
+                                    )
+                                    return response
+
+                                if not get_unit_of_analysis_by_id(
+                                    self.request,
+                                    dataworking["project_unit_of_analysis"],
+                                ):
+                                    response = Response(
+                                        status=401,
+                                        body=self._(
+                                            "The project_unit_of_analysis does not exist."
+                                        ),
+                                    )
+                                    return response
+
+                            location_unit_of_analysis = None
+                            if "project_objectives" in dataworking.keys():
+
+                                if not "project_location" in dataworking.keys():
+                                    dataworking["project_location"] = cdata[
+                                        "project_location"
+                                    ]
+
+                                if not "project_unit_of_analysis" in dataworking.keys():
+                                    dataworking["project_unit_of_analysis"] = cdata[
+                                        "project_unit_of_analysis"
+                                    ]
+
+                                location_unit_of_analysis = (
+                                    get_location_unit_of_analysis_by_combination(
+                                        self.request,
+                                        dataworking["project_location"],
+                                        dataworking["project_unit_of_analysis"],
+                                    )
+                                )
+
+                                if not location_unit_of_analysis:
+                                    response = Response(
+                                        status=401,
+                                        body=self._(
+                                            "This project_location with this project_unit_of_analysis has no defined relationship."
+                                        ),
+                                    )
+                                    return response
+
+                                dataworking[
+                                    "project_registration_and_analysis"
+                                ] = location_unit_of_analysis[
+                                    "registration_and_analysis"
+                                ]
+
+                                if not isinstance(
+                                    dataworking["project_objectives"], list
+                                ):
+                                    response = Response(
+                                        status=401,
+                                        body=self._(
+                                            "project_objectives should be in list format."
+                                        ),
+                                    )
+                                    return response
+                                else:
+                                    for obj in dataworking["project_objectives"]:
+
+                                        if not get_location_unit_of_analysis_objectives_by_combination(
+                                            self.request,
+                                            location_unit_of_analysis["pluoa_id"],
+                                            obj,
+                                        ):
+                                            response = Response(
+                                                status=401,
+                                                body=self._(
+                                                    "The objective {} does not correspond to the experiment site and the unit of analysis indicated.".format(
+                                                        obj
+                                                    )
+                                                ),
+                                            )
+                                            return response
 
                             if "project_template" in dataworking.keys():
                                 existsTemplate = getProjectIsTemplate(
@@ -665,6 +1049,30 @@ class updateProject_view(apiView):
                                     )
                                     return response
 
+                            if "project_type" in dataworking.keys():
+                                try:
+                                    dataworking["project_type"] = int(
+                                        dataworking["project_type"]
+                                    )
+
+                                    if dataworking["project_type"] not in [1, 2]:
+                                        response = Response(
+                                            status=401,
+                                            body=self._(
+                                                "The parameter project_type must be [1: Real. 2: Training - This project was only used to explain the use of the ClimMob platform and was created as an example]."
+                                            ),
+                                        )
+                                        return response
+
+                                except:
+                                    response = Response(
+                                        status=401,
+                                        body=self._(
+                                            "The parameter project_type must be a number."
+                                        ),
+                                    )
+                                    return response
+
                             if cdata["project_regstatus"] != 0:
                                 dataworking["project_numobs"] = cdata["project_numobs"]
                                 dataworking["project_numcom"] = cdata["project_numcom"]
@@ -686,24 +1094,6 @@ class updateProject_view(apiView):
                                         activeProjectId,
                                         self.request,
                                     )
-
-                            if (
-                                "project_registration_and_analysis"
-                                in dataworking.keys()
-                            ):
-                                if str(
-                                    dataworking["project_registration_and_analysis"]
-                                ) not in [
-                                    "0",
-                                    "1",
-                                ]:
-                                    response = Response(
-                                        status=401,
-                                        body=self._(
-                                            "The possible values in the parameter 'project_registration_and_analysis' are: ['0':' Registration is done first, followed by one or more data collection moments (with different forms)','1':'Requires registering participants and immediately asking questions to analyze the information']"
-                                        ),
-                                    )
-                                    return response
 
                             if "project_localvariety" in dataworking.keys():
                                 if str(dataworking["project_localvariety"]) not in [
@@ -760,6 +1150,34 @@ class updateProject_view(apiView):
                                 )
 
                                 if modified:
+
+                                    if "project_objectives" in dataworking.keys():
+                                        (
+                                            deleted,
+                                            message,
+                                        ) = delete_all_project_location_unit_objective(
+                                            activeProjectId, self.request
+                                        )
+
+                                        for objective in dataworking[
+                                            "project_objectives"
+                                        ]:
+                                            luoao_id = get_location_unit_of_analysis_objectives_by_combination(
+                                                self.request,
+                                                location_unit_of_analysis["pluoa_id"],
+                                                objective,
+                                            )[
+                                                "pluoaobj_id"
+                                            ]
+
+                                            infoObj = {
+                                                "project_id": activeProjectId,
+                                                "pluoaobj_id": luoao_id,
+                                            }
+                                            add_project_location_unit_objective(
+                                                infoObj, self.request
+                                            )
+
                                     if (
                                         str(cdata["project_registration_and_analysis"])
                                         == "1"

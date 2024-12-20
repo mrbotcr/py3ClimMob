@@ -13,6 +13,7 @@ from sqlalchemy import (
     text,
     BLOB,
     JSON,
+    UniqueConstraint,
 )
 from sqlalchemy.dialects.mysql import MEDIUMTEXT
 from sqlalchemy.orm import relationship
@@ -709,6 +710,14 @@ class Project(Base):
         nullable=False,
         server_default=text("'0'"),
     )
+    project_location = Column(
+        ForeignKey("project_location.plocation_id"), nullable=True
+    )
+    project_unit_of_analysis = Column(
+        ForeignKey("project_unit_of_analysis.puoa_id"), nullable=True
+    )
+    project_affiliation = Column(Unicode(120), nullable=True)
+    climmob_analytics = Column(Integer, nullable=True)
 
     country = relationship("Country")
 
@@ -1328,17 +1337,19 @@ class I18nProjectObjectives(Base):
 class LocationUnitOfAnalysis(Base):
     __tablename__ = "location_unit_of_analysis"
 
-    pluoa_id = Column(Integer, autoincrement=True, nullable=False, unique=True)
+    __table_args__ = (
+        UniqueConstraint("plocation_id", "puoa_id", name="uq_plocation_id_puoa_id"),
+    )
+
+    pluoa_id = Column(Integer, autoincrement=True, nullable=False, primary_key=True)
 
     plocation_id = Column(
-        ForeignKey("project_location.plocation_id", ondelete="CASCADE"),
-        primary_key=True,
+        ForeignKey("project_location.plocation_id", ondelete="CASCADE")
     )
 
-    puoa_id = Column(
-        ForeignKey("project_unit_of_analysis.puoa_id", ondelete="CASCADE"),
-        primary_key=True,
-    )
+    puoa_id = Column(ForeignKey("project_unit_of_analysis.puoa_id", ondelete="CASCADE"))
+
+    registration_and_analysis = Column(Integer, server_default=text("'0'"))
 
     ProjectLocation = relationship("ProjectLocation")
     ProjectUnitOfAnalysis = relationship("ProjectUnitOfAnalysis")
@@ -1397,3 +1408,50 @@ class ProjectMetadataForm(Base):
 
     Project = relationship("Project")
     MetadataForm = relationship("MetadataForm", backref="project_metadata_form")
+
+
+class LocationUnitOfAnalysisObjectives(Base):
+    __tablename__ = "location_unit_of_analysis_objectives"
+
+    __table_args__ = (
+        UniqueConstraint("pluoa_id", "pobjective_id", name="uq_pluoa_id_pobjective_id"),
+    )
+
+    pluoaobj_id = Column(Integer, autoincrement=True, nullable=False, primary_key=True)
+
+    pluoa_id = Column(
+        ForeignKey("location_unit_of_analysis.pluoa_id", ondelete="CASCADE")
+    )
+
+    pobjective_id = Column(
+        ForeignKey("project_objective.pobjective_id", ondelete="CASCADE")
+    )
+
+    LocationUnitOfAnalysis = relationship("LocationUnitOfAnalysis")
+    ProjectObjectives = relationship("ProjectObjectives")
+
+
+class ProjectLocaUnitObjective(Base):
+    __tablename__ = "project_location_unit_objective"
+
+    __table_args__ = (
+        UniqueConstraint("project_id", "pluoaobj_id", name="uq_project_id_pluoaobj_id"),
+    )
+
+    plocunitobj_id = Column(
+        Integer, autoincrement=True, nullable=False, primary_key=True
+    )
+
+    project_id = Column(
+        ForeignKey("project.project_id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    pluoaobj_id = Column(
+        ForeignKey(
+            "location_unit_of_analysis_objectives.pluoaobj_id", ondelete="CASCADE"
+        ),
+        nullable=False,
+    )
+
+    Project = relationship("Project")
+    LocationUnitOfAnalysisObjectives = relationship("LocationUnitOfAnalysisObjectives")
