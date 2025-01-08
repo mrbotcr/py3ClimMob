@@ -61,6 +61,63 @@
             {% endblock eprofilenotifications %}
 
             <div class="ibox float-e-margins">
+                {% block tfatitle %}
+                <div class="ibox-title">
+                    <h5>{{ _("Two-Factor Authentication (2FA)") }}</h5>
+                </div>
+                {% endblock tfatitle %}
+                <div class="ibox-content">
+                    <form method="post" class="form-horizontal" action="{{ request.path }}">
+                        <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">{{ _("2FA Method") }}</label>
+                            <div class="col-sm-10">
+                                <select id="two_fa_method" name="two_fa_method" class="form-control" required="">
+                                    <option value="app" {% if data.two_fa_method == "app" %}selected{% endif %}>
+                                        {{ _("Authenticator App") }}
+                                    </option>
+                                    <option value="email" {% if data.two_fa_method == "email" %}selected{% endif %}>
+                                        {{ _("Email") }}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        {% if otp_qr_code %}
+                        <div class="form-group">
+                            <label class="control-label">{{ _("Scan QR Code") }}</label>
+                            <div class="text-left">
+                                <img src="{{ otp_qr_code }}" alt="QR Code" class="img-fluid" style="max-width: 300px;" />
+                                <p>{{ _("Scan this code with your authenticator app.") }}</p>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        {% endif %}
+
+                        {% if one_time_codes %}
+                        <div class="alert alert-info">
+                            <h5>{{ _("Your One-Time Codes") }}</h5>
+                            <p>{{ _("Use these codes if you cannot access your authenticator app or email OTP. Keep them in a safe place!") }}</p>
+                            <ul>
+                                {% for otc in one_time_codes %}
+                                <li>{{ otc.code }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+
+                        <div class="form-group">
+                            <button type="submit" name="generate" id="generate" class="btn btn-primary block full-width m-b">
+                                {{ _("Generate 2FA") }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="ibox float-e-margins">
                 {% block eprofiletitle %}
                     <div class="ibox-title">
                         <h5>{{ _("Edit profile information") }}</h5>
@@ -165,6 +222,8 @@
                     {% endblock chgpasscontent %}
                 </div>
             </div>
+
+
 
         </div>
     </div>

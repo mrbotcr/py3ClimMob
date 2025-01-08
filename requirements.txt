@@ -115,6 +115,7 @@ pyramid-fanstatic==0.6
 pyramid-jinja2==2.10
 pyramid-mako==1.1.0
 pyramid-tm==2.5
+pyotp==2.9.0
 pyTelegramBotAPI==4.9.0
 pytest==7.2.0
 pytest-cov==4.0.0

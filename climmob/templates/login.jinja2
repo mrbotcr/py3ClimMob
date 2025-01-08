@@ -59,9 +59,10 @@
                             <input type="password" name="passwd" class="form-control" placeholder="{{ _("Password") }}" required="" autocomplete="off">
                         </div>
                         <input type="hidden" name="next" value="{{ next }}">
-                        <button type="submit" name="submit" class="btn btn-primary block full-width m-b">{{ _("Login") }}</button>
+                        <button type="button" id="loginButton" class="btn btn-primary block full-width m-b">{{ _("Login") }}</button>
 
                         <a href="{{ request.route_url('recover') }}"><small>{{ _("Forgot username or password?") }}</small></a>
+
 
                         {% if request.registry.settings.get('auth.register_users_via_web', "true") == 'true'%}
 
@@ -103,20 +104,221 @@
         </div>
     {% endif %}
 
-    <script>
 
-        {% if ask_for_cookies %}
-            $(document).ready(function() {
-                myVar = setTimeout(showCookieFunc, 500);
-                function showCookieFunc() {
-                    $('#cookieModal').modal('show');
+    <div class="modal inmodal" id="authenticatorModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <i class="fa fa-key modal-icon"></i>
+                    <h4 class="modal-title">{{ _('Autenticador') }}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Por favor, ingrese el código generado por su aplicación de autenticación:</p>
+                    <input type="text" id="authenticatorCode" class="form-control" placeholder="Código de la aplicación">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="verifyAuthenticatorCode">Verificar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal inmodal" id="emailModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <i class="fa fa-envelope modal-icon"></i>
+                    <h4 class="modal-title">{{ _('Enviar código por correo') }}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Se ha enviado un código a su correo electrónico registrado. Por favor, revíselo e ingréselo a continuación:</p>
+                    <input type="text" id="emailCode" class="form-control" placeholder="Código recibido por correo">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="verifyEmailCode">Verificar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal inmodal" id="securityModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <i class="fa fa-lock modal-icon"></i>
+                    <h4 class="modal-title">{{ _('Código de seguridad almacenado') }}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Ingrese uno de sus códigos de seguridad almacenados:</p>
+                    <input type="text" id="securityCode" class="form-control" placeholder="Código de seguridad">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="verifySecurityCode">Verificar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal inmodal" id="errorModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <i class="fa fa-exclamation-circle modal-icon text-danger"></i>
+                    <h4 class="modal-title">{{ _('Error') }}</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="errorModalMessage">{{ _('Error!') }}</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ _('Cerrar') }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<!-- ... Código anterior ... -->
+<script>
+    $(document).ready(function () {
+        let lastModal = null;
+
+        $('#loginButton').on('click', function (event) {
+            event.preventDefault();
+
+            const username = $('input[name="login"]').val();
+            const password = $('input[name="passwd"]').val();
+
+            if (!username || !password) {
+                showErrorModal('Por favor, ingrese su usuario y contraseña.');
+                return;
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '{{ request.route_url("login") }}',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                data: {
+                    login: username,
+                    passwd: password,
+                    submit: true
+                },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        // Credenciales válidas
+                        // Revisamos si viene two_fa_method en la respuesta
+                        if (response.two_fa_method === 'app') {
+                            // Mostrar modal de autenticador
+                            $('#authenticatorModal').modal('show');
+                        } else if (response.two_fa_method === 'email') {
+                            // El OTP ya fue enviado, mostrar modal de email
+                            $('#emailModal').modal('show');
+                        } else {
+                            // Sin 2FA, redirigir directamente
+                            location.href = response.redirect_url;
+                        }
+                    } else {
+                        // Error en credenciales
+                        const errorMsg = response.error || 'Error con las credenciales.';
+                        showErrorModal(errorMsg);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log("Raw response: ", xhr.responseText);
+                    try {
+                        const resp = JSON.parse(xhr.responseText);
+                        showErrorModal(resp.error || 'Error desconocido en el servidor.');
+                    } catch (e) {
+                        showErrorModal('Hubo un error al procesar su solicitud. Intente más tarde.');
+                    }
                 }
             });
-        {% endif %}
+        });
 
-        {% block loginscript %}
-        {% endblock loginscript %}
-    </script>
+        $('#verifyAuthenticatorCode').on('click', function () {
+            const code = $('#authenticatorCode').val();
+            if (!code) {
+                showErrorModal('Por favor, ingrese el código.', '#authenticatorModal');
+                return;
+            }
+            sendCode('authenticator', code);
+        });
+
+        $('#verifyEmailCode').on('click', function () {
+            const code = $('#emailCode').val();
+            if (!code) {
+                showErrorModal('Por favor, ingrese el código.', '#emailModal');
+                return;
+            }
+            sendCode('email', code);
+        });
+
+        $('#verifySecurityCode').on('click', function () {
+            const code = $('#securityCode').val();
+            if (!code) {
+                showErrorModal('Por favor, ingrese el código.', '#securityModal');
+                return;
+            }
+            sendCode('security_code', code);
+        });
+
+        function sendCode(authMethod, code) {
+            const modalMapping = {
+                authenticator: '#authenticatorModal',
+                email: '#emailModal',
+                security_code: '#securityModal'
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '{{ request.route_url("login") }}',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                data: {
+                    auth_method: authMethod,
+                    code: code
+                },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        location.href = response.redirect_url;
+                    } else {
+                        showErrorModal('Código incorrecto. Por favor, intente de nuevo.', modalMapping[authMethod]);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    showErrorModal('Hubo un error en la verificación. Intente más tarde.', '#authenticatorModal');
+                }
+            });
+        }
+
+        function showErrorModal(message, currentModal) {
+            if (currentModal) {
+                lastModal = currentModal;
+                $(currentModal).modal('hide');
+            }
+
+            $('#errorModalMessage').text(message);
+            $('#errorModal').modal('show');
+        }
+
+        $('#errorModal').on('hidden.bs.modal', function() {
+           if (lastModal) {
+               $(lastModal).modal('show');
+               lastModal = null;
+           }
+        });
+    });
+</script>
+
 
 {% endblock loginbody %}
 </body>

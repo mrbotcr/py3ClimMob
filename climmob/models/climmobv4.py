@@ -1007,6 +1007,18 @@ class User(Base):
     country = relationship("Country")
     sector = relationship("Sector")
 
+    secrets = relationship(
+        "UserSecret",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        lazy="dynamic",
+    )
+    one_time_codes = relationship(
+        "UserOneTimeCode",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+
 
 class RegistryJsonLog(Base):
     __tablename__ = "registry_jsonlog"
@@ -1397,3 +1409,44 @@ class ProjectMetadataForm(Base):
 
     Project = relationship("Project")
     MetadataForm = relationship("MetadataForm", backref="project_metadata_form")
+
+
+class UserSecret(Base):
+    __tablename__ = "user_secret"
+
+    user_name = Column(
+        ForeignKey("user.user_name", ondelete="CASCADE"),
+        primary_key=True,
+        nullable=False,
+    )
+    secret = Column(Unicode(120), nullable=False)
+    two_fa_method = Column(Unicode(10), nullable=False)  # Campo para el método
+    created_at = Column(DateTime, default=datetime.datetime.now, nullable=False)
+    updated_at = Column(
+        DateTime,
+        default=datetime.datetime.now,
+        onupdate=datetime.datetime.now,
+        nullable=False,
+    )
+
+    user = relationship("User", back_populates="secrets")
+
+
+class UserOneTimeCode(Base):
+    __tablename__ = "user_one_time_code"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_name = Column(
+        ForeignKey("user.user_name", ondelete="CASCADE"),
+        nullable=False,
+    )
+    code = Column(Unicode(512), nullable=False)
+    created_at = Column(DateTime, default=datetime.datetime.now, nullable=False)
+    updated_at = Column(
+        DateTime,
+        default=datetime.datetime.now,
+        onupdate=datetime.datetime.now,
+        nullable=False,
+    )
+
+    user = relationship("User", back_populates="one_time_codes")

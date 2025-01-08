@@ -150,7 +150,7 @@ from climmob.views.basic_views import (
     home_view,
     HealthView,
     notfound_view,
-    login_view,
+    LoginView,
     register_view,
     logout_view,
     RecoverPasswordView,
@@ -158,9 +158,11 @@ from climmob.views.basic_views import (
     StoreCookieView,
     TermsView,
     PrivacyView,
+    TwoFactorAuthenticationView,
 )
 from climmob.views.cleanErrorLogs import CleanErrorLogsView
 from climmob.views.cloneProjects.cloneProjects import cloneProjects_view
+from climmob.views.configure_2fa_view import Force2FAView, setup2FA_view
 from climmob.views.dashboard import dashboard_view, projectInformation_view
 from climmob.views.editData import (
     editDataView,
@@ -369,7 +371,7 @@ def loadRoutes(config):
         {
             "name": "login",
             "path": "/login",
-            "view": login_view,
+            "view": LoginView,
             "renderer": "login.jinja2",
         }
     )
@@ -395,6 +397,22 @@ def loadRoutes(config):
         }
     )
     routes.append(
+        {
+            "name": "tfa",
+            "path": "/tfa",
+            "view": TwoFactorAuthenticationView,
+            "renderer": "tfa.jinja2",
+        }
+    )
+    routes.append(
+        addRoute(
+            "generate_opt",
+            "/generate/{reset_key}/opt",
+            TwoFactorAuthenticationView,
+            "generate_opt.jinja2",
+        )
+    )
+    routes.append(
         addRoute(
             "reset_password",
             "/reset/{reset_key}/password",
@@ -409,6 +427,14 @@ def loadRoutes(config):
             "path": "/projects",
             "view": dashboard_view,
             "renderer": "dashboard/dashboard.jinja2",
+        }
+    )
+    routes.append(
+        {
+            "name": "setup2fa",
+            "path": "/setup2fa",
+            "view": setup2FA_view,
+            "renderer": "setup2fa.jinja2",
         }
     )
     routes.append(
