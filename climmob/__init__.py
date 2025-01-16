@@ -1,6 +1,7 @@
 import os
 import sys
 import climmob.plugins as p
+from climmob.views.basic_views import LoginView
 
 if (
     os.environ.get("CLIMMOB_PYTEST_RUNNING", "false") == "false"
@@ -21,6 +22,8 @@ from pyramid_authstack import AuthenticationStackPolicy
 
 import sentry_sdk
 from sentry_sdk.integrations.pyramid import PyramidIntegration
+from climmob.middleware.tfa_middleware import two_factor_middleware
+import pyramid.tweens
 
 
 def main(global_config, **settings):
@@ -85,5 +88,9 @@ def main(global_config, **settings):
             # We recommend adjusting this value in production.
             traces_sample_rate=1.0,
         )
+
+    config.add_tween(
+        "climmob.utility.middleware.two_factor_middleware", under=pyramid.tweens.EXCVIEW
+    )
 
     return config.make_wsgi_app()

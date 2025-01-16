@@ -139,7 +139,6 @@ class LoginView(publicView):
             auth_method = self.request.POST.get("auth_method")
             code = self.request.POST.get("code", "")
 
-            # Primero manejamos la fase de credenciales (sin 2FA)
             if submit:
                 login = self.request.POST.get("login", "")
                 passwd = self.request.POST.get("passwd", "")
@@ -149,45 +148,39 @@ class LoginView(publicView):
                     self.request.session["pending_user"] = login
 
                     two_fa_method = self.get_two_fa_method(login)
-                    if not two_fa_method:
-                        # Sin 2FA configurado, inicio de sesión directo
+
+                    tfa = self.request.registry.settings.get(
+                        "twofactorauth.active", "false"
+                    )
+
+                    if not two_fa_method or tfa == "false":
                         return self.handle_successful_login(next_url)
                     else:
-                        # Hay 2FA configurado
                         if two_fa_method == "app":
-                            # Devuelve success para que el frontend muestre el modal de autenticador
                             return Response(
                                 json.dumps({"success": True, "two_fa_method": "app"}),
                                 content_type="application/json; charset=UTF-8",
                             )
                         elif two_fa_method == "email":
-                            # Enviar OTP por email y luego mostrar modal de email
-                            otp_sent_response = (
-                                self.send_otp()
-                            )  # Retorna un Response JSON
-                            # En otp_sent_response ya enviamos el JSON
+                            otp_sent_response = self.send_otp()
                             return otp_sent_response
                 else:
-                    # Credenciales inválidas
                     return Response(
                         json.dumps({"success": False, "error": "Invalid credentials"}),
                         content_type="application/json; charset=UTF-8",
                     )
 
-            # Si no es submit, significa que estamos en la fase de validación del segundo factor
             if auth_method and code:
-                # Validar OTP según el método
                 success = self.validate_otp(auth_method, code)
                 if success:
                     return self.handle_successful_login(next_url)
                 else:
                     return Response(
-                        json.dumps({"success": False, "error": "Invalid OTP"}),
+                        json.dumps({"success": False, "error": "Invalid code"}),
                         content_type="application/json; charset=UTF-8",
                     )
 
             if auth_method == "email" and not code:
-                # Puede darse el caso de que se solicite re-envío del OTP (opcional)
                 return self.send_otp()
 
             return Response(
@@ -217,28 +210,30 @@ class LoginView(publicView):
         if has_secret and has_codes:
             user_secret = secret_response["data"]
             two_fa_method = getattr(user_secret, "two_fa_method", None)
-            return two_fa_method  # 'app' o 'email'
+            return two_fa_method
         elif not has_secret and not has_codes:
             return None
         else:
-            # Inconsistencia (log error)
             log.error(f"Inconsistent 2FA data for user: {login}")
             return None
 
     def validate_otp(self, method, code):
-        if method == "authenticator":
-            return self.verify_authenticator(code)
-        elif method == "email":
-            return self.verify_email_code(code)
-        elif method == "security_code":
-            return self.verify_security_code(code)
+        if method in ["authenticator", "email"]:
+            otp_valid = (
+                self.verify_authenticator(code)
+                if method == "authenticator"
+                else self.verify_email_code(code)
+            )
+            if otp_valid:
+                return True
+
+        security_code_valid = self.verify_security_code(code)
+        if security_code_valid:
+            return True
+
         return False
 
     def send_otp(self):
-        """
-        Envía el OTP por email al usuario si el 2FA es por email.
-        Retorna un Response JSON.
-        """
         login = self.request.session.get("pending_user")
         if not login:
             return Response(
@@ -304,15 +299,26 @@ class LoginView(publicView):
         if login:
             login_data = {"login": login, "group": "mainApp"}
             headers = remember(self.request, str(login_data), policies=["main"])
+
+            two_fa_method = self.get_two_fa_method(login)
+
+            tfa = self.request.registry.settings.get("twofactorauth.active", "false")
+
             next_url_2 = self.request.params.get("next") or self.request.route_url(
-                "setup2fa"
+                "dashboard"
             )
+
+            if tfa == "true":
+                if not two_fa_method:
+                    next_url_2 = self.request.route_url("setup2fa")
+
             response = Response(
                 json.dumps({"success": True, "redirect_url": next_url_2}),
                 content_type="application/json; charset=UTF-8",
             )
             response.headerlist.extend(headers)
             return response
+
         return Response(
             json.dumps({"success": False, "error": "Login session not found"}),
             content_type="application/json; charset=UTF-8",

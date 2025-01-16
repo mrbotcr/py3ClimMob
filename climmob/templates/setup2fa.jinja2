@@ -14,11 +14,11 @@
 <body>
     <div id="wrapper">
         <!-- Modal para 2FA -->
-        <div class="modal inmodal" id="twoFactorModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal inmodal" id="twoFactorModal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content animated fadeIn">
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <button type="button" class="close" onclick="redirectToLogin()">
                             <span aria-hidden="true">&times;</span>
                         </button>
                         <h4 class="modal-title">{{ _("Setup Two-Factor Authentication") }}</h4>
@@ -77,7 +77,7 @@
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-white" data-dismiss="modal" onclick="redirectToLogin()">{{ _("Close") }}</button>
+                        <button type="button" class="btn btn-white" onclick="redirectToLogin()">{{ _("Close") }}</button>
                     </div>
                 </div>
             </div>
@@ -85,13 +85,17 @@
         <!-- Fin del modal -->
     </div>
 
-    <!-- Scripts -->
     {% jsresource request,'coreresources','sweet' %}
     <script>
         $(document).ready(function () {
-            // Mostrar modal al cargar la página
+            $('#twoFactorModal').modal({
+                backdrop: 'static',
+                keyboard: false
+            });
+
             $('#twoFactorModal').modal('show');
         });
+
         function redirectToLogin() {
             window.location.href = "{{ request.route_url('login') }}";
         }

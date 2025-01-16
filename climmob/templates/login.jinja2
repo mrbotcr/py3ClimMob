@@ -106,15 +106,19 @@
 
 
     <div class="modal inmodal" id="authenticatorModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-sm">
             <div class="modal-content">
                 <div class="modal-header">
                     <i class="fa fa-key modal-icon"></i>
                     <h4 class="modal-title">{{ _('Autenticador') }}</h4>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body text-center">
                     <p>Por favor, ingrese el código generado por su aplicación de autenticación:</p>
-                    <input type="text" id="authenticatorCode" class="form-control" placeholder="Código de la aplicación">
+                    <div class="row justify-content-center">
+                        <div class="col-6">
+                            <input type="text" id="authenticatorCode" class="form-control" placeholder="Código de la aplicación">
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
@@ -125,15 +129,19 @@
     </div>
 
     <div class="modal inmodal" id="emailModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-sm">
             <div class="modal-content">
                 <div class="modal-header">
                     <i class="fa fa-envelope modal-icon"></i>
                     <h4 class="modal-title">{{ _('Enviar código por correo') }}</h4>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body text-center">
                     <p>Se ha enviado un código a su correo electrónico registrado. Por favor, revíselo e ingréselo a continuación:</p>
-                    <input type="text" id="emailCode" class="form-control" placeholder="Código recibido por correo">
+                    <div class="row justify-content-center">
+                        <div class="col-6">
+                            <input type="text" id="emailCode" class="w-50 mx-auto" placeholder="Código recibido por correo">
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
@@ -144,7 +152,7 @@
     </div>
 
     <div class="modal inmodal" id="securityModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-sm">
             <div class="modal-content">
                 <div class="modal-header">
                     <i class="fa fa-lock modal-icon"></i>
