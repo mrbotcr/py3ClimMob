@@ -49,7 +49,7 @@ def update_user_secret(
             if new_secret:
                 user_secret.secret = new_secret
             if new_two_fa_method:
-                user_secret.two_fa_method = new_two_fa_method  # Actualizar el método
+                user_secret.two_fa_method = new_two_fa_method
             user_secret.updated_at = datetime.now()
             return {"success": True, "message": "Secret updated successfully"}
         return {"success": False, "message": "User secret not found"}

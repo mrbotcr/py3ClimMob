@@ -46,6 +46,8 @@ from climmob.utility.helpers import readble_date
 from pyramid.response import Response
 import json
 
+from climmob.utility.send_email import send_email
+
 log = logging.getLogger("climmob")
 
 
@@ -166,7 +168,9 @@ class LoginView(publicView):
                             return otp_sent_response
                 else:
                     return Response(
-                        json.dumps({"success": False, "error": "Invalid credentials"}),
+                        json.dumps(
+                            {"success": False, "error": self._("Invalid credentials")}
+                        ),
                         content_type="application/json; charset=UTF-8",
                     )
 
@@ -176,7 +180,7 @@ class LoginView(publicView):
                     return self.handle_successful_login(next_url)
                 else:
                     return Response(
-                        json.dumps({"success": False, "error": "Invalid code"}),
+                        json.dumps({"success": False, "error": self._("Invalid code")}),
                         content_type="application/json; charset=UTF-8",
                     )
 
@@ -184,7 +188,7 @@ class LoginView(publicView):
                 return self.send_otp()
 
             return Response(
-                json.dumps({"success": False, "error": "No action taken"}),
+                json.dumps({"success": False, "error": self._("No action taken")}),
                 content_type="application/json; charset=UTF-8",
             )
 
@@ -238,7 +242,10 @@ class LoginView(publicView):
         if not login:
             return Response(
                 json.dumps(
-                    {"success": False, "message": "No pending user session found"}
+                    {
+                        "success": False,
+                        "message": self._("No pending user session found"),
+                    }
                 ),
                 content_type="application/json; charset=UTF-8",
             )
@@ -246,7 +253,7 @@ class LoginView(publicView):
         user = getUserData(login, self.request)
         if not user:
             return Response(
-                json.dumps({"success": False, "message": "User not found"}),
+                json.dumps({"success": False, "message": self._("User not found")}),
                 content_type="application/json; charset=UTF-8",
             )
 
@@ -265,7 +272,7 @@ class LoginView(publicView):
                 {
                     "success": True,
                     "two_fa_method": "email",
-                    "message": "OTP sent successfully",
+                    "message": self._("OTP sent successfully"),
                 }
             ),
             content_type="application/json; charset=UTF-8",
@@ -320,7 +327,7 @@ class LoginView(publicView):
             return response
 
         return Response(
-            json.dumps({"success": False, "error": "Login session not found"}),
+            json.dumps({"success": False, "error": self._("Login session not found")}),
             content_type="application/json; charset=UTF-8",
         )
 
@@ -328,7 +335,7 @@ class LoginView(publicView):
         email_from = self.request.registry.settings.get("email.from", None)
         if email_from is None:
             log.error("Email settings are not configured. Cannot send OTP.")
-            return {"success": False, "message": "Email configuration missing"}
+            return {"success": False, "message": self._("Email configuration missing")}
 
         subject = "ClimMob - Your OTP Code"
         body = f"""
@@ -340,58 +347,21 @@ class LoginView(publicView):
         """
 
         try:
-            msg = MIMEText(body, "plain", "utf-8")
-            msg["Subject"] = Header(subject, "utf-8")
-            msg["From"] = email_from
-            msg["To"] = email_to
-
-            smtp_server = self.request.registry.settings.get(
-                "email.server", "localhost"
+            send_email(
+                self,
+                body=body,
+                subject=subject,
+                target_name=user.fullName,
+                target_email=email_to,
+                mail_from=email_from,
             )
-            smtp_user = self.request.registry.settings.get("email.user")
-            smtp_password = self.request.registry.settings.get("email.password")
-
-            with smtplib.SMTP(smtp_server, 587) as server:
-                server.starttls()
-                server.login(smtp_user, smtp_password)
-                server.sendmail(email_from, [email_to], msg.as_string())
-
-            return {"success": True, "message": "OTP sent successfully"}
+            return {"success": True, "message": self._("OTP sent successfully")}
         except Exception as e:
-            log.error(f"Error sending email: {str(e)}")
+            log.error(f"Error sending OTP email: {str(e)}")
             return {"success": False, "message": str(e)}
 
 
 class RecoverPasswordView(publicView):
-    def send_password_by_email(
-        self, body, subject, target_name, target_email, mail_from
-    ):
-        msg = MIMEText(body.encode("utf-8"), "plain", "utf-8")
-        ssubject = subject
-        subject = Header(ssubject.encode("utf-8"), "utf-8")
-        msg["Subject"] = subject
-        msg["From"] = "{} <{}>".format("ClimMob", mail_from)
-        recipient = "{} <{}>".format(target_name.encode("utf-8"), target_email)
-        msg["To"] = Header(recipient, "utf-8")
-        msg["Date"] = utils.formatdate(time())
-        try:
-            smtp_server = self.request.registry.settings.get(
-                "email.server", "localhost"
-            )
-            smtp_user = self.request.registry.settings.get("email.user")
-            smtp_password = self.request.registry.settings.get("email.password")
-
-            server = smtplib.SMTP(smtp_server, 587)
-            server.ehlo()
-            server.starttls()
-            server.ehlo()
-            server.login(smtp_user, smtp_password)
-            server.sendmail(mail_from, [target_email], msg.as_string())
-            server.quit()
-
-        except Exception as e:
-            print(str(e))
-
     def send_password_email(self, email_to, reset_token, reset_key, user_dict):
         jinjaEnv.add_extension(ext.i18n)
         jinjaEnv.add_extension(extendThis)
@@ -417,7 +387,8 @@ class RecoverPasswordView(publicView):
             },
         )
 
-        self.send_password_by_email(
+        send_email(
+            self,
             text,
             self._("ClimMob - Password reset request"),
             user_dict.fullName,
@@ -427,7 +398,6 @@ class RecoverPasswordView(publicView):
 
     def processView(self):
 
-        # If we logged in then go to dashboard
         policy = get_policy(self.request, "main")
         login = policy.authenticated_userid(self.request)
         currentUser = getUserData(login, self.request)
@@ -626,97 +596,9 @@ class register_view(publicView):
                         mapping={"user": message},
                     )
 
-        # return {'data': self.decodeDict(data), 'error_summary': error_summary,'countries':getCountryList(self.request),'sectors':getSectorList(self.request)}
         return {
             "data": data,
             "error_summary": error_summary,
             "countries": getCountryList(self.request),
             "sectors": getSectorList(self.request),
         }
-
-
-class TwoFactorAuthenticationView(publicView):
-    def send_otp_by_email(self, body, target_name, target_email, mail_from):
-        msg = MIMEText(body.encode("utf-8"), "plain", "utf-8")
-        ssubject = self._("ClimMob - Password reset request")
-        subject = Header(ssubject.encode("utf-8"), "utf-8")
-        msg["Subject"] = subject
-        msg["From"] = "{} <{}>".format("ClimMob", mail_from)
-        recipient = "{} <{}>".format(target_name.encode("utf-8"), target_email)
-        msg["To"] = Header(recipient, "utf-8")
-        msg["Date"] = utils.formatdate(time())
-        try:
-            smtp_server = self.request.registry.settings.get(
-                "email.server", "localhost"
-            )
-            smtp_user = self.request.registry.settings.get("email.user")
-            smtp_password = self.request.registry.settings.get("email.password")
-
-            server = smtplib.SMTP(smtp_server, 587)
-            server.ehlo()
-            server.starttls()
-            server.ehlo()
-            server.login(smtp_user, smtp_password)
-            server.sendmail(mail_from, [target_email], msg.as_string())
-            server.quit()
-
-        except Exception as e:
-            print(str(e))
-
-    def send_otp_email(self, email_to, generated_opt, user_dict):
-        jinjaEnv.add_extension(ext.i18n)
-        jinjaEnv.add_extension(extendThis)
-        _ = self.request.translate
-        email_from = self.request.registry.settings.get("email.from", None)
-        if email_from is None:
-            log.error(
-                "ClimMob has no email settings in place. Email service is disabled."
-            )
-            return False
-        if email_from == "":
-            return False
-        date_string = readble_date(datetime.datetime.now(), self.request.locale_name)
-        reset_url = self.request.route_url("generate_opt", reset_key=generated_opt)
-        text = render_template(
-            "email/recover_email.jinja2",
-            {
-                "recovery_date": date_string,
-                "generated_opt": generated_opt,
-                "user_dict": user_dict,
-                "reset_url": reset_url,
-                "_": _,
-            },
-        )
-        self.send_otp_by_email(text, user_dict.fullName, email_to, email_from)
-
-    def processView(self):
-
-        # If we logged in then go to dashboard
-        policy = get_policy(self.request, "main")
-        login = policy.authenticated_userid(self.request)
-        currentUser = getUserData(login, self.request)
-        if currentUser is not None:
-            raise HTTPNotFound()
-
-        error_summary = {}
-        if "generate" in self.request.POST:
-            email = self.request.POST.get("user_email", None)
-            if email is not None:
-                user = getUserEmail(email, self.request)
-                if user is not None:
-
-                    generated_opt = generateOPTCode()
-
-                    self.send_otp_email(user.email, generated_opt, user)
-
-                    self.request.session.flash(
-                        self._("OTP sent successfully to your email."), "success"
-                    )
-                else:
-                    error_summary["email"] = self._(
-                        "Cannot find an user with such email address"
-                    )
-            else:
-                error_summary["email"] = self._("You need to provide an email address")
-
-        return {"error_summary": error_summary}

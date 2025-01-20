@@ -16,6 +16,8 @@ def two_factor_middleware(handler, registry):
         excluded_paths = [
             "/login",
             "/setup2fa",
+            "/register",
+            "/recover",
         ]
 
         if request.path in excluded_paths:

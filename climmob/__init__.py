@@ -90,7 +90,8 @@ def main(global_config, **settings):
         )
 
     config.add_tween(
-        "climmob.utility.middleware.two_factor_middleware", under=pyramid.tweens.EXCVIEW
+        "climmob.middleware.tfa_middleware.two_factor_middleware",
+        under=pyramid.tweens.EXCVIEW,
     )
 
     return config.make_wsgi_app()

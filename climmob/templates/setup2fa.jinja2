@@ -13,7 +13,6 @@
 
 <body>
     <div id="wrapper">
-        <!-- Modal para 2FA -->
         <div class="modal inmodal" id="twoFactorModal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content animated fadeIn">
@@ -27,7 +26,6 @@
                         <form method="post" class="form-horizontal" action="{{ request.path }}">
                             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
 
-                            <!-- Selección de método -->
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">{{ _("2FA Method") }}</label>
                                 <div class="col-sm-10">
@@ -42,35 +40,34 @@
                                 </div>
                             </div>
 
-                            <!-- QR Code -->
-                            {% if otp_qr_code and data.two_fa_method == "app" %}
-                            <div class="form-group">
-                                <label class="col-sm-2 control-label">{{ _("Scan QR Code") }}</label>
-                                <div class="col-sm-10">
-                                    <img src="{{ otp_qr_code }}" alt="QR Code" style="max-width: 300px;" />
+                            <div class="row">
+                                {% if otp_qr_code and data.two_fa_method == "app" %}
+                                <div class="col-md-6 text-center">
+                                    <label>{{ _("Scan QR Code") }}</label>
+                                    <img src="{{ otp_qr_code }}" alt="QR Code" style="max-width: 100%;" class="img-fluid" />
                                     <p>{{ _("Scan this code with your authenticator app.") }}</p>
                                 </div>
-                            </div>
-                            {% endif %}
+                                {% endif %}
 
-                            <!-- Códigos de un solo uso -->
-                            {% if one_time_codes %}
-                            <div class="alert alert-info">
-                                <h5>{{ _("Your One-Time Codes") }}</h5>
-                                <p>{{ _("Use these codes if you cannot access your authenticator app or email OTP.") }}</p>
-                                <ul>
-                                    {% for code_obj in one_time_codes %}
-                                    <li>{{ code_obj.code }}</li>
-                                    {% endfor %}
-                                </ul>
+                                {% if one_time_codes %}
+                                <div class="col-md-6">
+                                    <div class="alert alert-info">
+                                        <h5>{{ _("Your One-Time Codes") }}</h5>
+                                        <p>{{ _("These codes allow you to log in if you cannot access your authenticator app or the code sent via email. Please copy or print them and store them in a secure place, as each code can only be used once.") }}</p>
+                                        <ul>
+                                            {% for code_obj in one_time_codes %}
+                                            <li>{{ code_obj.code }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                                {% endif %}
                             </div>
-                            {% endif %}
 
-                            <!-- Botón -->
                             <div class="form-group">
                                 <div class="col-sm-10 col-sm-offset-2">
                                     <button type="submit" name="generate" class="btn btn-primary">
-                                        {{ _("Generate/Update 2FA") }}
+                                        {{ _("Generate 2FA") }}
                                     </button>
                                 </div>
                             </div>
@@ -82,7 +79,6 @@
                 </div>
             </div>
         </div>
-        <!-- Fin del modal -->
     </div>
 
     {% jsresource request,'coreresources','sweet' %}
