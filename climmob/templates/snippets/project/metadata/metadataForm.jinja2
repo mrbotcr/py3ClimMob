@@ -5,7 +5,7 @@
             {% if JsonInfo["name"] not in ["meta"] %}
 
                 {% if "label" in JsonInfo.keys() %}
-                    <div class="text-center">
+                    <div>
                         <br>
                         <h3><b>{{ JsonInfo["label"][request.locale_name] }}</b></h3>
                         <br>
@@ -34,9 +34,7 @@
 
                 {% if JsonInfo["type"] == "repeat"  %}
 
-{#                    <div class="text-center">#}
-                        <button type="button" class="btn btn-primary duplicate-repeat" onclick="duplicateRepeatBlock($(this),'{{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}')"><i class="fa fa-plus"></i> {{ _('Add other') }}</button><br>
-{#                    </div>#}
+                    <button type="button" class="btn btn-primary duplicate-repeat" onclick="duplicateRepeatBlock($(this),'{{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}')"><i class="fa fa-plus"></i> {{ _('Add other') }}</button><br>
                     <hr>
 
                 {% endif %}
@@ -49,7 +47,7 @@
                 <div class="form-group">
 
                     <div class="col-sm-12">
-                        <h3>{% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"].keys() and JsonInfo["bind"]["required"] == "yes" %}<strong style="color: red">*</strong> {% endif %}{{ JsonInfo["label"][request.locale_name] }}</h3>
+                        <h3>{{ JsonInfo["label"][request.locale_name] }} {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"].keys() and JsonInfo["bind"]["required"] == "yes" %}{% else %}({{ _("Optional") }}){% endif %}</h3>
                         {% if "hint" in JsonInfo.keys() %} <p>{{ JsonInfo["hint"][request.locale_name] }}</p>{% endif %}
 
                         {% if JsonInfo["type"] == "text" %}

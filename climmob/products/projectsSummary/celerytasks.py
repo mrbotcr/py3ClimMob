@@ -14,6 +14,8 @@ from climmob.models import (
     Country,
     Technology,
     CropTaxonomy,
+    ProjectStatus,
+    ProjectType,
 )
 import shutil as sh
 import pandas as pd
@@ -402,13 +404,21 @@ def getListOfProjects(dbsession):
             User.user_organization,
             userProject.user_name,
             Country.cnty_name,
+            Project.project_active,
+            Project.project_affiliation,
+            Project.project_curated_cropname,
+            Project.project_continent,
+            Project.climmob_analytics,
+            ProjectStatus.prjstatus_name,
+            ProjectType.prjtype_name,
         )
         .filter(Project.project_id == userProject.project_id)
         .filter(Project.project_cnty == Country.cnty_cod)
         .filter(userProject.access_type == 1)
         .filter(User.user_name == userProject.user_name)
-        .filter(Project.project_active == 1)
         .filter(Project.project_id.not_in(exclude))
+        .filter(Project.project_status == ProjectStatus.prjstatus_id)
+        .filter(Project.project_type == ProjectType.prjtype_id)
         .all()
     )
 
@@ -426,13 +436,21 @@ def getListOfProjects(dbsession):
             User.user_organization,
             userProject.user_name,
             Project.project_cnty.label("cnty_name"),
+            Project.project_active,
+            Project.project_affiliation,
+            Project.project_curated_cropname,
+            Project.project_continent,
+            Project.climmob_analytics,
+            ProjectStatus.prjstatus_name,
+            ProjectType.prjtype_name,
         )
         .filter(Project.project_id == userProject.project_id)
         .filter(Project.project_cnty.is_(None))
         .filter(userProject.access_type == 1)
         .filter(User.user_name == userProject.user_name)
-        .filter(Project.project_active == 1)
         .filter(Project.project_id.not_in(exclude))
+        .filter(Project.project_status == ProjectStatus.prjstatus_id)
+        .filter(Project.project_type == ProjectType.prjtype_id)
         .all()
     )
 
@@ -449,7 +467,9 @@ def processForGetTheGenotypes(projectId):
         "(SELECT technology.tech_name FROM technology where technology.tech_id = prjalias.tech_id) as crop_name, "
         "("
         "	SELECT COALESCE((SELECT alias_name FROM techalias where tech_id=tech_used and alias_id=alias_used), alias_name) as genotype "
-        ") as genotype "
+        ") as genotype, "
+        "prjalias.tech_id as tech_id, "
+        "prjalias.alias_used as alias_id "
         "FROM project, prjalias "
         "WHERE "
         "project.project_id = prjalias.project_id AND "
@@ -543,7 +563,7 @@ def createProjectsSummary(self, settings, otro):
                 "project_piemail": project["project_piemail"],
                 "project_date": project["project_creationdate"].strftime("%d-%m-%Y"),
                 "project_country": project["cnty_name"],
-                "project_type": project_type,
+                "project_location": project_type,
                 "farmers_target": project["project_numobs"],
                 "farmers_registered": num,
                 "gender_man": genderMan,
@@ -592,6 +612,14 @@ def createProjectsSummary(self, settings, otro):
             result["LatitudeAssessment"] = LatitudeA
             result["LongitudeAssessment"] = LongitudeA
 
+            result["affiliation"] = project["project_affiliation"]
+            result["cropname"] = project["project_curated_cropname"]
+            result["project_active"] = project["project_active"]
+            result["project_continent"] = project["project_continent"]
+            result["climmob_analytics"] = project["climmob_analytics"]
+            result["project_status"] = project["prjstatus_name"]
+            result["project_type"] = project["prjtype_name"]
+
             listOfProjects.append(result)
 
             resultGeno, genotypes = processForGetTheGenotypes(project["project_id"])
@@ -606,6 +634,8 @@ def createProjectsSummary(self, settings, otro):
                         "country": project["cnty_name"],
                         "crop_name": genotype.crop_name,
                         "genotype": genotype.genotype,
+                        "tech_id": genotype.tech_id,
+                        "alias_id": genotype.alias_id,
                         "instance_name": settings.get("analytics.instancename", ""),
                     }
                     listOfGenotypes.append(resultGenotypes)

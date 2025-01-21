@@ -32,6 +32,14 @@
 
 {% block pagecontent %}
 
+    <style>
+    .tableHover2 {
+        background-color: #e7eaec;
+        border-left: 1px solid #1ab394;
+        border-right: 1px solid #1ab394;
+    }
+    </style>
+
     {% if activeProject["access_type"] in [4] %}
         {% set onlySee = True %}
     {% endif %}
@@ -49,7 +57,7 @@
                     {% if listOfProjectMetadata %}
                         <div class="table-responsive">
 
-                            <table class="footable table table-stripped" data-page-size="50000" data-filter=#filter>
+                            <table class="footable table table-stripped tableHover" data-page-size="50000" data-filter=#filter>
                                 <tbody>
                                     <tr>
                                         <th>
@@ -63,19 +71,19 @@
                                         </th>
                                     </tr>
                                     {% for metadata in listOfProjectMetadata %}
-                                        <tr>
-                                            <td>
+                                        <tr idInternal="{{ metadata.metadata_id }}">
+                                            <td style="vertical-align: middle">
                                                 {{ metadata.metadata_name }}
                                             </td>
-                                            <td class="text-center">
+                                            <td class="text-center" style="vertical-align: middle">
                                                 {% if metadata.result %}
                                                     <span class="label label-success">{{ _("Completed") }}</span>
                                                 {% else %}
                                                     <span class="label label-warning">{{ _("Pending") }}</span>
                                                 {% endif %}
                                             </td>
-                                            <td class="text-center">
-                                                <button type="submit" class="btn btn-primary" onclick="openMetadataForm('{{ metadata.metadata_id }}')"><i class="fa fa-eye"></i> {{ _('View and edit') }}</button>
+                                            <td class="text-center" style="vertical-align: middle">
+                                                <button type="submit" class="btn btn-primary" onclick="openMetadataForm('{{ metadata.metadata_id }}')" style="margin-bottom: 0px"><i class="fa fa-eye"></i> {{ _('View and edit') }}</button>
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -96,12 +104,17 @@
         <div class="col-lg-8" id="div_for_show_form" style="display: none">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>{{ _("Trial documentation") }} </h5>
+                    <h5 id="spaceForPutTheTitle">{{ _("Trial documentation") }} </h5>
                     <div class="ibox-tools">
                         <button  class="btn btn-xs btn-default pull-right btn_cancel_metadata" ><i class="fa fa-close"></i>  {{ _("Close form") }}</button>
                     </div>
                 </div>
                 <div class="ibox-content">
+
+                    <h4>
+                        {{ _("Please note that all questions are mandatory unless they include the label “(Optional)” ") }}.
+                    </h4>
+                    <br>
 
                     <form class="form-horizontal" id="form_metadata" role="form" method="post" action="{{ request.url }}" >
 
@@ -144,7 +157,9 @@
                 URL = URL.replace("__metadataform__",formId)
 
                 $.get(URL, function (dataString, status) {
-                    $("#spaceForPutTheForm").html(dataString)
+                    dataString = dataString.split("@@@@@@@@@@")
+                    $("#spaceForPutTheTitle").text("{{ _("Form") }}: "+dataString[0])
+                    $("#spaceForPutTheForm").html(dataString[1])
                     $("#metadata_id").val(formId)
                     $("#div_for_show_form").css("display","block")
                 });
@@ -163,6 +178,10 @@
                 $("#spaceForPutTheForm").html("")
                 $("#metadata_id").val("")
                 $("#div_for_show_form").css("display","none")
+            });
+
+            $('.tableHover').on('click', 'tbody tr', function(event) {
+                $(this).addClass('tableHover2').siblings().removeClass('tableHover2');
             });
 
         </script>

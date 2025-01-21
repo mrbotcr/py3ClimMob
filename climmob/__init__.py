@@ -68,6 +68,9 @@ def main(global_config, **settings):
         authentication_policy=auth_policy,
         authorization_policy=authz_policy,
     )
+    config.add_subscriber(
+        "climmob.middleware.middleware.CheckMiddleware", "pyramid.events.BeforeRender"
+    )
 
     config.include(".models")
     # Load and configure the host application

@@ -149,7 +149,7 @@ class ShowMetadataForm_view(privateView):
                     }
                     render_temp = template.render(dict)
 
-                    return render_temp
+                    return metadataForm["metadata_name"] + "@@@@@@@@@@" + render_temp
 
         return ""
 

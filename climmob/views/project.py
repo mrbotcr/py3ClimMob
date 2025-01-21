@@ -804,21 +804,78 @@ class CurationOfProjects_view(privateView):
 
             if "btn_save_projects" in self.request.POST:
                 formdata = self.getPostDict()
+                listOfProject = {}
 
                 for key in formdata.keys():
-                    project = {}
-                    keyDetails = key.split("_")
+                    if key not in ["csrf_token", "btn_save_projects"]:
 
-                    if keyDetails[0] == "status":
-                        project["project_status"] = 3
+                        keyDetails = key.split("_")
 
-                    if keyDetails[0] == "type" and formdata[key] != "0":
-                        project["project_type"] = formdata[key]
+                        if keyDetails[1] == "status":
+                            value = 3
+                        else:
+                            value = formdata[key]
 
-                    if project:
+                        if keyDetails[-1] not in listOfProject.keys():
+                            listOfProject[keyDetails[-1]] = {}
+
+                        listOfProject[keyDetails[-1]][
+                            key.replace("_" + keyDetails[-1], "")
+                        ] = value
+
+                for key in listOfProject.keys():
+                    if (
+                        all(listOfProject[key].values())
+                        or listOfProject[key]["project_type"] == "2"
+                    ):
+
+                        listOfProject[key] = {
+                            k: v for k, v in listOfProject[key].items() if v
+                        }
+
                         updated, message = modifyProject(
-                            keyDetails[1], project, self.request
+                            key, listOfProject[key], self.request
                         )
+
+                        if "project_objectives" in listOfProject[key].keys():
+                            (
+                                deleted,
+                                message,
+                            ) = delete_all_project_location_unit_objective(
+                                key, self.request
+                            )
+
+                            if isinstance(
+                                listOfProject[key]["project_objectives"], str
+                            ):
+                                listOfProject[key]["project_objectives"] = [
+                                    listOfProject[key]["project_objectives"]
+                                ]
+
+                            for objective in listOfProject[key]["project_objectives"]:
+                                location_unit_of_analysis = (
+                                    get_location_unit_of_analysis_by_combination(
+                                        self.request,
+                                        listOfProject[key]["project_location"],
+                                        listOfProject[key]["project_unit_of_analysis"],
+                                    )
+                                )
+
+                                luoao_id = get_location_unit_of_analysis_objectives_by_combination(
+                                    self.request,
+                                    location_unit_of_analysis["pluoa_id"],
+                                    objective,
+                                )[
+                                    "pluoaobj_id"
+                                ]
+
+                                infoObj = {
+                                    "project_id": key,
+                                    "pluoaobj_id": luoao_id,
+                                }
+                                add_project_location_unit_objective(
+                                    infoObj, self.request
+                                )
 
         completed, projects = getProjectsByUserThatRequireSetup(
             self.user.login, self.request
@@ -831,6 +888,7 @@ class CurationOfProjects_view(privateView):
         return {
             "listOfProjects": projects,
             "listOfProjectTypes": getListOfProjectTypes(self.request),
+            "listOfLocations": get_all_project_location(self.request),
             "error_summary": error_summary,
         }
 

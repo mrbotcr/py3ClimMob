@@ -718,6 +718,8 @@ class Project(Base):
     )
     project_affiliation = Column(Unicode(120), nullable=True)
     climmob_analytics = Column(Integer, nullable=True)
+    project_curated_cropname = Column(Unicode(120), nullable=True)
+    project_continent = Column(ForeignKey("continent.continent_id"), nullable=True)
 
     country = relationship("Country")
 
@@ -1455,3 +1457,10 @@ class ProjectLocaUnitObjective(Base):
 
     Project = relationship("Project")
     LocationUnitOfAnalysisObjectives = relationship("LocationUnitOfAnalysisObjectives")
+
+
+class Continent(Base):
+    __tablename__ = "continent"
+
+    continent_id = Column(Integer, primary_key=True, autoincrement=False)
+    continent_name = Column(Unicode(120), nullable=False)

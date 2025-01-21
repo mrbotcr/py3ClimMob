@@ -122,6 +122,13 @@
                                     <th data-hide="all" style="text-align: center">{{ _("Longitude - Registry") }}</th>
                                     <th data-hide="all" style="text-align: center">{{ _("Latitude - Assessment") }}</th>
                                     <th data-hide="all" style="text-align: center">{{ _("Longitude - Assessment") }}</th>
+                                    <th data-hide="all" style="text-align: center">{{ _("Affiliation") }}</th>
+                                    <th data-hide="all" style="text-align: center">{{ _("Curated crop name") }}</th>
+                                    <th data-hide="all" style="text-align: center">{{ _("Active") }}</th>
+                                    <th data-hide="all" style="text-align: center">{{ _("Continent") }}</th>
+                                    <th data-hide="all" style="text-align: center">{{ _("Status") }}</th>
+                                    <th data-hide="all" style="text-align: center">{{ _("Type") }}</th>
+                                    <th data-hide="all" style="text-align: center">{{ _("Dashboard") }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -150,7 +157,13 @@
                                         <td>{{ project["LongitudeRegistry"] }}</td>
                                         <td>{{ project["LatitudeAssessment"] }}</td>
                                         <td>{{ project["LongitudeAssessment"] }}</td>
-                                        <td>{{ project["NumberOfManGender"] }}</td>
+                                        <td>{{ project["affiliation"] }}</td>
+                                        <td>{{ project["cropname"] }}</td>
+                                        <td>{% if project["project_active"] == 1 %}{{ _("Yes") }}{% else %}{{ _("No") }}{% endif %}</td>
+                                        <td>{{ project["project_continent"] }}</td>
+                                        <td>{{ project["project_status"] }}</td>
+                                        <td>{{ project["project_type"] }}</td>
+                                        <td>{% if project["climmob_analytics"] == 1 %}{{ _("Yes") }}{% else %}{{ _("No") }}{% endif %}</td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
