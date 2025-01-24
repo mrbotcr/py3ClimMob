@@ -223,7 +223,7 @@ def get_version():
     This returns the version of ClimMob
     :return: The version of ClimMob
     """
-    return "3.9.0 (20230720)"
+    return "3.9.0 (20250201)"
 
 
 @core_helper

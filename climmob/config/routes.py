@@ -136,6 +136,7 @@ from climmob.views.Share.projectShare import (
     API_all_users_view,
     removeprojectShare_view,
 )
+from climmob.views.Affiliation import SearchAffiliationView
 from climmob.views.assessment import (
     assessment_view,
     deleteAssessmentSection_view,
@@ -1022,6 +1023,15 @@ def loadRoutes(config):
             "api_select2_all_users",
             "/api/select2_user",
             API_all_users_view,
+            "json",
+        )
+    )
+
+    routes.append(
+        addRoute(
+            "searchaffiliation",
+            "/api/search_affiliation",
+            SearchAffiliationView,
             "json",
         )
     )

@@ -150,7 +150,7 @@ class ReadListOfUnitOfAnalysisView(apiView):
                     else:
                         response = Response(
                             status=401,
-                            body=self._("The experimental side does not exist."),
+                            body=self._("The experimental site does not exist."),
                         )
                         return response
                 else:
@@ -229,7 +229,7 @@ class ReadListOfObjectivesView(apiView):
                     else:
                         response = Response(
                             status=401,
-                            body=self._("The experimental side does not exist."),
+                            body=self._("The experimental site does not exist."),
                         )
                         return response
                 else:

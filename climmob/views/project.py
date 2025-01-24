@@ -580,16 +580,20 @@ class modifyProject_view(privateView):
                                 )
                         if continue_modify:
 
-                            location_unit_of_analysis = (
-                                get_location_unit_of_analysis_by_combination(
-                                    self.request,
-                                    data["project_location"],
-                                    data["project_unit_of_analysis"],
+                            location_unit_of_analysis = None
+                            if "project_location" in data.keys():
+                                location_unit_of_analysis = (
+                                    get_location_unit_of_analysis_by_combination(
+                                        self.request,
+                                        data["project_location"],
+                                        data["project_unit_of_analysis"],
+                                    )
                                 )
-                            )
-                            data[
-                                "project_registration_and_analysis"
-                            ] = location_unit_of_analysis["registration_and_analysis"]
+                                data[
+                                    "project_registration_and_analysis"
+                                ] = location_unit_of_analysis[
+                                    "registration_and_analysis"
+                                ]
 
                             modified, message = modifyProject(
                                 activeProjectId, data, self.request
@@ -605,33 +609,36 @@ class modifyProject_view(privateView):
                                     activeProjectId, self.request
                                 )
 
-                                if isinstance(data["project_objectives"], str):
-                                    data["project_objectives"] = [
-                                        data["project_objectives"]
-                                    ]
+                                if "project_objectives" in data.keys():
+                                    if isinstance(data["project_objectives"], str):
+                                        data["project_objectives"] = [
+                                            data["project_objectives"]
+                                        ]
 
-                                for objective in data["project_objectives"]:
-                                    luoao_id = get_location_unit_of_analysis_objectives_by_combination(
-                                        self.request,
-                                        location_unit_of_analysis["pluoa_id"],
-                                        objective,
-                                    )[
-                                        "pluoaobj_id"
-                                    ]
+                                if location_unit_of_analysis:
+                                    for objective in data["project_objectives"]:
+                                        luoao_id = get_location_unit_of_analysis_objectives_by_combination(
+                                            self.request,
+                                            location_unit_of_analysis["pluoa_id"],
+                                            objective,
+                                        )[
+                                            "pluoaobj_id"
+                                        ]
 
-                                    infoObj = {
-                                        "project_id": activeProjectId,
-                                        "pluoaobj_id": luoao_id,
-                                    }
-                                    add_project_location_unit_objective(
-                                        infoObj, self.request
-                                    )
-
-                                deleted, message = deleteAllPrjLang(
-                                    activeProjectId, self.request
-                                )
+                                        infoObj = {
+                                            "project_id": activeProjectId,
+                                            "pluoaobj_id": luoao_id,
+                                        }
+                                        add_project_location_unit_objective(
+                                            infoObj, self.request
+                                        )
 
                                 if "project_languages" in data.keys():
+
+                                    deleted, message = deleteAllPrjLang(
+                                        activeProjectId, self.request
+                                    )
+
                                     if data["project_languages"]:
 
                                         if isinstance(data["project_languages"], str):

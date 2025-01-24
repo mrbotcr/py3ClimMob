@@ -90,7 +90,7 @@
                                     <th style="vertical-align: middle">{{ _("Name") }}</th>
                                     <th style="vertical-align: middle">{{ _("Type") }}</th>
                                     <th style="vertical-align: middle">{{ _("Affiliation") }}</th>
-                                    <th style="vertical-align: middle">{{ _("Experimental side") }}</th>
+                                    <th style="vertical-align: middle">{{ _("Experimental site") }}</th>
                                     <th style="vertical-align: middle">{{ _("Unit of analysis") }}</th>
                                     <th style="vertical-align: middle">{{ _("Objectives") }}</th>
                                     <th style="vertical-align: middle">{{ _("Check this box if this project has been finished.") }}</th>
@@ -113,7 +113,7 @@
                                             </select>
                                         </td>
                                         <td style="vertical-align: middle; width: 200px; text-align: center">
-                                            <input class="form-control" id="project_affiliation_{{ project.project_id }}" name="project_affiliation_{{ project.project_id }}" oninvalid="this.setCustomValidity('{{ _("Write the affiliation.") }}')" onchange="this.setCustomValidity('')">
+                                            <select id="project_affiliation_{{ project.project_id }}" name="project_affiliation_{{ project.project_id }}" class="form-control js-example-data-ajax" required oninvalid="this.setCustomValidity('{{ _("Write the affiliation.") }}')" onchange="this.setCustomValidity('')"></select>
                                         </td>
                                         <td style="vertical-align: middle; width: 200px;">
                                             <select id="project_location_{{ project.project_id }}" name="project_location_{{ project.project_id }}" class="form-control chosen-select selectLocations" tabindex="2" oninvalid="this.setCustomValidity('{{ _("Select one experimental site.") }}')" onchange="this.setCustomValidity('')">
@@ -131,7 +131,7 @@
                                             </select>
                                         </td>
                                         <td style="vertical-align: middle; width: 200px;">
-                                            <select style="height: 10px" id="project_objectives_{{ project.project_id }}" name="project_objectives_{{ project.project_id }}" class="form-control chosen-select" data-placeholder="{{ _("Choose multiple objectives") }}" multiple tabindex="2" oninvalid="this.setCustomValidity('{{ _("Choose multiple objectives") }}')" onchange="this.setCustomValidity('')" >
+                                            <select style="height: 10px" id="project_objectives_{{ project.project_id }}" name="project_objectives_{{ project.project_id }}" class="form-control chosen-select" data-placeholder="{{ _("Choose multiple objectives") }}" tabindex="2" oninvalid="this.setCustomValidity('{{ _("Choose multiple objectives") }}')" onchange="this.setCustomValidity('')" >
                                                 {% for objectives in listOfObjectives %}
                                                     <option value="{{ objectives.pobjective_id }}">{{ objectives.pobjective_name }}</option>
                                                 {% endfor %}
@@ -168,6 +168,40 @@
             });
 
             $('.chosen-select').chosen({width: "100%"});
+
+            $(".js-example-data-ajax").select2({
+                //templateResult: formatUser,
+                placeholder: "{{ _("Write the affiliation name") }}",
+                ajax: {
+                    url: "{{ request.route_url('searchaffiliation') }}",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term, // search term
+                            page: params.page
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+
+                        if (data.results.length === 0 && params.term) {
+                            data.results.push({
+                                id: params.term,
+                                text: "{{ _("New affiliation") }}: "+params.term,
+                            });
+                        }
+
+                        return {
+                            results: data.results,
+                            pagination: {
+                                more: (params.page * 10) < data.total
+                            }
+                        };
+                    },
+                    cache: true
+                }
+            });
 
         });
 

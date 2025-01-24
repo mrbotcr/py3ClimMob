@@ -61,6 +61,7 @@ def CheckMiddleware(event):
         list_of_path.append("curationofprojects")
         list_of_path.append("getunitofanalysisbylocation")
         list_of_path.append("getobjectivesbylocationandunitofanalysis")
+        list_of_path.append("searchaffiliation")
 
         if request.matched_route.name not in list_of_path:
 

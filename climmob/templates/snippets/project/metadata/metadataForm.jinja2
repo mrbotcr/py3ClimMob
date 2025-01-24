@@ -135,6 +135,14 @@
                         element.id = element.text+ ' - '+ element.user_email
                     })
 
+                    if (data.results.length === 0 && params.term) {
+                        data.results.push({
+                            id: 'External - ' + params.term,
+                            user_email: "Undefined",
+                            text: 'External - ' + params.term, // Mostrar el término ingresado
+                        });
+                    }
+
                     return {
                         results: data.results,
                         pagination: {
@@ -233,7 +241,7 @@
             return user.text;
         }
         let $state = $(
-            '<span><img src="' + user.gravatar + '?name=' + user.text + '&size=45" class="img-flag" /> ' + user.text+ ' - '+ user.user_email + '</span>'
+            '<span>' + user.text+ ' - '+ user.user_email + '</span>'
         );
         return $state;
     }
@@ -409,6 +417,14 @@
                             {
                                 element.id = element.text+ ' - '+ element.user_email
                             })
+
+                            if (data.results.length === 0 && params.term) {
+                                data.results.push({
+                                    id: 'External - ' + params.term,
+                                    user_email: "Undefined",
+                                    text: 'External - ' + params.term, // Mostrar el término ingresado
+                                });
+                            }
 
                             return {
                                 results: data.results,

@@ -206,6 +206,30 @@ def upgrade():
             "prjstatus_description": "",
             "lang_code": "es",
         },
+        {
+            "prjstatus_id": 0,
+            "prjstatus_name": "Non défini",
+            "prjstatus_description": "",
+            "lang_code": "fr",
+        },
+        {
+            "prjstatus_id": 1,
+            "prjstatus_name": "Définition",
+            "prjstatus_description": "",
+            "lang_code": "fr",
+        },
+        {
+            "prjstatus_id": 2,
+            "prjstatus_name": "En cours",
+            "prjstatus_description": "",
+            "lang_code": "fr",
+        },
+        {
+            "prjstatus_id": 3,
+            "prjstatus_name": "Finalisé",
+            "prjstatus_description": "",
+            "lang_code": "fr",
+        },
     ]
 
     i18n_project_status = table(
@@ -225,20 +249,38 @@ def upgrade():
         {
             "prjtype_id": 0,
             "prjtype_name": "Sin definir",
-            "prjtype_description": "",
+            "prjtype_description": "El proyecto no tiene ningún tipo configurado",
             "lang_code": "es",
         },
         {
             "prjtype_id": 1,
             "prjtype_name": "Real",
-            "prjtype_description": "",
+            "prjtype_description": "El proyecto contiene información real de participantes que han recibido formación sobre el enfoque Tricot y que han realizado su ensayo de campo y están utilizando opciones tecnológicas reales.",
             "lang_code": "es",
         },
         {
             "prjtype_id": 2,
-            "prjtype_name": "Prueba",
-            "prjtype_description": "",
+            "prjtype_name": "Entrenamiento",
+            "prjtype_description": "Este proyecto sólo se utilizó para explicar el uso de la plataforma ClimMob y se creó como ejemplo",
             "lang_code": "es",
+        },
+        {
+            "prjtype_id": 0,
+            "prjtype_name": "Non défini",
+            "prjtype_description": "Le projet n'a aucun type configuré",
+            "lang_code": "fr",
+        },
+        {
+            "prjtype_id": 1,
+            "prjtype_name": "Réel",
+            "prjtype_description": "Le projet contient des informations réelles provenant de participants formés à l'approche Tricot, qui ont mené leur essai sur le terrain et utilisent des options technologiques réelles.",
+            "lang_code": "fr",
+        },
+        {
+            "prjtype_id": 2,
+            "prjtype_name": "Formation",
+            "prjtype_description": "Ce projet a été utilisé uniquement pour expliquer l'utilisation de la plateforme ClimMob et a été créé à titre d'exemple.",
+            "lang_code": "fr",
         },
     ]
 

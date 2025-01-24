@@ -1464,3 +1464,10 @@ class Continent(Base):
 
     continent_id = Column(Integer, primary_key=True, autoincrement=False)
     continent_name = Column(Unicode(120), nullable=False)
+
+
+class Affiliation(Base):
+    __tablename__ = "affiliation"
+
+    affiliation_id = Column(Integer, primary_key=True, autoincrement=True)
+    affiliation_name = Column(Unicode(120), nullable=False)

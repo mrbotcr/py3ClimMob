@@ -49,3 +49,4 @@ from climmob.processes.db.project_unit_of_analysis import *
 from climmob.processes.db.project_objectives import *
 from climmob.processes.db.project_location_unit_objective import *
 from climmob.processes.db.location_unit_of_analysis_objectives import *
+from climmob.processes.db.affiliation import *
