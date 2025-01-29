@@ -7,7 +7,7 @@ Create Date: 2024-12-11 15:12:11.405594
 """
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy.dialects import mysql
+from sqlalchemy.orm.session import Session
 
 # revision identifiers, used by Alembic.
 revision = "309b5898cb78"
@@ -27,6 +27,20 @@ def upgrade():
             nullable=True,
         ),
     )
+
+    session = Session(bind=op.get_bind())
+    try:
+        session.execute(
+            "UPDATE location_unit_of_analysis SET registration_and_analysis = '1' WHERE (pluoa_id = '5');"
+        )
+        session.execute(
+            "UPDATE location_unit_of_analysis SET registration_and_analysis = '1' WHERE (pluoa_id = '6');"
+        )
+    except Exception as e:
+        print(str(e))
+        exit(1)
+
+    session.commit()
     # ### end Alembic commands ###
 
 

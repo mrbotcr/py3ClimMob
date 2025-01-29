@@ -19,7 +19,7 @@ def create_projects_summary(request):
     registerProductInstance(
         None,
         "projectssummary",
-        "projectsSummary.xlsx",
+        "projectsSummary_" + settings.get("analytics.instancename", "") + ".xlsx",
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         "create_projectssummary_csv",
         task.id,

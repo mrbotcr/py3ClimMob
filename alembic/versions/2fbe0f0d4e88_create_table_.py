@@ -7,7 +7,8 @@ Create Date: 2024-11-20 09:43:14.295223
 """
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy.dialects import mysql
+from sqlalchemy import Integer
+from sqlalchemy.sql import table, column
 
 # revision identifiers, used by Alembic.
 revision = "2fbe0f0d4e88"
@@ -38,6 +39,60 @@ def upgrade():
         sa.PrimaryKeyConstraint("pluoa_id", name=op.f("pk_location_unit_of_analysis")),
         sa.UniqueConstraint("plocation_id", "puoa_id", name="uq_plocation_id_puoa_id"),
     )
+
+    project_location_unit_of_analysis_values = [
+        {
+            "pluoa_id": 1,
+            "plocation_id": 1,
+            "puoa_id": 4,
+        },
+        {
+            "pluoa_id": 2,
+            "plocation_id": 1,
+            "puoa_id": 1,
+        },
+        {
+            "pluoa_id": 3,
+            "plocation_id": 1,
+            "puoa_id": 2,
+        },
+        {
+            "pluoa_id": 4,
+            "plocation_id": 1,
+            "puoa_id": 5,
+        },
+        {
+            "pluoa_id": 5,
+            "plocation_id": 2,
+            "puoa_id": 3,
+        },
+        {
+            "pluoa_id": 6,
+            "plocation_id": 2,
+            "puoa_id": 6,
+        },
+        {
+            "pluoa_id": 7,
+            "plocation_id": 3,
+            "puoa_id": 3,
+        },
+        {
+            "pluoa_id": 8,
+            "plocation_id": 3,
+            "puoa_id": 6,
+        },
+    ]
+
+    project_location_unit_of_analysis = table(
+        "location_unit_of_analysis",
+        column("pluoa_id", Integer),
+        column("plocation_id", Integer),
+        column("puoa_id", Integer),
+    )
+    op.bulk_insert(
+        project_location_unit_of_analysis, project_location_unit_of_analysis_values
+    )
+
     # ### end Alembic commands ###
 
 

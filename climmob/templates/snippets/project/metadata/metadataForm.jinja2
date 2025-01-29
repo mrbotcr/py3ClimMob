@@ -59,6 +59,8 @@
                             {% if "climmob_users" in JsonInfo.keys()%}
                                 <select name="{{ JsonInfo["name"] }}" style="width: 100%; !important;" class="js-example-data-ajax form-control" {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %} required="" {% endif %} oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')"></select>
 
+                            {% elif "climmob_affiliations" in JsonInfo.keys()%}
+                                <select name="{{ JsonInfo["name"] }}" style="width: 100%; !important;" class="js-example-data-ajax-affi form-control" {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %} required="" {% endif %} oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')"></select>
                             {% else %}
 
                                 <select data-placeholder="" name="{{ JsonInfo["name"] }}" class="chosen-select form-control" {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %} required="" {% endif %} oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')">
@@ -154,6 +156,39 @@
             }
         });
 
+        $(".js-example-data-ajax-affi").select2({
+
+            ajax: {
+                url: "{{ request.route_url('searchaffiliation') }}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term, // search term
+                        page: params.page
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+
+                    if (data.results.length === 0 && params.term) {
+                        data.results.push({
+                            id: params.term,
+                            text: "{{ _("New affiliation") }}: "+params.term,
+                        });
+                    }
+
+                    return {
+                        results: data.results,
+                        pagination: {
+                            more: (params.page * 10) < data.total
+                        }
+                    };
+                },
+                cache: true
+            }
+        });
+
         {% if postData %}
             showData({{ postData }})
         {% endif %}
@@ -197,6 +232,10 @@
                         child.val(value);
                         child.trigger("chosen:updated");
                     }else if (child.hasClass("js-example-data-ajax")){
+                        child.append($('<option>').val(value).text(value));
+                        child.val(value);
+                        child.trigger('change');
+                    }else if (child.hasClass("js-example-data-ajax-affi")){
                         child.append($('<option>').val(value).text(value));
                         child.val(value);
                         child.trigger('change');
@@ -423,6 +462,40 @@
                                     id: 'External - ' + params.term,
                                     user_email: "Undefined",
                                     text: 'External - ' + params.term, // Mostrar el término ingresado
+                                });
+                            }
+
+                            return {
+                                results: data.results,
+                                pagination: {
+                                    more: (params.page * 10) < data.total
+                                }
+                            };
+                        },
+                        cache: true
+                    }
+                });
+            })
+
+            newRepeat.find('.js-example-data-ajax-affi').each(function (){
+                $(this).select2({
+                    ajax: {
+                        url: "{{ request.route_url('searchaffiliation') }}",
+                        dataType: 'json',
+                        delay: 250,
+                        data: function (params) {
+                            return {
+                                q: params.term, // search term
+                                page: params.page
+                            };
+                        },
+                        processResults: function (data, params) {
+                            params.page = params.page || 1;
+
+                            if (data.results.length === 0 && params.term) {
+                                data.results.push({
+                                    id: params.term,
+                                    text: "{{ _("New affiliation") }}: "+params.term,
                                 });
                             }
 

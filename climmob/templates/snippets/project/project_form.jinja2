@@ -382,7 +382,6 @@
     $('.chosen-select').chosen({width: "100%", max_selected_options: 4});
 
     $(".js-example-data-ajax").select2({
-        //templateResult: formatUser,
         placeholder: "{{ _("Write the affiliation name") }}",
         ajax: {
             url: "{{ request.route_url('searchaffiliation') }}",

@@ -7,7 +7,8 @@ Create Date: 2024-11-18 10:57:16.725859
 """
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy.dialects import mysql
+from sqlalchemy import String, Integer
+from sqlalchemy.sql import table, column
 
 # revision identifiers, used by Alembic.
 revision = "18a87d7851ee"
@@ -53,6 +54,46 @@ def upgrade():
             "puoa_id", "lang_code", name=op.f("pk_i18n_project_unit_of_analysis")
         ),
     )
+
+    project_unit_of_analysis_values = [
+        {"puoa_id": 1, "puoa_name": "Agricultural input", "puoa_lang": "en"},
+        {"puoa_id": 2, "puoa_name": "Crop management practice", "puoa_lang": "en"},
+        {"puoa_id": 3, "puoa_name": "Food product", "puoa_lang": "en"},
+        {"puoa_id": 4, "puoa_name": "Genotype", "puoa_lang": "en"},
+        {"puoa_id": 5, "puoa_name": "Genotype mix", "puoa_lang": "en"},
+        {"puoa_id": 6, "puoa_name": "Product concept", "puoa_lang": "en"},
+    ]
+
+    project_unit_of_analysis = table(
+        "project_unit_of_analysis",
+        column("puoa_id", Integer),
+        column("puoa_name", String),
+        column("puoa_lang", String),
+    )
+    op.bulk_insert(project_unit_of_analysis, project_unit_of_analysis_values)
+
+    i18n_project_unit_of_analysis_values = [
+        {"puoa_id": 1, "lang_code": "es", "puoa_name": "Insumo agrícola"},
+        {"puoa_id": 1, "lang_code": "fr", "puoa_name": "Intrant agricole"},
+        {"puoa_id": 2, "lang_code": "es", "puoa_name": "Práctica de manejo de cultivo"},
+        {"puoa_id": 2, "lang_code": "fr", "puoa_name": "Pratique agricole"},
+        {"puoa_id": 3, "lang_code": "es", "puoa_name": "Producto alimenticio"},
+        {"puoa_id": 3, "lang_code": "fr", "puoa_name": "Produit alimentaire"},
+        {"puoa_id": 4, "lang_code": "es", "puoa_name": "Genotipo"},
+        {"puoa_id": 4, "lang_code": "fr", "puoa_name": "Génotype"},
+        {"puoa_id": 5, "lang_code": "es", "puoa_name": "Mezcla de genotipos"},
+        {"puoa_id": 5, "lang_code": "fr", "puoa_name": "Mélange de génotypes"},
+        {"puoa_id": 6, "lang_code": "es", "puoa_name": "Concepto de producto"},
+        {"puoa_id": 6, "lang_code": "fr", "puoa_name": "Concept de produit"},
+    ]
+
+    i18n_project_unit_of_analysis = table(
+        "i18n_project_unit_of_analysis",
+        column("puoa_id", Integer),
+        column("lang_code", String),
+        column("puoa_name", String),
+    )
+    op.bulk_insert(i18n_project_unit_of_analysis, i18n_project_unit_of_analysis_values)
     # ### end Alembic commands ###
 
 

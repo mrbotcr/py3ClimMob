@@ -7,7 +7,8 @@ Create Date: 2024-11-18 10:54:26.345300
 """
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy.dialects import mysql
+from sqlalchemy import String, Integer
+from sqlalchemy.sql import table, column
 
 # revision identifiers, used by Alembic.
 revision = "fa9f3d8cccf8"
@@ -51,6 +52,53 @@ def upgrade():
             "plocation_id", "lang_code", name=op.f("pk_i18n_project_location")
         ),
     )
+
+    project_location_values = [
+        {"plocation_id": 1, "plocation_name": "Farm", "plocation_lang": "en"},
+        {
+            "plocation_id": 2,
+            "plocation_name": "Public space (e.g. market)",
+            "plocation_lang": "en",
+        },
+        {"plocation_id": 3, "plocation_name": "Home", "plocation_lang": "en"},
+    ]
+
+    project_location = table(
+        "project_location",
+        column("plocation_id", Integer),
+        column("plocation_name", String),
+        column("plocation_lang", String),
+    )
+    op.bulk_insert(project_location, project_location_values)
+
+    i18n_project_location_values = [
+        {"plocation_id": 1, "lang_code": "es", "plocation_name": "Finca"},
+        {
+            "plocation_id": 1,
+            "lang_code": "fr",
+            "plocation_name": "Exploitation agricole",
+        },
+        {
+            "plocation_id": 2,
+            "lang_code": "es",
+            "plocation_name": "Espacio público (ej. mercado)",
+        },
+        {
+            "plocation_id": 2,
+            "lang_code": "fr",
+            "plocation_name": "Espace public (marché,...)",
+        },
+        {"plocation_id": 3, "lang_code": "es", "plocation_name": "Hogar"},
+        {"plocation_id": 3, "lang_code": "fr", "plocation_name": "Foyer"},
+    ]
+
+    i18n_project_location = table(
+        "i18n_project_location",
+        column("plocation_id", Integer),
+        column("lang_code", String),
+        column("plocation_name", String),
+    )
+    op.bulk_insert(i18n_project_location, i18n_project_location_values)
     # ### end Alembic commands ###
 
 
