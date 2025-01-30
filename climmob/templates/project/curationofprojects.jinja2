@@ -168,7 +168,7 @@
                 checkboxClass: 'icheckbox_square-green',
             });
 
-            $('.chosen-select').chosen({width: "100%"});
+            $('.chosen-select').select2({width: "100%"});
 
             $(".js-example-data-ajax").select2({
                 //templateResult: formatUser,
@@ -248,10 +248,11 @@
 
             $("#project_unit_of_analysis_"+project_id).empty();
             $("#project_unit_of_analysis_"+project_id).append("<option value=''>{{ _("Select a unit of analysis") }}</option>");
-            $("#project_unit_of_analysis_"+project_id).trigger("chosen:updated");
+            $("#project_unit_of_analysis_"+project_id).trigger("change");
 
             $("#project_objectives_"+project_id).empty();
-            $("#project_objectives_"+project_id).trigger("chosen:updated");
+            $("#project_objectives_"+project_id).append("<option value=''>{{ _("Choose one objective") }}</option>");
+            $("#project_objectives_"+project_id).trigger("change");
 
             if ($(this).val() !=="") {
                 var URL = "{{ request.route_url('getunitofanalysisbylocation', locationid="__locationid__") }}"
@@ -263,7 +264,7 @@
                         $("#project_unit_of_analysis_"+project_id).append("<option value='"+ element.puoa_id+"'>"+ element.puoa_name+"</option>");
                     });
 
-                    $("#project_unit_of_analysis_"+project_id).trigger("chosen:updated");
+                    $("#project_unit_of_analysis_"+project_id).trigger("change");
                 });
             }
         });
@@ -274,7 +275,8 @@
             var project_id = project_id_split[project_id_split.length - 1]
 
             $("#project_objectives_"+project_id).empty();
-            $("#project_objectives_"+project_id).trigger("chosen:updated");
+            $("#project_objectives_"+project_id).append("<option value=''>{{ _("Choose one objective") }}</option>");
+            $("#project_objectives_"+project_id).trigger("change");
 
             if ($(this).val() !=="") {
                 var URL = "{{ request.route_url('getobjectivesbylocationandunitofanalysis', locationid="__locationid__", unitofanalysisid="__unitofanalysisid__") }}"
@@ -286,7 +288,7 @@
                         $("#project_objectives_"+project_id).append("<option value='"+ element.pobjective_id+"'>"+ element.pobjective_name+"</option>");
                     });
 
-                    $("#project_objectives_"+project_id).trigger("chosen:updated");
+                    $("#project_objectives_"+project_id).trigger("change");
                 });
             }
         });

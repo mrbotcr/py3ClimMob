@@ -115,7 +115,7 @@
             format: "dd-mm-yyyy"
         });
 
-        $('.chosen-select').chosen({width: "100%"});
+        $('.chosen-select').select2({width: "100%"});
 
         $(".js-example-data-ajax").select2({
             templateResult: formatUser,
@@ -230,7 +230,7 @@
 
                     if (child.hasClass("chosen-select")) {
                         child.val(value);
-                        child.trigger("chosen:updated");
+                        child.trigger("change");
                     }else if (child.hasClass("js-example-data-ajax")){
                         child.append($('<option>').val(value).text(value));
                         child.val(value);
@@ -422,7 +422,7 @@
             repeatContainer.after(newRepeat);
 
             newRepeat.find('.chosen-select').each(function() {
-                $(this).chosen({width: "100%"});
+                $(this).select2({width: "100%"});
             });
 
             newRepeat.find('.input-group.date').each(function() {

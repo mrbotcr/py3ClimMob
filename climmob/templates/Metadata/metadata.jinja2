@@ -12,6 +12,7 @@
     {% cssresource request,'coreresources','toastr' %}
     {% cssresource request,'coreresources','chosen' %}
     {% cssresource request,'coreresources','sweet' %}
+    {% cssresource request,'coreresources','select2' %}
 {% endblock css %}
 
 {% block topScripts %}
@@ -23,6 +24,7 @@
     {% jsresource request,'coreresources','toastr' %}
     {% jsresource request,'coreresources','chosen' %}
     {% jsresource request,'coreresources','sweet' %}
+    {% jsresource request,'coreresources','select2' %}
 {% endblock topScripts %}
 
 {% block pageheading %}
@@ -172,7 +174,7 @@
 
             setSwitchery(ckb_metadata_active, true)
 
-            $('.chosen-select').chosen({width: "100%"});
+            $('.chosen-select').select2({width: "100%"});
 
         });
 
@@ -209,7 +211,7 @@
                     put.push(element["pluoa_id"])
                 });
 
-                $("#select_project_types").val(put).trigger('chosen:updated');
+                $("#select_project_types").val(put).trigger('change');
 
                 $("#btn_modify_metadata").css('display','initial')
             });
@@ -232,7 +234,7 @@
         {
             $("#metadata_id").val("");
             $("#metadata_name").val("");
-            $("#select_project_types").val("").trigger('chosen:updated');
+            $("#select_project_types").val("").trigger('change');
             $("#xlsxODK").removeAttr('required')
             setSwitchery(ckb_metadata_active, true);
         }

@@ -379,7 +379,7 @@
         }
     )
 
-    $('.chosen-select').chosen({width: "100%", max_selected_options: 4});
+    $('.chosen-select').select2({width: "100%", maximumSelectionLength: 4});
 
     $(".js-example-data-ajax").select2({
         placeholder: "{{ _("Write the affiliation name") }}",
@@ -467,10 +467,10 @@
 
         $("#project_unit_of_analysis").empty();
         $("#project_unit_of_analysis").append("<option value=''>{{ _("Select a unit of analysis") }}</option>");
-        $("#project_unit_of_analysis").trigger("chosen:updated");
+        $("#project_unit_of_analysis").trigger("change");
 
         $("#project_objectives").empty();
-        $("#project_objectives").trigger("chosen:updated");
+        $("#project_objectives").trigger("change");
 
         if ($(this).val() !=="") {
             var URL = "{{ request.route_url('getunitofanalysisbylocation', locationid="__locationid__") }}"
@@ -482,7 +482,7 @@
                     $("#project_unit_of_analysis").append("<option value='"+ element.puoa_id+"'>"+ element.puoa_name+"</option>");
                 });
 
-                $("#project_unit_of_analysis").trigger("chosen:updated");
+                $("#project_unit_of_analysis").trigger("change");
             });
         }
     });
@@ -490,7 +490,8 @@
     $("#project_unit_of_analysis").change(function (){
 
         $("#project_objectives").empty();
-        $("#project_objectives").trigger("chosen:updated");
+        $("#project_objectives").append("<option value=''>{{ _("Choose one objective") }}</option>");
+        $("#project_objectives").trigger("change");
 
         if ($(this).val() !=="") {
             var URL = "{{ request.route_url('getobjectivesbylocationandunitofanalysis', locationid="__locationid__", unitofanalysisid="__unitofanalysisid__") }}"
@@ -502,7 +503,7 @@
                     $("#project_objectives").append("<option value='"+ element.pobjective_id+"'>"+ element.pobjective_name+"</option>");
                 });
 
-                $("#project_objectives").trigger("chosen:updated");
+                $("#project_objectives").trigger("change");
             });
         }
     });
