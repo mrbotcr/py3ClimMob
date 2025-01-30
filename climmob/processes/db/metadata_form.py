@@ -1,5 +1,8 @@
-from climmob.models import MetadataForm, mapToSchema, mapFromSchemaWithRelationships
+from climmob.models import MetadataForm, mapToSchema, mapFromSchema
 from climmob.processes.db.project_metadata_form import getProjectMetadataForm
+from climmob.processes.db.metadata_form_location_unit_of_analysis import (
+    getAllMetadaFormLocationUnitOfAnalysisByMetadataForm,
+)
 
 __all__ = [
     "addMetadataForm",
@@ -23,9 +26,22 @@ def addMetadataForm(data, request):
 
 def getAllMetadata(request):
     _query = (
-        request.dbsession.query(MetadataForm).order_by(MetadataForm.metadata_name).all()
+        request.dbsession.query(
+            MetadataForm.metadata_id,
+            MetadataForm.metadata_name,
+            MetadataForm.metadata_active,
+        )
+        .order_by(MetadataForm.metadata_name)
+        .all()
     )
-    result = mapFromSchemaWithRelationships(_query)
+    result = mapFromSchema(_query)
+
+    for metadata in result:
+
+        metadata["InfoDetails"] = getAllMetadaFormLocationUnitOfAnalysisByMetadataForm(
+            request, metadata["metadata_id"]
+        )
+
     return result
 
 
@@ -35,7 +51,11 @@ def getMetadataForm(request, metadataFormId):
         .filter(MetadataForm.metadata_id == metadataFormId)
         .first()
     )
-    result = mapFromSchemaWithRelationships(resultQuery)
+    result = mapFromSchema(resultQuery)
+
+    result["InfoDetails"] = getAllMetadaFormLocationUnitOfAnalysisByMetadataForm(
+        request, result["metadata_id"]
+    )
 
     return result
 
@@ -47,8 +67,8 @@ def getMetadataForm(request, metadataFormId):
 
 def getMetadataForProject(request, projectId):
 
-    result = mapFromSchemaWithRelationships(
-        request.dbsession.query(MetadataForm)
+    result = mapFromSchema(
+        request.dbsession.query(MetadataForm.metadata_id, MetadataForm.metadata_name)
         .filter(MetadataForm.metadata_active == 1)
         .order_by(MetadataForm.metadata_name)
         .all()

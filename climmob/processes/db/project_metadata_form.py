@@ -2,8 +2,9 @@ from climmob.models import (
     ProjectMetadataForm,
     MetadataForm,
     mapToSchema,
-    mapFromSchemaWithRelationships,
+    mapFromSchema,
 )
+from sqlalchemy import func
 
 __all__ = [
     "addProjectMetadataForm",
@@ -24,7 +25,7 @@ def addProjectMetadataForm(data, request):
 
 
 def getProjectMetadataForm(request, projectId, metadataFormId):
-    result = mapFromSchemaWithRelationships(
+    result = mapFromSchema(
         request.dbsession.query(ProjectMetadataForm)
         .filter(ProjectMetadataForm.project_id == projectId)
         .filter(ProjectMetadataForm.metadata_id == metadataFormId)
@@ -45,12 +46,19 @@ def modifyProjectMetadataForm(request, projectId, metadataFormId, data):
 
 
 def knowIfTheProjectMetadataIsComplete(request, projectId):
-    result = mapFromSchemaWithRelationships(request.dbsession.query(MetadataForm).all())
-    quantityRequired = len(result)
-    quantityCompleted = 0
-    for metadata in result:
-        for project in metadata["project_metadata_form"]:
-            if project["project_id"] == projectId:
-                quantityCompleted = quantityCompleted + 1
-
-    return quantityRequired, quantityCompleted
+    quantityRequired = mapFromSchema(
+        request.dbsession.query(
+            func.count(MetadataForm.metadata_id).label("quantity_required")
+        ).one()
+    )
+    quantityCompleted = mapFromSchema(
+        request.dbsession.query(
+            func.count(ProjectMetadataForm.project_id).label("quantity_completed")
+        )
+        .filter(ProjectMetadataForm.project_id == projectId)
+        .one()
+    )
+    return (
+        quantityRequired["quantity_required"],
+        quantityCompleted["quantity_completed"],
+    )

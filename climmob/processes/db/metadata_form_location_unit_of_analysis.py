@@ -1,8 +1,12 @@
-from climmob.models import mapToSchema, MetadaFormLocationUnitOfAnalysis
+from climmob.models import mapToSchema, MetadaFormLocationUnitOfAnalysis, mapFromSchema
+from climmob.processes.db.location_unit_of_analysis import (
+    get_location_unit_of_analysis_by_pluoa_id,
+)
 
 __all__ = [
     "addMetadaFormLocationUnitOfAnalysis",
     "deleteMetadaFormLocationUnitOfAnalysisByMetadataForm",
+    "getAllMetadaFormLocationUnitOfAnalysisByMetadataForm",
 ]
 
 
@@ -24,3 +28,19 @@ def deleteMetadaFormLocationUnitOfAnalysisByMetadataForm(request, metadataFormId
         return True, ""
     except Exception as e:
         return False, e
+
+
+def getAllMetadaFormLocationUnitOfAnalysisByMetadataForm(request, metadataFormId):
+
+    result = mapFromSchema(
+        request.dbsession.query(MetadaFormLocationUnitOfAnalysis)
+        .filter(MetadaFormLocationUnitOfAnalysis.metadata_id == metadataFormId)
+        .all()
+    )
+
+    for info in result:
+        info["InfoDetails"] = get_location_unit_of_analysis_by_pluoa_id(
+            request, info["pluoa_id"]
+        )
+
+    return result

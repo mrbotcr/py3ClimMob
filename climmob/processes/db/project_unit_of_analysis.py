@@ -2,25 +2,24 @@ from climmob.models import (
     ProjectUnitOfAnalysis,
     I18nProjectUnitOfAnalysis,
     LocationUnitOfAnalysis,
-    mapFromSchemaWithRelationships,
     mapFromSchema,
 )
 from sqlalchemy import func, and_
 
-__all__ = ["get_all_unit_of_analysis_by_location", "get_unit_of_analysis_by_id"]
+__all__ = [
+    "get_all_unit_of_analysis_by_location",
+    "get_unit_of_analysis_by_id",
+    "get_unit_of_analysis_by_unit_of_analysis_id_details",
+]
 
 
-def get_all_unit_of_analysis_by_location(request, location_id, method_from_schema=None):
-    if not method_from_schema:
-        method_from_schema = mapFromSchemaWithRelationships
-    else:
-        method_from_schema = mapFromSchema
+def get_all_unit_of_analysis_by_location(request, location_id):
 
     sub_query = request.dbsession.query(LocationUnitOfAnalysis.puoa_id).filter(
         LocationUnitOfAnalysis.plocation_id == location_id
     )
 
-    result = method_from_schema(
+    result = mapFromSchema(
         request.dbsession.query(
             ProjectUnitOfAnalysis,
             func.coalesce(
@@ -49,10 +48,39 @@ def get_all_unit_of_analysis_by_location(request, location_id, method_from_schem
 
 def get_unit_of_analysis_by_id(request, unit_of_analysis_id):
 
-    res = mapFromSchemaWithRelationships(
+    res = mapFromSchema(
         request.dbsession.query(ProjectUnitOfAnalysis)
         .filter(ProjectUnitOfAnalysis.puoa_id == unit_of_analysis_id)
         .first()
     )
 
     return res
+
+
+def get_unit_of_analysis_by_unit_of_analysis_id_details(request, unit_of_analysis_id):
+
+    result = mapFromSchema(
+        request.dbsession.query(
+            ProjectUnitOfAnalysis,
+            func.coalesce(
+                I18nProjectUnitOfAnalysis.puoa_name, ProjectUnitOfAnalysis.puoa_name
+            ).label("puoa_name"),
+        )
+        .join(
+            I18nProjectUnitOfAnalysis,
+            and_(
+                ProjectUnitOfAnalysis.puoa_id == I18nProjectUnitOfAnalysis.puoa_id,
+                I18nProjectUnitOfAnalysis.lang_code == request.locale_name,
+            ),
+            isouter=True,
+        )
+        .filter(ProjectUnitOfAnalysis.puoa_id == unit_of_analysis_id)
+        .order_by(
+            func.coalesce(
+                I18nProjectUnitOfAnalysis.puoa_name, ProjectUnitOfAnalysis.puoa_name
+            )
+        )
+        .first()
+    )
+
+    return result

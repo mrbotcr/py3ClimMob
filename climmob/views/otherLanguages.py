@@ -110,6 +110,9 @@ class requestLanguageTranslation_view(privateView):
                 "email": self.user.userData["user_email"],
                 "language": language,
                 "contribute": dataworking["contribute"],
+                "instance": self.request.registry.settings.get(
+                    "analytics.instancename", ""
+                ),
             }
 
             render_temp = template.render(info)

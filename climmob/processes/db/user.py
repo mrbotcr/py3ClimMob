@@ -5,7 +5,6 @@ from climmob.models import (
     User,
     mapToSchema,
     mapFromSchema,
-    mapFromSchemaWithRelationships,
 )
 from climmob.models.repository import sql_execute
 
@@ -76,7 +75,7 @@ def update_last_login(request, user):
 
 
 def getAllUserAdmin(request):
-    result = mapFromSchemaWithRelationships(
+    result = mapFromSchema(
         request.dbsession.query(User).filter(User.user_admin == 1).all()
     )
 

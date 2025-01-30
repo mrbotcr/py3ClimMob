@@ -93,28 +93,14 @@
                                         <tr>
                                             <td style="vertical-align: middle">{{ metadata.metadata_name }}</td>
                                             <td>
-                                                {% for relation in metadata["metadata_form_location_unit_of_analysis"] %}
-
-                                                    {% set changes = {'plocation_name': relation["LocationUnitOfAnalysis"]["ProjectLocation"]["plocation_name"], 'puoa_lang': relation["LocationUnitOfAnalysis"]["ProjectUnitOfAnalysis"]["puoa_name"] } %}
-
-                                                    {% for lang in relation["LocationUnitOfAnalysis"]["ProjectLocation"]["i18n_project_location"] %}
-                                                        {% if lang["lang_code"] ==  request.locale_name%}
-                                                            {% if changes.update({'plocation_name': lang["plocation_name"] }) %} {% endif %}
-                                                        {% endif %}
-                                                    {% endfor %}
+                                                {% for relation in  metadata.InfoDetails%}
 
 
-                                                    {% for lang in relation["LocationUnitOfAnalysis"]["ProjectUnitOfAnalysis"]["i18n_project_unit_of_analysis"] %}
-                                                        {% if lang["lang_code"] ==  request.locale_name%}
-                                                            {% if changes.update({'puoa_lang': lang["puoa_name"] }) %} {% endif %}
-                                                        {% endif %}
-                                                    {% endfor %}
-
-                                                    <p><span class="label label-default">
-                                                        {{ changes.plocation_name }} - {{ changes.puoa_lang }}
-                                                    </span></p>
-
-
+                                                    <p>
+                                                        <span class="label label-default">
+                                                            {{ relation["InfoDetails"]["project_location"]["plocation_name"] }} - {{ relation["InfoDetails"]["unit_of_analysis"]["puoa_name"] }}
+                                                        </span>
+                                                    </p>
                                                 {% endfor %}
                                             </td>
                                             <td class="text-center" style="vertical-align: middle">
@@ -219,7 +205,7 @@
                 }
 
                 var put = []
-                dataJson["metadata_form_location_unit_of_analysis"].forEach(element => {
+                dataJson["InfoDetails"].forEach(element => {
                     put.push(element["pluoa_id"])
                 });
 

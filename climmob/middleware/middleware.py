@@ -29,7 +29,9 @@ def CheckMiddleware(event):
 
         login = authenticated_user.get("login")
         if not login:
-            log.warning("Authenticated user does not have a login key. Passing request.")
+            log.warning(
+                "Authenticated user does not have a login key. Passing request."
+            )
             return
 
         last_activity = getLastActivityLogByUser(login, request)
@@ -58,7 +60,9 @@ def CheckMiddleware(event):
                     login, request
                 )
                 if not completed:
-                    raise HTTPFound(location=request.route_url("curationoftechnologies"))
+                    raise HTTPFound(
+                        location=request.route_url("curationoftechnologies")
+                    )
 
             list_of_path.append("curationofprojects")
             list_of_path.append("getunitofanalysisbylocation")

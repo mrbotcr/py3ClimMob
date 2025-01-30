@@ -1,23 +1,28 @@
 from climmob.models import (
-    mapToSchema,
-    mapFromSchemaWithRelationships,
+    mapFromSchema,
     LocationUnitOfAnalysis,
     ProjectLocation,
     ProjectUnitOfAnalysis,
     I18nProjectLocation,
     I18nProjectUnitOfAnalysis,
 )
+from climmob.processes.db.project_location import get_location_by_id_with_details
+from climmob.processes.db.project_unit_of_analysis import (
+    get_unit_of_analysis_by_unit_of_analysis_id_details,
+)
+
 from sqlalchemy import and_, func
 
 __all__ = [
     "getAllLocationUnitOfAnalysis",
     "get_location_unit_of_analysis_by_combination",
+    "get_location_unit_of_analysis_by_pluoa_id",
 ]
 
 
 def getAllLocationUnitOfAnalysis(request):
 
-    result = mapFromSchemaWithRelationships(
+    result = mapFromSchema(
         request.dbsession.query(
             LocationUnitOfAnalysis,
             func.coalesce(
@@ -56,11 +61,32 @@ def get_location_unit_of_analysis_by_combination(
     request, location_id, unit_of_analysis_id
 ):
 
-    result = mapFromSchemaWithRelationships(
+    result = mapFromSchema(
         request.dbsession.query(LocationUnitOfAnalysis)
         .filter(LocationUnitOfAnalysis.plocation_id == location_id)
         .filter(LocationUnitOfAnalysis.puoa_id == unit_of_analysis_id)
         .first()
     )
+
+    return result
+
+
+def get_location_unit_of_analysis_by_pluoa_id(request, pluoa_id):
+
+    result = mapFromSchema(
+        request.dbsession.query(LocationUnitOfAnalysis)
+        .filter(LocationUnitOfAnalysis.pluoa_id == pluoa_id)
+        .first()
+    )
+
+    if result:
+        result["project_location"] = get_location_by_id_with_details(
+            request, result["plocation_id"]
+        )
+        result[
+            "unit_of_analysis"
+        ] = get_unit_of_analysis_by_unit_of_analysis_id_details(
+            request, result["puoa_id"]
+        )
 
     return result

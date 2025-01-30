@@ -106,9 +106,7 @@ class ReadListOfLocationsView(apiView):
 
             response = Response(
                 status=200,
-                body=json.dumps(
-                    get_all_project_location(self.request, method_from_schema="API")
-                ),
+                body=json.dumps(get_all_project_location(self.request)),
             )
             return response
         else:
@@ -140,9 +138,7 @@ class ReadListOfUnitOfAnalysisView(apiView):
                             status=200,
                             body=json.dumps(
                                 get_all_unit_of_analysis_by_location(
-                                    self.request,
-                                    dataworking["plocation_id"],
-                                    method_from_schema="API",
+                                    self.request, dataworking["plocation_id"]
                                 )
                             ),
                         )
@@ -207,7 +203,6 @@ class ReadListOfObjectivesView(apiView):
                                             self.request,
                                             dataworking["plocation_id"],
                                             dataworking["puoa_id"],
-                                            method_from_schema="API",
                                         )
                                     ),
                                 )

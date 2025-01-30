@@ -1,4 +1,4 @@
-from climmob.models import mapFromSchemaWithRelationships, I18n
+from climmob.models import mapFromSchema, I18n
 
 __all__ = [
     "getListOfLanguages",
@@ -9,14 +9,14 @@ __all__ = [
 
 
 def getListOfLanguages(request):
-    mappedData = mapFromSchemaWithRelationships(
+    mappedData = mapFromSchema(
         request.dbsession.query(I18n).order_by(I18n.lang_name).all()
     )
     return mappedData
 
 
 def getListOfLanguagesInClimMob(request):
-    mappedData = mapFromSchemaWithRelationships(
+    mappedData = mapFromSchema(
         request.dbsession.query(I18n)
         .filter(I18n.lang_in_climmob == 1)
         .order_by(I18n.lang_name)
@@ -27,7 +27,7 @@ def getListOfLanguagesInClimMob(request):
 
 def languageExistInI18n(language, request):
 
-    mappedData = mapFromSchemaWithRelationships(
+    mappedData = mapFromSchema(
         request.dbsession.query(
             I18n,
         )
@@ -43,7 +43,7 @@ def languageExistInI18n(language, request):
 
 def languageByLanguageCode(languageCode, request):
 
-    mappedData = mapFromSchemaWithRelationships(
+    mappedData = mapFromSchema(
         request.dbsession.query(
             I18n,
         )

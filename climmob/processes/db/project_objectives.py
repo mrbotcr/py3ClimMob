@@ -4,7 +4,6 @@ from climmob.models import (
     LocationUnitOfAnalysis,
     LocationUnitOfAnalysisObjectives,
     mapFromSchema,
-    mapFromSchemaWithRelationships,
 )
 from sqlalchemy import func, and_
 
@@ -14,12 +13,8 @@ __all__ = [
 
 
 def get_all_objectives_by_location_and_unit_of_analysis(
-    request, location_id, unit_of_analysis_id, method_from_schema=None
+    request, location_id, unit_of_analysis_id
 ):
-    if not method_from_schema:
-        method_from_schema = mapFromSchemaWithRelationships
-    else:
-        method_from_schema = mapFromSchema
 
     sub_query_LocationUnitOfAnalysis = (
         request.dbsession.query(LocationUnitOfAnalysis.pluoa_id)
@@ -33,7 +28,7 @@ def get_all_objectives_by_location_and_unit_of_analysis(
         LocationUnitOfAnalysisObjectives.pluoa_id.in_(sub_query_LocationUnitOfAnalysis)
     )
 
-    result = method_from_schema(
+    result = mapFromSchema(
         request.dbsession.query(
             ProjectObjectives,
             func.coalesce(
