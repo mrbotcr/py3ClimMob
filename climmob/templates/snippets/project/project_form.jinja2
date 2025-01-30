@@ -223,9 +223,9 @@
                     <div class="hr-line-dashed"></div>
 
                     <div class="form-group">
-                        <label class="col-sm-4 control-label">{{ _("Objectives") }}</label>
+                        <label class="col-sm-4 control-label">{{ _("Objective") }}</label>
                         <div class="col-sm-8">
-                            <select id="project_objectives" name="project_objectives" class="form-control chosen-select" data-placeholder="{{ _("Choose multiple objectives") }}" tabindex="2" required oninvalid="this.setCustomValidity('{{ _("Choose multiple objectives") }}')" onchange="this.setCustomValidity('')" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} {% if not permissionForChanges %} disabled {% endif %}>
+                            <select id="project_objectives" name="project_objectives" class="form-control chosen-select" data-placeholder="{{ _("Choose one objective") }}" tabindex="2" required oninvalid="this.setCustomValidity('{{ _("Choose one objective") }}')" onchange="this.setCustomValidity('')" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} {% if not permissionForChanges %} disabled {% endif %}>
                                 {% for objectives in listOfObjectives %}
                                     <option value="{{ objectives.pobjective_id }}" {% if dataworking.project_objectives is string %} {% if objectives.pobjective_id|string == dataworking.project_objectives|string %}selected{% endif %}{% else %}{% if objectives.pobjective_id|string in dataworking.project_objectives %}selected{% endif %}{% endif %}   {% for obj in dataworking.objectives %}{% if obj.pobjective_id == objectives.pobjective_id %}selected{% endif %}{% endfor %}>{{ objectives.pobjective_name }}</option>
                                 {% endfor %}

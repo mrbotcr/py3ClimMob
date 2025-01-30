@@ -24,6 +24,8 @@ from climmob.processes import (
     getProjectLabels,
     getPrjLangDefaultInProject,
     languageExistInTheProject,
+    modifyProjectMainLanguage,
+    projectRegStatus,
 )
 from climmob.products import stopTasksByProcess
 from climmob.views.classes import privateView
@@ -518,3 +520,42 @@ def createDocumentForm(
         dataPreviewInMultipleLanguages,
         listOfLabelsForPackages,
     )
+
+
+class ChangeProjectMainLanguage_view(privateView):
+    def processView(self):
+
+        self.returnRawViewResult = True
+        if self.request.method == "POST":
+
+            postdata = self.getPostDict()
+            activeProjectUser = postdata["user"]
+            activeProjectCod = postdata["project"]
+            main_language = postdata["main_language"]
+
+            if not projectExists(
+                self.user.login, activeProjectUser, activeProjectCod, self.request
+            ):
+                raise HTTPNotFound()
+            else:
+                activeProjectId = getTheProjectIdForOwner(
+                    activeProjectUser, activeProjectCod, self.request
+                )
+
+                if projectRegStatus(activeProjectId, self.request):
+
+                    edited, message = modifyProjectMainLanguage(
+                        self.request, activeProjectId, main_language
+                    )
+
+                    if edited:
+
+                        return {
+                            "result": "success",
+                            "message": self._("Main language successfully updated"),
+                        }
+
+        return {
+            "result": "error",
+            "message": self._("There was an error updating the main language"),
+        }

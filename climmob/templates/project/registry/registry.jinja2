@@ -132,6 +132,23 @@
                                         <div class="tab-content" >
                                             <div role="tabpanel" id="tab{{ languageActive }}" class="tab-pane active">
                                                 <div class="panel-body">
+                                                    {% if onlySee == False %}
+                                                        {% for lang in activeProject["languages"] %}
+                                                            {% if lang.lang_default != 1 and lang.lang_code == languageActive %}
+                                                                <div class="text-center">
+                                                                    <div class="btn-success btn-xs btnChangeMainLanguage" style="width: 100%" langCode="{{ lang.lang_code }}">{{ _("Click here to set as main language of the project") }}</div>
+                                                                    <br>
+                                                                </div>
+                                                            {% endif %}
+                                                            {% if lang.lang_default == 1 and lang.lang_code == languageActive %}
+                                                                <div class="text-center">
+                                                                    <div class="btn-primary btn-xs" style="width: 100%" >{{ _("This language was set as the main language of the project") }}</div>
+                                                                    <br>
+                                                                </div>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% endif %}
+
 
                                                     <div style="overflow-x: hidden; overflow-y: scroll; min-height: 375px; max-height: calc(100vh - 270px);">
                                                         {% include 'snippets/error.jinja2' %}
@@ -457,6 +474,33 @@
 
             })
 
+        });
+
+        $(".btnChangeMainLanguage").click(function (){
+
+            $.ajax({
+                url: '{{ request.route_url('changeprojectmainlanguage') }}',
+                datatype: "json",
+                type: "POST",
+                data: {
+                    "csrf_token": '{{ request.session.get_csrf_token() }}',
+                    "user": "{{ activeProject["owner"].user_name }}",
+                    "project": "{{ activeProject.project_cod }}",
+                    "main_language": $(this).attr("langCode"),
+                },
+                success: function (response) {
+                    if (response["result"] === "success")
+                    {
+                        window.location.href = "{{ request.route_url('registry', user=activeProject["owner"].user_name, project=activeProject.project_cod) }}"
+                    }else{
+                        toastr.error(response["message"]);
+                    }
+
+                },
+                error: function (response) {
+                    toastr.error("{{ _("There was a problem updating the main languages") }}");
+                }
+            });
         });
 
         function createSection() {

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: climmob 3.9.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-01-28 09:52-0600\n"
-"PO-Revision-Date: 2025-01-28 09:58-0600\n"
+"POT-Creation-Date: 2025-01-30 10:43-0600\n"
+"PO-Revision-Date: 2025-01-30 11:27-0600\n"
 "Last-Translator: \n"
 "Language-Team: fr <LL@li.org>\n"
 "Language: fr\n"
@@ -220,7 +220,7 @@ msgstr "Nom"
 #: climmob/products/fieldagents/celerytasks.py:111
 #: climmob/templates/enumerators/enumerators.jinja2:117
 #: climmob/templates/enumerators/enumerators.jinja2:157
-#: climmob/templates/login.jinja2:56
+#: climmob/templates/login.jinja2:70
 #: climmob/templates/projectHelp/projectHelp.jinja2:74
 #: climmob/templates/register.jinja2:65 climmob/templates/register.jinja2:66
 #: climmob/templates/reset_password.jinja2:45
@@ -231,7 +231,7 @@ msgstr "Nom d'utilisateur"
 
 #: climmob/products/fieldagents/celerytasks.py:112
 #: climmob/templates/enumerators/enumerators.jinja2:160
-#: climmob/templates/login.jinja2:59 climmob/templates/register.jinja2:70
+#: climmob/templates/login.jinja2:73 climmob/templates/register.jinja2:70
 #: climmob/templates/register.jinja2:71
 #: climmob/templates/snippets/enumerators/enumerator-form.jinja2:18
 msgid "Password"
@@ -373,7 +373,7 @@ msgstr "Basculer la navigation"
 msgid "Login or request an account"
 msgstr "Connexion ou créer un nouveau compte"
 
-#: climmob/templates/landing.jinja2:47 climmob/templates/login.jinja2:62
+#: climmob/templates/landing.jinja2:47 climmob/templates/login.jinja2:76
 #: climmob/templates/register.jinja2:84
 msgid "Login"
 msgstr "Connexion"
@@ -454,8 +454,8 @@ msgstr "de multiples"
 msgid "locations"
 msgstr "emplacements"
 
-#: climmob/templates/cloneProjects/cloneProjects.jinja2:203
-#: climmob/templates/cloneProjects/cloneProjects.jinja2:226
+#: climmob/templates/cloneProjects/cloneProjects.jinja2:204
+#: climmob/templates/cloneProjects/cloneProjects.jinja2:227
 #: climmob/templates/landing.jinja2:106
 #: climmob/templates/project/analysis/projectAnalysis.jinja2:313
 msgid "Previous"
@@ -555,12 +555,12 @@ msgid "Or follow us on social media"
 msgstr "Ou suivez-nous sur les réseaux sociaux"
 
 #: climmob/templates/dashboard/dashboard.jinja2:896
-#: climmob/templates/landing.jinja2:703 climmob/templates/login.jinja2:78
+#: climmob/templates/landing.jinja2:703 climmob/templates/login.jinja2:92
 msgid "Copyright"
 msgstr "Droits d'auteur"
 
 #: climmob/templates/dashboard/dashboard.jinja2:896
-#: climmob/templates/landing.jinja2:703 climmob/templates/login.jinja2:78
+#: climmob/templates/landing.jinja2:703 climmob/templates/login.jinja2:92
 msgid "{}, MrBot Software Solutions"
 msgstr "{}, MrBot Software Solutions"
 
@@ -568,11 +568,11 @@ msgstr "{}, MrBot Software Solutions"
 msgid "Version"
 msgstr "Version"
 
-#: climmob/templates/landing.jinja2:718 climmob/templates/login.jinja2:89
+#: climmob/templates/landing.jinja2:718 climmob/templates/login.jinja2:103
 msgid "Cookies"
 msgstr "Cookies"
 
-#: climmob/templates/landing.jinja2:721 climmob/templates/login.jinja2:92
+#: climmob/templates/landing.jinja2:721 climmob/templates/login.jinja2:106
 msgid ""
 "This website stores cookies on your computer. These cookies are used to remember "
 "you or to know that you have been authenticated. To find out more about the "
@@ -582,11 +582,11 @@ msgstr ""
 "pour se souvenir de vous ou pour savoir que vous avez été authentifié. Pour en "
 "savoir plus sur les cookies que nous utilisons, consultez notre"
 
-#: climmob/templates/landing.jinja2:721 climmob/templates/login.jinja2:92
+#: climmob/templates/landing.jinja2:721 climmob/templates/login.jinja2:106
 msgid "Privacy Policy"
 msgstr "Politique de confidentialité"
 
-#: climmob/templates/landing.jinja2:726 climmob/templates/login.jinja2:97
+#: climmob/templates/landing.jinja2:726 climmob/templates/login.jinja2:111
 msgid "Accept"
 msgstr "Accepter"
 
@@ -624,19 +624,19 @@ msgstr ""
 "Échec de la connexion. Veuillez vérifier vos informations d'identification et "
 "réessayer"
 
-#: climmob/templates/login.jinja2:64
+#: climmob/templates/login.jinja2:78
 msgid "Forgot username or password?"
 msgstr "Nom d'utilisateur ou mot de passe oublié ?"
 
-#: climmob/templates/login.jinja2:68
+#: climmob/templates/login.jinja2:82
 msgid "Do not have an account?"
 msgstr "Vous n'avez pas de compte ?"
 
-#: climmob/templates/login.jinja2:69
+#: climmob/templates/login.jinja2:83
 msgid "Create an account"
 msgstr "Créer un compte"
 
-#: climmob/templates/login.jinja2:93
+#: climmob/templates/login.jinja2:107
 msgid ""
 "If you decline, two encrypted cookies will be stored: 1) a cookie to remember "
 "your answer and 2) a cookie for us to know that you are authenticated once you "
@@ -646,7 +646,7 @@ msgstr ""
 "souvenir de votre réponse et 2) un cookie pour nous permettre de savoir que vous "
 "êtes authentifié une fois connecté."
 
-#: climmob/templates/login.jinja2:98
+#: climmob/templates/login.jinja2:112
 msgid "Decline"
 msgstr "Refuser"
 
@@ -778,8 +778,8 @@ msgstr "Avez-vous déjà un compte ?"
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:433
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:454
 #: climmob/templates/project/projectList.jinja2:186
-#: climmob/templates/project/registry/registry.jinja2:481
-#: climmob/templates/project/registry/registry.jinja2:502
+#: climmob/templates/project/registry/registry.jinja2:523
+#: climmob/templates/project/registry/registry.jinja2:544
 #: climmob/templates/project/technologies/technologies.jinja2:343
 #: climmob/templates/question/library.jinja2:237
 #: climmob/templates/question/translations.jinja2:308
@@ -789,8 +789,8 @@ msgstr "Avez-vous déjà un compte ?"
 #: climmob/templates/snippets/languages/addMoreLanguages.jinja2:7
 #: climmob/templates/snippets/languages/addMoreLanguages.jinja2:16
 #: climmob/templates/snippets/languages/changeLanguages.jinja2:41
-#: climmob/templates/snippets/project/project_form.jinja2:430
-#: climmob/templates/snippets/project/project_form.jinja2:449
+#: climmob/templates/snippets/project/project_form.jinja2:429
+#: climmob/templates/snippets/project/project_form.jinja2:448
 #: climmob/templates/snippets/project/registry/create/combination_table.jinja2:67
 #: climmob/templates/technologies/curationoftechnologies.jinja2:100
 #: climmob/templates/technologies/technologies.jinja2:637
@@ -909,10 +909,10 @@ msgstr "Ajouter"
 #: climmob/templates/project/assessment/assessment.jinja2:65
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:151
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:152
-#: climmob/templates/project/curationofprojects.jinja2:149
+#: climmob/templates/project/curationofprojects.jinja2:150
 #: climmob/templates/project/metadata/metadata.jinja2:134
-#: climmob/templates/project/registry/registry.jinja2:180
-#: climmob/templates/project/registry/registry.jinja2:181
+#: climmob/templates/project/registry/registry.jinja2:195
+#: climmob/templates/project/registry/registry.jinja2:196
 #: climmob/templates/project/technologies/technologies.jinja2:189
 #: climmob/templates/question/translations.jinja2:291
 #: climmob/templates/technologies/curationoftechnologies.jinja2:76
@@ -950,33 +950,33 @@ msgstr "Statut"
 msgid "Actions"
 msgstr "Actions"
 
-#: climmob/templates/Metadata/metadata.jinja2:122
+#: climmob/templates/Metadata/metadata.jinja2:108
 #: climmob/templates/progress/progressInformation.jinja2:91
 #: climmob/templates/progress/progressInformation.jinja2:92
 #: climmob/templates/projectsSummary/projectsSummary.jinja2:127
 msgid "Active"
 msgstr "Actif"
 
-#: climmob/templates/Metadata/metadata.jinja2:124
+#: climmob/templates/Metadata/metadata.jinja2:110
 #: climmob/templates/progress/progressInformation.jinja2:92
 msgid "Inactive"
 msgstr "Inactif"
 
 # | msgid "Download form"
-#: climmob/templates/Metadata/metadata.jinja2:129
+#: climmob/templates/Metadata/metadata.jinja2:115
 msgid "Download ODK file"
 msgstr "Télécharger le fichier ODK"
 
 # | msgid "Download form"
-#: climmob/templates/Metadata/metadata.jinja2:129
+#: climmob/templates/Metadata/metadata.jinja2:115
 msgid "Download ODK"
 msgstr "Télécharger le fichier ODK"
 
-#: climmob/templates/Metadata/metadata.jinja2:130
+#: climmob/templates/Metadata/metadata.jinja2:116
 msgid "Edit metadata form"
 msgstr "Modifier le formulaire des métadonnées"
 
-#: climmob/templates/Metadata/metadata.jinja2:130
+#: climmob/templates/Metadata/metadata.jinja2:116
 #: climmob/templates/dashboard/editprofile.jinja2:19
 #: climmob/templates/enumerators/enumerators.jinja2:182
 #: climmob/templates/project/assessment/assessment.jinja2:136
@@ -985,27 +985,27 @@ msgid "Edit"
 msgstr "Modifier"
 
 # | msgid "Do you really want to delete this section?"
-#: climmob/templates/Metadata/metadata.jinja2:131
+#: climmob/templates/Metadata/metadata.jinja2:117
 msgid "Do you really want to delete this metadata form?"
 msgstr "Voulez-vous vraiment supprimer ce formulaire de métadonnées ?"
 
-#: climmob/templates/Metadata/metadata.jinja2:131
+#: climmob/templates/Metadata/metadata.jinja2:117
 msgid "Delete metadata form"
 msgstr "Supprimer le formulaire des métadonnées"
 
-#: climmob/templates/Metadata/metadata.jinja2:131
+#: climmob/templates/Metadata/metadata.jinja2:117
 #: climmob/templates/enumerators/enumerators.jinja2:183
 #: climmob/templates/project/assessment/assessment.jinja2:137
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:153
 #: climmob/templates/project/enumerators/enumerators.jinja2:147
-#: climmob/templates/project/registry/registry.jinja2:182
+#: climmob/templates/project/registry/registry.jinja2:197
 #: climmob/templates/project/share/share.jinja2:160
 #: climmob/templates/snippets/languages/selected_languages.jinja2:31
 #: climmob/templates/snippets/project/technologies/aliasgroup.jinja2:57
 msgid "Delete"
 msgstr "Supprimer"
 
-#: climmob/templates/Metadata/metadata.jinja2:142
+#: climmob/templates/Metadata/metadata.jinja2:128
 msgid "No metadata forms to display"
 msgstr "Aucun formulaire de métadonnées à afficher"
 
@@ -1013,68 +1013,68 @@ msgstr "Aucun formulaire de métadonnées à afficher"
 msgid "ClimMob | Clone a project"
 msgstr "ClimMob | Cloner un projet"
 
-#: climmob/templates/cloneProjects/cloneProjects.jinja2:33
+#: climmob/templates/cloneProjects/cloneProjects.jinja2:34
 msgid "Clone a project"
 msgstr "Cloner un projet"
 
-#: climmob/templates/cloneProjects/cloneProjects.jinja2:85
+#: climmob/templates/cloneProjects/cloneProjects.jinja2:86
 msgid "Selection"
 msgstr "Sélection"
 
-#: climmob/templates/cloneProjects/cloneProjects.jinja2:95
+#: climmob/templates/cloneProjects/cloneProjects.jinja2:96
 #: climmob/templates/project/registry/create/createregistry.jinja2:169
 msgid "Confirm"
 msgstr "Confirmer"
 
-#: climmob/templates/cloneProjects/cloneProjects.jinja2:105
+#: climmob/templates/cloneProjects/cloneProjects.jinja2:106
 msgid "New profile"
 msgstr "Nouveau profil"
 
-#: climmob/templates/cloneProjects/cloneProjects.jinja2:115
+#: climmob/templates/cloneProjects/cloneProjects.jinja2:116
 msgid "Verification"
 msgstr "Vérification"
 
-#: climmob/templates/cloneProjects/cloneProjects.jinja2:142
+#: climmob/templates/cloneProjects/cloneProjects.jinja2:143
 msgid "Project"
 msgstr "Projet"
 
-#: climmob/templates/cloneProjects/cloneProjects.jinja2:144
+#: climmob/templates/cloneProjects/cloneProjects.jinja2:145
 msgid "Select one project."
 msgstr "Sélectionner un projet."
 
-#: climmob/templates/cloneProjects/cloneProjects.jinja2:145
+#: climmob/templates/cloneProjects/cloneProjects.jinja2:146
 msgid "Select a project to clone"
 msgstr "Sélectionner un projet à cloner"
 
-#: climmob/templates/cloneProjects/cloneProjects.jinja2:157
-#: climmob/templates/cloneProjects/cloneProjects.jinja2:204
+#: climmob/templates/cloneProjects/cloneProjects.jinja2:158
+#: climmob/templates/cloneProjects/cloneProjects.jinja2:205
 msgid "Next step"
 msgstr "Étape suivante"
 
-#: climmob/templates/cloneProjects/cloneProjects.jinja2:185
-#: climmob/templates/cloneProjects/cloneProjects.jinja2:256
-#: climmob/templates/cloneProjects/cloneProjects.jinja2:285
+#: climmob/templates/cloneProjects/cloneProjects.jinja2:186
+#: climmob/templates/cloneProjects/cloneProjects.jinja2:257
+#: climmob/templates/cloneProjects/cloneProjects.jinja2:286
 #: climmob/templates/snippets/project/project_form.jinja2:341
 msgid "Registration form"
 msgstr "Formulaire d'inscription"
 
-#: climmob/templates/cloneProjects/cloneProjects.jinja2:192
-#: climmob/templates/cloneProjects/cloneProjects.jinja2:263
-#: climmob/templates/cloneProjects/cloneProjects.jinja2:292
+#: climmob/templates/cloneProjects/cloneProjects.jinja2:193
+#: climmob/templates/cloneProjects/cloneProjects.jinja2:264
+#: climmob/templates/cloneProjects/cloneProjects.jinja2:293
 #: climmob/templates/project/assessment/assessment.jinja2:86
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:26
 msgid "Trial data collection moment"
 msgstr "Moment de la collecte des données d'essai"
 
-#: climmob/templates/cloneProjects/cloneProjects.jinja2:227
+#: climmob/templates/cloneProjects/cloneProjects.jinja2:228
 msgid "Create clone"
 msgstr "Créer un clone"
 
-#: climmob/templates/cloneProjects/cloneProjects.jinja2:233
+#: climmob/templates/cloneProjects/cloneProjects.jinja2:234
 msgid "The project was successfully cloned."
 msgstr "Le projet a été cloné avec succès."
 
-#: climmob/templates/cloneProjects/cloneProjects.jinja2:234
+#: climmob/templates/cloneProjects/cloneProjects.jinja2:235
 msgid ""
 "Please check that the information is correct and that the projects have the same "
 "structure."
@@ -1082,7 +1082,7 @@ msgstr ""
 "Veuillez vérifier que les informations sont correctes et que les projets ont la "
 "même structure."
 
-#: climmob/templates/cloneProjects/cloneProjects.jinja2:304
+#: climmob/templates/cloneProjects/cloneProjects.jinja2:305
 msgid "Go to the new project"
 msgstr "Aller au nouveau projet"
 
@@ -2345,7 +2345,6 @@ msgstr "Unité d’analyse"
 
 # | msgid "Projects"
 #: climmob/templates/project/curationofprojects.jinja2:95
-#: climmob/templates/snippets/project/project_form.jinja2:226
 msgid "Objectives"
 msgstr "Objectifs"
 
@@ -2393,24 +2392,26 @@ msgstr "Sélectionnez une unité d’analyse."
 
 #: climmob/templates/project/curationofprojects.jinja2:134
 #: climmob/templates/snippets/project/project_form.jinja2:228
-msgid "Choose multiple objectives"
+msgid "Choose one objective"
 msgstr "Choisissez un objectif"
 
 # | msgid "Write the organization."
-#: climmob/templates/project/curationofprojects.jinja2:174
-#: climmob/templates/snippets/project/project_form.jinja2:386
+#: climmob/templates/project/curationofprojects.jinja2:175
+#: climmob/templates/snippets/project/project_form.jinja2:385
 msgid "Write the affiliation name"
 msgstr "Écrire le nom de l'affiliation"
 
 # | msgid "Pagination"
-#: climmob/templates/project/curationofprojects.jinja2:191
-#: climmob/templates/snippets/project/project_form.jinja2:403
+#: climmob/templates/project/curationofprojects.jinja2:192
+#: climmob/templates/snippets/project/metadata/metadataForm.jinja2:177
+#: climmob/templates/snippets/project/metadata/metadataForm.jinja2:498
+#: climmob/templates/snippets/project/project_form.jinja2:402
 msgid "New affiliation"
 msgstr "Nouvelle affiliation"
 
 # | msgid "Start analysis"
-#: climmob/templates/project/curationofprojects.jinja2:249
-#: climmob/templates/snippets/project/project_form.jinja2:470
+#: climmob/templates/project/curationofprojects.jinja2:250
+#: climmob/templates/snippets/project/project_form.jinja2:469
 msgid "Select a unit of analysis"
 msgstr "Choisissez une unité d’analyse"
 
@@ -2928,12 +2929,12 @@ msgid "Main language"
 msgstr "Langue principale"
 
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:139
-#: climmob/templates/project/registry/registry.jinja2:168
+#: climmob/templates/project/registry/registry.jinja2:183
 msgid "New section"
 msgstr "Nouvelle section"
 
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:141
-#: climmob/templates/project/registry/registry.jinja2:170
+#: climmob/templates/project/registry/registry.jinja2:185
 #: climmob/templates/project/technologies/technologies.jinja2:204
 #: climmob/templates/question/library.jinja2:102
 #: climmob/templates/question/library.jinja2:133
@@ -2944,39 +2945,39 @@ msgstr "Effacer et fermer le formulaire"
 
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:168
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:449
-#: climmob/templates/project/registry/registry.jinja2:200
-#: climmob/templates/project/registry/registry.jinja2:497
+#: climmob/templates/project/registry/registry.jinja2:215
+#: climmob/templates/project/registry/registry.jinja2:539
 #: climmob/templates/question/library.jinja2:158
 msgid "Preview"
 msgstr "Aperçu"
 
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:173
-#: climmob/templates/project/registry/registry.jinja2:205
+#: climmob/templates/project/registry/registry.jinja2:220
 msgid "Download form"
 msgstr "Télécharger le formulaire"
 
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:429
-#: climmob/templates/project/registry/registry.jinja2:477
+#: climmob/templates/project/registry/registry.jinja2:519
 msgid "Add questions to the form"
 msgstr "Ajouter des questions au formulaire"
 
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:429
-#: climmob/templates/project/registry/registry.jinja2:477
+#: climmob/templates/project/registry/registry.jinja2:519
 msgid "Move the question from left to right."
 msgstr "Déplacer la question de gauche à droite."
 
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:429
-#: climmob/templates/project/registry/registry.jinja2:477
+#: climmob/templates/project/registry/registry.jinja2:519
 msgid "Delete questions from the form"
 msgstr "Supprimer les questions du formulaire"
 
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:429
-#: climmob/templates/project/registry/registry.jinja2:477
+#: climmob/templates/project/registry/registry.jinja2:519
 msgid "Move the question from right to left."
 msgstr "Déplacer la question de droite à gauche."
 
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:450
-#: climmob/templates/project/registry/registry.jinja2:498
+#: climmob/templates/project/registry/registry.jinja2:540
 msgid ""
 "In case you cannot see all the questions, you can scroll down in this section to "
 "see the new questions added."
@@ -2985,7 +2986,7 @@ msgstr ""
 "section pour voir les nouvelles questions ajoutées."
 
 #: climmob/templates/project/assessment/assessmentdetail.jinja2:527
-#: climmob/templates/project/registry/registry.jinja2:566
+#: climmob/templates/project/registry/registry.jinja2:608
 msgid "Do you really want to delete this section?"
 msgstr "Voulez-vous vraiment supprimer cette section ?"
 
@@ -3253,7 +3254,21 @@ msgstr ""
 "l'application ODK Collect. Les agents de terrain peuvent entrer les informations "
 "directement dans l'application lors de l'inscription des participants."
 
-#: climmob/templates/project/registry/registry.jinja2:476
+# | msgid "This language was set as the main language of the project"
+#: climmob/templates/project/registry/registry.jinja2:138
+msgid "Click here to set as main language of the project"
+msgstr ""
+
+#: climmob/templates/project/registry/registry.jinja2:144
+msgid "This language was set as the main language of the project"
+msgstr "Cette langue a été définie comme la langue principale du projet"
+
+#: climmob/templates/project/registry/registry.jinja2:499
+#: climmob/templates/snippets/languages/changeLanguages.jinja2:162
+msgid "There was a problem updating the main languages"
+msgstr "Il y a eu un problème lors de la mise à jour des langues principales"
+
+#: climmob/templates/project/registry/registry.jinja2:518
 msgid "Prepare participant registration"
 msgstr "Préparer l'inscription des participants"
 
@@ -3955,7 +3970,7 @@ msgstr "Retour au projet"
 #: climmob/templates/question/translations.jinja2:71
 #: climmob/templates/question/translations.jinja2:457
 #: climmob/templates/snippets/languages/addMoreLanguages.jinja2:8
-#: climmob/templates/snippets/project/project_form.jinja2:445
+#: climmob/templates/snippets/project/project_form.jinja2:444
 msgid "Add more languages"
 msgstr "Ajouter plus de langues"
 
@@ -4146,6 +4161,12 @@ msgstr ""
 "Projets auxquels le formulaire sera appliqué en fonction de l'emplacement et de "
 "l'unité d'analyse"
 
+# | msgid "The project to be cloned does not exist."
+# | msgid "The experimental site does not exist."
+#: climmob/templates/snippets/Metadata/metadata-form.jinja2:23
+msgid "Choose the experimental site and unit of analysis..."
+msgstr "Choisissez le site expérimental et l'unité d'analyse..."
+
 # | msgid "Select at least one column"
 #: climmob/templates/snippets/Metadata/metadata-form.jinja2:23
 msgid "Select at least one."
@@ -4240,10 +4261,6 @@ msgstr "Nous utilisons la base de données linguistiques : Ethnologue"
 #: climmob/templates/snippets/languages/changeLanguages.jinja2:120
 msgid "There was a problem updating the languages"
 msgstr "Il y a eu un problème lors de la mise à jour des langues"
-
-#: climmob/templates/snippets/languages/changeLanguages.jinja2:162
-msgid "There was a problem updating the main languages"
-msgstr "Il y a eu un problème lors de la mise à jour des langues principales"
 
 #: climmob/templates/snippets/languages/selected_languages.jinja2:7
 msgid "Selected languages"
@@ -4378,6 +4395,11 @@ msgstr "5. Type de projet"
 msgid "Is this a training project ?"
 msgstr "S'agit-il d'un projet de test/formation ?"
 
+# | msgid "Projects"
+#: climmob/templates/snippets/project/project_form.jinja2:226
+msgid "Objective"
+msgstr "Objectif"
+
 #: climmob/templates/snippets/project/project_form.jinja2:252
 msgid "Do you want to define this project as a template ?"
 msgstr "Voulez-vous définir ce projet comme un modèle ?"
@@ -4417,11 +4439,11 @@ msgstr "6. Structure à cloner"
 msgid "Technology options"
 msgstr "Options technologiques"
 
-#: climmob/templates/snippets/project/project_form.jinja2:425
+#: climmob/templates/snippets/project/project_form.jinja2:424
 msgid "Create your project from a template"
 msgstr "Créer votre projet à partir d'un modèle"
 
-#: climmob/templates/snippets/project/project_form.jinja2:426
+#: climmob/templates/snippets/project/project_form.jinja2:425
 msgid ""
 "Templates have some predefined questions for participant registration form and "
 "trial data collection"
@@ -4429,11 +4451,11 @@ msgstr ""
 "Les modèles ont quelques questions prédéfinies pour le formulaire d'inscription "
 "des participants et la collecte des données d'essai"
 
-#: climmob/templates/snippets/project/project_form.jinja2:444
+#: climmob/templates/snippets/project/project_form.jinja2:443
 msgid "Define the languages for your form"
 msgstr "Définissez les langues pour votre formulaire"
 
-#: climmob/templates/snippets/project/project_form.jinja2:445
+#: climmob/templates/snippets/project/project_form.jinja2:444
 msgid ""
 "You can select up to 4 languages in which your users will be able to complete "
 "the information"
@@ -4441,7 +4463,7 @@ msgstr ""
 "Vous pouvez sélectionner jusqu'à 4 langues dans lesquelles vos utilisateurs "
 "pourront remplir les informations"
 
-#: climmob/templates/snippets/project/project_form.jinja2:445
+#: climmob/templates/snippets/project/project_form.jinja2:444
 msgid "If the corresponding languages are not in the list, click on:"
 msgstr "Si les langues correspondantes ne sont pas dans la liste, cliquez sur :"
 
@@ -5365,22 +5387,22 @@ msgstr ""
 
 #: climmob/views/Api/projectAssessments.py:591
 #: climmob/views/Api/projectAssessments.py:708 climmob/views/assessment.py:93
-#: climmob/views/assessment.py:109 climmob/views/registry.py:77
-#: climmob/views/registry.py:93
+#: climmob/views/assessment.py:109 climmob/views/registry.py:78
+#: climmob/views/registry.py:94
 msgid "There is already a group with this name."
 msgstr "Il existe déjà un groupe avec ce nom."
 
-#: climmob/views/assessment.py:100 climmob/views/registry.py:84
+#: climmob/views/assessment.py:100 climmob/views/registry.py:85
 msgid "The section was successfully added"
 msgstr "La section a été ajoutée avec succès"
 
-#: climmob/views/assessment.py:116 climmob/views/registry.py:100
+#: climmob/views/assessment.py:116 climmob/views/registry.py:101
 msgid "The section was successfully updated"
 msgstr "La section a été mise à jour avec succès"
 
 #: climmob/views/Api/projectAssessments.py:1463
 #: climmob/views/Api/projectRegistry.py:903 climmob/views/assessment.py:446
-#: climmob/views/registry.py:351
+#: climmob/views/registry.py:352
 msgid "Questions cannot be outside a group"
 msgstr "Les questions ne peuvent pas être en dehors d'un groupe"
 
@@ -5512,14 +5534,14 @@ msgstr "Ce formulaire de métadonnées n'existe pas"
 msgid "This process only accepts POST method"
 msgstr "Accepte uniquement la méthode POST"
 
-#: climmob/views/otherLanguages.py:121
+#: climmob/views/otherLanguages.py:124
 msgid ""
 "It has not been possible to request a new local language, due to email problems."
 msgstr ""
 "Il n'a pas été possible de demander une nouvelle langue locale en raison de "
 "problèmes de messagerie."
 
-#: climmob/views/otherLanguages.py:139
+#: climmob/views/otherLanguages.py:142
 msgid "Only POST methods are accepted"
 msgstr "Seules les méthodes POST sont acceptées"
 
@@ -5566,12 +5588,12 @@ msgid ""
 msgstr ""
 "Ce projet ne respecte pas les limites du nombre de participants par projet."
 
-#: climmob/views/Api/projectCreation.py:736 climmob/views/project.py:316
+#: climmob/views/Api/projectCreation.py:731 climmob/views/project.py:316
 msgid "This project ID already exists."
 msgstr "Cet ID de projet existe déjà."
 
-#: climmob/views/Api/projectCreation.py:720
-#: climmob/views/Api/projectCreation.py:1240 climmob/views/project.py:320
+#: climmob/views/Api/projectCreation.py:715
+#: climmob/views/Api/projectCreation.py:1235 climmob/views/project.py:320
 #: climmob/views/project.py:727
 msgid "The names that the items will receive should be different."
 msgstr "Les noms que les éléments recevront doivent être différents."
@@ -5588,7 +5610,7 @@ msgstr "Le nombre d'observations doit être supérieur à 0."
 msgid "The project was modified successfully"
 msgstr "Le projet a été modifié avec succès"
 
-#: climmob/views/Api/projectCreation.py:1316 climmob/views/project.py:792
+#: climmob/views/Api/projectCreation.py:1311 climmob/views/project.py:792
 msgid "The project was deleted successfully"
 msgstr "Le projet a été supprimé avec succès"
 
@@ -5717,11 +5739,11 @@ msgstr "Langue ajoutée avec succès"
 msgid "There was an error adding the language"
 msgstr "Il y a eu une erreur lors de l'ajout de la langue"
 
-#: climmob/views/question.py:978
+#: climmob/views/question.py:978 climmob/views/registry.py:552
 msgid "Main language successfully updated"
 msgstr "Langue principale mise à jour avec succès"
 
-#: climmob/views/question.py:983
+#: climmob/views/question.py:983 climmob/views/registry.py:557
 msgid "There was an error updating the main language"
 msgstr "Il y a eu une erreur lors de la mise à jour de la langue principale"
 
@@ -5780,7 +5802,7 @@ msgid "The technology was deleted successfully"
 msgstr "La technologie a été supprimée avec succès"
 
 #: climmob/views/Api/dashboard.py:54 climmob/views/Api/projectAssessments.py:81
-#: climmob/views/Api/projectCreation.py:1248
+#: climmob/views/Api/projectCreation.py:1243
 #: climmob/views/Api/projectEnumerators.py:174
 #: climmob/views/Api/projectEnumerators.py:228
 #: climmob/views/Api/projectEnumerators.py:294
@@ -5814,10 +5836,10 @@ msgstr "Il n'y a pas de projet avec ce code."
 #: climmob/views/Api/projectAssessments.py:1334
 #: climmob/views/Api/projectAssessments.py:1502
 #: climmob/views/Api/projectCreation.py:80
-#: climmob/views/Api/projectCreation.py:1320
-#: climmob/views/Api/projectCreation.py:1364
-#: climmob/views/Api/projectCreation.py:1465
-#: climmob/views/Api/projectCreation.py:1565
+#: climmob/views/Api/projectCreation.py:1315
+#: climmob/views/Api/projectCreation.py:1359
+#: climmob/views/Api/projectCreation.py:1460
+#: climmob/views/Api/projectCreation.py:1560
 #: climmob/views/Api/projectEnumerators.py:178
 #: climmob/views/Api/projectEnumerators.py:232
 #: climmob/views/Api/projectEnumerators.py:298
@@ -5873,11 +5895,11 @@ msgstr "Erreur dans le JSON."
 #: climmob/views/Api/projectAssessments.py:515
 #: climmob/views/Api/projectAssessments.py:1010
 #: climmob/views/Api/projectCreation.py:83 climmob/views/Api/projectCreation.py:98
-#: climmob/views/Api/projectCreation.py:115
-#: climmob/views/Api/projectCreation.py:169
-#: climmob/views/Api/projectCreation.py:250
-#: climmob/views/Api/projectCreation.py:795
-#: climmob/views/Api/projectCreation.py:1367
+#: climmob/views/Api/projectCreation.py:113
+#: climmob/views/Api/projectCreation.py:165
+#: climmob/views/Api/projectCreation.py:245
+#: climmob/views/Api/projectCreation.py:790
+#: climmob/views/Api/projectCreation.py:1362
 #: climmob/views/Api/projectEnumerators.py:235
 #: climmob/views/Api/projectEnumerators.py:301
 #: climmob/views/Api/projectProducts.py:77 climmob/views/Api/projectProducts.py:186
@@ -5931,10 +5953,10 @@ msgstr "Le mot de passe et sa re-saisie ne sont pas identiques."
 #: climmob/views/Api/projectAssessments.py:1172
 #: climmob/views/Api/projectAssessments.py:1330
 #: climmob/views/Api/projectAssessments.py:1498
-#: climmob/views/Api/projectCreation.py:76 climmob/views/Api/projectCreation.py:159
-#: climmob/views/Api/projectCreation.py:238
-#: climmob/views/Api/projectCreation.py:757
-#: climmob/views/Api/projectCreation.py:1253
+#: climmob/views/Api/projectCreation.py:76 climmob/views/Api/projectCreation.py:155
+#: climmob/views/Api/projectCreation.py:233
+#: climmob/views/Api/projectCreation.py:752
+#: climmob/views/Api/projectCreation.py:1248
 #: climmob/views/Api/projectProducts.py:70 climmob/views/Api/projectProducts.py:179
 #: climmob/views/Api/projectRegistry.py:288
 #: climmob/views/Api/projectRegistry.py:384
@@ -5973,8 +5995,8 @@ msgstr "Vous essayez d'utiliser un paramètre qui n'est pas autorisé."
 
 #: climmob/views/Api/enumerators.py:113 climmob/views/Api/enumerators.py:220
 #: climmob/views/Api/languages.py:126 climmob/views/Api/languages.py:213
-#: climmob/views/Api/languages.py:394 climmob/views/Api/projectCreation.py:771
-#: climmob/views/Api/projectCreation.py:1265 climmob/views/Api/questions.py:284
+#: climmob/views/Api/languages.py:394 climmob/views/Api/projectCreation.py:766
+#: climmob/views/Api/projectCreation.py:1260 climmob/views/Api/questions.py:284
 #: climmob/views/Api/questions.py:551 climmob/views/Api/questions.py:853
 #: climmob/views/Api/questions.py:993 climmob/views/Api/questions.py:1207
 #: climmob/views/Api/questions.py:1323 climmob/views/Api/questionsGroups.py:84
@@ -6001,11 +6023,11 @@ msgstr "Il ne respecte pas les clés obligatoires."
 #: climmob/views/Api/projectAssessments.py:1179
 #: climmob/views/Api/projectAssessments.py:1337
 #: climmob/views/Api/projectAssessments.py:1505
-#: climmob/views/Api/projectCreation.py:775
-#: climmob/views/Api/projectCreation.py:1269
-#: climmob/views/Api/projectCreation.py:1323
-#: climmob/views/Api/projectCreation.py:1468
-#: climmob/views/Api/projectCreation.py:1568
+#: climmob/views/Api/projectCreation.py:770
+#: climmob/views/Api/projectCreation.py:1264
+#: climmob/views/Api/projectCreation.py:1318
+#: climmob/views/Api/projectCreation.py:1463
+#: climmob/views/Api/projectCreation.py:1563
 #: climmob/views/Api/projectEnumerators.py:181
 #: climmob/views/Api/projectEnumerators.py:422
 #: climmob/views/Api/projectRegistry.py:295
@@ -6504,36 +6526,36 @@ msgid "Error in the JSON order."
 msgstr "Erreur dans l'ordre JSON."
 
 # | msgid "The project to be cloned does not exist."
-#: climmob/views/Api/projectCreation.py:153
-#: climmob/views/Api/projectCreation.py:232
+#: climmob/views/Api/projectCreation.py:149
+#: climmob/views/Api/projectCreation.py:227
 msgid "The experimental site does not exist."
 msgstr "Le site expérimental n'existe pas."
 
 # | msgid "The question_id parameter is required."
-#: climmob/views/Api/projectCreation.py:165
+#: climmob/views/Api/projectCreation.py:161
 msgid "Error in the JSON. Parameter plocation_id required."
 msgstr "Erreur dans le JSON. Le paramètre plocation_id est requis."
 
-#: climmob/views/Api/projectCreation.py:218
+#: climmob/views/Api/projectCreation.py:213
 msgid ""
 "This experiment side with this unit of analysis has no defined relationship."
 msgstr ""
 "Ce côté expérimental avec cette unité d'analyse n'a pas de relation définie."
 
 # | msgid "One of the variables you sent for analysis does not exist."
-#: climmob/views/Api/projectCreation.py:226
+#: climmob/views/Api/projectCreation.py:221
 msgid "The unit of analysis does not exist."
 msgstr "L’unité d’analyse n'existe pas."
 
-#: climmob/views/Api/projectCreation.py:244
+#: climmob/views/Api/projectCreation.py:239
 msgid "Error in the JSON. Parameter plocation_id and puoa_id required."
 msgstr "Erreur dans le JSON. Les paramètres plocation_id et puoa_id sont requis."
 
-#: climmob/views/Api/projectCreation.py:324
+#: climmob/views/Api/projectCreation.py:319
 msgid "The parameter project_languages must be a list."
 msgstr "Le paramètre project_languages doit être une liste."
 
-#: climmob/views/Api/projectCreation.py:354
+#: climmob/views/Api/projectCreation.py:349
 msgid ""
 "You are trying to add a language to the project that is not part of the list of "
 "languages to be used."
@@ -6541,12 +6563,12 @@ msgstr ""
 "Vous essayez d'ajouter une langue au projet qui ne fait pas partie de la liste "
 "des langues à utiliser."
 
-#: climmob/views/Api/projectCreation.py:366
+#: climmob/views/Api/projectCreation.py:361
 msgid "You cannot create a clone and use a template at the same time."
 msgstr "Vous ne pouvez pas créer un clone et utiliser un modèle en même temps."
 
-#: climmob/views/Api/projectCreation.py:380
-#: climmob/views/Api/projectCreation.py:1061
+#: climmob/views/Api/projectCreation.py:375
+#: climmob/views/Api/projectCreation.py:1056
 msgid ""
 "The parameter project_type must be [1: Real. 2: Training - This project was only "
 "used to explain the use of the ClimMob platform and was created as an example]."
@@ -6556,25 +6578,25 @@ msgstr ""
 "été créé à titre d'exemple]."
 
 # | msgid "The parameter project_numobs must be a number."
-#: climmob/views/Api/projectCreation.py:389
-#: climmob/views/Api/projectCreation.py:1070
+#: climmob/views/Api/projectCreation.py:384
+#: climmob/views/Api/projectCreation.py:1065
 msgid "The parameter project_type must be a number."
 msgstr "Le paramètre project_type doit être un nombre."
 
 # | msgid "This project does not exist."
-#: climmob/views/Api/projectCreation.py:400
-#: climmob/views/Api/projectCreation.py:900
+#: climmob/views/Api/projectCreation.py:395
+#: climmob/views/Api/projectCreation.py:895
 msgid "The project_location does not exist."
 msgstr "Le project_location n'existe pas."
 
 # | msgid "This project does not exist."
-#: climmob/views/Api/projectCreation.py:409
-#: climmob/views/Api/projectCreation.py:923
+#: climmob/views/Api/projectCreation.py:404
+#: climmob/views/Api/projectCreation.py:918
 msgid "The project_unit_of_analysis does not exist."
 msgstr "Le project_unit_of_analysis n'existe pas."
 
-#: climmob/views/Api/projectCreation.py:426
-#: climmob/views/Api/projectCreation.py:953
+#: climmob/views/Api/projectCreation.py:421
+#: climmob/views/Api/projectCreation.py:948
 msgid ""
 "This project_location with this project_unit_of_analysis has no defined "
 "relationship."
@@ -6582,13 +6604,13 @@ msgstr ""
 "Cet emplacement de projet avec cette unité d'analyse de projet n'a pas de "
 "relation définie."
 
-#: climmob/views/Api/projectCreation.py:439
-#: climmob/views/Api/projectCreation.py:970
+#: climmob/views/Api/projectCreation.py:434
+#: climmob/views/Api/projectCreation.py:965
 msgid "project_objectives should be in list format."
 msgstr "project_objectives doit être au format liste."
 
-#: climmob/views/Api/projectCreation.py:455
-#: climmob/views/Api/projectCreation.py:986
+#: climmob/views/Api/projectCreation.py:450
+#: climmob/views/Api/projectCreation.py:981
 msgid ""
 "The objective {} does not correspond to the experiment site and the unit of "
 "analysis indicated."
@@ -6596,9 +6618,9 @@ msgstr ""
 "L'objectif {} ne correspond pas au site expérimental et à l'unité d'analyse "
 "indiqués."
 
-#: climmob/views/Api/projectCreation.py:479
-#: climmob/views/Api/projectCreation.py:1018
-#: climmob/views/Api/projectCreation.py:1038
+#: climmob/views/Api/projectCreation.py:474
+#: climmob/views/Api/projectCreation.py:1013
+#: climmob/views/Api/projectCreation.py:1033
 msgid ""
 "You are trying to use a template that does not correspond to the type of project "
 "you are creating."
@@ -6606,21 +6628,21 @@ msgstr ""
 "Vous essayez d'utiliser un modèle qui ne correspond pas au type de projet que "
 "vous créez."
 
-#: climmob/views/Api/projectCreation.py:487
-#: climmob/views/Api/projectCreation.py:1046
+#: climmob/views/Api/projectCreation.py:482
+#: climmob/views/Api/projectCreation.py:1041
 msgid "There is no template with this identifier."
 msgstr "Il n'y a pas de modèle avec cet identifiant."
 
-#: climmob/views/Api/projectCreation.py:502
+#: climmob/views/Api/projectCreation.py:497
 msgid "The project to be cloned does not exist."
 msgstr "Le projet à cloner n'existe pas."
 
-#: climmob/views/Api/projectCreation.py:526
+#: climmob/views/Api/projectCreation.py:521
 msgid "The parameter project_numobs must be a number."
 msgstr "Le paramètre project_numobs doit être un nombre."
 
-#: climmob/views/Api/projectCreation.py:545
-#: climmob/views/Api/projectCreation.py:1105
+#: climmob/views/Api/projectCreation.py:540
+#: climmob/views/Api/projectCreation.py:1100
 msgid ""
 "The possible values in the parameter 'project_localvariety' are: "
 "['0':'No','1':'Yes']"
@@ -6628,28 +6650,28 @@ msgstr ""
 "Les valeurs possibles dans le paramètre 'project_localvariety' sont : "
 "['0':'Non', 1:'Oui']"
 
-#: climmob/views/Api/projectCreation.py:556
-#: climmob/views/Api/projectCreation.py:1117
+#: climmob/views/Api/projectCreation.py:551
+#: climmob/views/Api/projectCreation.py:1112
 msgid "The country assigned to the project does not exist in the ClimMob list."
 msgstr "Le pays assigné au projet n'existe pas dans la liste ClimMob."
 
-#: climmob/views/Api/projectCreation.py:666
+#: climmob/views/Api/projectCreation.py:661
 msgid "Project successfully cloned."
 msgstr "Projet cloné avec succès."
 
-#: climmob/views/Api/projectCreation.py:712
+#: climmob/views/Api/projectCreation.py:707
 msgid "Project created successfully."
 msgstr "Projet créé avec succès."
 
-#: climmob/views/Api/projectCreation.py:728
+#: climmob/views/Api/projectCreation.py:723
 msgid "The number of combinations and observations must be greater than 0."
 msgstr "Le nombre de combinaisons et d'observations doit être supérieur à 0."
 
-#: climmob/views/Api/projectCreation.py:742
+#: climmob/views/Api/projectCreation.py:737
 msgid "The project ID must start with a letter."
 msgstr "L'ID du projet doit commencer par une lettre."
 
-#: climmob/views/Api/projectCreation.py:750
+#: climmob/views/Api/projectCreation.py:745
 msgid ""
 "For the project ID only letters and numbers are allowed. The project ID must "
 "start with a letter."
@@ -6658,23 +6680,23 @@ msgstr ""
 "projet doit commencer par une lettre."
 
 # | msgid "You are trying to use a parameter that is not allowed.."
-#: climmob/views/Api/projectCreation.py:763
+#: climmob/views/Api/projectCreation.py:758
 msgid "You are trying to use a parameter that is not allowed."
 msgstr "Vous essayez d'utiliser un paramètre qui n'est pas autorisé."
 
-#: climmob/views/Api/projectCreation.py:874
+#: climmob/views/Api/projectCreation.py:869
 #: climmob/views/Api/projectEnumerators.py:276
 msgid ""
 "The access assigned for this project does not allow you to make modifications."
 msgstr "L'accès assigné à ce projet ne vous permet pas de faire des modifications."
 
-#: climmob/views/Api/projectCreation.py:889
+#: climmob/views/Api/projectCreation.py:884
 msgid ""
 "To modify project_location, the parameters: 'project_unit_of_analysis', "
 "'project_objectives' are required."
 msgstr "'project_objectives' sont requis."
 
-#: climmob/views/Api/projectCreation.py:911
+#: climmob/views/Api/projectCreation.py:906
 msgid ""
 "To modify project_unit_of_analysis, the parameter: 'project_objectives' is "
 "required."
@@ -6682,40 +6704,40 @@ msgstr ""
 "Pour modifier project_unit_of_analysis, le paramètre : 'project_objectives' est "
 "requis."
 
-#: climmob/views/Api/projectCreation.py:1232
+#: climmob/views/Api/projectCreation.py:1227
 msgid "The project was modified successfully."
 msgstr "Le projet a été modifié avec succès."
 
-#: climmob/views/Api/projectCreation.py:1259
+#: climmob/views/Api/projectCreation.py:1254
 msgid "Error in the parameters that you want to modify."
 msgstr "Erreur dans les paramètres que vous voulez modifier."
 
-#: climmob/views/Api/projectCreation.py:1290
-#: climmob/views/Api/projectCreation.py:1347
-#: climmob/views/Api/projectCreation.py:1393
-#: climmob/views/Api/projectCreation.py:1489
+#: climmob/views/Api/projectCreation.py:1285
+#: climmob/views/Api/projectCreation.py:1342
+#: climmob/views/Api/projectCreation.py:1388
+#: climmob/views/Api/projectCreation.py:1484
 #: climmob/views/Api/project_analysis.py:65
 #: climmob/views/Api/project_analysis.py:168
 #: climmob/views/Api/project_analysis.py:341
 msgid "This project does not exist."
 msgstr "Ce projet n'existe pas."
 
-#: climmob/views/Api/projectCreation.py:1304
+#: climmob/views/Api/projectCreation.py:1299
 msgid ""
 "The access assigned for this project does not allow you to delete the project."
 msgstr "L'accès assigné à ce projet ne vous permet pas de supprimer le projet."
 
-#: climmob/views/Api/projectCreation.py:1407
+#: climmob/views/Api/projectCreation.py:1402
 msgid ""
 "The access assigned for this project does not allow you to add collaborators to "
 "the project."
 msgstr "L'accès assigné à ce projet ne vous permet pas d'ajouter des évaluations."
 
-#: climmob/views/Api/projectCreation.py:1433
+#: climmob/views/Api/projectCreation.py:1428
 msgid "Collaborator added successfully."
 msgstr "Collaborateur ajouté avec succès."
 
-#: climmob/views/Api/projectCreation.py:1443
+#: climmob/views/Api/projectCreation.py:1438
 msgid ""
 "The types of access for collaborators are as follows: 2=Admin, 3=Editor, "
 "4=Member."
@@ -6723,37 +6745,37 @@ msgstr ""
 "Les types d'accès pour les collaborateurs sont les suivants : 2=Admin, "
 "3=Éditeur, 4=Membre."
 
-#: climmob/views/Api/projectCreation.py:1451
+#: climmob/views/Api/projectCreation.py:1446
 msgid "The collaborator you want to add already belongs to the project."
 msgstr "Le collaborateur que vous voulez ajouter appartient déjà au projet."
 
-#: climmob/views/Api/projectCreation.py:1459
+#: climmob/views/Api/projectCreation.py:1454
 msgid "The user you want to add as a collaborator does not exist."
 msgstr ""
 "L'utilisateur que vous voulez ajouter en tant que collaborateur n'existe pas."
 
-#: climmob/views/Api/projectCreation.py:1503
+#: climmob/views/Api/projectCreation.py:1498
 msgid ""
 "The access assigned for this project does not allow you to delete collaborators "
 "from the project."
 msgstr ""
 "L'accès assigné à ce projet ne vous permet pas de supprimer les évaluations."
 
-#: climmob/views/Api/projectCreation.py:1531
+#: climmob/views/Api/projectCreation.py:1526
 msgid "The collaborator has been successfully removed."
 msgstr "Le collaborateur a été supprimé avec succès."
 
-#: climmob/views/Api/projectCreation.py:1543
+#: climmob/views/Api/projectCreation.py:1538
 msgid "The user who owns the project cannot be deleted."
 msgstr "L'utilisateur qui possède le projet ne peut pas être supprimé."
 
-#: climmob/views/Api/projectCreation.py:1551
+#: climmob/views/Api/projectCreation.py:1546
 msgid ""
 "You are trying to delete a collaborator that does not belong to this project."
 msgstr ""
 "Vous essayez de supprimer un collaborateur qui n'appartient pas à ce projet."
 
-#: climmob/views/Api/projectCreation.py:1559
+#: climmob/views/Api/projectCreation.py:1554
 msgid "The user you want to delete as a collaborator does not exist."
 msgstr ""
 "L'utilisateur que vous voulez supprimer en tant que collaborateur n'existe pas."
@@ -7862,3 +7884,6 @@ msgstr "Nous n'avons pas trouvé de projet correspondant à ce qui a été spéc
 
 #~ msgid "Experimental side"
 #~ msgstr "Site expérimental"
+
+#~ msgid "Set as main language"
+#~ msgstr "Définir comme langue principale"

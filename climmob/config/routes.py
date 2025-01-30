@@ -239,6 +239,7 @@ from climmob.views.registry import (
     RegistryFormCreationView,
     RegistrySectionActionsView,
     GetRegistrySectionView,
+    ChangeProjectMainLanguage_view,
 )
 from climmob.views.techaliases import deletealias_view
 from climmob.views.technologies import (
@@ -878,6 +879,14 @@ def loadRoutes(config):
             "name": "registrySectionActions",
             "path": "/user/{user}/project/{project}/registrySectionActions",
             "view": RegistrySectionActionsView,
+            "renderer": "json",
+        }
+    )
+    routes.append(
+        {
+            "name": "changeprojectmainlanguage",
+            "path": "/ChangeProjectMainLanguage",
+            "view": ChangeProjectMainLanguage_view,
             "renderer": "json",
         }
     )
