@@ -398,7 +398,8 @@
                                         </div>
                                         <div class="ibox-content">
                                             <div class="row">
-                                                {% if pcompleted == 100 and progress.regsubmissions == 2  %}
+
+                                                {% if progress["enumerators"] and progress["technology"] and progress["techalias"] and progress["registry"] and progress["assessment"] and progress.regsubmissions == 2  %}
 {#                                                    <div class="text-left" style="padding: 15px;">#}
 {#                                                        <p>{{ _("Please check the following types of questions are in the started assessments or include them in the next assessments:") }}</p>#}
 {#                                                        <span style="font-size: 16px;font-weight: 600;" title="{{ _("You have included ")}}{{ progress.analysisControl.Characteristics }}{{ _(" Ranking of options") }}"><i  class="fa {% if progress.analysisControl.Characteristics > 0 %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.Characteristics > 0 %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Ranking of options") }}</span><br>#}
