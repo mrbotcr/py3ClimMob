@@ -37,6 +37,7 @@ from climmob.processes import (
     modifyI18nUserDefaultLanguage,
     getQuestionOwner,
     getPhraseTranslationInLanguage,
+    knowIfUserHasCreatedTranslations,
 )
 from climmob.views.classes import privateView
 
@@ -777,6 +778,9 @@ class qlibrary_view(privateView):
 
         regularDict = {
             "UserQuestion": UserQuestionMoreBioversity(user_name, self.request),
+            "knowIfUserHasCreatedTranslations": knowIfUserHasCreatedTranslations(
+                self.request, self.user.login
+            ),
             "showing": user_name,
             "Categories": getCategoriesParents(
                 self.user.login, self.user.login, self.request

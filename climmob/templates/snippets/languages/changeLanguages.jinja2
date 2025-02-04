@@ -34,8 +34,8 @@
                     {
                         element: "#div_for_languages",
                         title: "{{ _("Select the languages to be used with the participants") }}",
-                        content: "- {{ _("You must indicate at least one language to continue working in ClimMob.") }}<br>- {{ _("These will be used to create questions, projects and forms in multiple languages.") }}<br>- {{ _("You can add the languages you consider necessary.") }}<br><br><b>{{ _("Main language") }}:</b><br>{{ _("Set the language you will use the most as the 'Main language' for faster form filling.") }}<br><br><b>{{ _("We are using the language database: Ethnologue") }}</b><br>Eberhard, David M., Gary F. Simons, and Charles D. Fennig (eds.). 2023. Ethnologue: Languages of the World. Twenty-sixth edition. Dallas, Texas: SIL International. Online version: <a href='http://www.ethnologue.com' target='_blank'>http://www.ethnologue.com</a>.",
-                        placement: "right"
+                        content: "- {{ _("Please indicate at least one language to continue.") }}<br>- {{ _("These will be used to create questions, projects and forms in multiple languages.") }}<br>- {{ _("You are welcome to include as many languages as you deem necessary for your projects.") }}<br><br><b>{{ _("Main language") }}:</b><br>{{ _("Set the language you will use the most as the 'Main language' for faster form filling.") }}<br><br><b>{{ _("We are using the language database: Ethnologue") }}</b><br>Eberhard, David M., Gary F. Simons, and Charles D. Fennig (eds.). 2023. Ethnologue: Languages of the World. Twenty-sixth edition. Dallas, Texas: SIL International. Online version: <a href='http://www.ethnologue.com' target='_blank'>http://www.ethnologue.com</a>.",
+                        placement: "left"
                     }
                    ],
             template: "<div class='popover tour' style='border-color: #23c6c8; max-width: none; width:400px; z-index:10000'><div class='arrow' ></div><h3 class='popover-title btn-info'></h3><div class='popover-content'></div><div class='popover-navigation'> <button class='btn btn-sm btn-danger' data-role='end'><i class='fa fa-close'></i> {{ _("Close") }}</button> </div>",
@@ -93,7 +93,7 @@
         $("#select_lang").change(function (){
             var value = $(this).val();
 
-            if (value !="")
+            if (value !=="")
             {
                 $.ajax({
                     url: '{{ request.route_url('addUserLanguage') }}',
@@ -150,7 +150,7 @@
                         "lang_code": $("input[name=default_language]:checked").val(),
                     },
                     success: function (response) {
-                        if (response["result"] == "success")
+                        if (response["result"] === "success")
                         {
                             toastr.success(response["message"]);
                         }else{

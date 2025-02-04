@@ -11,6 +11,9 @@ from sqlalchemy import (
     LargeBinary,
     Unicode,
     text,
+    BLOB,
+    JSON,
+    UniqueConstraint,
 )
 from sqlalchemy.dialects.mysql import MEDIUMTEXT
 from sqlalchemy.orm import relationship
@@ -134,6 +137,20 @@ class Country(Base):
     cnty_cod = Column(Unicode(3), primary_key=True)
     cnty_iso = Column(Unicode(3), nullable=True)
     cnty_name = Column(Unicode(120))
+    cnty_lang = Column(ForeignKey("i18n.lang_code"), server_default=text("'en'"))
+
+    i18n = relationship("I18n")
+
+
+class I18nCountry(Base):
+    __tablename__ = "i18n_country"
+
+    cnty_cod = Column(ForeignKey("country.cnty_cod"), primary_key=True, nullable=False)
+    lang_code = Column(ForeignKey("i18n.lang_code"), primary_key=True, nullable=False)
+    cnty_name = Column(Unicode(120))
+
+    i18n = relationship("I18n")
+    country = relationship("Country")
 
 
 class Enumerator(Base):
@@ -150,7 +167,7 @@ class Enumerator(Base):
     enum_active = Column(Integer)
     extra = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
 
-    project = relationship("User")
+    user = relationship("User")
 
 
 class PrjEnumerator(Base):
@@ -242,6 +259,7 @@ class I18n(Base):
 
     lang_code = Column(Unicode(5), primary_key=True)
     lang_name = Column(Unicode(120))
+    lang_in_climmob = Column(Integer, server_default=text("'0'"))
 
 
 class I18nUser(Base):
@@ -344,7 +362,7 @@ class I18nQstoption(Base):
     value_desc = Column(Unicode(120))
 
     i18n = relationship("I18n")
-    question = relationship("Qstoption")
+    qstoption = relationship("Qstoption")
 
 
 class I18nQuestion_group(Base):
@@ -682,6 +700,26 @@ class Project(Base):
     )
     project_template = Column(Integer, server_default=text("'0'"))
     extra = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
+    project_status = Column(
+        ForeignKey("project_status.prjstatus_id"),
+        nullable=False,
+        server_default=text("'0'"),
+    )
+    project_type = Column(
+        ForeignKey("project_type.prjtype_id"),
+        nullable=False,
+        server_default=text("'0'"),
+    )
+    project_location = Column(
+        ForeignKey("project_location.plocation_id"), nullable=True
+    )
+    project_unit_of_analysis = Column(
+        ForeignKey("project_unit_of_analysis.puoa_id"), nullable=True
+    )
+    project_affiliation = Column(Unicode(120), nullable=True)
+    climmob_analytics = Column(Integer, nullable=True)
+    project_curated_cropname = Column(Unicode(120), nullable=True)
+    project_continent = Column(ForeignKey("continent.continent_id"), nullable=True)
 
     country = relationship("Country")
 
@@ -1077,7 +1115,7 @@ class userProject(Base):
     user = relationship("User")
 
 
-class ProjectMetadata(Base):
+"""class ProjectMetadata(Base):
     __tablename__ = "project_metadata"
     __table_args__ = (
         ForeignKeyConstraint(
@@ -1118,7 +1156,7 @@ class ProjectMetadata(Base):
     md_additional_inputs_provided = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
     md_varieties = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
 
-    project = relationship("Project")
+    project = relationship("Project")"""
 
 
 class ExtraForm(Base):
@@ -1144,3 +1182,292 @@ class ExtraFormAnswer(Base):
 
     extraform = relationship("ExtraForm")
     user = relationship("User")
+
+
+class ProjectType(Base):
+    __tablename__ = "project_type"
+
+    prjtype_id = Column(Integer, primary_key=True, autoincrement=False)
+    prjtype_name = Column(Unicode(120), nullable=False)
+    prjtype_description = Column(
+        MEDIUMTEXT(collation="utf8mb4_unicode_ci"), nullable=True
+    )
+    prjtype_lang = Column(ForeignKey("i18n.lang_code"), nullable=False)
+
+    i18n = relationship("I18n")
+
+
+class I18nProjectType(Base):
+    __tablename__ = "i18n_project_type"
+
+    prjtype_id = Column(
+        ForeignKey("project_type.prjtype_id", ondelete="CASCADE"), primary_key=True
+    )
+    lang_code = Column(
+        ForeignKey("i18n.lang_code", ondelete="CASCADE"),
+        primary_key=True,
+        nullable=False,
+    )
+    prjtype_name = Column(Unicode(120), nullable=False)
+    prjtype_description = Column(
+        MEDIUMTEXT(collation="utf8mb4_unicode_ci"), nullable=True
+    )
+
+    i18n = relationship("I18n")
+    ProjectType = relationship("ProjectType")
+
+
+class ProjectStatus(Base):
+    __tablename__ = "project_status"
+
+    prjstatus_id = Column(Integer, primary_key=True, autoincrement=False)
+    prjstatus_name = Column(Unicode(120), nullable=False)
+    prjstatus_description = Column(
+        MEDIUMTEXT(collation="utf8mb4_unicode_ci"), nullable=True
+    )
+    prjstatus_lang = Column(ForeignKey("i18n.lang_code"), nullable=False)
+
+    i18n = relationship("I18n")
+
+
+class I18nProjectStatus(Base):
+    __tablename__ = "i18n_project_status"
+
+    prjstatus_id = Column(
+        ForeignKey("project_status.prjstatus_id", ondelete="CASCADE"), primary_key=True
+    )
+    lang_code = Column(
+        ForeignKey("i18n.lang_code", ondelete="CASCADE"),
+        primary_key=True,
+        nullable=False,
+    )
+    prjstatus_name = Column(Unicode(120), nullable=False)
+    prjstatus_description = Column(
+        MEDIUMTEXT(collation="utf8mb4_unicode_ci"), nullable=True
+    )
+
+    i18n = relationship("I18n")
+    ProjectStatus = relationship("ProjectStatus")
+
+
+class ProjectLocation(Base):
+    __tablename__ = "project_location"
+
+    plocation_id = Column(Integer, primary_key=True, autoincrement=True)
+    plocation_name = Column(Unicode(120), nullable=False)
+    plocation_lang = Column(ForeignKey("i18n.lang_code"), nullable=False)
+
+    i18n = relationship("I18n")
+
+
+class I18nProjectLocation(Base):
+    __tablename__ = "i18n_project_location"
+
+    plocation_id = Column(
+        ForeignKey("project_location.plocation_id", ondelete="CASCADE"),
+        primary_key=True,
+    )
+    lang_code = Column(
+        ForeignKey("i18n.lang_code", ondelete="CASCADE"),
+        primary_key=True,
+        nullable=False,
+    )
+    plocation_name = Column(Unicode(120), nullable=False)
+
+    i18n = relationship("I18n")
+    ProjectLocation = relationship("ProjectLocation", backref="i18n_project_location")
+
+
+class ProjectUnitOfAnalysis(Base):
+    __tablename__ = "project_unit_of_analysis"
+
+    puoa_id = Column(Integer, primary_key=True, autoincrement=True)
+    puoa_name = Column(Unicode(120), nullable=False)
+    puoa_lang = Column(ForeignKey("i18n.lang_code"), nullable=False)
+
+    i18n = relationship("I18n")
+
+
+class I18nProjectUnitOfAnalysis(Base):
+    __tablename__ = "i18n_project_unit_of_analysis"
+
+    puoa_id = Column(
+        ForeignKey("project_unit_of_analysis.puoa_id", ondelete="CASCADE"),
+        primary_key=True,
+    )
+    lang_code = Column(
+        ForeignKey("i18n.lang_code", ondelete="CASCADE"),
+        primary_key=True,
+        nullable=False,
+    )
+    puoa_name = Column(Unicode(120), nullable=False)
+
+    i18n = relationship("I18n")
+    ProjectUnitOfAnalysis = relationship(
+        "ProjectUnitOfAnalysis", backref="i18n_project_unit_of_analysis"
+    )
+
+
+class ProjectObjectives(Base):
+    __tablename__ = "project_objective"
+
+    pobjective_id = Column(Integer, primary_key=True, autoincrement=True)
+    pobjective_name = Column(Unicode(120), nullable=False)
+    pobjective_lang = Column(ForeignKey("i18n.lang_code"), nullable=False)
+
+    i18n = relationship("I18n")
+
+
+class I18nProjectObjectives(Base):
+    __tablename__ = "i18n_project_objective"
+
+    pobjective_id = Column(
+        ForeignKey("project_objective.pobjective_id", ondelete="CASCADE"),
+        primary_key=True,
+    )
+    lang_code = Column(
+        ForeignKey("i18n.lang_code", ondelete="CASCADE"),
+        primary_key=True,
+        nullable=False,
+    )
+    pobjective_name = Column(Unicode(120), nullable=False)
+
+    i18n = relationship("I18n")
+    ProjectObjectives = relationship("ProjectObjectives")
+
+
+class LocationUnitOfAnalysis(Base):
+    __tablename__ = "location_unit_of_analysis"
+
+    __table_args__ = (
+        UniqueConstraint("plocation_id", "puoa_id", name="uq_plocation_id_puoa_id"),
+    )
+
+    pluoa_id = Column(Integer, autoincrement=True, nullable=False, primary_key=True)
+
+    plocation_id = Column(
+        ForeignKey("project_location.plocation_id", ondelete="CASCADE")
+    )
+
+    puoa_id = Column(ForeignKey("project_unit_of_analysis.puoa_id", ondelete="CASCADE"))
+
+    registration_and_analysis = Column(Integer, server_default=text("'0'"))
+
+    ProjectLocation = relationship("ProjectLocation")
+    ProjectUnitOfAnalysis = relationship("ProjectUnitOfAnalysis")
+
+
+class MetadataForm(Base):
+    __tablename__ = "metadata_form"
+
+    metadata_id = Column(Unicode(64), primary_key=True)
+    metadata_name = Column(Unicode(200), nullable=False)
+    metadata_odk = Column(BLOB, nullable=False)
+    metadata_json = Column(JSON, nullable=False)
+    metadata_active = Column(Integer, nullable=False, server_default=text("'1'"))
+
+    @property
+    def test(self):
+
+        return self.metadata_id + "_test"
+
+
+class MetadaFormLocationUnitOfAnalysis(Base):
+    __tablename__ = "metadata_form_location_unit_of_analysis"
+
+    metadata_id = Column(
+        ForeignKey("metadata_form.metadata_id", ondelete="CASCADE"),
+        primary_key=True,
+        nullable=False,
+    )
+
+    pluoa_id = Column(
+        ForeignKey("location_unit_of_analysis.pluoa_id", ondelete="CASCADE"),
+        primary_key=True,
+        nullable=False,
+    )
+
+    MetadataForm = relationship(
+        "MetadataForm", backref="metadata_form_location_unit_of_analysis"
+    )
+    LocationUnitOfAnalysis = relationship("LocationUnitOfAnalysis")
+
+
+class ProjectMetadataForm(Base):
+    __tablename__ = "project_metadata_form"
+
+    project_id = Column(
+        ForeignKey("project.project_id", ondelete="CASCADE"),
+        primary_key=True,
+        nullable=False,
+    )
+    metadata_id = Column(
+        ForeignKey("metadata_form.metadata_id", ondelete="CASCADE"),
+        primary_key=True,
+        nullable=False,
+    )
+    pmf_json = Column(JSON, nullable=False)
+
+    Project = relationship("Project")
+    MetadataForm = relationship("MetadataForm", backref="project_metadata_form")
+
+
+class LocationUnitOfAnalysisObjectives(Base):
+    __tablename__ = "location_unit_of_analysis_objectives"
+
+    __table_args__ = (
+        UniqueConstraint("pluoa_id", "pobjective_id", name="uq_pluoa_id_pobjective_id"),
+    )
+
+    pluoaobj_id = Column(Integer, autoincrement=True, nullable=False, primary_key=True)
+
+    pluoa_id = Column(
+        ForeignKey("location_unit_of_analysis.pluoa_id", ondelete="CASCADE")
+    )
+
+    pobjective_id = Column(
+        ForeignKey("project_objective.pobjective_id", ondelete="CASCADE")
+    )
+
+    LocationUnitOfAnalysis = relationship("LocationUnitOfAnalysis")
+    ProjectObjectives = relationship("ProjectObjectives")
+
+
+class ProjectLocaUnitObjective(Base):
+    __tablename__ = "project_location_unit_objective"
+
+    __table_args__ = (
+        UniqueConstraint("project_id", "pluoaobj_id", name="uq_project_id_pluoaobj_id"),
+    )
+
+    plocunitobj_id = Column(
+        Integer, autoincrement=True, nullable=False, primary_key=True
+    )
+
+    project_id = Column(
+        ForeignKey("project.project_id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    pluoaobj_id = Column(
+        ForeignKey(
+            "location_unit_of_analysis_objectives.pluoaobj_id", ondelete="CASCADE"
+        ),
+        nullable=False,
+    )
+
+    Project = relationship("Project")
+    LocationUnitOfAnalysisObjectives = relationship("LocationUnitOfAnalysisObjectives")
+
+
+class Continent(Base):
+    __tablename__ = "continent"
+
+    continent_id = Column(Integer, primary_key=True, autoincrement=False)
+    continent_name = Column(Unicode(120), nullable=False)
+
+
+class Affiliation(Base):
+    __tablename__ = "affiliation"
+
+    affiliation_id = Column(Integer, primary_key=True, autoincrement=True)
+    affiliation_name = Column(Unicode(120), nullable=False)

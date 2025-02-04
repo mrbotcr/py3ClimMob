@@ -30,7 +30,7 @@ from climmob.views.questionTranslations import (
 )
 
 
-class createQuestion_view(apiView):
+class CreateQuestionView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -289,7 +289,7 @@ class createQuestion_view(apiView):
             return response
 
 
-class readQuestions_view(apiView):
+class ReadQuestionsView(apiView):
     def processView(self):
 
         if self.request.method == "GET":
@@ -311,7 +311,7 @@ class readQuestions_view(apiView):
             return response
 
 
-class updateQuestion_view(apiView):
+class UpdateQuestionView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -556,7 +556,7 @@ class updateQuestion_view(apiView):
             return response
 
 
-class deleteQuestion_viewApi(apiView):
+class DeleteQuestionViewApi(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -613,7 +613,7 @@ class deleteQuestion_viewApi(apiView):
             return response
 
 
-class readQuestionValues_view(apiView):
+class ReadQuestionValuesView(apiView):
     def processView(self):
 
         if self.request.method == "GET":
@@ -668,7 +668,7 @@ class readQuestionValues_view(apiView):
             return response
 
 
-class addQuestionValue_viewApi(apiView):
+class AddQuestionValueViewApi(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -858,7 +858,7 @@ class addQuestionValue_viewApi(apiView):
             return response
 
 
-class updateQuestionValue_view(apiView):
+class UpdateQuestionValueView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -998,7 +998,7 @@ class updateQuestionValue_view(apiView):
             return response
 
 
-class deleteQuestionValue_viewApi(apiView):
+class DeleteQuestionValueViewApi(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -1096,7 +1096,7 @@ class readQuestionCharacteristic_view(apiView):
 """
 
 
-class updateQuestionCharacteristics_view(apiView):
+class UpdateQuestionCharacteristicsView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -1212,7 +1212,7 @@ class updateQuestionCharacteristics_view(apiView):
             return response
 
 
-class updateQuestionPerformance_view(apiView):
+class UpdateQuestionPerformanceView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -1328,7 +1328,7 @@ class updateQuestionPerformance_view(apiView):
             return response
 
 
-class multiLanguageQuestion_view(apiView):
+class MultiLanguageQuestionView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -1408,7 +1408,7 @@ class multiLanguageQuestion_view(apiView):
                     obligatory.append("question_perfstmt")
 
                 if data["question_dtype"] in [5, 6]:
-                    print("Hay que ver")
+
                     options = getQuestionOptions(
                         dataworking["question_id"], self.request
                     )
@@ -1513,7 +1513,7 @@ class multiLanguageQuestion_view(apiView):
             return response
 
 
-class readMultiLanguagesFromQuestion_view(apiView):
+class ReadMultiLanguagesFromQuestionView(apiView):
     def processView(self):
 
         if self.request.method == "GET":

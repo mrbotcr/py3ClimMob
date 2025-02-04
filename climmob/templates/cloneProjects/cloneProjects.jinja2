@@ -10,7 +10,7 @@
     {% cssresource request,'coreresources','style' %}
     {% cssresource request,'coreresources','chosen' %}
     {% cssresource request,'coreresources','jsTree' %}
-
+    {% cssresource request,'coreresources','select2' %}
     {% cssresource request,'coreresources','switch' %}
     {% cssresource request,'coreresources','tags' %}
     {% cssresource request,'coreresources','icheck' %}
@@ -26,6 +26,7 @@
     {% jsresource request,'coreresources','bootstrapmaxlength' %}
     {% jsresource request,'coreresources','icheck' %}
     {% jsresource request,'coreresources','tour' %}
+    {% jsresource request,'coreresources','select2' %}
 {% endblock topScripts %}
 
 
@@ -357,7 +358,7 @@
 
         $(document).ready(function ()
         {
-            $('.chosen-select').chosen({width: "100%"});
+            $('.chosen-select').select2({width: "100%"});
 
             $('.i-checks').iCheck({
                 radioClass: 'iradio_square-green',
@@ -365,6 +366,10 @@
             });
 
             $('.i-checksbox').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+            });
+
+            $('.i-checksbox2').iCheck({
                 checkboxClass: 'icheckbox_square-green',
             });
 

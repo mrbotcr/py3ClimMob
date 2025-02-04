@@ -1,7 +1,11 @@
 import uuid
 import datetime
 from climmob.config.encdecdata import encodeData
-from climmob.models import User, mapToSchema, mapFromSchema
+from climmob.models import (
+    User,
+    mapToSchema,
+    mapFromSchema,
+)
 from climmob.models.repository import sql_execute
 
 __all__ = [
@@ -11,6 +15,7 @@ __all__ = [
     "getUserCount",
     "getUserInfo",
     "update_last_login",
+    "getAllUserAdmin",
 ]
 
 
@@ -24,6 +29,7 @@ def addUser(userData, request):
     userData2["user_apikey"] = str(uuid.uuid4())
     userData2["user_about"] = ""
     userData2["user_password"] = encodeData(request, userData["user_password"])
+    userData2["user_joindate"] = datetime.datetime.now()
 
     mappedData = mapToSchema(User, userData2)
     newUser = User(**mappedData)
@@ -66,3 +72,11 @@ def update_last_login(request, user):
     )
 
     sql_execute(sql)
+
+
+def getAllUserAdmin(request):
+    result = mapFromSchema(
+        request.dbsession.query(User).filter(User.user_admin == 1).all()
+    )
+
+    return result

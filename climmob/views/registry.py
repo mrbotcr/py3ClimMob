@@ -24,6 +24,8 @@ from climmob.processes import (
     getProjectLabels,
     getPrjLangDefaultInProject,
     languageExistInTheProject,
+    modifyProjectMainLanguage,
+    projectRegStatus,
 )
 from climmob.products import stopTasksByProcess
 from climmob.views.classes import privateView
@@ -31,7 +33,7 @@ from climmob.views.question import getDictForPreview
 from climmob.products.forms.form import create_document_form
 
 
-class deleteRegistrySection_view(privateView):
+class DeleteRegistrySectionView(privateView):
     def processView(self):
 
         activeProjectUser = self.request.matchdict["user"]
@@ -101,7 +103,7 @@ def actionsInSections(self, postdata):
                 }
 
 
-class registrySectionActions_view(privateView):
+class RegistrySectionActionsView(privateView):
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
@@ -130,7 +132,7 @@ class registrySectionActions_view(privateView):
             return actionsInSections(self, postdata)
 
 
-class cancelRegistry_view(privateView):
+class CancelRegistryView(privateView):
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
@@ -178,7 +180,7 @@ class cancelRegistry_view(privateView):
         }
 
 
-class closeRegistry_view(privateView):
+class CloseRegistryView(privateView):
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
@@ -227,7 +229,7 @@ class closeRegistry_view(privateView):
         }
 
 
-class registry_view(privateView):
+class RegistryView(privateView):
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
@@ -311,7 +313,7 @@ class registry_view(privateView):
         return dictreturn
 
 
-class registryFormCreation_view(privateView):
+class RegistryFormCreationView(privateView):
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
@@ -460,7 +462,7 @@ def getDataFormPreview(
     return data, finalCloseQst
 
 
-class getRegistrySection_view(privateView):
+class GetRegistrySectionView(privateView):
     def processView(self):
 
         activeProjectUser = self.request.matchdict["user"]
@@ -518,3 +520,42 @@ def createDocumentForm(
         dataPreviewInMultipleLanguages,
         listOfLabelsForPackages,
     )
+
+
+class ChangeProjectMainLanguage_view(privateView):
+    def processView(self):
+
+        self.returnRawViewResult = True
+        if self.request.method == "POST":
+
+            postdata = self.getPostDict()
+            activeProjectUser = postdata["user"]
+            activeProjectCod = postdata["project"]
+            main_language = postdata["main_language"]
+
+            if not projectExists(
+                self.user.login, activeProjectUser, activeProjectCod, self.request
+            ):
+                raise HTTPNotFound()
+            else:
+                activeProjectId = getTheProjectIdForOwner(
+                    activeProjectUser, activeProjectCod, self.request
+                )
+
+                if projectRegStatus(activeProjectId, self.request):
+
+                    edited, message = modifyProjectMainLanguage(
+                        self.request, activeProjectId, main_language
+                    )
+
+                    if edited:
+
+                        return {
+                            "result": "success",
+                            "message": self._("Main language successfully updated"),
+                        }
+
+        return {
+            "result": "error",
+            "message": self._("There was an error updating the main language"),
+        }

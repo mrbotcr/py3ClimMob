@@ -106,6 +106,9 @@
                                             </svg><span class="nav-label">{{ _("Local languages") }}</span>
                                         </a>
                                     </li>
+                                    {% if activeUser.admin == 1 %}
+                                        <li id="nav_librarymetadata" {% if sectionActive == "librarymetadata" %}class="active" style="border-left: 4px solid #19aa8d;background: #293846;"{% endif %}><a href="{{ request.route_url('librarymetadata') }}"><i class="fa fa-file-text"></i><span class="nav-label">{{ _("Metadata forms") }}</span></a></li>
+                                    {% endif %}
                                 </ul>
                             </li>
                             <li id="nav_downloads" {% if sectionActive == "productlist" %}class="active" {% endif %}>
@@ -149,14 +152,13 @@
                         <ul class="nav navbar-top-links navbar-right">
                             {% block headitems %}
                                 <li class="li_languages">
-                                    <button style="background-color: transparent; border-color: transparent; padding: 0px"> <img class="language" name="en" src="{{ request.url_for_static('landing/en.png') }}" style="height: 15px; width: 22px"></button>
+                                    {{ _('Language') }}:
+                                    <select id="language">
+                                        <option id="en" value="en">English</option>
+                                        <option id="es" value="es">Español</option>
+                                        <option id="fr" value="fr">Français</option>
+                                    </select>
                                 </li>
-                                <li class="li_languages">
-                                    <button style="background-color: transparent; border-color: transparent; padding: 0px"> <img class="language" name="es" src="{{ request.url_for_static('landing/es.png') }}" style="height: 15px; width: 22px"></button>
-                                </li>
-{#                                <li class="li_languages">#}
-{#                                    <img class="language" name="fr" src="{{ request.url_for_static('landing/fr.png') }}" style="height: 15px; width: 22px">#}
-{#                                </li>#}
                                 <li>
                                     <a href="{{ request.route_url('logout') }}">
                                         <i class="fa fa-sign-out"></i> {{ _("Log out") }}
@@ -396,7 +398,8 @@
                                         </div>
                                         <div class="ibox-content">
                                             <div class="row">
-                                                {% if pcompleted == 100 and progress.regsubmissions == 2  %}
+
+                                                {% if progress["enumerators"] and progress["technology"] and progress["techalias"] and progress["registry"] and progress["assessment"] and progress.regsubmissions == 2  %}
 {#                                                    <div class="text-left" style="padding: 15px;">#}
 {#                                                        <p>{{ _("Please check the following types of questions are in the started assessments or include them in the next assessments:") }}</p>#}
 {#                                                        <span style="font-size: 16px;font-weight: 600;" title="{{ _("You have included ")}}{{ progress.analysisControl.Characteristics }}{{ _(" Ranking of options") }}"><i  class="fa {% if progress.analysisControl.Characteristics > 0 %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.Characteristics > 0 %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Ranking of options") }}</span><br>#}
@@ -891,7 +894,7 @@
                         {{ request.h.get_version() }}
                     </div>
                     <div>
-                        <strong>{{ _("Copyright") }}</strong> {{ _("2023, MrBot Software Solutions") }}
+                        <strong>{{ _("Copyright") }}</strong> {{ _("{}, MrBot Software Solutions").format(request.h.get_year()) }}
                     </div>
                 {% endblock footer %}
             </div>
@@ -1091,12 +1094,13 @@
 
     <script>
         $(document).ready(function() {
+
             var selectedLanguage = readCookie('_LOCALE_');
             if (selectedLanguage != null)
                 $('#language').val(selectedLanguage);
 
-            $(".language").click(function () {
-                setCookie('_LOCALE_', this.getAttribute("name"), 365);
+            $("#language").bind('change', function() {
+                setCookie('_LOCALE_', this.value, 365);
                 location.reload();
             })
 

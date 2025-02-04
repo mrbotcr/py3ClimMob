@@ -100,6 +100,10 @@
                     radioClass: 'iradio_square-green',
                 });
 
+                $('.i-checksbox2').iCheck({
+                    checkboxClass: 'icheckbox_square-green',
+                });
+
                 {% if activeUser.login == "bioversity" %}
 
                     var valueOfProjectTemplate = "{{ data["project_template"] }}"
@@ -120,13 +124,13 @@
 
                         $.get(URL, function (dataJson, status) {
                             $("#usingTemplate").empty();
-                            $('#usingTemplate').trigger("chosen:updated");
+                            $('#usingTemplate').trigger("change");
                             $("#usingTemplate").append("<option value=''>{{ _("Select a template") }}</option>");
                             for (var i = 0; i < dataJson.length; i++){
                                 var info = dataJson[i]
                                 $("#usingTemplate").append("<option value='"+ info.project_id+"'>"+ info.project_name+"</option>");
                             }
-                            $('#usingTemplate').trigger("chosen:updated");
+                            $('#usingTemplate').trigger("change");
                         });
                     });
 

@@ -56,6 +56,19 @@
                         <label class="col-sm-4 control-label">{{ _("Email address") }}</label>
                         <div class="col-sm-8"><input type="email" class="form-control" id="newproject_mail_address" required oninvalid="this.setCustomValidity('{{ _("Write the email address.") }}')" onchange="this.setCustomValidity('')" {% if not permissionForChanges %} disabled {% endif %} name="project_piemail" value="{{ dataworking.project_piemail }}"></div>
                     </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">{{ _("Affiliation") }}</label>
+                        <div class="col-sm-8">
+                            <select id="project_affiliation" name="project_affiliation" class="form-control js-example-data-ajax" required oninvalid="this.setCustomValidity('{{ _("Write the affiliation.") }}')" onchange="this.setCustomValidity('')" {% if not permissionForChanges %} disabled {% endif %}>
+                                {% if dataworking.project_affiliation %}
+                                    <option value="{{ dataworking.project_affiliation }}">{{ dataworking.project_affiliation }}</option>
+                                {% endif %}
+                            </select>
+                        </div>
+                    </div>
                     <br>
                     {% block general_information_extra %}
 
@@ -97,16 +110,33 @@
         <div class="col-md-12" style="padding: 0px">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>{{ _("3. Participants and technology options labels") }}</h5>
+                    <h5>{{ _("3. Participants") }}</h5>
                 </div>
                 <div class="ibox-content">
+
+                    <div class="text-center">
+                        <p>{{ _("If needed, please use the following calculator to determine the trial dimensions.") }} </p>
+
+                        <a class="btn btn-success btn-rounded  btn-xs" style="color: white" href="https://climmob.net/blog/wiki/trial-dimensions/" target="_blank"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a>
+                        <br><br>
+                    </div>
+
 
                     <div class="form-group">
                         <label class="col-sm-4 control-label">{{ _("Number of participants in the project") }}</label>
                         <div class="col-sm-8"><input type="number" min="10" {% if request.registry.settings.get("projects.limit", "false") == "true" and request.registry.settings.get("project.maximumnumberofobservations", 0)|int > 10%}max="{{ request.registry.settings.get("project.maximumnumberofobservations", 0)|int }}"{% endif %} class="form-control" id="newproject_numobs" required="" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} {% if not permissionForChanges %} disabled {% endif %} {% if dataworking.project_createpkgs == 2 %} readonly {% endif %} name="project_numobs" value="{{ dataworking.project_numobs }}"></div>
                     </div>
 
-                    <div class="hr-line-dashed"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12" style="padding: 0px">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{{ _("4. Technology options labels") }}</h5>
+                </div>
+                <div class="ibox-content">
 
                     <div class="form-group">
                         <label class="col-sm-4 control-label">{{ _("Number of technology options that each participant compares") }}</label>
@@ -148,18 +178,71 @@
         <div class="col-md-12" style="padding: 0px">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>{{ _("4. Type of project") }}</h5>
+                    <h5>{{ _("5. Project type") }}</h5>
                 </div>
                 <div class="ibox-content">
 
                     <div class="form-group" style="margin: 5px">
-                        <label class="col-sm-4 control-label">{{ _("Type") }}</label>
+                        <label class="col-sm-4 control-label">{{ _("Is this a training project ?") }}</label>
                         <div class="col-sm-8">
-                            <div class="i-checks" ><label style="font-weight: initial; font-size: 14px"> <input class="radiosRA" type="radio" name="project_registration_and_analysis" value="0" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} {% if dataworking["project_registration_and_analysis"] == 0 %}checked{% endif %} {% if not permissionForChanges %} disabled {% endif %}> <i></i> {{ _("On-farm testing") }} </label></div>
-                            <br>
-                            <div class="i-checks"><label style="font-weight: initial; font-size: 14px"> <input class="radiosRA" type="radio" name="project_registration_and_analysis" value="1" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} {% if dataworking["project_registration_and_analysis"] == 1 %}checked{% endif %} {% if not permissionForChanges %} disabled {% endif %}> <i></i> {{ _("Consumer/Market testing") }} </label></div>
+                            <div class="i-checksbox2">
+                                <input class="checksbox" type="checkbox" id="project_type" name="project_type" {% if dataworking.project_type =="on" or dataworking.project_type == 2 %}checked{% endif %} {% if dataworking.project_regstatus != 0 %} disabled {% endif %} {% if not permissionForChanges %} disabled {% endif %}>
+                            </div>
                         </div>
                     </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">{{ _("Experimental site") }}</label>
+                        <div class="col-sm-8">
+
+                            <select id="project_location" name="project_location" class="form-control chosen-select" tabindex="2" required oninvalid="this.setCustomValidity('{{ _("Select one experimental site.") }}')" onchange="this.setCustomValidity('')" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} {% if not permissionForChanges %} disabled {% endif %}>
+                                <option value="">{{ _("Select one experimental site") }}</option>
+                                {% for location in listOfLocations %}
+                                    <option value="{{ location.plocation_id }}" {% if location.plocation_id|string == dataworking.project_location|string %}selected{% endif %} >{{ location.plocation_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">{{ _("Unit of analysis") }}</label>
+                        <div class="col-sm-8">
+
+                            <select id="project_unit_of_analysis" name="project_unit_of_analysis" class="form-control chosen-select" data-placeholder="{{ _("Choose one unit of analysis") }}" tabindex="2" required oninvalid="this.setCustomValidity('{{ _("Select one unit of analysis.") }}')" onchange="this.setCustomValidity('')" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} {% if not permissionForChanges %} disabled {% endif %}>
+                                {% for unit_of_analysis in listOfUnitOfAnalysis %}
+                                    <option value="{{ unit_of_analysis.puoa_id }}" {% if unit_of_analysis.puoa_id|string == dataworking.project_unit_of_analysis|string %}selected{% endif %} >{{ unit_of_analysis.puoa_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">{{ _("Objective") }}</label>
+                        <div class="col-sm-8">
+                            <select id="project_objectives" name="project_objectives" class="form-control chosen-select" data-placeholder="{{ _("Choose one objective") }}" tabindex="2" required oninvalid="this.setCustomValidity('{{ _("Choose one objective") }}')" onchange="this.setCustomValidity('')" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} {% if not permissionForChanges %} disabled {% endif %}>
+                                {% for objectives in listOfObjectives %}
+                                    <option value="{{ objectives.pobjective_id }}" {% if dataworking.project_objectives is string %} {% if objectives.pobjective_id|string == dataworking.project_objectives|string %}selected{% endif %}{% else %}{% if objectives.pobjective_id|string in dataworking.project_objectives %}selected{% endif %}{% endif %}   {% for obj in dataworking.objectives %}{% if obj.pobjective_id == objectives.pobjective_id %}selected{% endif %}{% endfor %}>{{ objectives.pobjective_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+{#                    <div class="hr-line-dashed"></div>#}
+
+{#                    <div class="form-group" style="margin: 5px">#}
+{#                        <label class="col-sm-4 control-label">{{ _("Type") }}</label>#}
+{#                        <div class="col-sm-8">#}
+{#                            <div class="i-checks" ><label style="font-weight: initial; font-size: 14px"> <input class="radiosRA" type="radio" name="project_registration_and_analysis" value="0" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} {% if dataworking["project_registration_and_analysis"] == 0 %}checked{% endif %} {% if not permissionForChanges %} disabled {% endif %}> <i></i> {{ _("On-farm testing") }} </label></div>#}
+{#                            <br>#}
+{#                            <div class="i-checks"><label style="font-weight: initial; font-size: 14px"> <input class="radiosRA" type="radio" name="project_registration_and_analysis" value="1" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} {% if dataworking["project_registration_and_analysis"] == 1 %}checked{% endif %} {% if not permissionForChanges %} disabled {% endif %}> <i></i> {{ _("Consumer/Market testing") }} </label></div>#}
+{#                        </div>#}
+{#                    </div>#}
 
                     {% if allowTemplate %}
                         {% if activeUser.login == "bioversity" %}
@@ -207,20 +290,7 @@
                         {% endif %}
                     {% endif %}
 
-                    {% block type_project_extra %}
-
-                    {% endblock type_project_extra %}
-
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-12" style="padding: 0px">
-            <div class="ibox float-e-margins">
-                <div class="ibox-title">
-                    <h5>{{ _("5. Languages") }}</h5>
-                </div>
-                <div class="ibox-content">
+                    <div class="hr-line-dashed"></div>
 
                     <div class="form-group" style="margin: 5px" id="div_project_languages">
 
@@ -246,6 +316,10 @@
 
                         </div>
                     </div>
+
+                    {% block type_project_extra %}
+
+                    {% endblock type_project_extra %}
 
                 </div>
             </div>
@@ -305,7 +379,41 @@
         }
     )
 
-    $('.chosen-select').chosen({width: "100%", max_selected_options: 4});
+    $('.chosen-select').select2({width: "100%", maximumSelectionLength: 4});
+
+    $(".js-example-data-ajax").select2({
+        placeholder: "{{ _("Write the affiliation name") }}",
+        ajax: {
+            url: "{{ request.route_url('searchaffiliation') }}",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term, // search term
+                    page: params.page
+                };
+            },
+            processResults: function (data, params) {
+                params.page = params.page || 1;
+
+                if (data.results.length === 0 && params.term) {
+                    data.results.push({
+                        id: params.term,
+                        text: "{{ _("New affiliation") }}: "+params.term,
+                    });
+                }
+
+                return {
+                    results: data.results,
+                    pagination: {
+                        more: (params.page * 10) < data.total
+                    }
+                };
+            },
+            cache: true
+        }
+    });
+
 
     function showHelpTem()
     {
@@ -354,5 +462,50 @@
         tour2.end();
         $("html, body").animate({ scrollTop: 0 });
     })
+
+    $("#project_location").change(function (){
+
+        $("#project_unit_of_analysis").empty();
+        $("#project_unit_of_analysis").append("<option value=''>{{ _("Select a unit of analysis") }}</option>");
+        $("#project_unit_of_analysis").trigger("change");
+
+        $("#project_objectives").empty();
+        $("#project_objectives").trigger("change");
+
+        if ($(this).val() !=="") {
+            var URL = "{{ request.route_url('getunitofanalysisbylocation', locationid="__locationid__") }}"
+            URL = URL.replace("__locationid__", $(this).val())
+
+            $.get(URL, function (dataJson, status) {
+
+                dataJson.forEach(element => {
+                    $("#project_unit_of_analysis").append("<option value='"+ element.puoa_id+"'>"+ element.puoa_name+"</option>");
+                });
+
+                $("#project_unit_of_analysis").trigger("change");
+            });
+        }
+    });
+
+    $("#project_unit_of_analysis").change(function (){
+
+        $("#project_objectives").empty();
+        $("#project_objectives").append("<option value=''>{{ _("Choose one objective") }}</option>");
+        $("#project_objectives").trigger("change");
+
+        if ($(this).val() !=="") {
+            var URL = "{{ request.route_url('getobjectivesbylocationandunitofanalysis', locationid="__locationid__", unitofanalysisid="__unitofanalysisid__") }}"
+            URL = URL.replace("__locationid__", $("#project_location").val()).replace("__unitofanalysisid__", $("#project_unit_of_analysis").val())
+
+            $.get(URL, function (dataJson, status) {
+
+                dataJson.forEach(element => {
+                    $("#project_objectives").append("<option value='"+ element.pobjective_id+"'>"+ element.pobjective_name+"</option>");
+                });
+
+                $("#project_objectives").trigger("change");
+            });
+        }
+    });
 
 </script>

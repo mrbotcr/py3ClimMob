@@ -45,6 +45,7 @@
       border-color: #dee2e6 #dee2e6 #fff;
     }
 
+
     </style>
 
     <div class="row">
@@ -53,55 +54,250 @@
                 <div class="ibox-title" >
                     <h5>{{ _("Local languages") }}</h5>
 
-                    <div class="ibox-tools">
-                        <a class="btn btn-success btn-rounded  btn-xs modalLang" style="color: white" data-toggle="modal" data-target="#languagesModal"><i class="fa fa-plus"></i> {{ _("Add more languages") }}</a>
-                    </div>
+{#                    <div class="ibox-tools">#}
+{#                        <a class="btn btn-success btn-rounded  btn-xs modalLang" style="color: white" data-toggle="modal" data-target="#languagesModal"><i class="fa fa-plus"></i> {{ _("Add more languages") }}</a>#}
+{#                    </div>#}
                 </div>
                 <div class="ibox-content" >
-                    <div class="row">
 
-                        <div class="col-md-12" >
-                            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
-                            <h3>{{ _("Indications") }}</h3>
-                            <p>1. {{ _("The following is a list of texts that ClimMob uses to generate questions in ODK Collect") }}.</p>
-                            <p>2. {{ _("To see the different languages click on the corresponding tab, just above the language name. If only one language is shown, you can add more languages by clicking on “Add more languages” or going to your ClimMob user profile page.") }}</p>
-                            <p>3. {{ _("For new languages, the list of texts is shown in English. You will have to provide translations to other languages if this is not given") }}.</p>
-                            <p>4. {{ _("Some fields may be prefilled, but you can edit the texts") }}.</p>
-                            <br>
+                    <div class="row">
+                        <div class="col-lg-12">
                             <div class="tabs-container">
                                 <ul class="nav nav-tabs" role="tablist">
-                                    {% for lang in listOflanguages %}
-                                        <li><a class="nav-link {% if loop.index ==1 %}active{% endif %}" data-toggle="tab" href="#tab{{ lang.lang_code }}">{{ lang.lang_name}}</a></li>
-                                    {% endfor %}
+                                    <li><a class="nav-link active" data-toggle="tab" href="#basic-tab-1">{{ _("Local languages") }}</a></li>
+                                    <li><a class="nav-link" data-toggle="tab" href="#basic-tab-2"> {{ _("ClimMob’s pre-translated questions") }}</a></li>
+                                    <li><a class="nav-link" data-toggle="tab" href="#basic-tab-3"> {{ _("Creating and translating your questions") }}</a></li>
+                                    <li><a class="nav-link" data-toggle="tab" href="#basic-tab-4"> {{ _("Common phrases") }}</a></li>
                                 </ul>
-                                <div class="tab-content" id="div_for_translations">
-                                    {% for lang in listOflanguages %}
-                                        <div role="tabpanel" id="tab{{ lang.lang_code }}" class="tab-pane {% if loop.index ==1 %}active{% endif %}">
-                                            <div class="panel-body">
+                                <div class="tab-content">
+                                    <div role="tabpanel" id="basic-tab-1" class="tab-pane active">
+                                        <div class="panel-body" style="background-color: #f3f3f3">
 
-                                                <div id="table_for_{{ lang.lang_code }}"></div>
+
+
+                                            <div class="row">
+
+                                                <div class="col-lg-6 ">
+                                                    <div class="ibox float-e-margins">
+                                                        <div class="ibox-title">
+                                                            <h5>{{ _("Customize your ODK forms with local languages") }}</h5>
+                                                        </div>
+                                                        <div class="ibox-content" >
+
+                                                            <p>{{ _("Field teams often conduct interviews in local languages. To make this easier, ClimMob supports ODK forms in multiple languages, allowing you to conduct surveys in the language that best suits both the respondent and the interviewer. You can switch between different languages within the same form as needed.") }}</p>
+
+                                                            <div class="text-center">
+                                                                <img width="250px" src='{{ request.url_for_static('gif/change_language_odk.gif') }}' />
+                                                            </div>
+
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-lg-6 ">
+                                                    <div id="languagesParent" style="position: absolute; z-index: 10000"></div>
+                                                    {% set isModal = False %}
+                                                    {% set isTab = True %}
+                                                    {% include 'snippets/languages/changeLanguages.jinja2' %}
+                                                </div>
+
+                                                <div class="col-lg-6 ">
+                                                    <div class="ibox float-e-margins">
+                                                        <div class="ibox-title">
+                                                            <h5>{{ _("How to handle questions with local languages") }}</h5>
+                                                        </div>
+                                                        <div class="ibox-content" >
+
+                                                            <p>{{ _("You can either use questions from ClimMob's library or translate your own.") }}</p>
+
+                                                            <button type="button" class="btn btn-primary btn-rounded btn-block change-tab" href="#basic-tab-2" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" >{{ _("ClimMob’s pre-translated questions.") }}</button>
+
+                                                            <button type="button" class="btn btn-primary btn-rounded btn-block change-tab" href="#basic-tab-3" style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;" >{{ _("Creating and translating your questions") }}</button>
+
+
+                                                        </div>
+                                                    </div>
+                                                </div>
 
                                             </div>
+
+
+
                                         </div>
-                                    {% endfor %}
-
-                                    <div class="row text-right">
-                                        <br>
-                                        <button class="btn btn-primary" name="btn_save_translations" type="submit" id="btn_save_translations" style="margin-right: 15px">{{ _("Save") }}</button>
                                     </div>
+                                    <div role="tabpanel" id="basic-tab-2" class="tab-pane">
+                                        <div class="panel-body">
 
+
+
+                                            <p>{{ _("There are ready-made questions in multiple languages in ClimMob’s library that you can add directly to your forms. The number of available languages will continue to grow.  The ClimMob question library is currently available in the following languages") }}:</p>
+
+                                            <br>
+                                            <div class="row">
+                                                <div class="col-lg-6">
+                                                    <table class="table table-striped table-bordered">
+                                                        <tr>
+                                                            <th>{{ _("Language") }}</th>
+                                                        </tr>
+                                                        {% for language in listOfLanguagesInClimMob %}
+                                                            <tr>
+                                                                <td>
+                                                                    {{ language["lang_name"] }}
+                                                                </td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    </table>
+                                                </div>
+                                            </div>
+
+                                            <br>
+
+                                            <p>{{ _("If the language you need is not yet available, we offer two translation options") }}:</p>
+
+                                            <p>- {{ _("Self-service translation: You provide translations for the questions. The ClimMob team will validate them to ensure consistency and accuracy.") }}</p>
+
+                                            <p>- {{ _("ClimMob team translation: Our team handles the translation, and you review the translations") }}</p>
+
+                                            <br>
+
+                                            <p>{{ _("Fill out the form below to request translation of questions from the ClimMob library") }}</p>
+
+                                            <div class="row">
+                                                <div class="col-lg-6">
+                                                    <div class="ibox">
+                                                        <div class="ibox-content">
+
+                                                            <div class="form-horizontal">
+                                                                <div class="form-group">
+                                                                    <label class="col-sm-4 control-label">{{ _('Which language would you like to request ?') }}</label>
+                                                                    <div class="col-sm-8">
+                                                                        <select id="select_lang_add" name="select_lang_add" class="form-control" style="width: 100%; !important;">
+                                                                            <option value="">{{ _("Write here to search languages") }}</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="form-group">
+                                                                    <label class="col-sm-4 control-label">{{ _('How would you like to contribute?') }}</label>
+                                                                    <div class="col-sm-8">
+                                                                        <select id="select_form_contribution" name="select_form_contribution" class="form-control" style="width: 100%; !important;">
+                                                                            <option value="">{{ _("Select a form of contribution") }}</option>
+                                                                            <option value="Self-service translation">{{ _("Self-service translation") }}</option>
+                                                                            <option value="ClimMob team translation">{{ _("ClimMob team translation") }}</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+
+                                                                <button class="btn btn-primary pull-right" id="btn_send_request">{{ _("Send request") }}</button>
+
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+
+                                        </div>
+                                    </div>
+                                    <div role="tabpanel" id="basic-tab-3" class="tab-pane">
+                                        <div class="panel-body">
+
+
+
+                                            <p>{{ _("You can also create your own questions and translate them into local languages using ClimMob’s built-in translation functionality. This allows you to easily manage the translations for your custom questions, ensuring they are ready for use in diverse languages.") }}</p>
+
+                                            <br>
+
+                                            <p>{{ _("To use this functionality, simply click on the language symbol. In the list of questions, you will find the following variations of the symbol:") }}</p>
+
+                                            <p>- <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 512' height='20' fill='#b3b3b3'><path d='M0 128C0 92.7 28.7 64 64 64H256h48 16H576c35.3 0 64 28.7 64 64V384c0 35.3-28.7 64-64 64H320 304 256 64c-35.3 0-64-28.7-64-64V128zm320 0V384H576V128H320zM178.3 175.9c-3.2-7.2-10.4-11.9-18.3-11.9s-15.1 4.7-18.3 11.9l-64 144c-4.5 10.1 .1 21.9 10.2 26.4s21.9-.1 26.4-10.2l8.9-20.1h73.6l8.9 20.1c4.5 10.1 16.3 14.6 26.4 10.2s14.6-16.3 10.2-26.4l-64-144zM160 233.2L179 276H141l19-42.8zM448 164c11 0 20 9 20 20v4h44 16c11 0 20 9 20 20s-9 20-20 20h-2l-1.6 4.5c-8.9 24.4-22.4 46.6-39.6 65.4c.9 .6 1.8 1.1 2.7 1.6l18.9 11.3c9.5 5.7 12.5 18 6.9 27.4s-18 12.5-27.4 6.9l-18.9-11.3c-4.5-2.7-8.8-5.5-13.1-8.5c-10.6 7.5-21.9 14-34 19.4l-3.6 1.6c-10.1 4.5-21.9-.1-26.4-10.2s.1-21.9 10.2-26.4l3.6-1.6c6.4-2.9 12.6-6.1 18.5-9.8l-12.2-12.2c-7.8-7.8-7.8-20.5 0-28.3s20.5-7.8 28.3 0l14.6 14.6 .5 .5c12.4-13.1 22.5-28.3 29.8-45H448 376c-11 0-20-9-20-20s9-20 20-20h52v-4c0-11 9-20 20-20z'/></svg> {{ _("The gray color on the icon indicates that the question does not yet have local languages assigned.") }}</p>
+
+                                            <p>- <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 512' height='20' fill=''><path d='M0 128C0 92.7 28.7 64 64 64H256h48 16H576c35.3 0 64 28.7 64 64V384c0 35.3-28.7 64-64 64H320 304 256 64c-35.3 0-64-28.7-64-64V128zm320 0V384H576V128H320zM178.3 175.9c-3.2-7.2-10.4-11.9-18.3-11.9s-15.1 4.7-18.3 11.9l-64 144c-4.5 10.1 .1 21.9 10.2 26.4s21.9-.1 26.4-10.2l8.9-20.1h73.6l8.9 20.1c4.5 10.1 16.3 14.6 26.4 10.2s14.6-16.3 10.2-26.4l-64-144zM160 233.2L179 276H141l19-42.8zM448 164c11 0 20 9 20 20v4h44 16c11 0 20 9 20 20s-9 20-20 20h-2l-1.6 4.5c-8.9 24.4-22.4 46.6-39.6 65.4c.9 .6 1.8 1.1 2.7 1.6l18.9 11.3c9.5 5.7 12.5 18 6.9 27.4s-18 12.5-27.4 6.9l-18.9-11.3c-4.5-2.7-8.8-5.5-13.1-8.5c-10.6 7.5-21.9 14-34 19.4l-3.6 1.6c-10.1 4.5-21.9-.1-26.4-10.2s.1-21.9 10.2-26.4l3.6-1.6c6.4-2.9 12.6-6.1 18.5-9.8l-12.2-12.2c-7.8-7.8-7.8-20.5 0-28.3s20.5-7.8 28.3 0l14.6 14.6 .5 .5c12.4-13.1 22.5-28.3 29.8-45H448 376c-11 0-20-9-20-20s9-20 20-20h52v-4c0-11 9-20 20-20z'/></svg> {{ _("The black color on the icon indicates that the question already has local languages assigned.") }}</p>
+
+                                            <br>
+
+                                            <p>{{ _("Take a look at these examples") }}:</p>
+
+                                            <br>
+
+                                            <p>- {{ _("Click to view the different local languages of a question.") }}</p>
+
+                                            <img style="width: 100%; max-width: 700px" src='{{ request.url_for_static('gif/translation_button.gif') }}' />
+
+                                            <br>
+                                            <br>
+
+                                            <p>- {{ _("Translate your question into your local languages.") }}</p>
+
+                                            <img style="width: 100%; max-width: 700px" src='{{ request.url_for_static('gif/questions.gif') }}' />
+
+
+
+                                        </div>
+                                    </div>
+                                    <div role="tabpanel" id="basic-tab-4" class="tab-pane">
+                                        <div class="panel-body">
+
+
+
+                                            <div class="row">
+
+                                                <div class="col-md-12" >
+                                                    <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                                                    <h3>{{ _("Indications") }}</h3>
+                                                    <p>1. {{ _("The following is a list of texts that ClimMob uses on the questions that are deployed in ODK Collect form") }}.</p>
+                                                    <p>2. {{ _("To see the different languages click on the corresponding tab, just above the language name. If only one language is shown, you can add more languages in") }}: <button type="button" class="btn btn-primary btn-rounded btn-sm change-tab" href="#basic-tab-1" style="display: inline" >{{ _("Local languages") }}</button></p>
+                                                    <p>3. {{ _(" For new languages, the list of texts is shown in English. You will have to provide translations to other languages if this is not given") }}.</p>
+                                                    <p>4. {{ _("Some fields may be prefilled, but you can edit the texts") }}.</p>
+                                                    <br>
+                                                    <div class="tabs-container">
+                                                        <ul class="nav nav-tabs" role="tablist">
+                                                            {% for lang in listOflanguages %}
+                                                                <li><a class="nav-link {% if loop.index ==1 %}active{% endif %}" data-toggle="tab" href="#tab{{ lang.lang_code }}">{{ lang.lang_name}}</a></li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                        <div class="tab-content" id="div_for_translations">
+                                                            {% for lang in listOflanguages %}
+                                                                <div role="tabpanel" id="tab{{ lang.lang_code }}" class="tab-pane {% if loop.index ==1 %}active{% endif %}">
+                                                                    <div class="panel-body">
+
+                                                                        <div id="table_for_{{ lang.lang_code }}"></div>
+
+                                                                    </div>
+                                                                </div>
+                                                            {% endfor %}
+
+                                                            <div class="row text-right">
+                                                                <br>
+                                                                <button class="btn btn-primary" name="btn_save_translations" type="submit" id="btn_save_translations" style="margin-right: 15px">{{ _("Save") }}</button>
+                                                            </div>
+
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+
+
+                                        </div>
+                                    </div>
                                 </div>
+
 
                             </div>
                         </div>
 
                     </div>
+
                 </div>
             </div>
         </div>
     </div>
-
-    {% include 'snippets/languages/addMoreLanguages.jinja2' %}
 
     <script>
 
@@ -113,16 +309,25 @@
 
         {% endfor %}
 
+        $('.change-tab').on('click', function (e) {
+            var targetTab = $(this).attr('href');
+            $('.nav-tabs a[href="' + targetTab + '"]').tab('show');
+        });
+
+
         $(".modalLang").click(function (){
             show_carga = false;
         })
 
         $('.nav-tabs a').on('show.bs.tab', function(){
 
-            var language = $(this).attr("href").replace("#tab","")
+            if(!$(this).attr("href").includes("#basic-tab"))
+            {
+                var language = $(this).attr("href").replace("#tab", "")
 
-            if( $("#table_for_"+language).is(':empty') ) {
-                showLanguage(language)
+                if ($("#table_for_" + language).is(':empty')) {
+                    showLanguage(language)
+                }
             }
 
         });
@@ -174,6 +379,73 @@
                 }
             });
 
+
+        });
+
+        function formatLanguageForRequest (language) {
+            if (!language.id) {
+                return language.text;
+            }
+            let $state = $(
+                '<span>' + language.text + '</span>'
+            );
+            return $state;
+        }
+
+        $('#select_lang_add').select2({
+            templateResult: formatLanguageForRequest,
+            ajax: {
+                url: "{{ request.route_url('APIlanguagesClimMob', user=activeUser.login) }}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    tour.end()
+                    return {
+                        q: params.term, // search term
+                        page: params.page
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+
+                    return {
+                        results: data.results,
+                        pagination: {
+                            more: (params.page * 10) < data.total
+                        }
+                    };
+                },
+                cache: true
+            }
+        });
+
+        $("#btn_send_request").click(function (){
+
+            $.ajax({
+                url: "{{ request.route_url("requestLanguageTranslation") }}",
+                datatype: "json",
+                type: "POST",
+                data: {
+                    "csrf_token": '{{ request.session.get_csrf_token() }}',
+                    "contribute": $("#select_form_contribution").val(),
+                    "language": $("#select_lang_add").val()
+                },
+                success: function (respuesta) {
+
+                    if (respuesta.status === 200) {
+                        toastr.success("{{ _("The request has been successfully completed") }}")
+                        $("#select_form_contribution").val("");
+                        $("#select_lang_add").val("")
+                        $('#select_lang_add').trigger("change.select2");
+                            {#$("#select_lang_add").append("<option value=''>{{ _("Select a template") }}</option>");#}
+                    }else{
+                        toastr.error(respuesta.error);
+                    }
+                },
+                error: function (respuesta) {
+                    toastr.error("{{ _("There was a problem with requesting the incorporation of the new language") }}");
+                }
+            });
 
         });
 

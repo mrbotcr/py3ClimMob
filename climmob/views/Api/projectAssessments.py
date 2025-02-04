@@ -35,7 +35,7 @@ from climmob.processes import (
 from climmob.views.classes import apiView
 
 
-class readProjectAssessments_view(apiView):
+class ReadProjectAssessmentsView(apiView):
     def processView(self):
 
         if self.request.method == "GET":
@@ -89,7 +89,7 @@ class readProjectAssessments_view(apiView):
             return response
 
 
-class addNewAssessment_view(apiView):
+class AddNewAssessmentView(apiView):
     def processView(self):
         if self.request.method == "POST":
             obligatory = [
@@ -173,7 +173,7 @@ class addNewAssessment_view(apiView):
             return response
 
 
-class updateProjectAssessment_view(apiView):
+class UpdateProjectAssessmentView(apiView):
     def processView(self):
         if self.request.method == "POST":
             obligatory = [
@@ -282,7 +282,7 @@ class updateProjectAssessment_view(apiView):
             return response
 
 
-class deleteProjectAssessment_view(apiView):
+class DeleteProjectAssessmentView(apiView):
     def processView(self):
         if self.request.method == "POST":
             obligatory = ["project_cod", "user_owner", "ass_cod"]
@@ -387,7 +387,7 @@ class deleteProjectAssessment_view(apiView):
 
 
 # _________________________________________ASSESSMENTS GROUPS___________________________________________________#
-class readProjectAssessmentStructure_view(apiView):
+class ReadProjectAssessmentStructureView(apiView):
     def processView(self):
         if self.request.method == "GET":
             obligatory = ["project_cod", "user_owner", "ass_cod"]
@@ -516,7 +516,7 @@ class readProjectAssessmentStructure_view(apiView):
             return response
 
 
-class createAssessmentGroup_view(apiView):
+class CreateAssessmentGroupView(apiView):
     def processView(self):
         if self.request.method == "POST":
             obligatory = [
@@ -636,7 +636,7 @@ class createAssessmentGroup_view(apiView):
             return response
 
 
-class updateAssessmentGroup_view(apiView):
+class UpdateAssessmentGroupView(apiView):
     def processView(self):
         if self.request.method == "POST":
             obligatory = [
@@ -764,7 +764,7 @@ class updateAssessmentGroup_view(apiView):
             return response
 
 
-class deleteAssessmentGroup_view(apiView):
+class DeleteAssessmentGroupView(apiView):
     def processView(self):
         if self.request.method == "POST":
             obligatory = ["project_cod", "user_owner", "ass_cod", "group_cod"]
@@ -896,7 +896,7 @@ class deleteAssessmentGroup_view(apiView):
 # _________________________________________ASSESSMENTS GROUPS QUESTIONS___________________________________________________#
 
 
-class readPossibleQuestionForAssessmentGroup_view(apiView):
+class ReadPossibleQuestionForAssessmentGroupView(apiView):
     def processView(self):
         if self.request.method == "GET":
             obligatory = ["project_cod", "user_owner", "ass_cod"]
@@ -1011,7 +1011,7 @@ class readPossibleQuestionForAssessmentGroup_view(apiView):
             return response
 
 
-class addQuestionToGroupAssessment_view(apiView):
+class AddQuestionToGroupAssessmentView(apiView):
     def processView(self):
         if self.request.method == "POST":
             obligatory = [
@@ -1180,7 +1180,7 @@ class addQuestionToGroupAssessment_view(apiView):
             return response
 
 
-class deleteQuestionFromGroupAssessment_view(apiView):
+class DeleteQuestionFromGroupAssessmentView(apiView):
     def processView(self):
         if self.request.method == "POST":
             obligatory = [
@@ -1339,7 +1339,7 @@ class deleteQuestionFromGroupAssessment_view(apiView):
 
 
 # _________________________________________ASSESSMENTS ORDER GROUPS___________________________________________________#
-class orderAssessmentQuestions_view(apiView):
+class OrderAssessmentQuestionsView(apiView):
     def processView(self):
 
         if self.request.method == "POST":

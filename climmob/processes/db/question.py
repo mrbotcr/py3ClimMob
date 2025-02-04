@@ -13,6 +13,8 @@ from climmob.models import (
     I18nQstoption,
     I18n,
 )
+from sqlalchemy.exc import DatabaseError
+import logging
 
 __all__ = [
     "addQuestion",
@@ -37,17 +39,28 @@ __all__ = [
     "userQuestionDetailsById",
     "getDefaultQuestionLanguage",
     "getQuestionOwner",
+    "knowIfUserHasCreatedTranslations",
 ]
+
+log = logging.getLogger(__name__)
 
 
 def addQuestion(data, request):
+    _ = request.translate
     mappeData = mapToSchema(Question, data)
     newQuestion = Question(**mappeData)
+    save_point = request.tm.savepoint()
     try:
         request.dbsession.add(newQuestion)
         request.dbsession.flush()
         return True, newQuestion.question_id
+    except DatabaseError as e:
+        save_point.rollback()
+        log.error("Error creating the question.")
+        return False, _("Error creating the question. The question is very long")
     except Exception as e:
+        save_point.rollback()
+        log.error("Error {} while creating a question".format(str(e)))
         return False, str(e)
 
 
@@ -110,12 +123,16 @@ def updateOption(data, request):
 
 
 def updateQuestion(data, request):
+    _ = request.translate
     try:
         mappeData = mapToSchema(Question, data)
         request.dbsession.query(Question).filter(
             Question.user_name == data["user_name"]
         ).filter(Question.question_id == data["question_id"]).update(mappeData)
         return True, data["question_id"]
+    except DatabaseError as e:
+        log.error("Error creating the question. The question is very long")
+        return False, _("Error creating the question. The question is very long")
     except Exception as e:
         return False, str(e)
 
@@ -478,3 +495,22 @@ def getDefaultQuestionLanguage(request, questionId):
         .filter(Question.question_id == questionId)
         .first()
     )
+
+
+def knowIfUserHasCreatedTranslations(request, userId):
+
+    userQuestionsId = request.dbsession.query(Question.question_id).filter(
+        Question.user_name == userId
+    )
+
+    translations = (
+        request.dbsession.query(I18nQuestion)
+        .filter(I18nQuestion.question_id.in_(userQuestionsId))
+        .all()
+    )
+
+    if translations:
+
+        return True
+
+    return False

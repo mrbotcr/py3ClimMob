@@ -122,10 +122,12 @@
                                                         </tr>
                                                     {% endif %}
 
-                                                    <tr>
-                                                        <th>{{ _("Notes") }}</th>
-                                                        <td>{{ questionDetails["question_notes"] }}</td>
-                                                    </tr>
+{#                                                    {% if questionDetails["question_dtype"] in [2,3] %}#}
+{#                                                        <tr>#}
+{#                                                            <th>{{ _("Notes") }}</th>#}
+{#                                                            <td>{{ questionDetails["question_notes"] }}</td>#}
+{#                                                        </tr>#}
+{#                                                    {% endif %}#}
 
                                                     {% if questionDetails["question_dtype"] in [2,3,8] %}
                                                         <tr>
@@ -348,7 +350,7 @@
 
                             $(".txt{{ lang.lang_code }}").each(function () {
 
-                                if ($(this).val() === "") {
+                                if ($(this).val() === "" && $(this).attr("id") !== "question_unit_{{ lang.lang_code }}") {
                                     $(this).addClass("fieldWithProblem")
                                     $("#missingInfo").css("display", "block")
                                 } else {

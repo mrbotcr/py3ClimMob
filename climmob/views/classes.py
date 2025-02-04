@@ -26,7 +26,7 @@ from climmob.processes import (
 )
 
 
-def resource_callback(request, response):
+def ResourceCallback(request, response):
     """
     This function moves all script code in a html to an ephemeral js file.
     This is important to deny any inline JS as part of Content-Security-Policy while
@@ -236,7 +236,7 @@ class odkView(object):
 class publicView(object):
     def __init__(self, request):
         if request.registry.settings.get("secure.javascript", "false") == "true":
-            request.add_response_callback(resource_callback)
+            request.add_response_callback(ResourceCallback)
         self.request = request
         self._ = self.request.translate
 
@@ -269,7 +269,7 @@ class publicView(object):
 class privateView(object):
     def __init__(self, request):
         if request.registry.settings.get("secure.javascript", "false") == "true":
-            request.add_response_callback(resource_callback)
+            request.add_response_callback(ResourceCallback)
         self.request = request
         self.user = None
         self._ = self.request.translate
@@ -302,14 +302,32 @@ class privateView(object):
         else:
             return HTTPFound(location=self.request.route_url("login"))
 
-        if (
-            self.request.matched_route.name
-            not in ["profile", "getUserLanguagesPreview", "addUserLanguage"]
-            and not self.user.languages
-        ):
-            return HTTPFound(
-                location=self.request.route_url("profile", _query={"help": "languages"})
-            )
+        lastActivity = getLastActivityLogByUser(self.user.login, self.request)
+        # if lastActivity["log_message"] != "Welcome to ClimMob":
+        #     if (
+        #         self.request.matched_route.name
+        #         not in ["otherLanguages", "getUserLanguagesPreview", "addUserLanguage"]
+        #         and not self.user.languages
+        #     ):
+        #         return HTTPFound(
+        #             location=self.request.route_url(
+        #                 "otherLanguages", _query={"help": "languages"}
+        #             )
+        #         )
+        #
+        #     if (
+        #         self.request.matched_route.name
+        #         not in [
+        #             "curationoftechnologies",
+        #             "otherLanguages",
+        #             "getUserLanguagesPreview",
+        #             "addUserLanguage",
+        #         ]
+        #         and not self.user.technologies
+        #     ):
+        #         return HTTPFound(
+        #             location=self.request.route_url("curationoftechnologies")
+        #         )
 
         self.classResult["counterChat"] = counterChat(self.user.login, self.request)
         activeProjectData = getActiveProject(self.user.login, self.request)
@@ -324,7 +342,6 @@ class privateView(object):
         if hasActiveForm:
             self.classResult["surveyMustBeDisplayed"] = formDetails["form_name"]
 
-        lastActivity = getLastActivityLogByUser(self.user.login, self.request)
         if lastActivity:
             if lastActivity["log_message"] == "Created a new project":
                 self.classResult["showRememberAfterCreateProject"] = True
@@ -381,7 +398,16 @@ class privateView(object):
             self.classResult.update(self.viewResult)
             return self.classResult
         else:
-            return self.viewResult
+            if isinstance(self.viewResult, dict):
+                return json.loads(
+                    json.dumps(self.viewResult, default=self.myconverter, indent=4)
+                )
+            else:
+                return self.viewResult
+
+    def myconverter(self, o):
+        if isinstance(o, datetime.datetime):
+            return o.__str__()
 
     def processView(self):
         return {"activeUser": self.user}

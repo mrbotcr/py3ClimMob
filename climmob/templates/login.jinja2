@@ -50,6 +50,20 @@
                         </div>
                     {% endif %}
                 {% endblock loginerror %}
+
+                {% if request.registry.settings.get('auth.show_discontinued_message', "false") == 'true'%}
+
+                    <div class="alert alert-warning alert-dismissable" style="text-align: justify">
+                        <b>Important Update: Account Creation</b><br><br>
+                        <p>
+                            Please note that new accounts can now only be created on <a href="https://1000farms.climmob.net/">1000FARMS instance</a>.<br><br>
+                            If you are an existing user of ClimMob3 instance, you can continue to access your account as usual. However, new sign-ups are no longer allowed on this platform. Also, we recommend you to create your new trials on the <a href="https://1000farms.climmob.net/">1000FARMS instance</a>.<br><br>
+                            If you have any questions, please don’t hesitate to contact us by e-mail: climmob@mrbotcr.com.
+                        </p>
+                    </div>
+
+                {% endif %}
+
                 <form class="m-t" role="form" method="post" action="{{ request.path }}">
                     {% block loginform %}
                         <div class="form-group">
@@ -75,7 +89,7 @@
             {% endblock logincontent %}
             {% block loginfooter %}
                 <br>
-                <strong>{{ _("Copyright") }}</strong> {{ _("2023, MrBot Software Solutions") }}
+                <strong>{{ _("Copyright") }}</strong> {{ _("{}, MrBot Software Solutions").format(request.h.get_year()) }}
             {% endblock loginfooter %}
         </div>
     </div>

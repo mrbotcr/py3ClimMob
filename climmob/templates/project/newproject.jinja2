@@ -82,6 +82,14 @@
                     radioClass: 'iradio_square-green',
                 });
 
+                $('.i-checksbox').iCheck({
+                    checkboxClass: 'icheckbox_square-green',
+                });
+
+                $('.i-checksbox2').iCheck({
+                    checkboxClass: 'icheckbox_square-green',
+                });
+
                 {% if activeUser.login == "bioversity" %}
 
                     var valueOfProjectTemplate = "{{ dataworking["project_template"] }}"
@@ -96,19 +104,20 @@
 
                 {% else %}
 
-                    $('input[name="project_registration_and_analysis"]').on('ifChecked', function(event){
+                    $('.i-checks').on('ifChanged', function(event){
+                        const selectedValue = $('input[name="project_registration_and_analysis"]:checked').val();
                         var URL = "{{ request.route_url('getTemplatesByTypeOfProject', typeid="__typeid__") }}"
-                        URL = URL.replace("__typeid__", this.value)
+                        URL = URL.replace("__typeid__", selectedValue)
 
                         $.get(URL, function (dataJson, status) {
                             $("#usingTemplate").empty();
-                            $('#usingTemplate').trigger("chosen:updated");
+                            $('#usingTemplate').trigger("change");
                             $("#usingTemplate").append("<option value=''>{{ _("Select a template") }}</option>");
                             for (var i = 0; i < dataJson.length; i++){
                                 var info = dataJson[i]
                                 $("#usingTemplate").append("<option value='"+ info.project_id+"'>"+ info.project_name+"</option>");
                             }
-                            $('#usingTemplate').trigger("chosen:updated");
+                            $('#usingTemplate').trigger("change");
                         });
                     });
 

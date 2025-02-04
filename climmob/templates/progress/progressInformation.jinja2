@@ -29,9 +29,12 @@
         </div>
 
         <div class="text-center" style="padding: 20px">
-            <img class="language" name="en" src="{{ request.url_for_static('landing/en.png') }}" style="height: 15px; width: 22px">&nbsp;&nbsp;&nbsp;&nbsp;
-            <img class="language" name="es" src="{{ request.url_for_static('landing/es.png') }}" style="height: 15px; width: 22px">&nbsp;&nbsp;&nbsp;&nbsp;
-{#            <img class="language" name="fr" src="{{ request.url_for_static('landing/fr.png') }}" style="height: 15px; width: 22px">#}
+            {{ _('Language') }}:
+            <select id="language">
+                <option id="en" value="en">English</option>
+                <option id="es" value="es">Español</option>
+                <option id="fr" value="fr">Français</option>
+            </select>
         </div>
 
         <div class="row">
@@ -219,11 +222,11 @@
             var selectedLanguage = readCookie('_LOCALE_');
             if (selectedLanguage != null)
                 $('#language').val(selectedLanguage);
+
             $("#language").bind('change', function() {
-                //on change set cookie and...
                 setCookie('_LOCALE_', this.value, 365);
                 location.reload();
-            });
+            })
         });
 
         $(".language").click(function () {

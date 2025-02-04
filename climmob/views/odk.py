@@ -18,7 +18,7 @@ from climmob.processes import (
 from climmob.views.classes import odkView
 
 
-class formList_view(odkView):
+class FormlistView(odkView):
     def processView(self):
         userid = self.request.matchdict["userid"]
         if isEnumeratorActive(userid, self.user, self.request):
@@ -32,7 +32,7 @@ class formList_view(odkView):
             return self.askForCredentials()
 
 
-class formListByProject_view(odkView):
+class FormListByProjectView(odkView):
     def processView(self):
         userOwner = self.request.matchdict["user"]
         projectCod = self.request.matchdict["project"]
@@ -56,7 +56,7 @@ class formListByProject_view(odkView):
             return self.askForCredentials()
 
 
-class push_view(odkView):
+class PushView(odkView):
     def processView(self):
         if self.request.method == "POST":
             userid = self.request.matchdict["userid"]
@@ -85,7 +85,7 @@ class push_view(odkView):
             return response
 
 
-class submission_view(odkView):
+class SubmissionView(odkView):
     def processView(self):
         userid = self.request.matchdict["userid"]
         if self.request.method == "HEAD":
@@ -124,7 +124,7 @@ class submission_view(odkView):
                 return response
 
 
-class submissionByProject_view(odkView):
+class SubmissionByProjectView(odkView):
     def processView(self):
         userOwner = self.request.matchdict["user"]
         projectCod = self.request.matchdict["project"]
@@ -190,7 +190,7 @@ class submissionByProject_view(odkView):
                 return response
 
 
-class XMLForm_view(odkView):
+class XMLFormView(odkView):
     def processView(self):
         user = self.request.matchdict["user"]
         projectUserOwner = self.request.matchdict["userowner"]
@@ -206,7 +206,7 @@ class XMLForm_view(odkView):
             return self.askForCredentials()
 
 
-class assessmentXMLForm_view(odkView):
+class AssessmentXMLFormView(odkView):
     def processView(self):
         user = self.request.matchdict["user"]
         projectUserOwner = self.request.matchdict["userowner"]
@@ -225,7 +225,7 @@ class assessmentXMLForm_view(odkView):
             return self.askForCredentials()
 
 
-class manifest_view(odkView):
+class ManifestView(odkView):
     def processView(self):
         user = self.request.matchdict["user"]
         projectUserOwner = self.request.matchdict["userowner"]
@@ -245,7 +245,7 @@ class manifest_view(odkView):
             return self.askForCredentials()
 
 
-class assessmentManifest_view(odkView):
+class AssessmentManifestView(odkView):
     def processView(self):
         user = self.request.matchdict["user"]
         projectUserOwner = self.request.matchdict["userowner"]
@@ -271,7 +271,7 @@ class assessmentManifest_view(odkView):
             return self.askForCredentials()
 
 
-class mediaFile_view(odkView):
+class MediaFileView(odkView):
     def processView(self):
         user = self.request.matchdict["user"]
         projectUserOwner = self.request.matchdict["userowner"]
@@ -290,7 +290,7 @@ class mediaFile_view(odkView):
             return self.askForCredentials()
 
 
-class assessmentMediaFile_view(odkView):
+class AssessmentMediaFileView(odkView):
     def processView(self):
         user = self.request.matchdict["user"]
         projectUserOwner = self.request.matchdict["userowner"]

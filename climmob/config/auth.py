@@ -1,3 +1,5 @@
+import secrets
+
 import arrow
 import hashlib
 import urllib
@@ -6,6 +8,7 @@ from dateutil.relativedelta import relativedelta
 from climmob.config.encdecdata import decodeData
 from climmob.models import User as userModel, Country, Sector, mapFromSchema
 from climmob.processes.db.i18n_user import getListOfLanguagesByUser
+from climmob.processes.db.technologies import getTechnologiesByUserWithoutCropTaxonomy
 
 
 # User class Used to store information about the user
@@ -39,6 +42,7 @@ class User(object):
         else:
             self.about = userData["user_about"]
         self.languages = userData["languages"]
+        self.technologies = userData["technologies"]
 
     def check_password(self, passwd, request):
         return checkLogin(self.login, passwd, request)
@@ -101,6 +105,8 @@ def getUserData(user, request):
     if not result is None:
         result = mapFromSchema(result)
         result["languages"] = getListOfLanguagesByUser(request, user)
+        completed, results = getTechnologiesByUserWithoutCropTaxonomy(user, request)
+        result["technologies"] = completed
         res = User(result)
 
     return res
@@ -117,6 +123,10 @@ def getUserByApiKey(apiKey, request):
     if not result is None:
         result = mapFromSchema(result)
         result["languages"] = getListOfLanguagesByUser(request, result["user_name"])
+        completed, results = getTechnologiesByUserWithoutCropTaxonomy(
+            result["user_name"], request
+        )
+        result["technologies"] = completed
         res = User(result)
 
     return res
@@ -130,11 +140,42 @@ def getUserByEmail(email, request):
         .first()
     )
     if result is not None:
+        result = mapFromSchema(result)
+        result["languages"] = getListOfLanguagesByUser(request, result["user_name"])
+        completed, results = getTechnologiesByUserWithoutCropTaxonomy(
+            result["user_name"], request
+        )
+        result["technologies"] = completed
+
         return (
-            User(mapFromSchema(result)),
-            decodeData(request, result.user_password).decode("utf-8"),
+            User(result),
+            decodeData(request, result["user_password"]).decode("utf-8"),
         )
     return None, None
+
+
+def getUserEmail(email, request):
+    result = (
+        request.dbsession.query(userModel)
+        .filter_by(user_email=email)
+        .filter_by(user_active=1)
+        .first()
+    )
+    if result is not None:
+        result = mapFromSchema(result)
+        result["languages"] = getListOfLanguagesByUser(request, result["user_name"])
+        completed, results = getTechnologiesByUserWithoutCropTaxonomy(
+            result["user_name"], request
+        )
+        result["technologies"] = completed
+
+        return User(result)
+    return None
+
+
+def generateOPTCode():
+    opt = secrets.randbelow(10**6)
+    return f"{opt:06}"
 
 
 def checkLogin(user, password, request):

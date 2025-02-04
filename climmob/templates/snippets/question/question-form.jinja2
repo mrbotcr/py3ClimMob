@@ -376,7 +376,7 @@
     <div class="form-group">
         <label class="col-sm-4 control-label">{{ _("Question asked") }}</label>
         <div class="col-sm-8">
-            <input type="text" class="form-control inputForQuestion" required="" name="question_desc" id="question_desc"  oninvalid="this.setCustomValidity('{{ _("Write the question asked.") }}')" onchange="this.setCustomValidity('')">
+            <textarea class="form-control inputForQuestion" rows="2" maxlength="120" required="" name="question_desc" id="question_desc"  oninvalid="this.setCustomValidity('{{ _("Write the question asked.") }}')" onchange="this.setCustomValidity('')"></textarea>
             <span class="help-block m-b-none text-left">{{ _("Text of the question as shown in the ODK Collect app.") }}</span>
         </div>
     </div>
@@ -384,7 +384,7 @@
     <div class="form-group" id="div_unit">
         <label class="col-sm-4 control-label">{{ _("Unit") }}</label>
         <div class="col-sm-8">
-            <input type="text" class="form-control inputForQuestion" id="question_unit" name="question_unit" placeholder=" ">
+            <textarea type="text" rows="2" class="form-control inputForQuestion" id="question_unit" name="question_unit" placeholder=" "></textarea>
         </div>
     </div>
 </div>
@@ -532,9 +532,21 @@
 
 {% endif %}
 
-{% block dataprivacy_question_field %}
+{% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
 
-{% endblock dataprivacy_question_field %}
+    <div class="form-group">
+        <label class="col-sm-4 control-label">{{ _("Set as sensitive") }}</label>
+        <div class="col-sm-8">
+            <div class="switch">
+                <input type="checkbox" id="ckb_question_as_sensitive" class="inputForQuestionCheck"
+                       name="question_sensitive" data-on-color="success"
+                       data-off-color="danger" data-on-text="{{ _('Yes') }}"
+                       data-off-text="{{ _('No') }}" >
+            </div>
+        </div>
+    </div>
+
+{% endif %}
 <br>
 <br>
 

@@ -79,6 +79,12 @@ def upgrade():
             "question_desc": "¿Da su consentimiento para participar en este proyecto?",
             "question_name": "Consentimiento de participación",
         },
+        {
+            "question_id": 164,
+            "lang_code": "fr",
+            "question_desc": "Consentez-vous à participer à ce projet ?",
+            "question_name": "Consentement de participation",
+        },
     ]
 
     i18n_question = table(
@@ -97,6 +103,8 @@ def upgrade():
     i18n_qstoptions = [
         {"question_id": 164, "value_code": 1, "value_desc": "Sí", "lang_code": "es"},
         {"question_id": 164, "value_code": 2, "value_desc": "No", "lang_code": "es"},
+        {"question_id": 164, "value_code": 1, "value_desc": "Oui", "lang_code": "fr"},
+        {"question_id": 164, "value_code": 2, "value_desc": "Non", "lang_code": "fr"},
     ]
 
     i18n_qstoptions_table = table(

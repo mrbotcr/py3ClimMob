@@ -70,7 +70,7 @@ def searchTechnologies(projectId, request):
         )
         .filter(Technology.tech_id.notin_(subquery))
         .filter(Technology.user_name == User.user_name)
-        .order_by(Technology.tech_name)
+        .order_by(func.coalesce(I18nTechnology.tech_name, Technology.tech_name))
     )
 
     for plugin in p.PluginImplementations(p.IProjectTechnologies):
@@ -111,6 +111,7 @@ def searchTechnologiesInProject(projectId, request):
             .filter(Techalia.tech_id == Prjtech.tech_id)
             .label("quantityAlias"),
             User.user_fullname,
+            Technology.croptaxonomy_code,
         )
         .join(
             I18nTechnology,
@@ -138,6 +139,7 @@ def searchTechnologiesInProject(projectId, request):
                 "quantity": technology.quantity,
                 "quantityAlias": technology.quantityAlias,
                 "user_fullname": technology[5],
+                "croptaxonomy_code": technology.croptaxonomy_code,
             }
         )
 

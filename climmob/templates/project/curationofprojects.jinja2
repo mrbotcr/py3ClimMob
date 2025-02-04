@@ -1,0 +1,300 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("Project setup") }}</title>
+{% endblock title %}
+
+{% block css %}
+    {% cssresource request,'coreresources','datatables' %}
+    {% cssresource request,'coreresources','footable' %}
+    {% cssresource request,'coreresources','select2' %}
+    {% cssresource request,'coreresources','tour' %}
+    {% cssresource request,'coreresources','icheck' %}
+    {% cssresource request,'coreresources','chosen' %}
+{% endblock css %}
+
+{% block topScripts %}
+    {% jsresource request,'coreresources','footable' %}
+    {% jsresource request,'coreresources','technologies' %}
+    {% jsresource request,'coreresources','datatables' %}
+    {% jsresource request,'coreresources','tour' %}
+    {% jsresource request,'coreresources','select2' %}
+    {% jsresource request,'coreresources','icheck' %}
+    {% jsresource request,'coreresources','chosen' %}
+{% endblock topScripts %}
+
+{% block pageheading %}
+    {% set _title= _("Project setup") %}
+    {% include 'snippets/menuheading.jinja2' %}
+{% endblock %}
+
+{% block pagecontent %}
+
+    <div class="row">
+
+        <div class="col-md-12" >
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{{ _("Projects that require a setup") }}</h5>
+                </div>
+                <div class="ibox-content" >
+
+                    <form class="form-horizontal" role="form" method="post" action="{{ request.url }}">
+
+                        <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+
+                        {% if error_summary %}
+                            {% for key, error in error_summary.items() %}
+                                <div class="alert alert-danger alert-dismissable">
+                                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <div class="panel panel-warning">
+                            <div class="panel-heading">
+                                <h4><i class="fa fa-info-circle"></i> {{ _("Why are you been redirected to this screen?") }}</h4>
+                            </div>
+                            <div class="panel-body">
+                                <p>{{ _("To improve the quality of data collected through ClimMob and reduce maintenance costs, we need your help in correctly identifying the type of trials in your projects. By flagging test trials (e.g., training or demonstration projects), we can focus resources on managing active, real-world projects more effectively.") }}</p>
+                                <p>{{ _("Additionally, we want to better understand the status of each trial. Indicating whether a trial is completed or still ongoing helps us streamline project tracking and ensures we provide relevant support tailored to your project's current stage.") }}</p>
+                                <p>{{ _("Thank you for your cooperation in helping us enhance ClimMob’s efficiency and reliability!") }}</p>
+                            </div>
+                        </div>
+
+                        <p>{{ _("Read about the following types of projects that have been defined for ClimMob") }}:</p>
+                        <table class="footable table table-bordered">
+                            <thead>
+                                <th>{{ _("Type") }}</th>
+                                <th>{{ _("Description") }}</th>
+                            </thead>
+                            <tbody>
+                                {% for type in listOfProjectTypes %}
+                                    {% if type.prjtype_id != 0 %}
+                                        <tr>
+                                            <td>{{ type.prjtype_name }}</td>
+                                            <td>{{ type.prjtype_description }}.</td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                        <p>{{ _("Use the following table to help the ClimMob team know the type that each of your projects has") }}:</p>
+                        <div class="table-responsive">
+                            <table class="footable table table-bordered ">
+                                <thead>
+                                    <tr>
+                                        <th style="vertical-align: middle">{{ _("Project ID")}}</th>
+                                        <th style="vertical-align: middle">{{ _("Name") }}</th>
+                                        <th style="vertical-align: middle">{{ _("Type") }}</th>
+                                        <th style="vertical-align: middle">{{ _("Affiliation") }}</th>
+                                        <th style="vertical-align: middle">{{ _("Experimental site") }}</th>
+                                        <th style="vertical-align: middle">{{ _("Unit of analysis") }}</th>
+                                        <th style="vertical-align: middle">{{ _("Objectives") }}</th>
+                                        <th style="vertical-align: middle">{{ _("Check this box if this project has been finished.") }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    {% for project in listOfProjects %}
+                                        <tr>
+                                            <td style="vertical-align: middle">{{ project.project_cod }}</td>
+                                            <td style="vertical-align: middle">{{ project.project_name }}</td>
+                                            <td style="vertical-align: middle; min-width: 150px; width: 150px ">
+                                                <select class="form-control selectType" id="project_type_{{ project.project_id }}" name="project_type_{{ project.project_id }}" oninvalid="this.setCustomValidity('{{ _("Select one project type.") }}')" onchange="this.setCustomValidity('')">
+                                                    <option value="">{{ _("Select one type") }}</option>
+                                                    {% for type in listOfProjectTypes %}
+                                                        {% if type.prjtype_id != 0 %}
+                                                            <option value="{{ type.prjtype_id }}">{{ type.prjtype_name }}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </select>
+                                            </td>
+                                            <td style="vertical-align: middle; min-width: 200px; width: 200px; text-align: center">
+                                                <select id="project_affiliation_{{ project.project_id }}" name="project_affiliation_{{ project.project_id }}" class="form-control js-example-data-ajax" required oninvalid="this.setCustomValidity('{{ _("Write the affiliation.") }}')" onchange="this.setCustomValidity('')"></select>
+                                            </td>
+                                            <td style="vertical-align: middle; width: 200px;">
+                                                <select id="project_location_{{ project.project_id }}" name="project_location_{{ project.project_id }}" class="form-control chosen-select selectLocations" tabindex="2" oninvalid="this.setCustomValidity('{{ _("Select one experimental site.") }}')" onchange="this.setCustomValidity('')">
+                                                    <option value="">{{ _("Select one experimental site") }}</option>
+                                                    {% for location in listOfLocations %}
+                                                        <option value="{{ location.plocation_id }}" >{{ location.plocation_name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </td>
+                                            <td style="vertical-align: middle; width: 200px;">
+                                                <select id="project_unit_of_analysis_{{ project.project_id }}" name="project_unit_of_analysis_{{ project.project_id }}" class="form-control chosen-select selectUnitOfAnalisis" data-placeholder="{{ _("Choose one unit of analysis") }}" tabindex="2" oninvalid="this.setCustomValidity('{{ _("Select one unit of analysis.") }}')" onchange="this.setCustomValidity('')">
+                                                    {% for unit_of_analysis in listOfUnitOfAnalysis %}
+                                                        <option value="{{ unit_of_analysis.puoa_id }}">{{ unit_of_analysis.puoa_name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </td>
+                                            <td style="vertical-align: middle; width: 200px;">
+                                                <select style="height: 10px" id="project_objectives_{{ project.project_id }}" name="project_objectives_{{ project.project_id }}" class="form-control chosen-select" data-placeholder="{{ _("Choose one objective") }}" tabindex="2" oninvalid="this.setCustomValidity('{{ _("Choose one objective") }}')" onchange="this.setCustomValidity('')" >
+                                                    {% for objectives in listOfObjectives %}
+                                                        <option value="{{ objectives.pobjective_id }}">{{ objectives.pobjective_name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </td>
+                                            <td style="vertical-align: middle; width: 200px; text-align: center">
+                                                <input type="checkbox" class="i-checks" name="project_status_{{ project.project_id }}">
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <input class="btn btn-primary pull-right" type="submit" id="btn_save_projects" name="btn_save_projects" value="{{ _('Save') }}">
+                        <br>
+                        <br>
+
+                    </form>
+
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        $(document).ready(function () {
+
+            $('.i-checks').iCheck({
+                radioClass: 'iradio_square-green',
+                checkboxClass: 'icheckbox_square-green',
+            });
+
+            $('.chosen-select').select2({width: "100%"});
+
+            $(".js-example-data-ajax").select2({
+                //templateResult: formatUser,
+                placeholder: "{{ _("Write the affiliation name") }}",
+                ajax: {
+                    url: "{{ request.route_url('searchaffiliation') }}",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term, // search term
+                            page: params.page
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+
+                        if (data.results.length === 0 && params.term) {
+                            data.results.push({
+                                id: params.term,
+                                text: "{{ _("New affiliation") }}: "+params.term,
+                            });
+                        }
+
+                        return {
+                            results: data.results,
+                            pagination: {
+                                more: (params.page * 10) < data.total
+                            }
+                        };
+                    },
+                    cache: true
+                }
+            });
+
+        });
+
+        $(".form-control").change(function (){
+            var project_id_split = $(this).attr("id").split("_")
+            var project_id = project_id_split[project_id_split.length - 1]
+
+            var value;
+            if($("#project_type_"+project_id).val() ==="" && $("#project_affiliation_"+project_id).val() ==="" && $("#project_location_"+project_id).val() ==="" && ($("#project_unit_of_analysis_"+project_id).val() === null || $("#project_unit_of_analysis_"+project_id).val() ==="") && $("#project_objectives_"+project_id).val().length === 0 )
+            {
+                value = false;
+            }else{
+                if($("#project_type_"+project_id).val() === "2")
+                {
+                    value =  false;
+                }else{
+                    value =  true;
+                }
+
+            }
+
+            $("#project_type_"+project_id).prop('required', value);
+            $("#project_affiliation_"+project_id).prop('required', value);
+            $("#project_location_"+project_id).prop('required', value);
+            $("#project_unit_of_analysis_"+project_id).prop('required', value);
+            $("#project_objectives_"+project_id).prop('required', value);
+
+            if (value === false)
+            {
+                $("#project_type_"+project_id)[0].setCustomValidity('');
+                $("#project_affiliation_"+project_id)[0].setCustomValidity('');
+                $("#project_location_"+project_id)[0].setCustomValidity('');
+                $("#project_unit_of_analysis_"+project_id)[0].setCustomValidity('');
+                $("#project_objectives_"+project_id)[0].setCustomValidity('');
+            }
+
+        })
+
+        $(".selectLocations").change(function (){
+
+            var project_id_split = $(this).attr("id").split("_")
+            var project_id = project_id_split[project_id_split.length - 1]
+
+            $("#project_unit_of_analysis_"+project_id).empty();
+            $("#project_unit_of_analysis_"+project_id).append("<option value=''>{{ _("Select a unit of analysis") }}</option>");
+            $("#project_unit_of_analysis_"+project_id).trigger("change");
+
+            $("#project_objectives_"+project_id).empty();
+            $("#project_objectives_"+project_id).append("<option value=''>{{ _("Choose one objective") }}</option>");
+            $("#project_objectives_"+project_id).trigger("change");
+
+            if ($(this).val() !=="") {
+                var URL = "{{ request.route_url('getunitofanalysisbylocation', locationid="__locationid__") }}"
+                URL = URL.replace("__locationid__", $(this).val())
+
+                $.get(URL, function (dataJson, status) {
+
+                    dataJson.forEach(element => {
+                        $("#project_unit_of_analysis_"+project_id).append("<option value='"+ element.puoa_id+"'>"+ element.puoa_name+"</option>");
+                    });
+
+                    $("#project_unit_of_analysis_"+project_id).trigger("change");
+                });
+            }
+        });
+
+        $(".selectUnitOfAnalisis").change(function (){
+
+            var project_id_split = $(this).attr("id").split("_")
+            var project_id = project_id_split[project_id_split.length - 1]
+
+            $("#project_objectives_"+project_id).empty();
+            $("#project_objectives_"+project_id).append("<option value=''>{{ _("Choose one objective") }}</option>");
+            $("#project_objectives_"+project_id).trigger("change");
+
+            if ($(this).val() !=="") {
+                var URL = "{{ request.route_url('getobjectivesbylocationandunitofanalysis', locationid="__locationid__", unitofanalysisid="__unitofanalysisid__") }}"
+                URL = URL.replace("__locationid__", $("#project_location_"+project_id).val()).replace("__unitofanalysisid__", $("#project_unit_of_analysis_"+project_id).val())
+
+                $.get(URL, function (dataJson, status) {
+
+                    dataJson.forEach(element => {
+                        $("#project_objectives_"+project_id).append("<option value='"+ element.pobjective_id+"'>"+ element.pobjective_name+"</option>");
+                    });
+
+                    $("#project_objectives_"+project_id).trigger("change");
+                });
+            }
+        });
+
+    </script>
+
+    {% include 'snippets/loading.jinja2' %}
+
+{% endblock pagecontent %}

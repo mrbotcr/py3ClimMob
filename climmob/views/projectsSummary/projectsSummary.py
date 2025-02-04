@@ -46,9 +46,7 @@ class projectsSummary_view(privateView):
 
     def processView(self):
 
-        userInSession = getUserInfo(self.request, self.user.login)
-
-        if userInSession["user_admin"] not in [1]:
+        if self.user.admin not in [1]:
             raise HTTPNotFound()
 
         if self.request.method == "POST":
@@ -69,8 +67,30 @@ class projectsSummary_view(privateView):
             jsonLocation = os.path.join(
                 self.request.registry.settings["user.repository"], "_report"
             )
-            if os.path.exists(os.path.join(jsonLocation, "projectsSummary.json")):
-                jsonFile = open(os.path.join(jsonLocation, "projectsSummary.json"), "r")
+            projectsSummary = "projectsSummary"
+            if os.path.exists(
+                os.path.join(
+                    jsonLocation,
+                    "{}_{}.json".format(
+                        projectsSummary,
+                        self.request.registry.settings.get(
+                            "analytics.instancename", ""
+                        ),
+                    ),
+                )
+            ):
+                jsonFile = open(
+                    os.path.join(
+                        jsonLocation,
+                        "{}_{}.json".format(
+                            projectsSummary,
+                            self.request.registry.settings.get(
+                                "analytics.instancename", ""
+                            ),
+                        ),
+                    ),
+                    "r",
+                )
                 listOfProjects = json.loads(jsonFile.read())
 
         return {

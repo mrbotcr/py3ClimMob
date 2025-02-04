@@ -8,6 +8,7 @@ __all__ = [
     "deleteAllPrjLang",
     "getPrjLangDefaultInProject",
     "languageExistInTheProject",
+    "modifyProjectMainLanguage",
 ]
 
 
@@ -86,4 +87,19 @@ def deleteAllPrjLang(projectId, request):
         return False, e
     except Exception as e:
         # print(str(e))
+        return False, e
+
+
+def modifyProjectMainLanguage(request, projectId, mainLang):
+
+    try:
+        request.dbsession.query(Prjlang).filter(Prjlang.project_id == projectId).update(
+            {"lang_default": None}
+        )
+
+        request.dbsession.query(Prjlang).filter(Prjlang.project_id == projectId).filter(
+            Prjlang.lang_code == mainLang
+        ).update({"lang_default": 1})
+        return True, ""
+    except Exception as e:
         return False, e

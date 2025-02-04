@@ -7,7 +7,7 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', '{{request.registry.settings.get("google.analytics", "false")}}');
+      gtag('config', '{{request.registry.settings.get("google.analytics", "false")}}', {'anonymize_ip': true});
     </script>
 
 {% endif %}

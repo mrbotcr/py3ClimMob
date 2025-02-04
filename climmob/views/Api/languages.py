@@ -17,7 +17,7 @@ import re
 from pyramid.response import Response
 
 
-class readListOfLanguages_view(apiView):
+class ReadListOfLanguagesView(apiView):
     def processView(self):
 
         if self.request.method == "GET":
@@ -34,7 +34,7 @@ class readListOfLanguages_view(apiView):
             return response
 
 
-class addLanguageForUse_view(apiView):
+class AddLanguageForUseView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -131,7 +131,7 @@ class addLanguageForUse_view(apiView):
             return response
 
 
-class deleteLanguage_view(apiView):
+class DeleteLanguageView(apiView):
     def processView(self):
         if self.request.method == "POST":
 
@@ -218,7 +218,7 @@ class deleteLanguage_view(apiView):
             return response
 
 
-class readListOfUnusedLanguages_view(apiView):
+class ReadListOfUnusedLanguagesView(apiView):
     def processView(self):
 
         if self.request.method == "GET":
@@ -235,7 +235,7 @@ class readListOfUnusedLanguages_view(apiView):
             return response
 
 
-class readAllGeneralPhrases_view(apiView):
+class ReadAllGeneralPhrasesView(apiView):
     def processView(self):
 
         if self.request.method == "GET":
@@ -301,7 +301,7 @@ class readAllGeneralPhrases_view(apiView):
             return response
 
 
-class changeGeneralPhrases_view(apiView):
+class ChangeGeneralPhrasesView(apiView):
     def processView(self):
         if self.request.method == "POST":
 

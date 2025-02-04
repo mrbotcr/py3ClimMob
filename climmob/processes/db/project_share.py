@@ -5,6 +5,7 @@ from climmob.models.schema import mapToSchema, mapFromSchema
 
 __all__ = [
     "query_for_users",
+    "query_for_all_users",
     "add_project_collaborator",
     "get_collaborators_in_project",
     "remove_collaborator",
@@ -40,6 +41,36 @@ def query_for_users(request, q, query_from, query_size, projectId):
             )
         )
         .filter(User.user_name.notin_(subquery))
+        .all()
+    )
+
+    return mapFromSchema(result), len(result2)
+
+
+def query_for_all_users(request, q, query_from, query_size):
+    query = q.replace("*", "")
+
+    result = (
+        request.dbsession.query(User)
+        .filter(
+            or_(
+                User.user_name.ilike("%" + query + "%"),
+                User.user_fullname.ilike("%" + query + "%"),
+            )
+        )
+        .offset(query_from)
+        .limit(query_size)
+        .all()
+    )
+
+    result2 = (
+        request.dbsession.query(User)
+        .filter(
+            or_(
+                User.user_name.ilike("%" + query + "%"),
+                User.user_fullname.ilike("%" + query + "%"),
+            )
+        )
         .all()
     )
 

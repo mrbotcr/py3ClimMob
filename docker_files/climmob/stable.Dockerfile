@@ -1,9 +1,10 @@
-FROM alliancecostarica/climmob_base:20230106
+FROM mrbotcr/climmob_base:20240828
 
-MAINTAINER Alliance Bioversity-CIAT
+MAINTAINER MrBot Software Solutions
 
 WORKDIR /opt/new_r_code
 RUN git pull origin master
+RUN Rscript /root/R_packages_installation/check_R_libraries.R
 
 WORKDIR /opt
 RUN mkdir climmob_repository && mkdir climmob_log && mkdir climmob_celery && mkdir climmob_plugins && mkdir climmob_gunicorn && mkdir climmob_config
@@ -17,7 +18,7 @@ VOLUME /opt/climmob_plugins
 
 VOLUME /opt/climmob_config
 
-RUN python3 -m venv climmob_env && git clone https://github.com/BioversityCostaRica/py3ClimMob.git -b stable-3.9.0 climmob && . ./climmob_env/bin/activate && pip install wheel && pip install -r /opt/climmob/requirements.txt && python /opt/climmob/download_nltk_packages.py
+RUN python3 -m venv climmob_env && git clone https://github.com/mrbotcr/py3ClimMob.git -b develop climmob && . ./climmob_env/bin/activate && pip install wheel && pip install -r /opt/climmob/requirements.txt && python /opt/climmob/download_nltk_packages.py
 
 ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.6.0/wait /wait
 RUN chmod +x /wait

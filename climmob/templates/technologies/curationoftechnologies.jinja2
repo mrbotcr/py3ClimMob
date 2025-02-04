@@ -1,0 +1,156 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("Assigning a crop taxonomy to technologies") }}</title>
+{% endblock title %}
+
+{% block css %}
+    {% cssresource request,'coreresources','datatables' %}
+    {% cssresource request,'coreresources','footable' %}
+    {% cssresource request,'coreresources','select2' %}
+    {% cssresource request,'coreresources','tour' %}
+{% endblock css %}
+
+{% block topScripts %}
+    {% jsresource request,'coreresources','footable' %}
+    {% jsresource request,'coreresources','technologies' %}
+    {% jsresource request,'coreresources','datatables' %}
+    {% jsresource request,'coreresources','tour' %}
+    {% jsresource request,'coreresources','select2' %}
+{% endblock topScripts %}
+
+{% block pageheading %}
+    {% set iconOfLibrary="fa-flask" %}
+    {% set _title= _("Assigning a crop taxonomy to technologies") %}
+    {% include 'snippets/menuheading.jinja2' %}
+{% endblock %}
+
+{% block pagecontent %}
+
+    <div class="row">
+
+        <div class="col-md-6" >
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{{ _("Technologies that require a crop taxonomy") }}</h5>
+                    <div class="ibox-tools">
+                        <a class="btn btn-success btn-rounded  btn-xs" style="color: white" onclick="showHelp()"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a>
+                    </div>
+                </div>
+                <div class="ibox-content" id="div_of_technologies">
+                    <form class="form-horizontal" role="form" method="post" action="{{ request.url }}">
+
+                        <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+
+                        {% if error_summary %}
+                            {% for key, error in error_summary.items() %}
+                                <div class="alert alert-danger alert-dismissable">
+                                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <table class="footable table table-bordered ">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50%">{{ _("Technology")}}</th>
+                                    <th >{{  _("Crop taxonomy") }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for technology in listOfTechnologies %}
+                                    <tr>
+                                        <td>{{ technology.tech_name }}</td>
+                                        <td>
+                                            <select id="select_crop" name="updatetech_{{ technology.tech_id }}"  class="form-control setTech" style="width: 100%; !important;" required="" oninvalid="this.setCustomValidity('{{ _("Select one crop taxonomy.") }}')" onchange="this.setCustomValidity('')">
+                                                <option value="">{{ _("Select a crop taxonomy") }}</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                        <input class="btn btn-primary pull-right" type="submit" id="btn_save_crop_taxonomies" name="btn_save_crop_taxonomies" value="{{ _('Save') }}">
+                        <br>
+                        <br>
+
+                    </form>
+
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+
+        var tour = new Tour({
+            steps: [
+                    {
+                        element: "#div_of_technologies",
+                        title: "{{ _("Assigning a crop taxonomy to technologies") }}",
+                        content: "<p>{{ _("To ensure the quality of the data collected through ClimMob, we need your support to standardize the technologies registered on the platform.") }}<br><br>{{ _("For this reason, we have enabled a field where you can search for and assign a crop taxonomy to each of your technologies. The options will appear automatically as you begin typing the name of the crop.") }}<br><br>{{ _("For example:") }}<br>- Oryza sativa L.<br>- Manihot esculenta Crantz subsp.<br><br>{{ _("If your technology is not a crop, please select the option: Not a crop") }}</p>",
+                        placement: "right"
+                    }
+                   ],
+            template: "<div class='popover tour' style='border-color: #23c6c8; max-width: none; width:400px; z-index:10000'><div class='arrow' ></div><h3 class='popover-title btn-info'></h3><div class='popover-content'></div><div class='popover-navigation'> <button class='btn btn-sm btn-danger' data-role='end'><i class='fa fa-close'></i> {{ _("Close") }}</button> </div>",
+            backdrop: true,
+            backdropContainer: 'body'
+        });
+
+        function showHelp()
+        {
+
+            // Initialize the tour
+            tour.init();
+            tour.restart();
+        }
+
+        showHelp();
+
+        function formatCrop (crop) {
+            if (!crop.id) {
+                return crop.text;
+            }
+            let $state = $(
+                '<span>' + crop.text + '</span>'
+            );
+            return $state;
+        }
+
+        $(".setTech").select2({
+
+            templateResult: formatCrop,
+            {#dropdownParent: $('#CropParent'),#}
+            ajax: {
+                url: "{{ request.route_url('APICrops') }}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term, // search term
+                        page: params.page
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: data.results,
+                        pagination: {
+                            more: (params.page * 10) < data.total
+                        }
+                    };
+                },
+                cache: true
+            }
+        });
+
+    </script>
+
+    {% include 'snippets/loading.jinja2' %}
+
+{% endblock pagecontent %}

@@ -5,7 +5,6 @@ from climmob.models.climmobv4 import (
     Prjtech,
     I18nTechnology,
     User,
-    I18nCropTaxonomy,
     CropTaxonomy,
 )
 from climmob.models.schema import mapToSchema, mapFromSchema
@@ -25,6 +24,8 @@ __all__ = [
     "getTechnologyByName",
     "getUserTechById",
     "query_crops",
+    "getTechnologiesByUserWithoutCropTaxonomy",
+    "getCropTaxonomyDetails",
 ]
 
 
@@ -270,3 +271,29 @@ def query_crops(request, q, query_from, query_size, lang_code="en"):
     )
 
     return mapFromSchema(result), len(total)
+
+
+def getTechnologiesByUserWithoutCropTaxonomy(userId, request):
+
+    result = (
+        request.dbsession.query(Technology)
+        .filter(Technology.user_name == userId)
+        .filter(Technology.croptaxonomy_code == -1)
+        .all()
+    )
+
+    if result:
+        return False, result
+
+    return True, result
+
+
+def getCropTaxonomyDetails(cropTaxonomyId, request):
+
+    cropTaxonomy = mapFromSchema(
+        request.dbsession.query(CropTaxonomy)
+        .filter(CropTaxonomy.taxonomy_code == cropTaxonomyId)
+        .first()
+    )
+
+    return cropTaxonomy
