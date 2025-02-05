@@ -115,7 +115,7 @@
                                                 </select>
                                             </td>
                                             <td style="vertical-align: middle; min-width: 200px; width: 200px; text-align: center">
-                                                <select id="project_affiliation_{{ project.project_id }}" name="project_affiliation_{{ project.project_id }}" class="form-control js-example-data-ajax" required oninvalid="this.setCustomValidity('{{ _("Write the affiliation.") }}')" onchange="this.setCustomValidity('')"></select>
+                                                <select id="project_affiliation_{{ project.project_id }}" name="project_affiliation_{{ project.project_id }}" class="form-control js-example-data-ajax" oninvalid="this.setCustomValidity('{{ _("Write the affiliation.") }}')" onchange="this.setCustomValidity('')"></select>
                                             </td>
                                             <td style="vertical-align: middle; width: 200px;">
                                                 <select id="project_location_{{ project.project_id }}" name="project_location_{{ project.project_id }}" class="form-control chosen-select selectLocations" tabindex="2" oninvalid="this.setCustomValidity('{{ _("Select one experimental site.") }}')" onchange="this.setCustomValidity('')">
