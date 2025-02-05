@@ -114,6 +114,24 @@
                             <li id="nav_downloads" {% if sectionActive == "productlist" %}class="active" {% endif %}>
                                 <a href="{{ request.route_url('productList') }}"><i class="fa fa-cloud-download"></i> <span class="nav-label">{{ _("Downloads") }}</span></a>
                             </li>
+
+                            {% if not activeUser.technologies or not activeUser.projectsByUserThatRequireSetup%}
+                                <li class="active" style="border-left: initial;background: initial" id="nav_curations">
+                                    <a href="#" style="color: #a7b1c2;"><i class="fa fa-gears"></i> <span class="nav-label">{{ _("Curations") }}</span><span class="fa arrow"></span></a>
+                                    <ul class="nav nav-second-level collapse " style="border-left: initial;background: initial">
+
+                                        {% if not activeUser.technologies %}
+                                            <li id="nav_curationoftechnologies" {% if sectionActive == "curationoftechnologies" %}class="active" style="border-left: 4px solid #19aa8d;background: #293846;" {% endif %}><a href="{{ request.route_url('curationoftechnologies') }}"><i class="fa fa-flask"></i> <span class="nav-label">{{ _("Technologies") }}</span></a></li>
+                                        {% endif %}
+
+                                        {% if not activeUser.projectsByUserThatRequireSetup%}
+                                            <li id="nav_curationofprojects" {% if sectionActive == "curationofprojects" %}class="active" style="border-left: 4px solid #19aa8d;background: #293846;"{% endif %}><a href="{{ request.route_url('curationofprojects') }}"><i class="fa fa-tasks"></i> <span class="nav-label">{{ _("Projects") }}</span></a></li>
+                                        {% endif %}
+
+                                    </ul>
+                                </li>
+                            {% endif %}
+
                             {% if activeUser.login == "bioversity" %}
                                 <li {% if sectionActive == "projecthelp" %}class="active" {% endif %}>
                                     <a href="{{ request.route_url('projectHelp') }}"><i class="fa fa-cog"></i> <span class="nav-label">{{ _("Project help") }}</span></a>

@@ -52,7 +52,7 @@ def CheckMiddleware(event):
                         )
                     )
 
-            list_of_path.append("curationoftechnologies")
+            """list_of_path.append("curationoftechnologies")
             list_of_path.append("APICrops")
 
             if request.matched_route.name not in list_of_path:
@@ -74,4 +74,4 @@ def CheckMiddleware(event):
                 completed, projects = getProjectsByUserThatRequireSetup(login, request)
 
                 if not completed:
-                    raise HTTPFound(location=request.route_url("curationofprojects"))
+                    raise HTTPFound(location=request.route_url("curationofprojects"))"""

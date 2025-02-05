@@ -34,9 +34,9 @@
 
         <div class="col-md-12" >
             <div class="ibox float-e-margins">
-                <div class="ibox-title">
-                    <h5>{{ _("Projects that require a setup") }}</h5>
-                </div>
+{#                <div class="ibox-title">#}
+{#                    <h5>{{ _("Projects that require a setup") }}</h5>#}
+{#                </div>#}
                 <div class="ibox-content" >
 
                     <form class="form-horizontal" role="form" method="post" action="{{ request.url }}">
@@ -54,7 +54,7 @@
 
                         <div class="panel panel-warning">
                             <div class="panel-heading">
-                                <h4><i class="fa fa-info-circle"></i> {{ _("Why are you been redirected to this screen?") }}</h4>
+                                <h4><i class="fa fa-info-circle"></i> {{ _("Why can you access this screen?") }}</h4>
                             </div>
                             <div class="panel-body">
                                 <p>{{ _("To improve the quality of data collected through ClimMob and reduce maintenance costs, we need your help in correctly identifying the type of trials in your projects. By flagging test trials (e.g., training or demonstration projects), we can focus resources on managing active, real-world projects more effectively.") }}</p>
@@ -81,7 +81,9 @@
                             </tbody>
                         </table>
 
-                        <p>{{ _("Use the following table to help the ClimMob team know the type that each of your projects has") }}:</p>
+                        <p><b>{{ _("Note") }}:</b> {{ _("Only real projects require full curation of all fields. For training projects, only the field “Type“ needs to be curated. Training projects and uncurated projects will be automatically deleted after 6 months to optimize the resource usage of the platform.") }}</p>
+
+                        <p>{{ _("Please use the following table to curate your projects") }}:</p>
                         <div class="table-responsive">
                             <table class="footable table table-bordered ">
                                 <thead>

@@ -382,4 +382,8 @@ class CurationOfTechnologies_view(privateView):
             self.returnRawViewResult = True
             return HTTPFound(location=self.request.route_url("dashboard"))
 
-        return {"listOfTechnologies": tecnologies, "error_summary": error_summary}
+        return {
+            "sectionActive": "curationoftechnologies",
+            "listOfTechnologies": tecnologies,
+            "error_summary": error_summary,
+        }

@@ -9,6 +9,7 @@ from climmob.config.encdecdata import decodeData
 from climmob.models import User as userModel, Country, Sector, mapFromSchema
 from climmob.processes.db.i18n_user import getListOfLanguagesByUser
 from climmob.processes.db.technologies import getTechnologiesByUserWithoutCropTaxonomy
+from climmob.processes.db.project import getProjectsByUserThatRequireSetup
 
 
 # User class Used to store information about the user
@@ -43,6 +44,7 @@ class User(object):
             self.about = userData["user_about"]
         self.languages = userData["languages"]
         self.technologies = userData["technologies"]
+        self.projectsByUserThatRequireSetup = userData["projectsByUserThatRequireSetup"]
 
     def check_password(self, passwd, request):
         return checkLogin(self.login, passwd, request)
@@ -107,6 +109,8 @@ def getUserData(user, request):
         result["languages"] = getListOfLanguagesByUser(request, user)
         completed, results = getTechnologiesByUserWithoutCropTaxonomy(user, request)
         result["technologies"] = completed
+        completed, projects = getProjectsByUserThatRequireSetup(user, request)
+        result["projectsByUserThatRequireSetup"] = completed
         res = User(result)
 
     return res
@@ -127,6 +131,10 @@ def getUserByApiKey(apiKey, request):
             result["user_name"], request
         )
         result["technologies"] = completed
+        completed, projects = getProjectsByUserThatRequireSetup(
+            result["user_name"], request
+        )
+        result["projectsByUserThatRequireSetup"] = completed
         res = User(result)
 
     return res
@@ -146,6 +154,10 @@ def getUserByEmail(email, request):
             result["user_name"], request
         )
         result["technologies"] = completed
+        completed, projects = getProjectsByUserThatRequireSetup(
+            result["user_name"], request
+        )
+        result["projectsByUserThatRequireSetup"] = completed
 
         return (
             User(result),
@@ -168,6 +180,10 @@ def getUserEmail(email, request):
             result["user_name"], request
         )
         result["technologies"] = completed
+        completed, projects = getProjectsByUserThatRequireSetup(
+            result["user_name"], request
+        )
+        result["projectsByUserThatRequireSetup"] = completed
 
         return User(result)
     return None

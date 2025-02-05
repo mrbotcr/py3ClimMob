@@ -893,6 +893,7 @@ class CurationOfProjects_view(privateView):
             return HTTPFound(location=self.request.route_url("dashboard"))
 
         return {
+            "sectionActive": "curationofprojects",
             "listOfProjects": projects,
             "listOfProjectTypes": getListOfProjectTypes(self.request),
             "listOfLocations": get_all_project_location(self.request),
