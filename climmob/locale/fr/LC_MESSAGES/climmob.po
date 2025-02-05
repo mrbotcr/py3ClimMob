@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: climmob 3.9.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-02-05 13:23-0600\n"
+"POT-Creation-Date: 2025-02-05 16:16-0600\n"
 "PO-Revision-Date: 2025-02-05 11:43-0600\n"
 "Last-Translator: \n"
 "Language: fr\n"
@@ -2285,11 +2285,12 @@ msgstr "Terminer le formulaire d'inscription des participants"
 msgid "Project setup"
 msgstr "Mise en place du projet"
 
+# | msgid "Why are you been redirected to this screen?"
 #: climmob/templates/project/curationofprojects.jinja2:57
 #: climmob/templates/technologies/curationoftechnologies.jinja2:44
 #, fuzzy
-#| msgid "Why are you been redirected to this screen?"
-msgid "Why can you access this screen?"
+#| msgid "Why can you access this screen?"
+msgid "Why do you have access to this screen?"
 msgstr "Pourquoi avez-vous été redirigé vers cet écran?"
 
 #: climmob/templates/project/curationofprojects.jinja2:60

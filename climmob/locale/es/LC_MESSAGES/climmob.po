@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: climmob 4.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-02-05 13:23-0600\n"
-"PO-Revision-Date: 2025-02-05 13:26-0600\n"
+"POT-Creation-Date: 2025-02-05 16:16-0600\n"
+"PO-Revision-Date: 2025-02-05 16:18-0600\n"
 "Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
 "Language: en\n"
@@ -2250,8 +2250,8 @@ msgstr "Configuración del proyecto"
 
 #: climmob/templates/project/curationofprojects.jinja2:57
 #: climmob/templates/technologies/curationoftechnologies.jinja2:44
-msgid "Why can you access this screen?"
-msgstr "¿Por qué puede acceder a esta pantalla?"
+msgid "Why do you have access to this screen?"
+msgstr "¿Por qué tienes acceso a esta pantalla?"
 
 #: climmob/templates/project/curationofprojects.jinja2:60
 msgid ""
