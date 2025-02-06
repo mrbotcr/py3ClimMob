@@ -2321,7 +2321,7 @@ msgid ""
 msgstr ""
 "Sólo los proyectos reales requieren la curación de todos los campos. En el caso "
 "de los proyectos de entrenamiento, sólo es necesario curar el campo “Tipo“. Los "
-"proyectos de entrenamiento se eliminarán automáticamente al cabo de 6 meses para "
+"proyectos de entrenamiento se archivarán automáticamente al cabo de 6 meses para "
 "optimizar el uso de recursos de la plataforma."
 
 #: climmob/templates/project/curationofprojects.jinja2:86
