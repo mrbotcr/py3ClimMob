@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: climmob 4.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-02-05 16:16-0600\n"
-"PO-Revision-Date: 2025-02-05 16:18-0600\n"
+"POT-Creation-Date: 2025-02-06 11:52-0600\n"
+"PO-Revision-Date: 2025-02-06 11:55-0600\n"
 "Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
 "Language: en\n"
@@ -1156,8 +1156,8 @@ msgid "Downloads"
 msgstr "Descargas"
 
 #: climmob/templates/dashboard/dashboard.jinja2:120
-msgid "Curations"
-msgstr "Curaciones"
+msgid "Curation"
+msgstr "Curación"
 
 #: climmob/templates/dashboard/dashboard.jinja2:137
 #: climmob/templates/projectHelp/projectHelp.jinja2:16
@@ -2315,15 +2315,14 @@ msgstr "Nota"
 #: climmob/templates/project/curationofprojects.jinja2:84
 msgid ""
 "Only real projects require full curation of all fields. For training projects, "
-"only the field “Type“ needs to be curated. Training projects and uncurated "
-"projects will be automatically deleted after 6 months to optimize the resource "
-"usage of the platform."
+"only the field “Type“ needs to be curated. Training projects will be "
+"automatically archived after 6 months to optimize the resource usage of the "
+"platform."
 msgstr ""
 "Sólo los proyectos reales requieren la curación de todos los campos. En el caso "
 "de los proyectos de entrenamiento, sólo es necesario curar el campo “Tipo“. Los "
-"proyectos de entrenamiento y los proyectos sin curar se eliminarán "
-"automáticamente al cabo de 6 meses para optimizar el uso de recursos de la "
-"plataforma."
+"proyectos de entrenamiento se eliminarán automáticamente al cabo de 6 meses para "
+"optimizar el uso de recursos de la plataforma."
 
 #: climmob/templates/project/curationofprojects.jinja2:86
 msgid "Please use the following table to curate your projects"
@@ -2410,8 +2409,8 @@ msgstr "Escriba el nombre de la organización."
 
 # | msgid "Registration"
 #: climmob/templates/project/curationofprojects.jinja2:194
-#: climmob/templates/snippets/project/metadata/metadataForm.jinja2:177
-#: climmob/templates/snippets/project/metadata/metadataForm.jinja2:498
+#: climmob/templates/snippets/project/metadata/metadataForm.jinja2:176
+#: climmob/templates/snippets/project/metadata/metadataForm.jinja2:500
 #: climmob/templates/snippets/project/project_form.jinja2:402
 msgid "New affiliation"
 msgstr "Nueva organización"
@@ -4561,6 +4560,11 @@ msgstr "Agregar otro"
 msgid "Optional"
 msgstr "Opcional"
 
+#: climmob/templates/snippets/project/metadata/metadataForm.jinja2:143
+#: climmob/templates/snippets/project/metadata/metadataForm.jinja2:466
+msgid "External contributor"
+msgstr "Colaborador externo"
+
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:27
 msgid "Format"
 msgstr "Formato"
@@ -5318,11 +5322,11 @@ msgstr ""
 
 #: climmob/templates/technologies/curationoftechnologies.jinja2:65
 msgid ""
-"You must set a crop taxonomy for all the technologies you have created before "
-"clicking the “Save” button."
+"You must set a crop taxonomy for all the technologies you have created, before "
+"clicking the “Save” button"
 msgstr ""
 "Debe establecer una taxonomía de cultivo para todas las tecnologías que haya "
-"creado antes de pulsar el botón “Guardar“."
+"creado, antes de pulsar el botón “Guardar“."
 
 #: climmob/templates/technologies/curationoftechnologies.jinja2:96
 msgid "Select a crop taxonomy"

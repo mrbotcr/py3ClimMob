@@ -139,9 +139,8 @@
 
                     if (data.results.length === 0 && params.term) {
                         data.results.push({
-                            id: 'External - ' + params.term,
-                            user_email: "Undefined",
-                            text: 'External - ' + params.term, // Mostrar el término ingresado
+                            id: params.term,
+                            text: "{{ _("External contributor") }}: " + params.term,
                         });
                     }
 
@@ -279,8 +278,12 @@
         if (!user.id) {
             return user.text;
         }
+        var add = ""
+        if (user.user_email) {
+            add= ' - '+ user.user_email
+        }
         let $state = $(
-            '<span>' + user.text+ ' - '+ user.user_email + '</span>'
+            '<span>' + user.text+ add + '</span>'
         );
         return $state;
     }
@@ -459,9 +462,8 @@
 
                             if (data.results.length === 0 && params.term) {
                                 data.results.push({
-                                    id: 'External - ' + params.term,
-                                    user_email: "Undefined",
-                                    text: 'External - ' + params.term, // Mostrar el término ingresado
+                                    id: params.term,
+                                    text: "{{ _("External contributor") }}: " + params.term,
                                 });
                             }
 

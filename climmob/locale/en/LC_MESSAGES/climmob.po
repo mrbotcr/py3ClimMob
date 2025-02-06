@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: climmob 3.3.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-02-05 16:16-0600\n"
+"POT-Creation-Date: 2025-02-06 11:52-0600\n"
 "PO-Revision-Date: 2021-06-01 09:47+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -1109,7 +1109,7 @@ msgid "Downloads"
 msgstr ""
 
 #: climmob/templates/dashboard/dashboard.jinja2:120
-msgid "Curations"
+msgid "Curation"
 msgstr ""
 
 #: climmob/templates/dashboard/dashboard.jinja2:137
@@ -2181,8 +2181,8 @@ msgstr ""
 msgid ""
 "Only real projects require full curation of all fields. For training "
 "projects, only the field “Type“ needs to be curated. Training projects "
-"and uncurated projects will be automatically deleted after 6 months to "
-"optimize the resource usage of the platform."
+"will be automatically archived after 6 months to optimize the resource "
+"usage of the platform."
 msgstr ""
 
 #: climmob/templates/project/curationofprojects.jinja2:86
@@ -2268,8 +2268,8 @@ msgid "Write the affiliation name"
 msgstr ""
 
 #: climmob/templates/project/curationofprojects.jinja2:194
-#: climmob/templates/snippets/project/metadata/metadataForm.jinja2:177
-#: climmob/templates/snippets/project/metadata/metadataForm.jinja2:498
+#: climmob/templates/snippets/project/metadata/metadataForm.jinja2:176
+#: climmob/templates/snippets/project/metadata/metadataForm.jinja2:500
 #: climmob/templates/snippets/project/project_form.jinja2:402
 msgid "New affiliation"
 msgstr ""
@@ -4243,6 +4243,11 @@ msgstr ""
 msgid "Optional"
 msgstr ""
 
+#: climmob/templates/snippets/project/metadata/metadataForm.jinja2:143
+#: climmob/templates/snippets/project/metadata/metadataForm.jinja2:466
+msgid "External contributor"
+msgstr ""
+
 #: climmob/templates/snippets/project/productsList/productsList.jinja2:27
 msgid "Format"
 msgstr ""
@@ -4910,8 +4915,8 @@ msgstr ""
 
 #: climmob/templates/technologies/curationoftechnologies.jinja2:65
 msgid ""
-"You must set a crop taxonomy for all the technologies you have created "
-"before clicking the “Save” button."
+"You must set a crop taxonomy for all the technologies you have created, "
+"before clicking the “Save” button"
 msgstr ""
 
 #: climmob/templates/technologies/curationoftechnologies.jinja2:96
@@ -7679,5 +7684,25 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Why can you access this screen?"
+#~ msgstr ""
+
+#~ msgid "Curations"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Only real projects require full curation"
+#~ " of all fields. For training "
+#~ "projects, only the field “Type“ needs"
+#~ " to be curated. Training projects and"
+#~ " uncurated projects will be automatically"
+#~ " deleted after 6 months to optimize"
+#~ " the resource usage of the platform."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "You must set a crop taxonomy for"
+#~ " all the technologies you have "
+#~ "created before clicking the “Save” "
+#~ "button."
 #~ msgstr ""
 
