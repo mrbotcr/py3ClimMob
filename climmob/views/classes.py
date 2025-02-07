@@ -353,8 +353,10 @@ class privateView(object):
                     self.request,
                 )
 
-            if lastActivity["log_message"] == "Welcome to ClimMob":
-                self.classResult["showHelp"] = True
+            if (
+                lastActivity["log_message"] == "Welcome to ClimMob"
+                and self.request.matched_route.name != "dashboard"
+            ):
                 addToLog(
                     self.user.login,
                     "PRF",
@@ -362,6 +364,10 @@ class privateView(object):
                     lastActivity["log_datetime"] + datetime.timedelta(0, 3),
                     self.request,
                 )
+                lastActivity["log_message"] = "Dashboard"
+
+            if lastActivity["log_message"] == "Welcome to ClimMob":
+                self.classResult["showHelp"] = True
 
         if (
             self.request.method == "POST"

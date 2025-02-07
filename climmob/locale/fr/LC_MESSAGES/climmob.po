@@ -2335,7 +2335,7 @@ msgstr ""
 "Seuls les projets réels nécessitent une curation complète de tous les champs. "
 "Pour les projets resultants de test ou de formation, seul le champ “Type“ doit "
 "être complété. Les projets résultant de test ou de formation seront "
-"automatiquement archivé après 6 mois, afin d’optimiser l’utilisation des "
+"automatiquement archivés après 6 mois, afin d’optimiser l’utilisation des "
 "ressources de la plateforme."
 
 #: climmob/templates/project/curationofprojects.jinja2:86
