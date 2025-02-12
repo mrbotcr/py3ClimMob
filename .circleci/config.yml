@@ -27,6 +27,26 @@ jobs:
             apt-get update && apt-get -y upgrade
 
       - run:
+          name: Run tests
+          command: |
+            source climmob_env/bin/activate
+            export CLIMMOB_PYTEST_RUNNING=true
+            pytest -s --cov=climmob --cov-report=xml
+
+      - run:
+          name: Verify Coverage File
+          command: |
+            if [ ! -f coverage.xml ]; then
+              echo "Coverage file not found!"
+              exit 1
+            fi
+
+      - run:
+          name: Upload coverage to Codecov
+          command: |
+            curl -s https://codecov.io/bash | bash -s -- -t $CODECOV_TOKEN -n py3ClimMob -B $(git rev-parse --abbrev-ref HEAD)
+
+      - run:
           name: Install SSH client
           command: |
             apt-get update && apt-get install -y openssh-client
