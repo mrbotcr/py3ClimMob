@@ -1,12 +1,22 @@
+<script src="https://cmp.osano.com/169xy0UbHOG3Y9yEU/febcafe6-40bc-49a1-8406-a72a982c13b8/osano.js"></script>
 
 {% if request.registry.settings.get("google.analytics", "false") != "false" %}
 
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id={{ request.registry.settings.get("google.analytics", "false") }}"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
+      function gtag() { dataLayer.push(arguments); }
+
+      gtag('consent', 'default', {
+          'ad_storage': 'denied',
+          'analytics_storage': 'denied',
+          'wait_for_update': 500
+      });
+    </script>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ request.registry.settings.get("google.analytics", "false") }}"></script>
+    <script>
       gtag('js', new Date());
+
       gtag('config', '{{request.registry.settings.get("google.analytics", "false")}}', {'anonymize_ip': true});
     </script>
 
