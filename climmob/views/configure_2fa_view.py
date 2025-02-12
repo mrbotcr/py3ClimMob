@@ -30,20 +30,15 @@ class setup2FA_view(privateView):
         messages = []
         otp_qr_code = None
         one_time_codes = []
-        # Tomar datos de user
         user = getUserData(self.user.login, self.request)
 
-        # Almacenar en data algo como: data.two_fa_method
-        # para que el template sepa si está en 'app' o 'email'
         data = {}
 
-        # Traer user_secret
         secret_response = get_user_secret(self.request, self.user.login)
         if secret_response.get("success") and secret_response["data"]:
             user_secret = secret_response["data"]
             data["two_fa_method"] = user_secret.two_fa_method
         else:
-            # no hay user_secret => no hay 2FA configurado => default a 'app' o 'email'
             data["two_fa_method"] = "app"
 
         if self.request.method == "POST":
@@ -51,10 +46,8 @@ class setup2FA_view(privateView):
                 two_fa_method = self.request.POST.get("two_fa_method", "app")
                 new_secret = pyotp.random_base32()
 
-                # 1. Crear/actualizar en user_secret
                 secret_resp = get_user_secret(self.request, self.user.login)
                 if secret_resp.get("success") and secret_resp["data"]:
-                    # Update
                     update_user_secret(
                         self.request,
                         self.user.login,
@@ -62,7 +55,6 @@ class setup2FA_view(privateView):
                         new_two_fa_method=two_fa_method,
                     )
                 else:
-                    # Create
                     create_user_secret(
                         self.request,
                         self.user.login,
@@ -72,7 +64,6 @@ class setup2FA_view(privateView):
 
                 data["two_fa_method"] = two_fa_method
 
-                # 2. Si es 'app', generar QR
                 if two_fa_method == "app":
                     totp = TOTP(new_secret)
                     otp_uri = totp.provisioning_uri(
@@ -87,7 +78,6 @@ class setup2FA_view(privateView):
                 else:
                     messages.append("Email 2FA configured successfully!")
 
-                # 3. Generar/Actualizar los One-Time Codes
                 delete_all_codes(self.request, self.user.login)
                 create_one_time_codes(self.request, self.user.login, count=6)
                 codes_resp = get_active_codes(self.request, self.user.login)

@@ -59,6 +59,7 @@ class profile_view(privateView):
 
 class editProfile_view(privateView):
     def processView(self):
+        tfa = self.request.registry.settings.get("twofactorauth.active", "false")
         userstats = getUserStats(self.user.login, self.request)
         error_summary = {}
         passChanged = False
@@ -156,12 +157,10 @@ class editProfile_view(privateView):
             if "generate" in self.request.POST:
                 two_fa_method = self.request.POST.get("two_fa_method")
 
-                # Generar un nuevo secreto para cualquier método
                 new_secret = pyotp.random_base32()
                 secret_response = get_user_secret(self.request, self.user.login)
 
                 if secret_response.get("success"):
-                    # Actualizar el secreto y el método seleccionado
                     update_user_secret(
                         self.request,
                         self.user.login,
@@ -169,7 +168,6 @@ class editProfile_view(privateView):
                         new_two_fa_method=two_fa_method,
                     )
                 else:
-                    # Crear un nuevo secreto con el método seleccionado
                     create_user_secret(
                         self.request,
                         self.user.login,
@@ -178,7 +176,6 @@ class editProfile_view(privateView):
                     )
 
                 if two_fa_method == "app":
-                    # Generar QR Code si se selecciona "app"
                     totp = TOTP(new_secret)
                     otp_uri = totp.provisioning_uri(
                         name=self.user.email, issuer_name="ClimMob"
@@ -192,17 +189,18 @@ class editProfile_view(privateView):
                         self._("Authenticator App configured successfully!"), "success"
                     )
                 elif two_fa_method == "email":
-                    # Mensaje de éxito para email
                     self.request.session.flash(
                         self._("Email 2FA configured successfully!"), "success"
                     )
 
-                # Generar códigos de un solo uso
                 delete_all_codes(self.request, self.user.login)
                 create_one_time_codes(self.request, self.user.login, count=6)
                 active_codes = get_active_codes(self.request, self.user.login)
                 if active_codes.get("success"):
                     one_time_codes = active_codes["data"]
+
+        print(otp_qr_code)
+        print(one_time_codes)
 
         return {
             "activeProject": getActiveProject(self.user.login, self.request),
@@ -215,4 +213,5 @@ class editProfile_view(privateView):
             "sectors": getSectorList(self.request),
             "otp_qr_code": otp_qr_code,
             "one_time_codes": one_time_codes,
+            "tfa": tfa,
         }
