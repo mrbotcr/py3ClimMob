@@ -1,3 +1,6 @@
+    {% if activeProject["access_type"] in [4] %}
+        {% set onlySee = True %}
+    {% endif %}
 
     {% macro recursiveFunction(JsonInfo ,repeat_index=0) %}
         {% if JsonInfo["type"] in ["group", "repeat","survey"] %}
@@ -34,7 +37,7 @@
 
                 {% if JsonInfo["type"] == "repeat"  %}
 
-                    <button type="button" class="btn btn-primary duplicate-repeat" onclick="duplicateRepeatBlock($(this),'{{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}')"><i class="fa fa-plus"></i> {{ _('Add other') }}</button><br>
+                    <button type="button" class="btn btn-primary duplicate-repeat" onclick="duplicateRepeatBlock($(this),'{{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}')" {% if onlySee %}style="display: none" {% endif %}><i class="fa fa-plus"></i> {{ _('Add other') }}</button><br>
                     <hr>
 
                 {% endif %}
@@ -52,18 +55,18 @@
 
                         {% if JsonInfo["type"] == "text" %}
 
-                            <textarea class="form-control" rows="2"  name="{{ JsonInfo["name"] }}" {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %} required="" {% endif %}  oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')"></textarea>
+                            <textarea class="form-control" rows="2"  name="{{ JsonInfo["name"] }}" {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %} required="" {% endif %}  oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')" {% if onlySee %} disabled {% endif %}></textarea>
 
                         {% elif JsonInfo["type"] == "select one" %}
 
                             {% if "climmob_users" in JsonInfo.keys()%}
-                                <select name="{{ JsonInfo["name"] }}" style="width: 100%; !important;" class="js-example-data-ajax form-control" {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %} required="" {% endif %} oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')"></select>
+                                <select name="{{ JsonInfo["name"] }}" style="width: 100%; !important;" class="js-example-data-ajax form-control" {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %} required="" {% endif %} oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')" {% if onlySee %} disabled {% endif %}></select>
 
                             {% elif "climmob_affiliations" in JsonInfo.keys()%}
-                                <select name="{{ JsonInfo["name"] }}" style="width: 100%; !important;" class="js-example-data-ajax-affi form-control" {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %} required="" {% endif %} oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')"></select>
+                                <select name="{{ JsonInfo["name"] }}" style="width: 100%; !important;" class="js-example-data-ajax-affi form-control" {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %} required="" {% endif %} oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')" {% if onlySee %} disabled {% endif %}></select>
                             {% else %}
 
-                                <select data-placeholder="" name="{{ JsonInfo["name"] }}" class="chosen-select form-control" {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %} required="" {% endif %} oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')">
+                                <select data-placeholder="" name="{{ JsonInfo["name"] }}" class="chosen-select form-control" {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %} required="" {% endif %} oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')" {% if onlySee %} disabled {% endif %}>
                                     {% for choice in JsonInfo["choices"] %}
                                         <option value="{{ choice["label"][request.locale_name] }}">{{ choice["label"][request.locale_name] }}</option>
                                     {% endfor %}
@@ -73,18 +76,18 @@
 
                         {% elif JsonInfo["type"] == "select all that apply" %}
 
-                            <select data-placeholder="" name="{{ JsonInfo["name"] }}" class="chosen-select form-control" multiple tabindex="1" {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %} required="" {% endif %} oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')">
+                            <select data-placeholder="" name="{{ JsonInfo["name"] }}" class="chosen-select form-control" multiple tabindex="1" {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %} required="" {% endif %} oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')" {% if onlySee %} disabled {% endif %}>
                                 {% for choice in JsonInfo["choices"] %}
                                     <option value="{{ choice["label"][request.locale_name] }}">{{ choice["label"][request.locale_name] }}</option>
                                 {% endfor %}
                             </select>
 
                         {% elif JsonInfo["type"] == "integer" %}
-                            <input type="number" class="form-control" name="{{ JsonInfo["name"] }}">
+                            <input type="number" class="form-control" name="{{ JsonInfo["name"] }}" {% if onlySee %} disabled {% endif %}>
 
                         {% elif JsonInfo["type"] == "date" %}
                             <div class="input-group date">
-                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input type="text" name="{{ JsonInfo["name"] }}" class="form-control datepicker" value="" readonly {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %}required=""{% endif %} oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')">
+                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input type="text" name="{{ JsonInfo["name"] }}" class="form-control datepicker" value="" readonly {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %}required=""{% endif %} oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')" {% if onlySee %} disabled {% endif %}>
                             </div>
                         {% endif %}
 
@@ -416,7 +419,11 @@
 
             newRepeat.find('.chosen-container').remove();
             newRepeat.find('.select2-container').remove();
-            newRepeat.find('.remove-repeat').css("display","inline-block");
+            {% if onlySee %}
+                newRepeat.find('.remove-repeat').css("display","none");
+            {% else %}
+                newRepeat.find('.remove-repeat').css("display","inline-block");
+            {% endif %}
 
             newRepeat.find('input, select, textarea').each(function () {
                 $(this).val(''); // Limpia valores

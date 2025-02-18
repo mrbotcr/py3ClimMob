@@ -140,7 +140,10 @@ class ShowMetadataForm_view(privateView):
                         json.loads(metadataForm["metadata_json"])
                     )
 
+                    activeProjectData = getActiveProject(self.user.login, self.request)
+
                     dict = {
+                        "activeProject": activeProjectData,
                         "Form": json.loads(metadataForm["metadata_json"]),
                         "postData": json.dumps(informationFilled),
                         "dictionary": json.dumps(dictionary),
