@@ -175,8 +175,8 @@ xlrd==2.0.1
 XlsxWriter==3.0.6
 zc.lockfile==2.0
 zipp==3.11.0
-zope.deprecation==4.4.0
-zope.event==4.6
-zope.interface==5.5.2
-zope.sqlalchemy==1.6
+zope.deprecation==5.0
+zope.event==5.0
+zope.interface==6.0
+zope.sqlalchemy==3.1
 zopfli==0.2.2

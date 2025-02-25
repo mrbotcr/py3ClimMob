@@ -20,6 +20,12 @@ from climmob.models import (
     Assessment,
 )
 
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm.exc import StaleDataError
+import time
+
+MAX_RETRIES = 5
+RETRY_DELAY = 2
 
 @celeryApp.task(bind=True, base=celeryTask, soft_time_limit=7200, time_limit=7200)
 def createRandomization(self, locale, path, settings, projectId, userOwner, projectCod):
@@ -56,143 +62,176 @@ def createRandomization(self, locale, path, settings, projectId, userOwner, proj
     engine = get_engine(settings)
     session_factory = get_session_factory(engine)
 
-    with transaction.manager:
-        db_session = get_tm_session(session_factory, transaction.manager)
-        configure_mappers()
-        initialize_schema()
+    retries = 0
+    while retries < MAX_RETRIES:
+        try:
+            with transaction.manager:
 
-        prjData = (
-            db_session.query(Project).filter(Project.project_id == projectId).first()
-        )
-        # Only create the packages if its needed
-        # if prjData.project_createpkgs == 2:
-        combData = (
-            db_session.query(Prjcombination)
-            .filter(Prjcombination.project_id == projectId)
-            .filter(Prjcombination.comb_usable == 1)
-            .all()
-        )
+                db_session = get_tm_session(session_factory, transaction.manager)
+                configure_mappers()
+                initialize_schema()
 
-        combinations = []
-        availability = []
-        for comb in combData:
-            combinations.append(comb.comb_code)
-            availability.append(comb.quantity_available)
+                # if retries in [0,1,2]:
+                if retries in [0,1,2,3]:
+                    conn_id = db_session.execute(("SELECT CONNECTION_ID()")).scalar()
 
-        if combinations:
-            args = []
-            args.append("Rscript")
-            args.append(settings["r.random.script"])
-            args.append(str(prjData.project_numobs))
-            args.append("inames=c(" + ", ".join(map(str, combinations)) + ")")
-            args.append("iavailability=c(" + ", ".join(map(str, availability)) + ")")
-            args.append(rout)
+                    # Matar la conexión en MySQL
+                    db_session.execute((f"KILL {conn_id}"))
+                    db_session.commit()
 
-            try:
-                if self.is_aborted():
-                    return ""
 
-                db_session.query(Package).filter(
-                    Package.project_id == projectId
-                ).delete()
 
-                if self.is_aborted():
-                    return ""
+                prjData = (
+                    db_session.query(Project).filter(Project.project_id == projectId).first()
+                )
+                # Only create the packages if its needed
+                # if prjData.project_createpkgs == 2:
+                combData = (
+                    db_session.query(Prjcombination)
+                    .filter(Prjcombination.project_id == projectId)
+                    .filter(Prjcombination.comb_usable == 1)
+                    .all()
+                )
 
-                check_call(args)
+                combinations = []
+                availability = []
+                for comb in combData:
+                    combinations.append(comb.comb_code)
+                    availability.append(comb.quantity_available)
 
-                if self.is_aborted():
-                    return ""
-                if os.path.exists(rout):
-                    with open(rout) as fp:
-                        lines = fp.readlines()
-                        pkgid = 1
-                        for line in lines:
+                if combinations:
+                    args = []
+                    args.append("Rscript")
+                    args.append(settings["r.random.script"])
+                    args.append(str(prjData.project_numobs))
+                    args.append("inames=c(" + ", ".join(map(str, combinations)) + ")")
+                    args.append("iavailability=c(" + ", ".join(map(str, availability)) + ")")
+                    args.append(rout)
 
-                            if self.is_aborted():
-                                return ""
-
-                            newPackage = Package(
-                                project_id=projectId,
-                                package_id=pkgid,
-                                package_code=_("Package") + " #" + str(pkgid),
-                            )
-                            db_session.add(newPackage)
-
-                            a_package = line.replace('"', "")
-                            combs = a_package.split("\t")
-                            combid = 1
-                            for comb in combs:
-
-                                if self.is_aborted():
-                                    return ""
-
-                                newPkgcomb = Pkgcomb(
-                                    project_id=projectId,
-                                    package_id=pkgid,
-                                    comb_project_id=projectId,
-                                    comb_code=int(comb),
-                                    comb_order=combid,
-                                )
-                                db_session.add(newPkgcomb)
-                                combid = combid + 1
-                            pkgid = pkgid + 1
-
+                    try:
                         if self.is_aborted():
+                            engine.dispose()
                             return ""
 
-                        db_session.query(Project).filter(
-                            Project.project_id == projectId
-                        ).update({"project_createpkgs": 0})
+                        db_session.query(Package).filter(
+                            Package.project_id == projectId
+                        ).delete()
 
-                        # setRegistryStatus(userOwner, projectCod, projectId, 0, request)
-                        db_session.query(Project).filter(
-                            Project.project_id == projectId
-                        ).update({"project_regstatus": 0})
-                        db_session.query(Project).filter(
-                            Project.project_id == projectId
-                        ).update({"project_assstatus": 0})
-                        db_session.query(Assessment).filter(
-                            Assessment.project_id == projectId
-                        ).update({"ass_status": 0})
+                        if self.is_aborted():
+                            engine.dispose()
+                            return ""
 
-                        assessments = (
-                            db_session.query(Assessment)
-                            .filter(Assessment.project_id == projectId)
-                            .all()
-                        )
-                        for assessment in assessments:
-                            try:
-                                path = os.path.join(
-                                    settings["user.repository"],
-                                    *[
-                                        userOwner,
-                                        projectCod,
-                                        "data",
-                                        "ass",
-                                        assessment.ass_cod,
-                                    ]
+                        check_call(args)
+
+                        if self.is_aborted():
+                            engine.dispose()
+                            return ""
+
+                        if os.path.exists(rout):
+                            with open(rout) as fp:
+                                lines = fp.readlines()
+                                pkgid = 1
+                                for line in lines:
+
+                                    if self.is_aborted():
+                                        engine.dispose()
+                                        return ""
+
+                                    newPackage = Package(
+                                        project_id=projectId,
+                                        package_id=pkgid,
+                                        package_code=_("Package") + " #" + str(pkgid),
+                                    )
+                                    db_session.add(newPackage)
+
+                                    a_package = line.replace('"', "")
+                                    combs = a_package.split("\t")
+                                    combid = 1
+                                    for comb in combs:
+
+                                        if self.is_aborted():
+                                            engine.dispose()
+                                            return ""
+
+                                        newPkgcomb = Pkgcomb(
+                                            project_id=projectId,
+                                            package_id=pkgid,
+                                            comb_project_id=projectId,
+                                            comb_code=int(comb),
+                                            comb_order=combid,
+                                        )
+                                        db_session.add(newPkgcomb)
+                                        combid = combid + 1
+                                    pkgid = pkgid + 1
+
+                                if self.is_aborted():
+                                    engine.dispose()
+                                    return ""
+
+                                db_session.query(Project).filter(
+                                    Project.project_id == projectId
+                                ).update({"project_createpkgs": 0})
+
+                                # setRegistryStatus(userOwner, projectCod, projectId, 0, request)
+                                db_session.query(Project).filter(
+                                    Project.project_id == projectId
+                                ).update({"project_regstatus": 0})
+                                db_session.query(Project).filter(
+                                    Project.project_id == projectId
+                                ).update({"project_assstatus": 0})
+                                db_session.query(Assessment).filter(
+                                    Assessment.project_id == projectId
+                                ).update({"ass_status": 0})
+
+                                assessments = (
+                                    db_session.query(Assessment)
+                                    .filter(Assessment.project_id == projectId)
+                                    .all()
                                 )
-                                sh.rmtree(path)
-                            except:
-                                pass
-                else:
-                    db_session.query(Project).filter(
-                        Project.project_id == projectId
-                    ).update({"project_createpkgs": 3})
+                                for assessment in assessments:
+                                    try:
+                                        path = os.path.join(
+                                            settings["user.repository"],
+                                            *[
+                                                userOwner,
+                                                projectCod,
+                                                "data",
+                                                "ass",
+                                                assessment.ass_cod,
+                                            ]
+                                        )
+                                        sh.rmtree(path)
+                                    except:
+                                        pass
 
-            except CalledProcessError as e:
-                db_session.query(Project).filter(
-                    Project.project_id == projectId
-                ).update({"project_createpkgs": 3})
+                                print(f"Finished... User: {userOwner} Project: {projectCod} ProjectId: {projectId} {retries}/{MAX_RETRIES}")
+                                engine.dispose()
+                                return ""
+                        else:
+                            db_session.query(Project).filter(
+                                Project.project_id == projectId
+                            ).update({"project_createpkgs": 3})
+                            engine.dispose()
+                            return False
 
-                msg = "Error running R randomization file \n"
-                msg = msg + "Commang: " + " ".join(args) + "\n"
-                # msg = msg + "Error: \n"
-                # msg = msg + str(e)
-                print(msg)
-                return False
-        # else:
-        #    print("No se deben de crear paquetes")
+                    except CalledProcessError as e:
+                        db_session.query(Project).filter(
+                            Project.project_id == projectId
+                        ).update({"project_createpkgs": 3})
 
-    engine.dispose()
+                        msg = "Error running R randomization file \n"
+                        msg = msg + "Commang: " + " ".join(args) + "\n"
+                        # msg = msg + "Error: \n"
+                        # msg = msg + str(e)
+                        print(msg)
+                        engine.dispose()
+                        return False
+                # else:
+                #    print("No se deben de crear paquetes")
+
+            engine.dispose()
+        except Exception as e:
+            transaction.abort()
+            retries += 1
+            print(f"Transaction error, retrying User: {userOwner} Project: {projectCod} ProjectId: {projectId} {retries}/{MAX_RETRIES}: {e}")
+            time.sleep(RETRY_DELAY)
