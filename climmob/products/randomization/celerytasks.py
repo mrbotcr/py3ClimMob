@@ -27,6 +27,7 @@ import time
 MAX_RETRIES = 5
 RETRY_DELAY = 2
 
+
 @celeryApp.task(bind=True, base=celeryTask, soft_time_limit=7200, time_limit=7200)
 def createRandomization(self, locale, path, settings, projectId, userOwner, projectCod):
     if os.path.exists(path):
@@ -72,17 +73,17 @@ def createRandomization(self, locale, path, settings, projectId, userOwner, proj
                 initialize_schema()
 
                 # if retries in [0,1,2]:
-                if retries in [0,1,2,3]:
+                if retries in [0, 1, 2, 3]:
                     conn_id = db_session.execute(("SELECT CONNECTION_ID()")).scalar()
 
                     # Matar la conexión en MySQL
                     db_session.execute((f"KILL {conn_id}"))
                     db_session.commit()
 
-
-
                 prjData = (
-                    db_session.query(Project).filter(Project.project_id == projectId).first()
+                    db_session.query(Project)
+                    .filter(Project.project_id == projectId)
+                    .first()
                 )
                 # Only create the packages if its needed
                 # if prjData.project_createpkgs == 2:
@@ -105,7 +106,9 @@ def createRandomization(self, locale, path, settings, projectId, userOwner, proj
                     args.append(settings["r.random.script"])
                     args.append(str(prjData.project_numobs))
                     args.append("inames=c(" + ", ".join(map(str, combinations)) + ")")
-                    args.append("iavailability=c(" + ", ".join(map(str, availability)) + ")")
+                    args.append(
+                        "iavailability=c(" + ", ".join(map(str, availability)) + ")"
+                    )
                     args.append(rout)
 
                     try:
@@ -198,13 +201,15 @@ def createRandomization(self, locale, path, settings, projectId, userOwner, proj
                                                 "data",
                                                 "ass",
                                                 assessment.ass_cod,
-                                            ]
+                                            ],
                                         )
                                         sh.rmtree(path)
                                     except:
                                         pass
 
-                                print(f"Finished... User: {userOwner} Project: {projectCod} ProjectId: {projectId} {retries}/{MAX_RETRIES}")
+                                print(
+                                    f"Finished... User: {userOwner} Project: {projectCod} ProjectId: {projectId} {retries}/{MAX_RETRIES}"
+                                )
                                 engine.dispose()
                                 return ""
                         else:
@@ -233,5 +238,7 @@ def createRandomization(self, locale, path, settings, projectId, userOwner, proj
         except Exception as e:
             transaction.abort()
             retries += 1
-            print(f"Transaction error, retrying User: {userOwner} Project: {projectCod} ProjectId: {projectId} {retries}/{MAX_RETRIES}: {e}")
+            print(
+                f"Transaction error, retrying User: {userOwner} Project: {projectCod} ProjectId: {projectId} {retries}/{MAX_RETRIES}: {e}"
+            )
             time.sleep(RETRY_DELAY)
