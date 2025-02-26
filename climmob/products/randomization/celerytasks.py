@@ -73,12 +73,12 @@ def createRandomization(self, locale, path, settings, projectId, userOwner, proj
                 initialize_schema()
 
                 # if retries in [0,1,2]:
-                if retries in [0, 1, 2, 3]:
-                    conn_id = db_session.execute(("SELECT CONNECTION_ID()")).scalar()
-
-                    # Matar la conexión en MySQL
-                    db_session.execute((f"KILL {conn_id}"))
-                    db_session.commit()
+                # if retries in [0, 1, 2, 3]:
+                #     conn_id = db_session.execute(("SELECT CONNECTION_ID()")).scalar()
+                #
+                #     # Matar la conexión en MySQL
+                #     db_session.execute((f"KILL {conn_id}"))
+                #     db_session.commit()
 
                 prjData = (
                     db_session.query(Project)
