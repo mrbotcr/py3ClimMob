@@ -93,6 +93,9 @@
                             <li {% if sectionActive == "projectlist" %}class="active" {% endif %}>
                                 <a href="{{ request.route_url('projectList')  }}"><i class="fa fa-tasks"></i> {{ _("All projects") }}</a>
                             </li>
+                            <li {% if sectionActive == "prj_objectives" %}class="active" {% endif %}>
+                                <a href="{{ request.route_url('prj_objectives')  }}"><i class="fa fa-tasks"></i> {{ _("Project Objectives") }}</a>
+                            </li>
                             <li class="active" style="border-left: initial;background: initial" id="nav_libraries">
                                 <a href="#" style="color: #a7b1c2;"><i class="fa fa-book"></i> <span class="nav-label">{{ _("Library") }}</span><span class="fa arrow"></span></a>
                                 <ul class="nav nav-second-level collapse " style="border-left: initial;background: initial">
