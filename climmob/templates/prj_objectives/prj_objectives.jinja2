@@ -1,0 +1,282 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob | Project Objectives") }}</title>
+{% endblock title %}
+
+{% block pageheading %}
+    {% set _title= _("Project objectives") %}
+    {% include 'snippets/menuheading.jinja2' %}
+{% endblock %}
+
+{#{% jsresource request,'coreresources','toastr' %}#}
+
+
+{% block pagecontent %}
+    {% if activeUser.admin %}
+
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>{{ _("Project objectives") }}</h5>
+                <div class="ibox-tools">
+                    <button id="btn_cancel_enumerator" class="btn btn-xs btn-default pull-right "><i
+                            class="fa fa-undo"></i> {{ _("Clear form") }}</button>
+                </div>
+            </div>
+            <div class="ibox-content">
+                {% if error_summary %}
+                    {% for key, error in error_summary.items() %}
+                        <div class="alert alert-danger alert-dismissable">
+                            <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <div class="error-desc">
+                    <form class="form-horizontal formElement" role="form" method="post" action="{{ request.url }}">
+                        <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                        {% include 'snippets/prj_objectives/objective-form.jinja2' %}
+
+                        <button type="submit" class="btn btn-primary pull-right objective-form-btn"
+                                id="btn_add_enumerator"
+                                style="{% if modify %}display:none;{% else %}display: block{% endif %}"> {{ _('Add') }}</button>
+                        <button type="button" class="btn btn-primary pull-right objective-form-btn"
+                                id="btn_modify_enumerator"
+                                style="{% if modify %}display:block;{% else %}display: none{% endif %}"> {{ _('Save') }}</button>
+                    </form>
+                </div>
+                <br>
+                <br>
+            </div>
+        </div>
+    {% endif %}
+    <div class="form-group">
+        <label class="col-sm-4 control-label">{{ _("Experimental site") }}</label>
+        <div class="col-sm-8">
+
+            <select id="project_location" name="project_location" class="form-control chosen-select" tabindex="2"
+                    required oninvalid="this.setCustomValidity('{{ _("Select one experimental site.") }}')"
+                    onchange="this.setCustomValidity('')">
+                <option selected value="">{{ _("Select one experimental site") }}</option>
+                {% for location in listOfLocations %}
+                    <option value="{{ location.plocation_id }}"
+                            {% if location.plocation_id|string == dataworking.project_location|string %}selected{% endif %}>{{ location.plocation_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group mb-5">
+        <label class="col-sm-4 control-label">{{ _("Unit of analysis") }}</label>
+        <div class="col-sm-8">
+
+            <select id="project_unit_of_analysis" name="project_unit_of_analysis" class="form-control chosen-select"
+                    data-placeholder="{{ _("Choose one unit of analysis") }}" tabindex="2" required
+                    oninvalid="this.setCustomValidity('{{ _("Select one unit of analysis.") }}')"
+                    onchange="this.setCustomValidity('')">
+                {% for unit_of_analysis in listOfUnitOfAnalysis %}
+                    <option value="{{ unit_of_analysis.puoa_id }}"
+                            {% if unit_of_analysis.puoa_id|string == dataworking.project_unit_of_analysis|string %}selected{% endif %}>{{ unit_of_analysis.puoa_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <table class="table table-striped table-bordered m-3">
+        <tbody id="obj_table">
+        </tbody>
+    </table>
+
+    <script>
+
+        let token = "{{ request.session.get_csrf_token() }}";
+
+        $(document).ready(function () {
+            cleanInputs()
+            $("#project_location")[0].selectedIndex = 0
+        })
+
+        $("#btn_cancel_enumerator").click(function () {
+            cleanButtons()
+            cleanInputs()
+            $("#btn_add_enumerator").css('display','initial')
+            $("#div_submit_data").css("display",'none')
+        })
+
+        $("#project_location").change(function () {
+
+            $("#project_unit_of_analysis").empty();
+            $("#obj_table").empty();
+            $("#project_unit_of_analysis").append("<option value=''>{{ _("Select a unit of analysis") }}</option>");
+
+            if ($(this).val() !== "") {
+                var URL = "{{ request.route_url('getunitofanalysisbylocation', locationid="__locationid__") }}"
+                URL = URL.replace("__locationid__", $(this).val())
+
+                $.get(URL, function (dataJson, status) {
+
+                    dataJson.forEach(element => {
+                        $("#project_unit_of_analysis").append("<option value='" + element.puoa_id + "'>" + element.puoa_name + "</option>");
+                    });
+
+                    $("#project_unit_of_analysis").trigger("change");
+                });
+            }
+        });
+
+        $("#btn_modify_enumerator").on('click', function () {
+
+            let URL = "{{ request.route_url('objective_by_id', objective_id="__objective_id__") }}"
+            URL = URL.replace("__objective_id__", $("#pobjective_id")[0].value)
+
+
+
+            $.ajax({
+                    url: URL,
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    data: JSON.stringify({csrf_token: token, pobjective_name: $("#pobjective_name")[0].value}),
+                    method: 'PATCH',
+                    success: function (response) {
+                        $(`#obj-cell-${response.pobjective_id}`).text(response.pobjective_name)
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 4000
+                        };
+                        toastr.success("Objective updated successfully");
+                    },
+                    error: function (response) {
+                        console.log(response.responseText);
+                    }
+                }
+            )
+        })
+
+        $("#project_unit_of_analysis").change(function () {
+
+            if ($("#project_unit_of_analysis")[0].selectedIndex == 0) {
+                return;
+            }
+
+            $("#obj_table").empty();
+            $("#obj_table").append(
+                `<tr>\
+                    <th class="text-center">{{ _('Objective') }}</th>\
+                    {% if activeUser.admin %}
+                    <th class="text-center">{{ _('Edit') }}</th>\
+                    <th class="text-center">{{ _('Delete') }}</th>\
+                    {% endif %}
+                </tr>`
+            );
+
+
+            if ($(this).val() !== "") {
+                var URL = "{{ request.route_url('getobjectivesbylocationandunitofanalysis', locationid="__locationid__", unitofanalysisid="__unitofanalysisid__") }}"
+                URL = URL.replace("__locationid__", $("#project_location").val()).replace("__unitofanalysisid__", $("#project_unit_of_analysis").val())
+
+                $.get(URL, function (dataJson, status) {
+
+
+                    dataJson.forEach(element => {
+                        let row = document.createElement('tr');
+                        row.id = `obj-row-${element.pobjective_id}`;
+
+                        let name = document.createElement('td');
+                        name.id = `obj-cell-${element.pobjective_id}`;
+                        name.style.verticalAlign = "middle"
+                        name.textContent = element.pobjective_name;
+                        row.appendChild(name);
+
+                        {% if activeUser.admin %}
+
+                            let edit = buttonCell(seeObjective, 'btn btn-warning', 'fa fa-pencil', element);
+                            row.appendChild(edit);
+
+                            let delete_btn = buttonCell(deleteObjective, 'btn btn-danger', 'fa fa-trash', element)
+                            row.appendChild(delete_btn);
+
+                        {% endif %}
+
+
+                        $("#obj_table").append(row);
+                    });
+
+                });
+            }
+        });
+
+        function buttonCell(func, className, iconClassName, element) {
+            let cell = document.createElement('td');
+            cell.className = 'text-center';
+            cell.style.verticalAlign = 'middle';
+            let button = document.createElement('button');
+            button.onclick = function () {
+                func(element.pobjective_id)
+            }
+            button.className = className;
+            let icon = document.createElement('i');
+            icon.className = iconClassName;
+            button.appendChild(icon);
+            cell.appendChild(button);
+            return cell;
+        }
+
+        function deleteObjective(objectiveId) {
+
+            let URL = "{{ request.route_url('objective_by_id',objective_id="__objective_id__") }}"
+            URL = URL.replace("__objective_id__", objectiveId)
+
+            $.ajax({
+                    url: URL,
+                    data: {csrf_token: token},
+                    method: 'DELETE',
+                    success: function (response) {
+                        $(`#obj-row-${objectiveId}`).remove();
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 4000
+                        };
+                        toastr.success("Objective deleted successfully");
+                        {#window.location.href = '{{ request.route_url("prj_objectives") }}';#}
+                    }
+                }
+            )
+        }
+
+
+        function seeObjective(objectiveId) {
+            let URL = "{{ request.route_url('objective_by_id',objective_id="__objective_id__") }}"
+            URL = URL.replace("__objective_id__", objectiveId)
+
+            $.get(URL, function (dataJson, status) {
+                cleanButtons()
+                cleanInputs()
+
+
+                $("#pobjective_name").val(dataJson["pobjective_name"])
+                $("#pobjective_id").val(dataJson["pobjective_id"])
+
+
+                $("#btn_modify_enumerator").css('display', 'initial')
+                $("#div_submit_data").css("display", 'initial')
+                {% block enumerators_get_js_extra %}
+
+                {% endblock enumerators_get_js_extra %}
+            });
+        }
+
+        function cleanButtons() {
+            $(".objective-form-btn").css("display", 'none')
+        }
+
+        function cleanInputs() {
+            $(".inputsEnumerators").val("")
+            $("#enum_id").attr('readonly', false);
+        }
+    </script>
+{% endblock %}
