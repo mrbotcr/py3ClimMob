@@ -1,0 +1,14 @@
+<div class="form-group">
+    <label class="col-sm-4 control-label">{{ _('Objective Name') }}</label>
+    <div class="col-sm-8"><input type="text" class="form-control inputsEnumerators" value="{{ dataworking['pobjective_name'] }}" id="pobjective_name" name="pobjective_name" placeholder=" " required="" oninvalid="this.setCustomValidity('{{ _("Write the pobjective name.") }}')" onchange="this.setCustomValidity('')"></div>
+    <input type="hidden" name="objective_id" id="pobjective_id" class="inputsEnumerators">
+</div>
+
+{% block enumerator_form_extra %}
+
+{% endblock %}
+
+
+
+
+
