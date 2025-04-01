@@ -192,6 +192,7 @@ from climmob.views.odk import (
     AssessmentMediaFileView,
     AssessmentManifestView,
 )
+from climmob.views.prj_objective import prj_objectives_view, objective_by_id_view
 from climmob.views.productsList import (
     productsView,
     generateProductView,
@@ -294,6 +295,7 @@ from climmob.views.project_metadata import (
 # -------Api-------#
 
 route_list = []
+
 
 # This function append or overrides the routes to the main list
 def appendToRoutes(routeList):
@@ -714,6 +716,26 @@ def loadRoutes(config):
             "deleteenumerator",
             "/enumerator/{enumeratorid}/delete",
             deleteEnumerator_view,
+            "json",
+        )
+    )
+
+    # Project Objectives
+
+    routes.append(
+        addRoute(
+            "prj_objectives",
+            "/prj_objectives",
+            prj_objectives_view,
+            "prj_objectives/prj_objectives.jinja2",
+        )
+    )
+
+    routes.append(
+        addRoute(
+            "objective_by_id",
+            "/prj_objectives/{objective_id}",
+            objective_by_id_view,
             "json",
         )
     )
