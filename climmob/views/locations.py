@@ -14,7 +14,7 @@ from climmob.processes.db.project_location import (
     get_all_project_location,
     deleteLocationdb,
     add_Location_DB,
-    editLocation
+    editLocation,
 )
 
 from climmob.views.classes import privateView
@@ -38,11 +38,10 @@ class crud_view(privateView):
                 )
             if "btn_edit_location" in self.request.POST:
                 modify = False
-                locationid = dataworking['edit_plocation_id']
+                locationid = dataworking["edit_plocation_id"]
                 dataworking, error_summary = editLocation(
-                      dataworking, locationid, error_summary, self.request
-                  )
-
+                    dataworking, locationid, error_summary, self.request
+                )
 
         return {
             "activeUser": self.user,
@@ -55,33 +54,28 @@ class crud_view(privateView):
             "dataworking": dataworking,
         }
 
-def functionForAddLocations( self, dataworking, error_summary, showMessage=True):
+
+def functionForAddLocations(self, dataworking, error_summary, showMessage=True):
     added, message = add_Location_DB(dataworking, self.request)
     if not added:
         error_summary = {"error": message}
     else:
         dataworking = {}
         if showMessage:
-            self.request.session.flash(
-                self._("The location was created successfully."))
+            self.request.session.flash(self._("The location was created successfully."))
     return dataworking, error_summary
-
-
 
 
 class deleteLocation_view(privateView):
     def processView(self):
         locationid = self.request.matchdict["locationid"]
 
-
         if self.request.method == "POST":
             continue_delete = True
             message = ""
 
             if continue_delete:
-                deleted, message = deleteLocationdb(
-                     locationid, self.request
-                )
+                deleted, message = deleteLocationdb(locationid, self.request)
                 if not deleted:
                     self.returnRawViewResult = True
                     return {"status": 400, "error": message}
@@ -94,50 +88,6 @@ class deleteLocation_view(privateView):
             else:
                 self.returnRawViewResult = True
                 return {"status": 400, "error": message}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # class addLocation(privateView):

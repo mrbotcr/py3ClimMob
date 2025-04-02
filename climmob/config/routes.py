@@ -56,6 +56,7 @@ from climmob.views.Api.projectEnumerators import (
     readPossibleProjectEnumerators_view,
     deleteProjectEnumerator_view,
 )
+
 # ************
 # ************
 # ************
@@ -63,11 +64,12 @@ from climmob.views.Api.projectEnumerators import (
 
 from climmob.views.locations import (
     crud_view,
-    deleteLocation_view
+    deleteLocation_view,
     # addLocation,
     # editLocation,
     # deleteLocation
 )
+
 # ************************************
 # ************
 # ************
@@ -735,9 +737,6 @@ def loadRoutes(config):
         )
     )
 
-
-
-
     # {  # aca empiezan los cambios
     #     ** ** ** ** ** ** ** ** ** ** ** ** **
     # ** ** ** ** ** ** ** ** ** ** ** ** **
@@ -751,7 +750,7 @@ def loadRoutes(config):
             "crud_locations",
             "/crud_locations",
             crud_view,
-             "project/ViewLocations.jinja2"
+            "project/ViewLocations.jinja2",
         )
     )
 
@@ -762,7 +761,6 @@ def loadRoutes(config):
     #         crud_view,
     #         "json",
     #     )
-
 
     routes.append(
         addRoute(
@@ -808,10 +806,6 @@ def loadRoutes(config):
     #         None
     #     )
     # )
-
-
-
-
 
     # {  # aca terminan los cambios
     #     ** ** ** ** ** ** ** ** ** ** ** ** **
@@ -2238,7 +2232,6 @@ def loadRoutes(config):
             None,
         )
     )
-
 
     # --------------------------------------------------------ClimMob Bot--------------------------------------------------------#
 
