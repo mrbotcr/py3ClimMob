@@ -31,7 +31,7 @@ class objective_by_id_view(privateView):
                 ProjectObjectives(pobjective_id=pobj_id, pobjective_name=new_name),
             )
             if not success:
-                return Response(msg, status="400")
+                return Response(self._(msg), status="400")
             return get_objective_by_id(self.request, pobj_id)
 
         elif self.request.method == "DELETE":
@@ -59,7 +59,6 @@ class prj_objectives_view(privateView):
             success, msg = add_objective(self.request, name, luaos)
             if not success:
                 error_summary = {"error": self._(msg)}
-            print(body)
 
         return {
             "activeUser": self.user,

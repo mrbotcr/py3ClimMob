@@ -7678,6 +7678,21 @@ msgstr "Nom de l'objectif"
 msgid "Categories"
 msgstr "Catégories"
 
+msgid "Objective already exists"
+msgstr "L'objectif existe déjà"
+
+msgid "Must select at least one category"
+msgstr "Vous devez sélectionner au moins une catégorie"
+
+msgid "Objective name is already in use."
+msgstr "Le nom de l'objectif est déjà utilisé."
+
+msgid "Objective updated successfully"
+msgstr "Objectif mis à jour avec succès"
+
+msgid "Objective deleted successfully"
+msgstr "Objectif supprimé avec succès"
+
 #~ msgid "You have written {}/[] words required"
 #~ msgstr "Vous avez écrit {}/[] mots requis"
 

@@ -143,7 +143,7 @@
                             showMethod: 'slideDown',
                             timeOut: 4000
                         };
-                        toastr.success("Objective updated successfully");
+                        toastr.success("{{ _("Objective updated successfully") }}");
                     },
                     error: function (response) {
                         console.log(response.responseText);
@@ -238,8 +238,7 @@
                             showMethod: 'slideDown',
                             timeOut: 4000
                         };
-                        toastr.success("Objective deleted successfully");
-                        {#window.location.href = '{{ request.route_url("prj_objectives") }}';#}
+                        toastr.success("{{ _("Objective deleted successfully") }}");
                     }
                 }
             )
