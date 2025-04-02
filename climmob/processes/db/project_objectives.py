@@ -73,7 +73,7 @@ def add_objective(request, name, luaos):
         return False, "Must select at least one category"
     new_objective = ProjectObjectives()
     new_objective.pobjective_name = name
-    new_objective.pobjective_lang = "en"
+    new_objective.pobjective_lang = request.locale_name
     try:
         request.dbsession.add(new_objective)
         new_objective = get_objective_by_name(request, name)
