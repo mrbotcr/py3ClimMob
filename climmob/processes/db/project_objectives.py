@@ -53,12 +53,49 @@ def get_objective_by_name(request, name):
 
 def get_objective_by_id(request, obj_id):
     try:
-        res = (
-            request.dbsession.query(ProjectObjectives)
-            .filter(ProjectObjectives.pobjective_id == obj_id)
+        result = (
+            request.dbsession.query(
+                ProjectObjectives.pobjective_id,
+                func.coalesce(
+                    I18nProjectObjectives.pobjective_name,
+                    ProjectObjectives.pobjective_name,
+                ).label("pobjective_name"),
+                func.group_concat(LocationUnitOfAnalysisObjectives.pluoa_id).label(
+                    "pluoa_ids"
+                ),
+            )
+            .select_from(ProjectObjectives)
+            .join(
+                I18nProjectObjectives,
+                and_(
+                    ProjectObjectives.pobjective_id
+                    == I18nProjectObjectives.pobjective_id,
+                    I18nProjectObjectives.lang_code == request.locale_name,
+                ),
+                isouter=True,
+            )
+            .join(
+                LocationUnitOfAnalysisObjectives,
+                and_(
+                    LocationUnitOfAnalysisObjectives.pobjective_id
+                    == ProjectObjectives.pobjective_id,
+                ),
+            )
+            .filter(
+                or_(
+                    ProjectObjectives.pobjective_id == obj_id,
+                )
+            )
+            .group_by(
+                ProjectObjectives.pobjective_name,
+                I18nProjectObjectives.pobjective_name,
+                ProjectObjectives.pobjective_id,
+            )
             .one()
         )
-        return mapFromSchema(res)
+        result = mapFromSchema(result)
+        result["pluoa_ids"] = result["pluoa_ids"].split(",")
+        return result
     except NoResultFound:
         raise HTTPNotFound
 
