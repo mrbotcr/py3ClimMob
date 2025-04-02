@@ -115,6 +115,24 @@
                                 <a href="{{ request.route_url('productList') }}"><i class="fa fa-cloud-download"></i> <span class="nav-label">{{ _("Downloads") }}</span></a>
                             </li>
 
+{#                            aca empiezan los cambios
+**************************
+**************************
+**************************
+**************************
+**************************
+#}
+                             <li id="nav_crud_location" class="active" >
+                                <a href="{{ request.route_url('crud_locations') }}"><i class="fa fa-table"></i>
+                                    <span class="nav-label"> Crud Locations </span></a>
+                            </li>
+
+{#aca terminan los cambios
+**************************
+**************************
+**************************
+**************************
+**************************#}
                             {% if not activeUser.technologies or not activeUser.projectsByUserThatRequireSetup%}
                                 <li class="active" style="border-left: initial;background: initial" id="nav_curations">
                                     <a href="#" style="color: #a7b1c2;"><i class="fa fa-gears"></i> <span class="nav-label">{{ _("Curation") }}</span><span class="fa arrow"></span></a>

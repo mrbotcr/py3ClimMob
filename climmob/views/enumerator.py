@@ -48,7 +48,7 @@ class enumerators_view(privateView):
         if self.request.method == "POST":
 
             dataworking = self.getPostDict()
-            if "btn_add_enumerator" in self.request.POST:
+            if "btn_add_enumeratorgetPostDict" in self.request.POST:
                 modify = False
                 dataworking, error_summary = functionForAddFieldAgents(
                     dataworking, self, error_summary

@@ -56,6 +56,23 @@ from climmob.views.Api.projectEnumerators import (
     readPossibleProjectEnumerators_view,
     deleteProjectEnumerator_view,
 )
+# ************
+# ************
+# ************
+
+
+from climmob.views.locations import (
+    crud_view,
+    deleteLocation_view
+    # addLocation,
+    # editLocation,
+    # deleteLocation
+)
+# ************************************
+# ************
+# ************
+
+
 from climmob.views.Api.projectProducts import readProducts_view, downloadApi_view
 from climmob.views.Api.projectRegistry import (
     ReadProjectRegistryView,
@@ -717,6 +734,92 @@ def loadRoutes(config):
             "json",
         )
     )
+
+
+
+
+    # {  # aca empiezan los cambios
+    #     ** ** ** ** ** ** ** ** ** ** ** ** **
+    # ** ** ** ** ** ** ** ** ** ** ** ** **
+    # ** ** ** ** ** ** ** ** ** ** ** ** **
+    # ** ** ** ** ** ** ** ** ** ** ** ** **
+    # ** ** ** ** ** ** ** ** ** ** ** ** **
+    # ** ** ** ** ** ** ** ** ** ** ** ** **
+    # # }
+    routes.append(
+        addRoute(
+            "crud_locations",
+            "/crud_locations",
+            crud_view,
+             "project/ViewLocations.jinja2"
+        )
+    )
+
+    # routes.append(
+    #     addRoute(
+    #         "AddLocation",
+    #         "/crud_locations/Add",
+    #         crud_view,
+    #         "json",
+    #     )
+
+
+    routes.append(
+        addRoute(
+            "deleteLocation",
+            "/crud_locations/{locationid}/delete",
+            deleteLocation_view,
+            "json",
+        )
+    )
+    # routes.append(
+    #     addRoute(
+    #         "add_crud_locations_form",
+    #         "/crud_locations/add",
+    #         addLocation,
+    #         "project/AddViewLocations.jinja2"
+    #     )
+    # )
+    #
+    # # Ruta para manejar JSON
+    # routes.append(
+    #     addRoute(
+    #         "add_crud_locations_json",
+    #         "/crud_locations/add/json",
+    #         addLocation,
+    #         "json",
+    #     )
+    # )
+    #
+    # routes.append(
+    #     addRoute(
+    #         "edit_crud_locations",
+    #         "/crud_locations/edit/{id}",
+    #         editLocation,
+    #         "project/EditViewLocations.jinja2"
+    #     )
+    # )
+    #
+    # routes.append(
+    #     addRoute(
+    #         "delete_crud_locations",
+    #         "/crud_locations/delete/{id}",
+    #         deleteLocation,
+    #         None
+    #     )
+    # )
+
+
+
+
+
+    # {  # aca terminan los cambios
+    #     ** ** ** ** ** ** ** ** ** ** ** ** **
+    # ** ** ** ** ** ** ** ** ** ** ** ** **
+    # ** ** ** ** ** ** ** ** ** ** ** ** **
+    # ** ** ** ** ** ** ** ** ** ** ** ** **
+    # ** ** ** ** ** ** ** ** ** ** ** ** **
+    # # }
 
     # Tecnologies library
     routes.append(
@@ -2135,6 +2238,7 @@ def loadRoutes(config):
             None,
         )
     )
+
 
     # --------------------------------------------------------ClimMob Bot--------------------------------------------------------#
 

@@ -1,0 +1,198 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob | View Locations") }}</title>
+{% endblock title %}
+
+{% block css %}
+    {% cssresource request,'coreresources','icheck' %}
+    {% cssresource request,'coreresources','sweet' %}
+{% endblock css %}
+
+{% block topScripts %}
+    {% jsresource request,'coreresources','icheck' %}
+    {% jsresource request,'coreresources','sweet' %}
+    {% jsresource request,'coreresources','toastr' %}
+    {% include 'snippets/delete.jinja2' %}
+    {% include 'snippets/edit.jinja2' %}
+{% endblock topScripts %}
+
+{% block pageheading %}
+    {% set _title= _("View Locations") %}
+    {% set _linkWiki="https://climmob.net/blog/wiki/faq/the-growers-work-in-different-environments-how-can-their-observations-be-merged/" %}
+    {% include 'snippets/menuheading.jinja2' %}
+{% endblock %}
+
+{% block pagecontent %}
+
+    <div class="row" style="text-align: center">
+        <div class="col-lg-12">
+            <div class="ibox-content" style="padding: 10px">
+                <p style="margin: 0px">
+                    {{ _("A CRUD system for locations allows users to Create, Read, Update, and Delete location data.Create: Add new locations with details like name, address, and coordinates.
+                    Read: Retrieve and display location information.Update: Modify existing location details.Delete: Remove locations from the system.") }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" style="height: 100%">
+        {% set onlySee = False %}
+
+        {% if activeProject["access_type"] in [4] %}
+            {% set onlySee = True %}
+        {% endif %}
+
+        <div class="col-lg-12" style="height: 100%">
+            <div class="ibox-content" style="padding: 1px">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>{{ _("Add Locations ") }}</h5>
+                        <div class="ibox-tools">
+                            <button id="btn_cancel_field" class="btn btn-xs btn-default pull-right "><i
+                                    class="fa fa-undo"></i> {{ _("Clear form") }}</button>
+                        </div>
+                    </div>
+                    <div class="error-desc">
+                        <form class="form-horizontal formElement" role="form" method="post" action="{{ request.url }}">
+                            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                            <input type="hidden" name="plocation_lang" value="en">
+
+                            <br>
+                            <div class="col-sm-8">
+                                <label>Name location: </label>
+                                <input type="text" id="plocation_name" name="plocation_name" required>
+                            </div>
+                            <button type="submit" id="btn_add_location" name="btn_add_location" class="btn btn-primary">
+                                <i class="fa fa-plus"></i> {{ _('Add') }}</button>
+
+                        </form>
+                    </div>
+
+
+                    <div class="error-desc">
+                        <form class="form-horizontal formElement" role="form" method="post" action="{{ request.url }}">
+                            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                            {#                            {% include 'snippets/enumerators/enumerator-form.jinja2'%}#}
+                            {##}
+                            {#                            <button type="submit" class="btn btn-primary pull-right btnsEnumerator" id="btn_add_enumerator" name="btn_add_enumerator" style="{% if modify %}display:none;{% else %}display: block{% endif %}"> {{ _('Add') }}</button>#}
+                            {#                            <button type="submit" class="btn btn-primary pull-right btnsEnumerator" id="btn_modify_enumerator" name="btn_modify_enumerator" style="{% if modify %}display:block;{% else %}display: none{% endif %}"> {{ _('Save') }}</button>#}
+                        </form>
+                    </div>
+                    <br>
+                    <br>
+                </div>
+            </div>
+            <div>
+                <div class="col-lg-8 " style="height: 100%">
+                    <div class="ibox float-e-margins" style="height: 100%; margin-bottom: 0px">
+                        <div class="ibox-title">
+                            <div>
+                                {% block assigned_title %}
+                                    <h5>{{ _("View Locations") }}</h5>{% endblock assigned_title %}
+                            </div>
+
+                            <div class="ibox-tools">
+                                {#                        <a href="crud_locations/add" class="btn btn-primary">#}
+                                {#                        <i class="fa fa-plus"></i> Add location#}
+                                {#                        </a>#}
+                            </div>
+                        </div>
+                        <div class="ibox-content animated fadeInRightBig" style="height: 100%">
+                            <table class="table table-striped table-bordered">
+                                <tbody>
+                                <th>{{ _("plocation_name") }}</th>
+                                <th>{{ _("plocation_lang") }}</th>
+                                <th>{{ _("plocation_name") }}</th>
+                                <th>{{ _("Buttons") }}</th>
+                                {% for location in searchAllProyectLocation %}
+                                    <tr>
+                                        <td>{{ location.plocation_id }}</td>
+                                        <td>{{ location.plocation_lang }}</td>
+                                        <td>{{ location.plocation_name }}</td>
+                                        <td>
+                                            {#                                            <a href="crud_locations/edit/{{location.plocation_id}}" class="btn btn-warning">#}
+                                            {#                                                <i class="fa fa-pencil"></i> Edit .#}
+                                            {#                                            </a>#}
+                                            {#                                            <a href="crud_locations/delete/{{location.plocation_id}}" class="btn btn-danger">#}
+                                            {#                                                <i class="fa fa-trash"></i> Delete#}
+                                            {#                                            </a>#}
+                                            <button class="btn btn-danger"
+                                                    onclick="showDelete('{{ request.route_url('deleteLocation',locationid = location.plocation_id) }}','{{ _("Do you really want to delete this location?") }}','{{ request.session.get_csrf_token() }}')"
+                                                    type="button" title="{{ _("Delete location") }}"><i
+                                                    class="fa fa-trash"></i> {{ _("Delete") }}
+                                            </button>
+
+                                            <button class="btn btn-warning"
+                                                    onclick="toggleEditForm({{ location.plocation_id }}, '{{ location.plocation_name }}')">
+                                                <i class="fa fa-pencil"></i> {{ _('Edit') }}
+                                            </button>
+
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4" style="height: 100%">
+                    <div id="editFormContainer" class="form-container" style="display: none;">
+                        <div class="ibox float-e-margins">
+                            <div class="ibox-title">
+                                <h5>{{ _("Edit Location") }}</h5>
+                            </div>
+                            <div class="ibox-content">
+                                <form class="form-horizontal formElement" role="form" method="post"
+                                      action="{{ request.url }}">
+                                    <input type="hidden" name="csrf_token"
+                                           value="{{ request.session.get_csrf_token() }}">
+                                    <input name="edit_plocation_id"
+                                           type="hidden" id="edit_plocation_id" name="edit_plocation_id"
+                                               class="form-control" required>
+                                    <input type="hidden" name="plocation_lang" value="en">
+                                        <label for="edit_plocation_name">{{ _("Location Name:") }}</label>
+                                        <input type="text" id="edit_plocation_name" name="edit_plocation_name"
+                                               class="form-control" required>
+                                    <br>
+                                    <button type="submit" name="btn_edit_location" id="btn_edit_location"
+                                            class="btn btn-primary">
+                                        <i class="fa fa-save"></i> {{ _('Save Changes') }}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include 'snippets/loading.jinja2' %}
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var cancelButton = document.getElementById("btn_cancel_field");
+            var form = document.querySelector("form.formElement");
+            cancelButton.addEventListener("click", function (e) {
+                e.preventDefault();
+                form.reset();
+            });
+        });
+
+        function toggleEditForm(locationId, locationName) {
+            var editFormContainer = document.getElementById('editFormContainer');
+            var locationNameField = document.getElementById('edit_plocation_name');
+            var locationNameID = document.getElementById('edit_plocation_id');
+
+            if (editFormContainer.style.display === 'none' || editFormContainer.style.display === '') {
+                editFormContainer.style.display = 'block';
+                locationNameField.value = locationName;
+                locationNameID.value = locationId;
+            } else {
+                editFormContainer.style.display = 'none';
+            }
+        }
+    </script>
+
+{% endblock pagecontent %}

@@ -1,0 +1,56 @@
+<script>
+
+function showDelete (url,text, csrf, where = '') {
+
+    swal({
+            title: "{{ _("Are you sure") }}?",
+            text: text,
+            type: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "{{ _("Yes, edit it!") }}",
+            cancelButtonText: "{{ _("No, edit!") }}",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        },
+        function (isConfirm) {
+            if (isConfirm) {
+
+                $.ajax({
+                    url: url,
+                    datatype: "json",
+                    type: "POST",
+                    data: {"csrf_token": csrf},
+                    success: function(respuesta) {
+                        if (respuesta.status === 200) {
+                            if (where != 'noRedirect' & where != 'noRedirectAndAction') {
+                                if (where == '') {
+                                    location.href = window.location.href;
+                                } else {
+                                    location.href = where;
+                                }
+                            } else {
+                                swal.close()
+
+                                if (where == "noRedirectAndAction") {
+                                    myCustomAction()
+                                }
+                            }
+                        }
+                        else {
+                            swal("{{ _("Cancelled") }}", "{{ _("The information could not be edited.") }}" + "\n" + respuesta.error , "error");
+                        }
+                    },
+                    error: function(respuesta) {
+                        console.log(respuesta)
+                        swal("{{ _("Cancelled") }}", "{{ _("The information could not be edited.") }}", "error");
+                    }
+                });
+
+            } else {
+                swal("{{ _("Cancelled") }}", "{{ _("We have not edit the data") }}", "error");
+            }
+        });
+}
+
+</script>

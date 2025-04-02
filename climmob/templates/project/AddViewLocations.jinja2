@@ -1,0 +1,93 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob | Add Locations") }}</title>
+{% endblock title %}
+
+{% block css %}
+    {% cssresource request,'coreresources','icheck' %}
+    {% cssresource request,'coreresources','sweet' %}
+{% endblock css %}
+
+{% block topScripts %}
+    {% jsresource request,'coreresources','icheck' %}
+    {% jsresource request,'coreresources','sweet' %}
+    {% jsresource request,'coreresources','toastr' %}
+    {% include 'snippets/delete.jinja2' %}
+{% endblock topScripts %}
+
+{% block pageheading %}
+    {% set _title= _("Add Locations") %}
+    {% set _linkWiki="https://climmob.net/blog/wiki/faq/the-growers-work-in-different-environments-how-can-their-observations-be-merged/" %}
+    {% include 'snippets/menuheading.jinja2' %}
+{% endblock %}
+
+{% block pagecontent %}
+
+    <div class="row" style="text-align: center">
+        <div class="col-lg-12">
+            <div class="ibox-content" style="padding: 10px">
+                <p style="margin: 0px">
+                    {{ _("This page allows users to add a new location by providing details such as name") }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" style="height: 100%">
+        {% set onlySee = False %}
+
+        {% if activeProject["access_type"] in [4] %}
+            {% set onlySee = True %}
+        {% endif %}
+
+        <div class="col-lg-6 " style="height: 100%">
+            <div class="ibox float-e-margins" style="height: 100%; margin-bottom: 0px">
+                <div class="ibox-title">
+                    <div>
+                        {% block assigned_title %}<h5>{{ _("Add Locations") }}</h5>{% endblock assigned_title %}
+                    </div>
+                </div>
+                <div class="ibox-title">
+                    <form id="addForm">
+                        <label for="location_name">Location Name:</label><br>
+                        <input type="text" id="location_name" name="location_name" required><br><br>
+                        <input value="{{ request.session.get_csrf_token() }}" name="csrf_token" id="csrf_token">
+                        <input type="submit" value="{{ _('Submit') }}">
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    {% include 'snippets/loading.jinja2' %}
+    {{ request.session.get_csrf_token() }}
+    <script>
+        document.getElementById('addForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            var formData = {
+                plocation_name: document.getElementById('location_name').value,
+                csrf_token: document.getElementById('csrf_token').value,
+            };
+
+            // Enviar los datos como JSON con fetch
+            fetch('/climmob3/crud_locations/add/json', {
+                method: 'POST',
+                headers: {
+                    'csrf_token': document.getElementById('csrf_token').value,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+        console.log("paso")
+    </script>
+{% endblock pagecontent %}
