@@ -103,6 +103,8 @@
 
         $("#project_location").change(function () {
 
+            cleanInputs()
+
             $("#project_unit_of_analysis").empty();
             $("#obj_table").empty();
             $("#project_unit_of_analysis").append("<option value=''>{{ _("Select a unit of analysis") }}</option>");
@@ -157,6 +159,8 @@
             if ($("#project_unit_of_analysis")[0].selectedIndex == 0) {
                 return;
             }
+
+            cleanInputs()
 
             $("#obj_table").empty();
             $("#obj_table").append(
@@ -249,13 +253,17 @@
             let URL = "{{ request.route_url('objective_by_id',objective_id="__objective_id__") }}"
             URL = URL.replace("__objective_id__", objectiveId)
 
-            $.get(URL, function (dataJson, status) {
+            $.get(URL, function (response, status) {
                 cleanButtons()
                 cleanInputs()
 
+                response["pluoa_ids"].forEach(function (pluoa) {
+                    $(`#luoa-${pluoa}`).prop("checked", true).trigger('change')
+                })
 
-                $("#pobjective_name").val(dataJson["pobjective_name"])
-                $("#pobjective_id").val(dataJson["pobjective_id"])
+
+                $("#pobjective_name").val(response["pobjective_name"])
+                $("#pobjective_id").val(response["pobjective_id"])
 
 
                 $("#btn_modify_enumerator").css('display', 'initial')
@@ -273,6 +281,7 @@
         function cleanInputs() {
             $(".inputsEnumerators").val("")
             $("#enum_id").attr('readonly', false);
+            $(".form-check-input").prop("checked", false).trigger('change')
         }
     </script>
 {% endblock %}
