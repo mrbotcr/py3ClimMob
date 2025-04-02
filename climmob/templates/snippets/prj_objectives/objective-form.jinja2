@@ -17,13 +17,16 @@
                                  onchange="this.setCustomValidity('')"></div>
     <input type="hidden" name="objective_id" id="pobjective_id" class="inputsEnumerators">
     <label class="col-sm-4 control-label">{{ _('Categories') }}</label>
-    <div class="col-sm-8 m-3">
+    <div class="col-sm-8 m-sm-1">
         <section class="col-sm-4">
             {% for luoa in luoas %}
                 <div class="location-option btn-block p-3"
                      id="location-option-{{ luoa.plocation_id }}"
                      onclick="selectLocation(this, {{ luoa.plocation_id }})">
                     {{ luoa.plocation_name }}
+                    <strong>
+                    (<span class="loc-cnt" id="loc-cnt-{{ luoa.plocation_id }}">0</span>)
+                    </strong>
                 </div>
             {% endfor %}
         </section>
@@ -37,7 +40,8 @@
                                    type="checkbox"
                                    value="{{ luoa.pluoa_ids[loop.index0] }}"
                                    id="luoa-{{ luoa.pluoa_ids[loop.index0] }}"
-                                   name="luaos">
+                                   name="luaos"
+                                   onchange="checkClick('luoa-{{ luoa.pluoa_ids[loop.index0] }}', {{ luoa.plocation_id }})">
                             <label class="" for="luoa-{{ luoa.pluoa_ids[loop.index0] }}">
                                 {{ puoa_name }}
                             </label>
@@ -55,6 +59,7 @@
 
     $(document).ready(function () {
         $(".form-check-input").prop("checked", false);
+        $(".loc-cnt").text("0");
     })
 
     function selectLocation(clicked, ploc_id) {
@@ -63,6 +68,18 @@
         $(".chk-field").addClass('hidden');
         $(`#chk-field-${ploc_id}`).removeClass('hidden');
         console.log(`Selected ${ploc_id}`);
+    }
+
+    function checkClick(input_id, ploc_id) {
+        let counter = $(`#loc-cnt-${ploc_id}`)
+        let count = Number(counter.text())
+        let input = $(`#${input_id}`)
+        if (input[0].checked) {
+            count += 1
+        } else {
+            count -= 1
+        }
+        counter.text(count)
     }
 
 </script>
