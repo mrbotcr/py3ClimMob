@@ -7669,6 +7669,15 @@ msgstr "Le nombre de participants a été augmenté avec succès"
 msgid "We haven't found a project that matches what was specified"
 msgstr "Nous n'avons pas trouvé de projet correspondant à ce qui a été spécifié"
 
+msgid "Project objectives"
+msgstr "Objectifs du projet"
+
+msgid "Objective name"
+msgstr "Nom de l'objectif"
+
+msgid "Categories"
+msgstr "Catégories"
+
 #~ msgid "You have written {}/[] words required"
 #~ msgstr "Vous avez écrit {}/[] mots requis"
 
