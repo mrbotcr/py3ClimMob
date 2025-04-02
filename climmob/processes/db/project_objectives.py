@@ -8,7 +8,7 @@ from climmob.models import (
     LocationUnitOfAnalysisObjectives,
     mapFromSchema,
 )
-from sqlalchemy import func, and_
+from sqlalchemy import func, and_, or_
 
 __all__ = [
     "get_all_objectives_by_location_and_unit_of_analysis",
@@ -18,16 +18,35 @@ __all__ = [
     "delete_objective_by_id",
 ]
 
-from climmob.processes import getAllLocationUnitOfAnalysis
-
 
 def get_objective_by_name(request, name):
     try:
-        return (
-            request.dbsession.query(ProjectObjectives)
-            .filter(ProjectObjectives.pobjective_name == name)
+        result = (
+            request.dbsession.query(
+                ProjectObjectives.pobjective_id,
+                func.coalesce(
+                    I18nProjectObjectives.pobjective_name,
+                    ProjectObjectives.pobjective_name,
+                ).label("pobjective_name"),
+            )
+            .join(
+                I18nProjectObjectives,
+                and_(
+                    ProjectObjectives.pobjective_id
+                    == I18nProjectObjectives.pobjective_id,
+                    I18nProjectObjectives.lang_code == request.locale_name,
+                ),
+                isouter=True,
+            )
+            .filter(
+                or_(
+                    ProjectObjectives.pobjective_name == name,
+                    I18nProjectObjectives.pobjective_name == name,
+                )
+            )
             .one()
         )
+        return result
     except NoResultFound:
         raise HTTPNotFound
 
@@ -63,7 +82,6 @@ def add_objective(request, name, luaos):
             luaos = [luaos]
 
         for luoa in luaos:
-
             new_luoa = LocationUnitOfAnalysisObjectives()
             new_luoa.pobjective_id = new_objective.pobjective_id
             new_luoa.pluoa_id = luoa
