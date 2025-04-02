@@ -20,6 +20,7 @@ __all__ = [
 
 from climmob.processes import getAllLocationUnitOfAnalysis
 
+
 def get_objective_by_name(request, name):
     try:
         return (
@@ -29,6 +30,7 @@ def get_objective_by_name(request, name):
         )
     except NoResultFound:
         raise HTTPNotFound
+
 
 def get_objective_by_id(request, obj_id):
     try:
@@ -41,12 +43,15 @@ def get_objective_by_id(request, obj_id):
     except NoResultFound:
         raise HTTPNotFound
 
-def add_objective(request, name):
+
+def add_objective(request, name, luaos):
     try:
         get_objective_by_name(request, name)
         return False, "Objective already exists"
     except HTTPNotFound:
         pass
+    if not luaos:
+        return False, "Must select at least one category"
     new_objective = ProjectObjectives()
     new_objective.pobjective_name = name
     new_objective.pobjective_lang = "en"
@@ -54,12 +59,14 @@ def add_objective(request, name):
         request.dbsession.add(new_objective)
         new_objective = get_objective_by_name(request, name)
 
-        uoas = getAllLocationUnitOfAnalysis(request)
-        for uoa in uoas:
+        if not isinstance(luaos, list):
+            luaos = [luaos]
+
+        for luoa in luaos:
 
             new_luoa = LocationUnitOfAnalysisObjectives()
             new_luoa.pobjective_id = new_objective.pobjective_id
-            new_luoa.pluoa_id = uoa["pluoa_id"]
+            new_luoa.pluoa_id = luoa
 
             request.dbsession.add(new_luoa)
         return True, ""
@@ -78,6 +85,7 @@ def delete_objective_by_id(request, obj_id):
     except Exception as e:
         return False, e
 
+
 def update_objective(request, objective: ProjectObjectives):
     try:
         get_objective_by_name(request, objective.pobjective_name)
@@ -93,6 +101,7 @@ def update_objective(request, objective: ProjectObjectives):
         return True, ""
     except Exception as e:
         return False, e
+
 
 def get_all_objectives_by_location_and_unit_of_analysis(
     request, location_id, unit_of_analysis_id
