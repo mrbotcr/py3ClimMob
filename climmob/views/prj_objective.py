@@ -9,6 +9,7 @@ from climmob.processes import (
     add_objective,
     update_objective,
     delete_objective_by_id,
+    getAllLocationUnitOfAnalysisAgg,
 )
 
 
@@ -53,7 +54,9 @@ class prj_objectives_view(privateView):
         if self.request.method == "POST":
             # dataworking = {...dataworking, self.getPostDict()}
             body = self.getPostDict()
-            success, msg = add_objective(self.request, body.get("pobjective_name"))
+            name = body.get("pobjective_name")
+            luaos = body.get("luaos")
+            success, msg = add_objective(self.request, name, luaos)
             if not success:
                 error_summary = {"error": self._(msg)}
             print(body)
@@ -67,4 +70,5 @@ class prj_objectives_view(privateView):
             "nextPage": nextPage,
             "sectionActive": "prj_objectives",
             "listOfLocations": get_all_project_location(self.request),
+            "luoas": getAllLocationUnitOfAnalysisAgg(self.request),
         }

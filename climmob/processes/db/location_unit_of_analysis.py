@@ -15,13 +15,61 @@ from sqlalchemy import and_, func
 
 __all__ = [
     "getAllLocationUnitOfAnalysis",
+    "getAllLocationUnitOfAnalysisAgg",
     "get_location_unit_of_analysis_by_combination",
     "get_location_unit_of_analysis_by_pluoa_id",
 ]
 
 
-def getAllLocationUnitOfAnalysis(request):
+def getAllLocationUnitOfAnalysisAgg(request):
+    result = mapFromSchema(
+        request.dbsession.query(
+            ProjectLocation.plocation_id,
+            func.coalesce(
+                I18nProjectLocation.plocation_name, ProjectLocation.plocation_name
+            ).label("plocation_name"),
+            func.group_concat(
+                func.coalesce(
+                    I18nProjectUnitOfAnalysis.puoa_name, ProjectUnitOfAnalysis.puoa_name
+                )
+            ).label("puoa_names"),
+            func.group_concat(LocationUnitOfAnalysis.pluoa_id).label("pluoa_ids"),
+        )
+        .select_from(LocationUnitOfAnalysis)
+        .join(
+            I18nProjectLocation,
+            and_(
+                LocationUnitOfAnalysis.plocation_id == I18nProjectLocation.plocation_id,
+                I18nProjectLocation.lang_code == request.locale_name,
+            ),
+            isouter=True,
+        )
+        .join(
+            I18nProjectUnitOfAnalysis,
+            and_(
+                LocationUnitOfAnalysis.puoa_id == I18nProjectUnitOfAnalysis.puoa_id,
+                I18nProjectUnitOfAnalysis.lang_code == request.locale_name,
+            ),
+            isouter=True,
+        )
+        .filter(LocationUnitOfAnalysis.plocation_id == ProjectLocation.plocation_id)
+        .filter(LocationUnitOfAnalysis.puoa_id == ProjectUnitOfAnalysis.puoa_id)
+        .group_by(
+            ProjectLocation.plocation_name,
+            I18nProjectLocation.plocation_name,
+            ProjectLocation.plocation_id,
+        )
+        .all()
+    )
 
+    for row in result:
+        row["pluoa_ids"] = row["pluoa_ids"].split(",")
+        row["puoa_names"] = row["puoa_names"].split(",")
+
+    return result
+
+
+def getAllLocationUnitOfAnalysis(request):
     result = mapFromSchema(
         request.dbsession.query(
             LocationUnitOfAnalysis,
@@ -60,7 +108,6 @@ def getAllLocationUnitOfAnalysis(request):
 def get_location_unit_of_analysis_by_combination(
     request, location_id, unit_of_analysis_id
 ):
-
     result = mapFromSchema(
         request.dbsession.query(LocationUnitOfAnalysis)
         .filter(LocationUnitOfAnalysis.plocation_id == location_id)
@@ -72,7 +119,6 @@ def get_location_unit_of_analysis_by_combination(
 
 
 def get_location_unit_of_analysis_by_pluoa_id(request, pluoa_id):
-
     result = mapFromSchema(
         request.dbsession.query(LocationUnitOfAnalysis)
         .filter(LocationUnitOfAnalysis.pluoa_id == pluoa_id)
