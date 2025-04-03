@@ -10,6 +10,9 @@ from climmob.processes import (
     update_objective,
     delete_objective_by_id,
     getAllLocationUnitOfAnalysisAgg,
+    get_location_unit_of_analysis_objectives_by_pobjective_id,
+    add_location_unit_of_analysis_objective,
+    delete_location_unit_of_analysis_objective,
 )
 
 
@@ -24,20 +27,38 @@ class objective_by_id_view(privateView):
             return get_objective_by_id(self.request, pobj_id)
 
         elif self.request.method == "PATCH":
-            self.returnRawViewResult = True
-            new_name = self.request.json_body["pobjective_name"]
-            success, msg = update_objective(
-                self.request,
-                ProjectObjectives(pobjective_id=pobj_id, pobjective_name=new_name),
-            )
-            if not success:
-                return Response(self._(msg), status="400")
-            return get_objective_by_id(self.request, pobj_id)
+            return self.processPatch(pobj_id)
 
         elif self.request.method == "DELETE":
             delete_objective_by_id(self.request, pobj_id)
             self.returnRawViewResult = True
             return {"status": 200}
+
+    def processPatch(self, pobj_id):
+        self.returnRawViewResult = True
+        new_name = self.request.json_body["pobjective_name"]
+        luoas = self.request.json_body["luoas"]
+        if len(luoas) == 0:
+            return Response(self._("Must select at least one category"), status="400")
+        pluoaobjs = get_location_unit_of_analysis_objectives_by_pobjective_id(
+            self.request, pobj_id
+        )
+        pluoaobj_ids = list(map(lambda x: x["pluoa_id"], pluoaobjs))
+        for pluoaobj in pluoaobjs:
+            if pluoaobj["pluoa_id"] not in luoas:
+                delete_location_unit_of_analysis_objective(
+                    self.request, pluoaobj["pluoaobj_id"]
+                )
+        for luoa in luoas:
+            if luoa not in pluoaobj_ids:
+                add_location_unit_of_analysis_objective(self.request, pobj_id, luoa)
+        success, msg = update_objective(
+            self.request,
+            ProjectObjectives(pobjective_id=pobj_id, pobjective_name=new_name),
+        )
+        if not success:
+            return Response(self._(msg), status="400")
+        return get_objective_by_id(self.request, pobj_id)
 
 
 class prj_objectives_view(privateView):
