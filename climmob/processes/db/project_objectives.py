@@ -143,11 +143,6 @@ def delete_objective_by_id(request, obj_id):
 
 def update_objective(request, objective: ProjectObjectives):
     try:
-        get_objective_by_name(request, objective.pobjective_name)
-        return False, "Objective name is already in use."
-    except HTTPNotFound:
-        pass
-    try:
         (
             request.dbsession.query(ProjectObjectives)
             .filter(ProjectObjectives.pobjective_id == objective.pobjective_id)
