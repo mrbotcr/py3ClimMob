@@ -25,6 +25,7 @@ class crud_view(privateView):
     def processView(self):
         dataworking = {}
         error_summary = {}
+        success_message = None
         modify = False
         reportUpload = []
         nextPage = self.request.params.get("next")
@@ -36,12 +37,15 @@ class crud_view(privateView):
                 dataworking, error_summary = functionForAddLocations(
                     self, dataworking, error_summary
                 )
+                success_message = "Location created successfully"
+
             if "btn_edit_location" in self.request.POST:
                 modify = False
                 locationid = dataworking["edit_plocation_id"]
                 dataworking, error_summary = editLocation(
                     dataworking, locationid, error_summary, self.request
                 )
+                success_message = "Location edited successfully"
 
         return {
             "activeUser": self.user,
@@ -52,6 +56,7 @@ class crud_view(privateView):
             "reportUpload": reportUpload,
             "error_summary": error_summary,
             "dataworking": dataworking,
+            'success_message': success_message
         }
 
 
