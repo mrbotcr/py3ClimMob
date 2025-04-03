@@ -7847,9 +7847,6 @@ msgstr "Objetivo ya existe"
 msgid "Must select at least one category"
 msgstr "Debe seleccionar al menos una categoría"
 
-msgid "Objective name is already in use."
-msgstr "El nombre del objectivo ya se encuentra en uso"
-
 msgid "Objective updated successfully"
 msgstr "Objetivo actualizado exitosamente"
 
