@@ -129,13 +129,22 @@
             let URL = "{{ request.route_url('objective_by_id', objective_id="__objective_id__") }}"
             URL = URL.replace("__objective_id__", $("#pobjective_id")[0].value)
 
-
+            const ids = $(".form-check-input:checked")
+                .map(function() {
+                    return parseInt(this.id.replace("luoa-", ""), 10);
+                }).get();
 
             $.ajax({
                     url: URL,
                     contentType: 'application/json',
                     dataType: 'json',
-                    data: JSON.stringify({csrf_token: token, pobjective_name: $("#pobjective_name")[0].value}),
+                    data: JSON.stringify(
+                        {
+                            csrf_token: token,
+                            pobjective_name: $("#pobjective_name")[0].value,
+                            luoas: ids
+                        }
+                    ),
                     method: 'PATCH',
                     success: function (response) {
                         $(`#obj-cell-${response.pobjective_id}`).text(response.pobjective_name)
@@ -149,6 +158,13 @@
                     },
                     error: function (response) {
                         console.log(response.responseText);
+                        toastr.options = {
+                            closeButton: true,
+                            progressBar: true,
+                            showMethod: 'slideDown',
+                            timeOut: 4000
+                        };
+                        toastr.error(response.responseText);
                     }
                 }
             )
