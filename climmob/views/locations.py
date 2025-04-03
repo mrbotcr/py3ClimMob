@@ -15,6 +15,7 @@ from climmob.processes.db.project_location import (
     deleteLocationdb,
     add_Location_DB,
     editLocation,
+    get_location_by_name
 )
 
 from climmob.views.classes import privateView
@@ -26,6 +27,8 @@ class crud_view(privateView):
         dataworking = {}
         error_summary = {}
         success_message = None
+        error_message = None
+        exist = None
         modify = False
         reportUpload = []
         nextPage = self.request.params.get("next")
@@ -34,18 +37,28 @@ class crud_view(privateView):
             dataworking = self.getPostDict()
             if "btn_add_location" in self.request.POST:
                 modify = False
-                dataworking, error_summary = functionForAddLocations(
-                    self, dataworking, error_summary
-                )
-                success_message = "Location created successfully"
+                exist = get_location_by_name(self.request, dataworking["plocation_name"])
+                if not exist:
+                    dataworking, error_summary = functionForAddLocations(
+                        self, dataworking, error_summary
+                    )
+                    success_message = "Location created successfully"
+                else:
+
+                    error_message = "All ready exist this name"
 
             if "btn_edit_location" in self.request.POST:
                 modify = False
-                locationid = dataworking["edit_plocation_id"]
-                dataworking, error_summary = editLocation(
-                    dataworking, locationid, error_summary, self.request
-                )
-                success_message = "Location edited successfully"
+
+                exist = get_location_by_name(self.request, dataworking["edit_plocation_name"])
+                if not exist:
+                    locationid = dataworking["edit_plocation_id"]
+                    dataworking, error_summary = editLocation(
+                        dataworking, locationid, error_summary, self.request
+                    )
+                    success_message = "Location edited successfully"
+                else:
+                    error_message = "All ready exist this name"
 
         return {
             "activeUser": self.user,
@@ -55,6 +68,7 @@ class crud_view(privateView):
             "modify": modify,
             "reportUpload": reportUpload,
             "error_summary": error_summary,
+            "error_message": error_message,
             "dataworking": dataworking,
             'success_message': success_message
         }

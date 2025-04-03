@@ -13,6 +13,7 @@ __all__ = [
     "get_location_by_id",
     "get_location_by_id_with_details",
     "getAllLocation",
+    "get_location_by_name"
 ]
 
 
@@ -62,6 +63,17 @@ def get_location_by_id(request, location_id):
     return res
 
 
+def get_location_by_name(request, locationName):
+
+    res = mapFromSchema(
+        request.dbsession.query(ProjectLocation)
+        .filter(ProjectLocation.plocation_name == locationName)
+        .first()
+    )
+
+    return res
+
+
 def get_location_by_id_with_details(request, location_id):
 
     result = mapFromSchema(
@@ -87,7 +99,6 @@ def get_location_by_id_with_details(request, location_id):
 
 def add_Location_DB(data, request):
     mappedData = mapToSchema(ProjectLocation, data)
-    print("Mapped Data:", mappedData)
     newProjectLocation = ProjectLocation(**mappedData)
     try:
         request.dbsession.add(newProjectLocation)
@@ -102,7 +113,6 @@ def editLocation(data, locationid, error_summary, request):
     data["plocation_name"] = data["edit_plocation_name"]
     data["plocation_lang"] = data["plocation_lang"]
     mappedData = mapToSchema(ProjectLocation, data)
-    print("Mapped Data:", mappedData)
     try:
         request.dbsession.query(ProjectLocation).filter(
             ProjectLocation.plocation_id == locationid

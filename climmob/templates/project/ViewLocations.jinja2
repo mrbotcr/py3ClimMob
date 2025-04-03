@@ -14,6 +14,8 @@
     {% jsresource request,'coreresources','sweet' %}
     {% jsresource request,'coreresources','toastr' %}
     {% include 'snippets/delete.jinja2' %}
+    {% include 'snippets/confirmation.jinja2' %}
+    {% include 'snippets/cancelProcessError.jinja2' %}
 
 {% endblock topScripts %}
 
@@ -167,6 +169,8 @@
             </div>
         </div>
     </div>
+
+
     {% include 'snippets/loading.jinja2' %}
 
     <script>
@@ -206,8 +210,14 @@
         }
 
         {% if success_message %}
-            mostrarConfirmacion();  // Llama a la función de confirmación si success_message está presente
+            showConfirmation();  // Llama a la función de confirmación si success_message está presente
         {% endif %}
+
+        {% if error_message %}
+            console.log("HOli")
+            showCancelProcessError();
+        {% endif %}
+
     </script>
 
 {% endblock pagecontent %}

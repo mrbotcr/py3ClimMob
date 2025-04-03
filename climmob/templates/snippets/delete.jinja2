@@ -1,56 +1,55 @@
 <script>
 
-function showDelete (url,text, csrf, where = '') {
+    function showDelete(url, text, csrf, where = '') {
 
-    swal({
-            title: "{{ _("Are you sure") }}?",
-            text: text,
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#DD6B55",
-            confirmButtonText: "{{ _("Yes, delete it!") }}",
-            cancelButtonText: "{{ _("No, cancel!") }}",
-            closeOnConfirm: false,
-            closeOnCancel: false
-        },
-        function (isConfirm) {
-            if (isConfirm) {
+        swal({
+                title: "{{ _("Are you sure") }}?",
+                text: text,
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "{{ _("Yes, delete it!") }}",
+                cancelButtonText: "{{ _("No, cancel!") }}",
+                closeOnConfirm: false,
+                closeOnCancel: false
+            },
+            function (isConfirm) {
+                if (isConfirm) {
 
-                $.ajax({
-                    url: url,
-                    datatype: "json",
-                    type: "POST",
-                    data: {"csrf_token": csrf},
-                    success: function(respuesta) {
-                        if (respuesta.status === 200) {
-                            if (where != 'noRedirect' & where != 'noRedirectAndAction') {
-                                if (where == '') {
-                                    location.href = window.location.href;
+                    $.ajax({
+                        url: url,
+                        datatype: "json",
+                        type: "POST",
+                        data: {"csrf_token": csrf},
+                        success: function (respuesta) {
+                            if (respuesta.status === 200) {
+                                if (where != 'noRedirect' & where != 'noRedirectAndAction') {
+                                    if (where == '') {
+                                        location.href = window.location.href;
+                                    } else {
+                                        location.href = where;
+                                    }
                                 } else {
-                                    location.href = where;
+                                    swal.close()
+
+                                    if (where == "noRedirectAndAction") {
+                                        myCustomAction()
+                                    }
                                 }
                             } else {
-                                swal.close()
-
-                                if (where == "noRedirectAndAction") {
-                                    myCustomAction()
-                                }
+                                swal("{{ _("Cancelled") }}", "{{ _("The information could not be deleted.") }}" + "\n" + respuesta.error, "error");
                             }
+                        },
+                        error: function (respuesta) {
+                            console.log(respuesta)
+                            swal("{{ _("Cancelled") }}", "{{ _("The information could not be deleted.") }}", "error");
                         }
-                        else {
-                            swal("{{ _("Cancelled") }}", "{{ _("The information could not be deleted.") }}" + "\n" + respuesta.error , "error");
-                        }
-                    },
-                    error: function(respuesta) {
-                        console.log(respuesta)
-                        swal("{{ _("Cancelled") }}", "{{ _("The information could not be deleted.") }}", "error");
-                    }
-                });
+                    });
 
-            } else {
-                swal("{{ _("Cancelled") }}", "{{ _("We have not deleted the data") }}", "error");
-            }
-        });
-}
+                } else {
+                    swal("{{ _("Cancelled") }}", "{{ _("We have not deleted the data") }}", "error");
+                }
+            });
+    }
 
 </script>
