@@ -156,16 +156,18 @@ def update_objective(request, objective: ProjectObjectives):
 def get_all_objectives_by_location_and_unit_of_analysis(
     request, location_id, unit_of_analysis_id
 ):
-    sub_query_LocationUnitOfAnalysis = (
+    sub_query_location_unit_of_analysis = (
         request.dbsession.query(LocationUnitOfAnalysis.pluoa_id)
         .filter(LocationUnitOfAnalysis.plocation_id == location_id)
         .filter(LocationUnitOfAnalysis.puoa_id == unit_of_analysis_id)
     )
 
-    sub_query_LocationUnitOfAnalysisObjectives = request.dbsession.query(
+    sub_query_location_unit_of_analysis_objectives = request.dbsession.query(
         LocationUnitOfAnalysisObjectives.pobjective_id
     ).filter(
-        LocationUnitOfAnalysisObjectives.pluoa_id.in_(sub_query_LocationUnitOfAnalysis)
+        LocationUnitOfAnalysisObjectives.pluoa_id.in_(
+            sub_query_location_unit_of_analysis
+        )
     )
 
     result = mapFromSchema(
@@ -185,7 +187,7 @@ def get_all_objectives_by_location_and_unit_of_analysis(
         )
         .filter(
             ProjectObjectives.pobjective_id.in_(
-                sub_query_LocationUnitOfAnalysisObjectives
+                sub_query_location_unit_of_analysis_objectives
             )
         )
         .order_by(

@@ -15,13 +15,13 @@ from sqlalchemy import and_, func
 
 __all__ = [
     "getAllLocationUnitOfAnalysis",
-    "getAllLocationUnitOfAnalysisAgg",
+    "get_all_location_unit_of_analysis_grouped_by_project_location",
     "get_location_unit_of_analysis_by_combination",
     "get_location_unit_of_analysis_by_pluoa_id",
 ]
 
 
-def getAllLocationUnitOfAnalysisAgg(request):
+def get_all_location_unit_of_analysis_grouped_by_project_location(request):
     result = mapFromSchema(
         request.dbsession.query(
             ProjectLocation.plocation_id,

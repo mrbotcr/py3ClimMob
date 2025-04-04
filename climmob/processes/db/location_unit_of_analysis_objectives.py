@@ -5,7 +5,7 @@ from climmob.models import (
 
 __all__ = [
     "get_location_unit_of_analysis_objectives_by_combination",
-    "get_location_unit_of_analysis_objectives_by_pobjective_id",
+    "get_location_unit_of_analysis_objectives_by_proj_objective_id",
     "add_location_unit_of_analysis_objective",
     "delete_location_unit_of_analysis_objective",
 ]
@@ -24,7 +24,9 @@ def get_location_unit_of_analysis_objectives_by_combination(
     return result
 
 
-def get_location_unit_of_analysis_objectives_by_pobjective_id(request, pobjective_id):
+def get_location_unit_of_analysis_objectives_by_proj_objective_id(
+    request, pobjective_id
+):
     result = mapFromSchema(
         request.dbsession.query(LocationUnitOfAnalysisObjectives)
         .filter(LocationUnitOfAnalysisObjectives.pobjective_id == pobjective_id)

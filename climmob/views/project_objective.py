@@ -9,8 +9,8 @@ from climmob.processes import (
     add_objective,
     update_objective,
     delete_objective_by_id,
-    getAllLocationUnitOfAnalysisAgg,
-    get_location_unit_of_analysis_objectives_by_pobjective_id,
+    get_all_location_unit_of_analysis_grouped_by_project_location,
+    get_location_unit_of_analysis_objectives_by_proj_objective_id,
     add_location_unit_of_analysis_objective,
     delete_location_unit_of_analysis_objective,
 )
@@ -27,31 +27,37 @@ class ObjectiveByIdView(privateView):
             return get_objective_by_id(self.request, pobj_id)
 
         elif self.request.method == "PATCH":
-            return self.processPatch(pobj_id)
+            return self.process_patch(pobj_id)
 
         elif self.request.method == "DELETE":
             delete_objective_by_id(self.request, pobj_id)
             self.returnRawViewResult = True
             return {"status": 200}
 
-    def processPatch(self, pobj_id):
+    def process_patch(self, pobj_id):
         self.returnRawViewResult = True
         new_name = self.request.json_body["pobjective_name"]
-        luoas = self.request.json_body["luoas"]
-        if len(luoas) == 0:
+        loc_unit_of_analyses = self.request.json_body["luoas"]
+        if len(loc_unit_of_analyses) == 0:
             return Response(self._("Must select at least one category"), status="400")
-        pluoaobjs = get_location_unit_of_analysis_objectives_by_pobjective_id(
-            self.request, pobj_id
+        loc_unit_of_an_objectives = (
+            get_location_unit_of_analysis_objectives_by_proj_objective_id(
+                self.request, pobj_id
+            )
         )
-        pluoaobj_ids = list(map(lambda x: x["pluoa_id"], pluoaobjs))
-        for pluoaobj in pluoaobjs:
-            if pluoaobj["pluoa_id"] not in luoas:
+        loc_unit_of_an_objectives_ids = [
+            x["pluoa_id"] for x in loc_unit_of_an_objectives
+        ]
+        for loc_unit_of_an_objective in loc_unit_of_an_objectives:
+            if loc_unit_of_an_objective["pluoa_id"] not in loc_unit_of_analyses:
                 delete_location_unit_of_analysis_objective(
-                    self.request, pluoaobj["pluoaobj_id"]
+                    self.request, loc_unit_of_an_objective["pluoaobj_id"]
                 )
-        for luoa in luoas:
-            if luoa not in pluoaobj_ids:
-                add_location_unit_of_analysis_objective(self.request, pobj_id, luoa)
+        for loc_unit_of_analysis in loc_unit_of_analyses:
+            if loc_unit_of_analysis not in loc_unit_of_an_objectives_ids:
+                add_location_unit_of_analysis_objective(
+                    self.request, pobj_id, loc_unit_of_analysis
+                )
         success, msg = update_objective(
             self.request,
             ProjectObjectives(pobjective_id=pobj_id, pobjective_name=new_name),
@@ -76,8 +82,8 @@ class ProjectObjectivesView(privateView):
             # dataworking = {...dataworking, self.getPostDict()}
             body = self.getPostDict()
             name = body.get("pobjective_name")
-            luaos = body.get("luaos")
-            success, msg = add_objective(self.request, name, luaos)
+            loc_unit_of_analyses = body.get("luaos")
+            success, msg = add_objective(self.request, name, loc_unit_of_analyses)
             if not success:
                 error_summary = {"error": self._(msg)}
 
@@ -90,5 +96,7 @@ class ProjectObjectivesView(privateView):
             "nextPage": nextPage,
             "sectionActive": "project_objectives",
             "listOfLocations": get_all_project_location(self.request),
-            "luoas": getAllLocationUnitOfAnalysisAgg(self.request),
+            "luoas": get_all_location_unit_of_analysis_grouped_by_project_location(
+                self.request
+            ),
         }
