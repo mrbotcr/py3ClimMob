@@ -192,7 +192,7 @@ from climmob.views.odk import (
     AssessmentMediaFileView,
     AssessmentManifestView,
 )
-from climmob.views.prj_objective import prj_objectives_view, objective_by_id_view
+from climmob.views.project_objective import ProjectObjectivesView, ObjectiveByIdView
 from climmob.views.productsList import (
     productsView,
     generateProductView,
@@ -724,18 +724,18 @@ def loadRoutes(config):
 
     routes.append(
         addRoute(
-            "prj_objectives",
-            "/prj_objectives",
-            prj_objectives_view,
-            "prj_objectives/prj_objectives.jinja2",
+            "project_objectives",
+            "/project_objectives",
+            ProjectObjectivesView,
+            "project_objectives/project_objectives.jinja2",
         )
     )
 
     routes.append(
         addRoute(
             "objective_by_id",
-            "/prj_objectives/{objective_id}",
-            objective_by_id_view,
+            "/project_objectives/{objective_id}",
+            ObjectiveByIdView,
             "json",
         )
     )

@@ -33,7 +33,7 @@
                 <div class="error-desc">
                     <form class="form-horizontal formElement" role="form" method="post" action="{{ request.url }}">
                         <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
-                        {% include 'snippets/prj_objectives/objective-form.jinja2' %}
+                        {% include 'snippets/project_objectives/objective-form.jinja2' %}
 
                         <button type="submit" class="btn btn-primary pull-right objective-form-btn"
                                 id="btn_add_enumerator"

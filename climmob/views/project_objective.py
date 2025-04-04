@@ -16,7 +16,7 @@ from climmob.processes import (
 )
 
 
-class objective_by_id_view(privateView):
+class ObjectiveByIdView(privateView):
     def processView(self):
         print(
             f"{self.request.method} objective by id {self.request.matchdict['objective_id']}"
@@ -61,7 +61,7 @@ class objective_by_id_view(privateView):
         return get_objective_by_id(self.request, pobj_id)
 
 
-class prj_objectives_view(privateView):
+class ProjectObjectivesView(privateView):
     def processView(self):
         dataworking = {"project_location": "-1", "project_unit_of_analysis": "-1"}
         error_summary = {}
@@ -88,7 +88,7 @@ class prj_objectives_view(privateView):
             "reportUpload": reportUpload,
             "modify": modify,
             "nextPage": nextPage,
-            "sectionActive": "prj_objectives",
+            "sectionActive": "project_objectives",
             "listOfLocations": get_all_project_location(self.request),
             "luoas": getAllLocationUnitOfAnalysisAgg(self.request),
         }
