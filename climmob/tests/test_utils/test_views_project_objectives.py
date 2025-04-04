@@ -1,4 +1,5 @@
 import unittest
+from http import HTTPStatus
 from unittest.mock import MagicMock, patch
 from climmob.views.project_objective import ObjectiveByIdView
 
@@ -53,3 +54,5 @@ class TestProjectObjectiveByIdView(unittest.TestCase):
         )
 
         self.assertTrue(self.view.returnRawViewResult)
+
+        self.assertEqual(result.status_int, HTTPStatus.NO_CONTENT)

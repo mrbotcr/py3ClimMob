@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from pyramid.response import Response
 
 from climmob.models import ProjectObjectives
@@ -32,7 +34,7 @@ class ObjectiveByIdView(privateView):
         elif self.request.method == "DELETE":
             delete_objective_by_id(self.request, pobj_id)
             self.returnRawViewResult = True
-            return {"status": 200}
+            return Response(status=str(HTTPStatus.NO_CONTENT.__int__()))
 
     def process_patch(self, pobj_id):
         self.returnRawViewResult = True
