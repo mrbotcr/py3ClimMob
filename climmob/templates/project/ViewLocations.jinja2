@@ -170,7 +170,6 @@
         </div>
     </div>
 
-
     {% include 'snippets/loading.jinja2' %}
 
     <script>
@@ -210,12 +209,15 @@
         }
 
         {% if success_message %}
-            showConfirmation();  // Llama a la función de confirmación si success_message está presente
+            showConfirmation("{{ success_message }}");  // Llama a la función de confirmación si success_message está presente
+        {% endif %}
+
+        {% if request.session.pop_flash()[0]  %}
+            showConfirmation("{{ request.session.pop_flash()[0] }}");  // Llama a la función de confirmación si success_message está presente
         {% endif %}
 
         {% if error_message %}
-            console.log("HOli")
-            showCancelProcessError();
+            showCancelProcessError("{{ error_message }}");
         {% endif %}
 
     </script>

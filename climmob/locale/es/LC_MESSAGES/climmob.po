@@ -6344,6 +6344,9 @@ msgstr "Cancelar la recolección de datos"
 msgid "Data collection has not started. You cannot cancel it."
 msgstr "La recolección de datos no se ha iniciado. No lo puede cancelar."
 
+
+
+
 # | msgid "There is no a project with that code."
 #: climmob/views/Api/projectAssessmentStart.py:316
 #: climmob/views/Api/projectAssessmentStart.py:414

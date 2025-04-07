@@ -1,12 +1,13 @@
 <script>
 
-function showConfirmation () {
+function showConfirmation (mensaje) {
     swal({
         position: "top-end",
         type: "success",
-        title: "Your work has been saved",
+        title: "Success",
+        text: mensaje,
         showConfirmButton: false,
-        timer: 1500
+        timer: 2000
     });
 }
 </script>

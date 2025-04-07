@@ -129,7 +129,7 @@ def deleteLocationdb(location, request):
         ).delete()
         return True, ""
     except IntegrityError as e:
-        print("capturado")
+        # print("capturado")
         return False, e
     except Exception as e:
         # print(str(e))

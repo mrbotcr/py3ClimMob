@@ -32,7 +32,7 @@ class crud_view(privateView):
         modify = False
         reportUpload = []
         nextPage = self.request.params.get("next")
-
+        print(self.getPostDict())
         if self.request.method == "POST":
             dataworking = self.getPostDict()
             if "btn_add_location" in self.request.POST:
@@ -45,11 +45,10 @@ class crud_view(privateView):
                     success_message = "Location created successfully"
                 else:
 
-                    error_message = "All ready exist this name"
+                    error_message = "There is already a record with that name, it was not created"
 
             if "btn_edit_location" in self.request.POST:
                 modify = False
-
                 exist = get_location_by_name(self.request, dataworking["edit_plocation_name"])
                 if not exist:
                     locationid = dataworking["edit_plocation_id"]
@@ -58,7 +57,7 @@ class crud_view(privateView):
                     )
                     success_message = "Location edited successfully"
                 else:
-                    error_message = "All ready exist this name"
+                    error_message = "There is already a record with that name, it was not modified."
 
         return {
             "activeUser": self.user,
@@ -97,6 +96,7 @@ class deleteLocation_view(privateView):
                 deleted, message = deleteLocationdb(locationid, self.request)
                 if not deleted:
                     self.returnRawViewResult = True
+
                     return {"status": 400, "error": message}
                 else:
                     self.request.session.flash(
@@ -107,82 +107,3 @@ class deleteLocation_view(privateView):
             else:
                 self.returnRawViewResult = True
                 return {"status": 400, "error": message}
-
-
-# class addLocation(privateView):
-#
-#     def addLocation(self):
-#         dataworking = {}
-#         modify = False
-#         reportUpload = []
-#         nextPage = self.request.params.get("next")
-#
-#         return {
-#             "dataworking": dataworking,
-#             "reportUpload": reportUpload,
-#             "modify": modify,
-#             "nextPage": nextPage
-#         }
-#
-#     @view_config(route_name='add_crud_locations_json', request_method='POST', renderer='json')
-#     def add_location_json(self):
-#         try:
-#             # Obtener los datos del cuerpo de la solicitud en formato JSON
-#             data = json.loads(self.request.body.decode())
-#             location_name = data.get('plocation_name')
-#             csrf_token = self.request.headers.get('check_csrf_token')
-#
-#
-#             # Llamar a la función para guardar los datos en la base de datos
-#             success, error = add_Location_DB(data, self.request)
-#
-#             if not success:
-#                 # Si hubo un error al agregar la ubicación, se devuelve un mensaje de error
-#                 return Response(
-#                     json.dumps({
-#                         'status': 'error',
-#                         'message': error
-#                     }),
-#                     content_type='application/json',
-#                     status=400
-#                 )
-#
-
-#             return Response(
-#                 json.dumps({
-#                     'status': 'success',
-#                     'message': f'Location "{location_name}" added successfully!'
-#                 }),
-#                 content_type='application/json',
-#                 status=200
-#             )
-#         except json.JSONDecodeError:
-#             # Si hay un error en el formato JSON
-#             return Response(
-#                 json.dumps({'status': 'error', 'message': 'Invalid JSON format'}),
-#                 content_type='application/json',
-#                 status=400
-#             )
-#         except Exception as e:
-#             # Si ocurre cualquier otro error inesperado
-#             return Response(
-#                 json.dumps({'status': 'error', 'message': str(e)}),
-#                 content_type='application/json',
-#                 status=500
-#             )
-# class editLocation(privateView):
-#     def editLocation(self):
-#         print(self.request.id)
-#         # location = get_location_by_id(self.request,self.request.id)
-#         location = "hola"
-#
-#         if location is None:
-#            return HTTPFound(self.request.route_url('404.jinja2'))
-#         return  dict(location=location)
-#
-# class deleteLocation(privateView):
-#     def deleteLocation(self):
-#         self.request.session.flash('Deleted: %s' % self.request.id)
-#         self.request.dbsession.delete(self.request)
-#         url = "climmob3/crud_locations"
-#         return redirect(url)
