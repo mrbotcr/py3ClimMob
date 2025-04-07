@@ -42,31 +42,48 @@ class ObjectiveByIdView(privateView):
         loc_unit_of_analyses = self.request.json_body["luoas"]
         if len(loc_unit_of_analyses) == 0:
             return Response(self._("Must select at least one category"), status="400")
-        loc_unit_of_an_objectives = (
-            get_location_unit_of_analysis_objectives_by_proj_objective_id(
-                self.request, pobj_id
-            )
-        )
-        loc_unit_of_an_objectives_ids = [
-            x["pluoa_id"] for x in loc_unit_of_an_objectives
-        ]
-        for loc_unit_of_an_objective in loc_unit_of_an_objectives:
-            if loc_unit_of_an_objective["pluoa_id"] not in loc_unit_of_analyses:
-                delete_location_unit_of_analysis_objective(
-                    self.request, loc_unit_of_an_objective["pluoaobj_id"]
-                )
-        for loc_unit_of_analysis in loc_unit_of_analyses:
-            if loc_unit_of_analysis not in loc_unit_of_an_objectives_ids:
-                add_location_unit_of_analysis_objective(
-                    self.request, pobj_id, loc_unit_of_analysis
-                )
+
+        self.update_objective_luoaobjs(loc_unit_of_analyses, pobj_id)
+
         success, msg = update_objective(
             self.request,
             ProjectObjectives(pobjective_id=pobj_id, pobjective_name=new_name),
         )
         if not success:
             return Response(self._(msg), status="400")
-        return get_objective_by_id(self.request, pobj_id)
+        response = Response(
+            json_body=get_objective_by_id(self.request, pobj_id), status="200"
+        )
+        return response
+
+    def update_objective_luoaobjs(self, loc_unit_of_analyses, pobj_id):
+        loc_unit_of_an_objectives = (
+            get_location_unit_of_analysis_objectives_by_proj_objective_id(
+                self.request, pobj_id
+            )
+        )
+        self.delete_removed_luoaobjs(loc_unit_of_an_objectives, loc_unit_of_analyses)
+
+        self.add_new_luoaobjs(loc_unit_of_an_objectives, loc_unit_of_analyses, pobj_id)
+
+    def add_new_luoaobjs(
+        self, loc_unit_of_an_objectives, loc_unit_of_analyses, pobj_id
+    ):
+        loc_unit_of_an_objectives_ids = [
+            x["pluoa_id"] for x in loc_unit_of_an_objectives
+        ]
+        for loc_unit_of_analysis in loc_unit_of_analyses:
+            if loc_unit_of_analysis not in loc_unit_of_an_objectives_ids:
+                add_location_unit_of_analysis_objective(
+                    self.request, pobj_id, loc_unit_of_analysis
+                )
+
+    def delete_removed_luoaobjs(self, loc_unit_of_an_objectives, loc_unit_of_analyses):
+        for loc_unit_of_an_objective in loc_unit_of_an_objectives:
+            if loc_unit_of_an_objective["pluoa_id"] not in loc_unit_of_analyses:
+                delete_location_unit_of_analysis_objective(
+                    self.request, loc_unit_of_an_objective["pluoaobj_id"]
+                )
 
 
 class ProjectObjectivesView(privateView):
