@@ -720,6 +720,8 @@ class Project(Base):
     climmob_analytics = Column(Integer, nullable=True)
     project_curated_cropname = Column(Unicode(120), nullable=True)
     project_continent = Column(ForeignKey("continent.continent_id"), nullable=True)
+    project_template_used = Column(ForeignKey("project.project_id"), nullable=True)
+    project_checked = Column(Integer, server_default=text("'0'"))
 
     country = relationship("Country")
 

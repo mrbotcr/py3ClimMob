@@ -229,6 +229,12 @@ def createProjectFunction(dataworking, error_summary, self):
                         "project_registration_and_analysis"
                     ] = location_unit_of_analysis["registration_and_analysis"]
 
+                    if "usingTemplate" in dataworking.keys():
+                        if dataworking["usingTemplate"] != "":
+                            dataworking["project_template_used"] = dataworking[
+                                "usingTemplate"
+                            ]
+
                     if not exitsproject:
                         added, idormessage = addProject(dataworking, self.request)
                         if not added:
@@ -595,6 +601,12 @@ class modifyProject_view(privateView):
                                     "registration_and_analysis"
                                 ]
 
+                            if "usingTemplate" in data.keys():
+                                if data["usingTemplate"] != "":
+                                    data["project_template_used"] = data[
+                                        "usingTemplate"
+                                    ]
+
                             modified, message = modifyProject(
                                 activeProjectId, data, self.request
                             )
@@ -677,7 +689,10 @@ class modifyProject_view(privateView):
                                     )
 
                                 if "usingTemplate" in data.keys():
-                                    if data["usingTemplate"] != "":
+                                    if (
+                                        data["usingTemplate"]
+                                        != cdata["project_template_used"]
+                                    ):
                                         deleteRegistryByProjectId(
                                             activeProjectId, self.request
                                         )
