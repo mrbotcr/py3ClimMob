@@ -19,24 +19,19 @@ from climmob.processes import (
 
 
 class ObjectiveByIdView(privateView):
-    def processView(self):
-        print(
-            f"{self.request.method} objective by id {self.request.matchdict['objective_id']}"
-        )
+    def get(self):
         pobj_id = self.request.matchdict["objective_id"]
-        if self.request.method == "GET":
-            self.returnRawViewResult = True
-            return get_objective_by_id(self.request, pobj_id)
+        self.returnRawViewResult = True
+        return get_objective_by_id(self.request, pobj_id)
 
-        elif self.request.method == "PATCH":
-            return self.process_patch(pobj_id)
+    def delete(self):
+        pobj_id = self.request.matchdict["objective_id"]
+        delete_objective_by_id(self.request, pobj_id)
+        self.returnRawViewResult = True
+        return Response(status=str(HTTPStatus.NO_CONTENT.__int__()))
 
-        elif self.request.method == "DELETE":
-            delete_objective_by_id(self.request, pobj_id)
-            self.returnRawViewResult = True
-            return Response(status=str(HTTPStatus.NO_CONTENT.__int__()))
-
-    def process_patch(self, pobj_id):
+    def patch(self):
+        pobj_id = self.request.matchdict["objective_id"]
         self.returnRawViewResult = True
         new_name = self.request.json_body["pobjective_name"]
         loc_unit_of_analyses = self.request.json_body["luoas"]
@@ -87,32 +82,50 @@ class ObjectiveByIdView(privateView):
 
 
 class ProjectObjectivesView(privateView):
-    def processView(self):
-        dataworking = {"project_location": "-1", "project_unit_of_analysis": "-1"}
+    def get(self):
+        data_working = {"project_location": "-1", "project_unit_of_analysis": "-1"}
         error_summary = {}
         modify = False
-        reportUpload = []
+        report_upload = []
 
-        nextPage = self.request.params.get("next")
-
-        print(f"{self.request.method} project objectives")
-
-        if self.request.method == "POST":
-            # dataworking = {...dataworking, self.getPostDict()}
-            body = self.getPostDict()
-            name = body.get("pobjective_name")
-            loc_unit_of_analyses = body.get("luaos")
-            success, msg = add_objective(self.request, name, loc_unit_of_analyses)
-            if not success:
-                error_summary = {"error": self._(msg)}
+        next_page = self.request.params.get("next")
 
         return {
             "activeUser": self.user,
-            "dataworking": dataworking,
+            "dataworking": data_working,
             "error_summary": error_summary,
-            "reportUpload": reportUpload,
+            "reportUpload": report_upload,
             "modify": modify,
-            "nextPage": nextPage,
+            "nextPage": next_page,
+            "sectionActive": "project_objectives",
+            "listOfLocations": get_all_project_location(self.request),
+            "luoas": get_all_location_unit_of_analysis_grouped_by_project_location(
+                self.request
+            ),
+        }
+
+    def post(self):
+        data_working = {"project_location": "-1", "project_unit_of_analysis": "-1"}
+        error_summary = {}
+        modify = False
+        report_upload = []
+
+        next_page = self.request.params.get("next")
+
+        body = self.getPostDict()
+        name = body.get("pobjective_name")
+        loc_unit_of_analyses = body.get("luaos")
+        success, msg = add_objective(self.request, name, loc_unit_of_analyses)
+        if not success:
+            error_summary = {"error": self._(msg)}
+
+        return {
+            "activeUser": self.user,
+            "dataworking": data_working,
+            "error_summary": error_summary,
+            "reportUpload": report_upload,
+            "modify": modify,
+            "nextPage": next_page,
             "sectionActive": "project_objectives",
             "listOfLocations": get_all_project_location(self.request),
             "luoas": get_all_location_unit_of_analysis_grouped_by_project_location(

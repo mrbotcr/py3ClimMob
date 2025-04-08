@@ -58,16 +58,6 @@ class TestProjectObjectiveByIdView(unittest.TestCase):
 
         self.assertEqual(result.status_int, HTTPStatus.NO_CONTENT)
 
-    @patch("climmob.views.project_objective.ObjectiveByIdView.process_patch")
-    def test_process_view_patch(self, mock_process_patch):  # pragma: no cover
-        self.mock_request.method = "PATCH"
-
-        result = self.view.processView()
-
-        mock_process_patch.assert_called_once_with(
-            self.mock_request.matchdict["objective_id"]
-        )
-
     @patch(
         "climmob.views.project_objective.ObjectiveByIdView.update_objective_luoaobjs"
     )
@@ -84,6 +74,8 @@ class TestProjectObjectiveByIdView(unittest.TestCase):
         mock_get_objective_by_id,
         mock_update_objective_luoaobjs,
     ):
+        self.mock_request.method = "PATCH"
+
         updated_name = "Off-farm verification"
         update_luoas = [4, 6]
         pobjective_id = self.mock_request.matchdict["objective_id"]
@@ -101,7 +93,7 @@ class TestProjectObjectiveByIdView(unittest.TestCase):
 
         mock_get_objective_by_id.return_value = expected_output
 
-        result = self.view.process_patch(pobjective_id)
+        result = self.view.processView()
 
         mock_update_objective_luoaobjs.assert_called_once_with(
             update_luoas, pobjective_id
