@@ -3,20 +3,20 @@ import json
 from pyramid.response import Response
 
 from climmob.processes import (
-    getUserTechs,
-    findTechInLibrary,
-    addTechnology,
-    getTechnologyByUser,
-    getTechnologyAssigned,
-    updateTechnology,
-    deleteTechnology,
-    getTechnologyByName,
+    get_user_techs,
+    find_tech_in_library,
+    add_technology,
+    get_technology_by_user,
+    get_technology_assigned,
+    update_technology,
+    delete_technology,
+    get_technology_by_name,
 )
 from climmob.views.classes import apiView
 
 
-class createTechnology_view(apiView):
-    def processView(self):
+class CreateTechnologyView(apiView):
+    def process_view(self):
 
         if self.request.method == "POST":
 
@@ -25,26 +25,26 @@ class createTechnology_view(apiView):
 
             if sorted(obligatory) == sorted(dataworking.keys()):
 
-                dataInParams = True
+                data_in_params = True
                 for key in dataworking.keys():
                     if dataworking[key] == "":
-                        dataInParams = False
+                        data_in_params = False
 
-                if dataInParams:
+                if data_in_params:
                     dataworking["user_name"] = "bioversity"
-                    existInGenLibrary = findTechInLibrary(dataworking, self.request)
-                    if existInGenLibrary == False:
+                    exist_in_gen_library = find_tech_in_library(dataworking, self.request)
+                    if exist_in_gen_library == False:
                         dataworking["user_name"] = self.user.login
-                        existInPersLibrary = findTechInLibrary(
+                        exist_in_pers_library = find_tech_in_library(
                             dataworking, self.request
                         )
-                        if existInPersLibrary == False:
-                            added, message = addTechnology(dataworking, self.request)
+                        if exist_in_pers_library == False:
+                            added, message = add_technology(dataworking, self.request)
                             if not added:
                                 response = Response(status=401, body=message)
                                 return response
                             else:
-                                tech_data = getTechnologyByName(
+                                tech_data = get_technology_by_name(
                                     dataworking, self.request
                                 )
                                 # response = Response(status=200, body=self._("The technology was added successfully."))
@@ -81,8 +81,8 @@ class createTechnology_view(apiView):
             return response
 
 
-class readTechnologies_view(apiView):
-    def processView(self):
+class ReadTechnologiesView(apiView):
+    def process_view(self):
 
         if self.request.method == "GET":
 
@@ -91,8 +91,8 @@ class readTechnologies_view(apiView):
                 body=json.dumps(
                     list(
                         [
-                            *getUserTechs(self.user.login, self.request),
-                            *getUserTechs("bioversity", self.request),
+                            *get_user_techs(self.user.login, self.request),
+                            *get_user_techs("bioversity", self.request),
                         ]
                     )
                 ),
@@ -117,8 +117,8 @@ def merge_two_dicts(x, y):
     return z
 
 
-class updateTechnology_view(apiView):
-    def processView(self):
+class UpdateTechnologyView(apiView):
+    def process_view(self):
 
         if self.request.method == "POST":
 
@@ -127,23 +127,23 @@ class updateTechnology_view(apiView):
 
             if sorted(obligatory) == sorted(dataworking.keys()):
 
-                dataInParams = True
+                data_in_params = True
                 for key in dataworking.keys():
                     if dataworking[key] == "":
-                        dataInParams = False
+                        data_in_params = False
 
-                if dataInParams:
+                if data_in_params:
                     dataworking["user_name"] = "bioversity"
-                    existInGenLibrary = findTechInLibrary(dataworking, self.request)
-                    if existInGenLibrary == False:
+                    exist_in_gen_library = find_tech_in_library(dataworking, self.request)
+                    if exist_in_gen_library == False:
                         dataworking["user_name"] = self.user.login
-                        existInPersLibrary = findTechInLibrary(
+                        exist_in_pers_library = find_tech_in_library(
                             dataworking, self.request
                         )
-                        if existInPersLibrary == False:
-                            if getTechnologyByUser(dataworking, self.request):
-                                if not getTechnologyAssigned(dataworking, self.request):
-                                    update, message = updateTechnology(
+                        if exist_in_pers_library == False:
+                            if get_technology_by_user(dataworking, self.request):
+                                if not get_technology_assigned(dataworking, self.request):
+                                    update, message = update_technology(
                                         dataworking, self.request
                                     )
                                     if not update:
@@ -202,8 +202,8 @@ class updateTechnology_view(apiView):
             return response
 
 
-class deletetechnologyView_api(apiView):
-    def processView(self):
+class DeleteTechnologyViewAPI(apiView):
+    def process_view(self):
 
         if self.request.method == "POST":
 
@@ -212,9 +212,9 @@ class deletetechnologyView_api(apiView):
 
             if sorted(obligatory) == sorted(dataworking.keys()):
                 dataworking["user_name"] = self.user.login
-                if getTechnologyByUser(dataworking, self.request):
-                    if not getTechnologyAssigned(dataworking, self.request):
-                        dlt, message = deleteTechnology(dataworking, self.request)
+                if get_technology_by_user(dataworking, self.request):
+                    if not get_technology_assigned(dataworking, self.request):
+                        dlt, message = delete_technology(dataworking, self.request)
                         if not dlt:
                             response = Response(status=401, body=message)
                             return response

@@ -11,17 +11,17 @@ from climmob.models.schema import mapToSchema, mapFromSchema
 from climmob.processes.db.techaliases import getTechsAlias
 
 __all__ = [
-    "getUserTechs",
-    "findTechInLibrary",
-    "addTechnology",
+    "get_user_techs",
+    "find_tech_in_library",
+    "add_technology",
     "getTechnology",
-    "updateTechnology",
-    "deleteTechnology",
-    "getTechnologyByUser",
-    "getTechnologyAssigned",
+    "update_technology",
+    "delete_technology",
+    "get_technology_by_user",
+    "get_technology_assigned",
     "technologyExist",
     "isTechnologyAssigned",
-    "getTechnologyByName",
+    "get_technology_by_name",
     "getUserTechById",
     "query_crops",
     "getTechnologiesByUserWithoutCropTaxonomy",
@@ -29,7 +29,7 @@ __all__ = [
 ]
 
 
-def getUserTechs(user, request):
+def get_user_techs(user, request):
 
     res = []
     result = mapFromSchema(
@@ -104,7 +104,7 @@ def getUserTechById(tech_id, request):
     return result
 
 
-def findTechInLibrary(data, request, tech_id=None):
+def find_tech_in_library(data, request, tech_id=None):
     if tech_id is None:
         result = (
             request.dbsession.query(Technology)
@@ -136,7 +136,7 @@ def findTechInLibrary(data, request, tech_id=None):
             return True
 
 
-def addTechnology(data, request):
+def add_technology(data, request):
     mappeData = mapToSchema(Technology, data)
     newTech = Technology(**mappeData)
     try:
@@ -177,7 +177,7 @@ def technologyExist(techId, user, request):
             return False
 
 
-def getTechnologyByName(data, request):
+def get_technology_by_name(data, request):
     return mapFromSchema(
         request.dbsession.query(Technology)
         .filter(
@@ -188,7 +188,7 @@ def getTechnologyByName(data, request):
     )
 
 
-def getTechnologyByUser(data, request):
+def get_technology_by_user(data, request):
     result = (
         request.dbsession.query(Technology)
         .filter(Technology.user_name == data["user_name"])
@@ -202,7 +202,7 @@ def getTechnologyByUser(data, request):
         return True
 
 
-def getTechnologyAssigned(data, request):
+def get_technology_assigned(data, request):
     result = (
         request.dbsession.query(func.count(Prjtech.tech_id).label("found"))
         .filter(Prjtech.tech_id == data["tech_id"])
@@ -229,7 +229,7 @@ def isTechnologyAssigned(data, request):
         return True
 
 
-def updateTechnology(data, request):
+def update_technology(data, request):
     try:
         mappeData = mapToSchema(Technology, data)
         request.dbsession.query(Technology).filter(
@@ -240,7 +240,7 @@ def updateTechnology(data, request):
         return False, e
 
 
-def deleteTechnology(data, request):
+def delete_technology(data, request):
     try:
         request.dbsession.query(Technology).filter(
             Technology.user_name == data["user_name"]
