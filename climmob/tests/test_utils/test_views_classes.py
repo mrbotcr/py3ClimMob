@@ -5,7 +5,7 @@ from datetime import datetime as dt
 from hashlib import md5
 from unittest.mock import MagicMock, patch, mock_open
 
-from pyramid.httpexceptions import HTTPFound, HTTPNotFound
+from pyramid.httpexceptions import HTTPFound, HTTPNotFound, HTTPMethodNotAllowed
 from pyramid.testing import DummyRequest
 from webob.multidict import MultiDict
 
@@ -91,6 +91,76 @@ class TestResourceCallback(unittest.TestCase):
         # Verify that no changes are made to the response body
         self.assertEqual(self.response.body, b'{"key": "value"}')
         self.assertEqual(self.response.content_type, "application/json")
+
+
+class TestBaseView(unittest.TestCase):
+    def setUp(self):
+        self.request = MagicMock()
+        self.view = BaseView(self.request)
+
+    @patch("climmob.views.classes.BaseView.get")
+    def test_processView_get(self, mock_get):
+        self.request.method = "GET"
+
+        self.view.processView()
+
+        mock_get.assert_called_once()
+
+    @patch("climmob.views.classes.BaseView.post")
+    def test_processView_post(self, mock_post):
+        self.request.method = "POST"
+
+        self.view.processView()
+
+        mock_post.assert_called_once()
+
+    @patch("climmob.views.classes.BaseView.put")
+    def test_processView_put(self, mock_put):
+        self.request.method = "PUT"
+
+        self.view.processView()
+
+        mock_put.assert_called_once()
+
+    @patch("climmob.views.classes.BaseView.patch")
+    def test_processView_patch(self, mock_patch):
+        self.request.method = "PATCH"
+
+        self.view.processView()
+
+        mock_patch.assert_called_once()
+
+    @patch("climmob.views.classes.BaseView.delete")
+    def test_processView_delete(self, mock_delete):
+        self.request.method = "DELETE"
+
+        self.view.processView()
+
+        mock_delete.assert_called_once()
+
+    def test_processView_missing_HTTP_method(self):
+        with self.assertRaises(HTTPMethodNotAllowed):
+            self.view.processView()
+
+    def test_get(self):
+        with self.assertRaises(NotImplementedError):
+            self.view.get()
+
+    def test_post(self):
+        with self.assertRaises(NotImplementedError):
+            self.view.post()
+
+    def test_put(self):
+        with self.assertRaises(NotImplementedError):
+            self.view.put()
+
+    def test_patch(self):
+        with self.assertRaises(NotImplementedError):
+            self.view.patch()
+
+    def test_delete(self):
+        with self.assertRaises(NotImplementedError):
+            self.view.delete()
 
 
 class TestOdkView(unittest.TestCase):
