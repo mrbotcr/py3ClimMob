@@ -9,7 +9,7 @@ import climmob.plugins as p
 from ast import literal_eval
 from pyramid.response import Response
 from pyramid.session import check_csrf_token
-from pyramid.httpexceptions import HTTPFound
+from pyramid.httpexceptions import HTTPFound, HTTPMethodNotAllowed
 from pyramid.httpexceptions import HTTPNotFound
 from formencode.variabledecode import variable_decode
 from climmob.config.auth import getUserData, getUserByApiKey
@@ -83,20 +83,8 @@ def ResourceCallback(request, response):
 
 
 class BaseView:
-    def __init__(self):
-        self.request = None
-
-    def processView(self):
-        if self.request.method == "GET":
-            return self.get()
-        elif self.request.method == "POST":
-            return self.post()
-        elif self.request.method == "PUT":
-            return self.put()
-        elif self.request.method == "PATCH":
-            return self.patch()
-        elif self.request.method == "DELETE":
-            return self.delete()
+    def __init__(self, request):
+        self.request = request
 
     def get(self):
         raise NotImplementedError
@@ -113,11 +101,25 @@ class BaseView:
     def delete(self):
         raise NotImplementedError
 
+    def processView(self):
+        if self.request.method == "GET":
+            return self.get()
+        elif self.request.method == "POST":
+            return self.post()
+        elif self.request.method == "PUT":
+            return self.put()
+        elif self.request.method == "PATCH":
+            return self.patch()
+        elif self.request.method == "DELETE":
+            return self.delete()
+        else:
+            raise HTTPMethodNotAllowed
+
 
 # ODKView is a Digest Authorization view. It automates all the Digest work
 class odkView(BaseView):
     def __init__(self, request):
-        super().__init__()
+        super().__init__(request)
         self.request = request
         self._ = self.request.translate
         self.nonce = md5(str(uuid.uuid4()).encode()).hexdigest()
@@ -260,7 +262,7 @@ class odkView(BaseView):
 # This is the most basic public view. Used for 404 and 500. But then used for others more advanced classes
 class publicView(BaseView):
     def __init__(self, request):
-        super().__init__()
+        super().__init__(request)
         if request.registry.settings.get("secure.javascript", "false") == "true":
             request.add_response_callback(ResourceCallback)
         self.request = request
@@ -291,7 +293,7 @@ class publicView(BaseView):
 
 class privateView(BaseView):
     def __init__(self, request):
-        super().__init__()
+        super().__init__(request)
         if request.registry.settings.get("secure.javascript", "false") == "true":
             request.add_response_callback(ResourceCallback)
         self.request = request

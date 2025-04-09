@@ -15,6 +15,7 @@ from climmob.views.classes import (
     publicView,
     privateView,
     apiView,
+    BaseView,
 )
 
 
@@ -270,11 +271,6 @@ class TestOdkView(unittest.TestCase):
             response.headerlist,
         )
 
-    @patch("climmob.views.classes.md5", side_effect=md5)
-    def test_processView(self, mock_md5):
-        result = self.view.processView()
-        self.assertEqual(result, {})
-
 
 class TestPublicView(unittest.TestCase):
     def setUp(self):
@@ -293,15 +289,11 @@ class TestPublicView(unittest.TestCase):
         view = publicView(self.request)
         self.request.add_response_callback.assert_not_called()
 
-    def test_call(self):
+    @patch("climmob.views.classes.publicView.processView")
+    def test_call(self, mock_process_view):
         view = publicView(self.request)
-        result = view()
-        self.assertEqual(result, {})
-
-    def test_processView(self):
-        view = publicView(self.request)
-        result = view.processView()
-        self.assertEqual(result, {})
+        view()
+        mock_process_view.assert_called_once()
 
     def test_getPostDict(self):
         self.request.POST = MultiDict({"key1": "value1", "key2": "value2"})
@@ -380,13 +372,14 @@ class TestPrivateView(unittest.TestCase):
         self.assertIsInstance(response, HTTPFound)
         self.request.route_url.assert_called_with("login")
 
+    @patch("climmob.views.classes.privateView.processView")
     @patch("climmob.views.classes.getUserData")
     @patch(
         "climmob.views.classes.literal_eval",
         return_value={"group": "mainApp", "login": "test"},
     )
     def test_call_authenticated_userid_valid_user(
-        self, mock_literal_eval, mock_get_user_data
+        self, mock_literal_eval, mock_get_user_data, mock_process_view
     ):
         policy = self.view.get_policy("main")
         policy.authenticated_userid.return_value = (
@@ -395,6 +388,12 @@ class TestPrivateView(unittest.TestCase):
         mock_get_user_data.return_value = MagicMock(
             login="test_user", languages=["en"], email="test@example.com"
         )
+
+        mock_process_view.return_value = {
+            "activeUser": MagicMock(
+                login="test_user", languages=["en"], email="test@example.com"
+            )
+        }
 
         with patch("climmob.views.classes.counterChat", return_value=5), patch(
             "climmob.views.classes.getActiveProject", return_value={"project_id": 1}
@@ -417,17 +416,13 @@ class TestPrivateView(unittest.TestCase):
 
             response = self.view()
 
+            mock_process_view.assert_called_once()
             self.assertEqual(response["activeUser"].login, "test_user")
             self.assertTrue(response["hasActiveProject"])
             self.assertEqual(response["activeProject"], 1)
             self.assertEqual(response["counterChat"], 5)
             self.assertEqual(response["surveyMustBeDisplayed"], "Survey")
             self.assertTrue(response["showRememberAfterCreateProject"])
-
-    def test_processView(self):
-        self.view.user = {"login": "test_user"}
-        result = self.view.processView()
-        self.assertEqual(result, {"activeUser": {"login": "test_user"}})
 
     def test_getPostDict(self):
         self.request.POST = MultiDict({"key1": "value1", "key2": "value2"})
