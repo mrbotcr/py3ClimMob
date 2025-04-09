@@ -474,7 +474,7 @@ class privateView(BaseView):
         return None
 
 
-class apiView(object):
+class apiView(BaseView):
     def __init__(self, request):
         self.request = request
         self.user = None
@@ -515,7 +515,3 @@ class apiView(object):
             return response
 
         return self.processView()
-
-    def processView(self):
-
-        return {}

@@ -626,10 +626,6 @@ class TestApiView(unittest.TestCase):
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response.body, b"Apikey non-existent")
 
-    def test_processView(self):
-        result = self.view.processView()
-        self.assertEqual(result, {})
-
 
 if __name__ == "__main__":
     unittest.main()
