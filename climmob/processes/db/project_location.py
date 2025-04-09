@@ -108,7 +108,7 @@ def add_Location_DB(data, request):
         return False, str(e)
 
 
-def editLocation(data, locationid, error_summary, request):
+def editLocation(data, locationid, request):
     data["plocation_id"] = locationid
     data["plocation_name"] = data["edit_plocation_name"]
     data["plocation_lang"] = data["plocation_lang"]
@@ -129,8 +129,6 @@ def deleteLocationdb(location, request):
         ).delete()
         return True, ""
     except IntegrityError as e:
-        # print("capturado")
         return False, e
     except Exception as e:
-        # print(str(e))
         return False, e

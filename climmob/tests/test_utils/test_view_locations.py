@@ -1,140 +1,171 @@
 import unittest
-from unittest.mock import MagicMock
 
-from pyramid import testing
-from climmob.views.locations import crud_view
-from pyramid.config import Configurator
+from unittest.mock import MagicMock, patch
+
+from webob.multidict import MultiDict
+
+from climmob.views.locations import crud_view, deleteLocation_view
+
 
 class TestViewLocations(unittest.TestCase):
     def setUp(self):
-        self.config = testing.setUp()
-        self.config.add_route('crud_locations', '/crud_locations')
-        self.config.scan()
+        self.mock_request = MagicMock()
+        self.mock_request.params = {}
+        self.mock_user = MagicMock()
+        self.mock_user.login = "test_user"
+        self.view = crud_view(self.mock_request)
+        self.view.user = self.mock_user
+        self.view._ = MagicMock(side_effect=lambda x: x)
 
-    def tearDown(self):
-         testing.tearDown()
-
-    def test_crud_view(self):
+    @patch("climmob.views.locations.get_all_project_location",
+           return_value=[
+               {"id": 1, "plocation_name": "school", "plocation_lang": "en"},
+               {"id": 2, "plocation_name": "hospital", "plocation_lang": "en"},
+               {"id": 3, "plocation_name": "office", "plocation_lang": "en"}
+           ])
+    def test_proces_view_not_post(self, mock_get_all_project_location):
         """Verifica si la vista funciona correctamente"""
-        request = testing.DummyRequest()
-        request.translate = MagicMock(return_value="translated_text")
-        mock_project_locations = [
-            MagicMock(id=1, plocation_name="school", plocation_lang="en"),
-            MagicMock(id=2, plocation_name="hospital", plocation_lang="en"),
-            MagicMock(id=3, plocation_name="office", plocation_lang="en")
-        ]
-        active_user = MagicMock(login="test_user")
-        active_project = MagicMock(id=1, name="Test Project")
-        next_page = None
-        modify = False
-        report_upload = True
-        error_summary = {}
-        error_message = None
-        dataworking = {}
-        success_message = None
 
-        crud_view.get_all_project_location = mock_project_locations
-        crud_view.getActiveProject = MagicMock(return_value=active_project)
+        self.mock_request.method = "GET"
+        result = self.view.processView()
+        mock_get_all_project_location.assert_called_once_with(self.mock_request)
+        self.assertEqual(len(result['searchAllProyectLocation']), 3)
+        self.assertEqual(result["error_summary"], {})
+        self.assertEqual(result["dataworking"], {})
 
-        response = testing.DummyRequest('/crud_locations', request=request)
+    @patch("climmob.views.locations.get_all_project_location",
+           return_value=[
+               {"id": 1, "plocation_name": "school", "plocation_lang": "en"},
+               {"id": 2, "plocation_name": "hospital", "plocation_lang": "en"},
+               {"id": 3, "plocation_name": "office", "plocation_lang": "en"}
+           ])
+    @patch("climmob.views.locations.add_Location_DB", return_value=True)
+    @patch("climmob.views.locations.get_location_by_name", return_value={})
+    def test_proces_view_post_add(self, mock_get_location_by_name, mock_add_Location_DB, mock_get_all_project_location):
+        """Verifica si la vista funciona correctamente"""
 
-        self.assertEqual(crud_view.get_all_project_location.__class__, list)
-        self.assertEqual(error_summary,{})
-        self.assertEqual(dataworking,{})
-
-    def test_crud_view_post_add_location(self):
-        """Verifica si la vista funciona correctamente cuando se agrega una ubicación"""
-        request = testing.DummyRequest()
-        request.translate = MagicMock(return_value="translated_text")
-        request.method = 'POST'
-        request.POST = {
-            'csrf_token': MagicMock(),
+        location_data = {
+            'csrf_token': 'dummy_token',
             'plocation_lang': 'en',
-            'plocation_name': 'This is another ubication',
+            'plocation_name': '2',
             'btn_add_location': ''
         }
 
-        # Mock de las funciones necesarias
-        mock_project_locations = [
-            MagicMock(id=1, plocation_name="school", plocation_lang="en"),
-            MagicMock(id=2, plocation_name="hospital", plocation_lang="en"),
-        ]
-        crud_view.get_all_project_location = MagicMock(return_value=mock_project_locations)
-        crud_view.get_location_by_name = MagicMock(return_value=None)
-        crud_view.functionForAddLocations = MagicMock(return_value={'This is another ubication'})
-        crud_view.getActiveProject = MagicMock(return_value=MagicMock(id=1, name="Test Project"))
+        self.mock_request.method = "POST"
+        self.mock_request.POST = location_data
 
-        # Crear la vista y asignar el request
-        view_instance = crud_view(self.config)
-        view_instance.request = request
+        result = self.view.processView()
 
-        # Llamar al método processView() para ejecutar la vista
-        response = view_instance.processView()
+        mock_add_Location_DB.assert_called_once_with(location_data, self.mock_request)
+        mock_get_location_by_name.assert_called_once_with(self.mock_request, location_data["plocation_name"])
+        mock_get_all_project_location.assert_called_once_with(self.mock_request)
+        self.assertEqual(result["error_summary"], {})
+        self.assertEqual(result["success_message"], "Location created successfully")
 
-        # Verificar que no haya errores y que se haya añadido correctamente la ubicación
-        print(response)  # Para ver la salida de la respuesta
-        self.assertEqual(response['error_message'], None)
-        # Añadir más verificaciones si es necesario para la lógica de negocio.
+    @patch("climmob.views.locations.get_all_project_location",
+           return_value=[
+               {"id": 1, "plocation_name": "school", "plocation_lang": "en"},
+               {"id": 2, "plocation_name": "hospital", "plocation_lang": "en"},
+               {"id": 3, "plocation_name": "office", "plocation_lang": "en"}
+           ])
+    @patch("climmob.views.locations.get_location_by_name", return_value={"school"})
+    def test_proces_view_post_no_add(self, mock_get_location_by_name, mock_get_all_project_location):
+        """Verifica si la vista funciona correctamente"""
 
+        location_data = {
+            'csrf_token': 'dummy_token',
+            'plocation_lang': 'en',
+            'plocation_name': 'school',
+            'btn_add_location': ''
+        }
 
+        self.mock_request.method = "POST"
+        self.mock_request.POST = location_data
 
+        result = self.view.processView()
+        mock_get_location_by_name.assert_called_once_with(self.mock_request, location_data["plocation_name"])
+        mock_get_all_project_location.assert_called_once_with(self.mock_request)
+        self.assertEqual(result["error_summary"], {})
+        self.assertEqual(result["error_message"], "There is already a record with that name, it was not created")
 
+    @patch("climmob.views.locations.get_all_project_location",
+           return_value=[
+               {"id": 1, "plocation_name": "school", "plocation_lang": "en"},
+               {"id": 2, "plocation_name": "hospital", "plocation_lang": "en"},
+               {"id": 3, "plocation_name": "office", "plocation_lang": "en"}
+           ])
+    @patch("climmob.views.locations.editLocation", return_value=True)
+    @patch("climmob.views.locations.get_location_by_name", return_value={})
+    def test_proces_view_post_edit(self, mock_get_location_by_name, mock_editLocation, mock_get_all_project_location):
+        """Verifica si la vista funciona correctamente"""
 
+        location_data = {
+            'csrf_token': 'dummy_token',
+            'edit_plocation_id': '1',
+            'plocation_lang': 'en',
+            'edit_plocation_name': 'school',
+            'btn_edit_location': ''
+        }
 
+        self.mock_request.method = "POST"
+        self.mock_request.POST = location_data
 
+        result = self.view.processView()
 
+        mock_editLocation.assert_called_once_with(self.mock_request.POST,
+                                                  self.mock_request.POST['edit_plocation_id'],
+                                                  self.mock_request)
+        mock_get_location_by_name.assert_called_once_with(self.mock_request, location_data["edit_plocation_name"])
+        mock_get_all_project_location.assert_called_once_with(self.mock_request)
+        self.assertEqual(result["error_summary"], {})
+        self.assertEqual(result["success_message"], "Location edited successfully")
 
+    @patch("climmob.views.locations.get_all_project_location",
+           return_value=[
+               {"id": 1, "plocation_name": "school", "plocation_lang": "en"},
+               {"id": 2, "plocation_name": "hospital", "plocation_lang": "en"},
+               {"id": 3, "plocation_name": "office", "plocation_lang": "en"}
+           ])
+    @patch("climmob.views.locations.get_location_by_name", return_value={"school"})
+    def test_proces_view_post_no_edit(self, mock_get_location_by_name, mock_get_all_project_location):
+        """Verifica si la vista funciona correctamente"""
 
+        location_data = {
+            'csrf_token': 'dummy_token',
+            'edit_plocation_id': '1',
+            'plocation_lang': 'en',
+            'edit_plocation_name': 'school',
+            'btn_edit_location': ''
+        }
 
+        self.mock_request.method = "POST"
+        self.mock_request.POST = location_data
+        result = self.view.processView()
 
+        mock_get_location_by_name.assert_called_once_with(self.mock_request, location_data["edit_plocation_name"])
+        mock_get_all_project_location.assert_called_once_with(self.mock_request)
+        self.assertEqual(result["error_summary"], {})
+        self.assertEqual(result["error_message"], "There is already a record with that name, it was not modified.")
 
+class TestdeleteLocation_view(unittest.TestCase):
+    def setUp(self):
+        self.mock_request = MagicMock()
+        self.mock_request.params = {}
+        self.mock_user = MagicMock()
+        self.mock_user.login = "test_user"
+        self.view = deleteLocation_view(self.mock_request)
+        self.view.user = self.mock_user
+        self.view._ = MagicMock(side_effect=lambda x: x)
 
-    # class TestViewLocations(unittest.TestCase):
-#     @patch('climmob.processes.db.project_location.get_all_project_location')
-#     def setUp(self, mock_get_all_project_location):
-#         mock_get_all_project_location.return_value = [
-#             (MagicMock(id=1, plocation_name="school", plocation_lang="en")),
-#             (MagicMock(id=2, plocation_name="hospital", plocation_lang="en")),
-#             (MagicMock(id=3, plocation_name="office", plocation_lang="en"))
-#         ]
-#         self.view = crud_view(MagicMock())
-#         self.view.request = MagicMock()
-#         self.view.user = MagicMock()
-#         self.view.user.login = "test_user"
-#         self.view.add_Location_DB = MagicMock(return_value=(False,""))
-#         self.get_all_project_location = mock_get_all_project_location
-#
-#     @unittest.skip("demonstrating skipping")
-#     def mock_translation(self, message):
-#         return message
-#
-#     def test_process_view_with_project_locations(self, get_all_project_location):
-#         self.get_all_project_location
-#         response = self.view.processView()
-#         self.assertEqual(response["error_summary"],{})
-#
-#     # @patch('climmob.views.locations.self.getPostDict()', return_value=(True,
-#     # [(MagicMock({'csrf_token': 'cc4a052d3982ed41c75f72a05f31c0e3fda3d2da',
-#     #              'plocation_lang': 'en',
-#     #              'plocation_name': '2',
-#     #              'btn_add_location': ''
-#     #              }))]))
-#     # def test_process_view_when_adding_location(self):
-#     #     self.view.request.method = "POST"
-#     #     response = self.view.processView()
-#     #     self.assertEqual(response.location, "/crud_locations")
-#     #
-#
-#
-#
-#
-#
-#
-
-
-
-
-
+    @patch("climmob.views.locations.deleteLocationdb", return_value=True)
+    def test_proces_view_delete(self,mock_deleteLocationdb):
+        # data = MultiDict([('csrf_token', 'dummy_token')])
+        data = { 'csrf_token': 'dummy_token' }
+        self.mock_request.matchdict = {"locationid" : "1"}
+        self.mock_request.method = "POST"
+        self.mock_request.POST = data
+        result = self.view.processView()
+        mock_deleteLocationdb.assert_called_once_with("1", self.mock_request)
 
 if __name__ == "__main__":
     unittest.main()
