@@ -89,7 +89,7 @@ class BaseView:
     def __init__(self, request):
         self.request = request
 
-    def __validate(self):
+    def _validate(self):
         for validator in self.validators:
             validator(self.request).run()
 
@@ -299,7 +299,7 @@ class publicView(BaseView):
         self._ = self.request.translate
 
     def __call__(self):
-        self.__validate()
+        self._validate()
         return self.processView()
 
     def getPostDict(self):
@@ -455,7 +455,7 @@ class privateView(BaseView):
             except:
                 pass
 
-        self.__validate()
+        self._validate()
         self.viewResult = self.processView()
 
         if not self.returnRawViewResult:
@@ -546,5 +546,5 @@ class apiView(BaseView):
             )
             return response
 
-        self.__validate()
+        self._validate()
         return self.processView()
