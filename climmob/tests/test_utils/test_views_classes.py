@@ -164,11 +164,11 @@ class TestBaseView(unittest.TestCase):
 
     def test_validate(self):
         mock_validator_a_class = MagicMock()
-        mock_validator_a_instance = MagicMock(request=self.request)
+        mock_validator_a_instance = MagicMock(view=self.view)
         mock_validator_a_class.return_value = mock_validator_a_instance
 
         mock_validator_b_class = MagicMock()
-        mock_validator_b_instance = MagicMock(request=self.request)
+        mock_validator_b_instance = MagicMock(view=self.view)
         mock_validator_b_class.return_value = mock_validator_b_instance
 
         validators = (
@@ -179,10 +179,10 @@ class TestBaseView(unittest.TestCase):
         with patch("climmob.views.classes.BaseView.validators", validators):
             self.view._validate()
 
-        mock_validator_a_class.assert_called_once()
+        mock_validator_a_class.assert_called_once_with(self.view)
         mock_validator_a_instance.run.assert_called_once()
 
-        mock_validator_b_class.assert_called_once()
+        mock_validator_b_class.assert_called_once_with(self.view)
         mock_validator_b_instance.run.assert_called_once()
 
 

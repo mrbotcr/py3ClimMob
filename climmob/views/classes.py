@@ -91,7 +91,7 @@ class BaseView:
 
     def _validate(self):
         for validator in self.validators:
-            validator(self.request).run()
+            validator(self).run()
 
     def get(self):
         raise NotImplementedError

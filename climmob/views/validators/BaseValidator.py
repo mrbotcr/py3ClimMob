@@ -1,6 +1,6 @@
 class BaseValidator:
-    def __init__(self, request):
-        self.request = request
+    def __init__(self, view):
+        self.view = view
 
     def run(self):
         raise NotImplementedError
