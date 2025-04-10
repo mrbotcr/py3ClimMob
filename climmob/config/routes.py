@@ -124,10 +124,10 @@ from climmob.views.Api.techaliases import (
     deleteAliasView_api,
 )
 from climmob.views.Api.technologies import (
-    CreateTechnologyView,
-    ReadTechnologiesView,
-    UpdateTechnologyView,
-    DeleteTechnologyViewAPI,
+    createTechnology_view,
+    readTechnologies_view,
+    updateTechnology_view,
+    deletetechnologyView_api,
 )
 from climmob.views.Bot.bot import sendFeedbackToBot_view, readFeedback_view
 from climmob.views.Share.projectShare import (
@@ -1500,25 +1500,25 @@ def loadRoutes(config):
         addRoute(
             "addusertechnology_api",
             "/api/createTechnology",
-            CreateTechnologyView,
+            createTechnology_view,
             None,
         )
     )
     routes.append(
         addRoute(
-            "readtechnologies_api", "/api/readTecnologies", ReadTechnologiesView, None
+            "readtechnologies_api", "/api/readTecnologies", readTechnologies_view, None
         )
     )
     routes.append(
         addRoute(
-            "updatetechnology_api", "/api/updateTechnology", UpdateTechnologyView, None
+            "updatetechnology_api", "/api/updateTechnology", updateTechnology_view, None
         )
     )
     routes.append(
         addRoute(
             "deletetechnology_api",
             "/api/deleteTechnology",
-            DeleteTechnologyViewAPI,
+            deletetechnologyView_api,
             None,
         )
     )
