@@ -1506,10 +1506,7 @@ def loadRoutes(config):
     )
     routes.append(
         addRoute(
-            "readtechnologies_api",
-            "/api/readTecnologies",
-            ReadTechnologiesView,
-            None
+            "readtechnologies_api", "/api/readTecnologies", ReadTechnologiesView, None
         )
     )
     routes.append(
