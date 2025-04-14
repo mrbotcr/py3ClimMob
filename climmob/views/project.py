@@ -53,6 +53,7 @@ from climmob.processes import (
     delete_all_project_location_unit_objective,
 )
 from climmob.views.classes import privateView
+from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 
 
 class getTemplatesByTypeOfProject_view(privateView):
@@ -482,15 +483,12 @@ def functionCreateClone(self, projectId, newProjectId, structureToBeCloned):
 
 
 class modifyProject_view(privateView):
+    validators = (ProjectExistsValidator,)
+
     def processView(self):
 
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
-
-        if not projectExists(
-            self.user.login, activeProjectUser, activeProjectCod, self.request
-        ):
-            raise HTTPNotFound()
 
         activeProjectId = getTheProjectIdForOwner(
             activeProjectUser, activeProjectCod, self.request
@@ -753,14 +751,11 @@ class modifyProject_view(privateView):
 
 
 class deleteProject_view(privateView):
+    validators = (ProjectExistsValidator,)
+
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
-
-        if not projectExists(
-            self.user.login, activeProjectUser, activeProjectCod, self.request
-        ):
-            raise HTTPNotFound()
 
         activeProjectId = getTheProjectIdForOwner(
             activeProjectUser, activeProjectCod, self.request

@@ -18,21 +18,18 @@ from climmob.processes import (
     getActiveProject,
     getQuestionsStructure,
 )
-from climmob.processes import projectExists
 from climmob.processes.odk.api import storeJSONInMySQL
 from climmob.views.classes import privateView
 from climmob.views.editDataDB import getNamesEditByColums, fillDataTable
+from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 
 
 class CleanErrorLogsView(privateView):
+    validators = (ProjectExistsValidator,)
+
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
-
-        if not projectExists(
-            self.user.login, activeProjectUser, activeProjectCod, self.request
-        ):
-            raise HTTPNotFound()
 
         activeProjectId = getTheProjectIdForOwner(
             activeProjectUser, activeProjectCod, self.request
