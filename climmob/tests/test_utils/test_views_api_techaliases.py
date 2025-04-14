@@ -525,7 +525,7 @@ class TestDeleteAliasViewAPI(unittest.TestCase):
     @patch('climmob.views.Api.techaliases.getAliasAssignedWithoutProjectCode', return_value=(False))
     @patch('climmob.views.Api.techaliases.existAlias', return_value=(True))
     @patch('climmob.views.Api.techaliases.getTechnologyByUser', return_value=(True))
-    def test_process_view_no_delete_no_proyect_assigned(self, mock_getTechnologyByUser, mock_existAlias,
+    def test_process_view_no_delete_no_delete_error(self, mock_getTechnologyByUser, mock_existAlias,
                                                         mock_getAliasAssignedWithoutProjectCode, mock_removeAlias):
         self.view.body = json.dumps(
             {
@@ -535,7 +535,8 @@ class TestDeleteAliasViewAPI(unittest.TestCase):
         )
         response = self.view.processView()
         self.assertEqual(response.status_code, 401)
-        self.assertEqual(response.body,b"Error to delete.")
+        self.assertEqual(response.body, b"Error to delete.")
+        mock_removeAlias.assert_called_once()
 
 
     @patch('climmob.views.Api.techaliases.removeAlias', return_value=(True, ""))
