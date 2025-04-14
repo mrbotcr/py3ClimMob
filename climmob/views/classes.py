@@ -9,7 +9,7 @@ import climmob.plugins as p
 from ast import literal_eval
 from pyramid.response import Response
 from pyramid.session import check_csrf_token
-from pyramid.httpexceptions import HTTPFound
+from pyramid.httpexceptions import HTTPFound, HTTPMethodNotAllowed
 from pyramid.httpexceptions import HTTPNotFound
 from formencode.variabledecode import variable_decode
 from climmob.config.auth import getUserData, getUserByApiKey
@@ -82,9 +82,44 @@ def ResourceCallback(request, response):
         response.body = html_content.encode()
 
 
-# ODKView is a Digest Authorization view. It automates all the Digest work
-class odkView(object):
+class BaseView:
     def __init__(self, request):
+        self.request = request
+
+    def get(self):
+        raise NotImplementedError
+
+    def post(self):
+        raise NotImplementedError
+
+    def put(self):
+        raise NotImplementedError
+
+    def patch(self):
+        raise NotImplementedError
+
+    def delete(self):
+        raise NotImplementedError
+
+    def processView(self):
+        if self.request.method == "GET":
+            return self.get()
+        elif self.request.method == "POST":
+            return self.post()
+        elif self.request.method == "PUT":
+            return self.put()
+        elif self.request.method == "PATCH":
+            return self.patch()
+        elif self.request.method == "DELETE":
+            return self.delete()
+        else:
+            raise HTTPMethodNotAllowed
+
+
+# ODKView is a Digest Authorization view. It automates all the Digest work
+class odkView(BaseView):
+    def __init__(self, request):
+        super().__init__(request)
         self.request = request
         self._ = self.request.translate
         self.nonce = md5(str(uuid.uuid4()).encode()).hexdigest()
@@ -223,18 +258,11 @@ class odkView(object):
             reponse = Response(status=401, headerlist=headers)
             return reponse
 
-    def processView(self):
-        # At this point children of odkView have:
-        # self.user which us the user requesting ODK data
-        # authorize(self,correctPassword) which checks if the password in the authorization is correct
-        # askForCredentials(self) which return a response to ask again for the credentials
-        # createXMLResponse(self,XMLData) that can be used to return XML data to ODK with the required headers
-        return {}
-
 
 # This is the most basic public view. Used for 404 and 500. But then used for others more advanced classes
-class publicView(object):
+class publicView(BaseView):
     def __init__(self, request):
+        super().__init__(request)
         if request.registry.settings.get("secure.javascript", "false") == "true":
             request.add_response_callback(ResourceCallback)
         self.request = request
@@ -242,9 +270,6 @@ class publicView(object):
 
     def __call__(self):
         return self.processView()
-
-    def processView(self):
-        return {}
 
     def getPostDict(self):
         dct = variable_decode(self.request.POST)
@@ -266,8 +291,9 @@ class publicView(object):
         return dct
 
 
-class privateView(object):
+class privateView(BaseView):
     def __init__(self, request):
+        super().__init__(request)
         if request.registry.settings.get("secure.javascript", "false") == "true":
             request.add_response_callback(ResourceCallback)
         self.request = request
@@ -415,9 +441,6 @@ class privateView(object):
         if isinstance(o, datetime.datetime):
             return o.__str__()
 
-    def processView(self):
-        return {"activeUser": self.user}
-
     def getPostDict(self):
         dct = variable_decode(self.request.POST)
         """
@@ -451,7 +474,7 @@ class privateView(object):
         return None
 
 
-class apiView(object):
+class apiView(BaseView):
     def __init__(self, request):
         self.request = request
         self.user = None
@@ -492,7 +515,3 @@ class apiView(object):
             return response
 
         return self.processView()
-
-    def processView(self):
-
-        return {}
