@@ -15,7 +15,7 @@ from climmob.processes import (
 from climmob.views.classes import apiView
 
 
-class createAlias_view(apiView):
+class CreateAliasView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -76,7 +76,7 @@ class createAlias_view(apiView):
             return response
 
 
-class readAlias_view(apiView):
+class ReadAliasView(apiView):
     def processView(self):
         if self.request.method == "GET":
             obligatory = ["tech_id"]
@@ -133,7 +133,7 @@ class readAlias_view(apiView):
             return response
 
 
-class updateAlias_view(apiView):
+class UpdateAliasView(apiView):
     def processView(self):
         if self.request.method == "POST":
 
@@ -214,7 +214,7 @@ class updateAlias_view(apiView):
             return response
 
 
-class deleteAliasView_api(apiView):
+class DeleteAliasViewAPI(apiView):
     def processView(self):
 
         if self.request.method == "POST":
