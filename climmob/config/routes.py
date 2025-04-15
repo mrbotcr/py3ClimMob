@@ -112,10 +112,10 @@ from climmob.views.Api.questions import (
     ReadMultiLanguagesFromQuestionView,
 )
 from climmob.views.Api.questionsGroups import (
-    readGroupsOfQuestions_view,
-    createGroupOfQuestion_view,
-    updateGroupOfQuestion_view,
-    deleteGroupOfQuestion_view,
+    ReadGroupsOfQuestionsView,
+    CreateGroupOfQuestionView,
+    UpdateGroupOfQuestionView,
+    DeleteGroupOfQuestionView,
 )
 from climmob.views.Api.techaliases import (
     createAlias_view,
@@ -1539,7 +1539,7 @@ def loadRoutes(config):
         addRoute(
             "readcategoriesofquestions_api",
             "/api/readCategoriesOfQuestions",
-            readGroupsOfQuestions_view,
+            ReadGroupsOfQuestionsView,
             None,
         )
     )
@@ -1547,7 +1547,7 @@ def loadRoutes(config):
         addRoute(
             "createcategoryofquestions_api",
             "/api/createCategoryOfQuestions",
-            createGroupOfQuestion_view,
+            CreateGroupOfQuestionView,
             None,
         )
     )
@@ -1555,7 +1555,7 @@ def loadRoutes(config):
         addRoute(
             "updatecategoryofquestions_api",
             "/api/updateCategoryOfQuestions",
-            updateGroupOfQuestion_view,
+            UpdateGroupOfQuestionView,
             None,
         )
     )
@@ -1563,7 +1563,7 @@ def loadRoutes(config):
         addRoute(
             "deletecategoryofquestions_api",
             "/api/deleteCategoryOfQuestions",
-            deleteGroupOfQuestion_view,
+            DeleteGroupOfQuestionView,
             None,
         )
     )
