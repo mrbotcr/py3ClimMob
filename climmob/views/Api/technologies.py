@@ -15,7 +15,7 @@ from climmob.processes import (
 from climmob.views.classes import apiView
 
 
-class createTechnology_view(apiView):
+class CreateTechnologyView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -81,7 +81,7 @@ class createTechnology_view(apiView):
             return response
 
 
-class readTechnologies_view(apiView):
+class ReadTechnologiesView(apiView):
     def processView(self):
 
         if self.request.method == "GET":
@@ -110,14 +110,7 @@ class readTechnologies_view(apiView):
 )"""
 
 
-def merge_two_dicts(x, y):
-    """Given two dicts, merge them into a new dict as a shallow copy."""
-    z = x.copy()
-    z.update(y)
-    return z
-
-
-class updateTechnology_view(apiView):
+class UpdateTechnologyView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -202,7 +195,7 @@ class updateTechnology_view(apiView):
             return response
 
 
-class deletetechnologyView_api(apiView):
+class DeleteTechnologyViewAPI(apiView):
     def processView(self):
 
         if self.request.method == "POST":
