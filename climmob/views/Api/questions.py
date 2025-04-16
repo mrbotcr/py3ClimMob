@@ -83,7 +83,7 @@ class CreateQuestionView(apiView):
 
             for key in obligatory:
                 if key not in dataworking.keys():
-                    obligatoryKeys = False 
+                    obligatoryKeys = False
 
             if obligatoryKeys:
                 if permitedKeys:
@@ -113,7 +113,9 @@ class CreateQuestionView(apiView):
                             dataworking["question_alwaysinasse"] = 0
 
                         if "question_requiredvalue" not in dataworking.keys():
-                            dataworking["question_requiredvalue"] = 0 #'''codigo inaccesible para el test, ya que es obligatorio'''
+                            dataworking[
+                                "question_requiredvalue"
+                            ] = 0  # code inaccessible to the test, since it is mandatory
 
                         if "question_unit" not in dataworking.keys():
                             dataworking["question_unit"] = ""
@@ -288,6 +290,7 @@ class CreateQuestionView(apiView):
             response = Response(status=401, body=self._("Only accepts POST method."))
             return response
 
+
 class ReadQuestionsView(apiView):
     def processView(self):
 
@@ -308,6 +311,7 @@ class ReadQuestionsView(apiView):
         else:
             response = Response(status=401, body=self._("Only accepts GET method."))
             return response
+
 
 class UpdateQuestionView(apiView):
     def processView(self):
@@ -484,7 +488,7 @@ class UpdateQuestionView(apiView):
                                         dataworking["question_tied"] = 0
                                         dataworking["question_notobserved"] = 0
 
-                                else:     #inaccessible--> error Not all parameters have data. or Check the ID of the question type
+                                else:  # inaccessible--> error Not all parameters have data. or Check the ID of the question type
                                     if (
                                         str(data["question_dtype"]) == "9"
                                         or str(data["question_dtype"]) == "10"
@@ -553,6 +557,7 @@ class UpdateQuestionView(apiView):
             response = Response(status=401, body=self._("Only accepts POST method."))
             return response
 
+
 class DeleteQuestionViewApi(apiView):
     def processView(self):
 
@@ -609,6 +614,7 @@ class DeleteQuestionViewApi(apiView):
             response = Response(status=401, body=self._("Only accepts POST method."))
             return response
 
+
 class ReadQuestionValuesView(apiView):
     def processView(self):
 
@@ -662,6 +668,7 @@ class ReadQuestionValuesView(apiView):
         else:
             response = Response(status=401, body=self._("Only accepts GET method."))
             return response
+
 
 class AddQuestionValueViewApi(apiView):
     def processView(self):
@@ -852,6 +859,7 @@ class AddQuestionValueViewApi(apiView):
             response = Response(status=401, body=self._("Only accepts POST method."))
             return response
 
+
 class UpdateQuestionValueView(apiView):
     def processView(self):
 
@@ -991,6 +999,7 @@ class UpdateQuestionValueView(apiView):
             response = Response(status=401, body=self._("Only accepts POST method."))
             return response
 
+
 class DeleteQuestionValueViewApi(apiView):
     def processView(self):
 
@@ -1075,6 +1084,7 @@ class DeleteQuestionValueViewApi(apiView):
         else:
             response = Response(status=401, body=self._("Only accepts GET method."))
             return response
+
 
 """class readQuestionPerformance_view(apiView):
     def processView(self):
@@ -1203,6 +1213,7 @@ class UpdateQuestionCharacteristicsView(apiView):
             response = Response(status=401, body=self._("Only accepts POST method."))
             return response
 
+
 class UpdateQuestionPerformanceView(apiView):
     def processView(self):
 
@@ -1317,6 +1328,7 @@ class UpdateQuestionPerformanceView(apiView):
         else:
             response = Response(status=401, body=self._("Only accepts POST method."))
             return response
+
 
 class MultiLanguageQuestionView(apiView):
     def processView(self):
@@ -1455,7 +1467,8 @@ class MultiLanguageQuestionView(apiView):
                                         info["value_desc"] = dataworking[key]
                                         questionOptions.append(info)
                                     except:
-                                        va = ""
+                                        # va = ""
+                                        pass
                             if questionOptions:
                                 actionInTheTranslationOfQuestionOptions(
                                     self, questionOptions
