@@ -484,7 +484,7 @@ class UpdateQuestionView(apiView):
                                         dataworking["question_tied"] = 0
                                         dataworking["question_notobserved"] = 0
 
-                                else:     #unaccesable--> error Not all parameters have data. or Check the ID of the question type
+                                else:     #inaccessible--> error Not all parameters have data. or Check the ID of the question type
                                     if (
                                         str(data["question_dtype"]) == "9"
                                         or str(data["question_dtype"]) == "10"

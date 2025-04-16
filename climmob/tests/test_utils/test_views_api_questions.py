@@ -2160,7 +2160,67 @@ class TestMultiLanguageQuestionView(BaseViewTestCase):
     ):
 
         mock_get_question_data.return_value = (
-            {"question_lang": "en", "user_name": "test_user", "question_dtype": 5},
+            {"question_lang": "en", "user_name": "test_user", "question_dtype": 9},
+            True,
+        )
+
+        mock_get_question_options.return_value = [
+            {"value_code": "OPT1"},
+            {"value_code": "OPT2"},
+        ]
+
+        self.valid_data["option_OPT1"] = "Opción 1"
+        self.valid_data["question_desc"] = "Some description"
+        self.view.body = json.dumps(self.valid_data)
+
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "It is not complying with the obligatory keys", response.body.decode()
+        )
+
+        mock_get_question_data.assert_called_once_with(
+            "test_user", "QST123", self.view.request
+        )
+
+    @patch("climmob.views.Api.questions.getQuestionOptions")
+    @patch("climmob.views.Api.questions.languageExistInI18nUser", return_value=True)
+    @patch("climmob.views.Api.questions.getQuestionData")
+    def test_process_view_missing_option_translation_2(
+            self, mock_get_question_data, mock_language_exist, mock_get_question_options
+    ):
+        mock_get_question_data.return_value = (
+            {"question_lang": "en", "user_name": "test_user", "question_dtype": 2},
+            True,
+        )
+
+        mock_get_question_options.return_value = [
+            {"value_code": "OPT1"},
+            {"value_code": "OPT2"},
+        ]
+
+        self.valid_data["option_OPT1"] = "Opción 1"
+        self.valid_data["question_desc"] = "Some description"
+        self.view.body = json.dumps(self.valid_data)
+
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "It is not complying with the obligatory keys", response.body.decode()
+        )
+
+        mock_get_question_data.assert_called_once_with(
+            "test_user", "QST123", self.view.request
+        )
+
+    @patch("climmob.views.Api.questions.getQuestionOptions")
+    @patch("climmob.views.Api.questions.languageExistInI18nUser", return_value=True)
+    @patch("climmob.views.Api.questions.getQuestionData")
+    def test_process_view_missing_option_translation_10(
+            self, mock_get_question_data, mock_language_exist, mock_get_question_options
+    ):
+        mock_get_question_data.return_value = (
+            {"question_lang": "en", "user_name": "test_user", "question_dtype": 10},
             True,
         )
 
