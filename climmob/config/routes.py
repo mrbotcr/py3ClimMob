@@ -118,10 +118,10 @@ from climmob.views.Api.questionsGroups import (
     deleteGroupOfQuestion_view,
 )
 from climmob.views.Api.techaliases import (
-    createAlias_view,
-    readAlias_view,
-    updateAlias_view,
-    deleteAliasView_api,
+    CreateAliasView,
+    ReadAliasView,
+    UpdateAliasView,
+    DeleteAliasViewAPI,
 )
 from climmob.views.Api.technologies import (
     CreateTechnologyView,
@@ -1525,14 +1525,14 @@ def loadRoutes(config):
 
     # Alias library
     routes.append(
-        addRoute("adduseralias_api", "/api/createAlias", createAlias_view, None)
+        addRoute("adduseralias_api", "/api/createAlias", CreateAliasView, None)
     )
-    routes.append(addRoute("readalias_api", "/api/readAlias", readAlias_view, None))
+    routes.append(addRoute("readalias_api", "/api/readAlias", ReadAliasView, None))
     routes.append(
-        addRoute("updatealias_api", "/api/updateAlias", updateAlias_view, None)
+        addRoute("updatealias_api", "/api/updateAlias", UpdateAliasView, None)
     )
     routes.append(
-        addRoute("deletealias_api", "/api/deleteAlias", deleteAliasView_api, None)
+        addRoute("deletealias_api", "/api/deleteAlias", DeleteAliasViewAPI, None)
     )
     # Groups
     routes.append(
