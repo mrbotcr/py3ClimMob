@@ -177,6 +177,61 @@ class TestReadVariablesForAnalysisViewAPI(unittest.TestCase):
         self.assertEqual(response.status_code, 401)
         self.assertIn("Only accepts GET method.", response.body.decode())
 
+    @patch("climmob.views.Api.project_analysis.getAccessTypeForProject", return_value=4)
+    @patch("climmob.views.Api.project_analysis.getTheProjectIdForOwner", return_value=1)
+    @patch("climmob.views.Api.project_analysis.projectExists", return_value=True)
+    def test_process_read_variables_analysis_no_allow_create_analysis(
+        self,
+        mock_projectExists,
+        mock_getTheProjectIdForOwner,
+        mock_getAccessTypeForProject,
+    ):
+        self.view._ = self.mock_translation
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(
+            response.body.decode(),
+            "The access assigned for this project does not allow you to create an analysis.",
+        )
+        self.assertTrue(mock_projectExists.called)
+        self.assertTrue(mock_getTheProjectIdForOwner.called)
+        self.assertTrue(mock_getAccessTypeForProject.called)
+
+    @patch(
+        "climmob.views.Api.project_analysis.getProjectProgress",
+        return_value=(
+            {"assessments": [{"ass_status": 1, "asstotal": 0}], "regtotal": 0},
+            0,
+        ),
+    )
+    @patch(
+        "climmob.views.Api.project_analysis.getProjectData",
+        return_value={"project_registration_and_analysis": 1},
+    )
+    @patch("climmob.views.Api.project_analysis.getAccessTypeForProject", return_value=1)
+    @patch("climmob.views.Api.project_analysis.getTheProjectIdForOwner", return_value=1)
+    @patch("climmob.views.Api.project_analysis.projectExists", return_value=True)
+    def test_process_view_read_variables_analysis_no_enough_info(
+        self,
+        mock_projectExists,
+        mock_getTheProjectIdForOwner,
+        mock_getAccessTypeForProject,
+        mock_getProjectData,
+        mock_getProjectProgress,
+    ):
+        self.view._ = self.mock_translation  # Mock translation function
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(
+            response.body,
+            b"You don't have the amount of information needed to do a ClimMob analysis.",
+        )
+        self.assertTrue(mock_projectExists.called)
+        self.assertTrue(mock_getTheProjectIdForOwner.called)
+        self.assertTrue(mock_getAccessTypeForProject.called)
+        self.assertTrue(mock_getProjectData.called)
+        self.assertTrue(mock_getProjectProgress.called)
+
 
 class TestGenerateAnalysisByApiViewAPI(unittest.TestCase):
     def setUp(self):
@@ -236,6 +291,68 @@ class TestGenerateAnalysisByApiViewAPI(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("The analysis is being generated", response.body.decode())
+
+        # Verify that all the patched methods were called
+        self.assertTrue(mock_projectExists.called)
+        self.assertTrue(mock_getTheProjectIdForOwner.called)
+        self.assertTrue(mock_getAccessTypeForProject.called)
+        self.assertTrue(mock_getProjectData.called)
+        self.assertTrue(mock_getProjectProgress.called)
+        self.assertTrue(mock_getQuestionsByType.called)
+        self.assertTrue(mock_processToGenerateTheReport.called)
+
+    @patch(
+        "climmob.views.Api.project_analysis.processToGenerateTheReport",
+        return_value=True,
+    )
+    @patch(
+        "climmob.views.Api.project_analysis.getQuestionsByType",
+        return_value=(
+            {"key1": [{"codeForAnalysis": "var1"}, {"codeForAnalysis": "var2"}]},
+            ["assessment1"],
+        ),
+    )
+    @patch(
+        "climmob.views.Api.project_analysis.getProjectProgress",
+        return_value=(
+            {"assessments": [{"ass_status": 1, "asstotal": 10}], "regtotal": 6},
+            0,
+        ),
+    )
+    @patch(
+        "climmob.views.Api.project_analysis.getProjectData",
+        return_value={"project_registration_and_analysis": 1},
+    )
+    @patch("climmob.views.Api.project_analysis.getAccessTypeForProject", return_value=1)
+    @patch("climmob.views.Api.project_analysis.getTheProjectIdForOwner", return_value=1)
+    @patch("climmob.views.Api.project_analysis.projectExists", return_value=True)
+    def test_process_view_success_2(
+        self,
+        mock_projectExists,
+        mock_getTheProjectIdForOwner,
+        mock_getAccessTypeForProject,
+        mock_getProjectData,
+        mock_getProjectProgress,
+        mock_getQuestionsByType,
+        mock_processToGenerateTheReport,
+    ):
+        self.view.body = json.dumps(
+            {
+                "project_cod": "123",
+                "user_owner": "owner",
+                "variables_to_analyze": ["var1", "var2"],
+                "infosheets": "0",
+            }
+        )
+        self.view._ = self.mock_translation  # Mock translation function
+
+        response = self.view.processView()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            b"The analysis is being generated, it is a process that requires time to be processed, as soon as it is ready you will be able to see it in the download list.",
+            response.body,
+        )
 
         # Verify that all the patched methods were called
         self.assertTrue(mock_projectExists.called)
@@ -316,6 +433,55 @@ class TestGenerateAnalysisByApiViewAPI(unittest.TestCase):
         self.assertTrue(mock_getAccessTypeForProject.called)
         self.assertTrue(mock_getProjectData.called)
         self.assertTrue(mock_getProjectProgress.called)
+
+    ###
+
+    @patch(
+        "climmob.views.Api.project_analysis.getQuestionsByType",
+        side_effect=Exception("boom"),
+    )
+    @patch(
+        "climmob.views.Api.project_analysis.getProjectProgress",
+        return_value=(
+            {"assessments": [{"ass_status": 1, "asstotal": 10}], "regtotal": 6},
+            0,
+        ),
+    )
+    @patch(
+        "climmob.views.Api.project_analysis.getProjectData",
+        return_value={"project_registration_and_analysis": 1},
+    )
+    @patch("climmob.views.Api.project_analysis.getAccessTypeForProject", return_value=1)
+    @patch("climmob.views.Api.project_analysis.getTheProjectIdForOwner", return_value=1)
+    @patch("climmob.views.Api.project_analysis.projectExists", return_value=True)
+    def test_process_view_exception_trow(
+        self,
+        mock_projectExists,
+        mock_getTheProjectIdForOwner,
+        mock_getAccessTypeForProject,
+        mock_getProjectData,
+        mock_getProjectProgress,
+        mock_getQuestionsByType,
+    ):
+        self.view._ = self.mock_translation  # Mock translation function
+
+        response = self.view.processView()
+
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(
+            b"Problem with the data sent in the parameter: variables_to_analyze",
+            response.body,
+        )
+
+        # Verify that all the patched methods were called
+        self.assertTrue(mock_projectExists.called)
+        self.assertTrue(mock_getTheProjectIdForOwner.called)
+        self.assertTrue(mock_getAccessTypeForProject.called)
+        self.assertTrue(mock_getProjectData.called)
+        self.assertTrue(mock_getProjectProgress.called)
+        self.assertTrue(mock_getQuestionsByType.called)
+
+    ###
 
     def test_process_view_invalid_json(self):
         self.view._ = self.mock_translation  # Mock translation function
