@@ -272,7 +272,7 @@
                                                     <select id="usingTemplate" name="usingTemplate" class="form-control chosen-select" {% if dataworking.project_regstatus != 0 %} disabled {% endif %} {% if not permissionForChanges %} disabled {% endif %} style="width:0px;" >
                                                         <option value="">{{ _("Select a template") }}</option>
                                                         {% for template in listOfTemplates %}
-                                                            <option value="{{ template.project_id }}" {% if dataworking["usingTemplate"] == template.project_id %}selected{% endif %}>{{ template.project_name }}</option>
+                                                            <option value="{{ template.project_id }}" {% if dataworking["usingTemplate"] == template.project_id or dataworking["project_template_used"] == template.project_id %}selected{% endif %}>{{ template.project_name }}</option>
                                                         {% endfor %}
                                                     </select>
                                                 </td>
