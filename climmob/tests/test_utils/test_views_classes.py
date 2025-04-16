@@ -5,7 +5,7 @@ from datetime import datetime as dt
 from hashlib import md5
 from unittest.mock import MagicMock, patch, mock_open
 
-from pyramid.httpexceptions import HTTPFound, HTTPNotFound, HTTPMethodNotAllowed
+from pyramid.httpexceptions import HTTPFound, HTTPMethodNotAllowed
 from pyramid.testing import DummyRequest
 from webob.multidict import MultiDict
 
@@ -161,6 +161,29 @@ class TestBaseView(unittest.TestCase):
     def test_delete(self):
         with self.assertRaises(NotImplementedError):
             self.view.delete()
+
+    def test_validate(self):
+        mock_validator_a_class = MagicMock()
+        mock_validator_a_instance = MagicMock(view=self.view)
+        mock_validator_a_class.return_value = mock_validator_a_instance
+
+        mock_validator_b_class = MagicMock()
+        mock_validator_b_instance = MagicMock(view=self.view)
+        mock_validator_b_class.return_value = mock_validator_b_instance
+
+        validators = (
+            mock_validator_a_class,
+            mock_validator_b_class,
+        )
+
+        with patch("climmob.views.classes.BaseView.validators", validators):
+            self.view._validate()
+
+        mock_validator_a_class.assert_called_once_with(self.view)
+        mock_validator_a_instance.run.assert_called_once()
+
+        mock_validator_b_class.assert_called_once_with(self.view)
+        mock_validator_b_instance.run.assert_called_once()
 
 
 class TestOdkView(unittest.TestCase):

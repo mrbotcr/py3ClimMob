@@ -13,6 +13,7 @@ from pyramid.httpexceptions import HTTPFound, HTTPMethodNotAllowed
 from pyramid.httpexceptions import HTTPNotFound
 from formencode.variabledecode import variable_decode
 from climmob.config.auth import getUserData, getUserByApiKey
+from climmob.views.validators.BaseValidator import BaseValidator
 
 log = logging.getLogger(__name__)
 
@@ -83,8 +84,14 @@ def ResourceCallback(request, response):
 
 
 class BaseView:
+    validators: tuple[type[BaseValidator]] = ()
+
     def __init__(self, request):
         self.request = request
+
+    def _validate(self):
+        for validator in self.validators:
+            validator(self).run()
 
     def get(self):
         raise NotImplementedError
@@ -114,6 +121,29 @@ class BaseView:
             return self.delete()
         else:
             raise HTTPMethodNotAllowed
+
+    # Check if subclasses' validators match the type hint
+    def __init_subclass__(cls):
+        super().__init_subclass__()
+
+        validators = getattr(cls, "validators", None)
+
+        if not validators:
+            return
+
+        if not isinstance(validators, tuple):
+            raise TypeError(f"{cls.__name__}.validators must be a tuple")
+
+        for item in validators:
+            if not isinstance(item, type):
+                raise TypeError(
+                    f"{cls.__name__}.validators must contain class objects, got {item!r}"
+                )
+            if not issubclass(item, BaseValidator):
+                raise TypeError(
+                    f"{cls.__name__}.validators contains {item.__name__}, \
+                        which is not a subclass of BaseValidator"
+                )
 
 
 # ODKView is a Digest Authorization view. It automates all the Digest work
@@ -269,6 +299,7 @@ class publicView(BaseView):
         self._ = self.request.translate
 
     def __call__(self):
+        self._validate()
         return self.processView()
 
     def getPostDict(self):
@@ -424,6 +455,7 @@ class privateView(BaseView):
             except:
                 pass
 
+        self._validate()
         self.viewResult = self.processView()
 
         if not self.returnRawViewResult:
@@ -514,4 +546,5 @@ class apiView(BaseView):
             )
             return response
 
+        self._validate()
         return self.processView()
