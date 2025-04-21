@@ -76,7 +76,7 @@ class CreateQuestionView(apiView):
             permitedKeys = True
             for key in dataworking.keys():
                 if key not in possibles:
-                    print(key)
+                    # print(key)
                     permitedKeys = False
 
             obligatoryKeys = True
@@ -351,7 +351,7 @@ class UpdateQuestionView(apiView):
             permitedKeys = True
             for key in dataworking.keys():
                 if key not in possibles:
-                    print(key)
+                    # print(key)
                     permitedKeys = False
 
             obligatoryKeys = True
