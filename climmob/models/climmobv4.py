@@ -1365,11 +1365,9 @@ class MetadataForm(Base):
     metadata_odk = Column(BLOB, nullable=False)
     metadata_json = Column(JSON, nullable=False)
     metadata_active = Column(Integer, nullable=False, server_default=text("'1'"))
-
-    @property
-    def test(self):
-
-        return self.metadata_id + "_test"
+    metadata_for_technology_options = Column(
+        Integer, nullable=False, server_default=text("'0'")
+    )
 
 
 class MetadaFormLocationUnitOfAnalysis(Base):
