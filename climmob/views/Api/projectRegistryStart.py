@@ -37,7 +37,7 @@ from climmob.views.project_combinations import createSettings
 from climmob.views.project_combinations import startTheRegistry
 
 
-class readProjectCombinations_view(apiView):
+class ReadProjectCombinationsView(apiView):
     def processView(self):
 
         if self.request.method == "GET":
@@ -180,7 +180,7 @@ class readProjectCombinations_view(apiView):
             return response
 
 
-class setUsableCombinations_view(apiView):
+class SetUsableCombinationsView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -331,7 +331,7 @@ class setUsableCombinations_view(apiView):
             return response
 
 
-class setAvailabilityCombination_view(apiView):
+class SetAvailabilityCombinationView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -469,7 +469,7 @@ class setAvailabilityCombination_view(apiView):
             return response
 
 
-class createPackages_view(apiView):
+class CreatePackagesView(apiView):
     def processView(self):
         def myconverter(o):
             if isinstance(o, datetime.datetime):
@@ -640,7 +640,7 @@ class createPackages_view(apiView):
             return response
 
 
-class createProjectRegistry_view(apiView):
+class CreateProjectRegistryView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -785,7 +785,7 @@ class createProjectRegistry_view(apiView):
             return response
 
 
-class cancelRegistryApi_view(apiView):
+class CancelRegistryApiView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -871,7 +871,7 @@ class cancelRegistryApi_view(apiView):
             return response
 
 
-class closeRegistryApi_view(apiView):
+class CloseRegistryApiView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -968,7 +968,7 @@ class closeRegistryApi_view(apiView):
             return response
 
 
-class readRegistryStructure_view(apiView):
+class ReadRegistryStructureView(apiView):
     def processView(self):
 
         if self.request.method == "GET":
@@ -1045,7 +1045,7 @@ class readRegistryStructure_view(apiView):
             return response
 
 
-class pushJsonToRegistry_view(apiView):
+class PushJsonToRegistryView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -1307,7 +1307,7 @@ def ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId):
         return response
 
 
-class readRegistryData_view(apiView):
+class ReadRegistryDataView(apiView):
     def processView(self):
 
         if self.request.method == "GET":
@@ -1391,7 +1391,7 @@ class readRegistryData_view(apiView):
             return response
 
 
-class registryDataCleaning_view(apiView):
+class RegistryDataCleaningView(apiView):
     def processView(self):
 
         if self.request.method == "POST":

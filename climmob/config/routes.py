@@ -68,17 +68,17 @@ from climmob.views.Api.projectRegistry import (
     OrderRegistryQuestionsView,
 )
 from climmob.views.Api.projectRegistryStart import (
-    readProjectCombinations_view,
-    setUsableCombinations_view,
-    setAvailabilityCombination_view,
-    createPackages_view,
-    createProjectRegistry_view,
-    cancelRegistryApi_view,
-    closeRegistryApi_view,
-    readRegistryStructure_view,
-    pushJsonToRegistry_view,
-    registryDataCleaning_view,
-    readRegistryData_view,
+    ReadProjectCombinationsView,
+    SetUsableCombinationsView,
+    SetAvailabilityCombinationView,
+    CreatePackagesView,
+    CreateProjectRegistryView,
+    CancelRegistryApiView,
+    CloseRegistryApiView,
+    ReadRegistryStructureView,
+    PushJsonToRegistryView,
+    RegistryDataCleaningView,
+    ReadRegistryDataView,
 )
 from climmob.views.Api.projectTechnologies import (
     AddProjectTechnologyView,
@@ -1856,7 +1856,7 @@ def loadRoutes(config):
         addRoute(
             "readprojectcombinations",
             "/api/readProjectCombinations",
-            readProjectCombinations_view,
+            ReadProjectCombinationsView,
             None,
         )
     )
@@ -1864,7 +1864,7 @@ def loadRoutes(config):
         addRoute(
             "updateUsableCombinations",
             "/api/setUsableCombinations",
-            setUsableCombinations_view,
+            SetUsableCombinationsView,
             None,
         )
     )
@@ -1873,21 +1873,21 @@ def loadRoutes(config):
         addRoute(
             "updateAvailabilityCombinations",
             "/api/setAvailabilityCombination",
-            setAvailabilityCombination_view,
+            SetAvailabilityCombinationView,
             None,
         )
     )
 
     routes.append(
         addRoute(
-            "readprojectpackages", "/api/readProjectPackages", createPackages_view, None
+            "readprojectpackages", "/api/readProjectPackages", CreatePackagesView, None
         )
     )
     routes.append(
         addRoute(
             "createprojectregistry",
             "/api/createProjectRegistry",
-            createProjectRegistry_view,
+            CreateProjectRegistryView,
             None,
         )
     )
@@ -1895,7 +1895,7 @@ def loadRoutes(config):
         addRoute(
             "cancelprojectregistry",
             "/api/cancelProjectREgistry",
-            cancelRegistryApi_view,
+            CancelRegistryApiView,
             None,
         )
     )
@@ -1903,7 +1903,7 @@ def loadRoutes(config):
         addRoute(
             "closeprojectregistry",
             "/api/closeProjectRegistry",
-            closeRegistryApi_view,
+            CloseRegistryApiView,
             None,
         )
     )
@@ -1913,7 +1913,7 @@ def loadRoutes(config):
         addRoute(
             "readregistrystructure",
             "/api/readRegistryStructure",
-            readRegistryStructure_view,
+            ReadRegistryStructureView,
             None,
         )
     )
@@ -1921,7 +1921,7 @@ def loadRoutes(config):
         addRoute(
             "pushjsontoregistry",
             "/api/pushJsonToRegistry",
-            pushJsonToRegistry_view,
+            PushJsonToRegistryView,
             None,
         )
     )
@@ -1930,7 +1930,7 @@ def loadRoutes(config):
         addRoute(
             "registrydatacleaning",
             "/api/registryDataCleaning",
-            registryDataCleaning_view,
+            RegistryDataCleaningView,
             None,
         )
     )
@@ -1939,7 +1939,7 @@ def loadRoutes(config):
         addRoute(
             "readregistrydata",
             "/api/readRegistryData",
-            readRegistryData_view,
+            ReadRegistryDataView,
             None,
         )
     )
