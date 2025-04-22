@@ -483,7 +483,7 @@ def functionCreateClone(self, projectId, newProjectId, structureToBeCloned):
 
 
 class modifyProject_view(privateView):
-    validators = (ProjectExistsValidator, )
+    validators = (ProjectExistsValidator,)
 
     def processView(self):
 
@@ -751,7 +751,7 @@ class modifyProject_view(privateView):
 
 
 class deleteProject_view(privateView):
-    validators = (ProjectExistsValidator, )
+    validators = (ProjectExistsValidator,)
 
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]

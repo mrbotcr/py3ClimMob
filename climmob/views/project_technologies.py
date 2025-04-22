@@ -275,7 +275,7 @@ class prjTechAliases_view(privateView):
 
 
 class prjTechAliasAdd_view(privateView):
-    validators = (ProjectExistsValidator, )
+    validators = (ProjectExistsValidator,)
 
     def processView(self):
         error_summary = {}
