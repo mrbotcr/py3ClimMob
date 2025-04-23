@@ -31,19 +31,17 @@ from climmob.products import stopTasksByProcess
 from climmob.views.classes import privateView
 from climmob.views.question import getDictForPreview
 from climmob.products.forms.form import create_document_form
+from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 
 
 class DeleteRegistrySectionView(privateView):
+    validators = (ProjectExistsValidator,)
+
     def processView(self):
 
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
         groupid = self.request.matchdict["groupid"]
-
-        if not projectExists(
-            self.user.login, activeProjectUser, activeProjectCod, self.request
-        ):
-            raise HTTPNotFound()
 
         activeProjectId = getTheProjectIdForOwner(
             activeProjectUser, activeProjectCod, self.request
@@ -104,14 +102,11 @@ def actionsInSections(self, postdata):
 
 
 class RegistrySectionActionsView(privateView):
+    validators = (ProjectExistsValidator,)
+
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
-
-        if not projectExists(
-            self.user.login, activeProjectUser, activeProjectCod, self.request
-        ):
-            raise HTTPNotFound()
 
         activeProjectId = getTheProjectIdForOwner(
             activeProjectUser, activeProjectCod, self.request
@@ -133,14 +128,11 @@ class RegistrySectionActionsView(privateView):
 
 
 class CancelRegistryView(privateView):
+    validators = (ProjectExistsValidator,)
+
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
-
-        if not projectExists(
-            self.user.login, activeProjectUser, activeProjectCod, self.request
-        ):
-            raise HTTPNotFound()
 
         activeProjectId = getTheProjectIdForOwner(
             activeProjectUser, activeProjectCod, self.request
@@ -181,14 +173,11 @@ class CancelRegistryView(privateView):
 
 
 class CloseRegistryView(privateView):
+    validators = (ProjectExistsValidator,)
+
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
-
-        if not projectExists(
-            self.user.login, activeProjectUser, activeProjectCod, self.request
-        ):
-            raise HTTPNotFound()
 
         activeProjectId = getTheProjectIdForOwner(
             activeProjectUser, activeProjectCod, self.request
@@ -230,14 +219,11 @@ class CloseRegistryView(privateView):
 
 
 class RegistryView(privateView):
+    validators = (ProjectExistsValidator,)
+
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
-
-        if not projectExists(
-            self.user.login, activeProjectUser, activeProjectCod, self.request
-        ):
-            raise HTTPNotFound()
 
         activeProjectId = getTheProjectIdForOwner(
             activeProjectUser, activeProjectCod, self.request

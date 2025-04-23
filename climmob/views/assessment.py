@@ -37,6 +37,7 @@ from climmob.products.forms.form import create_document_form
 from climmob.views.classes import privateView
 from climmob.views.registry import getDataFormPreview
 from climmob.views.question import getDictForPreview
+from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 
 
 class deleteAssessmentSection_view(privateView):
@@ -696,15 +697,12 @@ def createDocumentForm(
 
 
 class closeAssessment_view(privateView):
+    validators = (ProjectExistsValidator,)
+
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
         assessmentid = self.request.matchdict["assessmentid"]
-
-        if not projectExists(
-            self.user.login, activeProjectUser, activeProjectCod, self.request
-        ):
-            raise HTTPNotFound()
 
         activeProjectId = getTheProjectIdForOwner(
             activeProjectUser, activeProjectCod, self.request
@@ -750,15 +748,12 @@ class closeAssessment_view(privateView):
 
 
 class CancelAssessmentView(privateView):
+    validators = (ProjectExistsValidator,)
+
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
         assessmentid = self.request.matchdict["assessmentid"]
-
-        if not projectExists(
-            self.user.login, activeProjectUser, activeProjectCod, self.request
-        ):
-            raise HTTPNotFound()
 
         activeProjectId = getTheProjectIdForOwner(
             activeProjectUser, activeProjectCod, self.request

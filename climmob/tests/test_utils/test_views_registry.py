@@ -29,7 +29,6 @@ class TestDeleteRegistrySectionView(unittest.TestCase):
     def tearDown(self):
         patch.stopall()
 
-    @patch("climmob.views.registry.projectExists", return_value=True)
     @patch("climmob.views.registry.getTheProjectIdForOwner", return_value="project_id")
     @patch(
         "climmob.views.registry.getRegistryGroupInformation",
@@ -39,7 +38,6 @@ class TestDeleteRegistrySectionView(unittest.TestCase):
         self,
         mock_getRegistryGroupInformation,
         mock_getTheProjectIdForOwner,
-        mock_projectExists,
     ):
         # Mock request method to GET
         self.mock_request.method = "GET"
@@ -48,9 +46,6 @@ class TestDeleteRegistrySectionView(unittest.TestCase):
         result = self.view.processView()
 
         # Assertions
-        mock_projectExists.assert_called_once_with(
-            "test_user", "test_user", "test_project", self.mock_request
-        )
         mock_getTheProjectIdForOwner.assert_called_once_with(
             "test_user", "test_project", self.mock_request
         )
@@ -62,7 +57,6 @@ class TestDeleteRegistrySectionView(unittest.TestCase):
         self.assertEqual(result["data"], {"group": "info"})
         self.assertEqual(result["groupid"], "test_group")
 
-    @patch("climmob.views.registry.projectExists", return_value=True)
     @patch("climmob.views.registry.getTheProjectIdForOwner", return_value="project_id")
     @patch(
         "climmob.views.registry.getRegistryGroupInformation",
@@ -77,7 +71,6 @@ class TestDeleteRegistrySectionView(unittest.TestCase):
         mock_deleteRegistryGroup,
         mock_getRegistryGroupInformation,
         mock_getTheProjectIdForOwner,
-        mock_projectExists,
     ):
         # Mock request method to POST
         self.mock_request.method = "POST"
@@ -86,9 +79,6 @@ class TestDeleteRegistrySectionView(unittest.TestCase):
         result = self.view.processView()
 
         # Assertions
-        mock_projectExists.assert_called_once_with(
-            "test_user", "test_user", "test_project", self.mock_request
-        )
         mock_getTheProjectIdForOwner.assert_called_once_with(
             "test_user", "test_project", self.mock_request
         )
@@ -100,7 +90,6 @@ class TestDeleteRegistrySectionView(unittest.TestCase):
         self.assertEqual(result["status"], 400)
         self.assertEqual(result["error"], "Delete Error")
 
-    @patch("climmob.views.registry.projectExists", return_value=True)
     @patch("climmob.views.registry.getTheProjectIdForOwner", return_value="project_id")
     @patch(
         "climmob.views.registry.getRegistryGroupInformation",
@@ -112,7 +101,6 @@ class TestDeleteRegistrySectionView(unittest.TestCase):
         mock_deleteRegistryGroup,
         mock_getRegistryGroupInformation,
         mock_getTheProjectIdForOwner,
-        mock_projectExists,
     ):
         # Mock request method to POST
         self.mock_request.method = "POST"
@@ -121,9 +109,6 @@ class TestDeleteRegistrySectionView(unittest.TestCase):
         result = self.view.processView()
 
         # Assertions
-        mock_projectExists.assert_called_once_with(
-            "test_user", "test_user", "test_project", self.mock_request
-        )
         mock_getTheProjectIdForOwner.assert_called_once_with(
             "test_user", "test_project", self.mock_request
         )
@@ -133,20 +118,6 @@ class TestDeleteRegistrySectionView(unittest.TestCase):
 
         self.assertTrue(self.view.returnRawViewResult)
         self.assertEqual(result["status"], 200)
-
-    @patch("climmob.views.registry.projectExists", return_value=False)
-    def test_process_view_project_not_exists(self, mock_projectExists):
-        # Mock request method to GET
-        self.mock_request.method = "GET"
-
-        # Call the processView method and assert HTTPNotFound is raised
-        with self.assertRaises(HTTPNotFound):
-            self.view.processView()
-
-        # Assertions
-        mock_projectExists.assert_called_once_with(
-            "test_user", "test_user", "test_project", self.mock_request
-        )
 
 
 class TestActionsInSections(unittest.TestCase):
@@ -232,12 +203,11 @@ class TestRegistrySectionActionsView(unittest.TestCase):
         patch.stopall()
 
     @patch("climmob.views.registry.getTheProjectIdForOwner", return_value="project_id")
-    @patch("climmob.views.registry.projectExists", return_value=True)
     @patch(
         "climmob.views.registry.actionsInSections", return_value={"result": "success"}
     )
     def test_process_view_post_insert_section(
-        self, mock_actionsInSections, mock_projectExists, mock_getTheProjectIdForOwner
+        self, mock_actionsInSections, mock_getTheProjectIdForOwner
     ):
         self.mock_request.method = "POST"
         self.mock_request.POST = {"action": "btnNewSection", "group_cod": "group_cod"}
@@ -245,9 +215,6 @@ class TestRegistrySectionActionsView(unittest.TestCase):
         result = self.view.processView()
 
         self.assertEqual(result["result"], "success")
-        mock_projectExists.assert_called_once_with(
-            "test_user", "test_user", "test_project", self.mock_request
-        )
         mock_getTheProjectIdForOwner.assert_called_once_with(
             "test_user", "test_project", self.mock_request
         )
@@ -257,12 +224,11 @@ class TestRegistrySectionActionsView(unittest.TestCase):
         self.assertNotIn("group_cod", postdata)
 
     @patch("climmob.views.registry.getTheProjectIdForOwner", return_value="project_id")
-    @patch("climmob.views.registry.projectExists", return_value=True)
     @patch(
         "climmob.views.registry.actionsInSections", return_value={"result": "success"}
     )
     def test_process_view_post_update_section(
-        self, mock_actionsInSections, mock_projectExists, mock_getTheProjectIdForOwner
+        self, mock_actionsInSections, mock_getTheProjectIdForOwner
     ):
         self.mock_request.method = "POST"
         self.mock_request.POST = {"action": "btnUpdateSection"}
@@ -270,23 +236,12 @@ class TestRegistrySectionActionsView(unittest.TestCase):
         result = self.view.processView()
 
         self.assertEqual(result["result"], "success")
-        mock_projectExists.assert_called_once_with(
-            "test_user", "test_user", "test_project", self.mock_request
-        )
         mock_getTheProjectIdForOwner.assert_called_once_with(
             "test_user", "test_project", self.mock_request
         )
         mock_actionsInSections.assert_called_once()
         postdata = mock_actionsInSections.call_args[0][1]
         self.assertEqual(postdata["action"], "update")
-
-    @patch("climmob.views.registry.projectExists", return_value=False)
-    def test_process_view_project_not_exists(self, mock_projectExists):
-        with self.assertRaises(HTTPNotFound):
-            self.view.processView()
-        mock_projectExists.assert_called_once_with(
-            "test_user", "test_user", "test_project", self.mock_request
-        )
 
 
 class TestCancelRegistryView(unittest.TestCase):
@@ -305,9 +260,8 @@ class TestCancelRegistryView(unittest.TestCase):
         return_value={"project": "active_project"},
     )
     @patch("climmob.views.registry.getTheProjectIdForOwner", return_value="project_id")
-    @patch("climmob.views.registry.projectExists", return_value=True)
     def test_process_view_get(
-        self, mock_projectExists, mock_getTheProjectIdForOwner, mock_getActiveProject
+        self, mock_getTheProjectIdForOwner, mock_getActiveProject
     ):
         self.mock_request.method = "GET"
 
@@ -316,9 +270,6 @@ class TestCancelRegistryView(unittest.TestCase):
         self.assertEqual(result["activeUser"], self.view.user)
         self.assertFalse(result["redirect"])
         self.assertEqual(result["activeProject"], {"project": "active_project"})
-        mock_projectExists.assert_called_once_with(
-            "test_user", "test_user", "test_project", self.mock_request
-        )
         mock_getTheProjectIdForOwner.assert_called_once_with(
             "test_user", "test_project", self.mock_request
         )
@@ -364,14 +315,6 @@ class TestCancelRegistryView(unittest.TestCase):
         self.assertIsInstance(result, HTTPFound)
         self.assertEqual(result.location, self.mock_request.route_url("dashboard"))
 
-    @patch("climmob.views.registry.projectExists", return_value=False)
-    def test_process_view_project_not_exists(self, mock_projectExists):
-        with self.assertRaises(HTTPNotFound):
-            self.view.processView()
-        mock_projectExists.assert_called_once_with(
-            "test_user", "test_user", "test_project", self.mock_request
-        )
-
 
 class TestCloseRegistryView(unittest.TestCase):
     def setUp(self):
@@ -393,10 +336,8 @@ class TestCloseRegistryView(unittest.TestCase):
         return_value=("progress", "completed"),
     )
     @patch("climmob.views.registry.getTheProjectIdForOwner", return_value="project_id")
-    @patch("climmob.views.registry.projectExists", return_value=True)
     def test_process_view_get(
         self,
-        mock_projectExists,
         mock_getTheProjectIdForOwner,
         mock_getProjectProgress,
         mock_getActiveProject,
@@ -409,9 +350,6 @@ class TestCloseRegistryView(unittest.TestCase):
         self.assertFalse(result["redirect"])
         self.assertEqual(result["progress"], "progress")
         self.assertEqual(result["activeProject"], {"project": "active_project"})
-        mock_projectExists.assert_called_once_with(
-            "test_user", "test_user", "test_project", self.mock_request
-        )
         mock_getTheProjectIdForOwner.assert_called_once_with(
             "test_user", "test_project", self.mock_request
         )
@@ -456,107 +394,6 @@ class TestCloseRegistryView(unittest.TestCase):
         )
         self.assertIsInstance(result, HTTPFound)
         self.assertEqual(result.location, self.mock_request.route_url("dashboard"))
-
-    @patch("climmob.views.registry.projectExists", return_value=False)
-    def test_process_view_project_not_exists(self, mock_projectExists):
-        with self.assertRaises(HTTPNotFound):
-            self.view.processView()
-        mock_projectExists.assert_called_once_with(
-            "test_user", "test_user", "test_project", self.mock_request
-        )
-
-
-class TestCloseRegistryView(unittest.TestCase):
-    def setUp(self):
-        self.mock_request = MagicMock()
-        self.mock_request.matchdict = {"user": "test_user", "project": "test_project"}
-        self.view = CloseRegistryView(self.mock_request)
-        self.view.user = MagicMock()
-        self.view.user.login = "test_user"
-
-    def tearDown(self):
-        patch.stopall()
-
-    @patch(
-        "climmob.views.registry.getActiveProject",
-        return_value={"project": "active_project"},
-    )
-    @patch(
-        "climmob.views.registry.getProjectProgress",
-        return_value=("progress", "completed"),
-    )
-    @patch("climmob.views.registry.getTheProjectIdForOwner", return_value="project_id")
-    @patch("climmob.views.registry.projectExists", return_value=True)
-    def test_process_view_get(
-        self,
-        mock_projectExists,
-        mock_getTheProjectIdForOwner,
-        mock_getProjectProgress,
-        mock_getActiveProject,
-    ):
-        self.mock_request.method = "GET"
-
-        result = self.view.processView()
-
-        self.assertEqual(result["activeUser"], self.view.user)
-        self.assertFalse(result["redirect"])
-        self.assertEqual(result["progress"], "progress")
-        self.assertEqual(result["activeProject"], {"project": "active_project"})
-        mock_projectExists.assert_called_once_with(
-            "test_user", "test_user", "test_project", self.mock_request
-        )
-        mock_getTheProjectIdForOwner.assert_called_once_with(
-            "test_user", "test_project", self.mock_request
-        )
-        mock_getProjectProgress.assert_called_once_with(
-            "test_user", "test_project", "project_id", self.mock_request
-        )
-        mock_getActiveProject.assert_called_once_with("test_user", self.mock_request)
-
-    @patch(
-        "climmob.views.registry.getActiveProject",
-        return_value={"project": "active_project"},
-    )
-    @patch(
-        "climmob.views.registry.getProjectProgress",
-        return_value=("progress", "completed"),
-    )
-    @patch("climmob.views.registry.getTheProjectIdForOwner", return_value="project_id")
-    @patch("climmob.views.registry.projectExists", return_value=True)
-    @patch("climmob.views.registry.setRegistryStatus")
-    @patch("climmob.views.registry.p.PluginImplementations")
-    def test_process_view_post_close_registry(
-        self,
-        mock_pluginImplementations,
-        mock_setRegistryStatus,
-        mock_projectExists,
-        mock_getTheProjectIdForOwner,
-        mock_getProjectProgress,
-        mock_getActiveProject,
-    ):
-        self.mock_request.method = "POST"
-        self.mock_request.params = {"closeRegistry": "1"}
-        mock_plugin = MagicMock()
-        mock_pluginImplementations.return_value = [mock_plugin]
-
-        result = self.view.processView()
-
-        mock_setRegistryStatus.assert_called_once_with(
-            "test_user", "test_project", "project_id", 2, self.mock_request
-        )
-        mock_plugin.after_deleting_form.assert_called_once_with(
-            self.mock_request, "test_user", "project_id", "test_project", "registry", ""
-        )
-        self.assertIsInstance(result, HTTPFound)
-        self.assertEqual(result.location, self.mock_request.route_url("dashboard"))
-
-    @patch("climmob.views.registry.projectExists", return_value=False)
-    def test_process_view_project_not_exists(self, mock_projectExists):
-        with self.assertRaises(HTTPNotFound):
-            self.view.processView()
-        mock_projectExists.assert_called_once_with(
-            "test_user", "test_user", "test_project", self.mock_request
-        )
 
 
 class TestGetRegistrySectionView(unittest.TestCase):
