@@ -6,6 +6,7 @@ These functions setup the routes for the host application and any plugins connec
 
 import climmob.plugins as p
 from climmob.plugins.utilities import addRoute
+from climmob.utility import factory
 from climmob.views.Api.enumerators import (
     CreateEnumeratorView,
     ReadEnumeratorsView,
@@ -2163,7 +2164,11 @@ def loadRoutes(config):
 
     # Now add the routes and views to the config
     for curr_route in route_list:
-        config.add_route(curr_route["name"], curr_route["path"])
+        config.add_route(
+            curr_route["name"],
+            curr_route["path"],
+            factory=factory,
+        )
         config.add_view(
             curr_route["view"],
             route_name=curr_route["name"],
