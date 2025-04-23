@@ -1,0 +1,497 @@
+
+    {% if activeProject["access_type"] in [4] %}
+        {% set onlySee = True %}
+    {% endif %}
+
+    {% macro recursiveFunction(JsonInfo ,repeat_index=0, requireLabel=True) %}
+        {% if JsonInfo["type"] in ["group", "survey"] %}
+
+            {% if JsonInfo["name"] not in ["meta"] %}
+
+                {% if "label" in JsonInfo.keys() %}
+                    <div>
+                        <br>
+                        <h3><b>{{ JsonInfo["label"][request.locale_name] }}</b></h3>
+                        <br>
+                    </div>
+                {% endif %}
+
+                <div class="{{ JsonInfo["type"] }} {{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}" name="{{ JsonInfo["name"] }}" {% if JsonInfo["type"] %}id="{{ JsonInfo["name"] }}"{% endif %}  style="border: 2px solid {% if JsonInfo["type"] == "repeat" %}#1ab394{% else %}#e7eaec{% endif %}; padding: 20px; margin-bottom: 20px">
+
+                    {% if "children" in JsonInfo.keys() %}
+                        {% for child in JsonInfo["children"] recursive %}
+                            {{ recursiveFunction(child, repeat_index, JsonInfo["type"]) }}
+                        {% endfor %}
+                    {% endif %}
+
+                </div>
+
+            {% endif %}
+
+        {% elif JsonInfo["type"] in ["repeat"] %}
+
+            {% if JsonInfo["name"] not in ["meta"] %}
+
+                {% if "label" in JsonInfo.keys() %}
+                    <div>
+                        <br>
+                        <h3><b>{{ JsonInfo["label"][request.locale_name] }}</b></h3>
+                        <br>
+                    </div>
+                {% endif %}
+
+                <table class="table table-striped table-bordered {{ JsonInfo["type"] }} {{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}" name="{{ JsonInfo["name"] }}"  >
+                    <tr>
+                        {% if "children" in JsonInfo.keys() %}
+                            {% for child in JsonInfo["children"] recursive %}
+                                <th {% if child["show_interface"] =="no" %}style="display: none"{% endif %}>
+                                    {{ child["label"][request.locale_name] }}
+                                </th>
+                            {% endfor %}
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        {% if "children" in JsonInfo.keys() %}
+                            {% for child in JsonInfo["children"] recursive %}
+                                <td {% if child["show_interface"] =="no" %}style="display: none"{% endif %}>
+                                    {{ recursiveFunction(child, repeat_index, False) }}
+                                </td>
+                            {% endfor %}
+                        {% endif %}
+                    </tr>
+                </table>
+
+                <button type="button" class="btn btn-primary duplicate-repeat" onclick="duplicateRepeatBlock($(this),'{{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}')" {% if onlySee or ("allow_more" in JsonInfo.keys() and JsonInfo["allow_more"] == "no") %}style="display: none" {% endif %}><i class="fa fa-plus"></i> {{ _('Add other row') }}</button><br>
+                <hr>
+
+            {% endif %}
+
+        {% else %}
+
+            {% if JsonInfo["type"] in ["text","select one","integer", "select all that apply", "date"] %}
+
+                {% if requireLabel %}
+                    <div class="form-group">
+
+                        <div class="col-sm-12">
+                            <h3>{{ JsonInfo["label"][request.locale_name] }} {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"].keys() and JsonInfo["bind"]["required"] == "yes" %}{% else %}({{ _("Optional") }}){% endif %}</h3>
+                            {% if "hint" in JsonInfo.keys() %} <p>{{ JsonInfo["hint"][request.locale_name] }}</p>{% endif %}
+
+                            {% include inputs %}
+
+                        </div>
+                    </div>
+                {% else %}
+                    {% include inputs %}
+                {% endif %}
+
+            {% endif %}
+
+        {% endif %}
+    {% endmacro %}
+
+
+
+{{ recursiveFunction(Form) }}
+
+
+<script>
+    $(document).ready(function () {
+
+        $('.input-group.date').datepicker({
+            language: '{{ request.locale_name }}',
+            startView: 0,
+            //todayBtn: "linked",
+            keyboardNavigation: false,
+            forceParse: false,
+            autoclose: true,
+            format: "dd-mm-yyyy"
+        });
+
+        $('.chosen-select').select2({width: "100%"});
+
+        $(".js-example-data-ajax").select2({
+            templateResult: formatUser,
+            ajax: {
+                url: "{{ request.route_url('api_select2_all_users') }}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term, // search term
+                        page: params.page
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+
+                    data.results.forEach(function(element)
+                    {
+                        element.id = element.text+ ' - '+ element.user_email
+                    })
+
+                    if (data.results.length === 0 && params.term) {
+                        data.results.push({
+                            id: params.term,
+                            text: "{{ _("External contributor") }}: " + params.term,
+                        });
+                    }
+
+                    return {
+                        results: data.results,
+                        pagination: {
+                            more: (params.page * 10) < data.total
+                        }
+                    };
+                },
+                cache: true
+            }
+        });
+
+        $(".js-example-data-ajax-affi").select2({
+            tags: true,
+            createTag: function (params){
+                const term = $.trim(params.term);
+                if (term === '') return null;
+
+                return {
+                    id: params.term,
+                    text: "{{ _("New affiliation") }}: "+ params.term,
+                }
+            }
+        });
+
+        {% if postData %}
+            showData({{ postData }})
+        {% endif %}
+
+    });
+
+    function showData(postData){
+        methodRecursiveToShowInformation(postData, $("#spaceForPutTheForm"))
+    }
+
+    function searchIntoDictionary(name){
+        dictionary = {{ dictionary }}
+        for (const key in dictionary) {
+            if (dictionary[key]["name"] === name)
+                return dictionary[key]["type"]
+        }
+    }
+
+
+    function methodRecursiveToShowInformation(postData, parentElement) {
+        if (typeof postData === "object" && postData !== null) {
+            for (const key in postData) {
+                if (!postData.hasOwnProperty(key)) continue;
+
+                // Validar que la clave es una cadena
+                if (typeof key !== "string") {
+                    continue;
+                }
+
+                // Buscar el elemento en el DOM
+                const child = parentElement.find(`[name="${key}"]`);
+
+                if (child.length === 0) {
+                    continue;
+                }
+
+                // Procesar el valor según el tipo de input
+                const value = postData[key];
+                if (child.is("input, textarea, select")) {
+
+                    if (child.hasClass("chosen-select")) {
+                        if (child.hasClass("dropdown_for_varieties")) {
+                            child.empty();
+                            var list_of_synonyms = {{ technologies_with_synonyms }};
+                            if (list_of_synonyms[postData["climmob_technology_id"]+"_"+postData["climmob_technology_option_id"]] !== undefined)
+                            {
+                                list_of_synonyms[postData["climmob_technology_id"] + "_" + postData["climmob_technology_option_id"]].forEach(element => {
+                                    child.append($('<option>').val(element.option).text(element.option));
+                                });
+                            }else{
+                                child.append($('<option>').val(value).text(value));
+                            }
+
+                            child.val(value);
+                            child.trigger('change');
+                        }else{
+                            child.val(value);
+                            child.trigger("change");
+                        }
+                    }else if (child.hasClass("js-example-data-ajax")){
+                        child.append($('<option>').val(value).text(value));
+                        child.val(value);
+                        child.trigger('change');
+                    }else if (child.hasClass("js-example-data-ajax-affi")){
+                        var existe = child.find('option[value="'+value+'"]').length > 0;
+                        if(!existe)
+                        {
+                            child.append($('<option>').val(value).text(value));
+                        }
+                        child.val(value);
+                        child.trigger('change');
+                    }else if(child.hasClass("datepicker")){
+                        child.datepicker({
+                            language: '{{ request.locale_name }}',
+                            format:'dd-mm-yyyy',
+                        });
+                        child.datepicker("update", value);
+                    }else{
+                        child.val(value);
+                    }
+                } else if (child.hasClass("repeat")) {
+                    if (Array.isArray(value)) {
+                        const repeatId = child.attr("name");
+
+                        for (let i = 0; i < value.length; i++) {
+                            if (i > 0) {
+                                var button = child.siblings(".duplicate-repeat").last()
+
+                                duplicateRepeatBlock(button, "repeat_"+repeatId); // Clonar si es necesario
+                            }
+
+                            const repeatBlocks = parentElement.find(`.repeat_${repeatId}`).last();
+                            var rowWorking = repeatBlocks.find('tbody tr').last();
+                            methodRecursiveToShowInformation(value[i], rowWorking);
+                        }
+                    }
+                } else if (child.hasClass("group") || child.hasClass("survey")) {
+                    methodRecursiveToShowInformation(value, child);
+                }else{
+                    alert("Nada")
+                }
+            }
+        }
+    }
+
+
+
+
+    function formatUser (user) {
+        if (!user.id) {
+            return user.text;
+        }
+        var add = ""
+        if (user.user_email) {
+            add= ' - '+ user.user_email
+        }
+        let $state = $(
+            '<span>' + user.text+ add + '</span>'
+        );
+        return $state;
+    }
+
+    function processGroup(groupElement, result) {
+        const groupName = groupElement.attr("name");
+        // Recorremos todos los hijos inmediatos del grupo
+        groupElement.children().each(function () {
+            const child = $(this);
+
+            if (child.hasClass("group")) {
+
+                if (!result[groupName]) {
+                    result[groupName] = {};
+                }
+
+                processGroup(child, result[groupName]);
+
+            } else if (child.hasClass("repeat")) {
+                // Si es un repeat, procesamos los elementos dentro de este repeat
+                const repeatName = child.attr("name");
+
+                if (!result[groupName]) {
+                    result[groupName] = {};  // Inicializamos el grupo si no existe
+                }
+                if (!result[groupName][repeatName]) {
+                    result[groupName][repeatName] = [];  // Inicializamos el array para el repeat
+                }
+
+                child.find("tr").each(function () {
+                    var repeatResult = {}
+
+                    $(this).find("td").each(function () {
+
+                        $(this).children("input").each(function () {
+                            repeatResult[$(this).attr("name")] = $(this).val()
+                        })
+
+                        $(this).children("textarea").each(function () {
+                            repeatResult[$(this).attr("name")] = $(this).val()
+                        })
+
+                        $(this).children("select").each(function () {
+                            repeatResult[$(this).attr("name")] = $(this).val()
+                        })
+
+                    });
+
+                    if(Object.keys(repeatResult).length > 0)
+                    {
+                        result[groupName][repeatName].push(repeatResult)
+                    }
+
+                });
+
+            } else if (child.is("input")) {
+
+                if (groupName !== undefined)
+                {
+                    result[groupName] = result[groupName] || {};
+                    result[groupName][child.attr("name")] = child.val();
+                }else{
+                    if (child.attr("name"))
+                    {
+                        result[child.attr("name")] = child.val();
+                    }
+                }
+            }else if (child.is("textarea")) {
+                if (groupName !== undefined)
+                {
+                    result[groupName] = result[groupName] || {};
+                    result[groupName][child.attr("name")] = child.val();
+                }else{
+                    result[child.attr("name")] = child.val();
+                }
+            }else if (child.is("select")) {
+                if (groupName !== undefined)
+                {
+                    result[groupName] = result[groupName] || {};
+                    result[groupName][child.attr("name")] = child.val();
+                }else{
+                    result[child.attr("name")] = child.val();
+                }
+            }else{
+
+                if (groupName === undefined)
+                {
+                    processGroup(child, result);
+                }else{
+                    if (!result[groupName]) {
+                        result[groupName] = {};  // Inicializamos el grupo si no existe
+                    }
+                    processGroup(child, result[groupName]);
+                }
+
+            }
+        });
+    }
+
+    function duplicateRepeatBlock(button, repeatId) {
+        // Encuentra el contenedor `.repeat` más cercano al botón
+        const repeatContainer = button.siblings("."+repeatId).last();
+
+        if (repeatContainer.length > 0) {
+            // Clona el `repeat` completo
+            var lastRow = repeatContainer.find('tbody tr').last();
+            const newRepeat = lastRow.clone(false, false);
+
+            newRepeat.find('.cloned').remove();
+
+            newRepeat.addClass('cloned');
+
+            newRepeat.find('.chosen-container').remove();
+            newRepeat.find('.select2-container').remove();
+            var allowRemove = newRepeat.find('.remove-repeat').attr("allowRemove");
+
+            if(allowRemove ==="no")
+            {
+                newRepeat.find('.remove-repeat').css("display","none");
+            }else{
+                newRepeat.find('.remove-repeat').css("display","inline-block");
+            }
+
+            newRepeat.find('input, select, textarea').each(function () {
+                $(this).val(''); // Limpia valores
+            });
+
+            lastRow.after(newRepeat);
+
+            newRepeat.find('.chosen-select').each(function() {
+                $(this).select2({width: "100%"});
+            });
+
+            newRepeat.find('.input-group.date').each(function() {
+                $(this).datepicker({
+                    language: '{{ request.locale_name }}',
+                    startView: 0,
+                    keyboardNavigation: false,
+                    forceParse: false,
+                    autoclose: true,
+                    format: "dd-mm-yyyy"
+                });
+            })
+
+            newRepeat.find('.js-example-data-ajax').each(function (){
+                $(this).select2({
+                    templateResult: formatUser,
+                    ajax: {
+                        url: "{{ request.route_url('api_select2_all_users') }}",
+                        dataType: 'json',
+                        delay: 250,
+                        data: function (params) {
+                            return {
+                                q: params.term, // search term
+                                page: params.page
+                            };
+                        },
+                        processResults: function (data, params) {
+                            params.page = params.page || 1;
+
+                            data.results.forEach(function(element)
+                            {
+                                element.id = element.text+ ' - '+ element.user_email
+                            })
+
+                            if (data.results.length === 0 && params.term) {
+                                data.results.push({
+                                    id: params.term,
+                                    text: "{{ _("External contributor") }}: " + params.term,
+                                });
+                            }
+
+                            return {
+                                results: data.results,
+                                pagination: {
+                                    more: (params.page * 10) < data.total
+                                }
+                            };
+                        },
+                        cache: true
+                    }
+                });
+            })
+
+            newRepeat.find('.js-example-data-ajax-affi').each(function (){
+                $(this).select2({
+                    tags: true,
+                    createTag: function (params){
+                        const term = $.trim(params.term);
+                        if (term === '') return null;
+
+                        return {
+                            id: params.term,
+                            text: "{{ _("New affiliation") }}: "+ params.term,
+                        }
+                    }
+                });
+            })
+
+
+        } else {
+            console.warn('No se encontró un contenedor `.repeat` asociado al botón.');
+        }
+    }
+
+    function removeRepeatBlock(button, classes) {
+        const repeatBlock = button.closest('.'+classes);
+
+        if (repeatBlock) {
+            repeatBlock.remove();
+        }
+
+    }
+
+
+</script>

@@ -9,6 +9,8 @@ from climmob.processes import (
     addProjectMetadataForm,
     getProjectMetadataForm,
     modifyProjectMetadataForm,
+    getCombinations,
+    get_all_affiliations,
 )
 from climmob.views.classes import privateView
 from jinja2 import Environment, FileSystemLoader
@@ -135,10 +137,44 @@ class ShowMetadataForm_view(privateView):
                         trim_blocks=False,
                     )
                     template = env.get_template("metadataForm.jinja2")
+                    template_form = env.get_template("template_form.jinja2")
+                    template_table = env.get_template("template_table.jinja2")
+                    inputs = env.get_template("metadata_inputs.jinja2")
 
                     dictionary = self.extract_names_and_types(
                         json.loads(metadataForm["metadata_json"])
                     )
+
+                    dict_of_technologies_with_synonyms = {}
+                    if metadataForm["metadata_for_technology_options"] == 1:
+
+                        techs, ncombs, combs = getCombinations(
+                            activeProjectId, self.request
+                        )
+
+                        for comb in combs:
+                            dict_of_technologies_with_synonyms[
+                                "{}_{}".format(comb["tech_id"], comb["alias_id"])
+                            ] = []
+                            dict_of_technologies_with_synonyms[
+                                "{}_{}".format(comb["tech_id"], comb["alias_id"])
+                            ].append({"option": comb["alias_name"]})
+
+                        if not informationFilled:
+
+                            informationFilled["data"] = {}
+                            informationFilled["data"]["br_trial_varieties"] = []
+
+                            for comb in combs:
+                                informationFilled["data"]["br_trial_varieties"].append(
+                                    {
+                                        "climmob_technology_id": comb["tech_id"],
+                                        "climmob_technology_option_id": comb[
+                                            "alias_id"
+                                        ],
+                                        "climmob_genotype_name": comb["alias_name"],
+                                    }
+                                )
 
                     activeProjectData = getActiveProject(self.user.login, self.request)
 
@@ -149,6 +185,14 @@ class ShowMetadataForm_view(privateView):
                         "dictionary": json.dumps(dictionary),
                         "_": self._,
                         "request": self.request,
+                        "technologies_with_synonyms": json.dumps(
+                            dict_of_technologies_with_synonyms
+                        ),
+                        "template_form": template_form,
+                        "template_table": template_table,
+                        "inputs": inputs,
+                        "form_to_use": metadataForm["metadata_for_technology_options"],
+                        "list_of_affiliations": get_all_affiliations(self.request),
                     }
                     render_temp = template.render(dict)
 
