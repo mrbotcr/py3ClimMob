@@ -90,11 +90,6 @@ class BaseView:
     def __init__(self, request):
         self.request = request
         self.context = None
-        self.set_context(request)
-
-    def set_context(self, request):
-        if issubclass(self.__class__, privateView):
-            self.context = PrivateContext(request)
 
     def _validate(self):
         for validator in self.validators:
@@ -335,6 +330,7 @@ class privateView(BaseView):
         if request.registry.settings.get("secure.javascript", "false") == "true":
             request.add_response_callback(ResourceCallback)
         self.request = request
+        self.context = PrivateContext(request)
         self.user = None
         self._ = self.request.translate
         self.checkCrossPost = False
