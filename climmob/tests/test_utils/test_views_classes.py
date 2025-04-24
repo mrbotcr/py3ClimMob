@@ -185,6 +185,19 @@ class TestBaseView(unittest.TestCase):
         mock_validator_b_class.assert_called_once_with(self.view)
         mock_validator_b_instance.run.assert_called_once()
 
+    # Test that private views get a PrivateContext assigned in self.context
+    @patch("climmob.views.classes.PrivateContext")
+    def test_set_private_context(self, mock_private_context):
+        class PrivateViewSubclass(privateView):
+            pass
+
+        view = PrivateViewSubclass(self.request)
+
+        mock_private_context.assert_called_once()
+
+        self.assertIsInstance(view.context, MagicMock)
+        self.assertEqual(view.context, mock_private_context.return_value)
+
 
 class TestOdkView(unittest.TestCase):
     def setUp(self):

@@ -13,6 +13,7 @@ from pyramid.httpexceptions import HTTPFound, HTTPMethodNotAllowed
 from pyramid.httpexceptions import HTTPNotFound
 from formencode.variabledecode import variable_decode
 from climmob.config.auth import getUserData, getUserByApiKey
+from climmob.views.context.PrivateContext import PrivateContext
 from climmob.views.validators.BaseValidator import BaseValidator
 
 log = logging.getLogger(__name__)
@@ -88,6 +89,12 @@ class BaseView:
 
     def __init__(self, request):
         self.request = request
+        self.context = None
+        self.set_context(request)
+
+    def set_context(self, request):
+        if issubclass(self.__class__, privateView):
+            self.context = PrivateContext(request)
 
     def _validate(self):
         for validator in self.validators:
