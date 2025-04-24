@@ -218,6 +218,183 @@ class TestReadProjectRegistryView(BaseViewTestCase):
             onlyShowTheBasicQuestions=True,
         )
 
+    @patch(
+        "climmob.views.Api.projectRegistry.getRegistryQuestions",
+        return_value=[{"section_id": -99, "question_id": None, "question_reqinreg": 1}],
+    )
+    @patch(
+        "climmob.views.Api.projectRegistry.getProjectData",
+        return_value={
+            "project_label_a": "Label A",
+            "project_label_b": "Label B",
+            "project_label_c": "Label C",
+        },
+    )
+    @patch(
+        "climmob.views.Api.projectRegistry.getTheProjectIdForOwner",
+        return_value="project_id",
+    )
+    @patch("climmob.views.Api.projectRegistry.projectExists", return_value=True)
+    def test_process_view_success_2(
+        self,
+        mock_project_exists,
+        mock_get_project_id,
+        mock_get_project_data,
+        mock_get_registry_questions,
+    ):
+        response = self.view.processView()
+
+        self.assertEqual(response.status_code, 200)
+        response_data = json.loads(response.body)
+        self.assertIn("data", response_data)
+        self.assertIn("finalCloseQst", response_data)
+        self.assertIsInstance(response_data["data"], list)
+        self.assertIsInstance(response_data["finalCloseQst"], bool)
+        mock_project_exists.assert_called_once_with(
+            "test_user", "owner123", "PRJ123", self.view.request
+        )
+        mock_get_project_id.assert_called_once_with(
+            "owner123", "PRJ123", self.view.request
+        )
+        mock_get_project_data.assert_called_once_with("project_id", self.view.request)
+        mock_get_registry_questions.assert_called_once_with(
+            "owner123",
+            "project_id",
+            self.view.request,
+            ["Label A", "Label B", "Label C"],
+            onlyShowTheBasicQuestions=True,
+        )
+
+    @patch(
+        "climmob.views.Api.projectRegistry.getRegistryQuestions",
+        return_value=[
+            {
+                "section_id": 1,
+                "hasQuestions": True,
+                "question_id": 12,
+                "question_reqinreg": 1,
+            },
+            {
+                "section_id": 1,
+                "hasQuestions": False,
+                "question_id": 13,
+                "question_reqinreg": 1,
+            },
+            {
+                "section_id": 2,
+                "hasQuestions": True,
+                "question_id": 14,
+                "question_reqinreg": 1,
+            },
+        ],
+    )
+    @patch(
+        "climmob.views.Api.projectRegistry.getProjectData",
+        return_value={
+            "project_label_a": "Label A",
+            "project_label_b": "Label B",
+            "project_label_c": "Label C",
+        },
+    )
+    @patch(
+        "climmob.views.Api.projectRegistry.getTheProjectIdForOwner",
+        return_value="project_id",
+    )
+    @patch("climmob.views.Api.projectRegistry.projectExists", return_value=True)
+    def test_process_view_success_3(
+        self,
+        mock_project_exists,
+        mock_get_project_id,
+        mock_get_project_data,
+        mock_get_registry_questions,
+    ):
+        response = self.view.processView()
+
+        self.assertEqual(response.status_code, 200)
+        response_data = json.loads(response.body)
+        self.assertIn("data", response_data)
+        self.assertIn("finalCloseQst", response_data)
+        self.assertIsInstance(response_data["data"], list)
+        self.assertIsInstance(response_data["finalCloseQst"], bool)
+        self.assertTrue(response_data["finalCloseQst"])
+
+        mock_project_exists.assert_called_once_with(
+            "test_user", "owner123", "PRJ123", self.view.request
+        )
+        mock_get_project_id.assert_called_once_with(
+            "owner123", "PRJ123", self.view.request
+        )
+        mock_get_project_data.assert_called_once_with("project_id", self.view.request)
+        mock_get_registry_questions.assert_called_once_with(
+            "owner123",
+            "project_id",
+            self.view.request,
+            ["Label A", "Label B", "Label C"],
+            onlyShowTheBasicQuestions=True,
+        )
+
+    @patch(
+        "climmob.views.Api.projectRegistry.getRegistryQuestions",
+        return_value=[
+            {
+                "section_id": 1,
+                "hasQuestions": False,
+                "question_id": None,
+                "question_reqinreg": 1,
+            },
+            {
+                "section_id": 2,
+                "hasQuestions": True,
+                "question_id": 22,
+                "question_reqinreg": 1,
+            },
+        ],
+    )
+    @patch(
+        "climmob.views.Api.projectRegistry.getProjectData",
+        return_value={
+            "project_label_a": "Label A",
+            "project_label_b": "Label B",
+            "project_label_c": "Label C",
+        },
+    )
+    @patch(
+        "climmob.views.Api.projectRegistry.getTheProjectIdForOwner",
+        return_value="project_id",
+    )
+    @patch("climmob.views.Api.projectRegistry.projectExists", return_value=True)
+    def test_process_view_success_4(
+        self,
+        mock_project_exists,
+        mock_get_project_id,
+        mock_get_project_data,
+        mock_get_registry_questions,
+    ):
+        response = self.view.processView()
+
+        self.assertEqual(response.status_code, 200)
+        response_data = json.loads(response.body)
+        self.assertIn("data", response_data)
+        self.assertIn("finalCloseQst", response_data)
+        self.assertIsInstance(response_data["data"], list)
+        self.assertIsInstance(response_data["finalCloseQst"], bool)
+        self.assertTrue(response_data["finalCloseQst"])
+
+        mock_project_exists.assert_called_once_with(
+            "test_user", "owner123", "PRJ123", self.view.request
+        )
+        mock_get_project_id.assert_called_once_with(
+            "owner123", "PRJ123", self.view.request
+        )
+        mock_get_project_data.assert_called_once_with("project_id", self.view.request)
+        mock_get_registry_questions.assert_called_once_with(
+            "owner123",
+            "project_id",
+            self.view.request,
+            ["Label A", "Label B", "Label C"],
+            onlyShowTheBasicQuestions=True,
+        )
+
 
 class TestReadPossibleQuestionsForRegistryGroupView(BaseViewTestCase):
     view_class = ReadPossibleQuestionsForRegistryGroupView
@@ -1238,6 +1415,36 @@ class TestAddQuestionToGroupRegistryView(BaseViewTestCase):
             "test_user", "owner123", "PRJ123", self.view.request
         )
 
+    @patch("climmob.views.Api.projectRegistry.getAccessTypeForProject", return_value=4)
+    @patch(
+        "climmob.views.Api.projectRegistry.getTheProjectIdForOwner",
+        return_value="project_id",
+    )
+    @patch("climmob.views.Api.projectRegistry.projectExists", return_value=True)
+    def test_process_view_user_access_denied(
+        self,
+        mock_project_exists,
+        mock_get_project_id,
+        mock_get_access_type,
+    ):
+        response = self.view.processView()
+
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "The access assigned for this project does not allow you to add questions.",
+            response.body.decode(),
+        )
+
+        mock_project_exists.assert_called_once_with(
+            "test_user", "owner123", "PRJ123", self.view.request
+        )
+        mock_get_project_id.assert_called_once_with(
+            "owner123", "PRJ123", self.view.request
+        )
+        mock_get_access_type.assert_called_once_with(
+            "test_user", "project_id", self.view.request
+        )
+
     @patch(
         "climmob.views.Api.projectRegistry.theUserBelongsToTheProject",
         return_value=False,
@@ -1316,6 +1523,50 @@ class TestAddQuestionToGroupRegistryView(BaseViewTestCase):
             "question_user", "project_id", self.view.request
         )
         mock_project_reg_status.assert_called_once_with("project_id", self.view.request)
+
+    @patch("climmob.views.Api.projectRegistry.exitsRegistryGroup", return_value=False)
+    @patch("climmob.views.Api.projectRegistry.projectRegStatus", return_value=True)
+    @patch(
+        "climmob.views.Api.projectRegistry.theUserBelongsToTheProject",
+        return_value=True,
+    )
+    @patch("climmob.views.Api.projectRegistry.getAccessTypeForProject", return_value=2)
+    @patch(
+        "climmob.views.Api.projectRegistry.getTheProjectIdForOwner",
+        return_value="project_id",
+    )
+    @patch("climmob.views.Api.projectRegistry.projectExists", return_value=True)
+    def test_process_view_no_group_with_that_code(
+        self,
+        mock_project_exists,
+        mock_get_project_id,
+        mock_get_access_type,
+        mock_user_belongs_to_project,
+        mock_project_reg_status,
+        mock_exitsRegistryGroup,
+    ):
+        response = self.view.processView()
+
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "There is not a group with that code.",
+            response.body.decode(),
+        )
+
+        mock_project_exists.assert_called_once_with(
+            "test_user", "owner123", "PRJ123", self.view.request
+        )
+        mock_get_project_id.assert_called_once_with(
+            "owner123", "PRJ123", self.view.request
+        )
+        mock_get_access_type.assert_called_once_with(
+            "test_user", "project_id", self.view.request
+        )
+        mock_user_belongs_to_project.assert_called_once_with(
+            "question_user", "project_id", self.view.request
+        )
+        mock_project_reg_status.assert_called_once_with("project_id", self.view.request)
+        mock_exitsRegistryGroup.assert_called_once()
 
     @patch(
         "climmob.views.Api.projectRegistry.getQuestionData", return_value=(None, False)
@@ -1636,6 +1887,36 @@ class TestDeleteQuestionFromGroupRegistryView(BaseViewTestCase):
 
         mock_project_exists.assert_called_once_with(
             "test_user", "owner123", "PRJ123", self.view.request
+        )
+
+    @patch("climmob.views.Api.projectRegistry.getAccessTypeForProject", return_value=4)
+    @patch(
+        "climmob.views.Api.projectRegistry.getTheProjectIdForOwner",
+        return_value="project_id",
+    )
+    @patch("climmob.views.Api.projectRegistry.projectExists", return_value=True)
+    def test_process_view_registration_access_no_allow_delet(
+        self,
+        mock_project_exists,
+        mock_get_project_id,
+        mock_get_access_type,
+    ):
+        response = self.view.processView()
+
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "The access assigned for this project does not allow you to delete questions.",
+            response.body.decode(),
+        )
+
+        mock_project_exists.assert_called_once_with(
+            "test_user", "owner123", "PRJ123", self.view.request
+        )
+        mock_get_project_id.assert_called_once_with(
+            "owner123", "PRJ123", self.view.request
+        )
+        mock_get_access_type.assert_called_once_with(
+            "test_user", "project_id", self.view.request
         )
 
     @patch("climmob.views.Api.projectRegistry.projectRegStatus", return_value=False)
@@ -2048,6 +2329,23 @@ class TestOrderRegistryQuestionsView(BaseViewTestCase):
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("Not all parameters have data.", response.body.decode())
+
+    @patch("climmob.views.Api.projectRegistry.projectExists", return_value=False)
+    def test_process_view_invalid_proyect_exist(
+        self,
+        mock_project_exists,
+    ):
+        invalid_data = self.valid_data.copy()
+        invalid_data["order"] = "{invalid_json}"
+        self.view.body = json.dumps(invalid_data)
+        response = self.view.processView()
+
+        self.assertEqual(response.status_code, 401)
+        self.assertIn("There is no project with that code.", response.body.decode())
+
+        mock_project_exists.assert_called_once_with(
+            "test_user", "owner123", "PRJ123", self.view.request
+        )
 
     @patch("climmob.views.Api.projectRegistry.projectRegStatus", return_value=True)
     @patch("climmob.views.Api.projectRegistry.getAccessTypeForProject", return_value=2)
