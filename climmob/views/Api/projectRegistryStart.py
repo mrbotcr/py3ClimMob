@@ -1092,7 +1092,7 @@ class PushJsonToRegistryView(apiView):
                                 activeProjectId,
                                 self.request,
                             ):
-                                structure = generateStructureForInterfaceForms(
+                                structure = (
                                     dataworking["user_owner"],
                                     activeProjectId,
                                     dataworking["project_cod"],

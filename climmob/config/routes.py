@@ -89,7 +89,7 @@ from climmob.views.Api.projectTechnologies import (
     ReadProjectTechnologiesAliasView,
     ReadProjectTechnologiesAliasExtraView,
     ReadPossibleProjectTechnologiesAliasView,
-    DeleteProjectTechnologyAlias_view,
+    DeleteProjectTechnologyAliasView,
     AddProjectTechnologyAliasExtraView,
 )
 from climmob.views.Api.project_analysis import (
@@ -1783,7 +1783,7 @@ def loadRoutes(config):
         addRoute(
             "deleteprjtechnologyalias",
             "/api/deleteProjectTechnologyAlias",
-            DeleteProjectTechnologyAlias_view,
+            DeleteProjectTechnologyAliasView,
             None,
         )
     )
