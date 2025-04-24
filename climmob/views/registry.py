@@ -26,6 +26,7 @@ from climmob.processes import (
     languageExistInTheProject,
     modifyProjectMainLanguage,
     projectRegStatus,
+    update_project_status,
 )
 from climmob.products import stopTasksByProcess
 from climmob.views.classes import privateView
@@ -148,6 +149,8 @@ class CancelRegistryView(privateView):
                     0,
                     self.request,
                 )
+                update_project_status(activeProjectId, 1, self.request)
+
                 clean_registry_error_logs(self.request, activeProjectId)
 
                 stopTasksByProcess(self.request, activeProjectId)

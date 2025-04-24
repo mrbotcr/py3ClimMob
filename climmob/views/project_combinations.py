@@ -25,6 +25,7 @@ from climmob.processes import (
     projectExists,
     getTech,
     getProjectEnumerators,
+    update_project_status,
 )
 from climmob.products.colors.colors import create_colors_cards
 from climmob.products.fieldagents.fieldagents import create_fieldagents_report
@@ -284,6 +285,9 @@ class projectCombinations_view(privateView):
                 )
 
                 if startIsOk:
+
+                    update_project_status(activeProjectId, 2, self.request)
+
                     self.returnRawViewResult = True
                     return HTTPFound(location=self.request.route_url("dashboard"))
                 else:

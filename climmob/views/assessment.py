@@ -32,6 +32,7 @@ from climmob.processes import (
     getPrjLangDefaultInProject,
     languageExistInTheProject,
     getPhraseTranslationInLanguage,
+    update_project_status,
 )
 from climmob.products.forms.form import create_document_form
 from climmob.views.classes import privateView
@@ -610,6 +611,8 @@ class startAssessments_view(privateView):
                                     "assessment",
                                     assessment_id,
                                 )
+
+                            update_project_status(activeProjectId, 2, self.request)
 
                             self.returnRawViewResult = True
                             return HTTPFound(

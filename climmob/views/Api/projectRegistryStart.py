@@ -28,6 +28,7 @@ from climmob.processes import (
     setCombinationQuantityAvailable,
     updateCreatePackages,
     deleteProjectPackages,
+    update_project_status,
 )
 from climmob.processes.odk.api import storeJSONInMySQL
 from climmob.products import stopTasksByProcess
@@ -720,6 +721,11 @@ class createProjectRegistry_view(apiView):
                                             projectDetails["languages"],
                                         )
                                         if startIsOk:
+
+                                            update_project_status(
+                                                activeProjectId, 2, self.request
+                                            )
+
                                             response = Response(
                                                 status=200,
                                                 body=self._("Registration started."),
@@ -835,6 +841,9 @@ class cancelRegistryApi_view(apiView):
                                 0,
                                 self.request,
                             )
+
+                            update_project_status(activeProjectId, 1, self.request)
+
                             stopTasksByProcess(
                                 self.request,
                                 activeProjectId,
