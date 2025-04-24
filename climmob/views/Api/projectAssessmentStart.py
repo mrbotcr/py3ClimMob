@@ -23,6 +23,7 @@ from climmob.processes import (
     getProjectData,
     getTheProjectIdForOwner,
     getAccessTypeForProject,
+    update_project_status,
 )
 from climmob.processes.odk.api import storeJSONInMySQL
 from climmob.products.forms.form import create_document_form
@@ -178,6 +179,10 @@ class createProjectAssessment_view(apiView):
                                                 dataworking["ass_cod"],
                                                 dataPreviewInMultipleLanguages,
                                                 listOfLabels,
+                                            )
+
+                                            update_project_status(
+                                                activeProjectId, 2, self.request
                                             )
 
                                             response = Response(
