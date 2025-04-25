@@ -21,7 +21,7 @@ from climmob.views.classes import apiView
 import climmob.plugins as p
 
 
-class addProjectEnumerator_view(apiView):
+class AddProjectEnumeratorView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -139,7 +139,7 @@ class addProjectEnumerator_view(apiView):
                                             ),
                                         )
                                         return response
-                                else:
+                                else:  # punto a depurar inaccesible
                                     response = Response(
                                         status=401,
                                         body=message,
@@ -182,7 +182,7 @@ class addProjectEnumerator_view(apiView):
             return response
 
 
-class readProjectEnumerators_view(apiView):
+class ReadProjectEnumeratorsView(apiView):
     def processView(self):
 
         if self.request.method == "GET":
@@ -236,7 +236,7 @@ class readProjectEnumerators_view(apiView):
             return response
 
 
-class readPossibleProjectEnumerators_view(apiView):
+class ReadPossibleProjectEnumeratorsView(apiView):
     def processView(self):
 
         if self.request.method == "GET":
@@ -302,7 +302,7 @@ class readPossibleProjectEnumerators_view(apiView):
             return response
 
 
-class deleteProjectEnumerator_view(apiView):
+class DeleteProjectEnumeratorView(apiView):
     def processView(self):
 
         if self.request.method == "POST":

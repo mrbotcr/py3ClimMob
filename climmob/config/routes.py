@@ -51,10 +51,10 @@ from climmob.views.Api.projectCreation import (
     ReadListOfObjectivesView,
 )
 from climmob.views.Api.projectEnumerators import (
-    addProjectEnumerator_view,
-    readProjectEnumerators_view,
-    readPossibleProjectEnumerators_view,
-    deleteProjectEnumerator_view,
+    AddProjectEnumeratorView,
+    ReadProjectEnumeratorsView,
+    ReadPossibleProjectEnumeratorsView,
+    DeleteProjectEnumeratorView,
 )
 from climmob.views.Api.projectProducts import readProducts_view, downloadApi_view
 from climmob.views.Api.projectRegistry import (
@@ -1676,7 +1676,7 @@ def loadRoutes(config):
         addRoute(
             "addprjenumerators_api",
             "/api/addProjectEnumerator",
-            addProjectEnumerator_view,
+            AddProjectEnumeratorView,
             None,
         )
     )
@@ -1684,7 +1684,7 @@ def loadRoutes(config):
         addRoute(
             "readprjenumerators_api",
             "/api/readProjectEnumerators",
-            readProjectEnumerators_view,
+            ReadProjectEnumeratorsView,
             None,
         )
     )
@@ -1692,7 +1692,7 @@ def loadRoutes(config):
         addRoute(
             "readprjpossibleenumerators_api",
             "/api/readPossibleProjectEnumerators",
-            readPossibleProjectEnumerators_view,
+            ReadPossibleProjectEnumeratorsView,
             None,
         )
     )
@@ -1700,7 +1700,7 @@ def loadRoutes(config):
         addRoute(
             "deleteprjenumerator_api",
             "/api/deleteProjectEnumerator",
-            deleteProjectEnumerator_view,
+            DeleteProjectEnumeratorView,
             None,
         )
     )
