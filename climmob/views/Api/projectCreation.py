@@ -791,7 +791,7 @@ class ReadProjectsView(apiView):
             return response
 
 
-class updateProject_view(apiView):
+class UpdateProjectView(apiView):
     def processView(self):
 
         if self.request.method == "POST":

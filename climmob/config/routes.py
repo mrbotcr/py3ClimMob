@@ -39,7 +39,7 @@ from climmob.views.Api.projectAssessments import (
 from climmob.views.Api.projectCreation import (
     CreateProjectView,
     ReadProjectsView,
-    updateProject_view,
+    UpdateProjectView,
     DeleteProjectViewApi,
     ReadListOfCountriesView,
     ReadListOfTemplatesView,
@@ -1433,7 +1433,7 @@ def loadRoutes(config):
         addRoute("readProjects_api", "/api/readProjects", ReadProjectsView, "json")
     )
     routes.append(
-        addRoute("updateproject_api", "/api/updateProject", updateProject_view, None)
+        addRoute("updateproject_api", "/api/updateProject", UpdateProjectView, None)
     )
     routes.append(
         addRoute("deleteproject_api", "/api/deleteProject", DeleteProjectViewApi, None)

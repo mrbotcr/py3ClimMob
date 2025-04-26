@@ -415,6 +415,7 @@ class TestAddProjectEnumeratorView(unittest.TestCase):
             },
         )
 
+
 class TestReadProjectEnumeratorsView(unittest.TestCase):
     def setUp(self):
         self.request = MagicMock()
