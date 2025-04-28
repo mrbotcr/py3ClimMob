@@ -189,6 +189,38 @@ class TestBaseView(unittest.TestCase):
         mock_validator_b_class.assert_called_once_with(self.view)
         mock_validator_b_instance.run.assert_called_once()
 
+    def test_subclass_init_validators_not_a_tuple(self):
+        with self.assertRaises(TypeError) as context:
+
+            class subclass(BaseView):
+                validators = [
+                    MagicMock,
+                ]
+
+        self.assertEqual(str(context.exception), "subclass.validators must be a tuple")
+
+    def test_subclass_init_validators_has_a_non_type(self):
+        with self.assertRaises(TypeError) as context:
+
+            class subclass(BaseView):
+                validators = (MagicMock(),)
+
+        self.assertEqual(
+            str(context.exception),
+            f"subclass.validators must contain class objects, got {MagicMock}",
+        )
+
+    def test_subclass_init_validators_has_a_non_validator(self):
+        with self.assertRaises(TypeError) as context:
+
+            class subclass(BaseView):
+                validators = (MagicMock,)
+
+        self.assertEqual(
+            str(context.exception),
+            f"subclass.validators contains {MagicMock.__name__}, which is not a subclass of BaseValidator",
+        )
+
 
 class TestOdkView(unittest.TestCase):
     def setUp(self):

@@ -139,12 +139,12 @@ class BaseView:
         for item in validators:
             if not isinstance(item, type):
                 raise TypeError(
-                    f"{cls.__name__}.validators must contain class objects, got {item!r}"
+                    f"{cls.__name__}.validators must contain class objects, got {type(item)}"
                 )
             if not issubclass(item, BaseValidator):
                 raise TypeError(
-                    f"{cls.__name__}.validators contains {item.__name__}, \
-                        which is not a subclass of BaseValidator"
+                    f"{cls.__name__}.validators contains {item.__name__}, "
+                    + "which is not a subclass of BaseValidator"
                 )
 
 
