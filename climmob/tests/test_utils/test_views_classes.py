@@ -98,6 +98,10 @@ class TestBaseView(unittest.TestCase):
         self.request = MagicMock()
         self.view = BaseView(self.request)
 
+    def test_init(self):
+        self.assertEqual(self.view.request, self.request)
+        self.assertEqual(self.view.context, None)
+
     @patch("climmob.views.classes.BaseView.get")
     def test_processView_get(self, mock_get):
         self.request.method = "GET"
@@ -432,6 +436,17 @@ class TestPrivateView(unittest.TestCase):
         self.request.session = MagicMock()
         self.request.dbsession = MagicMock()  # Added to avoid dbsession errors
         self.view = privateView(self.request)
+
+    # Test that private views get a PrivateContext assigned in self.context
+    @patch("climmob.views.classes.PrivateContext")
+    def test_init_set_private_context(self, mock_private_context):
+
+        view = privateView(self.request)
+
+        mock_private_context.assert_called_once()
+
+        self.assertIsInstance(view.context, MagicMock)
+        self.assertEqual(view.context, mock_private_context.return_value)
 
     @patch("climmob.views.classes.ResourceCallback")
     def test_init_secure_javascript_true(self, mock_resource_callback):
