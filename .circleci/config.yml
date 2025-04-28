@@ -1,5 +1,138 @@
 version: 2.1
 
+commands:
+  notify_slack_short:
+    parameters:
+      title:
+        type: string
+      color:
+        type: string
+        default: "#c0c0c0"
+    steps:
+      - run:
+          name: Send Slack Notification
+          command: |
+            COMMIT_SUBJECT=$(git log -1 --pretty=%s $CIRCLE_SHA1)
+            
+            curl -X POST -H 'Content-type: application/json' --data '{
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "<< parameters.title >>"
+                  }
+                }
+              ],
+              "attachments": [
+                {
+                  "color": "<< parameters.color >>",
+                  "fields": [
+                    {
+                      "title": "Branch",
+                      "value": "'"$CIRCLE_BRANCH"'"
+                    },
+                    {
+                      "title": "Commit Subject",
+                      "value": "'"$COMMIT_SUBJECT"'"
+                    }
+                  ]
+                }
+              ]
+            }' $SLACK_WEBHOOK_URL
+  notify_slack_long:
+    parameters:
+      title:
+        type: string
+      when:
+        type: string
+        default: on_success
+      color:
+        type: string
+        default: "#c0c0c0"
+    steps:
+      - run:
+          name: Send Slack Notification
+          when: << parameters.when >>
+          command: |
+            COMMIT_MESSAGE=$(git log -1 --pretty=%B $CIRCLE_SHA1)
+            COMMIT_AUTHOR=$(git log -1 --pretty=%an $CIRCLE_SHA1)
+            COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=%ae $CIRCLE_SHA1)
+            COMMIT_DATE=$(git log -1 --pretty=%cd $CIRCLE_SHA1)
+            SHORT_COMMIT_HASH=$(git rev-parse --short $CIRCLE_SHA1)
+            COMMIT_SUBJECT=$(git log -1 --pretty=%s $CIRCLE_SHA1)
+            
+            curl -X POST -H 'Content-type: application/json' --data '{
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "<< parameters.title >>"
+                  }
+                }
+              ],
+              "attachments": [
+                {
+                  "color": "<< parameters.color >>",
+                  "fields": [
+                    {
+                      "title": "Branch",
+                      "value": "'"$CIRCLE_BRANCH"'",
+                      "short": true
+                    },
+                    {
+                      "title": "Commit",
+                      "value": "'"${CIRCLE_SHA1:0:7}"'",
+                      "short": true
+                    },
+                    {
+                      "title": "Author",
+                      "value": "'"$COMMIT_AUTHOR"'",
+                      "short": true
+                    },
+                    {
+                      "title": "Author Email",
+                      "value": "'"$COMMIT_AUTHOR_EMAIL"'",
+                      "short": true
+                    },
+                    {
+                      "title": "Commit Date",
+                      "value": "'"$COMMIT_DATE"'",
+                      "short": true
+                    },
+                    {
+                      "title": "Build Number",
+                      "value": "'"$CIRCLE_BUILD_NUM"'",
+                      "short": true
+                    },
+                    {
+                      "title": "GitHub Message",
+                      "value": "'"$COMMIT_MESSAGE"'"
+                    },
+                    {
+                      "title": "Commit Subject",
+                      "value": "'"$COMMIT_SUBJECT"'"
+                    },
+                    {
+                      "title": "Build URL",
+                      "value": "'"$CIRCLE_BUILD_URL"'"
+                    },
+                    {
+                      "title": "Project Repository",
+                      "value": "'"$CIRCLE_PROJECT_REPONAME"'",
+                      "short": true
+                    },
+                    {
+                      "title": "Project Username",
+                      "value": "'"$CIRCLE_PROJECT_USERNAME"'",
+                      "short": true
+                    }
+                  ]
+                }
+              ]
+            }' $SLACK_WEBHOOK_URL
+
 executors:
   docker-executor:
     docker:
@@ -42,6 +175,9 @@ jobs:
     executor: docker-executor
     steps:
       - checkout
+
+      - notify_slack_short:
+          title: "ClimMob build starting..."
 
       - run:
           name: Install curl
@@ -156,6 +292,16 @@ jobs:
           name: Deploy over SSH
           command: |
             ssh -o StrictHostKeyChecking=no -v $TEST_USER@$TEST_IP "./testing/deploy_testing.sh -o $PREV_IMAGE_VERSION -n $IMAGE_VERSION "
+      
+      - notify_slack_long:
+          title: "ClimMob build Succeeded!"
+          when: on_success
+          color: "good"
+
+      - notify_slack_long:
+          title: "ClimMob build failed!"
+          when: on_fail
+          color: "danger"
 
 workflows:
   version: 2
