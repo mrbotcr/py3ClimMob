@@ -16,6 +16,7 @@ from climmob.views.Api.projectCreation import (
     ReadListOfLocationsView,
     ReadListOfUnitOfAnalysisView,
     ReadListOfObjectivesView,
+    UpdateProjectView,
 )
 
 
@@ -1405,6 +1406,1037 @@ class TestReadProjectsView(BaseViewTestCase):
         response = self.view.processView()
         self.assertEqual(response.status_code, 401)
         self.assertIn("Only accepts GET method.", response.body.decode())
+
+
+class TestUpdateProjectView(BaseViewTestCase):
+    view_class = UpdateProjectView
+    request_method = "POST"
+
+    def setUp(self):
+        super().setUp()
+        self.valid_data = {
+            "project_cod": "PRJ123",
+            "user_owner": "Owner_User",
+            "project_location": 1,
+            "project_unit_of_analysis": 1,
+            "project_objectives": [0, 1],
+            "project_type": 1,
+        }
+        self.view.body = json.dumps(self.valid_data)
+
+    def test_process_view_update_project_view_invalid_method(self):
+        self.view.request.method = "GET"
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn("Only accepts POST method.", response.body.decode())
+
+    def test_process_view_update_project_view_obligatory_keys(self):
+        del self.valid_data["project_cod"]
+        self.view.body = json.dumps(self.valid_data)
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "It is not complying with the obligatory keys.", response.body.decode()
+        )
+
+    @patch(
+        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
+    )
+    def test_process_view_update_project_view_invalid_parameters(
+        self, mock_language_exist
+    ):
+        self.valid_data["invalid_param"] = "invalid"
+        self.view.body = json.dumps(self.valid_data)
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "Error in the parameters that you want to modify.",
+            response.body.decode(),
+        )
+        mock_language_exist.assert_not_called()
+
+    @patch(
+        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
+    )
+    def test_process_view_update_project_view_no_data(self, mock_language_exist):
+        self.valid_data["project_cod"] = ""
+        self.view.body = json.dumps(self.valid_data)
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "Not all parameters have data.",
+            response.body.decode(),
+        )
+        mock_language_exist.assert_not_called()
+
+    @patch("climmob.views.Api.projectCreation.projectExists", return_value=False)
+    @patch(
+        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
+    )
+    def test_process_view_update_project_view_project_no_exist(
+        self, mock_language_exist, mock_projectExists
+    ):
+        self.view.body = json.dumps(self.valid_data)
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "There is no a project with that code.",
+            response.body.decode(),
+        )
+
+    @patch("climmob.views.Api.projectCreation.getAccessTypeForProject", return_value=4)
+    @patch("climmob.views.Api.projectCreation.getTheProjectIdForOwner", return_value=1)
+    @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)
+    @patch(
+        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
+    )
+    def test_process_view_update_project_view_project_no_allow_modifications(
+        self,
+        mock_language_exist,
+        mock_projectExists,
+        mock_getTheProjectIdForOwner,
+        mock_getAccessTypeForProject,
+    ):
+        self.view.body = json.dumps(self.valid_data)
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "The access assigned for this project does not allow you to make modifications.",
+            response.body.decode(),
+        )
+
+    @patch("climmob.views.Api.projectCreation.getProjectData", return_value=1)
+    @patch("climmob.views.Api.projectCreation.getAccessTypeForProject", return_value=1)
+    @patch("climmob.views.Api.projectCreation.getTheProjectIdForOwner", return_value=1)
+    @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)
+    @patch(
+        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
+    )
+    def test_process_view_update_project_view_project_no_params_required(
+        self,
+        mock_language_exist,
+        mock_projectExists,
+        mock_getTheProjectIdForOwner,
+        mock_getAccessTypeForProject,
+        mock_getProjectData,
+    ):
+        del self.valid_data["project_unit_of_analysis"]
+        self.view.body = json.dumps(self.valid_data)
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "To modify project_location, the parameters: 'project_unit_of_analysis', 'project_objectives' are required.",
+            response.body.decode(),
+        )
+
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=None)
+    @patch("climmob.views.Api.projectCreation.getProjectData", return_value=1)
+    @patch("climmob.views.Api.projectCreation.getAccessTypeForProject", return_value=1)
+    @patch("climmob.views.Api.projectCreation.getTheProjectIdForOwner", return_value=1)
+    @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)
+    @patch(
+        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
+    )
+    def test_process_view_update_project_view_project_no_project_location_exist(
+        self,
+        mock_language_exist,
+        mock_projectExists,
+        mock_getTheProjectIdForOwner,
+        mock_getAccessTypeForProject,
+        mock_getProjectData,
+        mock_get_location_by_id,
+    ):
+        self.view.body = json.dumps(self.valid_data)
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "The project_location does not exist.",
+            response.body.decode(),
+        )
+
+    @patch("climmob.views.Api.projectCreation.getProjectData", return_value=1)
+    @patch("climmob.views.Api.projectCreation.getAccessTypeForProject", return_value=1)
+    @patch("climmob.views.Api.projectCreation.getTheProjectIdForOwner", return_value=1)
+    @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)
+    @patch(
+        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
+    )
+    def test_process_view_update_project_view_project_no_project_objectives_exist(
+        self,
+        mock_language_exist,
+        mock_projectExists,
+        mock_getTheProjectIdForOwner,
+        mock_getAccessTypeForProject,
+        mock_getProjectData,
+    ):
+        del self.valid_data["project_objectives"]
+        del self.valid_data["project_location"]
+        self.view.body = json.dumps(self.valid_data)
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "To modify project_unit_of_analysis, the parameter: 'project_objectives' is required.",
+            response.body.decode(),
+        )
+
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=None)
+    @patch("climmob.views.Api.projectCreation.getProjectData", return_value=1)
+    @patch("climmob.views.Api.projectCreation.getAccessTypeForProject", return_value=1)
+    @patch("climmob.views.Api.projectCreation.getTheProjectIdForOwner", return_value=1)
+    @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)
+    @patch(
+        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
+    )
+    def test_process_view_update_project_view_project_no_project_unit_exist(
+        self,
+        mock_language_exist,
+        mock_projectExists,
+        mock_getTheProjectIdForOwner,
+        mock_getAccessTypeForProject,
+        mock_getProjectData,
+        mock_get_location_by_id,
+    ):
+        del self.valid_data["project_location"]
+        self.view.body = json.dumps(self.valid_data)
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "The project_unit_of_analysis does not exist.",
+            response.body.decode(),
+        )
+
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_by_combination",
+        return_value=None,
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.getProjectData",
+        return_value={"project_location": 1, "project_unit_of_analysis": [0, 1]},
+    )
+    @patch("climmob.views.Api.projectCreation.getAccessTypeForProject", return_value=1)
+    @patch("climmob.views.Api.projectCreation.getTheProjectIdForOwner", return_value=1)
+    @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)
+    @patch(
+        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
+    )
+    def test_process_view_update_project_view_project_no_project_unit_relationship_out(
+        self,
+        mock_language_exist,
+        mock_projectExists,
+        mock_getTheProjectIdForOwner,
+        mock_getAccessTypeForProject,
+        mock_getProjectData,
+        mock_get_location_unit_of_analysis_by_combination,
+    ):
+        del self.valid_data["project_location"]
+        del self.valid_data["project_unit_of_analysis"]
+        self.view.body = json.dumps(self.valid_data)
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "This project_location with this project_unit_of_analysis has no defined relationship.",
+            response.body.decode(),
+        )
+
+    @patch(
+        "climmob.views.Api.projectCreation.get_unit_of_analysis_by_id", return_value=1
+    )
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=1)
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_by_combination",
+        return_value={"project_location": 1, "registration_and_analysis": [0, 1]},
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.getProjectData",
+        return_value={"project_location": 1, "project_unit_of_analysis": [0, 1]},
+    )
+    @patch("climmob.views.Api.projectCreation.getAccessTypeForProject", return_value=1)
+    @patch("climmob.views.Api.projectCreation.getTheProjectIdForOwner", return_value=1)
+    @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)
+    @patch(
+        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
+    )
+    def test_process_view_update_project_view_project_project_objectives_format_error(
+        self,
+        mock_language_exist,
+        mock_projectExists,
+        mock_getTheProjectIdForOwner,
+        mock_getAccessTypeForProject,
+        mock_getProjectData,
+        mock_get_location_unit_of_analysis_by_combination,
+        mock_get_location_by_id,
+        mock_get_unit_of_analysis_by_id,
+    ):
+
+        self.valid_data["project_objectives"] = "Error"
+        self.view.body = json.dumps(self.valid_data)
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "project_objectives should be in list format.",
+            response.body.decode(),
+        )
+
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_objectives_by_combination",
+        return_value=None,
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_unit_of_analysis_by_id", return_value=1
+    )
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=1)
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_by_combination",
+        return_value={
+            "pluoa_id": "2",
+            "project_location": 1,
+            "registration_and_analysis": [0, 1],
+        },
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.getProjectData",
+        return_value={"project_location": 1, "project_unit_of_analysis": [0, 1]},
+    )
+    @patch("climmob.views.Api.projectCreation.getAccessTypeForProject", return_value=1)
+    @patch("climmob.views.Api.projectCreation.getTheProjectIdForOwner", return_value=1)
+    @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)
+    @patch(
+        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
+    )
+    def test_process_view_update_project_view_project_no_project_unit_relationship(
+        self,
+        mock_language_exist,
+        mock_projectExists,
+        mock_getTheProjectIdForOwner,
+        mock_getAccessTypeForProject,
+        mock_getProjectData,
+        mock_get_location_unit_of_analysis_by_combination,
+        mock_get_location_by_id,
+        mock_get_unit_of_analysis_by_id,
+        mock_get_location_unit_of_analysis_objectives_by_combination,
+    ):
+        self.view.body = json.dumps(self.valid_data)
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "The objective 0 does not correspond to the experiment site and the unit of analysis indicated.",
+            response.body.decode(),
+        )
+
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_objectives_by_combination",
+        return_value=None,
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_unit_of_analysis_by_id", return_value=1
+    )
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=1)
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_by_combination",
+        return_value={
+            "pluoa_id": "2",
+            "project_location": 1,
+            "registration_and_analysis": [0, 1],
+        },
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.getProjectData",
+        return_value={"project_location": 1, "project_unit_of_analysis": [0, 1]},
+    )
+    @patch("climmob.views.Api.projectCreation.getAccessTypeForProject", return_value=1)
+    @patch("climmob.views.Api.projectCreation.getTheProjectIdForOwner", return_value=1)
+    @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)
+    @patch(
+        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
+    )
+    def test_process_view_update_project_view_project_not_correspond_to_the_experiment(
+        self,
+        mock_language_exist,
+        mock_projectExists,
+        mock_getTheProjectIdForOwner,
+        mock_getAccessTypeForProject,
+        mock_getProjectData,
+        mock_get_location_unit_of_analysis_by_combination,
+        mock_get_location_by_id,
+        mock_get_unit_of_analysis_by_id,
+        mock_get_location_unit_of_analysis_objectives_by_combination,
+    ):
+        self.view.body = json.dumps(self.valid_data)
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "The objective 0 does not correspond to the experiment site and the unit of analysis indicated.",
+            response.body.decode(),
+        )
+
+    @patch(
+        "climmob.views.Api.projectCreation.getProjectIsTemplate",
+        return_value={"project_registration_and_analysis": [1]},
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_objectives_by_combination",
+        return_value=1,
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_unit_of_analysis_by_id", return_value=1
+    )
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=1)
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_by_combination",
+        return_value={
+            "pluoa_id": "2",
+            "project_location": 1,
+            "registration_and_analysis": [0, 1],
+        },
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.getProjectData",
+        return_value={"project_location": 1, "project_unit_of_analysis": [0, 1]},
+    )
+    @patch("climmob.views.Api.projectCreation.getAccessTypeForProject", return_value=1)
+    @patch("climmob.views.Api.projectCreation.getTheProjectIdForOwner", return_value=1)
+    @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)
+    @patch(
+        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
+    )
+    def test_process_view_update_project_view_project_template_not_correspond_to_type(
+        self,
+        mock_language_exist,
+        mock_projectExists,
+        mock_getTheProjectIdForOwner,
+        mock_getAccessTypeForProject,
+        mock_getProjectData,
+        mock_get_location_unit_of_analysis_by_combination,
+        mock_get_location_by_id,
+        mock_get_unit_of_analysis_by_id,
+        mock_get_location_unit_of_analysis_objectives_by_combination,
+        mock_getProjectIsTemplate,
+    ):
+        self.valid_data["project_template"] = "3"
+        self.view.body = json.dumps(self.valid_data)
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "You are trying to use a template that does not correspond to the type of project you are creating.",
+            response.body.decode(),
+        )
+
+    @patch("climmob.views.Api.projectCreation.getProjectIsTemplate", return_value=None)
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_objectives_by_combination",
+        return_value=1,
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_unit_of_analysis_by_id", return_value=1
+    )
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=1)
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_by_combination",
+        return_value={
+            "pluoa_id": "2",
+            "project_location": 1,
+            "registration_and_analysis": [0, 1],
+        },
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.getProjectData",
+        return_value={"project_location": 1, "project_unit_of_analysis": [0, 1]},
+    )
+    @patch("climmob.views.Api.projectCreation.getAccessTypeForProject", return_value=1)
+    @patch("climmob.views.Api.projectCreation.getTheProjectIdForOwner", return_value=1)
+    @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)
+    @patch(
+        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
+    )
+    def test_process_view_update_project_view_project_no_template_id(
+        self,
+        mock_language_exist,
+        mock_projectExists,
+        mock_getTheProjectIdForOwner,
+        mock_getAccessTypeForProject,
+        mock_getProjectData,
+        mock_get_location_unit_of_analysis_by_combination,
+        mock_get_location_by_id,
+        mock_get_unit_of_analysis_by_id,
+        mock_get_location_unit_of_analysis_objectives_by_combination,
+        mock_getProjectIsTemplate,
+    ):
+        self.valid_data["project_template"] = "3"
+        self.view.body = json.dumps(self.valid_data)
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "There is no template with this identifier.",
+            response.body.decode(),
+        )
+
+    # It canot access to lines 1018 - 1037 because "project_objectives" is required and its puts  dataworking[project_registration_and_analysis]
+
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_objectives_by_combination",
+        return_value=1,
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_unit_of_analysis_by_id", return_value=1
+    )
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=1)
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_by_combination",
+        return_value={
+            "pluoa_id": "2",
+            "project_location": 1,
+            "registration_and_analysis": [0, 1],
+        },
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.getProjectData",
+        return_value={"project_location": 1, "project_unit_of_analysis": [0, 1]},
+    )
+    @patch("climmob.views.Api.projectCreation.getAccessTypeForProject", return_value=1)
+    @patch("climmob.views.Api.projectCreation.getTheProjectIdForOwner", return_value=1)
+    @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)
+    @patch(
+        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
+    )
+    def test_process_view_update_project_view_project_type_string(
+        self,
+        mock_language_exist,
+        mock_projectExists,
+        mock_getTheProjectIdForOwner,
+        mock_getAccessTypeForProject,
+        mock_getProjectData,
+        mock_get_location_unit_of_analysis_by_combination,
+        mock_get_location_by_id,
+        mock_get_unit_of_analysis_by_id,
+        mock_get_location_unit_of_analysis_objectives_by_combination,
+    ):
+        self.valid_data["project_type"] = "One"
+        self.view.body = json.dumps(self.valid_data)
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "The parameter project_type must be a number.",
+            response.body.decode(),
+        )
+
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_objectives_by_combination",
+        return_value=1,
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_unit_of_analysis_by_id", return_value=1
+    )
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=1)
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_by_combination",
+        return_value={
+            "pluoa_id": "2",
+            "project_location": 1,
+            "registration_and_analysis": [0, 1],
+        },
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.getProjectData",
+        return_value={"project_location": 1, "project_unit_of_analysis": [0, 1]},
+    )
+    @patch("climmob.views.Api.projectCreation.getAccessTypeForProject", return_value=1)
+    @patch("climmob.views.Api.projectCreation.getTheProjectIdForOwner", return_value=1)
+    @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)
+    @patch(
+        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
+    )
+    def test_process_view_update_project_view_project_type_value_no_allowed(
+        self,
+        mock_language_exist,
+        mock_projectExists,
+        mock_getTheProjectIdForOwner,
+        mock_getAccessTypeForProject,
+        mock_getProjectData,
+        mock_get_location_unit_of_analysis_by_combination,
+        mock_get_location_by_id,
+        mock_get_unit_of_analysis_by_id,
+        mock_get_location_unit_of_analysis_objectives_by_combination,
+    ):
+        self.valid_data["project_type"] = 0
+        self.view.body = json.dumps(self.valid_data)
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "The parameter project_type must be [1: Real. 2: Training - This project was only used to explain the use of the ClimMob platform and was created as an example].",
+            response.body.decode(),
+        )
+
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_objectives_by_combination",
+        return_value=1,
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_unit_of_analysis_by_id", return_value=1
+    )
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=1)
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_by_combination",
+        return_value={
+            "pluoa_id": "2",
+            "project_location": 1,
+            "registration_and_analysis": [0, 1],
+        },
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.getProjectData",
+        return_value={"project_location": 1, "project_unit_of_analysis": [0, 1]},
+    )
+    @patch("climmob.views.Api.projectCreation.getAccessTypeForProject", return_value=1)
+    @patch("climmob.views.Api.projectCreation.getTheProjectIdForOwner", return_value=1)
+    @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)
+    @patch(
+        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
+    )
+    def test_process_view_update_project_view_project_type_value_no_allowed(
+        self,
+        mock_language_exist,
+        mock_projectExists,
+        mock_getTheProjectIdForOwner,
+        mock_getAccessTypeForProject,
+        mock_getProjectData,
+        mock_get_location_unit_of_analysis_by_combination,
+        mock_get_location_by_id,
+        mock_get_unit_of_analysis_by_id,
+        mock_get_location_unit_of_analysis_objectives_by_combination,
+    ):
+        self.valid_data["project_type"] = 0
+        self.view.body = json.dumps(self.valid_data)
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "The parameter project_type must be [1: Real. 2: Training - This project was only used to explain the use of the ClimMob platform and was created as an example].",
+            response.body.decode(),
+        )
+
+    @patch("climmob.views.Api.projectCreation.existsCountryByCode", return_value=False)
+    @patch("climmob.views.Api.projectCreation.changeTheStateOfCreateComb")
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_objectives_by_combination",
+        return_value=1,
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_unit_of_analysis_by_id", return_value=1
+    )
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=1)
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_by_combination",
+        return_value={
+            "pluoa_id": "2",
+            "project_location": 1,
+            "registration_and_analysis": [0, 1],
+        },
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.getProjectData",
+        return_value={
+            "project_numobs": "2",
+            "project_numcom": "2",
+            "project_regstatus": 1,
+            "project_location": 1,
+            "project_unit_of_analysis": [0, 1],
+        },
+    )
+    @patch("climmob.views.Api.projectCreation.getAccessTypeForProject", return_value=1)
+    @patch("climmob.views.Api.projectCreation.getTheProjectIdForOwner", return_value=1)
+    @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)
+    @patch(
+        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
+    )
+    def test_process_view_update_project_view_project_country_assigned_not_exist_on_climmob(
+        self,
+        mock_language_exist,
+        mock_projectExists,
+        mock_getTheProjectIdForOwner,
+        mock_getAccessTypeForProject,
+        mock_getProjectData,
+        mock_get_location_unit_of_analysis_by_combination,
+        mock_get_location_by_id,
+        mock_get_unit_of_analysis_by_id,
+        mock_get_location_unit_of_analysis_objectives_by_combination,
+        mock_changeTheStateOfCreateComb,
+        mock_existsCountryByCode,
+    ):
+        self.valid_data["project_cnty"] = 3
+        self.view.body = json.dumps(self.valid_data)
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "The country assigned to the project does not exist in the ClimMob list.",
+            response.body.decode(),
+        )
+
+    # project_localvariety is not a variable allowed and the system didnt create the variable, 1093-1104 can not be access
+
+    @patch(
+        "climmob.views.Api.projectCreation.modifyProject",
+        return_value=(False, "Error to modify."),
+    )
+    @patch("climmob.views.Api.projectCreation.existsCountryByCode", return_value=False)
+    @patch("climmob.views.Api.projectCreation.changeTheStateOfCreateComb")
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_objectives_by_combination",
+        return_value=1,
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_unit_of_analysis_by_id", return_value=1
+    )
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=1)
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_by_combination",
+        return_value={
+            "pluoa_id": "2",
+            "project_location": 1,
+            "registration_and_analysis": [0, 1],
+        },
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.getProjectData",
+        return_value={
+            "project_numobs": "2",
+            "project_numcom": "2",
+            "project_regstatus": 0,
+            "project_location": 1,
+            "project_unit_of_analysis": [0, 1],
+            "project_label_a": "project_label_a",
+            "project_label_b": "project_label_b",
+            "project_label_c": "project_label_c",
+        },
+    )
+    @patch("climmob.views.Api.projectCreation.getAccessTypeForProject", return_value=1)
+    @patch("climmob.views.Api.projectCreation.getTheProjectIdForOwner", return_value=1)
+    @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)
+    @patch(
+        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
+    )
+    def test_process_view_update_project_view_project_country_assigned_error_to_modify(
+        self,
+        mock_language_exist,
+        mock_projectExists,
+        mock_getTheProjectIdForOwner,
+        mock_getAccessTypeForProject,
+        mock_getProjectData,
+        mock_get_location_unit_of_analysis_by_combination,
+        mock_get_location_by_id,
+        mock_get_unit_of_analysis_by_id,
+        mock_get_location_unit_of_analysis_objectives_by_combination,
+        mock_changeTheStateOfCreateComb,
+        mock_existsCountryByCode,
+        mock_modifyProject,
+    ):
+
+        self.view.body = json.dumps(self.valid_data)
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "Error to modify.",
+            response.body.decode(),
+        )
+        mock_modifyProject.assert_called_once()
+
+    @patch(
+        "climmob.views.Api.projectCreation.modifyProject",
+        return_value=(False, "Error to modify."),
+    )
+    @patch("climmob.views.Api.projectCreation.existsCountryByCode", return_value=False)
+    @patch("climmob.views.Api.projectCreation.changeTheStateOfCreateComb")
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_objectives_by_combination",
+        return_value=1,
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_unit_of_analysis_by_id", return_value=1
+    )
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=1)
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_by_combination",
+        return_value={
+            "pluoa_id": "2",
+            "project_location": 1,
+            "registration_and_analysis": [0, 1],
+        },
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.getProjectData",
+        return_value={
+            "project_registration_and_analysis": 1,
+            "project_numobs": "2",
+            "project_numcom": "2",
+            "project_regstatus": 0,
+            "project_location": 1,
+            "project_unit_of_analysis": [0, 1],
+            "project_label_a": "project_label",
+            "project_label_b": "project_label",
+            "project_label_c": "project_label",
+        },
+    )
+    @patch("climmob.views.Api.projectCreation.getAccessTypeForProject", return_value=1)
+    @patch("climmob.views.Api.projectCreation.getTheProjectIdForOwner", return_value=1)
+    @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)
+    @patch(
+        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
+    )
+    def test_process_view_update_project_view_project_country_assigned_error_to_modify(
+        self,
+        mock_language_exist,
+        mock_projectExists,
+        mock_getTheProjectIdForOwner,
+        mock_getAccessTypeForProject,
+        mock_getProjectData,
+        mock_get_location_unit_of_analysis_by_combination,
+        mock_get_location_by_id,
+        mock_get_unit_of_analysis_by_id,
+        mock_get_location_unit_of_analysis_objectives_by_combination,
+        mock_changeTheStateOfCreateComb,
+        mock_existsCountryByCode,
+        mock_modifyProject,
+    ):
+        self.view.body = json.dumps(self.valid_data)
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "The names that the items will receive should be different.",
+            response.body.decode(),
+        )
+
+    @patch(
+        "climmob.views.Api.projectCreation.modifyProject",
+        return_value=(False, "Error to modify."),
+    )
+    @patch("climmob.views.Api.projectCreation.existsCountryByCode", return_value=False)
+    @patch("climmob.views.Api.projectCreation.changeTheStateOfCreateComb")
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_objectives_by_combination",
+        return_value={"pluoaobj_id": 123},
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_unit_of_analysis_by_id", return_value=1
+    )
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=1)
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_by_combination",
+        return_value={
+            "pluoaobj_id": 123,
+            "pluoa_id": "1",
+            "project_location": 1,
+            "registration_and_analysis": [0, 1],
+        },
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.getProjectData",
+        return_value={
+            "project_registration_and_analysis": 1,
+            "project_numobs": "2",
+            "project_numcom": "2",
+            "project_regstatus": 0,
+            "project_location": 1,
+            "project_unit_of_analysis": [0, 1],
+            "project_label_a": "project_label_a",
+            "project_label_b": "project_label_b",
+            "project_label_c": "project_label_c",
+        },
+    )
+    @patch("climmob.views.Api.projectCreation.getAccessTypeForProject", return_value=1)
+    @patch("climmob.views.Api.projectCreation.getTheProjectIdForOwner", return_value=1)
+    @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)
+    @patch(
+        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
+    )
+    def test_process_view_update_project_view_project_no_modified(
+        self,
+        mock_language_exist,
+        mock_projectExists,
+        mock_getTheProjectIdForOwner,
+        mock_getAccessTypeForProject,
+        mock_getProjectData,
+        mock_get_location_unit_of_analysis_by_combination,
+        mock_get_location_by_id,
+        mock_get_unit_of_analysis_by_id,
+        mock_get_location_unit_of_analysis_objectives_by_combination,
+        mock_changeTheStateOfCreateComb,
+        mock_existsCountryByCode,
+        mock_modifyProject,
+    ):
+        self.valid_data["project_numobs"] = 1
+        self.view.body = json.dumps(self.valid_data)
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "Error to modify.",
+            response.body.decode(),
+        )
+        mock_modifyProject.assert_called_once()
+
+    @patch(
+        "climmob.views.Api.projectCreation.deleteRegistryByProjectId",
+        return_value=(True, ""),
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.add_project_location_unit_objective",
+        return_value=True,
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.delete_all_project_location_unit_objective",
+        return_value=(True, ""),
+    )
+    @patch("climmob.views.Api.projectCreation.modifyProject", return_value=(True, ""))
+    @patch("climmob.views.Api.projectCreation.existsCountryByCode", return_value=False)
+    @patch("climmob.views.Api.projectCreation.changeTheStateOfCreateComb")
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_objectives_by_combination",
+        return_value={"pluoaobj_id": 123},
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_unit_of_analysis_by_id", return_value=1
+    )
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=1)
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_by_combination",
+        return_value={
+            "pluoaobj_id": 123,
+            "pluoa_id": "1",
+            "project_location": 1,
+            "registration_and_analysis": [0, 1],
+        },
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.getProjectData",
+        return_value={
+            "project_registration_and_analysis": 1,
+            "project_numobs": "2",
+            "project_numcom": "2",
+            "project_regstatus": 0,
+            "project_location": 1,
+            "project_unit_of_analysis": [0, 1],
+            "project_label_a": "project_label_a",
+            "project_label_b": "project_label_b",
+            "project_label_c": "project_label_c",
+        },
+    )
+    @patch("climmob.views.Api.projectCreation.getAccessTypeForProject", return_value=1)
+    @patch("climmob.views.Api.projectCreation.getTheProjectIdForOwner", return_value=1)
+    @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)
+    @patch(
+        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
+    )
+    def test_process_view_update_project_view_project_country_assigned_success(
+        self,
+        mock_language_exist,
+        mock_projectExists,
+        mock_getTheProjectIdForOwner,
+        mock_getAccessTypeForProject,
+        mock_getProjectData,
+        mock_get_location_unit_of_analysis_by_combination,
+        mock_get_location_by_id,
+        mock_get_unit_of_analysis_by_id,
+        mock_get_location_unit_of_analysis_objectives_by_combination,
+        mock_changeTheStateOfCreateComb,
+        mock_existsCountryByCode,
+        mock_modifyProject,
+        mock_delete_all_project_location_unit_objective,
+        mock_add_project_location_unit_objective,
+        mock_deleteRegistryByProjectId,
+    ):
+        self.view.body = json.dumps(self.valid_data)
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(
+            "The project was modified successfully",
+            response.body.decode(),
+        )
+        mock_modifyProject.assert_called_once()
+        mock_delete_all_project_location_unit_objective.assert_called_once()
+
+    @patch(
+        "climmob.views.Api.projectCreation.getProjectIsTemplate",
+        return_value=({"project_registration_and_analysis": "data"}),
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.deleteRegistryByProjectId",
+        return_value=(True, ""),
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.add_project_location_unit_objective",
+        return_value=True,
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.delete_all_project_location_unit_objective",
+        return_value=(True, ""),
+    )
+    @patch("climmob.views.Api.projectCreation.modifyProject", return_value=(True, ""))
+    @patch("climmob.views.Api.projectCreation.existsCountryByCode", return_value=False)
+    @patch("climmob.views.Api.projectCreation.changeTheStateOfCreateComb")
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_objectives_by_combination",
+        return_value={"pluoaobj_id": 123},
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.get_unit_of_analysis_by_id", return_value=1
+    )
+    @patch("climmob.views.Api.projectCreation.get_location_by_id", return_value=1)
+    @patch(
+        "climmob.views.Api.projectCreation.get_location_unit_of_analysis_by_combination",
+        return_value={
+            "pluoaobj_id": 123,
+            "pluoa_id": "1",
+            "project_location": 1,
+            "registration_and_analysis": "data",
+        },
+    )
+    @patch(
+        "climmob.views.Api.projectCreation.getProjectData",
+        return_value={
+            "project_registration_and_analysis": 1,
+            "project_numobs": "2",
+            "project_numcom": "2",
+            "project_regstatus": 0,
+            "project_location": 1,
+            "project_unit_of_analysis": [0, 1],
+            "project_label_a": "project_label_a",
+            "project_label_b": "project_label_b",
+            "project_label_c": "project_label_c",
+        },
+    )
+    @patch("climmob.views.Api.projectCreation.getAccessTypeForProject", return_value=1)
+    @patch("climmob.views.Api.projectCreation.getTheProjectIdForOwner", return_value=1)
+    @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)
+    @patch(
+        "climmob.views.Api.projectCreation.languageExistInI18nUser", return_value=True
+    )
+    def test_process_view_update_project_view_project_template_success(
+        self,
+        mock_language_exist,
+        mock_projectExists,
+        mock_getTheProjectIdForOwner,
+        mock_getAccessTypeForProject,
+        mock_getProjectData,
+        mock_get_location_unit_of_analysis_by_combination,
+        mock_get_location_by_id,
+        mock_get_unit_of_analysis_by_id,
+        mock_get_location_unit_of_analysis_objectives_by_combination,
+        mock_changeTheStateOfCreateComb,
+        mock_existsCountryByCode,
+        mock_modifyProject,
+        mock_delete_all_project_location_unit_objective,
+        mock_add_project_location_unit_objective,
+        mock_deleteRegistryByProjectId,
+        mock_getProjectIsTemplate,
+    ):
+
+        self.valid_data["project_template"] = "data"
+        self.view.body = json.dumps(self.valid_data)
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(
+            "The project was modified successfully",
+            response.body.decode(),
+        )
+        mock_modifyProject.assert_called_once()
+        mock_delete_all_project_location_unit_objective.assert_called_once()
 
 
 class TestDeleteProjectViewApi(BaseViewTestCase):
