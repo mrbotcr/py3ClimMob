@@ -14,13 +14,13 @@ from climmob.views.Api.enumerators import (
     ApiDeleteEnumeratorView,
 )
 from climmob.views.Api.projectAssessmentStart import (
-    createProjectAssessment_view,
-    cancelAssessmentApi_view,
-    closeAssessmentApi_view,
-    readAssessmentStructure_view,
-    pushJsonToAssessment_view,
-    assessmentDataCleaning_view,
-    readAssessmentData_view,
+    CreateProjectAssessmentView,
+    CancelAssessmentApiView,
+    CloseAssessmentApiView,
+    ReadAssessmentStructureView,
+    PushJsonToAssessmentView,
+    ReadAssessmentDataView,
+    AssessmentDataCleaningView,
 )
 from climmob.views.Api.projectAssessments import (
     ReadProjectAssessmentsView,
@@ -1984,7 +1984,7 @@ def loadRoutes(config):
         addRoute(
             "createprjassessment",
             "/api/createProjectAssessment",
-            createProjectAssessment_view,
+            CreateProjectAssessmentView,
             None,
         )
     )
@@ -1992,7 +1992,7 @@ def loadRoutes(config):
         addRoute(
             "cancelprojectassessment",
             "/api/cancelProjectAssessment",
-            cancelAssessmentApi_view,
+            CancelAssessmentApiView,
             None,
         )
     )
@@ -2000,7 +2000,7 @@ def loadRoutes(config):
         addRoute(
             "closeprojectassessment",
             "/api/closeProjectAssessment",
-            closeAssessmentApi_view,
+            CloseAssessmentApiView,
             None,
         )
     )
@@ -2076,7 +2076,7 @@ def loadRoutes(config):
         addRoute(
             "readassessmentstructure",
             "/api/readAssessmentStructure",
-            readAssessmentStructure_view,
+            ReadAssessmentStructureView,
             None,
         )
     )
@@ -2084,7 +2084,7 @@ def loadRoutes(config):
         addRoute(
             "pushjsontoassessment",
             "/api/pushJsonToAssessment",
-            pushJsonToAssessment_view,
+            PushJsonToAssessmentView,
             None,
         )
     )
@@ -2093,7 +2093,7 @@ def loadRoutes(config):
         addRoute(
             "assessmentdatacleaning",
             "/api/assessmentDataCleaning",
-            assessmentDataCleaning_view,
+            AssessmentDataCleaningView,
             None,
         )
     )
@@ -2102,7 +2102,7 @@ def loadRoutes(config):
         addRoute(
             "readassessmentdata",
             "/api/readAssessmentData",
-            readAssessmentData_view,
+            ReadAssessmentDataView,
             None,
         )
     )

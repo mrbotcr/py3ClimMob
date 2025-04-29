@@ -30,7 +30,7 @@ from climmob.views.classes import apiView
 from climmob.views.registry import getDataFormPreview
 
 
-class createProjectAssessment_view(apiView):
+class CreateProjectAssessmentView(apiView):
     def processView(self):
         if self.request.method == "POST":
             obligatory = ["project_cod", "user_owner", "ass_cod"]
@@ -192,7 +192,13 @@ class createProjectAssessment_view(apiView):
                                                     "There has been a problem in the creation of the basic structure of the project, this may be due to something wrong with the form. Contact the ClimMob team with the next message to get the solution to the problem"
                                                 )
                                                 + ": "
-                                                + str(correct[0]["error"], "utf-8"),
+                                                + (
+                                                    correct[0]["error"].decode("utf-8")
+                                                    if isinstance(
+                                                        correct[0]["error"], bytes
+                                                    )
+                                                    else correct[0]["error"]
+                                                ),
                                             )
                                             return response
 
@@ -243,7 +249,7 @@ class createProjectAssessment_view(apiView):
             return response
 
 
-class cancelAssessmentApi_view(apiView):
+class CancelAssessmentApiView(apiView):
     def processView(self):
         if self.request.method == "POST":
             obligatory = ["project_cod", "user_owner", "ass_cod"]
@@ -329,7 +335,7 @@ class cancelAssessmentApi_view(apiView):
             return response
 
 
-class closeAssessmentApi_view(apiView):
+class CloseAssessmentApiView(apiView):
     def processView(self):
         if self.request.method == "POST":
             obligatory = ["project_cod", "user_owner", "ass_cod"]
@@ -427,7 +433,7 @@ class closeAssessmentApi_view(apiView):
             return response
 
 
-class readAssessmentStructure_view(apiView):
+class ReadAssessmentStructureView(apiView):
     def processView(self):
         if self.request.method == "GET":
             obligatory = ["project_cod", "user_owner", "ass_cod"]
@@ -523,7 +529,7 @@ class readAssessmentStructure_view(apiView):
             return response
 
 
-class pushJsonToAssessment_view(apiView):
+class PushJsonToAssessmentView(apiView):
     def processView(self):
         if self.request.method == "POST":
             obligatory = ["project_cod", "user_owner", "ass_cod", "json"]
@@ -827,7 +833,7 @@ def ApiAssessmentPushProcess(self, structure, dataworking, activeProjectId):
         return response
 
 
-class readAssessmentData_view(apiView):
+class ReadAssessmentDataView(apiView):
     def processView(self):
         if self.request.method == "GET":
             obligatory = ["project_cod", "user_owner", "ass_cod"]
@@ -932,7 +938,7 @@ class readAssessmentData_view(apiView):
 from climmob.views.Api.projectRegistryStart import functionForProcessAndValidateUpdate
 
 
-class assessmentDataCleaning_view(apiView):
+class AssessmentDataCleaningView(apiView):
     def processView(self):
         if self.request.method == "POST":
             obligatory = ["project_cod", "user_owner", "ass_cod", "json"]
@@ -988,6 +994,7 @@ class assessmentDataCleaning_view(apiView):
                                     dataworking["ass_cod"],
                                     self.request,
                                 ):
+
                                     structure = generateStructureForInterfaceForms(
                                         dataworking["user_owner"],
                                         activeProjectId,
