@@ -301,6 +301,28 @@ class TestOdkView(unittest.TestCase):
         result = self.view.authorize(correct_password)
         self.assertTrue(result)
 
+    def test_authorize_invalid_response_header(self):
+        self.view.user = "user"
+        correct_password = "password".encode()
+        self.request.body = b"test_body"
+
+        self.view.authHeader["response"] = "test_response_header"
+
+        result = self.view.authorize(correct_password)
+
+        self.assertFalse(result)
+
+    @patch("climmob.views.classes.md5", side_effect=md5)
+    def test_authorize_empty_qop(self, mock_md5):
+        self.view.user = "user"
+        correct_password = "password".encode()
+        self.request.body = b"test_body"
+        self.view.authHeader["qop"] = ""
+
+        with self.assertRaises(TypeError):
+            self.view.authorize(correct_password)
+
+
     @patch("climmob.views.classes.md5", side_effect=md5)
     def test_authorize_auth_int_qop(self, mock_md5):
         self.view.user = "user"
