@@ -811,12 +811,12 @@ class TestPrivateView(unittest.TestCase):
     @patch("climmob.views.classes.getUserData")
     @patch("climmob.views.classes.getLastActivityLogByUser")
     def test_call_invalid_cross_post(
-            self,
-            mock_get_last_activity_log_by_user,
-            mock_get_user_data,
-            mock_process_view,
-            mock_check_csrf_token,
-            mock_log,
+        self,
+        mock_get_last_activity_log_by_user,
+        mock_get_user_data,
+        mock_process_view,
+        mock_check_csrf_token,
+        mock_log,
     ):
         policy = self.view.get_policy("main")
         policy.authenticated_userid.return_value = (
@@ -846,16 +846,17 @@ class TestPrivateView(unittest.TestCase):
         mock_log.error.assert_called_once_with(
             f"SECURITY-CrossPost error. Posting at {self.request.url} from {self.request.referer} "
         )
+
     @patch("climmob.views.classes.json")
     @patch("climmob.views.classes.privateView.processView")
     @patch("climmob.views.classes.getUserData")
     @patch("climmob.views.classes.getLastActivityLogByUser")
     def test_call_raw_result_dict(
-            self,
-            mock_get_last_activity_log_by_user,
-            mock_get_user_data,
-            mock_process_view,
-            mock_json,
+        self,
+        mock_get_last_activity_log_by_user,
+        mock_get_user_data,
+        mock_process_view,
+        mock_json,
     ):
         policy = self.view.get_policy("main")
         policy.authenticated_userid.return_value = (
@@ -874,18 +875,20 @@ class TestPrivateView(unittest.TestCase):
 
         self.view()
 
-        mock_json.dumps.assert_called_once_with(self.view.viewResult, default=self.view.myconverter, indent=4)
+        mock_json.dumps.assert_called_once_with(
+            self.view.viewResult, default=self.view.myconverter, indent=4
+        )
 
     @patch("climmob.views.classes.json")
     @patch("climmob.views.classes.privateView.processView")
     @patch("climmob.views.classes.getUserData")
     @patch("climmob.views.classes.getLastActivityLogByUser")
     def test_call_raw_result_not_dict(
-            self,
-            mock_get_last_activity_log_by_user,
-            mock_get_user_data,
-            mock_process_view,
-            mock_json,
+        self,
+        mock_get_last_activity_log_by_user,
+        mock_get_user_data,
+        mock_process_view,
+        mock_json,
     ):
         policy = self.view.get_policy("main")
         policy.authenticated_userid.return_value = (
@@ -905,6 +908,18 @@ class TestPrivateView(unittest.TestCase):
         result = self.view()
 
         self.assertEqual(result, self.view.viewResult)
+
+    def test_myconverter_datetime(self):
+        test_datetime = MagicMock(dt)
+        result = self.view.myconverter(test_datetime)
+
+        self.assertEqual(result, str(test_datetime))
+
+    def test_myconverter_not_datetime(self):
+        test_datetime = MagicMock()
+        result = self.view.myconverter(test_datetime)
+
+        self.assertIsNone(result)
 
 
 class TestApiView(unittest.TestCase):
