@@ -407,7 +407,7 @@ def getListOfProjects(dbsession):
             Project.project_active,
             Project.project_affiliation,
             Project.project_curated_cropname,
-            Project.project_continent,
+            Country.cnty_continent,
             Project.climmob_analytics,
             ProjectStatus.prjstatus_name,
             ProjectType.prjtype_name,
@@ -439,7 +439,7 @@ def getListOfProjects(dbsession):
             Project.project_active,
             Project.project_affiliation,
             Project.project_curated_cropname,
-            Project.project_continent,
+            Project.project_cnty.label("cnty_continent"),
             Project.climmob_analytics,
             ProjectStatus.prjstatus_name,
             ProjectType.prjtype_name,
@@ -615,7 +615,7 @@ def createProjectsSummary(self, settings, otro):
             result["affiliation"] = project["project_affiliation"]
             result["cropname"] = project["project_curated_cropname"]
             result["project_active"] = project["project_active"]
-            result["project_continent"] = project["project_continent"]
+            result["project_continent"] = project["cnty_continent"]
             result["climmob_analytics"] = project["climmob_analytics"]
             result["project_status"] = project["prjstatus_name"]
             result["project_type"] = project["prjtype_name"]
