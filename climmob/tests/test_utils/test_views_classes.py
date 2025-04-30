@@ -805,6 +805,48 @@ class TestPrivateView(unittest.TestCase):
             f"SECURITY-CSRF error at {self.request.url} "
         )
 
+    @patch("climmob.views.classes.log")
+    @patch("climmob.views.classes.check_csrf_token")
+    @patch("climmob.views.classes.privateView.processView")
+    @patch("climmob.views.classes.getUserData")
+    @patch("climmob.views.classes.getLastActivityLogByUser")
+    def test_call_invalid_cross_post(
+            self,
+            mock_get_last_activity_log_by_user,
+            mock_get_user_data,
+            mock_process_view,
+            mock_check_csrf_token,
+            mock_log,
+    ):
+        policy = self.view.get_policy("main")
+        policy.authenticated_userid.return_value = (
+            "{'login': 'test', 'group': 'mainApp'}"
+        )
+
+        mock_get_user_data.return_value = MagicMock(
+            login="test_user", languages=["en"], email="test@example.com"
+        )
+
+        mock_get_last_activity_log_by_user.return_value = None
+
+        mock_check_csrf_token.return_value = True
+
+        self.request.method = "POST"
+
+        self.request.url = "test_url"
+        self.request.referer = "test_referer"
+
+        self.view.checkCrossPost = True
+
+        with self.assertRaises(HTTPNotFound):
+            self.view()
+
+        self.request.session.pop_flash.assert_called_once()
+
+        mock_log.error.assert_called_once_with(
+            f"SECURITY-CrossPost error. Posting at {self.request.url} from {self.request.referer} "
+        )
+
 
 class TestApiView(unittest.TestCase):
     def setUp(self):
