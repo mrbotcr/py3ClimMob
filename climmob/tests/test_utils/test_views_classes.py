@@ -659,9 +659,7 @@ class TestPrivateView(unittest.TestCase):
     )
     def test_call_no_group(self, mock_literal_eval):
         policy = self.view.get_policy("main")
-        policy.authenticated_userid.return_value = (
-            "{'login': 'test'}"
-        )
+        policy.authenticated_userid.return_value = "{'login': 'test'}"
         with self.assertRaises(KeyError) as context:
             self.view()
 
@@ -673,14 +671,37 @@ class TestPrivateView(unittest.TestCase):
     )
     def test_call_empty_group(self, mock_literal_eval):
         policy = self.view.get_policy("main")
-        policy.authenticated_userid.return_value = (
-            "{'login': 'test', 'group': ''}"
-        )
+        policy.authenticated_userid.return_value = "{'login': 'test', 'group': ''}"
         response = self.view()
 
         self.assertEqual(type(response), HTTPFound)
 
+    @patch("climmob.views.classes.privateView.processView")
+    @patch("climmob.views.classes.getActiveProject", return_value=None)
+    @patch("climmob.views.classes.getUserData")
+    @patch(
+        "climmob.views.classes.literal_eval",
+        return_value={"login": "test", "group": "mainApp"},
+    )
+    def test_call_no_active_project(
+        self,
+        mock_literal_eval,
+        mock_get_user_data,
+        mock_get_active_project,
+        mock_process_view,
+    ):
+        policy = self.view.get_policy("main")
+        policy.authenticated_userid.return_value = (
+            "{'login': 'test', 'group': 'mainApp'}"
+        )
 
+        mock_get_user_data.return_value = MagicMock(
+            login="test_user", languages=["en"], email="test@example.com"
+        )
+
+        self.view()
+
+        self.assertFalse(self.view.classResult["hasActiveProject"])
 
 
 class TestApiView(unittest.TestCase):
