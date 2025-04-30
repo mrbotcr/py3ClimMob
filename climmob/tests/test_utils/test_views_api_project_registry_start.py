@@ -2876,6 +2876,17 @@ class TestPushJsonToRegistryView(unittest.TestCase):
         mock_isRegistryClose.assert_called_once_with(1, self.view.request)
 
     @patch("climmob.views.Api.projectRegistryStart.ApiRegistrationPushProcess")
+    @patch("climmob.views.Api.projectRegistryStart.generateStructureForInterfaceForms", return_value=[
+            {
+                "section_questions": [
+                    {
+                        "question_code": "QST162",
+                        "question_datafield": "package_id",
+                        "question_requiredvalue": 1,
+                    },
+                ]
+            }
+        ])
     @patch("climmob.views.Api.projectRegistryStart.isRegistryClose", return_value=False)
     @patch(
         "climmob.views.Api.projectRegistryStart.projectRegStatus", return_value=False
@@ -2894,6 +2905,7 @@ class TestPushJsonToRegistryView(unittest.TestCase):
         mock_getAccessTypeForProject,
         mock_projectRegStatus,
         mock_isRegistryClose,
+        mock_generateStructureForInterfaceForms,
         mock_ApiRegistrationPushProcess,
     ):
         mock_ApiRegistrationPushProcess.return_value = MockResponse(

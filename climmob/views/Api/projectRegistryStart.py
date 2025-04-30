@@ -1633,10 +1633,10 @@ def functionForProcessAndValidateUpdate(
 
                                 if atLeastOneHasBeenSent:
                                     for column in getColumnValue:
-                                        print(
-                                            "Debo de obtener el valor en la base de datos de la columna: "
-                                            + column
-                                        )
+                                        # print(
+                                        #     "Debo de obtener el valor en la base de datos de la columna: "
+                                        #     + column
+                                        # )
 
                                         if (
                                             str(rowInTheDatabase[column])
@@ -1656,7 +1656,7 @@ def functionForProcessAndValidateUpdate(
                                             )
                                             return response
 
-                        print("***********Esta permitido intentar el update***********")
+                        # print("***********Esta permitido intentar el update***********")
                         _json["id"] = 0
                         _json["flag_update"] = "true"
                         result, message = update_edited_data(

@@ -13,7 +13,7 @@ from climmob.views.Api.projectTechnologies import (
     ReadProjectTechnologiesAliasView,
     ReadProjectTechnologiesAliasExtraView,
     ReadPossibleProjectTechnologiesAliasView,
-    DeleteProjectTechnologyAlias_view,
+    DeleteProjectTechnologyAliasView,
 )
 
 
@@ -2720,7 +2720,7 @@ class TestReadPossibleProjectTechnologiesAliasView(unittest.TestCase):
 
 class TestDeleteProyectTechnologyAliasView(unittest.TestCase):
     def setUp(self):
-        self.view = deleteProjectTechnologyAlias_view(MagicMock())
+        self.view = DeleteProjectTechnologyAliasView(MagicMock())
         self.view.request.method = "POST"
         self.view.body = json.dumps(
             {
