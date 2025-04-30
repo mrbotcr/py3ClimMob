@@ -322,7 +322,6 @@ class TestOdkView(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.view.authorize(correct_password)
 
-
     @patch("climmob.views.classes.md5", side_effect=md5)
     def test_authorize_auth_int_qop(self, mock_md5):
         self.view.user = "user"
@@ -942,6 +941,43 @@ class TestPrivateView(unittest.TestCase):
         result = self.view.myconverter(test_datetime)
 
         self.assertIsNone(result)
+
+    @patch("climmob.views.classes.p.PluginImplementations")
+    @patch("climmob.views.classes.privateView.processView")
+    @patch("climmob.views.classes.getUserData")
+    @patch("climmob.views.classes.getLastActivityLogByUser")
+    def test_call_plugin(
+        self,
+        mock_get_last_activity_log_by_user,
+        mock_get_user_data,
+        mock_process_view,
+        mock_plugins,
+    ):
+        policy = self.view.get_policy("main")
+        policy.authenticated_userid.return_value = (
+            "{'login': 'test', 'group': 'mainApp'}"
+        )
+
+        mock_get_user_data.return_value = MagicMock(
+            login="test_user", languages=["en"], email="test@example.com"
+        )
+
+        mock_get_last_activity_log_by_user.return_value = None
+
+        mock_process_view.return_value = MagicMock()
+
+        good_plugin = MagicMock()
+        bad_plugin = MagicMock()
+        bad_plugin.register_user_flow.side_effect = Exception
+
+        mock_plugins.return_value = [good_plugin, bad_plugin]
+
+        self.view()
+
+        mock_plugins.assert_called_once()
+        good_plugin.register_user_flow.assert_called_once_with(
+            self.view.user, self.view.request
+        )
 
 
 class TestApiView(unittest.TestCase):
