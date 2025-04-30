@@ -2,6 +2,7 @@ import json
 import unittest
 import uuid
 from datetime import datetime as dt
+from datetime import timedelta
 from hashlib import md5
 from unittest.mock import MagicMock, patch, mock_open
 
@@ -702,6 +703,72 @@ class TestPrivateView(unittest.TestCase):
         self.view()
 
         self.assertFalse(self.view.classResult["hasActiveProject"])
+
+    @patch("climmob.views.classes.addToLog")
+    @patch("climmob.views.classes.privateView.processView")
+    @patch("climmob.views.classes.getUserData")
+    @patch("climmob.views.classes.getLastActivityLogByUser")
+    def test_call_last_activity_is_welcome_and_route_is_not_dashboard(
+        self,
+        mock_get_last_activity_log_by_user,
+        mock_get_user_data,
+        mock_process_view,
+        mock_add_to_log,
+    ):
+        policy = self.view.get_policy("main")
+        policy.authenticated_userid.return_value = (
+            "{'login': 'test', 'group': 'mainApp'}"
+        )
+
+        mock_get_user_data.return_value = MagicMock(
+            login="test_user", languages=["en"], email="test@example.com"
+        )
+
+        log = {"log_message": "Welcome to ClimMob", "log_datetime": dt.now()}
+
+        mock_get_last_activity_log_by_user.return_value = log
+
+        self.view.request.matched_route.name = "test_route"
+
+        self.view()
+
+        mock_add_to_log.assert_called_once_with(
+            self.view.user.login,
+            "PRF",
+            "Dashboard",
+            log["log_datetime"] + timedelta(0, 3),
+            self.view.request,
+        )
+
+    @patch("climmob.views.classes.addToLog")
+    @patch("climmob.views.classes.privateView.processView")
+    @patch("climmob.views.classes.getUserData")
+    @patch("climmob.views.classes.getLastActivityLogByUser")
+    def test_call_last_activity_is_welcome(
+        self,
+        mock_get_last_activity_log_by_user,
+        mock_get_user_data,
+        mock_process_view,
+        mock_add_to_log,
+    ):
+        policy = self.view.get_policy("main")
+        policy.authenticated_userid.return_value = (
+            "{'login': 'test', 'group': 'mainApp'}"
+        )
+
+        mock_get_user_data.return_value = MagicMock(
+            login="test_user", languages=["en"], email="test@example.com"
+        )
+
+        log = {"log_message": "Welcome to ClimMob", "log_datetime": dt.now()}
+
+        mock_get_last_activity_log_by_user.return_value = log
+
+        self.view.request.matched_route.name = "dashboard"
+
+        self.view()
+
+        self.assertTrue(self.view.classResult["showHelp"])
 
 
 class TestApiView(unittest.TestCase):
