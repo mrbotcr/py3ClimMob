@@ -137,6 +137,7 @@ class Country(Base):
     cnty_cod = Column(Unicode(3), primary_key=True)
     cnty_iso = Column(Unicode(3), nullable=True)
     cnty_name = Column(Unicode(120))
+    cnty_continent = Column(ForeignKey("continent.continent_id"), nullable=True)
     cnty_lang = Column(ForeignKey("i18n.lang_code"), server_default=text("'en'"))
 
     i18n = relationship("I18n")
@@ -719,7 +720,6 @@ class Project(Base):
     project_affiliation = Column(Unicode(120), nullable=True)
     climmob_analytics = Column(Integer, nullable=True)
     project_curated_cropname = Column(Unicode(120), nullable=True)
-    project_continent = Column(ForeignKey("continent.continent_id"), nullable=True)
     project_template_used = Column(ForeignKey("project.project_id"), nullable=True)
     project_checked = Column(Integer, server_default=text("'0'"))
 
