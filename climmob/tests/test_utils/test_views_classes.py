@@ -964,6 +964,36 @@ class TestApiView(unittest.TestCase):
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response.body, b"Apikey non-existent")
 
+    @patch("climmob.views.classes.Response")
+    def test_call_no_api_key(self, mock_response):
+        mock_response.return_value = MagicMock(status=401, body=b"Apikey non-existent")
+
+        response = self.view()
+
+        mock_response.assert_called_once_with(status=401, body="Apikey non-existent")
+        self.assertEqual(response, mock_response.return_value)
+
+    @patch("climmob.views.classes.apiView._validate")
+    @patch("climmob.views.classes.apiView.processView")
+    @patch("climmob.views.classes.update_last_login")
+    @patch(
+        "climmob.views.classes.getUserByApiKey",
+        return_value=MagicMock(login="test_user"),
+    )
+    def test_call(
+        self,
+        mock_getUserByApiKey,
+        mock_update_last_login,
+        mock_process_view,
+        mock_validate,
+    ):
+        self.request.params = {"Apikey": "valid", "key1": "value1", "key2": "value2"}
+
+        mock_process_view.return_value = MagicMock()
+        response = self.view()
+        mock_validate.assert_called_once()
+        self.assertEqual(response, mock_process_view.return_value)
+
 
 if __name__ == "__main__":
     unittest.main()
