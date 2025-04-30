@@ -653,6 +653,35 @@ class TestPrivateView(unittest.TestCase):
         # ):
         # self.view()
 
+    @patch(
+        "climmob.views.classes.literal_eval",
+        return_value={"login": "test"},
+    )
+    def test_call_no_group(self, mock_literal_eval):
+        policy = self.view.get_policy("main")
+        policy.authenticated_userid.return_value = (
+            "{'login': 'test'}"
+        )
+        with self.assertRaises(KeyError) as context:
+            self.view()
+
+        self.assertEqual(str(context.exception), "'group'")
+
+    @patch(
+        "climmob.views.classes.literal_eval",
+        return_value={"login": "test", "group": ""},
+    )
+    def test_call_empty_group(self, mock_literal_eval):
+        policy = self.view.get_policy("main")
+        policy.authenticated_userid.return_value = (
+            "{'login': 'test', 'group': ''}"
+        )
+        response = self.view()
+
+        self.assertEqual(type(response), HTTPFound)
+
+
+
 
 class TestApiView(unittest.TestCase):
     def setUp(self):
