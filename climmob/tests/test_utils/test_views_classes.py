@@ -846,6 +846,65 @@ class TestPrivateView(unittest.TestCase):
         mock_log.error.assert_called_once_with(
             f"SECURITY-CrossPost error. Posting at {self.request.url} from {self.request.referer} "
         )
+    @patch("climmob.views.classes.json")
+    @patch("climmob.views.classes.privateView.processView")
+    @patch("climmob.views.classes.getUserData")
+    @patch("climmob.views.classes.getLastActivityLogByUser")
+    def test_call_raw_result_dict(
+            self,
+            mock_get_last_activity_log_by_user,
+            mock_get_user_data,
+            mock_process_view,
+            mock_json,
+    ):
+        policy = self.view.get_policy("main")
+        policy.authenticated_userid.return_value = (
+            "{'login': 'test', 'group': 'mainApp'}"
+        )
+
+        mock_get_user_data.return_value = MagicMock(
+            login="test_user", languages=["en"], email="test@example.com"
+        )
+
+        mock_get_last_activity_log_by_user.return_value = None
+
+        mock_process_view.return_value = MagicMock(dict)
+
+        self.view.returnRawViewResult = True
+
+        self.view()
+
+        mock_json.dumps.assert_called_once_with(self.view.viewResult, default=self.view.myconverter, indent=4)
+
+    @patch("climmob.views.classes.json")
+    @patch("climmob.views.classes.privateView.processView")
+    @patch("climmob.views.classes.getUserData")
+    @patch("climmob.views.classes.getLastActivityLogByUser")
+    def test_call_raw_result_not_dict(
+            self,
+            mock_get_last_activity_log_by_user,
+            mock_get_user_data,
+            mock_process_view,
+            mock_json,
+    ):
+        policy = self.view.get_policy("main")
+        policy.authenticated_userid.return_value = (
+            "{'login': 'test', 'group': 'mainApp'}"
+        )
+
+        mock_get_user_data.return_value = MagicMock(
+            login="test_user", languages=["en"], email="test@example.com"
+        )
+
+        mock_get_last_activity_log_by_user.return_value = None
+
+        mock_process_view.return_value = MagicMock()
+
+        self.view.returnRawViewResult = True
+
+        result = self.view()
+
+        self.assertEqual(result, self.view.viewResult)
 
 
 class TestApiView(unittest.TestCase):
