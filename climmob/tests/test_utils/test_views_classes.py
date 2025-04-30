@@ -6,7 +6,7 @@ from datetime import timedelta
 from hashlib import md5
 from unittest.mock import MagicMock, patch, mock_open
 
-from pyramid.httpexceptions import HTTPFound, HTTPMethodNotAllowed
+from pyramid.httpexceptions import HTTPFound, HTTPMethodNotAllowed, HTTPNotFound
 from pyramid.testing import DummyRequest
 from webob.multidict import MultiDict
 
@@ -740,7 +740,6 @@ class TestPrivateView(unittest.TestCase):
             self.view.request,
         )
 
-    @patch("climmob.views.classes.addToLog")
     @patch("climmob.views.classes.privateView.processView")
     @patch("climmob.views.classes.getUserData")
     @patch("climmob.views.classes.getLastActivityLogByUser")
@@ -749,7 +748,6 @@ class TestPrivateView(unittest.TestCase):
         mock_get_last_activity_log_by_user,
         mock_get_user_data,
         mock_process_view,
-        mock_add_to_log,
     ):
         policy = self.view.get_policy("main")
         policy.authenticated_userid.return_value = (
@@ -769,6 +767,43 @@ class TestPrivateView(unittest.TestCase):
         self.view()
 
         self.assertTrue(self.view.classResult["showHelp"])
+
+    @patch("climmob.views.classes.log")
+    @patch("climmob.views.classes.check_csrf_token")
+    @patch("climmob.views.classes.privateView.processView")
+    @patch("climmob.views.classes.getUserData")
+    @patch("climmob.views.classes.getLastActivityLogByUser")
+    def test_call_token_not_safe(
+        self,
+        mock_get_last_activity_log_by_user,
+        mock_get_user_data,
+        mock_process_view,
+        mock_check_csrf_token,
+        mock_log,
+    ):
+        policy = self.view.get_policy("main")
+        policy.authenticated_userid.return_value = (
+            "{'login': 'test', 'group': 'mainApp'}"
+        )
+
+        mock_get_user_data.return_value = MagicMock(
+            login="test_user", languages=["en"], email="test@example.com"
+        )
+
+        mock_get_last_activity_log_by_user.return_value = None
+
+        mock_check_csrf_token.return_value = None
+
+        self.request.method = "POST"
+
+        with self.assertRaises(HTTPNotFound):
+            self.view()
+
+        self.request.session.pop_flash.assert_called_once()
+
+        mock_log.error.assert_called_once_with(
+            f"SECURITY-CSRF error at {self.request.url} "
+        )
 
 
 class TestApiView(unittest.TestCase):
