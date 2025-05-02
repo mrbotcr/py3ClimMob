@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 from pyramid.response import Response
 
-from climmob.tests.test_utils.common import BaseViewTestCase
+from climmob.tests.test_utils.common import ViewBaseTest
 from climmob.views.Api.projectAssessments import (
     ReadProjectAssessmentsView,
     AddNewAssessmentView,
@@ -21,7 +21,7 @@ from climmob.views.Api.projectAssessments import (
 )
 
 
-class TestReadProjectAssessmentsView(BaseViewTestCase):
+class TestReadProjectAssessmentsView(ViewBaseTest):
     view_class = ReadProjectAssessmentsView
     request_method = "GET"
     request_body = json.dumps({"project_cod": "123", "user_owner": "owner"})
@@ -103,7 +103,7 @@ class TestReadProjectAssessmentsView(BaseViewTestCase):
         self.assertIn("Only accepts GET method.", response.body.decode())
 
 
-class TestAddNewAssessmentView(BaseViewTestCase):
+class TestAddNewAssessmentView(ViewBaseTest):
     view_class = AddNewAssessmentView
     request_method = "POST"
     request_body = json.dumps(
@@ -376,7 +376,7 @@ class TestAddNewAssessmentView(BaseViewTestCase):
         )
 
 
-class TestUpdateProjectAssessmentView(BaseViewTestCase):
+class TestUpdateProjectAssessmentView(ViewBaseTest):
     view_class = UpdateProjectAssessmentView
     request_method = "POST"
     request_body = json.dumps(
@@ -676,7 +676,7 @@ class TestUpdateProjectAssessmentView(BaseViewTestCase):
         )
 
 
-class TestDeleteProjectAssessmentView(BaseViewTestCase):
+class TestDeleteProjectAssessmentView(ViewBaseTest):
     view_class = DeleteProjectAssessmentView
     request_method = "POST"
     request_body = json.dumps(
@@ -964,7 +964,7 @@ class TestDeleteProjectAssessmentView(BaseViewTestCase):
         )
 
 
-class TestReadProjectAssessmentStructureView(BaseViewTestCase):
+class TestReadProjectAssessmentStructureView(ViewBaseTest):
     view_class = ReadProjectAssessmentStructureView
     request_method = "GET"
     request_body = json.dumps(
@@ -1300,7 +1300,7 @@ class TestReadProjectAssessmentStructureView(BaseViewTestCase):
         mock_assessment_exists.assert_not_called()
 
 
-class TestCreateAssessmentGroupView(BaseViewTestCase):
+class TestCreateAssessmentGroupView(ViewBaseTest):
     view_class = CreateAssessmentGroupView
     request_method = "POST"
     request_body = json.dumps(
@@ -1632,7 +1632,7 @@ class TestCreateAssessmentGroupView(BaseViewTestCase):
         mock_get_access_type_for_project.assert_not_called()
 
 
-class TestUpdateAssessmentGroupView(BaseViewTestCase):
+class TestUpdateAssessmentGroupView(ViewBaseTest):
     view_class = UpdateAssessmentGroupView
     request_method = "POST"
     request_body = json.dumps(
@@ -1987,7 +1987,7 @@ class TestUpdateAssessmentGroupView(BaseViewTestCase):
         self.assertTrue(mock_modify_assessment_group.called)
 
 
-class TestDeleteAssessmentGroupView(BaseViewTestCase):
+class TestDeleteAssessmentGroupView(ViewBaseTest):
     view_class = DeleteAssessmentGroupView
     request_method = "POST"
     request_body = json.dumps(
@@ -2363,7 +2363,7 @@ class TestDeleteAssessmentGroupView(BaseViewTestCase):
         mock_assessment_exists.assert_not_called()
 
 
-class TestReadPossibleQuestionForAssessmentGroupView(BaseViewTestCase):
+class TestReadPossibleQuestionForAssessmentGroupView(ViewBaseTest):
     view_class = ReadPossibleQuestionForAssessmentGroupView
     request_method = "GET"
     request_body = json.dumps(
@@ -2578,7 +2578,7 @@ class TestReadPossibleQuestionForAssessmentGroupView(BaseViewTestCase):
         mock_assessment_exists.assert_not_called()
 
 
-class TestAddQuestionToGroupAssessmentView(BaseViewTestCase):
+class TestAddQuestionToGroupAssessmentView(ViewBaseTest):
     view_class = AddQuestionToGroupAssessmentView
     request_method = "POST"
     request_body = json.dumps(
@@ -3092,7 +3092,7 @@ class TestAddQuestionToGroupAssessmentView(BaseViewTestCase):
         self.assertTrue(mock_exits_assessment_group.called)
 
 
-class TestDeleteQuestionFromGroupAssessmentView(BaseViewTestCase):
+class TestDeleteQuestionFromGroupAssessmentView(ViewBaseTest):
     view_class = DeleteQuestionFromGroupAssessmentView
     request_method = "POST"
     request_body = json.dumps(
@@ -3600,7 +3600,7 @@ class TestDeleteQuestionFromGroupAssessmentView(BaseViewTestCase):
         mock_assessment_exists.assert_not_called()
 
 
-class TestOrderAssessmentQuestionsView(BaseViewTestCase):
+class TestOrderAssessmentQuestionsView(ViewBaseTest):
     view_class = OrderAssessmentQuestionsView
     request_method = "POST"
     request_body = json.dumps(

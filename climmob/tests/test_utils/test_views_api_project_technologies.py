@@ -2,7 +2,7 @@ import json
 import unittest
 from unittest.mock import patch, MagicMock
 
-from climmob.tests.test_utils.common import BaseViewTestCase
+from climmob.tests.test_utils.common import ViewBaseTest
 from climmob.views.Api.projectTechnologies import (
     AddProjectTechnologyView,
     ReadProjectTechnologiesView,
@@ -17,7 +17,7 @@ from climmob.views.Api.projectTechnologies import (
 )
 
 
-class TestAddProjectTechnologyView(BaseViewTestCase):
+class TestAddProjectTechnologyView(ViewBaseTest):
     view_class = AddProjectTechnologyView
     request_method = "POST"
 
@@ -385,7 +385,7 @@ class TestAddProjectTechnologyView(BaseViewTestCase):
         )
 
 
-class TestReadProjectTechnologiesView(BaseViewTestCase):
+class TestReadProjectTechnologiesView(ViewBaseTest):
     view_class = ReadProjectTechnologiesView
     request_method = "GET"
 
@@ -469,7 +469,7 @@ class TestReadProjectTechnologiesView(BaseViewTestCase):
         mock_json_loads.assert_called_once_with(self.view.body)
 
 
-class TestReadPossibleProjectTechnologiesView(BaseViewTestCase):
+class TestReadPossibleProjectTechnologiesView(ViewBaseTest):
     view_class = ReadPossibleProjectTechnologiesView
     request_method = "GET"
 
@@ -586,7 +586,7 @@ class TestReadPossibleProjectTechnologiesView(BaseViewTestCase):
         mock_json_loads.assert_called_once_with(self.view.body)
 
 
-class TestDeleteProjectTechnologyView(BaseViewTestCase):
+class TestDeleteProjectTechnologyView(ViewBaseTest):
     view_class = DeleteProjectTechnologyView
     request_method = "POST"
 
@@ -903,7 +903,7 @@ class TestDeleteProjectTechnologyView(BaseViewTestCase):
         mock_json_loads.assert_called_once_with(self.view.body)
 
 
-class TestAddProjectTechnologyAliasView(BaseViewTestCase):
+class TestAddProjectTechnologyAliasView(ViewBaseTest):
     view_class = AddProjectTechnologyAliasView
     request_method = "POST"
 

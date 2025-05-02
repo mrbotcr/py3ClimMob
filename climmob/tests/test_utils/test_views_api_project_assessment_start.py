@@ -15,7 +15,7 @@ from climmob.views.Api.projectAssessmentStart import (
     ReadAssessmentDataView,
     AssessmentDataCleaningView,
 )
-from climmob.tests.test_utils.common import BaseViewTestCase
+from climmob.tests.test_utils.common import ViewBaseTest
 
 
 class MockResponse:
@@ -33,7 +33,7 @@ class FakeSelf:
         self._ = lambda x: x
 
 
-class TestCreateProjectAssessmentView(BaseViewTestCase):
+class TestCreateProjectAssessmentView(ViewBaseTest):
     view_class = CreateProjectAssessmentView
     request_method = "POST"
     request_body = json.dumps(
@@ -529,7 +529,7 @@ class TestCreateProjectAssessmentView(BaseViewTestCase):
         )
 
 
-class TestCancelAssessmentApiView(BaseViewTestCase):
+class TestCancelAssessmentApiView(ViewBaseTest):
     view_class = CancelAssessmentApiView
     request_method = "POST"
     request_body = json.dumps(
@@ -675,7 +675,7 @@ class TestCancelAssessmentApiView(BaseViewTestCase):
         mock_project_exists.assert_not_called()
 
 
-class TestCloseAssessmentApiView(BaseViewTestCase):
+class TestCloseAssessmentApiView(ViewBaseTest):
     view_class = CloseAssessmentApiView
     request_method = "POST"
     request_body = json.dumps(
@@ -864,7 +864,7 @@ class TestCloseAssessmentApiView(BaseViewTestCase):
         mock_project_exists.assert_not_called()
 
 
-class TestReadAssessmentStructureView(BaseViewTestCase):
+class TestReadAssessmentStructureView(ViewBaseTest):
     view_class = ReadAssessmentStructureView
     request_method = "GET"
     request_body = json.dumps(
@@ -1014,7 +1014,7 @@ class TestReadAssessmentStructureView(BaseViewTestCase):
         mock_project_exists.assert_not_called()
 
 
-class TestPushJsonToAssessmentView(BaseViewTestCase):
+class TestPushJsonToAssessmentView(ViewBaseTest):
     view_class = PushJsonToAssessmentView
     request_method = "POST"
     request_body = json.dumps(
@@ -1656,7 +1656,7 @@ class TestApiAssessmentPushProcess(unittest.TestCase):
         )
 
 
-class TestReadAssessmentDataView(BaseViewTestCase):
+class TestReadAssessmentDataView(ViewBaseTest):
     view_class = ReadAssessmentDataView
     request_method = "GET"
     request_body = json.dumps(
@@ -1773,7 +1773,7 @@ class TestReadAssessmentDataView(BaseViewTestCase):
         self.assertIn('{"structure": "a", "data": "data"}', response.body.decode())
 
 
-class TestAssessmentDataCleaningView(BaseViewTestCase):
+class TestAssessmentDataCleaningView(ViewBaseTest):
     view_class = AssessmentDataCleaningView
     request_method = "POST"
     request_body = '{"project_cod": "123", "user_owner": "owner", "ass_cod": "ass123", "json": "json"}'
