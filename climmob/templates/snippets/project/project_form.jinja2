@@ -383,13 +383,14 @@
 
     $(".js-example-data-ajax").select2({
         placeholder: "{{ _("Write the affiliation name") }}",
+        minimumInputLength: 0,
         ajax: {
             url: "{{ request.route_url('searchaffiliation') }}",
             dataType: 'json',
             delay: 250,
             data: function (params) {
                 return {
-                    q: params.term, // search term
+                    q: params.term || "", // search term
                     page: params.page
                 };
             },
@@ -402,7 +403,6 @@
                         text: "{{ _("New affiliation") }}: "+params.term,
                     });
                 }
-
                 return {
                     results: data.results,
                     pagination: {
