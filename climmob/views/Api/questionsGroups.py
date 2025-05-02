@@ -17,7 +17,7 @@ from climmob.processes import (
 from climmob.views.classes import apiView
 
 
-class createGroupOfQuestion_view(apiView):
+class CreateGroupOfQuestionView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -89,7 +89,7 @@ class createGroupOfQuestion_view(apiView):
             return response
 
 
-class updateGroupOfQuestion_view(apiView):
+class UpdateGroupOfQuestionView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -176,7 +176,7 @@ class updateGroupOfQuestion_view(apiView):
             return response
 
 
-class deleteGroupOfQuestion_view(apiView):
+class DeleteGroupOfQuestionView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -258,7 +258,7 @@ class deleteGroupOfQuestion_view(apiView):
             return response
 
 
-class readGroupsOfQuestions_view(apiView):
+class ReadGroupsOfQuestionsView(apiView):
     def processView(self):
 
         if self.request.method == "GET":

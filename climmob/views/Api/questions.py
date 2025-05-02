@@ -76,7 +76,7 @@ class CreateQuestionView(apiView):
             permitedKeys = True
             for key in dataworking.keys():
                 if key not in possibles:
-                    print(key)
+                    # print(key)
                     permitedKeys = False
 
             obligatoryKeys = True
@@ -113,7 +113,9 @@ class CreateQuestionView(apiView):
                             dataworking["question_alwaysinasse"] = 0
 
                         if "question_requiredvalue" not in dataworking.keys():
-                            dataworking["question_requiredvalue"] = 0
+                            dataworking[
+                                "question_requiredvalue"
+                            ] = 0  # code inaccessible to the test, since it is mandatory
 
                         if "question_unit" not in dataworking.keys():
                             dataworking["question_unit"] = ""
@@ -349,7 +351,7 @@ class UpdateQuestionView(apiView):
             permitedKeys = True
             for key in dataworking.keys():
                 if key not in possibles:
-                    print(key)
+                    # print(key)
                     permitedKeys = False
 
             obligatoryKeys = True
@@ -486,7 +488,7 @@ class UpdateQuestionView(apiView):
                                         dataworking["question_tied"] = 0
                                         dataworking["question_notobserved"] = 0
 
-                                else:
+                                else:  # inaccessible--> error Not all parameters have data. or Check the ID of the question type
                                     if (
                                         str(data["question_dtype"]) == "9"
                                         or str(data["question_dtype"]) == "10"
@@ -1465,7 +1467,8 @@ class MultiLanguageQuestionView(apiView):
                                         info["value_desc"] = dataworking[key]
                                         questionOptions.append(info)
                                     except:
-                                        va = ""
+                                        # va = ""
+                                        pass
                             if questionOptions:
                                 actionInTheTranslationOfQuestionOptions(
                                     self, questionOptions

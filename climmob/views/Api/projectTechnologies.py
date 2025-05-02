@@ -870,7 +870,7 @@ class ReadPossibleProjectTechnologiesAliasView(apiView):
             return response
 
 
-class deleteProjectTechnologyAlias_view(apiView):
+class DeleteProjectTechnologyAliasView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
