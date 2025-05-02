@@ -3100,11 +3100,9 @@ class TestApiRegistrationPushProcess(unittest.TestCase):
         self.assertEqual(response.status, "401 Unauthorized")
         self.assertIn(b"The package code must be a number", response.body)
 
+    @patch("climmob.views.Api.projectRegistryStart.open")
     @patch("climmob.views.Api.projectRegistryStart.getProjectNumobs", return_value=2)
-    def test_api_registration_no_package_code(
-        self,
-        mock_getProjectNumobs,
-    ):
+    def test_api_registration_no_package_code(self, mock_getProjectNumobs, mock_open):
         structure = [
             {
                 "section_questions": [
@@ -3135,11 +3133,12 @@ class TestApiRegistrationPushProcess(unittest.TestCase):
             response.body, b"ERROR: You do not have a package code with this ID."
         )
 
+    @patch("climmob.views.Api.projectRegistryStart.open")
     @patch("climmob.views.Api.projectRegistryStart.storeJSONInMySQL")
     @patch("climmob.views.Api.projectRegistryStart.getProjectNumobs", return_value=10)
     @patch("uuid.uuid1", return_value="12345678")
     def test_api_registration_reads_log_error(
-        self, mock_uuid, mock_getProjectNumobs, mock_storeJSONInMySQL
+        self, mock_uuid, mock_getProjectNumobs, mock_storeJSONInMySQL, mock_open
     ):
         structure = [
             {
@@ -3195,10 +3194,11 @@ class TestApiRegistrationPushProcess(unittest.TestCase):
         )
         mock_storeJSONInMySQL.assert_called()
 
+    @patch("climmob.views.Api.projectRegistryStart.open")
     @patch("climmob.views.Api.projectRegistryStart.storeJSONInMySQL")
     @patch("climmob.views.Api.projectRegistryStart.getProjectNumobs", return_value=10)
     def test_api_registration_successful(
-        self, mock_getProjectNumobs, mock_storeJSONInMySQL
+        self, mock_getProjectNumobs, mock_storeJSONInMySQL, mock_open
     ):
         structure = [
             {
