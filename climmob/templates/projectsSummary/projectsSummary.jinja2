@@ -126,6 +126,9 @@
                                     <th data-hide="all" style="text-align: center">{{ _("Curated crop name") }}</th>
                                     <th data-hide="all" style="text-align: center">{{ _("Active") }}</th>
                                     <th data-hide="all" style="text-align: center">{{ _("Continent") }}</th>
+                                    <th data-hide="all" style="text-align: center">{{ _("Experimental site") }}</th>
+                                    <th data-hide="all" style="text-align: center">{{ _("Unit of analysis") }}</th>
+                                    <th data-hide="all" style="text-align: center">{{ _("Objective") }}</th>
                                     <th data-hide="all" style="text-align: center">{{ _("Status") }}</th>
                                     <th data-hide="all" style="text-align: center">{{ _("Type") }}</th>
                                     <th data-hide="all" style="text-align: center">{{ _("Dashboard") }}</th>
@@ -161,6 +164,9 @@
                                         <td>{{ project["cropname"] }}</td>
                                         <td>{% if project["project_active"] == 1 %}{{ _("Yes") }}{% else %}{{ _("No") }}{% endif %}</td>
                                         <td>{{ project["project_continent"] }}</td>
+                                        <td>{{ project["project_experimental_site"] }}</td>
+                                        <td>{{ project["project_unit_of_analysis"] }}</td>
+                                        <td>{{ project["project_objective"] }}</td>
                                         <td>{{ project["project_status"] }}</td>
                                         <td>{{ project["project_type"] }}</td>
                                         <td>{% if project["climmob_analytics"] == 1 %}{{ _("Yes") }}{% else %}{{ _("No") }}{% endif %}</td>
