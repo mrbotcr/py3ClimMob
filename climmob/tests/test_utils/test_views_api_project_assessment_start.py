@@ -1513,6 +1513,7 @@ class TestApiAssessmentPushProcess(unittest.TestCase):
             b"You have repeated data in the next column: option_2. Remember that the options can not be repeated.",
         )
 
+    @patch("climmob.views.Api.projectAssessmentStart.open")
     @patch("climmob.views.Api.projectAssessmentStart.uuid.uuid1")
     @patch("climmob.views.Api.projectAssessmentStart.os.path.join")
     @patch("climmob.views.Api.projectAssessmentStart.storeJSONInMySQL")
@@ -1520,7 +1521,12 @@ class TestApiAssessmentPushProcess(unittest.TestCase):
         "climmob.views.Api.projectAssessmentStart.os.path.exists", return_value=False
     )
     def test_api_registration_success(
-        self, mock_storeJSONInMySQL, mock_os_path_join, mock_uuid1, mock_os_path_exist
+        self,
+        mock_storeJSONInMySQL,
+        mock_os_path_join,
+        mock_uuid1,
+        mock_os_path_exist,
+        mock_open,
     ):
         structure = [
             {
@@ -1567,6 +1573,7 @@ class TestApiAssessmentPushProcess(unittest.TestCase):
         self.assertEqual(response.status, "200 OK")
         self.assertIn(response.body, b"Data registered.")
 
+    @patch("climmob.views.Api.projectAssessmentStart.open")
     @patch("uuid.uuid1", return_value=UUID("12345678-1234-5678-1234-567812345678"))
     @patch(
         "climmob.views.Api.projectAssessmentStart.os.path.join",
@@ -1574,7 +1581,7 @@ class TestApiAssessmentPushProcess(unittest.TestCase):
     )
     @patch("climmob.views.Api.projectAssessmentStart.storeJSONInMySQL")
     def test_api_registration_data_could_not_be_saved(
-        self, mock_storeJSONInMySQL, mock_os_path_join, mock_uuid1
+        self, mock_storeJSONInMySQL, mock_os_path_join, mock_uuid1, mock_open
     ):
         structure = [
             {
