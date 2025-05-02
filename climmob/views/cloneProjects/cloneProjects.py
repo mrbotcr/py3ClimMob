@@ -18,6 +18,7 @@ from climmob.processes import (
     get_all_project_location,
     get_all_unit_of_analysis_by_location,
     get_all_objectives_by_location_and_unit_of_analysis,
+    get_all_affiliations,
 )
 from climmob.views.classes import privateView
 from climmob.views.project import createProjectFunction, functionCreateClone
@@ -178,6 +179,7 @@ class cloneProjects_view(privateView):
                     dataworking["project_location"],
                     dataworking["project_unit_of_analysis"],
                 ),
+                "list_of_affiliation": get_all_affiliations(self.request),
             }
 
         if stage == 4:

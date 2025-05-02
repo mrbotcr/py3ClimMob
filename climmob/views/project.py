@@ -51,6 +51,7 @@ from climmob.processes import (
     get_location_unit_of_analysis_by_combination,
     get_location_unit_of_analysis_objectives_by_combination,
     delete_all_project_location_unit_objective,
+    get_all_affiliations,
 )
 from climmob.views.classes import privateView
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
@@ -157,6 +158,7 @@ class newProject_view(privateView):
                 dataworking["project_location"],
                 dataworking["project_unit_of_analysis"],
             ),
+            "list_of_affiliation": get_all_affiliations(self.request),
         }
 
 
@@ -759,6 +761,7 @@ class modifyProject_view(privateView):
             "listOfObjectives": get_all_objectives_by_location_and_unit_of_analysis(
                 self.request, data["project_location"], data["project_unit_of_analysis"]
             ),
+            "list_of_affiliation": get_all_affiliations(self.request),
         }
         for plugin in p.PluginImplementations(p.IProject):
             context = plugin.before_returning_project_context(self.request, context)

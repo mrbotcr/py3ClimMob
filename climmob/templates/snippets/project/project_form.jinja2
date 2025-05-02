@@ -62,11 +62,18 @@
                     <div class="form-group">
                         <label class="col-sm-4 control-label">{{ _("Affiliation") }}</label>
                         <div class="col-sm-8">
-                            <select id="project_affiliation" name="project_affiliation" class="form-control js-example-data-ajax" required oninvalid="this.setCustomValidity('{{ _("Write the affiliation.") }}')" onchange="this.setCustomValidity('')" {% if not permissionForChanges %} disabled {% endif %}>
-                                {% if dataworking.project_affiliation %}
-                                    <option value="{{ dataworking.project_affiliation }}">{{ dataworking.project_affiliation }}</option>
+                            <select id="project_affiliation" name="project_affiliation" class="form-control js-affiliation-tags" required oninvalid="this.setCustomValidity('{{ _("Write the affiliation.") }}')" onchange="this.setCustomValidity('')" {% if not permissionForChanges %} disabled {% endif %}>
+                                <option value="">{{ _("Select one or create a new affiliation") }}</option>
+
+                                {% for affiliation in list_of_affiliation %}
+                                    <option value="{{ affiliation.affiliation_name }}" {% if affiliation.affiliation_name == dataworking.project_affiliation %}selected{% endif %}>{{ affiliation.affiliation_name }}</option>
+                                {% endfor %}
+                                {% if list_of_affiliation | selectattr("affiliation_name", "equalto", dataworking.project_affiliation) | list | length <= 0%}
+                                <option value="{{ dataworking.project_affiliation }}" selected>{{ dataworking.project_affiliation }}</option>
                                 {% endif %}
+
                             </select>
+
                         </div>
                     </div>
                     <br>
@@ -381,39 +388,19 @@
 
     $('.chosen-select').select2({width: "100%", maximumSelectionLength: 4});
 
-    $(".js-example-data-ajax").select2({
-        placeholder: "{{ _("Write the affiliation name") }}",
-        ajax: {
-            url: "{{ request.route_url('searchaffiliation') }}",
-            dataType: 'json',
-            delay: 250,
-            data: function (params) {
-                return {
-                    q: params.term, // search term
-                    page: params.page
-                };
-            },
-            processResults: function (data, params) {
-                params.page = params.page || 1;
 
-                if (data.results.length === 0 && params.term) {
-                    data.results.push({
-                        id: params.term,
-                        text: "{{ _("New affiliation") }}: "+params.term,
-                    });
+    $(".js-affiliation-tags").select2({
+            tags: true,
+            createTag: function (params) {
+                const term = $.trim(params.term);
+                if (term === '') return null;
+
+                return {
+                    id: params.term,
+                    text: "{{ _("New affiliation") }}: " + params.term,
                 }
-
-                return {
-                    results: data.results,
-                    pagination: {
-                        more: (params.page * 10) < data.total
-                    }
-                };
-            },
-            cache: true
-        }
+            }
     });
-
 
     function showHelpTem()
     {
