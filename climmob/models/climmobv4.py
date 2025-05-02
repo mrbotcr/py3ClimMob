@@ -14,6 +14,7 @@ from sqlalchemy import (
     BLOB,
     JSON,
     UniqueConstraint,
+    Float,
 )
 from sqlalchemy.dialects.mysql import MEDIUMTEXT
 from sqlalchemy.orm import relationship
@@ -802,6 +803,8 @@ class Question(Base):
     question_desc = Column(Unicode(120))
     question_notes = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
     question_unit = Column(Unicode(120))
+    question_min = Column(Float, nullable=True)
+    question_max = Column(Float, nullable=True)
     question_dtype = Column(Integer)
     question_cmp = Column(Unicode(120))
     question_reqinreg = Column(Integer, server_default=text("'0'"))
