@@ -440,10 +440,12 @@ class TestPublicView(unittest.TestCase):
         view = publicView(self.request)
         self.request.add_response_callback.assert_not_called()
 
+    @patch("climmob.views.classes.publicView._validate")
     @patch("climmob.views.classes.publicView.processView")
-    def test_call(self, mock_process_view):
+    def test_call(self, mock_process_view, mock_validate):
         view = publicView(self.request)
         view()
+        mock_validate.assert_called_once()
         mock_process_view.assert_called_once()
 
     def test_getPostDict(self):
