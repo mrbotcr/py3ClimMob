@@ -223,6 +223,23 @@
 
         var tour;
 
+        function isQuestionTypeNumerical(type) {
+            return (type==2 || type==3);
+        }
+
+        function showNumericalInputs() {
+            $('#div_unit').css('display', 'block');
+            $('#div_min_max').css('display', 'block');
+        }
+
+        function hideNumericalInputs() {
+            $('#div_unit').css('display', 'none');
+            $('#div_min_max').css('display', 'none');
+            $("#question_unit").val("-");
+            $("#question_min").val("");
+            $("#question_max").val("");
+        }
+
         $(document).ready(function() {
 
             tour = new Tour({
@@ -333,11 +350,11 @@
             if (objQRequired.is(':checked'))
                 question_requiredvalue = 1;
 
-            if(type==2 || type==3)
-                $('#div_unit').css('display', 'block');
+            if(isQuestionTypeNumerical(type)){
+                showNumericalInputs();
+            }
             else {
-                $('#div_unit').css('display', 'none');
-                $("#question_unit").val("");
+                hideNumericalInputs();
             }
 
             if (question_requiredvalue == 1)
@@ -365,11 +382,11 @@
                     setSwitchery(ckb_tricot_quantitative, false);
                 }
 
-                if(value==2 || value==3)
-                    $('#div_unit').css('display', 'block');
+                if(isQuestionTypeNumerical(value)){
+                    showNumericalInputs();
+                }
                 else {
-                    $('#div_unit').css('display', 'none');
-                    $("#question_unit").val("-");
+                    hideNumericalInputs();
                 }
 
                 if(value == 9 )
@@ -626,6 +643,8 @@
                     "question_name":$("#question_name").val(),
                     "question_desc": $("#question_desc").val(),
                     "question_unit": $("#question_unit").val(),
+                    "question_min": $("#question_min").val(),
+                    "question_max": $("#question_max").val(),
                     "question_posstm": $("#question_posstm").val(),
                     "question_negstm": $("#question_negstm").val(),
                     "question_perfstmt": $("#question_perfstmt").val(),
@@ -859,6 +878,8 @@
             clean_extra_section();
             clean_buttoms_question();
 
+            hideNumericalInputs()
+
             loadLanguages();
 
             $(".inputForQuestion").val("")
@@ -941,6 +962,8 @@
                 $("#question_name").val(dataJson["question_name"])
                 $("#question_desc").val(dataJson["question_desc"])
                 $("#question_unit").val(dataJson["question_unit"])
+                $("#question_min").val(dataJson["question_min"])
+                $("#question_max").val(dataJson["question_max"])
                 $("#question_posstm").val(dataJson["question_posstm"])
                 $("#question_negstm").val(dataJson["question_negstm"])
                 $("#question_perfstmt").val(dataJson["question_perfstmt"])
@@ -1009,11 +1032,11 @@
 
                 {% endif %}
 
-                if(dataJson["question_dtype"] == '2' || dataJson["question_dtype"] == '3')
+                if(isQuestionTypeNumerical(dataJson["question_dtype"]))
                 {
-                    $('#div_unit').css('display', 'block');
+                    showNumericalInputs();
                 }else{
-                    $('#div_unit').css('display', 'none');
+                    hideNumericalInputs();
                 }
 
                 if (dataJson["question_dtype"] != "9" && dataJson["question_dtype"] != "10") {
