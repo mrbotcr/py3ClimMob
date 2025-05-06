@@ -550,4 +550,10 @@ class apiView(BaseView):
             return response
 
         self._validate()
-        return self.processView()
+        try:
+            return self.processView()
+        except NotImplementedError:
+            response = Response(
+                status=405, body=self.request.translate("Method Not Allowed")
+            )
+            return response
