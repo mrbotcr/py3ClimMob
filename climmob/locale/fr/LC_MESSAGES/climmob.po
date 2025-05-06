@@ -7669,6 +7669,31 @@ msgstr "Le nombre de participants a été augmenté avec succès"
 msgid "We haven't found a project that matches what was specified"
 msgstr "Nous n'avons pas trouvé de projet correspondant à ce qui a été spécifié"
 
+#: climmob/templates/snippets/question/question-form.jinja2:400
+msgid "Maximum"
+msgstr "Maximum"
+
+#: climmob/templates/snippets/question/question-form.jinja2:393
+msgid "Minimum"
+msgstr "Minimum"
+
+#: climmob/templates/question/library.jinja2:649
+#: climmob/views/question.py:466
+msgid "The minimum must be less than the maximum"
+msgstr "Le minimum doit être inférieur au maximum"
+
+#: climmob/views/question.py:463
+msgid "The minimum and minimum must be numbers"
+msgstr "Le minimum et le minimum doivent être des nombres"
+
+#: climmob/templates/snippets/question/question-form.jinja2:396
+msgid "Leave empty to not set a minimum."
+msgstr "Laissez vide pour ne pas définir de minimum."
+
+#: climmob/templates/snippets/question/question-form.jinja2:403
+msgid "Leave empty to not set a maximum."
+msgstr "Laissez vide pour ne pas définir de maximum."
+
 #~ msgid "You have written {}/[] words required"
 #~ msgstr "Vous avez écrit {}/[] mots requis"
 
