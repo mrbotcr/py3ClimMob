@@ -5,11 +5,11 @@ from unittest.mock import patch
 
 from pyramid.response import Response
 
-from climmob.tests.test_utils.common import BaseViewTestCase
+from climmob.tests.test_utils.common import ViewBaseTest
 from climmob.views.Api.projectProducts import readProducts_view, downloadApi_view
 
 
-class TestReadProductsView(BaseViewTestCase):
+class TestReadProductsView(ViewBaseTest):
     view_class = readProducts_view
     request_method = "GET"
 
@@ -84,7 +84,7 @@ class TestReadProductsView(BaseViewTestCase):
         mock_json_loads.assert_called_once()
 
 
-class TestDownloadApiView(BaseViewTestCase):
+class TestDownloadApiView(ViewBaseTest):
     view_class = downloadApi_view
     request_method = "GET"
 
