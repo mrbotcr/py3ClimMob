@@ -30,44 +30,45 @@ from climmob.views.questionTranslations import (
 )
 
 
+def is_question_type_numerical(question: dict) -> bool:
+    return (
+        str(question["question_dtype"]) == "2" or str(question["question_dtype"]) == "3"
+    )
+
+
+def validate_question_min_max(question) -> (bool, str):
+    if question.get("question_min", "") == "":
+        question["question_min"] = None
+    if question.get("question_max", "") == "":
+        question["question_max"] = None
+
+    question_min, question_max = None, None
+
+    if question["question_min"] is not None:
+        try:
+            question_min = float(question["question_min"])
+        except ValueError:
+            return False, "The minimum must be a number"
+
+    if question["question_max"] is not None:
+        try:
+            question_max = float(question["question_max"])
+        except ValueError:
+            return False, "The maximum must be a number"
+
+    if question_min is None or question_max is None:
+        return True, None
+
+    if question_min >= question_max:
+        return False, "The minimum must be less than the maximum"
+    else:
+        return True, None
+
+
 class CreateQuestionView(apiView):
 
     def post(self):
 
-            possibles = [
-                "question_code",
-                "question_name",
-                "question_desc",
-                "question_dtype",
-                "question_notes",
-                "qstgroups_id",
-                "question_unit",
-                "question_alwaysinreg",
-                "question_alwaysinasse",
-                "question_requiredvalue",
-                "question_tied",
-                "question_notobserved",
-                "question_quantitative",
-                "question_lang",
-                "user_name",
-            ]
-            obligatory = [
-                "question_code",
-                "question_name",
-                "question_desc",
-                "question_dtype",
-                "qstgroups_id",
-                "question_requiredvalue",
-                "question_lang",
-            ]
-            zeroOrTwo = [
-                "question_alwaysinreg",
-                "question_alwaysinasse",
-                "question_requiredvalue",
-                "question_tied",
-                "question_notobserved",
-                "question_quantitative",
-            ]
         possibles = [
             "question_code",
             "question_name",
@@ -76,14 +77,8 @@ class CreateQuestionView(apiView):
             "question_notes",
             "qstgroups_id",
             "question_unit",
-        possibles = [
-            "question_code",
-            "question_name",
-            "question_desc",
-            "question_dtype",
-            "question_notes",
-            "qstgroups_id",
-            "question_unit",
+            "question_min",
+            "question_max",
             "question_alwaysinreg",
             "question_alwaysinasse",
             "question_requiredvalue",
@@ -205,21 +200,13 @@ class CreateQuestionView(apiView):
                         )
                         return response
 
-                        dataworking["question_code"] = re.sub(
-                            "[^A-Za-z0-9\-]+", "", dataworking["question_code"]
-                        )
-                        if not questionExists(
-                            self.user.login, dataworking["question_code"], self.request
-                        ):
-                            categoryExists = categoryExistsById(
-                                self.user.login,
-                                dataworking["qstgroups_id"],
-                                self.request,
-                            )
-                            if categoryExists:
-                                dataworking["qstgroups_user"] = categoryExists[
-                                    "user_name"
-                                ]
+                    if is_question_type_numerical(dataworking):
+                        validate_question_min_max(dataworking)
+                    else:
+                        # Not allow non-numerical questions to have min or max
+                        dataworking["question_min"] = None
+                        dataworking["question_max"] = None
+
                     dataworking["question_code"] = re.sub(
                         "[^A-Za-z0-9\-]+", "", dataworking["question_code"]
                     )
