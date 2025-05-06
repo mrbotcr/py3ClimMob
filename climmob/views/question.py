@@ -445,6 +445,29 @@ class newQuestion_view(privateView):
         return {}
 
 
+def validate_question_min_max(question) -> (bool, str):
+    if question.get("question_min", "") == "":
+        question["question_min"] = None
+    if question.get("question_max", "") == "":
+        question["question_max"] = None
+
+    if not question["question_max"] or not question["question_min"]:
+        return True, None
+
+    try:
+        question_min = float(question["question_min"])
+        question_max = float(question["question_max"])
+    except KeyError:
+        return True, None
+    except ValueError:
+        return False, "The minimum and minimum must be numbers"
+
+    if question_min >= question_max:
+        return False, "The minimum must be less than the maximum"
+    else:
+        return True, None
+
+
 def actionsInquestion(self, formdata):
 
     if "question_lang" in formdata.keys():
@@ -495,6 +518,10 @@ def actionsInquestion(self, formdata):
         and formdata["question_desc"] != ""
         and formdata["question_dtype"] != ""
     ):
+        success, msg = validate_question_min_max(formdata)
+        if not success:
+            return {"result": "error", "error": self._(msg)}
+
         if formdata["action"] == "insert":
             formdata["question_code"] = "qst_" + formdata["question_code"]
             if not questionExists(

@@ -595,6 +595,14 @@
             return options
         }
 
+        function checkIsVisibleAndHide(selector) {
+            if ($(selector).is(':visible')) {
+                $(selector).hide();
+                return;
+            }
+            setTimeout(() => checkIsVisibleAndHide(selector), 100);
+        }
+
         function actionQuestion(action) {
             $("#btn_add_question").prop('disabled', true);
             $("#btn_update_question").prop('disabled', true);
@@ -630,6 +638,20 @@
             {% endif %}
 
             optionsValues = prepareOptionsValues()
+
+            let question_min = parseFloat($("#question_min").val());
+            let question_max = parseFloat($("#question_max").val());
+
+            if (isNaN(question_min)) question_min = null;
+            if (isNaN(question_max)) question_max = null;
+
+            if (question_min && question_max && question_min >= question_max) {
+                toastr.error("Error: "+ "{{ _("The minimum must be less than the maximum") }}");
+                $("#btn_add_question").prop('disabled', false);
+                $("#btn_update_question").prop('disabled', false);
+                checkIsVisibleAndHide("#carga")
+                return;
+             }
 
             $.ajax({
                 url: '{{ request.route_url('questionActions') }}',
