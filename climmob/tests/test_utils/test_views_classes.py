@@ -166,7 +166,7 @@ class TestBaseView(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             self.view.delete()
 
-    def test_validate(self):
+    def test_validate_uses_validators(self):
         mock_validator_a_class = MagicMock()
         mock_validator_a_instance = MagicMock(view=self.view)
         mock_validator_a_class.return_value = mock_validator_a_instance
@@ -188,6 +188,41 @@ class TestBaseView(unittest.TestCase):
 
         mock_validator_b_class.assert_called_once_with(self.view)
         mock_validator_b_instance.run.assert_called_once()
+
+    def test_validate_for_views_with_processView(self):
+        self.request.method = "TEST_METHOD"
+
+        class subclass(BaseView):
+            def processView(self):
+                pass
+
+        # Since it has processView overridden the method does not matter
+        # and there is nothing to assert
+        subclass(self.request)._validate()
+
+    def test_validate_for_views_without_processView_method_not_allowed(self):
+        self.request.method = "TEST_METHOD"
+
+        class subclass(BaseView):
+            # It does not have processView nor test_method
+            pass
+
+        with self.assertRaises(HTTPMethodNotAllowed) as context:
+            subclass(self.request)._validate()
+
+        self.assertEqual(
+            str(context.exception), f"Method {self.request.method} Not Allowed"
+        )
+
+    def test_validate_for_views_without_processView_method_allowed(self):
+        self.request.method = "TEST_METHOD"
+
+        class subclass(BaseView):
+            # It does not have processView
+            def test_method(self):
+                pass
+
+        subclass(self.request)._validate()
 
 
 class TestOdkView(unittest.TestCase):

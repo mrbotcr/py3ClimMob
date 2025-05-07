@@ -92,6 +92,15 @@ class BaseView:
         self.context = None
 
     def _validate(self):
+        method_name = self.request.method.lower()
+
+        # Check if subclasses have the method implemented
+        if (
+            "processView" not in self.__class__.__dict__
+            and method_name not in self.__class__.__dict__
+        ):
+            raise HTTPMethodNotAllowed(f"Method {self.request.method} Not Allowed")
+
         for validator in self.validators:
             validator(self).run()
 
@@ -511,6 +520,7 @@ class privateView(BaseView):
 
 class apiView(BaseView):
     def __init__(self, request):
+        super().__init__(request)
         self.request = request
         self.user = None
         self.body = None
@@ -552,13 +562,8 @@ class apiView(BaseView):
         try:
             self._validate()
         except HTTPBadRequest as e:
-            response = Response(status=400, body=self._(f"{e}"))
-            return response
+            return Response(status=400, body=self._(f"{e}"))
+        except HTTPMethodNotAllowed as e:
+            return Response(status=405, body=self._(f"{e}"))
 
-        try:
-            return self.processView()
-        except NotImplementedError:
-            response = Response(
-                status=405, body=self.request.translate("Method Not Allowed")
-            )
-            return response
+        return self.processView()
