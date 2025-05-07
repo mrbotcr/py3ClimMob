@@ -9,7 +9,7 @@ import climmob.plugins as p
 from ast import literal_eval
 from pyramid.response import Response
 from pyramid.session import check_csrf_token
-from pyramid.httpexceptions import HTTPFound, HTTPMethodNotAllowed
+from pyramid.httpexceptions import HTTPFound, HTTPMethodNotAllowed, HTTPBadRequest
 from pyramid.httpexceptions import HTTPNotFound
 from formencode.variabledecode import variable_decode
 from climmob.config.auth import getUserData, getUserByApiKey
@@ -549,7 +549,12 @@ class apiView(BaseView):
             )
             return response
 
-        self._validate()
+        try:
+            self._validate()
+        except HTTPBadRequest as e:
+            response = Response(status=400, body=self._(f"{e}"))
+            return response
+
         try:
             return self.processView()
         except NotImplementedError:
