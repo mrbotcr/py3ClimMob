@@ -21,6 +21,17 @@ class QuestionMinMaxValidator(BaseValidator):
         else:
             raise NotImplementedError
 
+        if (
+            self.question["question_dtype"] != "2"
+            and self.question["question_dtype"] != "3"
+        ):
+            if self.question.get("question_min", None) or self.question.get(
+                "question_max", None
+            ):
+                raise HTTPBadRequest(
+                    "Non-numerical questions may not have min nor max set"
+                )
+
         self.validate()
 
     def validate(self):

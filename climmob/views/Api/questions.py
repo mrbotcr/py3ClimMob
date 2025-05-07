@@ -31,12 +31,6 @@ from climmob.views.questionTranslations import (
 from climmob.views.validators.QuestionMinMaxValidator import QuestionMinMaxValidator
 
 
-def is_question_type_numerical(question: dict) -> bool:
-    return (
-        str(question["question_dtype"]) == "2" or str(question["question_dtype"]) == "3"
-    )
-
-
 class CreateQuestionView(apiView):
     validators = (QuestionMinMaxValidator,)
 
@@ -186,11 +180,6 @@ class CreateQuestionView(apiView):
                 body=self._("Check the ID of the question type."),
             )
             return response
-
-        if not is_question_type_numerical(dataworking):
-            # Not allow non-numerical questions to have min or max
-            dataworking["question_min"] = None
-            dataworking["question_max"] = None
 
         dataworking["question_code"] = re.sub(
             "[^A-Za-z0-9\-]+", "", dataworking["question_code"]
