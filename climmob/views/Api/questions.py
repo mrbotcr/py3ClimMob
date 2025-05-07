@@ -28,6 +28,7 @@ from climmob.views.questionTranslations import (
     actionInTheTranslationOfQuestion,
     actionInTheTranslationOfQuestionOptions,
 )
+from climmob.views.validators.QuestionMinMaxValidator import QuestionMinMaxValidator
 
 
 def is_question_type_numerical(question: dict) -> bool:
@@ -36,36 +37,8 @@ def is_question_type_numerical(question: dict) -> bool:
     )
 
 
-def validate_question_min_max(question) -> (bool, str):
-    if question.get("question_min", "") == "":
-        question["question_min"] = None
-    if question.get("question_max", "") == "":
-        question["question_max"] = None
-
-    question_min, question_max = None, None
-
-    if question["question_min"] is not None:
-        try:
-            question_min = float(question["question_min"])
-        except ValueError:
-            return False, "The minimum must be a number"
-
-    if question["question_max"] is not None:
-        try:
-            question_max = float(question["question_max"])
-        except ValueError:
-            return False, "The maximum must be a number"
-
-    if question_min is None or question_max is None:
-        return True, None
-
-    if question_min >= question_max:
-        return False, "The minimum must be less than the maximum"
-    else:
-        return True, None
-
-
 class CreateQuestionView(apiView):
+    validators = (QuestionMinMaxValidator,)
 
     def post(self):
 
@@ -121,215 +94,201 @@ class CreateQuestionView(apiView):
             if key not in dataworking.keys():
                 obligatoryKeys = False
 
-        if obligatoryKeys:
-            if permitedKeys:
-
-                dataInParams = True
-                for key in dataworking.keys():
-                    if dataworking[key] == "":
-                        dataInParams = False
-
-                if dataInParams:
-
-                    if not languageExistInI18nUser(
-                        dataworking["question_lang"], self.user.login, self.request
-                    ):
-                        response = Response(
-                            status=401,
-                            body=self._(
-                                "The language does not belong to your list of languages to be used.."
-                            ),
-                        )
-                        return response
-
-                    if "question_alwaysinreg" not in dataworking.keys():
-                        dataworking["question_alwaysinreg"] = 0
-
-                    if "question_alwaysinasse" not in dataworking.keys():
-                        dataworking["question_alwaysinasse"] = 0
-
-                    if "question_requiredvalue" not in dataworking.keys():
-                        dataworking[
-                            "question_requiredvalue"
-                        ] = 0  # code inaccessible to the test, since it is mandatory
-
-                    if "question_unit" not in dataworking.keys():
-                        dataworking["question_unit"] = ""
-
-                    if "question_tied" not in dataworking.keys():
-                        dataworking["question_tied"] = 0
-
-                    if "question_notobserved" not in dataworking.keys():
-                        dataworking["question_notobserved"] = 0
-
-                    if "question_quantitative" not in dataworking.keys():
-                        dataworking["question_quantitative"] = 0
-
-                    for data in zeroOrTwo:
-                        if str(dataworking[data]) not in ["0", "1"]:
-                            response = Response(
-                                status=401,
-                                body=self._(
-                                    "The possible values in the parameters: 'question_alwaysinreg','question_alwaysinasse','question_requiredvalue', 'question_quantitative' is 1 or 0."
-                                ),
-                            )
-                            return response
-
-                    if str(dataworking["question_dtype"]) not in [
-                        "1",
-                        "2",
-                        "3",
-                        "4",
-                        "5",
-                        "6",
-                        "9",
-                        "10",
-                        "11",
-                        "12",
-                        "13",
-                        "14",
-                        "15",
-                        "16",
-                        "17",
-                        "18",
-                        "19",
-                    ]:
-                        response = Response(
-                            status=401,
-                            body=self._("Check the ID of the question type."),
-                        )
-                        return response
-
-                    if is_question_type_numerical(dataworking):
-                        validate_question_min_max(dataworking)
-                    else:
-                        # Not allow non-numerical questions to have min or max
-                        dataworking["question_min"] = None
-                        dataworking["question_max"] = None
-
-                    dataworking["question_code"] = re.sub(
-                        "[^A-Za-z0-9\-]+", "", dataworking["question_code"]
-                    )
-                    if not questionExists(
-                        self.user.login, dataworking["question_code"], self.request
-                    ):
-                        categoryExists = categoryExistsById(
-                            self.user.login,
-                            dataworking["qstgroups_id"],
-                            self.request,
-                        )
-                        if categoryExists:
-                            dataworking["qstgroups_user"] = categoryExists[
-                                "user_name"
-                            ]
-
-                            if (
-                                str(dataworking["question_dtype"]) == "9"
-                                or str(dataworking["question_dtype"]) == "10"
-                            ):
-                                dataworking["question_quantitative"] = 0
-
-                            if str(dataworking["question_dtype"]) != "9":
-                                dataworking["question_tied"] = 0
-                                dataworking["question_notobserved"] = 0
-
-                            add, idorerror = addQuestion(dataworking, self.request)
-                            if not add:
-                                response = Response(status=401, body=idorerror)
-                                return response
-                            else:
-
-                                if (
-                                    str(dataworking["question_dtype"]) == "5"
-                                    or str(dataworking["question_dtype"]) == "6"
-                                    or str(dataworking["question_dtype"]) == "9"
-                                    or str(dataworking["question_dtype"]) == "10"
-                                ):
-                                    if (
-                                        str(dataworking["question_dtype"]) == "5"
-                                        or str(dataworking["question_dtype"]) == "6"
-                                    ):
-                                        response = Response(
-                                            status=200,
-                                            body=json.dumps(
-                                                getQuestionData(
-                                                    dataworking["user_name"],
-                                                    idorerror,
-                                                    self.request,
-                                                )
-                                            ),
-                                        )
-                                        return response
-                                    else:
-                                        if (
-                                            str(dataworking["question_dtype"])
-                                            == "9"
-                                        ):
-                                            response = Response(
-                                                status=200,
-                                                body=self._(
-                                                    "The question was successfully added. Configure the ranking of options now."
-                                                ),
-                                            )
-                                            return response
-                                        else:
-                                            response = Response(
-                                                status=200,
-                                                body=json.dumps(
-                                                    getQuestionData(
-                                                        dataworking["user_name"],
-                                                        idorerror,
-                                                        self.request,
-                                                    )
-                                                ),
-                                            )
-                                            return response
-                                else:
-                                    response = Response(
-                                        status=200,
-                                        body=json.dumps(
-                                            getQuestionData(
-                                                dataworking["user_name"],
-                                                idorerror,
-                                                self.request,
-                                            )
-                                        ),
-                                    )
-                                    return response
-                        else:
-                            response = Response(
-                                status=401,
-                                body=self._(
-                                    "There is no category with this identifier."
-                                ),
-                            )
-                            return response
-                    else:
-                        response = Response(
-                            status=401,
-                            body=self._(
-                                "There is another question with the same code."
-                            ),
-                        )
-                        return response
-                else:
-                    response = Response(
-                        status=401, body=self._("Not all parameters have data.")
-                    )
-                    return response
-            else:
-                response = Response(
-                    status=401,
-                    body=self._("Error in the parameters that you want to add."),
-                )
-                return response
-        else:
+        if not obligatoryKeys:
             response = Response(
                 status=401,
                 body=self._("It is not complying with the obligatory keys."),
             )
             return response
 
+        if not permitedKeys:
+            response = Response(
+                status=401,
+                body=self._("Error in the parameters that you want to add."),
+            )
+            return response
+
+        dataInParams = True
+        for key in dataworking.keys():
+            if dataworking[key] == "":
+                dataInParams = False
+
+        if not dataInParams:
+            response = Response(
+                status=401, body=self._("Not all parameters have data.")
+            )
+            return response
+
+        if not languageExistInI18nUser(
+            dataworking["question_lang"], self.user.login, self.request
+        ):
+            response = Response(
+                status=401,
+                body=self._(
+                    "The language does not belong to your list of languages to be used.."
+                ),
+            )
+            return response
+
+        if "question_alwaysinreg" not in dataworking.keys():
+            dataworking["question_alwaysinreg"] = 0
+
+        if "question_alwaysinasse" not in dataworking.keys():
+            dataworking["question_alwaysinasse"] = 0
+
+        if "question_requiredvalue" not in dataworking.keys():
+            dataworking[
+                "question_requiredvalue"
+            ] = 0  # code inaccessible to the test, since it is mandatory
+
+        if "question_unit" not in dataworking.keys():
+            dataworking["question_unit"] = ""
+
+        if "question_tied" not in dataworking.keys():
+            dataworking["question_tied"] = 0
+
+        if "question_notobserved" not in dataworking.keys():
+            dataworking["question_notobserved"] = 0
+
+        if "question_quantitative" not in dataworking.keys():
+            dataworking["question_quantitative"] = 0
+
+        for data in zeroOrTwo:
+            if str(dataworking[data]) not in ["0", "1"]:
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "The possible values in the parameters: 'question_alwaysinreg','question_alwaysinasse','question_requiredvalue', 'question_quantitative' is 1 or 0."
+                    ),
+                )
+                return response
+
+        if str(dataworking["question_dtype"]) not in [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+            "17",
+            "18",
+            "19",
+        ]:
+            response = Response(
+                status=401,
+                body=self._("Check the ID of the question type."),
+            )
+            return response
+
+        if not is_question_type_numerical(dataworking):
+            # Not allow non-numerical questions to have min or max
+            dataworking["question_min"] = None
+            dataworking["question_max"] = None
+
+        dataworking["question_code"] = re.sub(
+            "[^A-Za-z0-9\-]+", "", dataworking["question_code"]
+        )
+        if not questionExists(
+            self.user.login, dataworking["question_code"], self.request
+        ):
+            categoryExists = categoryExistsById(
+                self.user.login,
+                dataworking["qstgroups_id"],
+                self.request,
+            )
+            if categoryExists:
+                dataworking["qstgroups_user"] = categoryExists["user_name"]
+
+                if (
+                    str(dataworking["question_dtype"]) == "9"
+                    or str(dataworking["question_dtype"]) == "10"
+                ):
+                    dataworking["question_quantitative"] = 0
+
+                if str(dataworking["question_dtype"]) != "9":
+                    dataworking["question_tied"] = 0
+                    dataworking["question_notobserved"] = 0
+
+                add, idorerror = addQuestion(dataworking, self.request)
+                if not add:
+                    response = Response(status=401, body=idorerror)
+                    return response
+                else:
+
+                    if (
+                        str(dataworking["question_dtype"]) == "5"
+                        or str(dataworking["question_dtype"]) == "6"
+                        or str(dataworking["question_dtype"]) == "9"
+                        or str(dataworking["question_dtype"]) == "10"
+                    ):
+                        if (
+                            str(dataworking["question_dtype"]) == "5"
+                            or str(dataworking["question_dtype"]) == "6"
+                        ):
+                            response = Response(
+                                status=200,
+                                body=json.dumps(
+                                    getQuestionData(
+                                        dataworking["user_name"],
+                                        idorerror,
+                                        self.request,
+                                    )
+                                ),
+                            )
+                            return response
+                        else:
+                            if str(dataworking["question_dtype"]) == "9":
+                                response = Response(
+                                    status=200,
+                                    body=self._(
+                                        "The question was successfully added. Configure the ranking of options now."
+                                    ),
+                                )
+                                return response
+                            else:
+                                response = Response(
+                                    status=200,
+                                    body=json.dumps(
+                                        getQuestionData(
+                                            dataworking["user_name"],
+                                            idorerror,
+                                            self.request,
+                                        )
+                                    ),
+                                )
+                                return response
+                    else:
+                        response = Response(
+                            status=200,
+                            body=json.dumps(
+                                getQuestionData(
+                                    dataworking["user_name"],
+                                    idorerror,
+                                    self.request,
+                                )
+                            ),
+                        )
+                        return response
+            else:
+                response = Response(
+                    status=401,
+                    body=self._("There is no category with this identifier."),
+                )
+                return response
+        else:
+            response = Response(
+                status=401,
+                body=self._("There is another question with the same code."),
+            )
+            return response
 
 
 class ReadQuestionsView(apiView):
