@@ -88,8 +88,14 @@ class CreateQuestionView(apiView):
                 # print(key)
                 permitedKeys = False
 
-        obligatoryKeys = True
+        if not permitedKeys:
+            response = Response(
+                status=401,
+                body=self._("Error in the parameters that you want to add."),
+            )
+            return response
 
+        obligatoryKeys = True
         for key in obligatory:
             if key not in dataworking.keys():
                 obligatoryKeys = False
@@ -98,13 +104,6 @@ class CreateQuestionView(apiView):
             response = Response(
                 status=401,
                 body=self._("It is not complying with the obligatory keys."),
-            )
-            return response
-
-        if not permitedKeys:
-            response = Response(
-                status=401,
-                body=self._("Error in the parameters that you want to add."),
             )
             return response
 
@@ -196,99 +195,97 @@ class CreateQuestionView(apiView):
         dataworking["question_code"] = re.sub(
             "[^A-Za-z0-9\-]+", "", dataworking["question_code"]
         )
-        if not questionExists(
-            self.user.login, dataworking["question_code"], self.request
-        ):
-            categoryExists = categoryExistsById(
-                self.user.login,
-                dataworking["qstgroups_id"],
-                self.request,
-            )
-            if categoryExists:
-                dataworking["qstgroups_user"] = categoryExists["user_name"]
 
-                if (
-                    str(dataworking["question_dtype"]) == "9"
-                    or str(dataworking["question_dtype"]) == "10"
-                ):
-                    dataworking["question_quantitative"] = 0
-
-                if str(dataworking["question_dtype"]) != "9":
-                    dataworking["question_tied"] = 0
-                    dataworking["question_notobserved"] = 0
-
-                add, idorerror = addQuestion(dataworking, self.request)
-                if not add:
-                    response = Response(status=401, body=idorerror)
-                    return response
-                else:
-
-                    if (
-                        str(dataworking["question_dtype"]) == "5"
-                        or str(dataworking["question_dtype"]) == "6"
-                        or str(dataworking["question_dtype"]) == "9"
-                        or str(dataworking["question_dtype"]) == "10"
-                    ):
-                        if (
-                            str(dataworking["question_dtype"]) == "5"
-                            or str(dataworking["question_dtype"]) == "6"
-                        ):
-                            response = Response(
-                                status=200,
-                                body=json.dumps(
-                                    getQuestionData(
-                                        dataworking["user_name"],
-                                        idorerror,
-                                        self.request,
-                                    )
-                                ),
-                            )
-                            return response
-                        else:
-                            if str(dataworking["question_dtype"]) == "9":
-                                response = Response(
-                                    status=200,
-                                    body=self._(
-                                        "The question was successfully added. Configure the ranking of options now."
-                                    ),
-                                )
-                                return response
-                            else:
-                                response = Response(
-                                    status=200,
-                                    body=json.dumps(
-                                        getQuestionData(
-                                            dataworking["user_name"],
-                                            idorerror,
-                                            self.request,
-                                        )
-                                    ),
-                                )
-                                return response
-                    else:
-                        response = Response(
-                            status=200,
-                            body=json.dumps(
-                                getQuestionData(
-                                    dataworking["user_name"],
-                                    idorerror,
-                                    self.request,
-                                )
-                            ),
-                        )
-                        return response
-            else:
-                response = Response(
-                    status=401,
-                    body=self._("There is no category with this identifier."),
-                )
-                return response
-        else:
+        if questionExists(self.user.login, dataworking["question_code"], self.request):
             response = Response(
                 status=401,
                 body=self._("There is another question with the same code."),
             )
             return response
+
+        categoryExists = categoryExistsById(
+            self.user.login,
+            dataworking["qstgroups_id"],
+            self.request,
+        )
+        if not categoryExists:
+            response = Response(
+                status=401,
+                body=self._("There is no category with this identifier."),
+            )
+            return response
+
+        dataworking["qstgroups_user"] = categoryExists["user_name"]
+
+        if (
+            str(dataworking["question_dtype"]) == "9"
+            or str(dataworking["question_dtype"]) == "10"
+        ):
+            dataworking["question_quantitative"] = 0
+
+        if str(dataworking["question_dtype"]) != "9":
+            dataworking["question_tied"] = 0
+            dataworking["question_notobserved"] = 0
+
+        add, idorerror = addQuestion(dataworking, self.request)
+        if not add:
+            response = Response(status=401, body=idorerror)
+            return response
+
+        if not (
+            str(dataworking["question_dtype"]) == "5"
+            or str(dataworking["question_dtype"]) == "6"
+            or str(dataworking["question_dtype"]) == "9"
+            or str(dataworking["question_dtype"]) == "10"
+        ):
+            response = Response(
+                status=200,
+                body=json.dumps(
+                    getQuestionData(
+                        dataworking["user_name"],
+                        idorerror,
+                        self.request,
+                    )
+                ),
+            )
+            return response
+
+        if (
+            str(dataworking["question_dtype"]) == "5"
+            or str(dataworking["question_dtype"]) == "6"
+        ):
+            response = Response(
+                status=200,
+                body=json.dumps(
+                    getQuestionData(
+                        dataworking["user_name"],
+                        idorerror,
+                        self.request,
+                    )
+                ),
+            )
+            return response
+
+        if str(dataworking["question_dtype"]) == "9":
+            response = Response(
+                status=200,
+                body=self._(
+                    "The question was successfully added. Configure the ranking of options now."
+                ),
+            )
+            return response
+
+        response = Response(
+            status=200,
+            body=json.dumps(
+                getQuestionData(
+                    dataworking["user_name"],
+                    idorerror,
+                    self.request,
+                )
+            ),
+        )
+        return response
 
 
 class ReadQuestionsView(apiView):
