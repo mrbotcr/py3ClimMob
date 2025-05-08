@@ -62,14 +62,19 @@
                     <div class="form-group">
                         <label class="col-sm-4 control-label">{{ _("Affiliation") }}</label>
                         <div class="col-sm-8">
-                            <select id="project_affiliation" name="project_affiliation" class="form-control js-affiliation-tags" required oninvalid="this.setCustomValidity('{{ _("Write the affiliation.") }}')" onchange="this.setCustomValidity('')" {% if not permissionForChanges %} disabled {% endif %}>
-                                <option value="">{{ _("Select one or create a new affiliation") }}</option>
-
+                            <select id="project_affiliation" name="project_affiliation" class="form-control js-affiliation-tags" required oninvalid="this.setCustomValidity('{{ _("Select or create a new affiliation.") }}')" onchange="this.setCustomValidity('')" {% if not permissionForChanges %} disabled {% endif %}>
+                                {% if not dataworking.project_affiliation %}
+                                    <option value="" selected>
+                                        {{ _("Select one or create a new affiliation") }}
+                                    </option>
+                                {% endif %}
                                 {% for affiliation in list_of_affiliation %}
                                     <option value="{{ affiliation.affiliation_name }}" {% if affiliation.affiliation_name == dataworking.project_affiliation %}selected{% endif %}>{{ affiliation.affiliation_name }}</option>
                                 {% endfor %}
-                                {% if list_of_affiliation | selectattr("affiliation_name", "equalto", dataworking.project_affiliation) | list | length <= 0%}
-                                <option value="{{ dataworking.project_affiliation }}" selected>{{ dataworking.project_affiliation }}</option>
+                                {% if dataworking.project_affiliation %}
+                                    {% if list_of_affiliation | selectattr("affiliation_name", "equalto", dataworking.project_affiliation) | list | length <= 0%}
+                                        <option value="{{ dataworking.project_affiliation }}" selected>{{ dataworking.project_affiliation }}</option>
+                                    {% endif %}
                                 {% endif %}
 
                             </select>
