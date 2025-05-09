@@ -604,24 +604,21 @@ def actionsInquestion(self, formdata):
         return {"result": "error", "error": self._("Incomplete information.")}
 
 
-class questionsActions_view(privateView):
-    def processView(self):
+class QuestionsActionsView(privateView):
+    def post(self):
 
-        if self.request.method == "POST":
-            postdata = self.getPostDict()
-            postdata["user_name"] = self.user.login
-            self.returnRawViewResult = True
+        postdata = self.getPostDict()
+        postdata["user_name"] = self.user.login
+        self.returnRawViewResult = True
 
-            if postdata["action"] == "btn_add_question":
-                del postdata["question_id"]
-                postdata["action"] = "insert"
+        if postdata["action"] == "btn_add_question":
+            del postdata["question_id"]
+            postdata["action"] = "insert"
 
-            if postdata["action"] == "btn_update_question":
-                postdata["action"] = "update"
+        if postdata["action"] == "btn_update_question":
+            postdata["action"] = "update"
 
-            return actionsInquestion(self, postdata)
-
-        return {}
+        return actionsInquestion(self, postdata)
 
 
 class getUserQuestionPreview_view(privateView):
