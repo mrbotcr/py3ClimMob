@@ -639,19 +639,25 @@
 
             optionsValues = prepareOptionsValues()
 
-            let question_min = parseFloat($("#question_min").val());
-            let question_max = parseFloat($("#question_max").val());
+            let numerical_inputs = {}
 
-            if (isNaN(question_min)) question_min = null;
-            if (isNaN(question_max)) question_max = null;
+            if (isQuestionTypeNumerical($('#question_dtype').val())) {
+                let question_min = parseFloat($("#question_min").val());
+                let question_max = parseFloat($("#question_max").val());
 
-            if (question_min && question_max && question_min >= question_max) {
-                toastr.error("Error: "+ "{{ _("The minimum must be less than the maximum") }}");
-                $("#btn_add_question").prop('disabled', false);
-                $("#btn_update_question").prop('disabled', false);
-                checkIsVisibleAndHide("#carga")
-                return;
-             }
+                if (isNaN(question_min)) question_min = null;
+                if (isNaN(question_max)) question_max = null;
+
+                if (!isNaN(question_min) && !isNaN(question_max) && question_min >= question_max) {
+                    toastr.error("Error: "+ "{{ _("The minimum must be less than the maximum") }}");
+                    $("#btn_add_question").prop('disabled', false);
+                    $("#btn_update_question").prop('disabled', false);
+                    checkIsVisibleAndHide("#carga")
+                    return;
+                 }
+                numerical_inputs["question_min"] = $("#question_min").val();
+                numerical_inputs["question_max"] = $("#question_max").val();
+            }
 
             $.ajax({
                 url: '{{ request.route_url('questionActions') }}',
@@ -665,8 +671,7 @@
                     "question_name":$("#question_name").val(),
                     "question_desc": $("#question_desc").val(),
                     "question_unit": $("#question_unit").val(),
-                    "question_min": $("#question_min").val(),
-                    "question_max": $("#question_max").val(),
+                    ...numerical_inputs,
                     "question_posstm": $("#question_posstm").val(),
                     "question_negstm": $("#question_negstm").val(),
                     "question_perfstmt": $("#question_perfstmt").val(),
