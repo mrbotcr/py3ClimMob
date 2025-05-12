@@ -40,6 +40,7 @@ from climmob.processes import (
     knowIfUserHasCreatedTranslations,
 )
 from climmob.views.classes import privateView
+from climmob.views.validators.QuestionMinMaxValidator import QuestionMinMaxValidator
 
 
 class deleteQuestion_view(privateView):
@@ -605,6 +606,8 @@ def actionsInquestion(self, formdata):
 
 
 class QuestionsActionsView(privateView):
+    validators = (QuestionMinMaxValidator,)
+
     def post(self):
 
         postdata = self.getPostDict()

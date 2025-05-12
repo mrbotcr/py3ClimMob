@@ -467,7 +467,11 @@ class privateView(BaseView):
             except:
                 pass
 
-        self._validate()
+        try:
+            self._validate()
+        except (HTTPBadRequest, HTTPMethodNotAllowed) as e:
+            return {"result": "error", "error": self._(f"{e}")}
+
         self.viewResult = self.processView()
 
         if not self.returnRawViewResult:
