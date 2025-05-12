@@ -306,3 +306,15 @@ class TestQuestionMinMaxValidator(unittest.TestCase):
         self.assertEqual(
             str(context.exception), "The minimum must be less than the maximum"
         )
+
+    def test_is_question_type_integer_or_decimal_false(self):
+        self.validator.question["question_dtype"] = 5
+        result = self.validator.is_question_type_integer_or_decimal()
+
+        self.assertFalse(result)
+
+    def test_is_question_type_integer_or_decimal_true(self):
+        self.validator.question["question_dtype"] = 2
+        result = self.validator.is_question_type_integer_or_decimal()
+
+        self.assertFalse(result)

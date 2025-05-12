@@ -18,8 +18,9 @@ class QuestionMinMaxValidator(BaseValidator):
 
     def run(self):
         if not self.is_question_type_integer_or_decimal():
-            if self.question.get("question_min", None) or self.question.get(
-                "question_max", None
+            if (
+                "question_min" in self.question.keys()
+                or "question_max" in self.question.keys()
             ):
                 raise HTTPBadRequest(
                     "Non-numerical questions may not have min nor max set"
@@ -52,6 +53,6 @@ class QuestionMinMaxValidator(BaseValidator):
 
     def is_question_type_integer_or_decimal(self):
         return (
-            self.question["question_dtype"] == "2"
-            or self.question["question_dtype"] == "3"
+            self.question.get("question_dtype") == "2"
+            or self.question.get("question_dtype") == "3"
         )
