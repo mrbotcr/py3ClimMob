@@ -417,7 +417,6 @@ class RegisterView(publicView):
                         mapping={"user": message},
                     )
 
-        # return {'data': self.decodeDict(data), 'error_summary': error_summary,'countries':getCountryList(self.request),'sectors':getSectorList(self.request)}
         return {
             "data": data,
             "error_summary": error_summary,

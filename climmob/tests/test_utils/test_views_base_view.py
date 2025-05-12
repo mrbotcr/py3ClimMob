@@ -1,11 +1,13 @@
-import json
 import unittest
+from datetime import datetime
 from unittest.mock import patch, MagicMock
 from time import time
 import smtplib
 from email.mime.text import MIMEText
 from email.header import Header
 from email import utils
+
+from dateutil.relativedelta import relativedelta
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 
 from climmob.views.basic_views import (
@@ -24,8 +26,8 @@ from climmob.views.basic_views import (
     get_policy
 )
 
-def build_email_message(body, subject, target_name, target_email, mail_from):
 
+def build_email_message(body, subject, target_name, target_email, mail_from):
     msg = MIMEText(body.encode("utf-8"), "plain", "utf-8")
     ssubject = subject
     subject = Header(ssubject.encode("utf-8"), "utf-8")
@@ -35,6 +37,7 @@ def build_email_message(body, subject, target_name, target_email, mail_from):
     msg["To"] = Header(recipient, "utf-8")
     msg["Date"] = utils.formatdate(time())
     return msg
+
 
 class TestRenderTemplate(unittest.TestCase):
     @patch('climmob.views.basic_views.jinjaEnv')
@@ -48,11 +51,12 @@ class TestRenderTemplate(unittest.TestCase):
             "reset_token": "reset_token",
             "user_dict": "user_dict",
             "reset_url": "reset_url",
-            "_": "_",}
+            "_": "_", }
         result = render_template(template_filename, context)
         mock_jinja_env.get_template.assert_called_once_with(template_filename)
         mock_template.render.assert_called_once_with(context)
         self.assertEqual(result, 'rendered')
+
 
 class TestHomeView(unittest.TestCase):
     def setUp(self):
@@ -75,7 +79,7 @@ class TestHomeView(unittest.TestCase):
     @patch('climmob.views.basic_views.getProjectCount', return_value=8)
     @patch('climmob.views.basic_views.getUserCount', return_value=2)
     def test_process_view_cookie_true(self, mock_getUserCount, mock_getProjectCount):
-        self.request.cookies = {"climmob_cookie_question":1}
+        self.request.cookies = {"climmob_cookie_question": 1}
         result = self.view.processView()
         self.assertEqual(result, {
             "numUsers": 2,
@@ -84,6 +88,7 @@ class TestHomeView(unittest.TestCase):
         })
         mock_getUserCount.assert_called_once_with(self.request)
         mock_getProjectCount.assert_called_once_with(self.request)
+
 
 class TestHealthView(unittest.TestCase):
 
@@ -105,19 +110,20 @@ class TestHealthView(unittest.TestCase):
         self.mock_dbsession.get_bind.assert_called_once()
         self.mock_dbsession.execute.assert_called_once_with("show status like 'Threads_connected%'")
         self.mock_result.fetchone.assert_called_once()
-        self.assertEqual(result,{"health":{
-                                            "pool": "Pool status OK",
-                                            "threads_connected": 12,
+        self.assertEqual(result, {"health": {
+            "pool": "Pool status OK",
+            "threads_connected": 12,
         }})
 
     def test_process_view_health_view_exception(self):
         self.mock_dbsession.execute.side_effect = Exception("Database error")
         result = self.view.processView()
         self.mock_dbsession.get_bind.assert_called_once()
-        self.assertEqual(result,{"health":{
-                                            "pool": "Pool status OK",
-                                            "threads_connected": "Database error",
+        self.assertEqual(result, {"health": {
+            "pool": "Pool status OK",
+            "threads_connected": "Database error",
         }})
+
 
 class TestTermsView(unittest.TestCase):
     def setUp(self):
@@ -128,6 +134,7 @@ class TestTermsView(unittest.TestCase):
         result = self.view.processView()
         self.assertEqual(result, {})
 
+
 class TestPrivacyView(unittest.TestCase):
     def setUp(self):
         self.request = MagicMock()
@@ -136,6 +143,7 @@ class TestPrivacyView(unittest.TestCase):
     def test_process_view_privacy_view_success(self):
         result = self.view.processView()
         self.assertEqual(result, {})
+
 
 class TestNotFoundView(unittest.TestCase):
     def setUp(self):
@@ -146,6 +154,7 @@ class TestNotFoundView(unittest.TestCase):
         result = self.view.processView()
         self.assertEqual(result, {})
         self.assertEqual(self.request.response.status, 404)
+
 
 class TestStoreCookieView(unittest.TestCase):
     def setUp(self):
@@ -176,17 +185,18 @@ class TestStoreCookieView(unittest.TestCase):
                 max_age=31536000
             )
 
+
 class TestGetPolicy(unittest.TestCase):
     def setUp(self):
         self.request = MagicMock()
 
     def test_process_view_get_policy_found(self):
-        self.request.policies.return_value = [{"name": "Trust", "policy":"Trust on this process"}]
+        self.request.policies.return_value = [{"name": "Trust", "policy": "Trust on this process"}]
         result = get_policy(self.request, "Trust")
         self.assertEqual(result, "Trust on this process")
 
     def test_process_view_get_policy_no_found(self):
-        self.request.policies.return_value = [{"name": "Forbidden", "policy":"Trust on this process"}]
+        self.request.policies.return_value = [{"name": "Forbidden", "policy": "Trust on this process"}]
         result = get_policy(self.request, "Trust")
         self.assertIsNone(result)
 
@@ -194,6 +204,7 @@ class TestGetPolicy(unittest.TestCase):
         self.request.policies.return_value = []
         result = get_policy(self.request, "Trust")
         self.assertIsNone(result)
+
 
 class TestLoginView(unittest.TestCase):
     def setUp(self):
@@ -212,29 +223,30 @@ class TestLoginView(unittest.TestCase):
         self.request.params.get.return_value = "next"
         self.request.POST = {}
         result = self.view.processView()
-        self.assertEqual(result,{"login": "",
-            "failed_attempt": False,
-            "next": "next",
-            "ask_for_cookies": True,})
+        self.assertEqual(result, {"login": "",
+                                  "failed_attempt": False,
+                                  "next": "next",
+                                  "ask_for_cookies": True, })
 
-    @patch("climmob.views.basic_views.getUserData", return_value=({'user_email':'climmob@climmob.com'}))
+    @patch("climmob.views.basic_views.getUserData", return_value=({'user_email': 'climmob@climmob.com'}))
     @patch("climmob.views.basic_views.get_policy")
     def test_process_view_login_cookies_login_data(self, mock_get_policy, mock_get_user_data):
         mock_policy = MagicMock()
-        mock_policy.authenticated_userid.return_value = "{'login': 'usuario_test', 'group': 'mainApp'}"
+        mock_policy.authenticated_userid.return_value = "{'login': 'user_test', 'group': 'mainApp'}"
         mock_get_policy.return_value = mock_policy
         self.request.policy = MagicMock()
         self.request.policy.authenticated_userid.return_value = None
-        self.request.cookies = {"climmob_cookie_question":True}
+        self.request.cookies = {"climmob_cookie_question": True}
         self.request.route_url.return_value = "dashboard"
         result = self.view.processView()
         self.assertIsInstance(result, HTTPFound)
         self.assertEqual(result.location, "dashboard")
 
     @patch("climmob.views.basic_views.remember")
-    @patch("climmob.views.basic_views.getUserData", return_value=({'user_name':'climmob'}))
+    @patch("climmob.views.basic_views.getUserData", return_value=({'user_name': 'climmob'}))
     @patch("climmob.views.basic_views.get_policy")
-    def test_process_view_login_no_cookies_no_login_data_submit_dataw(self, mock_get_policy, mock_get_user_data, mock_remember):
+    def test_process_view_login_no_cookies_no_login_data_submit_dataw(self, mock_get_policy, mock_get_user_data,
+                                                                      mock_remember):
         mock_policy = MagicMock()
         mock_policy.authenticated_userid.return_value = None
         mock_get_policy.return_value = mock_policy
@@ -242,9 +254,9 @@ class TestLoginView(unittest.TestCase):
         self.request.policy.authenticated_userid.return_value = None
         self.request.params.get.return_value = "next"
         self.request.POST = {
-                "submit": True,
-                "login": "LOGIN_USER",
-                "passwd": "PASS_USER"
+            "submit": True,
+            "login": "LOGIN_USER",
+            "passwd": "PASS_USER"
         }
         mock_user = MagicMock()
         mock_user.check_password.return_value = True
@@ -252,7 +264,8 @@ class TestLoginView(unittest.TestCase):
         result = self.view.processView()
         mock_get_policy.assert_called_once_with(self.request, "main")
         mock_get_user_data.assert_called_once_with("LOGIN_USER", self.request)
-        mock_remember.assert_called_once_with(self.request, "{'login': 'LOGIN_USER', 'group': 'mainApp'}", policies=["main"] )
+        mock_remember.assert_called_once_with(self.request, "{'login': 'LOGIN_USER', 'group': 'mainApp'}",
+                                              policies=["main"])
         self.assertIsInstance(result, HTTPFound)
         self.assertEqual(result.location, "next")
 
@@ -266,36 +279,507 @@ class TestLoginView(unittest.TestCase):
         self.request.policy.authenticated_userid.return_value = None
         self.request.params.get.return_value = "next"
         self.request.POST = {
-                "submit": True,
-                "login": "LOGIN_USER",
-                "passwd": "PASS_USER"
+            "submit": True,
+            "login": "LOGIN_USER",
+            "passwd": "PASS_USER"
         }
         result = self.view.processView()
-        self.assertEqual(result,{
+        self.assertEqual(result, {
             "login": "LOGIN_USER",
             "failed_attempt": True,
             "next": "next",
-            "ask_for_cookies": True,})
+            "ask_for_cookies": True, })
+
 
 class TestRecoverPasswordView(unittest.TestCase):
 
     @patch("climmob.views.basic_views.smtplib.SMTP")
-    def test_send_password_by_email_no_success(self, mock_smtp_server):
+    def test_send_password_by_email_success(self, mock_smtp_server):
         self.request = MagicMock()
         mock_server = MagicMock()
         mock_smtp_server.return_value = mock_server
-        body = "this is the body of the email test"
-        subject = "Subject test email"
+        body = "THIS_IS_THE_BODY_OF_THE_EMAIL_TEST"
+        subject = "SUBJECT_TEST_EMAIL"
         target_name = "YOUR_EMAIL"
         target_email = "YOUR_EMAIL@CLIMMOB.COM"
-        mail_from = "CLIMMOB@CLIMMOB.COM"
+        mail_from = "TEST@CLIMMOB.COM"
         msg = build_email_message(body, subject, target_name, target_email, mail_from)
 
         self.view = RecoverPasswordView(self.request)
         self.view.send_password_by_email(body, subject, target_name, target_email, mail_from)
         mock_smtp_server.assert_called_once()
-        mock_server.sendmail.assert_any_call(mail_from, [target_email],msg.as_string())
+        mock_server.sendmail.assert_called_once_with(mail_from, [target_email], msg.as_string())
         self.assertIn("Subject", mock_server.sendmail.call_args[0][2])
+
+    @patch("climmob.views.basic_views.print")
+    @patch("climmob.views.basic_views.smtplib.SMTP")
+    def test_send_password_by_email_fail(self, mock_smtp_server, mock_print):
+        self.request = MagicMock()
+        mock_smtp_server.side_effect = Exception("Connection failed")
+        body = "THIS_IS_THE_BODY_OF_THE_EMAIL_TEST"
+        subject = "SUBJECT_TEST_EMAIL"
+        target_name = "YOUR_EMAIL"
+        target_email = "YOUR_EMAIL@CLIMMOB.COM"
+        mail_from = "TEST@CLIMMOB.COM"
+
+        self.view = RecoverPasswordView(self.request)
+        self.view.send_password_by_email(body, subject, target_name, target_email, mail_from)
+        mock_smtp_server.assert_called_once()
+        mock_print.assert_called_with("Connection failed")
+
+    @patch("climmob.views.basic_views.log.error")
+    def test_send_password_email_no_email(self, mock_log_error):
+        self.request = MagicMock()
+        self.request.registry = MagicMock()
+        self.request.registry.settings = {"email.from": None}
+        email_to = "YOUR_EMAIL@CLIMMOB.COM"
+        reset_token = "NEW_TOKEN"
+        reset_key = "RESET_KEY"
+        user_dict = {"user": "USER", "password": "PASSWORD"}
+
+        self.view = RecoverPasswordView(self.request)
+        result = self.view.send_password_email(email_to, reset_token, reset_key, user_dict)
+        mock_log_error.assert_called_once_with("ClimMob has no email settings in place. Email service is disabled.")
+        self.assertEqual(result, False)
+
+    def test_send_password_email_empty_email(self):
+        self.request = MagicMock()
+        self.request.registry = MagicMock()
+        self.request.registry.settings = {"email.from": ""}
+        email_to = "YOUR_EMAIL@CLIMMOB.COM"
+        reset_token = "NEW_TOKEN"
+        reset_key = "RESET_KEY"
+        user_dict = {"user": "USER", "password": "PASSWORD"}
+
+        self.view = RecoverPasswordView(self.request)
+        result = self.view.send_password_email(email_to, reset_token, reset_key, user_dict)
+        self.assertEqual(result, False)
+
+    @patch("climmob.views.basic_views.RecoverPasswordView.send_password_by_email")
+    @patch("climmob.views.basic_views.render_template")
+    @patch("climmob.views.basic_views.readble_date", return_value=("Monday 01th of May, 2025", "en"))
+    def test_send_password_email_success(self, mock_readable_date, mock_render_template, mock_send_password_by_email):
+        email_to = "YOUR_EMAIL@CLIMMOB.COM"
+        reset_token = "NEW_TOKEN"
+        reset_key = "RESET_KEY"
+        user_dict = MagicMock()
+        user_dict.fullName = "FULL_NAME_USER"
+        user_dict.user = "USER"
+        user_dict.password = "PASSWORD"
+        self.request = MagicMock()
+        self.request.registry = MagicMock()
+        self.request.registry.settings = {"email.from": "TEST@CLIMMOB.COM"}
+        self.request.route_url = MagicMock(return_value="/reset/RESET_KEY/password")
+        self.view = RecoverPasswordView(self.request)
+        result = self.view.send_password_email(email_to, reset_token, reset_key, user_dict)
+
+        mock_send_password_by_email.assert_called_once()
+        mock_readable_date.assert_called_once()
+        mock_render_template.assert_called_once()
+        self.assertEqual(result, None)
+
+    @patch("climmob.views.basic_views.getUserData", return_value="USER")
+    @patch("climmob.views.basic_views.get_policy")
+    def test_process_view_recovery_password_user_exist(self, mock_get_policy, mock_get_user_data):
+        self.request = MagicMock()
+        mock_policy = MagicMock()
+        mock_policy.authenticated_userid.return_value = "True"
+        mock_get_policy.return_value = mock_policy
+        self.view = RecoverPasswordView(self.request)
+        with self.assertRaises(HTTPNotFound) as context:
+            self.view.processView()
+            self.assertEqual(context.exception.code, 404)
+            self.assertEqual(context.exception.explanation, "The resource could not be found.")
+        mock_get_policy.assert_called_once_with(self.request, "main")
+        mock_get_user_data.assert_called_once_with("True", self.request)
+
+    @patch("climmob.views.basic_views.getUserData", return_value=None)
+    @patch("climmob.views.basic_views.get_policy")
+    def test_process_view_recovery_password_user_no_exist_submit_it_no_email(self, mock_get_policy, mock_get_user_data):
+        mock_policy = MagicMock()
+        mock_policy.authenticated_userid.return_value = "True"
+        mock_get_policy.return_value = mock_policy
+        self.request = MagicMock()
+        self.view = RecoverPasswordView(self.request)
+        self.view._ = MagicMock(side_effect=lambda x: x)
+        self.request.POST = {"submit": "1", "user_email": None}
+
+        response = self.view.processView()
+        mock_get_policy.assert_called_once_with(self.request, "main")
+        mock_get_user_data.assert_called_once_with("True", self.request)
+        self.assertEqual(response, {'error_summary': {'email': 'You need to provide an email address'}})
+
+    @patch("climmob.views.basic_views.getUserByEmail", return_value=(None, None))
+    @patch("climmob.views.basic_views.getUserData", return_value=None)
+    @patch("climmob.views.basic_views.get_policy")
+    def test_process_view_recovery_password_user_no_exist_submit_it_no_user(self, mock_get_policy, mock_get_user_data,
+                                                                            mock_getUserByEmail):
+        mock_policy = MagicMock()
+        mock_policy.authenticated_userid.return_value = "True"
+        mock_get_policy.return_value = mock_policy
+        self.request = MagicMock()
+        self.view = RecoverPasswordView(self.request)
+        self.view._ = MagicMock(side_effect=lambda x: x)
+        self.request.POST = {"submit": "1", "user_email": "YOUR_EMAIL@CLIMMOB.COM"}
+
+        response = self.view.processView()
+        mock_get_policy.assert_called_once_with(self.request, "main")
+        mock_get_user_data.assert_called_once_with("True", self.request)
+        self.assertEqual(response, {'error_summary': {'email': 'Cannot find an user with such email address'}})
+        mock_getUserByEmail.assert_called_once_with("YOUR_EMAIL@CLIMMOB.COM", self.request)
+
+    @patch.object(RecoverPasswordView, 'send_password_email', return_value=None)
+    @patch("climmob.views.basic_views.setPasswordResetToken", return_value=None)
+    @patch("climmob.views.basic_views.getUserByEmail",
+           return_value=(MagicMock(login="USER", email="YOUR_EMAIL@CLIMMOB.COM"), "PASSWORD"))
+    @patch("climmob.views.basic_views.getUserData", return_value=None)
+    @patch("climmob.views.basic_views.get_policy")
+    def test_process_view_recovery_password_success(self, mock_get_policy, mock_get_user_data, mock_get_user_by_email,
+                                                    mock_set_password_email, mock_send_password_reset_token):
+        mock_policy = MagicMock()
+        mock_policy.authenticated_userid.return_value = "True"
+        mock_get_policy.return_value = mock_policy
+
+        self.request = MagicMock()
+        self.view = RecoverPasswordView(self.request)
+        self.view._ = MagicMock(side_effect=lambda x: x)
+        self.request.locale_name = "en"
+        self.request.POST = {"submit": "1", "user_email": "YOUR_EMAIL@CLIMMOB.COM"}
+
+        result = self.view.processView()
+        self.assertEqual(result.status_code, 302)
+        mock_get_policy.assert_called_once_with(self.request, "main")
+        mock_get_user_data.assert_called_once_with("True", self.request)
+        mock_get_user_by_email.assert_called_once_with("YOUR_EMAIL@CLIMMOB.COM", self.request)
+        mock_set_password_email.assert_called_once()
+        mock_send_password_reset_token.assert_called_once()
+
+
+class TestResetPasswordView(unittest.TestCase):
+    def setUp(self):
+        self.request = MagicMock()
+        self.view = ResetPasswordView(self.request)
+        self.view._ = MagicMock(side_effect=lambda x: x)
+        self.view.request.method = "POST"
+
+    @patch("climmob.views.basic_views.resetKeyExists", return_value=False)
+    def test_process_view_reset_password_view_no_reset_key(self, mock_reset_Key_exists):
+        self.request.matchdict = {"reset_key": "DUMMY_RESET_KEY"}
+        with self.assertRaises(HTTPNotFound) as context:
+            self.view.processView()
+        self.assertEqual(context.exception.status_code, 404)
+        mock_reset_Key_exists.assert_called_once_with(self.request, "DUMMY_RESET_KEY")
+
+    @patch("climmob.views.basic_views.resetKeyExists", return_value=True)
+    def test_process_view_reset_password_view_no_post(self, mock_reset_Key_exists):
+        self.request.matchdict = {"reset_key": "DUMMY_RESET_KEY"}
+        self.view.request.method = "GET"
+        response = self.view.processView()
+        self.assertEqual(response, {"error_summary": {}, "dataworking": {}})
+        mock_reset_Key_exists.assert_called_once_with(self.request, "DUMMY_RESET_KEY")
+
+    @patch("climmob.views.basic_views.check_csrf_token", return_value=False)
+    @patch("climmob.views.basic_views.resetKeyExists", return_value=True)
+    def test_process_view_reset_password_view_user_no_safe(self, mock_reset_Key_exists, mock_check_csrf_token):
+        self.request.matchdict = {"reset_key": "DUMMY_RESET_KEY"}
+        with self.assertRaises(HTTPNotFound) as context:
+            self.view.processView()
+        self.assertEqual(context.exception.status_code, 404)
+        mock_reset_Key_exists.assert_called_once_with(self.request, "DUMMY_RESET_KEY")
+        mock_check_csrf_token.assert_called_once_with(self.request, raises=False)
+
+    @patch("climmob.views.basic_views.getUserData", return_value=None)
+    @patch("climmob.views.basic_views.log.error")
+    @patch("climmob.views.basic_views.check_csrf_token", return_value=True)
+    @patch("climmob.views.basic_views.resetKeyExists", return_value=True)
+    def test_process_view_reset_password_view_user_no_user(self, mock_reset_Key_exists, mock_check_csrf_token,
+                                                           mock_log_error, mock_get_user_data):
+        self.view.getPostDict = MagicMock(return_value={
+            "user": "SOME_VALUE",
+            "token": "TOKEN",
+            "password": "PASSWORD",
+            "password2": "OTHER_PASSWORD",
+            "email": "EMAIL",
+        })
+        self.request.matchdict = {"reset_key": "DUMMY_RESET_KEY"}
+        self.request.remote_addr = "127.0.0.1"
+        self.request.user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
+        response = self.view.processView()
+        self.assertEqual(response, {
+            'dataworking':
+                {
+                    'email': 'EMAIL',
+                    'password': 'PASSWORD',
+                    'password2': 'OTHER_PASSWORD',
+                    'token': 'TOKEN',
+                    'user': 'SOME_VALUE'
+                },
+            'error_summary':
+                {'Error': 'User does not exist'
+                 }
+        })
+        mock_reset_Key_exists.assert_called_once_with(self.request, "DUMMY_RESET_KEY")
+        mock_check_csrf_token.assert_called_once_with(self.request, raises=False)
+        mock_log_error.assert_called_once_with(
+            "Suspicious bot password recovery from IP: " + self.request.remote_addr + ". Agent: " + self.request.user_agent + ". Email: EMAIL")
+        mock_get_user_data.assert_called_once_with('SOME_VALUE', self.request )
+
+    @patch("climmob.views.basic_views.getUserData")
+    @patch("climmob.views.basic_views.log.error")
+    @patch("climmob.views.basic_views.check_csrf_token", return_value=True)
+    @patch("climmob.views.basic_views.resetKeyExists", return_value=True)
+    def test_process_view_reset_password_view_user_invalid_Key(self, mock_reset_Key_exists, mock_check_csrf_token,
+                                                           mock_log_error, mock_get_user_data):
+        mock_user = MagicMock()
+        mock_user.userData = {
+            "user_password_reset_key": "RESET_KEY",
+            "user_password_reset_token": "RESET_TOKEN",
+            "user_password_reset_expires_on": datetime(2025, 5, 12, 15, 0, 0)
+        }
+        mock_get_user_data.return_value = mock_user
+        self.view.getPostDict = MagicMock(return_value={
+            "user": "SOME_VALUE",
+            "token": "TOKEN",
+            "password": "PASSWORD",
+            "password2": "OTHER_PASSWORD",
+            "email": "EMAIL",
+        })
+        self.request.matchdict = {"reset_key": "DUMMY_RESET_KEY"}
+        self.request.remote_addr = "127.0.0.1"
+        self.request.user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
+        response = self.view.processView()
+        self.assertEqual(response, {
+            'dataworking':
+                {
+                    'email': 'EMAIL',
+                    'password': 'PASSWORD',
+                    'password2': 'OTHER_PASSWORD',
+                    'token': 'TOKEN',
+                    'user': 'SOME_VALUE'
+                },
+            'error_summary':
+                {'Error': 'Invalid key'
+                 }
+        })
+
+        mock_reset_Key_exists.assert_called_once_with(self.request, "DUMMY_RESET_KEY")
+        mock_check_csrf_token.assert_called_once_with(self.request, raises=False)
+        mock_log_error.assert_called_once_with(
+            "Suspicious bot password recovery from IP: " + self.request.remote_addr + ". Agent: " + self.request.user_agent + ". Email: EMAIL")
+        mock_get_user_data.assert_called_once_with('SOME_VALUE', self.request)
+
+    @patch("climmob.views.basic_views.getUserData")
+    @patch("climmob.views.basic_views.log.error")
+    @patch("climmob.views.basic_views.check_csrf_token", return_value=True)
+    @patch("climmob.views.basic_views.resetKeyExists", return_value=True)
+    def test_process_view_reset_password_view_user_invalid_token(self, mock_reset_Key_exists, mock_check_csrf_token,
+                                                           mock_log_error, mock_get_user_data):
+        mock_user = MagicMock()
+        mock_user.userData = {
+            "user_password_reset_key": "DUMMY_RESET_KEY",
+            "user_password_reset_token": "RESET_TOKEN",
+            "user_password_reset_expires_on": "2025-05-12 15:00:00"
+        }
+        mock_get_user_data.return_value = mock_user
+        self.view.getPostDict = MagicMock(return_value={
+            "user": "SOME_VALUE",
+            "token": "TOKEN",
+            "password": "PASSWORD",
+            "password2": "OTHER_PASSWORD",
+            "email": "EMAIL",
+        })
+        self.request.matchdict = {"reset_key": "DUMMY_RESET_KEY"}
+        self.request.remote_addr = "127.0.0.1"
+        self.request.user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
+        response = self.view.processView()
+        self.assertEqual(response, {
+            'dataworking':
+                {
+                    'email': 'EMAIL',
+                    'password': 'PASSWORD',
+                    'password2': 'OTHER_PASSWORD',
+                    'token': 'TOKEN',
+                    'user': 'SOME_VALUE'
+                },
+            'error_summary':
+                {'Error': 'Invalid token'
+                 }
+        })
+
+        mock_reset_Key_exists.assert_called_once_with(self.request, "DUMMY_RESET_KEY")
+        mock_check_csrf_token.assert_called_once_with(self.request, raises=False)
+        mock_log_error.assert_called_once_with(
+            "Suspicious bot password recovery from IP: " + self.request.remote_addr + ". Agent: " + self.request.user_agent + ". Email: EMAIL")
+        mock_get_user_data.assert_called_once_with('SOME_VALUE', self.request)
+
+    @patch("climmob.views.basic_views.getUserData")
+    @patch("climmob.views.basic_views.log.error")
+    @patch("climmob.views.basic_views.check_csrf_token", return_value=True)
+    @patch("climmob.views.basic_views.resetKeyExists", return_value=True)
+    def test_process_view_reset_password_view_user_invalid_token_by_time(self, mock_reset_Key_exists, mock_check_csrf_token,
+                                                           mock_log_error, mock_get_user_data):
+        mock_user = MagicMock()
+        mock_user.userData = {
+            "user_password_reset_key": "DUMMY_RESET_KEY",
+            "user_password_reset_token": "RESET_TOKEN",
+            "user_password_reset_expires_on": datetime(2025, 5, 12, 15, 0, 0)
+        }
+        mock_get_user_data.return_value = mock_user
+        self.view.getPostDict = MagicMock(return_value={
+            "user": "SOME_VALUE",
+            "token": "RESET_TOKEN",
+            "password": "PASSWORD",
+            "password2": "OTHER_PASSWORD",
+            "email": "EMAIL",
+        })
+        self.request.matchdict = {"reset_key": "DUMMY_RESET_KEY"}
+        self.request.remote_addr = "127.0.0.1"
+        self.request.user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
+        response = self.view.processView()
+        self.assertEqual(response, {
+            'dataworking':
+                {
+                    'email': 'EMAIL',
+                    'password': 'PASSWORD',
+                    'password2': 'OTHER_PASSWORD',
+                    'token': 'RESET_TOKEN',
+                    'user': 'SOME_VALUE'
+                },
+            'error_summary':
+                {'Error': 'Invalid token'
+                 }
+        })
+        mock_reset_Key_exists.assert_called_once_with(self.request, "DUMMY_RESET_KEY")
+        mock_check_csrf_token.assert_called_once_with(self.request, raises=False)
+        mock_log_error.assert_called_once_with(
+            "Suspicious bot password recovery from IP: " + self.request.remote_addr + ". Agent: " + self.request.user_agent + ". Email: EMAIL")
+        mock_get_user_data.assert_called_once_with('SOME_VALUE', self.request)
+
+    @patch("climmob.views.basic_views.getUserData")
+    @patch("climmob.views.basic_views.log.error")
+    @patch("climmob.views.basic_views.check_csrf_token", return_value=True)
+    @patch("climmob.views.basic_views.resetKeyExists", return_value=True)
+    def test_process_view_reset_password_view_password_empty(self, mock_reset_Key_exists,
+                                                                         mock_check_csrf_token,
+                                                                         mock_log_error, mock_get_user_data):
+        mock_user = MagicMock()
+        mock_user.userData = {
+            "user_password_reset_key": "DUMMY_RESET_KEY",
+            "user_password_reset_token": "RESET_TOKEN",
+            "user_password_reset_expires_on": datetime.now() + relativedelta(hours=+1)
+        }
+        mock_get_user_data.return_value = mock_user
+        self.view.getPostDict = MagicMock(return_value={
+            "user": "SOME_VALUE",
+            "token": "RESET_TOKEN",
+            "password": "",
+            "password2": "",
+            "email": "EMAIL",
+        })
+        self.request.matchdict = {"reset_key": "DUMMY_RESET_KEY"}
+        self.request.remote_addr = "127.0.0.1"
+        self.request.user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
+        response = self.view.processView()
+        self.assertEqual(response, {
+            'dataworking':
+                {
+                    'email': 'EMAIL',
+                    'password': '',
+                    'password2': '',
+                    'token': 'RESET_TOKEN',
+                    'user': 'SOME_VALUE'
+                },
+            'error_summary':
+                {'Error': 'The password cannot be empty'
+                 }
+        })
+        mock_reset_Key_exists.assert_called_once_with(self.request, "DUMMY_RESET_KEY")
+        mock_check_csrf_token.assert_called_once_with(self.request, raises=False)
+        mock_log_error.assert_called_once_with(
+            "Suspicious bot password recovery from IP: " + self.request.remote_addr + ". Agent: " + self.request.user_agent + ". Email: EMAIL")
+        mock_get_user_data.assert_called_once_with('SOME_VALUE', self.request)
+
+    @patch("climmob.views.basic_views.getUserData")
+    @patch("climmob.views.basic_views.log.error")
+    @patch("climmob.views.basic_views.check_csrf_token", return_value=True)
+    @patch("climmob.views.basic_views.resetKeyExists", return_value=True)
+    def test_process_view_reset_password_view_pass1_different_pass2(self, mock_reset_Key_exists,
+                                                                         mock_check_csrf_token,
+                                                                         mock_log_error, mock_get_user_data):
+        mock_user = MagicMock()
+        mock_user.userData = {
+            "user_password_reset_key": "DUMMY_RESET_KEY",
+            "user_password_reset_token": "RESET_TOKEN",
+            "user_password_reset_expires_on": datetime.now() + relativedelta(hours=+1)
+        }
+        mock_get_user_data.return_value = mock_user
+        self.view.getPostDict = MagicMock(return_value={
+            "user": "SOME_VALUE",
+            "token": "RESET_TOKEN",
+            "password": "PASSWORD",
+            "password2": "OTHER_PASSWORD",
+            "email": "EMAIL",
+        })
+        self.request.matchdict = {"reset_key": "DUMMY_RESET_KEY"}
+        self.request.remote_addr = "127.0.0.1"
+        self.request.user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
+        response = self.view.processView()
+        self.assertEqual(response, {
+            'dataworking':
+                {
+                    'email': 'EMAIL',
+                    'password': 'PASSWORD',
+                    'password2': 'OTHER_PASSWORD',
+                    'token': 'RESET_TOKEN',
+                    'user': 'SOME_VALUE'
+                },
+            'error_summary':
+                {'Error': 'The password and the confirmation are not the same'
+                 }
+        })
+        mock_reset_Key_exists.assert_called_once_with(self.request, "DUMMY_RESET_KEY")
+        mock_check_csrf_token.assert_called_once_with(self.request, raises=False)
+        mock_log_error.assert_called_once_with(
+            "Suspicious bot password recovery from IP: " + self.request.remote_addr + ". Agent: " + self.request.user_agent + ". Email: EMAIL")
+        mock_get_user_data.assert_called_once_with('SOME_VALUE', self.request)
+
+    @patch("climmob.views.basic_views.resetPassword")
+    @patch("climmob.views.basic_views.encodeData", return_value="data")
+    @patch("climmob.views.basic_views.getUserData")
+    @patch("climmob.views.basic_views.log.error")
+    @patch("climmob.views.basic_views.check_csrf_token", return_value=True)
+    @patch("climmob.views.basic_views.resetKeyExists", return_value=True)
+    def test_process_view_reset_password_view_success(self, mock_reset_Key_exists,
+                                                                         mock_check_csrf_token,
+                                                                         mock_log_error, mock_get_user_data, mock_encode_data, mock_reset_password):
+        mock_user = MagicMock()
+        mock_user.userData = {
+            "user_name": "SOME_VALUE",
+            "user_password_reset_key": "DUMMY_RESET_KEY",
+            "user_password_reset_token": "RESET_TOKEN",
+            "user_password_reset_expires_on": datetime.now() + relativedelta(hours=+1)
+        }
+        mock_get_user_data.return_value = mock_user
+        self.view.getPostDict = MagicMock(return_value={
+            "user": "SOME_VALUE",
+            "token": "RESET_TOKEN",
+            "password": "PASSWORD",
+            "password2": "PASSWORD",
+            "email": "EMAIL",
+        })
+        self.request.matchdict = {"reset_key": "DUMMY_RESET_KEY"}
+        self.request.remote_addr = "127.0.0.1"
+        self.request.user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
+        response = self.view.processView()
+        self.assertIsInstance(response, HTTPFound)
+        mock_reset_Key_exists.assert_called_once_with(self.request, "DUMMY_RESET_KEY")
+        mock_check_csrf_token.assert_called_once_with(self.request, raises=False)
+        mock_log_error.assert_called_once_with(
+            "Suspicious bot password recovery from IP: " + self.request.remote_addr + ". Agent: " + self.request.user_agent + ". Email: EMAIL")
+        mock_get_user_data.assert_called_once_with('SOME_VALUE', self.request)
+        mock_encode_data.assert_called_once_with(self.request, "PASSWORD")
+        mock_reset_password.assert_called_once_with(self.request, "SOME_VALUE", "DUMMY_RESET_KEY", "RESET_TOKEN", "data")
+
 
 
 
