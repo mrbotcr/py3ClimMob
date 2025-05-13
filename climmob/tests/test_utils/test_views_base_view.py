@@ -5,6 +5,7 @@ from unittest.mock import patch, MagicMock
 from dateutil.relativedelta import relativedelta
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 
+from climmob.tests.test_utils.common import ViewBaseTest
 from climmob.utility.email import build_email_message
 from climmob.views.basic_views import (
     HomeView,
@@ -43,38 +44,41 @@ class TestRenderTemplate(unittest.TestCase):
         self.assertEqual(result, "rendered")
 
 
-class TestHomeView(unittest.TestCase):
-    def setUp(self):
-        self.request = MagicMock()
-        self.view = HomeView(self.request)
+class TestHomeView(ViewBaseTest):
+    view_class = HomeView
 
     @patch("climmob.views.basic_views.getProjectCount", return_value=8)
     @patch("climmob.views.basic_views.getUserCount", return_value=2)
     def test_process_view_home_view_cookie_none(
         self, mock_getUserCount, mock_getProjectCount
     ):
-        self.request.cookies = {}
+        self.view.request.cookies = {}
         result = self.view.processView()
         self.assertEqual(
             result, {"numUsers": 2, "numProjs": 8, "ask_for_cookies": True}
         )
-        mock_getUserCount.assert_called_once_with(self.request)
-        mock_getProjectCount.assert_called_once_with(self.request)
+        mock_getUserCount.assert_called_once_with(self.view.request)
+        mock_getProjectCount.assert_called_once_with(self.view.request)
 
     @patch("climmob.views.basic_views.getProjectCount", return_value=8)
     @patch("climmob.views.basic_views.getUserCount", return_value=2)
     def test_process_view_cookie_true(self, mock_getUserCount, mock_getProjectCount):
-        self.request.cookies = {"climmob_cookie_question": 1}
+        self.view.request.cookies = {"climmob_cookie_question": 1}
         result = self.view.processView()
         self.assertEqual(
             result, {"numUsers": 2, "numProjs": 8, "ask_for_cookies": False}
         )
-        mock_getUserCount.assert_called_once_with(self.request)
-        mock_getProjectCount.assert_called_once_with(self.request)
+        mock_getUserCount.assert_called_once_with(self.view.request)
+        mock_getProjectCount.assert_called_once_with(self.view.request)
 
 
-class TestHealthView(unittest.TestCase):
+##*****##
+class TestHealthView(ViewBaseTest):
+    view_class = HealthView
+    request_method = "GET"
+
     def setUp(self):
+        super().setUp()
         self.mock_dbsession = MagicMock()
         self.mock_engine = MagicMock()
         self.mock_result = MagicMock()
@@ -82,10 +86,9 @@ class TestHealthView(unittest.TestCase):
         self.mock_result.fetchone.return_value = ("Threads_connected", 12)
         self.mock_dbsession.get_bind.return_value = self.mock_engine
         self.mock_dbsession.execute.return_value = self.mock_result
-        self.request = MagicMock()
-        self.request.dbsession = self.mock_dbsession
-        self.request.add_response_callback = MagicMock()
-        self.view = HealthView(self.request)
+        self.view.request.dbsession = self.mock_dbsession
+        self.view.request.add_response_callback = MagicMock()
+        self.view = HealthView(self.view.request)
 
     def test_process_view_health_view_thread_connected(self):
         result = self.view.processView()
@@ -119,45 +122,37 @@ class TestHealthView(unittest.TestCase):
         )
 
 
-class TestTermsView(unittest.TestCase):
-    def setUp(self):
-        self.request = MagicMock()
-        self.view = TermsView(self.request)
+class TestTermsView(ViewBaseTest):
+    view_class = TermsView
 
     def test_process_view_terms_view_success(self):
         result = self.view.processView()
         self.assertEqual(result, {})
 
 
-class TestPrivacyView(unittest.TestCase):
-    def setUp(self):
-        self.request = MagicMock()
-        self.view = PrivacyView(self.request)
+class TestPrivacyView(ViewBaseTest):
+    view_class = PrivacyView
 
     def test_process_view_privacy_view_success(self):
         result = self.view.processView()
         self.assertEqual(result, {})
 
 
-class TestNotFoundView(unittest.TestCase):
-    def setUp(self):
-        self.request = MagicMock()
-        self.view = NotFoundView(self.request)
+class TestNotFoundView(ViewBaseTest):
+    view_class = NotFoundView
 
     def test_process_view_not_found_view_success(self):
         result = self.view.processView()
         self.assertEqual(result, {})
-        self.assertEqual(self.request.response.status, 404)
+        self.assertEqual(self.view.request.response.status, 404)
 
 
-class TestStoreCookieView(unittest.TestCase):
-    def setUp(self):
-        self.request = MagicMock()
-        self.view = StoreCookieView(self.request)
-        self.request.method = "POST"
+class TestStoreCookieView(ViewBaseTest):
+    view_class = StoreCookieView
+    request_method = "POST"
 
     def test_process_view_store_cookie_view_with_get(self):
-        self.request.method = "GET"
+        self.view.request.method = "GET"
         with self.assertRaises(HTTPNotFound) as context:
             self.view.processView()
         self.assertEqual(context.exception.code, 404)
@@ -166,9 +161,10 @@ class TestStoreCookieView(unittest.TestCase):
         )
 
     def test_process_view_store_cookie_view_success(self):
-        self.request.route_url.return_value = "home"
-        self.request.params.get.return_value = "next"
-        self.request.POST = "accept"
+        self.view.request.cookies = {"climmob_cookie_question": 1}
+        self.view.request.route_url.return_value = "home"
+        self.view.request.params.get.return_value = "next"
+        self.view.request.POST = "accept"
         with patch.object(HTTPFound, "set_cookie", autospec=True) as mock_set_cookie:
             result = self.view.processView()
             self.assertIsInstance(result, HTTPFound)
@@ -203,11 +199,12 @@ class TestGetPolicy(unittest.TestCase):
         self.assertIsNone(result)
 
 
-class TestLoginView(unittest.TestCase):
+class TestLoginView(ViewBaseTest):
+    view_class = LoginView
+
     def setUp(self):
-        self.request = MagicMock()
-        self.request.cookies = {}
-        self.view = LoginView(self.request)
+        super().setUp()
+        self.view.request.cookies = {}
         self.view.user = MagicMock(login="test_user")
 
     @patch("climmob.views.basic_views.get_policy")
@@ -217,10 +214,10 @@ class TestLoginView(unittest.TestCase):
         mock_policy = MagicMock()
         mock_policy.authenticated_userid.return_value = None
         mock_get_policy.return_value = mock_policy
-        self.request.policy = MagicMock()
-        self.request.policy.authenticated_userid.return_value = None
-        self.request.params.get.return_value = "next"
-        self.request.POST = {}
+        self.view.request.policy = MagicMock()
+        self.view.request.policy.authenticated_userid.return_value = None
+        self.view.request.params.get.return_value = "next"
+        self.view.request.POST = {}
         result = self.view.processView()
         self.assertEqual(
             result,
@@ -245,10 +242,10 @@ class TestLoginView(unittest.TestCase):
             "{'login': 'user_test', 'group': 'mainApp'}"
         )
         mock_get_policy.return_value = mock_policy
-        self.request.policy = MagicMock()
-        self.request.policy.authenticated_userid.return_value = None
-        self.request.cookies = {"climmob_cookie_question": True}
-        self.request.route_url.return_value = "dashboard"
+        self.view.request.policy = MagicMock()
+        self.view.request.policy.authenticated_userid.return_value = None
+        self.view.request.cookies = {"climmob_cookie_question": True}
+        self.view.request.route_url.return_value = "dashboard"
         result = self.view.processView()
         self.assertIsInstance(result, HTTPFound)
         self.assertEqual(result.location, "dashboard")
@@ -264,10 +261,10 @@ class TestLoginView(unittest.TestCase):
         mock_policy = MagicMock()
         mock_policy.authenticated_userid.return_value = None
         mock_get_policy.return_value = mock_policy
-        self.request.policy = MagicMock()
-        self.request.policy.authenticated_userid.return_value = None
-        self.request.params.get.return_value = "next"
-        self.request.POST = {
+        self.view.request.policy = MagicMock()
+        self.view.request.policy.authenticated_userid.return_value = None
+        self.view.request.params.get.return_value = "next"
+        self.view.request.POST = {
             "submit": True,
             "login": "LOGIN_USER",
             "passwd": "PASS_USER",
@@ -276,10 +273,10 @@ class TestLoginView(unittest.TestCase):
         mock_user.check_password.return_value = True
         mock_get_user_data.return_value = mock_user
         result = self.view.processView()
-        mock_get_policy.assert_called_once_with(self.request, "main")
-        mock_get_user_data.assert_called_once_with("LOGIN_USER", self.request)
+        mock_get_policy.assert_called_once_with(self.view.request, "main")
+        mock_get_user_data.assert_called_once_with("LOGIN_USER", self.view.request)
         mock_remember.assert_called_once_with(
-            self.request,
+            self.view.request,
             "{'login': 'LOGIN_USER', 'group': 'mainApp'}",
             policies=["main"],
         )
@@ -294,10 +291,10 @@ class TestLoginView(unittest.TestCase):
         mock_policy = MagicMock()
         mock_policy.authenticated_userid.return_value = None
         mock_get_policy.return_value = mock_policy
-        self.request.policy = MagicMock()
-        self.request.policy.authenticated_userid.return_value = None
-        self.request.params.get.return_value = "next"
-        self.request.POST = {
+        self.view.request.policy = MagicMock()
+        self.view.request.policy.authenticated_userid.return_value = None
+        self.view.request.params.get.return_value = "next"
+        self.view.request.POST = {
             "submit": True,
             "login": "LOGIN_USER",
             "passwd": "PASS_USER",
@@ -524,13 +521,14 @@ class TestRecoverPasswordView(unittest.TestCase):
         mock_send_password_reset_token.assert_called_once()
 
 
-class TestResetPasswordView(unittest.TestCase):
+class TestResetPasswordView(ViewBaseTest):
+    view_class = ResetPasswordView
+    _ = MagicMock(side_effect=lambda x: x)
+    request_method = "POST"
+
     def setUp(self):
-        self.request = MagicMock()
-        self.view = ResetPasswordView(self.request)
-        self.view._ = MagicMock(side_effect=lambda x: x)
-        self.view.request.method = "POST"
-        self.request.matchdict = {"reset_key": "DUMMY_RESET_KEY"}
+        super().setUp()
+        self.view.request.matchdict = {"reset_key": "DUMMY_RESET_KEY"}
         self.view.getPostDict = MagicMock(
             return_value={
                 "user": "SOME_VALUE",
@@ -540,22 +538,26 @@ class TestResetPasswordView(unittest.TestCase):
                 "email": "EMAIL",
             }
         )
-        self.request.remote_addr = "127.0.0.1"
-        self.request.user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
+        self.view.request.remote_addr = "127.0.0.1"
+        self.view.request.user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
 
     @patch("climmob.views.basic_views.resetKeyExists", return_value=False)
     def test_process_view_reset_password_view_no_reset_key(self, mock_reset_Key_exists):
         with self.assertRaises(HTTPNotFound) as context:
             self.view.processView()
         self.assertEqual(context.exception.status_code, 404)
-        mock_reset_Key_exists.assert_called_once_with(self.request, "DUMMY_RESET_KEY")
+        mock_reset_Key_exists.assert_called_once_with(
+            self.view.request, "DUMMY_RESET_KEY"
+        )
 
     @patch("climmob.views.basic_views.resetKeyExists", return_value=True)
     def test_process_view_reset_password_view_no_post(self, mock_reset_Key_exists):
         self.view.request.method = "GET"
         response = self.view.processView()
         self.assertEqual(response, {"error_summary": {}, "dataworking": {}})
-        mock_reset_Key_exists.assert_called_once_with(self.request, "DUMMY_RESET_KEY")
+        mock_reset_Key_exists.assert_called_once_with(
+            self.view.request, "DUMMY_RESET_KEY"
+        )
 
     @patch("climmob.views.basic_views.check_csrf_token", return_value=False)
     @patch("climmob.views.basic_views.resetKeyExists", return_value=True)
@@ -565,8 +567,10 @@ class TestResetPasswordView(unittest.TestCase):
         with self.assertRaises(HTTPNotFound) as context:
             self.view.processView()
         self.assertEqual(context.exception.status_code, 404)
-        mock_reset_Key_exists.assert_called_once_with(self.request, "DUMMY_RESET_KEY")
-        mock_check_csrf_token.assert_called_once_with(self.request, raises=False)
+        mock_reset_Key_exists.assert_called_once_with(
+            self.view.request, "DUMMY_RESET_KEY"
+        )
+        mock_check_csrf_token.assert_called_once_with(self.view.request, raises=False)
 
     @patch("climmob.views.basic_views.getUserData", return_value=None)
     @patch("climmob.views.basic_views.log.error")
@@ -593,16 +597,18 @@ class TestResetPasswordView(unittest.TestCase):
                 "error_summary": {"Error": "User does not exist"},
             },
         )
-        mock_reset_Key_exists.assert_called_once_with(self.request, "DUMMY_RESET_KEY")
-        mock_check_csrf_token.assert_called_once_with(self.request, raises=False)
+        mock_reset_Key_exists.assert_called_once_with(
+            self.view.request, "DUMMY_RESET_KEY"
+        )
+        mock_check_csrf_token.assert_called_once_with(self.view.request, raises=False)
         mock_log_error.assert_called_once_with(
             "Suspicious bot password recovery from IP: "
-            + self.request.remote_addr
+            + self.view.request.remote_addr
             + ". Agent: "
-            + self.request.user_agent
+            + self.view.request.user_agent
             + ". Email: EMAIL"
         )
-        mock_get_user_data.assert_called_once_with("SOME_VALUE", self.request)
+        mock_get_user_data.assert_called_once_with("SOME_VALUE", self.view.request)
 
     @patch("climmob.views.basic_views.getUserData")
     @patch("climmob.views.basic_views.log.error")
@@ -637,16 +643,18 @@ class TestResetPasswordView(unittest.TestCase):
             },
         )
 
-        mock_reset_Key_exists.assert_called_once_with(self.request, "DUMMY_RESET_KEY")
-        mock_check_csrf_token.assert_called_once_with(self.request, raises=False)
+        mock_reset_Key_exists.assert_called_once_with(
+            self.view.request, "DUMMY_RESET_KEY"
+        )
+        mock_check_csrf_token.assert_called_once_with(self.view.request, raises=False)
         mock_log_error.assert_called_once_with(
             "Suspicious bot password recovery from IP: "
-            + self.request.remote_addr
+            + self.view.request.remote_addr
             + ". Agent: "
-            + self.request.user_agent
+            + self.view.request.user_agent
             + ". Email: EMAIL"
         )
-        mock_get_user_data.assert_called_once_with("SOME_VALUE", self.request)
+        mock_get_user_data.assert_called_once_with("SOME_VALUE", self.view.request)
 
     @patch("climmob.views.basic_views.getUserData")
     @patch("climmob.views.basic_views.log.error")
@@ -681,16 +689,18 @@ class TestResetPasswordView(unittest.TestCase):
             },
         )
 
-        mock_reset_Key_exists.assert_called_once_with(self.request, "DUMMY_RESET_KEY")
-        mock_check_csrf_token.assert_called_once_with(self.request, raises=False)
+        mock_reset_Key_exists.assert_called_once_with(
+            self.view.request, "DUMMY_RESET_KEY"
+        )
+        mock_check_csrf_token.assert_called_once_with(self.view.request, raises=False)
         mock_log_error.assert_called_once_with(
             "Suspicious bot password recovery from IP: "
-            + self.request.remote_addr
+            + self.view.request.remote_addr
             + ". Agent: "
-            + self.request.user_agent
+            + self.view.request.user_agent
             + ". Email: EMAIL"
         )
-        mock_get_user_data.assert_called_once_with("SOME_VALUE", self.request)
+        mock_get_user_data.assert_called_once_with("SOME_VALUE", self.view.request)
 
     @patch("climmob.views.basic_views.getUserData")
     @patch("climmob.views.basic_views.log.error")
@@ -733,16 +743,18 @@ class TestResetPasswordView(unittest.TestCase):
                 "error_summary": {"Error": "Invalid token"},
             },
         )
-        mock_reset_Key_exists.assert_called_once_with(self.request, "DUMMY_RESET_KEY")
-        mock_check_csrf_token.assert_called_once_with(self.request, raises=False)
+        mock_reset_Key_exists.assert_called_once_with(
+            self.view.request, "DUMMY_RESET_KEY"
+        )
+        mock_check_csrf_token.assert_called_once_with(self.view.request, raises=False)
         mock_log_error.assert_called_once_with(
             "Suspicious bot password recovery from IP: "
-            + self.request.remote_addr
+            + self.view.request.remote_addr
             + ". Agent: "
-            + self.request.user_agent
+            + self.view.request.user_agent
             + ". Email: EMAIL"
         )
-        mock_get_user_data.assert_called_once_with("SOME_VALUE", self.request)
+        mock_get_user_data.assert_called_once_with("SOME_VALUE", self.view.request)
 
     @patch("climmob.views.basic_views.getUserData")
     @patch("climmob.views.basic_views.log.error")
@@ -785,16 +797,18 @@ class TestResetPasswordView(unittest.TestCase):
                 "error_summary": {"Error": "The password cannot be empty"},
             },
         )
-        mock_reset_Key_exists.assert_called_once_with(self.request, "DUMMY_RESET_KEY")
-        mock_check_csrf_token.assert_called_once_with(self.request, raises=False)
+        mock_reset_Key_exists.assert_called_once_with(
+            self.view.request, "DUMMY_RESET_KEY"
+        )
+        mock_check_csrf_token.assert_called_once_with(self.view.request, raises=False)
         mock_log_error.assert_called_once_with(
             "Suspicious bot password recovery from IP: "
-            + self.request.remote_addr
+            + self.view.request.remote_addr
             + ". Agent: "
-            + self.request.user_agent
+            + self.view.request.user_agent
             + ". Email: EMAIL"
         )
-        mock_get_user_data.assert_called_once_with("SOME_VALUE", self.request)
+        mock_get_user_data.assert_called_once_with("SOME_VALUE", self.view.request)
 
     @patch("climmob.views.basic_views.getUserData")
     @patch("climmob.views.basic_views.log.error")
@@ -839,16 +853,18 @@ class TestResetPasswordView(unittest.TestCase):
                 },
             },
         )
-        mock_reset_Key_exists.assert_called_once_with(self.request, "DUMMY_RESET_KEY")
-        mock_check_csrf_token.assert_called_once_with(self.request, raises=False)
+        mock_reset_Key_exists.assert_called_once_with(
+            self.view.request, "DUMMY_RESET_KEY"
+        )
+        mock_check_csrf_token.assert_called_once_with(self.view.request, raises=False)
         mock_log_error.assert_called_once_with(
             "Suspicious bot password recovery from IP: "
-            + self.request.remote_addr
+            + self.view.request.remote_addr
             + ". Agent: "
-            + self.request.user_agent
+            + self.view.request.user_agent
             + ". Email: EMAIL"
         )
-        mock_get_user_data.assert_called_once_with("SOME_VALUE", self.request)
+        mock_get_user_data.assert_called_once_with("SOME_VALUE", self.view.request)
 
     @patch("climmob.views.basic_views.resetPassword")
     @patch("climmob.views.basic_views.encodeData", return_value="data")
@@ -875,19 +891,21 @@ class TestResetPasswordView(unittest.TestCase):
         mock_get_user_data.return_value = mock_user
         response = self.view.processView()
         self.assertIsInstance(response, HTTPFound)
-        mock_reset_Key_exists.assert_called_once_with(self.request, "DUMMY_RESET_KEY")
-        mock_check_csrf_token.assert_called_once_with(self.request, raises=False)
+        mock_reset_Key_exists.assert_called_once_with(
+            self.view.request, "DUMMY_RESET_KEY"
+        )
+        mock_check_csrf_token.assert_called_once_with(self.view.request, raises=False)
         mock_log_error.assert_called_once_with(
             "Suspicious bot password recovery from IP: "
-            + self.request.remote_addr
+            + self.view.request.remote_addr
             + ". Agent: "
-            + self.request.user_agent
+            + self.view.request.user_agent
             + ". Email: EMAIL"
         )
-        mock_get_user_data.assert_called_once_with("SOME_VALUE", self.request)
-        mock_encode_data.assert_called_once_with(self.request, "PASSWORD")
+        mock_get_user_data.assert_called_once_with("SOME_VALUE", self.view.request)
+        mock_encode_data.assert_called_once_with(self.view.request, "PASSWORD")
         mock_reset_password.assert_called_once_with(
-            self.request, "SOME_VALUE", "DUMMY_RESET_KEY", "TOKEN", "data"
+            self.view.request, "SOME_VALUE", "DUMMY_RESET_KEY", "TOKEN", "data"
         )
 
 
@@ -904,15 +922,19 @@ class TestLogOutView(unittest.TestCase):
         self.request.route_url.assert_called_once_with("home")
         self.assertIsInstance(result, HTTPFound)
 
+        def mock_translation(self, message, **kwargs):
+            return message
 
-class TestRegisterView(unittest.TestCase):
+
+class TestRegisterView(ViewBaseTest):
+    view_class = RegisterView
+    request_method = "POST"
+
     def setUp(self):
-        self.request = MagicMock()
-        self.view = RegisterView(self.request)
-        self.view.request.method = "POST"
-        self.request.registry = MagicMock()
-        self.request.registry.settings = {"auth.register_users_via_web": True}
-        self.request.POST = {
+        super().setUp()
+        self.view.request.registry = MagicMock()
+        self.view.request.registry.settings = {"auth.register_users_via_web": True}
+        self.view.request.POST = {
             "submit": "1",
             "user": "SOME_VALUE",
             "user_policy": "True",
@@ -923,15 +945,10 @@ class TestRegisterView(unittest.TestCase):
             "CheckPolicy": "True",
             "user_fullname": "COMPLETE_SOME_VALUE",
         }
+        self.view._ = self.mock_translation
 
-    def test_process_view_auth_via_web_no_registry(self):
-        self.request.registry.settings = {"auth.register_users_via_web": "false"}
-        with self.assertRaises(HTTPNotFound) as context:
-            self.view.processView()
-        self.assertEqual(context.exception.code, 404)
-        self.assertEqual(
-            context.exception.explanation, "The resource could not be found."
-        )
+    def mock_translation(self, message, **kwargs):
+        return message
 
     @patch(
         "climmob.views.basic_views.getUserData",
@@ -948,12 +965,12 @@ class TestRegisterView(unittest.TestCase):
         mock_policy = MagicMock()
         mock_policy.authenticated_userid.return_value = "123456"
         mock_get_policy.return_value = mock_policy
-        self.request.route_url = MagicMock(return_value="dashboard")
+        self.view.request.route_url = MagicMock(return_value="dashboard")
         result = self.view.processView()
         self.assertIsInstance(result, HTTPFound)
         self.assertEqual(result.location, "dashboard")
         mock_literal_eval.assert_called_once_with("123456")
-        mock_get_user_data.assert_called_once_with("LOGIN", self.request)
+        mock_get_user_data.assert_called_once_with("LOGIN", self.view.request)
 
     @patch(
         "climmob.views.basic_views.addUser",
@@ -964,7 +981,7 @@ class TestRegisterView(unittest.TestCase):
     def test_process_view_auth_via_web_login_data_no_create_user(
         self, mock_get_policy, mock_valid_register_form, mock_add_user
     ):
-        self.request.POST = {
+        self.view.POST = {
             "submit": "1",
             "user": "SOME_VALUE",
             "user_password": "<PASSWORD>",
@@ -984,7 +1001,25 @@ class TestRegisterView(unittest.TestCase):
         self.assertEqual(result["countries"], [])
         self.assertEqual(result["sectors"], [])
         self.assertIn("createError", result["error_summary"])
-        self.assertTrue(isinstance(result["error_summary"]["createError"], MagicMock))
+        self.assertEqual(
+            result,
+            {
+                "data": {
+                    "submit": "1",
+                    "user": "SOME_VALUE",
+                    "user_policy": "True",
+                    "user_password": "<PASSWORD>",
+                    "user_password2": "<PASSWORD>",
+                    "user_name": "SOME_VALUE",
+                    "user_email": "YOUR_EMAIL@climmob.com",
+                    "CheckPolicy": "True",
+                    "user_fullname": "COMPLETE_SOME_VALUE",
+                },
+                "error_summary": {"createError": "Unable to create user"},
+                "countries": [],
+                "sectors": [],
+            },
+        )
         mock_valid_register_form.assert_called_once()
         mock_add_user.assert_called_once()
 
@@ -1003,16 +1038,28 @@ class TestRegisterView(unittest.TestCase):
         mock_policy.authenticated_userid.return_value = None
         mock_get_policy.return_value = mock_policy
         result = self.view.processView()
-
-        self.assertEqual(result["data"]["user"], "SOME_VALUE")
-        self.assertEqual(result["data"]["user_email"], "YOUR_EMAIL@climmob.com")
-        self.assertEqual(result["countries"], [])
-        self.assertEqual(result["sectors"], [])
-        self.assertIn("createError", result["error_summary"])
-        self.assertTrue(isinstance(result["error_summary"]["createError"], MagicMock))
+        self.assertEqual(
+            result,
+            {
+                "data": {
+                    "submit": "1",
+                    "user": "SOME_VALUE",
+                    "user_policy": "True",
+                    "user_password": "<PASSWORD>",
+                    "user_password2": "<PASSWORD>",
+                    "user_name": "SOME_VALUE",
+                    "user_email": "YOUR_EMAIL@climmob.com",
+                    "CheckPolicy": "True",
+                    "user_fullname": "COMPLETE_SOME_VALUE",
+                },
+                "error_summary": {"createError": "User is None!"},
+                "countries": [],
+                "sectors": [],
+            },
+        )
         mock_valid_register_form.assert_called_once()
         mock_add_user.assert_called_once()
-        mock_get_user_data.assert_called_once_with("SOME_VALUE", self.request)
+        mock_get_user_data.assert_called_once_with("SOME_VALUE", self.view.request)
 
     @patch("climmob.views.basic_views.getUserData")
     @patch("climmob.views.basic_views.addUser", return_value=(True, ""))
@@ -1041,16 +1088,29 @@ class TestRegisterView(unittest.TestCase):
         mock_get_user_data.return_value = mock_user
         mock_user.check_password.return_value = False
         result = self.view.processView()
-        self.assertEqual(result["data"]["user"], "SOME_VALUE")
-        self.assertEqual(result["data"]["user_email"], "YOUR_EMAIL@climmob.com")
-        self.assertEqual(result["countries"], [])
-        self.assertEqual(result["sectors"], [])
-        self.assertIn("createError", result["error_summary"])
-        self.assertTrue(isinstance(result["error_summary"]["createError"], MagicMock))
+        self.assertEqual(
+            result,
+            {
+                "data": {
+                    "submit": "1",
+                    "user": "SOME_VALUE",
+                    "user_policy": "True",
+                    "user_password": "<PASSWORD>",
+                    "user_password2": "<PASSWORD>",
+                    "user_name": "SOME_VALUE",
+                    "user_email": "YOUR_EMAIL@climmob.com",
+                    "CheckPolicy": "True",
+                    "user_fullname": "COMPLETE_SOME_VALUE",
+                },
+                "error_summary": {"createError": "Password does not match <PASSWORD>"},
+                "countries": [],
+                "sectors": [],
+            },
+        )
         mock_valid_register_form.assert_called_once()
         mock_add_user.assert_called_once()
         mock_add_user.assert_called_once()
-        mock_get_user_data.assert_called_once_with("SOME_VALUE", self.request)
+        mock_get_user_data.assert_called_once_with("SOME_VALUE", self.view.request)
 
     @patch("climmob.views.basic_views.getUserData")
     @patch("climmob.views.basic_views.addUser", return_value=(True, ""))
@@ -1084,7 +1144,7 @@ class TestRegisterView(unittest.TestCase):
         mock_valid_register_form.assert_called_once()
         mock_add_user.assert_called_once()
         mock_add_user.assert_called_once()
-        mock_get_user_data.assert_called_once_with("SOME_VALUE", self.request)
+        mock_get_user_data.assert_called_once_with("SOME_VALUE", self.view.request)
 
     if __name__ == "__main__":
         unittest.main()
