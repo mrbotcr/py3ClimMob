@@ -1,14 +1,15 @@
 import datetime
-import smtplib
 import logging
-from email import utils
-from email.header import Header
-from email.mime.text import MIMEText
-from time import time
+import secrets
+import smtplib
+import uuid
 from ast import literal_eval
+
+from jinja2 import ext
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 from pyramid.security import remember
-from climmob.config.encdecdata import encodeData
+from pyramid.session import check_csrf_token
+
 from climmob.config.auth import (
     getUserData,
     getUserByEmail,
@@ -16,6 +17,8 @@ from climmob.config.auth import (
     resetKeyExists,
     resetPassword,
 )
+from climmob.config.encdecdata import encodeData
+from climmob.config.jinja_extensions import jinjaEnv, extendThis
 from climmob.processes import (
     addUser,
     addToLog,
@@ -25,14 +28,9 @@ from climmob.processes import (
     getProjectCount,
 )
 from climmob.utility import valideRegisterForm
-from climmob.views.classes import publicView
-from pyramid.session import check_csrf_token
-import secrets
-import uuid
-
-from jinja2 import ext
-from climmob.config.jinja_extensions import jinjaEnv, extendThis
+from climmob.utility.email import build_email_message
 from climmob.utility.helpers import readble_date
+from climmob.views.classes import publicView
 
 log = logging.getLogger("climmob")
 
@@ -157,14 +155,8 @@ class RecoverPasswordView(publicView):
     def send_password_by_email(
         self, body, subject, target_name, target_email, mail_from
     ):
-        msg = MIMEText(body.encode("utf-8"), "plain", "utf-8")
-        ssubject = subject
-        subject = Header(ssubject.encode("utf-8"), "utf-8")
-        msg["Subject"] = subject
-        msg["From"] = "{} <{}>".format("ClimMob", mail_from)
-        recipient = "{} <{}>".format(target_name.encode("utf-8"), target_email)
-        msg["To"] = Header(recipient, "utf-8")
-        msg["Date"] = utils.formatdate(time())
+        msg = build_email_message(body, subject, target_name, target_email, mail_from)
+
         try:
             smtp_server = self.request.registry.settings.get(
                 "email.server", "localhost"
