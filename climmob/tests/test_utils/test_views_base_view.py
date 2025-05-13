@@ -1,11 +1,10 @@
 import unittest
 from datetime import datetime
-from unittest.mock import patch, MagicMock
-from time import time
-import smtplib
-from email.mime.text import MIMEText
-from email.header import Header
 from email import utils
+from email.header import Header
+from email.mime.text import MIMEText
+from time import time
+from unittest.mock import patch, MagicMock
 
 from dateutil.relativedelta import relativedelta
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
