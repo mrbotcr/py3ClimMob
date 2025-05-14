@@ -645,9 +645,6 @@
                 let question_min = parseFloat($("#question_min").val());
                 let question_max = parseFloat($("#question_max").val());
 
-                if (isNaN(question_min)) question_min = null;
-                if (isNaN(question_max)) question_max = null;
-
                 if (!isNaN(question_min) && !isNaN(question_max) && question_min >= question_max) {
                     toastr.error("Error: "+ "{{ _("The minimum must be less than the maximum") }}");
                     $("#btn_add_question").prop('disabled', false);
