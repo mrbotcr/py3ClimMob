@@ -9,6 +9,9 @@ class QuestionUpdateMinMaxValidator(QuestionValidator):
     def run(self):
         current_question = self.get_question_data()
 
+        if not current_question:
+            return
+
         self.check_question_type(current_question)
 
         question_min = self.question.get(
