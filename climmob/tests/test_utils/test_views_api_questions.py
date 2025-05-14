@@ -16,8 +16,12 @@ from climmob.views.Api.questions import (
     MultiLanguageQuestionView,
     ReadMultiLanguagesFromQuestionView,
 )
-from climmob.views.validators.question.QuestionMinMaxValidator import QuestionMinMaxValidator
-from climmob.views.validators.question.QuestionUpdateMinMaxValidator import QuestionUpdateMinMaxValidator
+from climmob.views.validators.question.QuestionMinMaxValidator import (
+    QuestionMinMaxValidator,
+)
+from climmob.views.validators.question.QuestionUpdateMinMaxValidator import (
+    QuestionUpdateMinMaxValidator,
+)
 
 
 class TestCreateQuestionView(BaseViewTestCase):
