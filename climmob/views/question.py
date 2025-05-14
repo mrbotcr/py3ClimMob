@@ -40,7 +40,9 @@ from climmob.processes import (
     knowIfUserHasCreatedTranslations,
 )
 from climmob.views.classes import privateView
-from climmob.views.validators.QuestionMinMaxValidator import QuestionMinMaxValidator
+from climmob.views.validators.question.QuestionMinMaxValidator import (
+    QuestionMinMaxValidator,
+)
 
 
 class deleteQuestion_view(privateView):

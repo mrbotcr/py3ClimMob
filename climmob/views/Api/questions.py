@@ -28,7 +28,12 @@ from climmob.views.questionTranslations import (
     actionInTheTranslationOfQuestion,
     actionInTheTranslationOfQuestionOptions,
 )
-from climmob.views.validators.QuestionMinMaxValidator import QuestionMinMaxValidator
+from climmob.views.validators.question.QuestionMinMaxValidator import (
+    QuestionMinMaxValidator,
+)
+from climmob.views.validators.question.QuestionUpdateMinMaxValidator import (
+    QuestionUpdateMinMaxValidator,
+)
 
 
 class CreateQuestionView(apiView):

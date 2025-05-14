@@ -1,23 +1,13 @@
-import json
-
 from pyramid.httpexceptions import HTTPBadRequest
 
-from climmob.views.classes import privateView, apiView
-from climmob.views.validators.BaseValidator import BaseValidator
+from climmob.utility import is_type_numerical
+from climmob.views.validators.question.QuestionValidator import QuestionValidator
 
 
-class QuestionMinMaxValidator(BaseValidator):
-    def __init__(self, view):
-        super().__init__(view)
-        self.question = {}
-        if issubclass(self.view.__class__, privateView):
-            self.question = self.view.getPostDict()
-
-        elif issubclass(self.view.__class__, apiView):
-            self.question = json.loads(self.view.body)
-
+class QuestionMinMaxValidator(QuestionValidator):
     def run(self):
-        if not self.is_question_type_integer_or_decimal():
+
+        if not is_type_numerical(self.question.get("question_dtype")):
             if (
                 "question_min" in self.question.keys()
                 or "question_max" in self.question.keys()
@@ -50,9 +40,3 @@ class QuestionMinMaxValidator(BaseValidator):
 
         if question_min >= question_max:
             raise HTTPBadRequest("The minimum must be less than the maximum")
-
-    def is_question_type_integer_or_decimal(self):
-        return (
-            self.question.get("question_dtype") == "2"
-            or self.question.get("question_dtype") == "3"
-        )
