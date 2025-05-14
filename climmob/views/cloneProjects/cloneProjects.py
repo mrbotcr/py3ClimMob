@@ -21,7 +21,7 @@ from climmob.processes import (
     get_all_affiliations,
 )
 from climmob.views.classes import privateView
-from climmob.views.project import createProjectFunction, functionCreateClone
+from climmob.views.project import create_project_function, function_create_clone
 from climmob.views.registry import getDataFormPreview
 
 
@@ -121,7 +121,7 @@ class cloneProjects_view(privateView):
 
                 if "btn_addNewProject" in self.request.POST:
 
-                    dataworking, error_summary, added = createProjectFunction(
+                    dataworking, error_summary, added = create_project_function(
                         dataworking, error_summary, self
                     )
                     if added:
@@ -130,7 +130,7 @@ class cloneProjects_view(privateView):
                             self.user.login, dataworking["project_cod"], self.request
                         )
 
-                        ok = functionCreateClone(
+                        ok = function_create_clone(
                             self,
                             projectId,
                             newProjectId,

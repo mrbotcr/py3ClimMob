@@ -40,7 +40,7 @@ from climmob.processes import (
     delete_all_project_location_unit_objective,
 )
 from climmob.views.classes import apiView
-from climmob.views.project import functionCreateClone
+from climmob.views.project import function_create_clone
 
 
 class ReadListOfTemplatesView(apiView):
@@ -649,7 +649,7 @@ class CreateProjectView(apiView):
                                                             assess["ass_cod"]
                                                         )
 
-                                                    ok = functionCreateClone(
+                                                    ok = function_create_clone(
                                                         self,
                                                         projectId,
                                                         idormessage,
@@ -689,7 +689,7 @@ class CreateProjectView(apiView):
                                                         )
                                                     )
 
-                                                    functionCreateClone(
+                                                    function_create_clone(
                                                         self,
                                                         dataworking["usingTemplate"],
                                                         newProjectId,
@@ -1211,7 +1211,7 @@ class updateProject_view(apiView):
                                             self.request,
                                         )
 
-                                        functionCreateClone(
+                                        function_create_clone(
                                             self,
                                             dataworking["usingTemplate"],
                                             newProjectId,
