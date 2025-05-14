@@ -16,6 +16,8 @@ from climmob.views.Api.questions import (
     MultiLanguageQuestionView,
     ReadMultiLanguagesFromQuestionView,
 )
+from climmob.views.validators.question.QuestionMinMaxValidator import QuestionMinMaxValidator
+from climmob.views.validators.question.QuestionUpdateMinMaxValidator import QuestionUpdateMinMaxValidator
 
 
 class TestCreateQuestionView(BaseViewTestCase):
@@ -35,6 +37,10 @@ class TestCreateQuestionView(BaseViewTestCase):
         self.view.body = json.dumps(self.valid_data)
         self.view.user = MagicMock()
         self.view.user.login = "test_user"
+
+    def test_has_validator(self):
+        validators = (QuestionMinMaxValidator,)
+        self.assertEqual(self.view.validators, validators)
 
     def test_post_missing_obligatory_keys(self):
         invalid_data = self.valid_data.copy()
@@ -437,6 +443,10 @@ class TestUpdateQuestionView(BaseViewTestCase):
             "qstgroups_id": "random_num",
         }
         self.view.body = json.dumps(self.valid_data)
+
+    def test_has_validator(self):
+        validators = (QuestionUpdateMinMaxValidator,)
+        self.assertEqual(self.view.validators, validators)
 
     def test_process_view_invalid_method(self):
         self.view.request.method = "GET"
