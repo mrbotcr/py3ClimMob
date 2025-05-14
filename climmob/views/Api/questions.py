@@ -305,6 +305,8 @@ class ReadQuestionsView(apiView):
 
 
 class UpdateQuestionView(apiView):
+    validators = (QuestionUpdateMinMaxValidator,)
+
     def processView(self):
 
         if self.request.method == "POST":
@@ -316,6 +318,8 @@ class UpdateQuestionView(apiView):
                 "question_dtype",
                 "question_notes",
                 "question_unit",
+                "question_min",
+                "question_max",
                 "question_alwaysinreg",
                 "question_alwaysinasse",
                 "question_requiredvalue",
@@ -325,6 +329,10 @@ class UpdateQuestionView(apiView):
                 "qstgroups_id",
                 "question_lang",
                 "user_name",
+            ]
+            nullable = [
+                "question_min",
+                "question_max",
             ]
             obligatory = ["question_id"]
             zeroOrTwo = [
@@ -357,7 +365,10 @@ class UpdateQuestionView(apiView):
                     dataInParams = True
                     for key in dataworking.keys():
                         if dataworking[key] == "":
-                            dataInParams = False
+                            if key in nullable:
+                                dataworking[key] = None
+                            else:
+                                dataInParams = False
 
                     if dataInParams:
                         data, editable = getQuestionData(
