@@ -25,7 +25,7 @@ from climmob.views.project import create_project_function, function_create_clone
 from climmob.views.registry import getDataFormPreview
 
 
-class cloneProjects_view(privateView):
+class CloneProjectsView(privateView):
     def processView(self):
 
         if self.request.registry.settings.get("projects.limit", "false") == "true":
@@ -95,8 +95,6 @@ class cloneProjects_view(privateView):
             dataworking["projectBeingCloned"] = getAllInformationForProject(
                 self, userOwner, projectId
             )
-
-            # print(dataworking["projectBeingCloned"])
 
             return {
                 "activeProject": getActiveProject(self.user.login, self.request),

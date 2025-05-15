@@ -165,7 +165,7 @@ from climmob.views.basic_views import (
     PrivacyView,
 )
 from climmob.views.cleanErrorLogs import CleanErrorLogsView
-from climmob.views.cloneProjects.cloneProjects import cloneProjects_view
+from climmob.views.cloneProjects.cloneProjects import CloneProjectsView
 from climmob.views.dashboard import dashboard_view, projectInformation_view
 from climmob.views.editData import (
     editDataView,
@@ -1332,7 +1332,7 @@ def loadRoutes(config):
         {
             "name": "cloneProject",
             "path": "/cloneProject",
-            "view": cloneProjects_view,
+            "view": CloneProjectsView,
             "renderer": "cloneProjects/cloneProjects.jinja2",
         }
     )
