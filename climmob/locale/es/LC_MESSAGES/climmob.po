@@ -7832,43 +7832,6 @@ msgstr "El número de participantes ha sido incrementado correctamente"
 msgid "We haven't found a project that matches what was specified"
 msgstr "No hemos encontrado un proyecto que se ajuste a lo especificado"
 
-#: climmob/templates/snippets/question/question-form.jinja2:400
-msgid "Maximum"
-msgstr "Máximo"
-
-#: climmob/templates/snippets/question/question-form.jinja2:393
-msgid "Minimum"
-msgstr "Mínimo"
-
-#: climmob/templates/question/library.jinja2:649
-#: climmob/views/validators/question/QuestionMinMaxValidator.py:42
-#: climmob/views/validators/question/QuestionUpdateMinMaxValidator.py:46
-msgid "The minimum must be less than the maximum"
-msgstr "El mínimo debe ser menor que el máximo"
-
-#: climmob/templates/snippets/question/question-form.jinja2:396
-msgid "Leave empty to not set a minimum."
-msgstr "Dejar vacío para no establecer un mínimo."
-
-#: climmob/templates/snippets/question/question-form.jinja2:403
-msgid "Leave empty to not set a maximum."
-msgstr "Dejar vacío para no establecer un máximo."
-
-#: climmob/views/validators/question/QuestionUpdateMinMaxValidator.py:58
-#: climmob/views/validators/question/QuestionMinMaxValidator.py:16
-msgid "Non-numerical questions may not have min nor max set"
-msgstr "Las preguntas no numéricas no pueden tener mínimo ni máximo"
-
-#: climmob/views/validators/question/QuestionMinMaxValidator.py:30
-#: climmob/views/validators/question/QuestionUpdateMinMaxValidator.py:34
-msgid "The minimum must be a number"
-msgstr "El mínimo debe ser un número"
-
-#: climmob/views/validators/question/QuestionMinMaxValidator.py:36
-#: climmob/views/validators/question/QuestionUpdateMinMaxValidator.py:40
-msgid "The maximum must be a number"
-msgstr "El máximo debe ser un número"
-
 # | msgid "Question options"
 #~ msgid "Number of observations"
 #~ msgstr "Número de observaciones"
