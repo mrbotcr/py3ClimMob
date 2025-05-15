@@ -60,6 +60,10 @@ class CreateQuestionView(apiView):
             "question_lang",
             "user_name",
         ]
+        nullable = [
+            "question_min",
+            "question_max",
+        ]
         obligatory = [
             "question_code",
             "question_name",
@@ -109,7 +113,10 @@ class CreateQuestionView(apiView):
         dataInParams = True
         for key in dataworking.keys():
             if dataworking[key] == "":
-                dataInParams = False
+                if key in nullable:
+                    dataworking[key] = None
+                else:
+                    dataInParams = False
 
         if not dataInParams:
             response = Response(

@@ -590,6 +590,12 @@ class QuestionsActionsView(privateView):
         postdata["user_name"] = self.user.login
         self.returnRawViewResult = True
 
+        nullable = ["question_min", "question_max"]
+
+        for field in nullable:
+            if postdata[field] == "":
+                postdata[field] = None
+
         if postdata["action"] == "btn_add_question":
             del postdata["question_id"]
             postdata["action"] = "insert"
