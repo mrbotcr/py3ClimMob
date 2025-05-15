@@ -1,65 +1,28 @@
-from pyramid.httpexceptions import HTTPBadRequest
-
 from climmob.processes import getQuestionData
-from climmob.utility import is_type_numerical
-from climmob.views.validators.question.QuestionValidator import QuestionValidator
+from climmob.views.validators.question.QuestionMinMaxValidator import (
+    QuestionMinMaxValidator,
+)
 
 
-class QuestionUpdateMinMaxValidator(QuestionValidator):
-    def run(self):
-        current_question = self.get_question_data()
-
-        if not current_question:
-            return
-
-        self.check_question_type(current_question)
-
-        question_min = self.question.get(
-            "question_min", current_question["question_min"]
-        )
-        question_max = self.question.get(
-            "question_max", current_question["question_max"]
-        )
-
-        if question_min == "":
-            question_min = None
-
-        if question_max == "":
-            question_max = None
-
-        if question_min is not None:
-            try:
-                question_min = float(question_min)
-            except ValueError:
-                raise HTTPBadRequest("The minimum must be a number")
-
-        if question_max is not None:
-            try:
-                question_max = float(question_max)
-            except ValueError:
-                raise HTTPBadRequest("The maximum must be a number")
-
-        if question_min is None or question_max is None:
-            return
-
-        if question_min >= question_max:
-            raise HTTPBadRequest("The minimum must be less than the maximum")
-
-    def check_question_type(self, current_question):
-        q_type = self.question.get(
-            "question_dtype", str(current_question["question_dtype"])
-        )
-        if not is_type_numerical(q_type):
-            if (
-                "question_min" in self.question.keys()
-                or "question_max" in self.question.keys()
-            ):
-                raise HTTPBadRequest(
-                    "Non-numerical questions may not have min nor max set"
-                )
+class QuestionUpdateMinMaxValidator(QuestionMinMaxValidator):
+    def __init__(self, view):
+        super().__init__(view)
+        self.old_question = self.get_question_data()
 
     def get_question_data(self):
         current_question, _ = getQuestionData(
             self.view.user.login, self.question.get("question_id"), self.view.request
         )
         return current_question
+
+    def set_min_max(self):
+        super().set_min_max()
+        if self.min is None:
+            self.min = self.old_question["question_min"]
+        if self.max is None:
+            self.max = self.old_question["question_max"]
+
+    def set_question_dtype(self):
+        super().set_question_dtype()
+        if self.question_dtype is None:
+            self.question_dtype = self.old_question["question_dtype"]

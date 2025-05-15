@@ -1,42 +1,62 @@
+import json
+
 from pyramid.httpexceptions import HTTPBadRequest
 
 from climmob.utility import is_type_numerical
-from climmob.views.validators.question.QuestionValidator import QuestionValidator
+from climmob.views.classes import privateView, apiView
+from climmob.views.validators.BaseValidator import BaseValidator
 
 
-class QuestionMinMaxValidator(QuestionValidator):
+class QuestionMinMaxValidator(BaseValidator):
+    def __init__(self, view):
+        super().__init__(view)
+        self.question = {}
+
+        self.extract_question()
+
+        self.min, self.max = None, None
+
+        self.question_dtype = None
+
+    def extract_question(self):
+        if issubclass(self.view.__class__, privateView):
+            self.question = self.view.getPostDict()
+
+        elif issubclass(self.view.__class__, apiView):
+            self.question = json.loads(self.view.body)
+
+        else:
+            raise TypeError
+
     def run(self):
+        self.set_min_max()
+        if self.min == "":
+            self.min = None
+        if self.max == "":
+            self.max = None
 
-        if not is_type_numerical(self.question.get("question_dtype")):
-            if (
-                "question_min" in self.question.keys()
-                or "question_max" in self.question.keys()
-            ):
+        self.set_question_dtype()
+
+        if not is_type_numerical(self.question_dtype):
+            if self.min is not None or self.max is not None:
                 raise HTTPBadRequest(
-                    "Non-numerical questions may not have min nor max set"
+                    self._("Non-numerical questions may not have min nor max set")
                 )
+        if self.min is not None:
+            self.min = self.float_parse(self.min, "question_min")
 
-        if self.question.get("question_min", "") == "":
-            self.question["question_min"] = None
-        if self.question.get("question_max", "") == "":
-            self.question["question_max"] = None
+        if self.max is not None:
+            self.max = self.float_parse(self.max, "question_max")
 
-        question_min, question_max = None, None
-
-        if self.question["question_min"] is not None:
-            try:
-                question_min = float(self.question["question_min"])
-            except ValueError:
-                raise HTTPBadRequest("The minimum must be a number")
-
-        if self.question["question_max"] is not None:
-            try:
-                question_max = float(self.question["question_max"])
-            except ValueError:
-                raise HTTPBadRequest("The maximum must be a number")
-
-        if question_min is None or question_max is None:
+        if self.min is None or self.max is None:
             return
 
-        if question_min >= question_max:
-            raise HTTPBadRequest("The minimum must be less than the maximum")
+        if self.min >= self.max:
+            raise HTTPBadRequest(self._("The minimum must be less than the maximum"))
+
+    def set_min_max(self):
+        self.min = self.question.get("question_min")
+        self.max = self.question.get("question_max")
+
+    def set_question_dtype(self):
+        self.question_dtype = self.question.get("question_dtype")

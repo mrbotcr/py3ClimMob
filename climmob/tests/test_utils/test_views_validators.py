@@ -70,9 +70,11 @@ class TestProjectExistsValidator(unittest.TestCase):
         )
 
 
-class TestQuestionValidator(unittest.TestCase):
+class TestQuestionMinMaxValidator(unittest.TestCase):
     def test_init_for_api(self):
         view = MagicMock(apiView)
+        view.request = MagicMock()
+        view.request.translate = lambda s: s
         view.body = '{"test_key": "test_value"}'
         validator = QuestionMinMaxValidator(view)
 
@@ -80,26 +82,74 @@ class TestQuestionValidator(unittest.TestCase):
 
     def test_init_for_private(self):
         view = MagicMock(privateView)
+        view.request = MagicMock()
+        view.request.translate = lambda s: s
         view.getPostDict.return_value = {"test_key": "test_value"}
         validator = QuestionMinMaxValidator(view)
 
         self.assertEqual(validator.question, validator.view.getPostDict.return_value)
 
+    def test_init_for_unknown_type(self):
+        view = MagicMock()
+        view.request = MagicMock()
+        view.request.translate = lambda s: s
 
-class TestQuestionMinMaxValidator(unittest.TestCase):
-    def setUp(self):
+        with self.assertRaises(TypeError):
+            validator = QuestionMinMaxValidator(view)
+
+
+class TestQuestionMinMaxValidatorRun(unittest.TestCase):
+    @patch(
+        "climmob.views.validators.question" ".QuestionMinMaxValidator.issubclass",
+        return_value=True,
+    )
+    def setUp(self, mock_issubclass):
         self.request = MagicMock()
+        self.request.translate = lambda s: s
         self.view = MagicMock()
         self.view.request = self.request
 
         self.validator = QuestionMinMaxValidator(self.view)
 
-    @patch(
-        "climmob.views.validators.question"
-        ".QuestionMinMaxValidator.is_type_numerical",
-        return_value=False,
-    )
-    def test_run_non_numerical_question(self, mock_is_numerical):
+        self.mock_is_type_numerical.reset_mock()
+        self.mock_float_parse.reset_mock()
+        self.mock_extract_question.reset_mock()
+
+        self.mock_is_type_numerical.return_value = True
+
+    @classmethod
+    def setUpClass(cls):
+        cls.patcher_is_type_numerical = patch(
+            "climmob.views.validators.question"
+            ".QuestionMinMaxValidator.is_type_numerical"
+        )
+
+        cls.patcher_float_parse = patch(
+            "climmob.views.validators.question.QuestionMinMaxValidator.QuestionMinMaxValidator.float_parse",
+            side_effect=QuestionMinMaxValidator.float_parse,
+            autospec=True,
+        )
+
+        cls.patcher_extract_question = patch(
+            "climmob.views.validators.question"
+            ".QuestionMinMaxValidator.QuestionMinMaxValidator"
+            ".extract_question"
+        )
+
+        cls.mock_is_type_numerical = cls.patcher_is_type_numerical.start()
+        cls.mock_float_parse = cls.patcher_float_parse.start()
+        cls.mock_extract_question = cls.patcher_extract_question.start()
+
+        cls.mock_is_type_numerical.return_value = True
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.patcher_is_type_numerical.stop()
+        cls.patcher_float_parse.stop()
+        cls.patcher_extract_question.stop()
+
+    def test_run_non_numerical_question(self):
+        self.mock_is_type_numerical.return_value = False
         self.validator.question["question_min"] = MagicMock()
         self.validator.question["question_max"] = MagicMock()
         with self.assertRaises(HTTPBadRequest) as context:
@@ -110,36 +160,23 @@ class TestQuestionMinMaxValidator(unittest.TestCase):
             "Non-numerical questions may not have min nor max set",
         )
 
-    @patch(
-        "climmob.views.validators.question"
-        ".QuestionMinMaxValidator.is_type_numerical",
-        return_value=True,
-    )
-    @patch(
-        "climmob.views.validators.question.QuestionMinMaxValidator.float",
-        side_effect=float,
-    )
-    def test_run_with_both_min_and_max(self, mock_float, mock_is_numerical):
+    def test_run_with_both_min_and_max(self):
         self.validator.question["question_min"] = 1
         self.validator.question["question_max"] = 2
 
         self.validator.run()
 
         expected_parameters = [
-            self.validator.question["question_min"],
-            self.validator.question["question_max"],
+            (self.validator.question["question_min"], "question_min"),
+            (self.validator.question["question_max"], "question_max"),
         ]
 
-        mock_float.assert_has_calls(
-            [call(param) for param in expected_parameters], any_order=False
+        self.mock_float_parse.assert_has_calls(
+            [call(self.validator, value, name) for value, name in expected_parameters],
+            any_order=False,
         )
 
-    @patch(
-        "climmob.views.validators.question"
-        ".QuestionMinMaxValidator.is_type_numerical",
-        return_value=True,
-    )
-    def test_run_max_less_than_min(self, mock_is_numerical):
+    def test_run_max_less_than_min(self):
         self.validator.question["question_min"] = 2
         self.validator.question["question_max"] = 1
 
@@ -150,185 +187,124 @@ class TestQuestionMinMaxValidator(unittest.TestCase):
             str(context.exception), "The minimum must be less than the maximum"
         )
 
-    @patch(
-        "climmob.views.validators.question"
-        ".QuestionMinMaxValidator.is_type_numerical",
-        return_value=True,
-    )
-    def test_run_min_not_a_number(self, mock_is_numerical):
+    def test_run_min_not_a_number(self):
         self.validator.question["question_min"] = "abc"
         self.validator.question["question_max"] = 1
 
         with self.assertRaises(HTTPBadRequest) as context:
             self.validator.run()
 
-        self.assertEqual(str(context.exception), "The minimum must be a number")
+        self.assertEqual(str(context.exception), "question_min must be a number")
 
-    @patch(
-        "climmob.views.validators.question"
-        ".QuestionMinMaxValidator.is_type_numerical",
-        return_value=True,
-    )
-    def test_run_max_not_a_number(self, mock_is_numerical):
+    def test_run_max_not_a_number(self):
         self.validator.question["question_min"] = 1
         self.validator.question["question_max"] = "abc"
 
         with self.assertRaises(HTTPBadRequest) as context:
             self.validator.run()
 
-        self.assertEqual(str(context.exception), "The maximum must be a number")
+        self.assertEqual(str(context.exception), "question_max must be a number")
 
-    @patch(
-        "climmob.views.validators.question"
-        ".QuestionMinMaxValidator.is_type_numerical",
-        return_value=True,
-    )
-    def test_run_empty_turns_into_none(self, mock_is_numerical):
+    def test_run_empty_turns_into_none(self):
         self.validator.question["question_min"] = ""
         self.validator.question["question_max"] = ""
 
         self.validator.run()
 
-        self.assertIsNone(self.validator.question["question_min"])
-        self.assertIsNone(self.validator.question["question_max"])
+        self.assertIsNone(self.validator.min)
+        self.assertIsNone(self.validator.max)
 
-    @patch(
-        "climmob.views.validators.question"
-        ".QuestionMinMaxValidator.is_type_numerical",
-        return_value=True,
-    )
-    @patch(
-        "climmob.views.validators.question.QuestionMinMaxValidator.float",
-        side_effect=float,
-    )
-    def test_run_not_min_valid_max_is_success(self, mock_float, mock_is_numerical):
+    def test_run_not_min_valid_max_is_success(self):
         self.validator.question["question_max"] = 5
 
         self.validator.run()
 
-        mock_float.assert_called_once_with(self.validator.question["question_max"])
+        self.mock_float_parse.assert_called_once_with(
+            self.validator, self.validator.question["question_max"], "question_max"
+        )
 
-    @patch(
-        "climmob.views.validators.question"
-        ".QuestionMinMaxValidator.is_type_numerical",
-        return_value=True,
-    )
-    @patch(
-        "climmob.views.validators.question.QuestionMinMaxValidator.float",
-        side_effect=float,
-    )
-    def test_run_not_max_valid_min_is_success(self, mock_float, mock_is_numerical):
+    def test_run_not_max_valid_min_is_success(self):
         self.validator.question["question_min"] = 5
 
         self.validator.run()
 
-        mock_float.assert_called_once_with(self.validator.question["question_min"])
+        self.mock_float_parse.assert_called_once_with(
+            self.validator, self.validator.question["question_min"], "question_min"
+        )
 
-    @patch(
-        "climmob.views.validators.question"
-        ".QuestionMinMaxValidator.is_type_numerical",
-        return_value=True,
-    )
-    @patch(
-        "climmob.views.validators.question.QuestionMinMaxValidator.float",
-        side_effect=float,
-    )
-    def test_run_equals(self, mock_float, mock_is_numerical):
+    def test_run_equals(self):
         self.validator.question["question_min"] = 5
         self.validator.question["question_max"] = 5
 
         expected_parameters = [
-            self.validator.question["question_min"],
-            self.validator.question["question_max"],
+            (self.validator.question["question_min"], "question_min"),
+            (self.validator.question["question_max"], "question_max"),
         ]
 
         with self.assertRaises(HTTPBadRequest) as context:
             self.validator.run()
 
-        mock_float.assert_has_calls(
-            [call(param) for param in expected_parameters], any_order=False
+        self.mock_float_parse.assert_has_calls(
+            [call(self.validator, value, name) for value, name in expected_parameters],
+            any_order=False,
         )
 
         self.assertEqual(
             str(context.exception), "The minimum must be less than the maximum"
         )
 
-    @patch(
-        "climmob.views.validators.question"
-        ".QuestionMinMaxValidator.is_type_numerical",
-        return_value=True,
-    )
-    @patch(
-        "climmob.views.validators.question.QuestionMinMaxValidator.float",
-        side_effect=float,
-    )
-    def test_run_both_zeros(self, mock_float, mock_is_numerical):
-        self.validator.question["question_min"] = 0
+    def test_run_both_zeros(self):
         self.validator.question["question_max"] = 0
+        self.validator.question["question_min"] = 0
 
         expected_parameters = [
-            self.validator.question["question_min"],
-            self.validator.question["question_max"],
+            (self.validator.question["question_min"], "question_min"),
+            (self.validator.question["question_max"], "question_max"),
         ]
 
         with self.assertRaises(HTTPBadRequest) as context:
             self.validator.run()
 
-        mock_float.assert_has_calls(
-            [call(param) for param in expected_parameters], any_order=False
+        self.mock_float_parse.assert_has_calls(
+            [call(self.validator, value, name) for value, name in expected_parameters],
+            any_order=False,
         )
 
         self.assertEqual(
             str(context.exception), "The minimum must be less than the maximum"
         )
 
-    @patch(
-        "climmob.views.validators.question"
-        ".QuestionMinMaxValidator.is_type_numerical",
-        return_value=True,
-    )
-    @patch(
-        "climmob.views.validators.question.QuestionMinMaxValidator.float",
-        side_effect=float,
-    )
-    def test_run_min_zero_max_positive(self, mock_float, mock_is_numerical):
+    def test_run_min_zero_max_positive(self):
         self.validator.question["question_min"] = 0
         self.validator.question["question_max"] = 5
 
         self.validator.run()
 
         expected_parameters = [
-            self.validator.question["question_min"],
-            self.validator.question["question_max"],
+            (self.validator.question["question_min"], "question_min"),
+            (self.validator.question["question_max"], "question_max"),
         ]
 
-        mock_float.assert_has_calls(
-            [call(param) for param in expected_parameters], any_order=False
+        self.mock_float_parse.assert_has_calls(
+            [call(self.validator, value, name) for value, name in expected_parameters],
+            any_order=False,
         )
 
-    @patch(
-        "climmob.views.validators.question"
-        ".QuestionMinMaxValidator.is_type_numerical",
-        return_value=True,
-    )
-    @patch(
-        "climmob.views.validators.question.QuestionMinMaxValidator.float",
-        side_effect=float,
-    )
-    def test_run_max_zero_min_positive(self, mock_float, mock_is_numerical):
+    def test_run_max_zero_min_positive(self):
         self.validator.question["question_min"] = 5
         self.validator.question["question_max"] = 0
 
         expected_parameters = [
-            self.validator.question["question_min"],
-            self.validator.question["question_max"],
+            (self.validator.question["question_min"], "question_min"),
+            (self.validator.question["question_max"], "question_max"),
         ]
 
         with self.assertRaises(HTTPBadRequest) as context:
             self.validator.run()
 
-        mock_float.assert_has_calls(
-            [call(param) for param in expected_parameters], any_order=False
+        self.mock_float_parse.assert_has_calls(
+            [call(self.validator, value, name) for value, name in expected_parameters],
+            any_order=False,
         )
 
         self.assertEqual(
@@ -337,12 +313,35 @@ class TestQuestionMinMaxValidator(unittest.TestCase):
 
 
 class TestQuestionUpdateMinMaxValidator(unittest.TestCase):
-    def setUp(self):
+    @patch(
+        "climmob.views.validators.question"
+        ".QuestionUpdateMinMaxValidator.QuestionUpdateMinMaxValidator"
+        ".get_question_data",
+        return_value={"question_min": ANY, "question_max": ANY, "question_dtype": ANY},
+    )
+    @patch(
+        "climmob.views.validators.question" ".QuestionMinMaxValidator.issubclass",
+        return_value=True,
+    )
+    def setUp(self, mock_issubclass, mock_get_question_data):
         self.request = MagicMock()
         self.view = MagicMock()
         self.view.request = self.request
-
         self.validator = QuestionUpdateMinMaxValidator(self.view)
+
+    @patch(
+        "climmob.views.validators.question"
+        ".QuestionUpdateMinMaxValidator.QuestionUpdateMinMaxValidator"
+        ".get_question_data"
+    )
+    @patch(
+        "climmob.views.validators.question" ".QuestionMinMaxValidator.issubclass",
+        return_value=True,
+    )
+    def test_init(self, mock_issubclass, mock_get_question_data):
+        mock_get_question_data.return_value = MagicMock()
+        validator = QuestionUpdateMinMaxValidator(self.view)
+        self.assertEqual(validator.old_question, mock_get_question_data.return_value)
 
     @patch(
         "climmob.views.validators.question"
@@ -362,260 +361,30 @@ class TestQuestionUpdateMinMaxValidator(unittest.TestCase):
         self.assertEqual(result, question)
 
     @patch(
-        "climmob.views.validators.question"
-        ".QuestionUpdateMinMaxValidator.is_type_numerical",
-        return_value=True,
+        "climmob.views.validators.question.QuestionMinMaxValidator"
+        ".QuestionMinMaxValidator.set_min_max"
     )
-    def test_check_question_type_when_non_numerical(self, mock_is_type_numerical):
-        mock_is_type_numerical.return_value = False
-        current_question = {"question_dtype": ANY}
+    def test_set_min_max_from_old_question(self, mock_set_min_max):
+        self.validator.set_min_max()
 
-        self.validator.question["question_min"] = MagicMock()
-        self.validator.question["question_max"] = MagicMock()
-
-        with self.assertRaises(HTTPBadRequest) as context:
-            self.validator.check_question_type(current_question)
+        mock_set_min_max.assert_called_once()
 
         self.assertEqual(
-            str(context.exception),
-            "Non-numerical questions may not have min nor max set",
+            self.validator.min, self.validator.old_question["question_min"]
+        )
+        self.assertEqual(
+            self.validator.max, self.validator.old_question["question_max"]
         )
 
+    @patch(
+        "climmob.views.validators.question.QuestionMinMaxValidator"
+        ".QuestionMinMaxValidator.set_question_dtype"
+    )
+    def test_set_question_dtype(self, mock_set_question_dtype):
+        self.validator.set_question_dtype()
 
-@patch(
-    "climmob.views.validators.question"
-    ".QuestionUpdateMinMaxValidator.is_type_numerical",
-    return_value=True,
-)
-@patch(
-    "climmob.views.validators.question"
-    ".QuestionUpdateMinMaxValidator.QuestionUpdateMinMaxValidator"
-    ".get_question_data",
-    return_value={"question_dtype": 2, "question_min": 1, "question_max": 2},
-)
-@patch(
-    "climmob.views.validators.question.QuestionUpdateMinMaxValidator.float",
-    side_effect=float,
-)
-class TestQuestionUpdateMinMaxValidatorRun(unittest.TestCase):
-    def setUp(self):
-        self.request = MagicMock()
-        self.view = MagicMock()
-        self.view.request = self.request
-
-        self.validator = QuestionUpdateMinMaxValidator(self.view)
-
-    def test_run_with_both_min_and_max(
-        self, mock_float, mock_get_question, mock_is_type_numerical
-    ):
-        self.validator.question["question_min"] = 1
-        self.validator.question["question_max"] = 2
-
-        self.validator.run()
-
-        expected_parameters = [
-            self.validator.question["question_min"],
-            self.validator.question["question_max"],
-        ]
-
-        mock_float.assert_has_calls(
-            [call(param) for param in expected_parameters], any_order=False
-        )
-
-    def test_run_max_less_than_min(
-        self, mock_float, mock_get_question, mock_is_type_numerical
-    ):
-        self.validator.question["question_min"] = 2
-        self.validator.question["question_max"] = 1
-
-        with self.assertRaises(HTTPBadRequest) as context:
-            self.validator.run()
+        mock_set_question_dtype.assert_called_once()
 
         self.assertEqual(
-            str(context.exception), "The minimum must be less than the maximum"
+            self.validator.question_dtype, self.validator.old_question["question_dtype"]
         )
-
-    def test_run_min_not_a_number(
-        self, mock_float, mock_get_question, mock_is_type_numerical
-    ):
-        self.validator.question["question_min"] = "abc"
-        self.validator.question["question_max"] = 1
-
-        with self.assertRaises(HTTPBadRequest) as context:
-            self.validator.run()
-
-        self.assertEqual(str(context.exception), "The minimum must be a number")
-
-    def test_run_max_not_a_number(
-        self, mock_float, mock_get_question, mock_is_type_numerical
-    ):
-        self.validator.question["question_min"] = 1
-        self.validator.question["question_max"] = "abc"
-
-        with self.assertRaises(HTTPBadRequest) as context:
-            self.validator.run()
-
-        self.assertEqual(str(context.exception), "The maximum must be a number")
-
-    def test_run_not_min_valid_max_is_success(
-        self, mock_float, mock_get_question, mock_is_type_numerical
-    ):
-        self.validator.question["question_max"] = 5
-
-        expected_parameters = [
-            mock_get_question.return_value["question_min"],
-            self.validator.question["question_max"],
-        ]
-
-        self.validator.run()
-
-        mock_float.assert_has_calls(
-            [call(param) for param in expected_parameters], any_order=False
-        )
-
-    def test_run_not_max_valid_min_is_success(
-        self, mock_float, mock_get_question, mock_is_type_numerical
-    ):
-        self.validator.question["question_min"] = 0
-
-        expected_parameters = [
-            self.validator.question["question_min"],
-            mock_get_question.return_value["question_max"],
-        ]
-
-        self.validator.run()
-
-        mock_float.assert_has_calls(
-            [call(param) for param in expected_parameters], any_order=False
-        )
-
-    def test_run_equals(self, mock_float, mock_get_question, mock_is_type_numerical):
-        self.validator.question["question_min"] = 5
-        self.validator.question["question_max"] = 5
-
-        expected_parameters = [
-            self.validator.question["question_min"],
-            self.validator.question["question_max"],
-        ]
-
-        with self.assertRaises(HTTPBadRequest) as context:
-            self.validator.run()
-
-        mock_float.assert_has_calls(
-            [call(param) for param in expected_parameters], any_order=False
-        )
-
-        self.assertEqual(
-            str(context.exception), "The minimum must be less than the maximum"
-        )
-
-    def test_run_both_zeros(
-        self, mock_float, mock_get_question, mock_is_type_numerical
-    ):
-        self.validator.question["question_min"] = 0
-        self.validator.question["question_max"] = 0
-
-        expected_parameters = [
-            self.validator.question["question_min"],
-            self.validator.question["question_max"],
-        ]
-
-        with self.assertRaises(HTTPBadRequest) as context:
-            self.validator.run()
-
-        mock_float.assert_has_calls(
-            [call(param) for param in expected_parameters], any_order=False
-        )
-
-        self.assertEqual(
-            str(context.exception), "The minimum must be less than the maximum"
-        )
-
-    def test_run_min_zero_max_positive(
-        self, mock_float, mock_get_question, mock_is_type_numerical
-    ):
-        self.validator.question["question_min"] = 0
-        self.validator.question["question_max"] = 5
-
-        self.validator.run()
-
-        expected_parameters = [
-            self.validator.question["question_min"],
-            self.validator.question["question_max"],
-        ]
-
-        mock_float.assert_has_calls(
-            [call(param) for param in expected_parameters], any_order=False
-        )
-
-    def test_run_max_zero_min_positive(
-        self, mock_float, mock_get_question, mock_is_type_numerical
-    ):
-        self.validator.question["question_min"] = 5
-        self.validator.question["question_max"] = 0
-
-        expected_parameters = [
-            self.validator.question["question_min"],
-            self.validator.question["question_max"],
-        ]
-
-        with self.assertRaises(HTTPBadRequest) as context:
-            self.validator.run()
-
-        mock_float.assert_has_calls(
-            [call(param) for param in expected_parameters], any_order=False
-        )
-
-        self.assertEqual(
-            str(context.exception), "The minimum must be less than the maximum"
-        )
-
-    def test_run_new_min_greater_than_old_max(
-        self, mock_float, mock_get_question, mock_is_type_numerical
-    ):
-        self.validator.question["question_min"] = 25
-
-        expected_parameters = [
-            self.validator.question["question_min"],
-            mock_get_question.return_value["question_max"],
-        ]
-
-        with self.assertRaises(HTTPBadRequest) as context:
-            self.validator.run()
-
-        mock_float.assert_has_calls(
-            [call(param) for param in expected_parameters], any_order=False
-        )
-
-        self.assertEqual(
-            str(context.exception), "The minimum must be less than the maximum"
-        )
-
-    def test_run_new_max_less_than_old_min(
-        self, mock_float, mock_get_question, mock_is_type_numerical
-    ):
-        self.validator.question["question_max"] = 1
-
-        expected_parameters = [
-            mock_get_question.return_value["question_min"],
-            self.validator.question["question_max"],
-        ]
-
-        with self.assertRaises(HTTPBadRequest) as context:
-            self.validator.run()
-
-        mock_float.assert_has_calls(
-            [call(param) for param in expected_parameters], any_order=False
-        )
-
-        self.assertEqual(
-            str(context.exception), "The minimum must be less than the maximum"
-        )
-
-    def test_empty_params(self, mock_float, mock_get_question, mock_is_type_numerical):
-        self.validator.question["question_min"] = ""
-        self.validator.question["question_max"] = ""
-
-        self.validator.run()
-
-        mock_float.assert_not_called()

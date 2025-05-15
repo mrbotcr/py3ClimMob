@@ -470,7 +470,7 @@ class privateView(BaseView):
         try:
             self._validate()
         except (HTTPBadRequest, HTTPMethodNotAllowed) as e:
-            return {"result": "error", "error": self._(f"{e}")}
+            return {"result": "error", "error": str(e)}
 
         self.viewResult = self.processView()
 
@@ -566,8 +566,8 @@ class apiView(BaseView):
         try:
             self._validate()
         except HTTPBadRequest as e:
-            return Response(status=400, body=self._(f"{e}"))
+            return Response(status=str(400), body=str(e))
         except HTTPMethodNotAllowed as e:
-            return Response(status=405, body=self._(f"{e}"))
+            return Response(status=str(405), body=str(e))
 
         return self.processView()
