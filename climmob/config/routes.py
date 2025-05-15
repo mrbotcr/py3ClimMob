@@ -152,11 +152,11 @@ from climmob.views.assessment import (
     getAssessmentSection_view,
 )
 from climmob.views.basic_views import (
-    home_view,
+    HomeView,
     HealthView,
-    notfound_view,
-    login_view,
-    register_view,
+    NotFoundView,
+    LoginView,
+    RegisterView,
     logout_view,
     RecoverPasswordView,
     ResetPasswordView,
@@ -323,7 +323,7 @@ def loadRoutes(config):
     # These are the routes of the host application
     routes = []
     routes.append(
-        {"name": "home", "path": "/", "view": home_view, "renderer": "landing.jinja2"}
+        {"name": "home", "path": "/", "view": HomeView, "renderer": "landing.jinja2"}
     )
     routes.append(
         {
@@ -377,7 +377,7 @@ def loadRoutes(config):
         {
             "name": "login",
             "path": "/login",
-            "view": login_view,
+            "view": LoginView,
             "renderer": "login.jinja2",
         }
     )
@@ -390,7 +390,7 @@ def loadRoutes(config):
         {
             "name": "register",
             "path": "/register",
-            "view": register_view,
+            "view": RegisterView,
             "renderer": "register.jinja2",
         }
     )
@@ -2155,7 +2155,7 @@ def loadRoutes(config):
 
     appendToRoutes(routes)
 
-    config.add_notfound_view(notfound_view, renderer="404.jinja2")
+    config.add_notfound_view(NotFoundView, renderer="404.jinja2")
 
     # Custom mapping can happen here AFTER the host maps
     for plugin in p.PluginImplementations(p.IRoutes):
