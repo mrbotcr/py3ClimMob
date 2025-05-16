@@ -4,7 +4,10 @@ from unittest.mock import patch, MagicMock, ANY, call
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 
 from climmob.tests.test_utils.common import BaseViewTestCase
-from climmob.views.cloneProjects.cloneProjects import CloneProjectsView, get_all_information_for_project
+from climmob.views.cloneProjects.cloneProjects import (
+    CloneProjectsView,
+    get_all_information_for_project,
+)
 
 
 class TestModifyProjectView(BaseViewTestCase):
@@ -520,94 +523,197 @@ class TestModifyProjectView(BaseViewTestCase):
             self.view.user.login, self.view.request
         )
 
+
 class TestGetAllInformationForProject(unittest.TestCase):
-
-
-    @patch("climmob.views.cloneProjects.cloneProjects.getProjectAssessments", return_value=[{"ass_cod":1}, {"ass_cod":2}])
-    @patch("climmob.views.cloneProjects.cloneProjects.getDataFormPreview", return_value=({"data":"DATA_7"}, "DATA_8"))
-    @patch("climmob.views.cloneProjects.cloneProjects.getPrjLangDefaultInProject", return_value={"lang_code":"en"})
-    @patch("climmob.views.cloneProjects.cloneProjects.AliasExtraSearchTechnologyInProject")
+    @patch(
+        "climmob.views.cloneProjects.cloneProjects.getProjectAssessments",
+        return_value=[{"ass_cod": 1}, {"ass_cod": 2}],
+    )
+    @patch(
+        "climmob.views.cloneProjects.cloneProjects.getDataFormPreview",
+        return_value=({"data": "DATA_7"}, "DATA_8"),
+    )
+    @patch(
+        "climmob.views.cloneProjects.cloneProjects.getPrjLangDefaultInProject",
+        return_value={"lang_code": "en"},
+    )
+    @patch(
+        "climmob.views.cloneProjects.cloneProjects.AliasExtraSearchTechnologyInProject"
+    )
     @patch("climmob.views.cloneProjects.cloneProjects.AliasSearchTechnologyInProject")
     @patch("climmob.views.cloneProjects.cloneProjects.searchTechnologiesInProject")
     @patch("climmob.views.cloneProjects.cloneProjects.getProjectEnumerators")
     @patch("climmob.views.cloneProjects.cloneProjects.getProjectData")
-    def test_get_all_information_for_project_success(self, mock_get_project_data, mock_get_project_enumerators,
-                                             mock_search_technologies_in_project, mock_alias_search_technologies_in_project,
-                                             mock_alias_extra_search_technology_in_project,
-                                             mock_get_proj_lang_default_in_project, mock_get_data_form_preview, mock_get_project_assessments,
-                                             ):
+    def test_get_all_information_for_project_success(
+        self,
+        mock_get_project_data,
+        mock_get_project_enumerators,
+        mock_search_technologies_in_project,
+        mock_alias_search_technologies_in_project,
+        mock_alias_extra_search_technology_in_project,
+        mock_get_proj_lang_default_in_project,
+        mock_get_data_form_preview,
+        mock_get_project_assessments,
+    ):
         userOwner = "test_user"
         projectId = 1
         fake_self = MagicMock()
         fake_self.request = MagicMock()
 
-        mock_get_project_data.return_value = {"project_registration_and_analysis": "DATA"}
+        mock_get_project_data.return_value = {
+            "project_registration_and_analysis": "DATA"
+        }
         mock_get_project_enumerators.return_value = {"project_enumerators": "DATA_1"}
-        mock_search_technologies_in_project.return_value = [{"tech_id":1, "tech1":"TECH1"}, {"tech_id":2, "tech1":"TECH2"}]
+        mock_search_technologies_in_project.return_value = [
+            {"tech_id": 1, "tech1": "TECH1"},
+            {"tech_id": 2, "tech1": "TECH2"},
+        ]
         mock_alias_search_technologies_in_project.side_effect = ["DATA_3", "DATA_4"]
         mock_alias_extra_search_technology_in_project.side_effect = ["DATA_5", "DATA_6"]
 
-
         result = get_all_information_for_project(fake_self, userOwner, projectId)
         self.assertEqual(
-            {'project_registration_and_analysis': 'DATA', 'project_fieldagents': {'project_enumerators': 'DATA_1'},
-             'project_techs': [{'tech_id': 1, 'tech1': 'TECH1', 'alias': 'DATA_3', 'aliasExtra': 'DATA_5'},
-                               {'tech_id': 2, 'tech1': 'TECH2', 'alias': 'DATA_4', 'aliasExtra': 'DATA_6'}],
-             'project_registry': {'data': 'DATA_7'},
-             'project_assessment': [{'ass_cod': 1, 'Questions': {'data': 'DATA_7'}},
-                                    {'ass_cod': 2, 'Questions': {'data': 'DATA_7'}}]}, result)
+            {
+                "project_registration_and_analysis": "DATA",
+                "project_fieldagents": {"project_enumerators": "DATA_1"},
+                "project_techs": [
+                    {
+                        "tech_id": 1,
+                        "tech1": "TECH1",
+                        "alias": "DATA_3",
+                        "aliasExtra": "DATA_5",
+                    },
+                    {
+                        "tech_id": 2,
+                        "tech1": "TECH2",
+                        "alias": "DATA_4",
+                        "aliasExtra": "DATA_6",
+                    },
+                ],
+                "project_registry": {"data": "DATA_7"},
+                "project_assessment": [
+                    {"ass_cod": 1, "Questions": {"data": "DATA_7"}},
+                    {"ass_cod": 2, "Questions": {"data": "DATA_7"}},
+                ],
+            },
+            result,
+        )
         mock_get_project_data.assert_called_once_with(projectId, fake_self.request)
-        mock_get_project_enumerators.assert_called_once_with(projectId, fake_self.request)
-        mock_search_technologies_in_project.assert_called_once_with(projectId, fake_self.request)
-        mock_alias_search_technologies_in_project.assert_called_with(2,projectId, fake_self.request)
-        mock_alias_extra_search_technology_in_project.assert_has_calls([call(1, 1, fake_self.request), call(2, 1, fake_self.request)])
-        mock_get_proj_lang_default_in_project.assert_called_once_with(projectId, fake_self.request)
-        mock_get_data_form_preview.assert_called_with(fake_self, "test_user", 1,assessmentid=2,language="en")
-        mock_get_project_assessments.assert_called_once_with(1,fake_self.request)
+        mock_get_project_enumerators.assert_called_once_with(
+            projectId, fake_self.request
+        )
+        mock_search_technologies_in_project.assert_called_once_with(
+            projectId, fake_self.request
+        )
+        mock_alias_search_technologies_in_project.assert_called_with(
+            2, projectId, fake_self.request
+        )
+        mock_alias_extra_search_technology_in_project.assert_has_calls(
+            [call(1, 1, fake_self.request), call(2, 1, fake_self.request)]
+        )
+        mock_get_proj_lang_default_in_project.assert_called_once_with(
+            projectId, fake_self.request
+        )
+        mock_get_data_form_preview.assert_called_with(
+            fake_self, "test_user", 1, assessmentid=2, language="en"
+        )
+        mock_get_project_assessments.assert_called_once_with(1, fake_self.request)
 
-
-    @patch("climmob.views.cloneProjects.cloneProjects.getProjectAssessments", return_value=[{"ass_cod":1}, {"ass_cod":2}])
-    @patch("climmob.views.cloneProjects.cloneProjects.getDataFormPreview", return_value=({"data":"DATA_7"}, "DATA_8"))
-    @patch("climmob.views.cloneProjects.cloneProjects.getPrjLangDefaultInProject", return_value={})
-    @patch("climmob.views.cloneProjects.cloneProjects.AliasExtraSearchTechnologyInProject")
+    @patch(
+        "climmob.views.cloneProjects.cloneProjects.getProjectAssessments",
+        return_value=[{"ass_cod": 1}, {"ass_cod": 2}],
+    )
+    @patch(
+        "climmob.views.cloneProjects.cloneProjects.getDataFormPreview",
+        return_value=({"data": "DATA_7"}, "DATA_8"),
+    )
+    @patch(
+        "climmob.views.cloneProjects.cloneProjects.getPrjLangDefaultInProject",
+        return_value={},
+    )
+    @patch(
+        "climmob.views.cloneProjects.cloneProjects.AliasExtraSearchTechnologyInProject"
+    )
     @patch("climmob.views.cloneProjects.cloneProjects.AliasSearchTechnologyInProject")
     @patch("climmob.views.cloneProjects.cloneProjects.searchTechnologiesInProject")
     @patch("climmob.views.cloneProjects.cloneProjects.getProjectEnumerators")
     @patch("climmob.views.cloneProjects.cloneProjects.getProjectData")
-    def test_get_all_information_for_project_success_2(self, mock_get_project_data, mock_get_project_enumerators,
-                                             mock_search_technologies_in_project, mock_alias_search_technologies_in_project,
-                                             mock_alias_extra_search_technology_in_project,
-                                             mock_get_proj_lang_default_in_project, mock_get_data_form_preview, mock_get_project_assessments,
-                                             ):
+    def test_get_all_information_for_project_success_2(
+        self,
+        mock_get_project_data,
+        mock_get_project_enumerators,
+        mock_search_technologies_in_project,
+        mock_alias_search_technologies_in_project,
+        mock_alias_extra_search_technology_in_project,
+        mock_get_proj_lang_default_in_project,
+        mock_get_data_form_preview,
+        mock_get_project_assessments,
+    ):
         userOwner = "test_user"
         projectId = 1
         fake_self = MagicMock()
         fake_self.request = MagicMock()
         fake_self.request.locale_name = "en"
 
-        mock_get_project_data.return_value = {"project_registration_and_analysis": "DATA"}
+        mock_get_project_data.return_value = {
+            "project_registration_and_analysis": "DATA"
+        }
         mock_get_project_enumerators.return_value = {"project_enumerators": "DATA_1"}
-        mock_search_technologies_in_project.return_value = [{"tech_id":1, "tech1":"TECH1"}, {"tech_id":2, "tech1":"TECH2"}]
+        mock_search_technologies_in_project.return_value = [
+            {"tech_id": 1, "tech1": "TECH1"},
+            {"tech_id": 2, "tech1": "TECH2"},
+        ]
         mock_alias_search_technologies_in_project.side_effect = ["DATA_3", "DATA_4"]
         mock_alias_extra_search_technology_in_project.side_effect = ["DATA_5", "DATA_6"]
 
-
         result = get_all_information_for_project(fake_self, userOwner, projectId)
         self.assertEqual(
-            {'project_registration_and_analysis': 'DATA', 'project_fieldagents': {'project_enumerators': 'DATA_1'},
-             'project_techs': [{'tech_id': 1, 'tech1': 'TECH1', 'alias': 'DATA_3', 'aliasExtra': 'DATA_5'},
-                               {'tech_id': 2, 'tech1': 'TECH2', 'alias': 'DATA_4', 'aliasExtra': 'DATA_6'}],
-             'project_registry': {'data': 'DATA_7'},
-             'project_assessment': [{'ass_cod': 1, 'Questions': {'data': 'DATA_7'}},
-                                    {'ass_cod': 2, 'Questions': {'data': 'DATA_7'}}]}, result)
+            {
+                "project_registration_and_analysis": "DATA",
+                "project_fieldagents": {"project_enumerators": "DATA_1"},
+                "project_techs": [
+                    {
+                        "tech_id": 1,
+                        "tech1": "TECH1",
+                        "alias": "DATA_3",
+                        "aliasExtra": "DATA_5",
+                    },
+                    {
+                        "tech_id": 2,
+                        "tech1": "TECH2",
+                        "alias": "DATA_4",
+                        "aliasExtra": "DATA_6",
+                    },
+                ],
+                "project_registry": {"data": "DATA_7"},
+                "project_assessment": [
+                    {"ass_cod": 1, "Questions": {"data": "DATA_7"}},
+                    {"ass_cod": 2, "Questions": {"data": "DATA_7"}},
+                ],
+            },
+            result,
+        )
         mock_get_project_data.assert_called_once_with(projectId, fake_self.request)
-        mock_get_project_enumerators.assert_called_once_with(projectId, fake_self.request)
-        mock_search_technologies_in_project.assert_called_once_with(projectId, fake_self.request)
-        mock_alias_search_technologies_in_project.assert_called_with(2,projectId, fake_self.request)
-        mock_alias_extra_search_technology_in_project.assert_has_calls([call(1, 1, fake_self.request), call(2, 1, fake_self.request)])
-        mock_get_proj_lang_default_in_project.assert_called_once_with(projectId, fake_self.request)
-        mock_get_data_form_preview.assert_called_with(fake_self, "test_user", 1,assessmentid=2,language="en")
-        mock_get_project_assessments.assert_called_once_with(1,fake_self.request)
+        mock_get_project_enumerators.assert_called_once_with(
+            projectId, fake_self.request
+        )
+        mock_search_technologies_in_project.assert_called_once_with(
+            projectId, fake_self.request
+        )
+        mock_alias_search_technologies_in_project.assert_called_with(
+            2, projectId, fake_self.request
+        )
+        mock_alias_extra_search_technology_in_project.assert_has_calls(
+            [call(1, 1, fake_self.request), call(2, 1, fake_self.request)]
+        )
+        mock_get_proj_lang_default_in_project.assert_called_once_with(
+            projectId, fake_self.request
+        )
+        mock_get_data_form_preview.assert_called_with(
+            fake_self, "test_user", 1, assessmentid=2, language="en"
+        )
+        mock_get_project_assessments.assert_called_once_with(1, fake_self.request)
+
 
 if __name__ == "__main__":
     unittest.main()
