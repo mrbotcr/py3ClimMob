@@ -92,7 +92,7 @@ class CloneProjectsView(privateView):
         if stage == 2:
             dataworking["slt_project_by_owner"] = userOwner + "___" + projectCod
 
-            dataworking["projectBeingCloned"] = getAllInformationForProject(
+            dataworking["projectBeingCloned"] = get_all_information_for_project(
                 self, userOwner, projectId
             )
 
@@ -194,7 +194,7 @@ class CloneProjectsView(privateView):
             except:
                 raise HTTPNotFound()
 
-            dataworking["clonedProject"] = getAllInformationForProject(
+            dataworking["clonedProject"] = get_all_information_for_project(
                 self, userOwner, projectId
             )
 
@@ -202,7 +202,7 @@ class CloneProjectsView(privateView):
                 self.user.login, cloned, self.request
             )
 
-            dataworking["projectBeingCloned"] = getAllInformationForProject(
+            dataworking["projectBeingCloned"] = get_all_information_for_project(
                 self, self.user.login, newProjectId
             )
 
@@ -213,7 +213,7 @@ class CloneProjectsView(privateView):
             }
 
 
-def getAllInformationForProject(self, userOwner, projectId):
+def get_all_information_for_project(self, userOwner, projectId):
 
     dataworking = getProjectData(projectId, self.request)
 
