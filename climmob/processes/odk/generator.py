@@ -805,6 +805,7 @@ class ODKExcelFile(object):
             if not self.languages:
                 question.set("label", label)
                 question.set("hint", hint)
+                question.set("constraint_message", constraint_message)
             else:
                 if isinstance(label, str):
                     for language in self.languages:
