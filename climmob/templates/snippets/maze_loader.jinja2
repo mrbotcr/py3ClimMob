@@ -1,4 +1,4 @@
-{% if request.registry.settings.get('test.inject_test_code', "false") == 'true' %}
+{% if request.registry.settings.get('maze.inject_test_code', "false") == 'true' %}
     <script>
         (function (m, a, z, e) {
             var s, t;
@@ -18,6 +18,6 @@
             s.async = true;
             a.getElementsByTagName('head')[0].appendChild(s);
             m.mazeUniversalSnippetApiKey = e;
-        })(window, document, 'https://snippet.maze.co/maze-universal-loader.js', {{ request.registry.settings.get('maze.key') }});
+        })(window, document, 'https://snippet.maze.co/maze-universal-loader.js', "{{ request.registry.settings.get('maze.key') }}");
     </script>
 {% endif %}
