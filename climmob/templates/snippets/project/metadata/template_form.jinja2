@@ -45,7 +45,7 @@
             {% endif %}
         {% else %}
 
-            {% if JsonInfo["type"] in ["text","select one","integer", "select all that apply", "date"] %}
+            {% if JsonInfo["type"] in ["text","select one","integer", "select all that apply", "date"]%}
 
                 <div class="form-group" id="div_{{ JsonInfo.get("name", {}) }}"{% if JsonInfo.get("bind", {}).get("required") != "yes"  %} style="display: none" {% endif %}>
 
@@ -477,6 +477,17 @@
 
     }
 
+        function ToggleByOther() {
+      var selected_other = document.getElementById("{{ JsonInfo.get("name", {}) }}");
+      var div_other = document.getElementById("div_{{ JsonInfo.get("name", {}) }}");
+      var type = document.
+
+      if (selected_other.value === "Other") {
+        div_other.style.display = "block";
+      } else {
+        div_other.style.display = "none";
+      }
+    }
 
 
 
