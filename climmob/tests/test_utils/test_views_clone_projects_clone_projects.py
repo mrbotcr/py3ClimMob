@@ -3,14 +3,14 @@ from unittest.mock import patch, MagicMock, ANY, call
 
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 
-from climmob.tests.test_utils.common import BaseViewTestCase
+from climmob.tests.test_utils.common import ViewBaseTest
 from climmob.views.cloneProjects.cloneProjects import (
     CloneProjectsView,
     get_all_information_for_project,
 )
 
 
-class TestModifyProjectView(BaseViewTestCase):
+class TestModifyProjectView(ViewBaseTest):
     view_class = CloneProjectsView
     request_method = "POST"
 
