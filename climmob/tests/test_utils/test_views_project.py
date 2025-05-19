@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch, ANY, call
 
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 
-from climmob.tests.test_utils.common import BaseViewTestCase
+from climmob.tests.test_utils.common import ViewBaseTest
 from climmob.views.project import (
     GetUnitOfAnalysisByLocationView,
     GetObjectivesByLocationAndUnitOfAnalysisView,
@@ -109,7 +109,7 @@ class TestGetObjectivesByLocationAndUnitOfAnalysisView(unittest.TestCase):
         self.assertEqual(result, {})
 
 
-class TestNewProjectView(BaseViewTestCase):
+class TestNewProjectView(ViewBaseTest):
     view_class = NewProjectView
     request_method = "POST"
 
@@ -273,7 +273,7 @@ class TestNewProjectView(BaseViewTestCase):
         )
 
 
-class TestModifyProjectView(BaseViewTestCase):
+class TestModifyProjectView(ViewBaseTest):
     view_class = ModifyProjectView
     request_method = "POST"
 
@@ -1440,7 +1440,7 @@ class TestModifyProjectView(BaseViewTestCase):
         mock_get_all_affiliations.assert_called_once_with(self.view.request)
 
 
-class TestGetTemplatesByTypeOfProjectView(BaseViewTestCase):
+class TestGetTemplatesByTypeOfProjectView(ViewBaseTest):
     view_class = GetTemplatesByTypeOfProjectView
 
     @patch("climmob.views.project.getProjectTemplates", return_value={"data": "data"})
@@ -1459,7 +1459,7 @@ class TestGetTemplatesByTypeOfProjectView(BaseViewTestCase):
         self.assertEqual(context.exception.code, 404)
 
 
-class TestProjectListView(BaseViewTestCase):
+class TestProjectListView(ViewBaseTest):
     view_class = ProjectListView
 
     @patch(
@@ -1493,7 +1493,7 @@ class TestProjectListView(BaseViewTestCase):
         mock_get_total_projects_in_climmob.assert_called_once_with(self.view.request)
 
 
-class TestDeleteProjectView(BaseViewTestCase):
+class TestDeleteProjectView(ViewBaseTest):
     view_class = DeleteProjectView
     request_method = "POST"
 
