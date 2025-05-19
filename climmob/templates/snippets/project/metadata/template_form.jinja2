@@ -47,10 +47,10 @@
 
             {% if JsonInfo["type"] in ["text","select one","integer", "select all that apply", "date"] %}
 
-                <div class="form-group">
+                <div class="form-group" id="div_{{ JsonInfo.get("name", {}) }}"{% if JsonInfo.get("bind", {}).get("required") != "yes"  %} style="display: none" {% endif %}>
 
-                    <div class="col-sm-12">
-                        <h3>{{ JsonInfo["label"][request.locale_name] }} {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"].keys() and JsonInfo["bind"]["required"] == "yes" %}{% else %}({{ _("Optional") }}){% endif %}</h3>
+                    <div class="col-sm-12" >
+                        <h3>{{ JsonInfo["label"][request.locale_name] }} {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"].keys() and JsonInfo["bind"]["required"] == "yes" %}{% else %}({{ _("Required") }}){% endif %}</h3>
                         {% if "hint" in JsonInfo.keys() %} <p>{{ JsonInfo["hint"][request.locale_name] }}</p>{% endif %}
 
                         {% include inputs %}
@@ -236,9 +236,6 @@
             }
         }
     }
-
-
-
 
     function formatUser (user) {
         if (!user.id) {
@@ -479,6 +476,8 @@
         }
 
     }
+
+
 
 
 </script>
