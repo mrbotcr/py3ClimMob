@@ -18,13 +18,14 @@ from climmob.processes import (
     get_all_project_location,
     get_all_unit_of_analysis_by_location,
     get_all_objectives_by_location_and_unit_of_analysis,
+    get_all_affiliations,
 )
 from climmob.views.classes import privateView
-from climmob.views.project import createProjectFunction, functionCreateClone
+from climmob.views.project import create_project_function, function_create_clone
 from climmob.views.registry import getDataFormPreview
 
 
-class cloneProjects_view(privateView):
+class CloneProjectsView(privateView):
     def processView(self):
 
         if self.request.registry.settings.get("projects.limit", "false") == "true":
@@ -91,11 +92,9 @@ class cloneProjects_view(privateView):
         if stage == 2:
             dataworking["slt_project_by_owner"] = userOwner + "___" + projectCod
 
-            dataworking["projectBeingCloned"] = getAllInformationForProject(
+            dataworking["projectBeingCloned"] = get_all_information_for_project(
                 self, userOwner, projectId
             )
-
-            # print(dataworking["projectBeingCloned"])
 
             return {
                 "activeProject": getActiveProject(self.user.login, self.request),
@@ -120,7 +119,7 @@ class cloneProjects_view(privateView):
 
                 if "btn_addNewProject" in self.request.POST:
 
-                    dataworking, error_summary, added = createProjectFunction(
+                    dataworking, error_summary, added = create_project_function(
                         dataworking, error_summary, self
                     )
                     if added:
@@ -129,7 +128,7 @@ class cloneProjects_view(privateView):
                             self.user.login, dataworking["project_cod"], self.request
                         )
 
-                        ok = functionCreateClone(
+                        ok = function_create_clone(
                             self,
                             projectId,
                             newProjectId,
@@ -178,6 +177,7 @@ class cloneProjects_view(privateView):
                     dataworking["project_location"],
                     dataworking["project_unit_of_analysis"],
                 ),
+                "list_of_affiliation": get_all_affiliations(self.request),
             }
 
         if stage == 4:
@@ -194,7 +194,7 @@ class cloneProjects_view(privateView):
             except:
                 raise HTTPNotFound()
 
-            dataworking["clonedProject"] = getAllInformationForProject(
+            dataworking["clonedProject"] = get_all_information_for_project(
                 self, userOwner, projectId
             )
 
@@ -202,7 +202,7 @@ class cloneProjects_view(privateView):
                 self.user.login, cloned, self.request
             )
 
-            dataworking["projectBeingCloned"] = getAllInformationForProject(
+            dataworking["projectBeingCloned"] = get_all_information_for_project(
                 self, self.user.login, newProjectId
             )
 
@@ -213,7 +213,7 @@ class cloneProjects_view(privateView):
             }
 
 
-def getAllInformationForProject(self, userOwner, projectId):
+def get_all_information_for_project(self, userOwner, projectId):
 
     dataworking = getProjectData(projectId, self.request)
 

@@ -165,7 +165,7 @@ from climmob.views.basic_views import (
     PrivacyView,
 )
 from climmob.views.cleanErrorLogs import CleanErrorLogsView
-from climmob.views.cloneProjects.cloneProjects import cloneProjects_view
+from climmob.views.cloneProjects.cloneProjects import CloneProjectsView
 from climmob.views.dashboard import dashboard_view, projectInformation_view
 from climmob.views.editData import (
     editDataView,
@@ -201,12 +201,12 @@ from climmob.views.productsList import (
 )
 from climmob.views.profile import profile_view, editProfile_view
 from climmob.views.project import (
-    newProject_view,
-    getTemplatesByTypeOfProject_view,
-    modifyProject_view,
-    deleteProject_view,
-    projectList_view,
-    CurationOfProjects_view,
+    NewProjectView,
+    GetTemplatesByTypeOfProjectView,
+    ModifyProjectView,
+    DeleteProjectView,
+    ProjectListView,
+    CurationOfProjectsView,
     GetUnitOfAnalysisByLocationView,
     GetObjectivesByLocationAndUnitOfAnalysisView,
 )
@@ -423,7 +423,7 @@ def loadRoutes(config):
         {
             "name": "projectList",
             "path": "/projectList",
-            "view": projectList_view,
+            "view": ProjectListView,
             "renderer": "project/projectList.jinja2",
         }
     )
@@ -483,7 +483,7 @@ def loadRoutes(config):
         addRoute(
             "getTemplatesByTypeOfProject",
             "/projectType/{typeid}",
-            getTemplatesByTypeOfProject_view,
+            GetTemplatesByTypeOfProjectView,
             "json",
         )
     )
@@ -492,7 +492,7 @@ def loadRoutes(config):
         {
             "name": "newproject",
             "path": "/project/new",
-            "view": newProject_view,
+            "view": NewProjectView,
             "renderer": "project/newproject.jinja2",
         }
     )
@@ -500,7 +500,7 @@ def loadRoutes(config):
         {
             "name": "modifyproject",
             "path": "/user/{user}/project/{project}/edit",
-            "view": modifyProject_view,
+            "view": ModifyProjectView,
             "renderer": "project/modifyproject.jinja2",
         }
     )
@@ -508,7 +508,7 @@ def loadRoutes(config):
         {
             "name": "deleteproject",
             "path": "/user/{user}/project/{project}/delete",
-            "view": deleteProject_view,
+            "view": DeleteProjectView,
             "renderer": "json",
         }
     )
@@ -818,7 +818,7 @@ def loadRoutes(config):
         addRoute(
             "curationofprojects",
             "/CurationOfProjects",
-            CurationOfProjects_view,
+            CurationOfProjectsView,
             "project/curationofprojects.jinja2",
         )
     )
@@ -1332,7 +1332,7 @@ def loadRoutes(config):
         {
             "name": "cloneProject",
             "path": "/cloneProject",
-            "view": cloneProjects_view,
+            "view": CloneProjectsView,
             "renderer": "cloneProjects/cloneProjects.jinja2",
         }
     )
