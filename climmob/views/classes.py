@@ -567,6 +567,8 @@ class apiView(BaseView):
             self._validate()
         except HTTPBadRequest as e:
             return Response(status=str(400), body=str(e))
+        except HTTPNotFound as e:
+            return Response(status=str(404), body=str(e))
         except HTTPMethodNotAllowed as e:
             return Response(status=str(405), body=str(e))
 

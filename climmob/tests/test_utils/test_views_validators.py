@@ -27,9 +27,48 @@ class TestBaseValidator(unittest.TestCase):
 
 
 class TestProjectExistsValidator(unittest.TestCase):
-    def setUp(self):
+    def test_init_for_api(self):
+        view = MagicMock(apiView)
+        view.request = MagicMock()
+        view.request.translate = lambda s: s
+        view.body = '{"user_owner": "test_owner", "project_cod": "test_cod"}'
+
+        validator = ProjectExistsValidator(view)
+
+        body = json.loads(view.body)
+
+        self.assertEqual(validator.project_owner_username, body["user_owner"])
+        self.assertEqual(validator.project_cod, body["project_cod"])
+
+    def test_init_for_private(self):
+        view = MagicMock(privateView)
+        view.request = MagicMock()
+        view.request.translate = lambda s: s
+        view.request.matchdict = {"user": "test_owner", "project": "test_cod"}
+
+        validator = ProjectExistsValidator(view)
+
+        self.assertEqual(
+            validator.project_owner_username, view.request.matchdict["user"]
+        )
+        self.assertEqual(validator.project_cod, view.request.matchdict["project"])
+
+    def test_init_for_unknown_type(self):
+        view = MagicMock()
+        view.request = MagicMock()
+        view.request.translate = lambda s: s
+
+        with self.assertRaises(TypeError):
+            validator = ProjectExistsValidator(view)
+
+
+class TestProjectExistsValidatorRun(unittest.TestCase):
+    @patch(
+        "climmob.views.validators.ProjectExistsValidator"
+        ".ProjectExistsValidator.extract"
+    )
+    def setUp(self, mock_extract):
         self.request = MagicMock()
-        self.request.matchdict = {"user": "test_user", "project": "test_project"}
 
         self.view = MagicMock()
         self.view.user = MagicMock()
@@ -37,6 +76,8 @@ class TestProjectExistsValidator(unittest.TestCase):
         self.view.request = self.request
 
         self.validator = ProjectExistsValidator(self.view)
+        self.validator.project_owner_username = "test_user"
+        self.validator.project_cod = "test_project"
 
     @patch(
         "climmob.views.validators.ProjectExistsValidator.projectExists",
@@ -47,8 +88,8 @@ class TestProjectExistsValidator(unittest.TestCase):
 
         mock_project_exists.assert_called_once_with(
             self.validator.view.user.login,
-            self.request.matchdict["user"],
-            self.request.matchdict["project"],
+            self.validator.project_owner_username,
+            self.validator.project_cod,
             self.request,
         )
 
@@ -64,8 +105,8 @@ class TestProjectExistsValidator(unittest.TestCase):
 
         mock_project_exists.assert_called_once_with(
             self.validator.view.user.login,
-            self.request.matchdict["user"],
-            self.request.matchdict["project"],
+            self.validator.project_owner_username,
+            self.validator.project_cod,
             self.request,
         )
 
