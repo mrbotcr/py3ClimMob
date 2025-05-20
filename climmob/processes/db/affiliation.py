@@ -28,6 +28,10 @@ def search_affiliation(request, q, query_from, query_size):
 
 def get_all_affiliations(request):
 
-    result = mapFromSchema(request.dbsession.query(Affiliation).all())
+    result = mapFromSchema(
+        request.dbsession.query(Affiliation)
+        .order_by(Affiliation.affiliation_name)
+        .all()
+    )
 
     return result

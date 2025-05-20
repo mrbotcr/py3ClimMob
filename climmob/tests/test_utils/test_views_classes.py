@@ -2,10 +2,11 @@ import json
 import unittest
 import uuid
 from datetime import datetime as dt
+from datetime import timedelta
 from hashlib import md5
 from unittest.mock import MagicMock, patch, mock_open
 
-from pyramid.httpexceptions import HTTPFound, HTTPMethodNotAllowed
+from pyramid.httpexceptions import HTTPFound, HTTPMethodNotAllowed, HTTPNotFound
 from pyramid.testing import DummyRequest
 from webob.multidict import MultiDict
 
@@ -189,6 +190,38 @@ class TestBaseView(unittest.TestCase):
         mock_validator_b_class.assert_called_once_with(self.view)
         mock_validator_b_instance.run.assert_called_once()
 
+    def test_subclass_init_validators_not_a_tuple(self):
+        with self.assertRaises(TypeError) as context:
+
+            class subclass(BaseView):
+                validators = [
+                    MagicMock,
+                ]
+
+        self.assertEqual(str(context.exception), "subclass.validators must be a tuple")
+
+    def test_subclass_init_validators_has_a_non_type(self):
+        with self.assertRaises(TypeError) as context:
+
+            class subclass(BaseView):
+                validators = (MagicMock(),)
+
+        self.assertEqual(
+            str(context.exception),
+            f"subclass.validators must contain class objects, got {MagicMock}",
+        )
+
+    def test_subclass_init_validators_has_a_non_validator(self):
+        with self.assertRaises(TypeError) as context:
+
+            class subclass(BaseView):
+                validators = (MagicMock,)
+
+        self.assertEqual(
+            str(context.exception),
+            f"subclass.validators contains {MagicMock.__name__}, which is not a subclass of BaseValidator",
+        )
+
     def test_validate_for_views_with_processView(self):
         self.request.method = "TEST_METHOD"
 
@@ -302,6 +335,27 @@ class TestOdkView(unittest.TestCase):
 
         result = self.view.authorize(correct_password)
         self.assertTrue(result)
+
+    def test_authorize_invalid_response_header(self):
+        self.view.user = "user"
+        correct_password = "password".encode()
+        self.request.body = b"test_body"
+
+        self.view.authHeader["response"] = "test_response_header"
+
+        result = self.view.authorize(correct_password)
+
+        self.assertFalse(result)
+
+    @patch("climmob.views.classes.md5", side_effect=md5)
+    def test_authorize_empty_qop(self, mock_md5):
+        self.view.user = "user"
+        correct_password = "password".encode()
+        self.request.body = b"test_body"
+        self.view.authHeader["qop"] = ""
+
+        with self.assertRaises(TypeError):
+            self.view.authorize(correct_password)
 
     @patch("climmob.views.classes.md5", side_effect=md5)
     def test_authorize_auth_int_qop(self, mock_md5):
@@ -421,10 +475,12 @@ class TestPublicView(unittest.TestCase):
         view = publicView(self.request)
         self.request.add_response_callback.assert_not_called()
 
+    @patch("climmob.views.classes.publicView._validate")
     @patch("climmob.views.classes.publicView.processView")
-    def test_call(self, mock_process_view):
+    def test_call(self, mock_process_view, mock_validate):
         view = publicView(self.request)
         view()
+        mock_validate.assert_called_once()
         mock_process_view.assert_called_once()
 
     def test_getPostDict(self):
@@ -656,6 +712,310 @@ class TestPrivateView(unittest.TestCase):
         # ):
         # self.view()
 
+    @patch(
+        "climmob.views.classes.literal_eval",
+        return_value={"login": "test"},
+    )
+    def test_call_no_group(self, mock_literal_eval):
+        policy = self.view.get_policy("main")
+        policy.authenticated_userid.return_value = "{'login': 'test'}"
+        with self.assertRaises(KeyError) as context:
+            self.view()
+
+        self.assertEqual(str(context.exception), "'group'")
+
+    @patch(
+        "climmob.views.classes.literal_eval",
+        return_value={"login": "test", "group": ""},
+    )
+    def test_call_empty_group(self, mock_literal_eval):
+        policy = self.view.get_policy("main")
+        policy.authenticated_userid.return_value = "{'login': 'test', 'group': ''}"
+        response = self.view()
+
+        self.assertEqual(type(response), HTTPFound)
+
+    @patch("climmob.views.classes.privateView.processView")
+    @patch("climmob.views.classes.getActiveProject", return_value=None)
+    @patch("climmob.views.classes.getUserData")
+    @patch(
+        "climmob.views.classes.literal_eval",
+        return_value={"login": "test", "group": "mainApp"},
+    )
+    def test_call_no_active_project(
+        self,
+        mock_literal_eval,
+        mock_get_user_data,
+        mock_get_active_project,
+        mock_process_view,
+    ):
+        policy = self.view.get_policy("main")
+        policy.authenticated_userid.return_value = (
+            "{'login': 'test', 'group': 'mainApp'}"
+        )
+
+        mock_get_user_data.return_value = MagicMock(
+            login="test_user", languages=["en"], email="test@example.com"
+        )
+
+        self.view()
+
+        self.assertFalse(self.view.classResult["hasActiveProject"])
+
+    @patch("climmob.views.classes.addToLog")
+    @patch("climmob.views.classes.privateView.processView")
+    @patch("climmob.views.classes.getUserData")
+    @patch("climmob.views.classes.getLastActivityLogByUser")
+    def test_call_last_activity_is_welcome_and_route_is_not_dashboard(
+        self,
+        mock_get_last_activity_log_by_user,
+        mock_get_user_data,
+        mock_process_view,
+        mock_add_to_log,
+    ):
+        policy = self.view.get_policy("main")
+        policy.authenticated_userid.return_value = (
+            "{'login': 'test', 'group': 'mainApp'}"
+        )
+
+        mock_get_user_data.return_value = MagicMock(
+            login="test_user", languages=["en"], email="test@example.com"
+        )
+
+        log = {"log_message": "Welcome to ClimMob", "log_datetime": dt.now()}
+
+        mock_get_last_activity_log_by_user.return_value = log
+
+        self.view.request.matched_route.name = "test_route"
+
+        self.view()
+
+        mock_add_to_log.assert_called_once_with(
+            self.view.user.login,
+            "PRF",
+            "Dashboard",
+            log["log_datetime"] + timedelta(0, 3),
+            self.view.request,
+        )
+
+    @patch("climmob.views.classes.privateView.processView")
+    @patch("climmob.views.classes.getUserData")
+    @patch("climmob.views.classes.getLastActivityLogByUser")
+    def test_call_last_activity_is_welcome(
+        self,
+        mock_get_last_activity_log_by_user,
+        mock_get_user_data,
+        mock_process_view,
+    ):
+        policy = self.view.get_policy("main")
+        policy.authenticated_userid.return_value = (
+            "{'login': 'test', 'group': 'mainApp'}"
+        )
+
+        mock_get_user_data.return_value = MagicMock(
+            login="test_user", languages=["en"], email="test@example.com"
+        )
+
+        log = {"log_message": "Welcome to ClimMob", "log_datetime": dt.now()}
+
+        mock_get_last_activity_log_by_user.return_value = log
+
+        self.view.request.matched_route.name = "dashboard"
+
+        self.view()
+
+        self.assertTrue(self.view.classResult["showHelp"])
+
+    @patch("climmob.views.classes.log")
+    @patch("climmob.views.classes.check_csrf_token")
+    @patch("climmob.views.classes.privateView.processView")
+    @patch("climmob.views.classes.getUserData")
+    @patch("climmob.views.classes.getLastActivityLogByUser")
+    def test_call_token_not_safe(
+        self,
+        mock_get_last_activity_log_by_user,
+        mock_get_user_data,
+        mock_process_view,
+        mock_check_csrf_token,
+        mock_log,
+    ):
+        policy = self.view.get_policy("main")
+        policy.authenticated_userid.return_value = (
+            "{'login': 'test', 'group': 'mainApp'}"
+        )
+
+        mock_get_user_data.return_value = MagicMock(
+            login="test_user", languages=["en"], email="test@example.com"
+        )
+
+        mock_get_last_activity_log_by_user.return_value = None
+
+        mock_check_csrf_token.return_value = None
+
+        self.request.method = "POST"
+
+        with self.assertRaises(HTTPNotFound):
+            self.view()
+
+        self.request.session.pop_flash.assert_called_once()
+
+        mock_log.error.assert_called_once_with(
+            f"SECURITY-CSRF error at {self.request.url} "
+        )
+
+    @patch("climmob.views.classes.log")
+    @patch("climmob.views.classes.check_csrf_token")
+    @patch("climmob.views.classes.privateView.processView")
+    @patch("climmob.views.classes.getUserData")
+    @patch("climmob.views.classes.getLastActivityLogByUser")
+    def test_call_invalid_cross_post(
+        self,
+        mock_get_last_activity_log_by_user,
+        mock_get_user_data,
+        mock_process_view,
+        mock_check_csrf_token,
+        mock_log,
+    ):
+        policy = self.view.get_policy("main")
+        policy.authenticated_userid.return_value = (
+            "{'login': 'test', 'group': 'mainApp'}"
+        )
+
+        mock_get_user_data.return_value = MagicMock(
+            login="test_user", languages=["en"], email="test@example.com"
+        )
+
+        mock_get_last_activity_log_by_user.return_value = None
+
+        mock_check_csrf_token.return_value = True
+
+        self.request.method = "POST"
+
+        self.request.url = "test_url"
+        self.request.referer = "test_referer"
+
+        self.view.checkCrossPost = True
+
+        with self.assertRaises(HTTPNotFound):
+            self.view()
+
+        self.request.session.pop_flash.assert_called_once()
+
+        mock_log.error.assert_called_once_with(
+            f"SECURITY-CrossPost error. Posting at {self.request.url} from {self.request.referer} "
+        )
+
+    @patch("climmob.views.classes.json")
+    @patch("climmob.views.classes.privateView.processView")
+    @patch("climmob.views.classes.getUserData")
+    @patch("climmob.views.classes.getLastActivityLogByUser")
+    def test_call_raw_result_dict(
+        self,
+        mock_get_last_activity_log_by_user,
+        mock_get_user_data,
+        mock_process_view,
+        mock_json,
+    ):
+        policy = self.view.get_policy("main")
+        policy.authenticated_userid.return_value = (
+            "{'login': 'test', 'group': 'mainApp'}"
+        )
+
+        mock_get_user_data.return_value = MagicMock(
+            login="test_user", languages=["en"], email="test@example.com"
+        )
+
+        mock_get_last_activity_log_by_user.return_value = None
+
+        mock_process_view.return_value = MagicMock(dict)
+
+        self.view.returnRawViewResult = True
+
+        self.view()
+
+        mock_json.dumps.assert_called_once_with(
+            self.view.viewResult, default=self.view.myconverter, indent=4
+        )
+
+    @patch("climmob.views.classes.json")
+    @patch("climmob.views.classes.privateView.processView")
+    @patch("climmob.views.classes.getUserData")
+    @patch("climmob.views.classes.getLastActivityLogByUser")
+    def test_call_raw_result_not_dict(
+        self,
+        mock_get_last_activity_log_by_user,
+        mock_get_user_data,
+        mock_process_view,
+        mock_json,
+    ):
+        policy = self.view.get_policy("main")
+        policy.authenticated_userid.return_value = (
+            "{'login': 'test', 'group': 'mainApp'}"
+        )
+
+        mock_get_user_data.return_value = MagicMock(
+            login="test_user", languages=["en"], email="test@example.com"
+        )
+
+        mock_get_last_activity_log_by_user.return_value = None
+
+        mock_process_view.return_value = MagicMock()
+
+        self.view.returnRawViewResult = True
+
+        result = self.view()
+
+        self.assertEqual(result, self.view.viewResult)
+
+    def test_myconverter_datetime(self):
+        test_datetime = MagicMock(dt)
+        result = self.view.myconverter(test_datetime)
+
+        self.assertEqual(result, str(test_datetime))
+
+    def test_myconverter_not_datetime(self):
+        test_datetime = MagicMock()
+        result = self.view.myconverter(test_datetime)
+
+        self.assertIsNone(result)
+
+    @patch("climmob.views.classes.p.PluginImplementations")
+    @patch("climmob.views.classes.privateView.processView")
+    @patch("climmob.views.classes.getUserData")
+    @patch("climmob.views.classes.getLastActivityLogByUser")
+    def test_call_plugin(
+        self,
+        mock_get_last_activity_log_by_user,
+        mock_get_user_data,
+        mock_process_view,
+        mock_plugins,
+    ):
+        policy = self.view.get_policy("main")
+        policy.authenticated_userid.return_value = (
+            "{'login': 'test', 'group': 'mainApp'}"
+        )
+
+        mock_get_user_data.return_value = MagicMock(
+            login="test_user", languages=["en"], email="test@example.com"
+        )
+
+        mock_get_last_activity_log_by_user.return_value = None
+
+        mock_process_view.return_value = MagicMock()
+
+        good_plugin = MagicMock()
+        bad_plugin = MagicMock()
+        bad_plugin.register_user_flow.side_effect = Exception
+
+        mock_plugins.return_value = [good_plugin, bad_plugin]
+
+        self.view()
+
+        mock_plugins.assert_called_once()
+        good_plugin.register_user_flow.assert_called_once_with(
+            self.view.user, self.view.request
+        )
+
 
 class TestApiView(unittest.TestCase):
     def setUp(self):
@@ -698,6 +1058,36 @@ class TestApiView(unittest.TestCase):
         response = self.view()
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response.body, b"Apikey non-existent")
+
+    @patch("climmob.views.classes.Response")
+    def test_call_no_api_key(self, mock_response):
+        mock_response.return_value = MagicMock(status=401, body=b"Apikey non-existent")
+
+        response = self.view()
+
+        mock_response.assert_called_once_with(status=401, body="Apikey non-existent")
+        self.assertEqual(response, mock_response.return_value)
+
+    @patch("climmob.views.classes.apiView._validate")
+    @patch("climmob.views.classes.apiView.processView")
+    @patch("climmob.views.classes.update_last_login")
+    @patch(
+        "climmob.views.classes.getUserByApiKey",
+        return_value=MagicMock(login="test_user"),
+    )
+    def test_call(
+        self,
+        mock_getUserByApiKey,
+        mock_update_last_login,
+        mock_process_view,
+        mock_validate,
+    ):
+        self.request.params = {"Apikey": "valid", "key1": "value1", "key2": "value2"}
+
+        mock_process_view.return_value = MagicMock()
+        response = self.view()
+        mock_validate.assert_called_once()
+        self.assertEqual(response, mock_process_view.return_value)
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 import json
 import unittest
 from unittest.mock import patch, MagicMock, ANY
-from climmob.tests.test_utils.common import BaseViewTestCase
+from climmob.tests.test_utils.common import ViewBaseTest
 from climmob.views.Api.questions import (
     CreateQuestionView,
     ReadQuestionsView,
@@ -24,7 +24,7 @@ from climmob.views.validators.question.QuestionUpdateMinMaxValidator import (
 )
 
 
-class TestCreateQuestionView(BaseViewTestCase):
+class TestCreateQuestionView(ViewBaseTest):
     view_class = CreateQuestionView
 
     def setUp(self):
@@ -382,7 +382,7 @@ class TestCreateQuestionView(BaseViewTestCase):
         )
 
 
-class TestReadQuestionsView(BaseViewTestCase):
+class TestReadQuestionsView(ViewBaseTest):
     view_class = ReadQuestionsView
     request_method = "GET"
 
@@ -431,7 +431,7 @@ class TestReadQuestionsView(BaseViewTestCase):
         self.assertEqual(mock_user_question.call_count, 2)
 
 
-class TestUpdateQuestionView(BaseViewTestCase):
+class TestUpdateQuestionView(ViewBaseTest):
     view_class = UpdateQuestionView
     request_method = "POST"
 
@@ -728,7 +728,7 @@ class TestUpdateQuestionView(BaseViewTestCase):
         )
 
 
-class TestDeleteQuestionViewApi(BaseViewTestCase):
+class TestDeleteQuestionViewApi(ViewBaseTest):
     view_class = DeleteQuestionViewApi
     request_method = "POST"
 
@@ -822,7 +822,7 @@ class TestDeleteQuestionViewApi(BaseViewTestCase):
         )
 
 
-class TestReadQuestionValuesView(BaseViewTestCase):
+class TestReadQuestionValuesView(ViewBaseTest):
     view_class = ReadQuestionValuesView
     request_method = "GET"
 
@@ -934,7 +934,7 @@ class TestReadQuestionValuesView(BaseViewTestCase):
         mock_get_question_options.assert_called_once_with("QST123", self.view.request)
 
 
-class TestAddQuestionValueViewApi(BaseViewTestCase):
+class TestAddQuestionValueViewApi(ViewBaseTest):
     view_class = AddQuestionValueViewApi
     request_method = "POST"
 
@@ -1188,7 +1188,7 @@ class TestAddQuestionValueViewApi(BaseViewTestCase):
         )
 
 
-class TestUpdateQuestionValueView(BaseViewTestCase):
+class TestUpdateQuestionValueView(ViewBaseTest):
     view_class = UpdateQuestionValueView
     request_method = "POST"
 
@@ -1393,7 +1393,7 @@ class TestUpdateQuestionValueView(BaseViewTestCase):
         self.assertIn("Not all parameters have data.", response.body.decode())
 
 
-class TestDeleteQuestionValueViewApi(BaseViewTestCase):
+class TestDeleteQuestionValueViewApi(ViewBaseTest):
     view_class = DeleteQuestionValueViewApi
     request_method = "POST"
 
@@ -1536,7 +1536,7 @@ class TestDeleteQuestionValueViewApi(BaseViewTestCase):
         mock_delete_option.assert_called_once_with("QST123", "OPT1", self.view.request)
 
 
-class TestUpdateQuestionCharacteristicsView(BaseViewTestCase):
+class TestUpdateQuestionCharacteristicsView(ViewBaseTest):
     view_class = UpdateQuestionCharacteristicsView
     request_method = "POST"
 
@@ -1691,7 +1691,7 @@ class TestUpdateQuestionCharacteristicsView(BaseViewTestCase):
         self.assertIn("Not all parameters have data.", response.body.decode())
 
 
-class TestUpdateQuestionPerformanceView(BaseViewTestCase):
+class TestUpdateQuestionPerformanceView(ViewBaseTest):
     view_class = UpdateQuestionPerformanceView
     request_method = "POST"
 
@@ -1865,7 +1865,7 @@ class TestUpdateQuestionPerformanceView(BaseViewTestCase):
         self.assertIn("Not all parameters have data.", response.body.decode())
 
 
-class TestMultiLanguageQuestionView(BaseViewTestCase):
+class TestMultiLanguageQuestionView(ViewBaseTest):
     view_class = MultiLanguageQuestionView
     request_method = "POST"
 
@@ -2348,7 +2348,7 @@ class TestMultiLanguageQuestionView(BaseViewTestCase):
         )
 
 
-class TestReadMultiLanguagesFromQuestionView(BaseViewTestCase):
+class TestReadMultiLanguagesFromQuestionView(ViewBaseTest):
     view_class = ReadMultiLanguagesFromQuestionView
     request_method = "GET"
 

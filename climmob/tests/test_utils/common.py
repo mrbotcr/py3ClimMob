@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import MagicMock
 
 
-class BaseViewTestCase(unittest.TestCase):
+class ViewBaseTest(unittest.TestCase):
     view_class = None
     request_method = "GET"
     request_body = None

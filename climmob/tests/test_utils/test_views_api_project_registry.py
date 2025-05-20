@@ -2,7 +2,7 @@ import json
 import unittest
 from unittest.mock import patch, MagicMock
 
-from climmob.tests.test_utils.common import BaseViewTestCase
+from climmob.tests.test_utils.common import ViewBaseTest
 from climmob.views.Api.projectRegistry import (
     ReadProjectRegistryView,
     ReadPossibleQuestionsForRegistryGroupView,
@@ -15,7 +15,7 @@ from climmob.views.Api.projectRegistry import (
 )
 
 
-class TestReadProjectRegistryView(BaseViewTestCase):
+class TestReadProjectRegistryView(ViewBaseTest):
     view_class = ReadProjectRegistryView
     request_method = "GET"
 
@@ -396,7 +396,7 @@ class TestReadProjectRegistryView(BaseViewTestCase):
         )
 
 
-class TestReadPossibleQuestionsForRegistryGroupView(BaseViewTestCase):
+class TestReadPossibleQuestionsForRegistryGroupView(ViewBaseTest):
     view_class = ReadPossibleQuestionsForRegistryGroupView
     request_method = "GET"
 
@@ -574,7 +574,7 @@ class TestReadPossibleQuestionsForRegistryGroupView(BaseViewTestCase):
         )
 
 
-class TestAddRegistryGroupView(BaseViewTestCase):
+class TestAddRegistryGroupView(ViewBaseTest):
     view_class = AddRegistryGroupView
     request_method = "POST"
 
@@ -795,7 +795,7 @@ class TestAddRegistryGroupView(BaseViewTestCase):
         )
 
 
-class TestUpdateRegistryGroupView(BaseViewTestCase):
+class TestUpdateRegistryGroupView(ViewBaseTest):
     view_class = UpdateRegistryGroupView
     request_method = "POST"
 
@@ -1052,7 +1052,7 @@ class TestUpdateRegistryGroupView(BaseViewTestCase):
         )
 
 
-class TestDeleteRegistryGroupView(BaseViewTestCase):
+class TestDeleteRegistryGroupView(ViewBaseTest):
     view_class = DeleteRegistryGroupView
     request_method = "POST"
 
@@ -1362,7 +1362,7 @@ class TestDeleteRegistryGroupView(BaseViewTestCase):
         )
 
 
-class TestAddQuestionToGroupRegistryView(BaseViewTestCase):
+class TestAddQuestionToGroupRegistryView(ViewBaseTest):
     view_class = AddQuestionToGroupRegistryView
     request_method = "POST"
 
@@ -1836,7 +1836,7 @@ class TestAddQuestionToGroupRegistryView(BaseViewTestCase):
         )
 
 
-class TestDeleteQuestionFromGroupRegistryView(BaseViewTestCase):
+class TestDeleteQuestionFromGroupRegistryView(ViewBaseTest):
     view_class = DeleteQuestionFromGroupRegistryView
     request_method = "POST"
 
@@ -2275,7 +2275,7 @@ class TestDeleteQuestionFromGroupRegistryView(BaseViewTestCase):
         )
 
 
-class TestOrderRegistryQuestionsView(BaseViewTestCase):
+class TestOrderRegistryQuestionsView(ViewBaseTest):
     view_class = OrderRegistryQuestionsView
     request_method = "POST"
 

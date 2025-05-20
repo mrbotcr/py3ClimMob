@@ -51,12 +51,13 @@ from climmob.processes import (
     get_location_unit_of_analysis_by_combination,
     get_location_unit_of_analysis_objectives_by_combination,
     delete_all_project_location_unit_objective,
+    get_all_affiliations,
 )
 from climmob.views.classes import privateView
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 
 
-class getTemplatesByTypeOfProject_view(privateView):
+class GetTemplatesByTypeOfProjectView(privateView):
     def processView(self):
         if self.request.method == "GET":
             typeId = self.request.matchdict["typeid"]
@@ -68,7 +69,7 @@ class getTemplatesByTypeOfProject_view(privateView):
         raise HTTPNotFound
 
 
-class projectList_view(privateView):
+class ProjectListView(privateView):
     def processView(self):
 
         return {
@@ -79,7 +80,7 @@ class projectList_view(privateView):
         }
 
 
-class newProject_view(privateView):
+class NewProjectView(privateView):
     def processView(self):
 
         if self.request.registry.settings.get("projects.limit", "false") == "true":
@@ -115,7 +116,7 @@ class newProject_view(privateView):
             if "btn_addNewProject" in self.request.POST:
                 dataworking = self.getPostDict()
 
-                dataworking, error_summary, added = createProjectFunction(
+                dataworking, error_summary, added = create_project_function(
                     dataworking, error_summary, self
                 )
                 if added:
@@ -157,10 +158,11 @@ class newProject_view(privateView):
                 dataworking["project_location"],
                 dataworking["project_unit_of_analysis"],
             ),
+            "list_of_affiliation": get_all_affiliations(self.request),
         }
 
 
-def createProjectFunction(dataworking, error_summary, self):
+def create_project_function(dataworking, error_summary, self):
     added = False
     dataworking["user_name"] = self.user.login
     dataworking["project_regstatus"] = 0
@@ -311,7 +313,7 @@ def createProjectFunction(dataworking, error_summary, self):
                                         self.request,
                                     )
 
-                                    functionCreateClone(
+                                    function_create_clone(
                                         self,
                                         dataworking["usingTemplate"],
                                         newProjectId,
@@ -350,7 +352,7 @@ def createProjectFunction(dataworking, error_summary, self):
     return dataworking, error_summary, added
 
 
-def functionCreateClone(self, projectId, newProjectId, structureToBeCloned):
+def function_create_clone(self, projectId, newProjectId, structureToBeCloned):
 
     if "fieldagents" in structureToBeCloned:
         enumerators = getProjectEnumerators(
@@ -488,7 +490,7 @@ def functionCreateClone(self, projectId, newProjectId, structureToBeCloned):
     return ""
 
 
-class modifyProject_view(privateView):
+class ModifyProjectView(privateView):
     validators = (ProjectExistsValidator,)
 
     def processView(self):
@@ -714,7 +716,7 @@ class modifyProject_view(privateView):
                                             self.request,
                                         )
 
-                                        functionCreateClone(
+                                        function_create_clone(
                                             self,
                                             data["usingTemplate"],
                                             newProjectId,
@@ -759,13 +761,14 @@ class modifyProject_view(privateView):
             "listOfObjectives": get_all_objectives_by_location_and_unit_of_analysis(
                 self.request, data["project_location"], data["project_unit_of_analysis"]
             ),
+            "list_of_affiliation": get_all_affiliations(self.request),
         }
         for plugin in p.PluginImplementations(p.IProject):
             context = plugin.before_returning_project_context(self.request, context)
         return context
 
 
-class deleteProject_view(privateView):
+class DeleteProjectView(privateView):
     validators = (ProjectExistsValidator,)
 
     def processView(self):
@@ -813,7 +816,7 @@ class deleteProject_view(privateView):
         }
 
 
-class CurationOfProjects_view(privateView):
+class CurationOfProjectsView(privateView):
     def processView(self):
         error_summary = {}
 

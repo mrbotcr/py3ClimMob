@@ -3,7 +3,7 @@ import json
 import unittest
 from unittest.mock import patch
 
-from climmob.tests.test_utils.common import BaseViewTestCase
+from climmob.tests.test_utils.common import ViewBaseTest
 from climmob.views.Api.projectCreation import (
     ReadListOfTemplatesView,
     ReadListOfCountriesView,
@@ -20,7 +20,7 @@ from climmob.views.Api.projectCreation import (
 )
 
 
-class TestReadListOfTemplatesView(BaseViewTestCase):
+class TestReadListOfTemplatesView(ViewBaseTest):
     view_class = ReadListOfTemplatesView
     request_method = "GET"
     request_body = json.dumps({"project_type": "agriculture"})
@@ -94,7 +94,7 @@ class TestReadListOfTemplatesView(BaseViewTestCase):
         mock_get_project_templates.assert_called_with(self.view.request, "agriculture")
 
 
-class TestReadListOfCountriesView(BaseViewTestCase):
+class TestReadListOfCountriesView(ViewBaseTest):
     view_class = ReadListOfCountriesView
     request_method = "GET"
 
@@ -116,7 +116,7 @@ class TestReadListOfCountriesView(BaseViewTestCase):
         self.assertIn("Only accepts GET method.", response.body.decode())
 
 
-class TestReadListOfLocationsView(BaseViewTestCase):
+class TestReadListOfLocationsView(ViewBaseTest):
     view_class = ReadListOfLocationsView
     request_method = "GET"
 
@@ -138,7 +138,7 @@ class TestReadListOfLocationsView(BaseViewTestCase):
         self.assertIn("Only accepts GET method.", response.body.decode())
 
 
-class TestReadListOfUnitOfAnalysisView(BaseViewTestCase):
+class TestReadListOfUnitOfAnalysisView(ViewBaseTest):
     view_class = ReadListOfUnitOfAnalysisView
     request_method = "GET"
     request_body = json.dumps({"plocation_id": "1"})
@@ -188,7 +188,7 @@ class TestReadListOfUnitOfAnalysisView(BaseViewTestCase):
         self.assertIn('{"data": "data"}', response.body.decode())
 
 
-class TestReadListOfObjectivesView(BaseViewTestCase):
+class TestReadListOfObjectivesView(ViewBaseTest):
     view_class = ReadListOfObjectivesView
     request_body = json.dumps({"plocation_id": "1", "puoa_id": "1"})
 
@@ -289,7 +289,7 @@ class TestReadListOfObjectivesView(BaseViewTestCase):
         self.assertIn('{"data": "data"}', response.body.decode())
 
 
-class TestCreateProjectView(BaseViewTestCase):
+class TestCreateProjectView(ViewBaseTest):
     view_class = CreateProjectView
     request_method = "POST"
 
@@ -1371,7 +1371,7 @@ class TestCreateProjectView(BaseViewTestCase):
         )
 
 
-class TestReadProjectsView(BaseViewTestCase):
+class TestReadProjectsView(ViewBaseTest):
     view_class = ReadProjectsView
     request_method = "GET"
 
@@ -1408,7 +1408,7 @@ class TestReadProjectsView(BaseViewTestCase):
         self.assertIn("Only accepts GET method.", response.body.decode())
 
 
-class TestUpdateProjectView(BaseViewTestCase):
+class TestUpdateProjectView(ViewBaseTest):
     view_class = UpdateProjectView
     request_method = "POST"
 
@@ -2439,7 +2439,7 @@ class TestUpdateProjectView(BaseViewTestCase):
         mock_delete_all_project_location_unit_objective.assert_called_once()
 
 
-class TestDeleteProjectViewApi(BaseViewTestCase):
+class TestDeleteProjectViewApi(ViewBaseTest):
     view_class = DeleteProjectViewApi
     request_method = "POST"
 
@@ -2548,7 +2548,7 @@ class TestDeleteProjectViewApi(BaseViewTestCase):
         self.assertIn("Only accepts POST method.", response.body.decode())
 
 
-class TestReadCollaboratorsView(BaseViewTestCase):
+class TestReadCollaboratorsView(ViewBaseTest):
     view_class = ReadCollaboratorsView
     request_method = "GET"
 
@@ -2606,7 +2606,7 @@ class TestReadCollaboratorsView(BaseViewTestCase):
         self.assertIn("Only accepts GET method.", response.body.decode())
 
 
-class TestAddCollaboratorView(BaseViewTestCase):
+class TestAddCollaboratorView(ViewBaseTest):
     view_class = AddCollaboratorView
     request_method = "POST"
 
@@ -2874,7 +2874,7 @@ class TestAddCollaboratorView(BaseViewTestCase):
         self.assertIn("Only accepts POST method.", response.body.decode())
 
 
-class TestDeleteCollaboratorView(BaseViewTestCase):
+class TestDeleteCollaboratorView(ViewBaseTest):
     view_class = DeleteCollaboratorView
     request_method = "POST"
 
