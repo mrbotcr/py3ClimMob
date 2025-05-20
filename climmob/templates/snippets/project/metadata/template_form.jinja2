@@ -46,10 +46,7 @@
         {% else %}
 
             {% if JsonInfo["type"] in ["text","select one","integer", "select all that apply", "date"]%}
-                {% set other_value = false %}
-                {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"].keys() and JsonInfo["bind"]["required"] == "yes" %}{% else %} {% set other_value = true %} {% endif %}
-
-                <div class="form-group" id="div_{{ JsonInfo.get("name", {}) }}" {% if other_value %}style="margin-left: 40px" {% endif %}>
+                <div class="form-group" id="div_{{ JsonInfo.get("name", {}) }}">
 
                     <div class="col-sm-12" >
                         <h3>{{ JsonInfo["label"][request.locale_name] }} ({{ _("Required") }})</h3>
@@ -396,6 +393,10 @@
 
             newRepeat.find('.chosen-select').each(function() {
                 $(this).select2({width: "100%"});
+                $(this).on('select2:select select2:unselect', function () {
+            toggleOtherField(this);
+        });
+                console.log(this)
             });
 
             newRepeat.find('.input-group.date').each(function() {
@@ -479,41 +480,48 @@
 
     }
 
-    $(document).ready(function () {
+    function toggleOtherField(selectElement) {
 
-        function toggleOtherField(selectElement) {
-            const dropdownId = selectElement.dataset.dropdownId;
-            const selected = $(selectElement).val();
-            const fieldName = dropdownId.split('#')[1];
-            const divName = 'div_' + fieldName + '_other';
-            const textAreaName = 'text_' + fieldName + '_other';
+        const dropdownId = selectElement.dataset.dropdownId;
+        const selectedOptions = selectElement.selectedOptions;
+        const fieldName = dropdownId.split('#')[1];
+        const divName = 'div_' + fieldName + '_other';
+        const textAreaName = 'text_' + fieldName + '_other';
+        const divElement = document.getElementById(divName);
+        const textareaElement = document.getElementById(textAreaName);
 
-            const divElement = document.getElementById(divName);
-            const textareaElement = document.getElementById(textAreaName);
-
-            if (selected.includes("Other") || selected.includes("Otro") || selected.includes("Autres")) {
-                if (divElement) divElement.style.display = "block";
-                if (textareaElement) textareaElement.required = true;
-            } else {
-                if (divElement) divElement.style.display = "none";
-                if (textareaElement) {
-                    textareaElement.required = false;
-                    textareaElement.value = '';
-                }
+        let has_Other_selected = false;
+        for (let option of selectedOptions) {
+            if (option.dataset.isOther === "yes"  ) {
+                has_Other_selected = true;
+                break;
             }
         }
 
-        // toggles the other field
-        $('select[data-dropdown-id]').on('select2:select select2:unselect', function () {
-            toggleOtherField(this);
-        });
+        if (has_Other_selected) {
+            if (divElement) divElement.style.display = "block";
+            if (textareaElement) textareaElement.required = true;
+        } else {
+            if (divElement) divElement.style.display = "none";
+            if (textareaElement) {
+                textareaElement.required = false;
+                textareaElement.value = '';
+            }
+        }
+    }
 
-        // Check the load of the page
+    // toggles the other field
+    $('select[data-dropdown-id]').on('select2:select select2:unselect', function () {
+        toggleOtherField(this);
+    });
+
+    // Check the load of the page
+    setTimeout(function () {
         $('select[data-dropdown-id]').each(function () {
             toggleOtherField(this);
         });
+    }, 200);
 
-    });
 
 
 
