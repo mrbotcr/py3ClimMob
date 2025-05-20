@@ -1,6 +1,6 @@
 {% if JsonInfo["type"] == "text" %}
 
-    <textarea class="form-control" rows="2"  name="{{ JsonInfo["name"] }}" {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %} required="" {% endif %}  oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')" {% if onlySee %} disabled {% endif %} {% if "allow_changes" in JsonInfo.keys() and JsonInfo["allow_changes"] == "no" %} disabled {% endif %}></textarea>
+    <textarea class="form-control" rows="2" id="text_{{ JsonInfo["name"] }}" name="{{ JsonInfo["name"] }}" {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %} required="" {% endif %}  oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')" {% if onlySee %} disabled {% endif %} {% if "allow_changes" in JsonInfo.keys() and JsonInfo["allow_changes"] == "no" %} disabled {% endif %}></textarea>
 
 {% elif JsonInfo["type"] == "select one" %}
 
@@ -29,7 +29,7 @@
 
 {% elif JsonInfo["type"] == "select all that apply" %}
 
-    <select data-placeholder="" name="{{ JsonInfo["name"] }}" class="chosen-select form-control" multiple tabindex="1" {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %} required="" {% endif %} oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')" {% if onlySee %} disabled {% endif %} {% if "allow_changes" in JsonInfo.keys() and JsonInfo["allow_changes"] == "no" %} disabled {% endif %}>
+    <select data-placeholder="" name="{{ JsonInfo["name"] }}" data-dropdown-id="select_all#{{ JsonInfo["name"] }}" class="chosen-select form-control" multiple tabindex="1" {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %} required="" {% endif %} oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')" {% if onlySee %} disabled {% endif %} {% if "allow_changes" in JsonInfo.keys() and JsonInfo["allow_changes"] == "no" %} disabled {% endif %}>
         {% for choice in JsonInfo["choices"] %}
             <option value="{{ choice["label"][request.locale_name] }}">{{ choice["label"][request.locale_name] }}</option>
         {% endfor %}

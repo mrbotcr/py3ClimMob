@@ -46,11 +46,13 @@
         {% else %}
 
             {% if JsonInfo["type"] in ["text","select one","integer", "select all that apply", "date"]%}
+                {% set other_value = false %}
+                {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"].keys() and JsonInfo["bind"]["required"] == "yes" %}{% else %} {% set other_value = true %} {% endif %}
 
-                <div class="form-group" id="div_{{ JsonInfo.get("name", {}) }}"{% if JsonInfo.get("bind", {}).get("required") != "yes"  %} style="display: none" {% endif %}>
+                <div class="form-group" id="div_{{ JsonInfo.get("name", {}) }}" {% if other_value %}style="margin-left: 40px" {% endif %}>
 
                     <div class="col-sm-12" >
-                        <h3>{{ JsonInfo["label"][request.locale_name] }} {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"].keys() and JsonInfo["bind"]["required"] == "yes" %}{% else %}({{ _("Required") }}){% endif %}</h3>
+                        <h3>{{ JsonInfo["label"][request.locale_name] }} ({{ _("Required") }})</h3>
                         {% if "hint" in JsonInfo.keys() %} <p>{{ JsonInfo["hint"][request.locale_name] }}</p>{% endif %}
 
                         {% include inputs %}
@@ -477,17 +479,43 @@
 
     }
 
-        function ToggleByOther() {
-      var selected_other = document.getElementById("{{ JsonInfo.get("name", {}) }}");
-      var div_other = document.getElementById("div_{{ JsonInfo.get("name", {}) }}");
-      var type = document.
+    $(document).ready(function () {
 
-      if (selected_other.value === "Other") {
-        div_other.style.display = "block";
-      } else {
-        div_other.style.display = "none";
-      }
-    }
+        function toggleOtherField(selectElement) {
+            const dropdownId = selectElement.dataset.dropdownId;
+            const selected = $(selectElement).val();
+            const fieldName = dropdownId.split('#')[1];
+            const divName = 'div_' + fieldName + '_other';
+            const textAreaName = 'text_' + fieldName + '_other';
+
+            const divElement = document.getElementById(divName);
+            const textareaElement = document.getElementById(textAreaName);
+
+            if (selected.includes("Other") || selected.includes("Otro") || selected.includes("Autres")) {
+                if (divElement) divElement.style.display = "block";
+                if (textareaElement) textareaElement.required = true;
+            } else {
+                if (divElement) divElement.style.display = "none";
+                if (textareaElement) {
+                    textareaElement.required = false;
+                    textareaElement.value = '';
+                }
+            }
+        }
+
+        // toggles the other field
+        $('select[data-dropdown-id]').on('select2:select select2:unselect', function () {
+            toggleOtherField(this);
+        });
+
+        // Check the load of the page
+        $('select[data-dropdown-id]').each(function () {
+            toggleOtherField(this);
+        });
+
+    });
+
+
 
 
 
