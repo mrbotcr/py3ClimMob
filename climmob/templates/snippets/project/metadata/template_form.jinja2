@@ -68,6 +68,10 @@
 
 
 <script>
+    if (typeof window.counter === 'undefined') {
+        window.counter = 1;
+    }
+
     $(document).ready(function () {
 
         $('.input-group.date').datepicker({
@@ -386,7 +390,39 @@
             }
 
             newRepeat.find('input, select, textarea').each(function () {
+                const baseId = $(this).data("dropdown-id");
+                if (baseId) {
+                    const cleanId = baseId.toString().split("*")[0];
+                    const newId = `${cleanId}*${counter}`; //
+                    $(this).attr("data-dropdown-id", newId);
+                }
+
+                if ($(this).is('textarea')) {
+                    const currentId = $(this).attr('id');
+                    if (currentId.includes('_other')) {
+                        let cleanId = currentId.split('_other')[0];
+                        if (cleanId.includes('*')){
+                            cleanId = cleanId.split('*')[0];
+                        }
+                        const newId = `${cleanId}*${counter}_other`;
+                        $(this).attr("id", newId);
+                    }
+                }
                 $(this).val(''); // Limpia valores
+            });
+
+            newRepeat.find('div').each(function () {
+                if ($(this).hasClass('form-group')) {
+                    const divId = $(this).attr('id');
+                    if (divId && divId.includes('_other')) {
+                        let cleanDivId = divId.split('_other')[0];
+                        if (cleanDivId.includes('*')){
+                            cleanDivId = cleanDivId.split('*')[0];
+                        }
+                        const newDivId = `${cleanDivId}*${counter}_other`;
+                        $(this).attr('id', newDivId);
+                    }
+                }
             });
 
             repeatContainer.after(newRepeat);
@@ -394,9 +430,8 @@
             newRepeat.find('.chosen-select').each(function() {
                 $(this).select2({width: "100%"});
                 $(this).on('select2:select select2:unselect', function () {
-            toggleOtherField(this);
-        });
-                console.log(this)
+                    toggleOtherField(this);
+                });
             });
 
             newRepeat.find('.input-group.date').each(function() {
@@ -465,7 +500,7 @@
                 });
             })
 
-
+        window.counter++;
         } else {
             console.warn('No se encontró un contenedor `.repeat` asociado al botón.');
         }
