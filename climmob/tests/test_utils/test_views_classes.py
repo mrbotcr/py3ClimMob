@@ -99,6 +99,9 @@ class TestBaseView(unittest.TestCase):
         self.request = MagicMock()
         self.view = BaseView(self.request)
 
+    def test_has_empty_validators(self):
+        self.assertEqual(self.view.validators, ())
+
     def test_init(self):
         self.assertEqual(self.view.request, self.request)
         self.assertEqual(self.view.context, None)
@@ -189,6 +192,22 @@ class TestBaseView(unittest.TestCase):
 
         mock_validator_b_class.assert_called_once_with(self.view)
         mock_validator_b_instance.run.assert_called_once()
+
+    def test_subclass_init_validators_is_none(self):
+        with self.assertRaises(TypeError) as context:
+
+            class subclass(BaseView):
+                validators = None
+
+        self.assertEqual(str(context.exception), "subclass.validators must be a tuple")
+
+    def test_subclass_init_validators_is_an_empty_list(self):
+        with self.assertRaises(TypeError) as context:
+
+            class subclass(BaseView):
+                validators = []
+
+        self.assertEqual(str(context.exception), "subclass.validators must be a tuple")
 
     def test_subclass_init_validators_not_a_tuple(self):
         with self.assertRaises(TypeError) as context:

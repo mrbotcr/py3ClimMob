@@ -139,10 +139,7 @@ class BaseView:
 
         validators = getattr(cls, "validators", None)
 
-        if not validators:
-            return
-
-        if not isinstance(validators, tuple):
+        if validators is None or not isinstance(validators, tuple):
             raise TypeError(f"{cls.__name__}.validators must be a tuple")
 
         for item in validators:
