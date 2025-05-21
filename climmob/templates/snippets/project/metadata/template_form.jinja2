@@ -46,7 +46,7 @@
         {% else %}
 
             {% if JsonInfo["type"] in ["text","select one","integer", "select all that apply", "date"]%}
-                <div class="form-group" id="div_{{ JsonInfo.get("name", {}) }}">
+                <div class="form-group" div-name="div_{{ JsonInfo.get("name", {}) }}">
 
                     <div class="col-sm-12" >
                         <h3>{{ JsonInfo["label"][request.locale_name] }} ({{ _("Required") }})</h3>
@@ -390,22 +390,22 @@
             }
 
             newRepeat.find('input, select, textarea').each(function () {
-                const baseId = $(this).data("dropdown-id");
-                if (baseId) {
-                    const cleanId = baseId.toString().split("*")[0];
-                    const newId = `${cleanId}*${counter}`; //
-                    $(this).attr("data-dropdown-id", newId);
+                const baseDropDown = $(this).data("dropdown-id");
+                if (baseDropDown) {
+                    const nameQuestion = baseDropDown.toString().split("*")[0];
+                    const newNameDropdown = `${nameQuestion}*${counter}`; //
+                    $(this).attr("data-dropdown-id", newNameDropdown);
                 }
 
                 if ($(this).is('textarea')) {
-                    const currentId = $(this).attr('id');
-                    if (currentId.includes('_other')) {
-                        let cleanId = currentId.split('_other')[0];
-                        if (cleanId.includes('*')){
-                            cleanId = cleanId.split('*')[0];
+                    const currentNameText = $(this).attr('name-text-check');
+                    if (currentNameText && currentNameText.includes('_other')) {
+                        let nameQuestion = currentNameText.split('_other')[0];
+                        if (nameQuestion.includes('*')){
+                            nameQuestion = nameQuestion.split('*')[0];
                         }
-                        const newId = `${cleanId}*${counter}_other`;
-                        $(this).attr("id", newId);
+                        const newNameText = `${nameQuestion}*${counter}_other`;
+                        $(this).attr("name-text-check", newNameText);
                     }
                 }
                 $(this).val(''); // Limpia valores
@@ -413,14 +413,14 @@
 
             newRepeat.find('div').each(function () {
                 if ($(this).hasClass('form-group')) {
-                    const divId = $(this).attr('id');
-                    if (divId && divId.includes('_other')) {
-                        let cleanDivId = divId.split('_other')[0];
-                        if (cleanDivId.includes('*')){
-                            cleanDivId = cleanDivId.split('*')[0];
+                    const divName = $(this).attr('div-name');
+                    if (divName && divName.includes('_other')) {
+                        let nameQuestion = divName.split('_other')[0];
+                        if (nameQuestion.includes('*')){
+                            nameQuestion = nameQuestion.split('*')[0];
                         }
-                        const newDivId = `${cleanDivId}*${counter}_other`;
-                        $(this).attr('id', newDivId);
+                        const newDivName = `${nameQuestion}*${counter}_other`;
+                        $(this).attr('div-name', newDivName);
                     }
                 }
             });
@@ -519,11 +519,11 @@
 
         const dropdownId = selectElement.dataset.dropdownId;
         const selectedOptions = selectElement.selectedOptions;
-        const fieldName = dropdownId.split('#')[1];
-        const divName = 'div_' + fieldName + '_other';
-        const textAreaName = 'text_' + fieldName + '_other';
-        const divElement = document.getElementById(divName);
-        const textareaElement = document.getElementById(textAreaName);
+        const nameQuestion = dropdownId.split('#')[1];
+        const divNameOther = 'div_' + nameQuestion + '_other';
+        const textAreaNameOther = 'text_' + nameQuestion + '_other';
+        const divElement = document.querySelector(`[div-name="${divNameOther}"]`);
+        const textareaElement = document.querySelector(`[name-text-check="${textAreaNameOther}"]`);
 
         let has_Other_selected = false;
         for (let option of selectedOptions) {
@@ -532,7 +532,6 @@
                 break;
             }
         }
-
         if (has_Other_selected) {
             if (divElement) divElement.style.display = "block";
             if (textareaElement) textareaElement.required = true;
