@@ -4,6 +4,7 @@ import json
 import uuid
 import logging
 import datetime
+from dataclasses import dataclass
 from hashlib import md5
 import climmob.plugins as p
 from ast import literal_eval
@@ -519,13 +520,38 @@ class privateView(BaseView):
         return None
 
 
+@dataclass
+class ValidField:
+    key: str
+    required: bool = False
+    nullable: bool = False
+    binary: bool = False
+
+
 class apiView(BaseView):
+
+    valid_fields: tuple[ValidField, ...] = ()
+
     def __init__(self, request):
         super().__init__(request)
         self.request = request
         self.user = None
         self.body = None
         self._ = self.request.translate
+
+    def __init_subclass__(cls):
+        super().__init_subclass__()
+
+        valid_fields = getattr(cls, "valid_fields", None)
+
+        if valid_fields is None or not isinstance(valid_fields, tuple):
+            raise TypeError(f"{cls.__name__}.valid_fields must be a tuple")
+
+        for valid_field in valid_fields:
+            if not isinstance(valid_field, ValidField):
+                raise TypeError(
+                    f"{cls.__name__}.valid_fields must contain only {ValidField}"
+                )
 
     def __call__(self):
 
@@ -570,3 +596,65 @@ class apiView(BaseView):
             return Response(status=str(405), body=str(e))
 
         return self.processView()
+
+    def _validate(self):
+        self.validate_fields()
+        super()._validate()
+
+    def validate_fields(self):
+        if len(self.valid_fields) == 0:
+            return
+
+        (
+            unallowed,
+            missing,
+            non_nullable_empty,
+            invalid_binary,
+        ) = self.get_invalid_fields()
+
+        msg = ""
+        if len(unallowed) > 0:
+            msg = "The following fields are not allowed: "
+            msg += ", ".join(unallowed)
+
+        elif len(missing) > 0:
+            msg = "The following fields are required: "
+            msg += ", ".join(missing)
+
+        elif len(non_nullable_empty) > 0:
+            msg = "The following fields require a value: "
+            msg += ", ".join(non_nullable_empty)
+
+        elif len(invalid_binary) > 0:
+            msg = "The following fields may only have values of 0 or 1: "
+            msg += ", ".join(invalid_binary)
+
+        if msg != "":
+            raise HTTPBadRequest(msg)
+
+    def get_invalid_fields(self):
+        body = json.loads(self.body)
+
+        missing = []
+        non_nullable_empty = []
+        invalid_binary = []
+
+        for valid_field in self.valid_fields:
+            try:
+                value = body[valid_field.key]
+            except KeyError:
+                if valid_field.required:
+                    missing.append(valid_field.key)
+                continue
+
+            del body[valid_field.key]
+
+            if not valid_field.nullable and value == "":
+                non_nullable_empty.append(valid_field.key)
+
+            if valid_field.binary and str(value) not in ["0", "1"]:
+                invalid_binary.append(valid_field.key)
+
+        unallowed = list(body.keys())
+
+        return unallowed, missing, non_nullable_empty, invalid_binary
