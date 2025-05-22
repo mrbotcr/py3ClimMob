@@ -40,11 +40,11 @@
                     </div>
                 {% endif %}
 
-                <table class="table table-striped table-bordered {{ JsonInfo["type"] }} {{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}" name="{{ JsonInfo["name"] }}"  >
+                <table class="table table-striped table-bordered {{ JsonInfo["type"] }} {{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}" name="{{ JsonInfo["name"] }}" style="table-layout: fixed;" >
                     <tr>
                         {% if "children" in JsonInfo.keys() %}
                             {% for child in JsonInfo["children"] recursive %}
-                                <th {% if child["show_interface"] =="no" %}style="display: none"{% endif %}>
+                                <th style="width:{{ 100/JsonInfo["children"]|length }}%; {% if child["show_interface"] =="no" %}display: none;{% endif %}">
                                     {{ child["label"][request.locale_name] }}
                                 </th>
                             {% endfor %}
@@ -96,6 +96,10 @@
 
 
 <script>
+    if (typeof window.counter === 'undefined') {
+        window.counter = 1;
+    }
+
     $(document).ready(function () {
 
         $('.input-group.date').datepicker({
@@ -403,6 +407,25 @@
             }
 
             newRepeat.find('input, select, textarea').each(function () {
+
+                const baseDropDown = $(this).data("dropdown-id");
+                if (baseDropDown) {
+                    const nameQuestion = baseDropDown.toString().split("*")[0];
+                    const newNameDropdown = `${nameQuestion}*${counter}`; //
+                    $(this).attr("data-dropdown-id", newNameDropdown);
+                }
+
+                if ($(this).is('textarea')) {
+                    const currentNameText = $(this).attr('name-text-check');
+                    if (currentNameText && currentNameText.includes('_other')) {
+                        let nameQuestion = currentNameText.split('_other')[0];
+                        if (nameQuestion.includes('*')){
+                            nameQuestion = nameQuestion.split('*')[0];
+                        }
+                        const newNameText = `${nameQuestion}*${counter}_other`;
+                        $(this).attr("name-text-check", newNameText);
+                    }
+                }
                 $(this).val(''); // Limpia valores
             });
 
@@ -410,6 +433,9 @@
 
             newRepeat.find('.chosen-select').each(function() {
                 $(this).select2({width: "100%"});
+                $(this).on('select2:select select2:unselect', function () {
+                    toggleOtherField(this);
+                })
             });
 
             newRepeat.find('.input-group.date').each(function() {
@@ -477,8 +503,7 @@
                     }
                 });
             })
-
-
+                window.counter++;
         } else {
             console.warn('No se encontró un contenedor `.repeat` asociado al botón.');
         }
@@ -492,6 +517,52 @@
         }
 
     }
+
+        function toggleOtherField(selectElement) {
+
+        const dropdownId = selectElement.dataset.dropdownId;
+        const selectedOptions = selectElement.selectedOptions;
+        const nameQuestion = dropdownId.split('#')[1];
+        const divNameOther = 'div_' + nameQuestion + '_other';
+        const textAreaNameOther = 'text_' + nameQuestion + '_other';
+        const divElement = document.querySelector(`[div-name="${divNameOther}"]`);
+        const textareaElement = document.querySelector(`[name-text-check="${textAreaNameOther}"]`);
+
+        let has_Other_selected = false;
+        for (let option of selectedOptions) {
+            if (option.dataset.isOther === "yes"  ) {
+                has_Other_selected = true;
+                break;
+            }
+        }
+        if (has_Other_selected) {
+            if (divElement) divElement.style.display = "block";
+            if (textareaElement){
+                textareaElement.required = true;
+                textareaElement.style.display = "block";
+            }
+        } else {
+            if (divElement) divElement.style.display = "none";
+            if (textareaElement) {
+                textareaElement.required = false;
+                textareaElement.value = '';
+                textareaElement.style.display = "none";
+            }
+        }
+    }
+
+    // toggles the other field
+    $('select[data-dropdown-id]').on('select2:select select2:unselect', function () {
+        toggleOtherField(this);
+    });
+
+    // Check the load of the page
+    setTimeout(function () {
+        $('select[data-dropdown-id]').each(function () {
+            toggleOtherField(this);
+        });
+    }, 200);
+
 
 
 </script>
