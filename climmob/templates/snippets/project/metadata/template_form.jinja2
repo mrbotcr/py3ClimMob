@@ -49,7 +49,7 @@
                 <div class="form-group" div-name="div_{{ JsonInfo.get("name", {}) }}">
 
                     <div class="col-sm-12" >
-                        <h3>{{ JsonInfo["label"][request.locale_name] }} ({{ _("Required") }})</h3>
+                        <h3>{{ JsonInfo["label"][request.locale_name] }} </h3>
                         {% if "hint" in JsonInfo.keys() %} <p>{{ JsonInfo["hint"][request.locale_name] }}</p>{% endif %}
 
                         {% include inputs %}
