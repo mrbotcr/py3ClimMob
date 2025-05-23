@@ -91,7 +91,7 @@
                                 <a href="{{ request.route_url('dashboard') }}"><i class="fa fa-th-large"></i> <span class="nav-label">{{ _("Project overview") }}</span></a>
                             </li>
                             <li {% if sectionActive == "projectlist" %}class="active" {% endif %}>
-                                <a href="{{ request.route_url('projectList')  }}"><i class="fa fa-tasks"></i> {{ _("All projects") }}</a>
+                                <a href="{{ request.route_url('projectList')  }}"><i class="fa fa-tasks"></i> <span class="nav-label">{{ _("All projects") }}</span></a>
                             </li>
                             <li class="active" style="border-left: initial;background: initial" id="nav_libraries">
                                 <a href="#" style="color: #a7b1c2;"><i class="fa fa-book"></i> <span class="nav-label">{{ _("Library") }}</span><span class="fa arrow"></span></a>
