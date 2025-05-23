@@ -6,15 +6,17 @@
 
 {% block css %}
     {% cssresource request,'coreresources','select2' %}
+    {% cssresource request,'coreresources','toastr' %}
 {% endblock css %}
 
 {% block topScripts %}
     {% jsresource request,'coreresources','editprofile' %}
+    {% jsresource request,'coreresources','toastr' %}
 {% endblock topScripts %}
 
 {% block pageheading %}
     {% set _title= _("Profile")%}
-    {% set _linkWiki="https://climmob.net/blog/wiki/profile/"%}
+{#    {% set _linkWiki="https://climmob.net/blog/wiki/profile/"%}#}
     {% set extra=[[_("Profile"), request.route_url('profile')]] %}
     {% set otherTitle= _("Edit") %}
     {% include 'snippets/menuheading.jinja2'%}

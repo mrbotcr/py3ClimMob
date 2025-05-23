@@ -45,12 +45,11 @@
             {% endif %}
         {% else %}
 
-            {% if JsonInfo["type"] in ["text","select one","integer", "select all that apply", "date"] %}
+            {% if JsonInfo["type"] in ["text","select one","integer", "select all that apply", "date"]%}
+                <div class="form-group" div-name="div_{{ JsonInfo.get("name", {}) }}">
 
-                <div class="form-group">
-
-                    <div class="col-sm-12">
-                        <h3>{{ JsonInfo["label"][request.locale_name] }} {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"].keys() and JsonInfo["bind"]["required"] == "yes" %}{% else %}({{ _("Optional") }}){% endif %}</h3>
+                    <div class="col-sm-12" >
+                        <h3>{{ JsonInfo["label"][request.locale_name] }} </h3>
                         {% if "hint" in JsonInfo.keys() %} <p>{{ JsonInfo["hint"][request.locale_name] }}</p>{% endif %}
 
                         {% include inputs %}
@@ -69,6 +68,10 @@
 
 
 <script>
+    if (typeof window.counter === 'undefined') {
+        window.counter = 1;
+    }
+
     $(document).ready(function () {
 
         $('.input-group.date').datepicker({
@@ -237,9 +240,6 @@
         }
     }
 
-
-
-
     function formatUser (user) {
         if (!user.id) {
             return user.text;
@@ -390,13 +390,48 @@
             }
 
             newRepeat.find('input, select, textarea').each(function () {
+                const baseDropDown = $(this).data("dropdown-id");
+                if (baseDropDown) {
+                    const nameQuestion = baseDropDown.toString().split("*")[0];
+                    const newNameDropdown = `${nameQuestion}*${counter}`; //
+                    $(this).attr("data-dropdown-id", newNameDropdown);
+                }
+
+                if ($(this).is('textarea')) {
+                    const currentNameText = $(this).attr('name-text-check');
+                    if (currentNameText && currentNameText.includes('_other')) {
+                        let nameQuestion = currentNameText.split('_other')[0];
+                        if (nameQuestion.includes('*')){
+                            nameQuestion = nameQuestion.split('*')[0];
+                        }
+                        const newNameText = `${nameQuestion}*${counter}_other`;
+                        $(this).attr("name-text-check", newNameText);
+                    }
+                }
                 $(this).val(''); // Limpia valores
+            });
+
+            newRepeat.find('div').each(function () {
+                if ($(this).hasClass('form-group')) {
+                    const divName = $(this).attr('div-name');
+                    if (divName && divName.includes('_other')) {
+                        let nameQuestion = divName.split('_other')[0];
+                        if (nameQuestion.includes('*')){
+                            nameQuestion = nameQuestion.split('*')[0];
+                        }
+                        const newDivName = `${nameQuestion}*${counter}_other`;
+                        $(this).attr('div-name', newDivName);
+                    }
+                }
             });
 
             repeatContainer.after(newRepeat);
 
             newRepeat.find('.chosen-select').each(function() {
                 $(this).select2({width: "100%"});
+                $(this).on('select2:select select2:unselect', function () {
+                    toggleOtherField(this);
+                });
             });
 
             newRepeat.find('.input-group.date').each(function() {
@@ -465,7 +500,7 @@
                 });
             })
 
-
+        window.counter++;
         } else {
             console.warn('No se encontró un contenedor `.repeat` asociado al botón.');
         }
@@ -479,6 +514,51 @@
         }
 
     }
+
+    function toggleOtherField(selectElement) {
+
+        const dropdownId = selectElement.dataset.dropdownId;
+        const selectedOptions = selectElement.selectedOptions;
+        const nameQuestion = dropdownId.split('#')[1];
+        const divNameOther = 'div_' + nameQuestion + '_other';
+        const textAreaNameOther = 'text_' + nameQuestion + '_other';
+        const divElement = document.querySelector(`[div-name="${divNameOther}"]`);
+        const textareaElement = document.querySelector(`[name-text-check="${textAreaNameOther}"]`);
+
+        let has_Other_selected = false;
+        for (let option of selectedOptions) {
+            if (option.dataset.isOther === "yes"  ) {
+                has_Other_selected = true;
+                break;
+            }
+        }
+        if (has_Other_selected) {
+            if (divElement) divElement.style.display = "block";
+            if (textareaElement) textareaElement.required = true;
+        } else {
+            if (divElement) divElement.style.display = "none";
+            if (textareaElement) {
+                textareaElement.required = false;
+                textareaElement.value = '';
+            }
+        }
+    }
+
+    // toggles the other field
+    $('select[data-dropdown-id]').on('select2:select select2:unselect', function () {
+        toggleOtherField(this);
+    });
+
+    // Check the load of the page
+    setTimeout(function () {
+        $('select[data-dropdown-id]').each(function () {
+            toggleOtherField(this);
+        });
+    }, 200);
+
+
+
+
 
 
 </script>
