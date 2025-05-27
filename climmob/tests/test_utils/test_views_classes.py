@@ -22,8 +22,8 @@ from climmob.views.classes import (
     privateView,
     apiView,
     BaseView,
-    ValidField,
 )
+from climmob.views.validators import Field
 
 
 class TestResourceCallback(unittest.TestCase):
@@ -1100,7 +1100,7 @@ class TestApiView(unittest.TestCase):
 
         self.assertEqual(
             str(context.exception),
-            f"subclass.valid_fields must contain only {ValidField}",
+            f"subclass.valid_fields must contain only {Field}",
         )
 
     @patch("climmob.views.classes.getUserByApiKey", return_value=None)
@@ -1168,7 +1168,6 @@ class TestApiView(unittest.TestCase):
         mock_validate.assert_called_once()
         self.assertEqual(response, mock_process_view.return_value)
 
-    @patch("climmob.views.classes.apiView.validate_fields")
     @patch("climmob.views.classes.apiView._validate", side_effect=HTTPBadRequest)
     @patch("climmob.views.classes.apiView.processView")
     @patch("climmob.views.classes.update_last_login")
@@ -1182,7 +1181,6 @@ class TestApiView(unittest.TestCase):
         mock_update_last_login,
         mock_process_view,
         mock_validate,
-        mock_validate_fields,
     ):
         self.request.params = {"Apikey": "valid", "key1": "value1", "key2": "value2"}
 
@@ -1191,7 +1189,6 @@ class TestApiView(unittest.TestCase):
         mock_validate.assert_called_once()
         self.assertEqual(response.status_code, 400)
 
-    @patch("climmob.views.classes.apiView.validate_fields")
     @patch("climmob.views.classes.apiView._validate", side_effect=HTTPNotFound)
     @patch("climmob.views.classes.apiView.processView")
     @patch("climmob.views.classes.update_last_login")
@@ -1205,7 +1202,6 @@ class TestApiView(unittest.TestCase):
         mock_update_last_login,
         mock_process_view,
         mock_validate,
-        mock_validate_fields,
     ):
         self.request.params = {"Apikey": "valid", "key1": "value1", "key2": "value2"}
 
@@ -1214,7 +1210,6 @@ class TestApiView(unittest.TestCase):
         mock_validate.assert_called_once()
         self.assertEqual(response.status_code, 404)
 
-    @patch("climmob.views.classes.apiView.validate_fields")
     @patch("climmob.views.classes.apiView._validate", side_effect=HTTPMethodNotAllowed)
     @patch("climmob.views.classes.apiView.processView")
     @patch("climmob.views.classes.update_last_login")
@@ -1228,7 +1223,6 @@ class TestApiView(unittest.TestCase):
         mock_update_last_login,
         mock_process_view,
         mock_validate,
-        mock_validate_fields,
     ):
         self.request.params = {"Apikey": "valid", "key1": "value1", "key2": "value2"}
 
@@ -1237,206 +1231,11 @@ class TestApiView(unittest.TestCase):
         mock_validate.assert_called_once()
         self.assertEqual(response.status_code, 405)
 
-    @patch("climmob.views.classes.apiView.validate_fields")
     @patch("climmob.views.classes.BaseView._validate")
-    def test_validate(self, mock_validate, mock_validate_fields):
+    def test_validate(self, mock_validate):
         self.view._validate()
 
         mock_validate.assert_called_once()
-        mock_validate_fields.assert_called_once()
-
-    @patch("climmob.views.classes.apiView.get_invalid_fields")
-    def test_validate_fields_with_empty_valid_fields(
-        self,
-        mock_get_invalid_fields,
-    ):
-        self.view.valid_fields = ()
-        self.view.validate_fields()
-
-        mock_get_invalid_fields.assert_not_called()
-
-    @patch("climmob.views.classes.apiView.get_invalid_fields")
-    def test_validate_fields_with_not_empty_valid_fields_valid(
-        self,
-        mock_get_invalid_fields,
-    ):
-        mock_get_invalid_fields.return_value = ([], [], [], [])
-
-        self.view.valid_fields = (MagicMock(),)
-
-        self.view.validate_fields()
-
-        mock_get_invalid_fields.assert_called_once()
-
-    @patch("climmob.views.classes.apiView.get_invalid_fields")
-    def test_validate_fields_with_unallowed_fields(
-        self,
-        mock_get_invalid_fields,
-    ):
-        mock_get_invalid_fields.return_value = (["unallowed_field"], [], [], [])
-
-        expected_msg = "The following fields are not allowed: " + ", ".join(
-            mock_get_invalid_fields.return_value[0]
-        )
-
-        self.view.valid_fields = (MagicMock(),)
-
-        with self.assertRaises(HTTPBadRequest) as context:
-            self.view.validate_fields()
-
-        mock_get_invalid_fields.assert_called_once()
-
-        self.assertEqual(str(context.exception), expected_msg)
-
-    @patch("climmob.views.classes.apiView.get_invalid_fields")
-    def test_validate_fields_with_missing_fields(
-        self,
-        mock_get_invalid_fields,
-    ):
-        mock_get_invalid_fields.return_value = ([], ["missing_field"], [], [])
-
-        expected_msg = "The following fields are required: " + ", ".join(
-            mock_get_invalid_fields.return_value[1]
-        )
-
-        self.view.valid_fields = (MagicMock(),)
-
-        with self.assertRaises(HTTPBadRequest) as context:
-            self.view.validate_fields()
-
-        mock_get_invalid_fields.assert_called_once()
-
-        self.assertEqual(str(context.exception), expected_msg)
-
-    @patch("climmob.views.classes.apiView.get_invalid_fields")
-    def test_validate_fields_with_empty_non_nullable_fields(
-        self,
-        mock_get_invalid_fields,
-    ):
-        mock_get_invalid_fields.return_value = ([], [], ["non_nullable_field"], [])
-
-        expected_msg = "The following fields require a value: " + ", ".join(
-            mock_get_invalid_fields.return_value[2]
-        )
-
-        self.view.valid_fields = (MagicMock(),)
-
-        with self.assertRaises(HTTPBadRequest) as context:
-            self.view.validate_fields()
-
-        mock_get_invalid_fields.assert_called_once()
-
-        self.assertEqual(str(context.exception), expected_msg)
-
-    @patch("climmob.views.classes.apiView.get_invalid_fields")
-    def test_validate_fields_invalid_fields(
-        self,
-        mock_get_invalid_fields,
-    ):
-        mock_get_invalid_fields.return_value = ([], [], [], ["invalid_binary_field"])
-
-        expected_msg = (
-            "The following fields may only have values of 0 or 1: "
-            + ", ".join(mock_get_invalid_fields.return_value[3])
-        )
-
-        self.view.valid_fields = (MagicMock(),)
-
-        with self.assertRaises(HTTPBadRequest) as context:
-            self.view.validate_fields()
-
-        mock_get_invalid_fields.assert_called_once()
-
-        self.assertEqual(str(context.exception), expected_msg)
-
-    def test_get_unallowed_fields(self):
-        self.view.valid_fields = (
-            ValidField("permitted_key_1"),
-            ValidField("permitted_key_2"),
-        )
-        self.view.body = '{"permitted_key_1": "abc", "test_key": "test_value"}'
-
-        unallowed, m, n, i = self.view.get_invalid_fields()
-
-        self.assertEqual(unallowed, ["test_key"])
-
-    def test_get_unallowed_fields_valid(self):
-        self.view.valid_fields = (
-            ValidField("permitted_key_1"),
-            ValidField("permitted_key_2"),
-        )
-        self.view.body = '{"permitted_key_1": "abc", "permitted_key_2": "test_value"}'
-
-        unallowed, m, n, i = self.view.get_invalid_fields()
-
-        self.assertEqual(unallowed, [])
-
-    def test_get_missing_fields_missing_obligatory_key(self):
-        self.view.valid_fields = (
-            ValidField("permitted_key_1", required=True),
-            ValidField("permitted_key_2"),
-            ValidField("permitted_key_3", required=True),
-        )
-        self.view.body = '{"permitted_key_2": "test_value"}'
-
-        u, missing, n, i = self.view.get_invalid_fields()
-
-        self.assertEqual(missing, ["permitted_key_1", "permitted_key_3"])
-
-    def test_get_missing_fields_valid(self):
-        self.view.valid_fields = (
-            ValidField("permitted_key_1"),
-            ValidField("permitted_key_2", nullable=True),
-        )
-        self.view.body = '{"permitted_key_2": "test_value"}'
-
-        u, missing, n, i = self.view.get_invalid_fields()
-
-        self.assertEqual(missing, [])
-
-    def test_get_non_nullable_empty_fields_with_a_nullable(self):
-        self.view.valid_fields = (
-            ValidField("permitted_key_1"),
-            ValidField("permitted_key_2", nullable=True),
-        )
-        self.view.body = '{"permitted_key_2": ""}'
-
-        u, m, non_nullable, i = self.view.get_invalid_fields()
-
-        self.assertEqual(non_nullable, [])
-
-    def test_get_non_nullable_empty_fields_with_a_non_nullable(self):
-        self.view.valid_fields = (
-            ValidField("permitted_key_1"),
-            ValidField("permitted_key_2", nullable=True),
-        )
-        self.view.body = '{"permitted_key_1": "", "permitted_key_2": "abc"}'
-
-        u, m, non_nullable, i = self.view.get_invalid_fields()
-
-        self.assertEqual(non_nullable, ["permitted_key_1"])
-
-    def test_get_invalid_binary_fields_valid(self):
-        self.view.valid_fields = (
-            ValidField("permitted_key_1"),
-            ValidField("permitted_key_2", binary=True),
-        )
-        self.view.body = '{"permitted_key_1": "", "permitted_key_2": "0"}'
-
-        u, m, n, invalid_binary = self.view.get_invalid_fields()
-
-        self.assertEqual(invalid_binary, [])
-
-    def test_get_invalid_binary_fields_invalid(self):
-        self.view.valid_fields = (
-            ValidField("permitted_key_1"),
-            ValidField("permitted_key_2", binary=True),
-        )
-        self.view.body = '{"permitted_key_1": "", "permitted_key_2": "xyz"}'
-
-        u, m, n, invalid_binary = self.view.get_invalid_fields()
-
-        self.assertEqual(invalid_binary, ["permitted_key_2"])
 
 
 if __name__ == "__main__":
