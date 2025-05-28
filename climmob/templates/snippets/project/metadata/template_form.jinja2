@@ -1,4 +1,10 @@
-
+<p>
+    {% if lang_answer_name %}
+        {{_("This form show the answers on the same language once saved, it was: ")}} {{ lang_answer_name }}
+    {% else %}
+        {{ _("Please check your language, the answers going to be displayed at same language once save") }}
+    {% endif %}
+</p>
     {% if activeProject["access_type"] in [4] %}
         {% set onlySee = True %}
     {% endif %}

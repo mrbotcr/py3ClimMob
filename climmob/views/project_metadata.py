@@ -10,7 +10,7 @@ from climmob.processes import (
     getProjectMetadataForm,
     modifyProjectMetadataForm,
     getCombinations,
-    get_all_affiliations,
+    get_all_affiliations, languageByLanguageCode,
 )
 from climmob.views.classes import privateView
 from jinja2 import Environment, FileSystemLoader
@@ -18,7 +18,7 @@ import json
 import os
 
 
-class ProjectMetadataForm_view(privateView):
+class ProjectMetadataFormView(privateView):
     def processView(self):
 
         activeProjectUser = self.request.matchdict["user"]
@@ -58,6 +58,7 @@ class ProjectMetadataForm_view(privateView):
                     )
 
                     if not projectMetadataForm:
+                        postData["pmf_lang"] = self.request.locale_name
                         added, message = addProjectMetadataForm(postData, self.request)
                         if not added:
                             error_summary = {"error": message}
@@ -119,12 +120,19 @@ class ShowMetadataForm_view(privateView):
                     return ""
                 else:
                     informationFilled = {}
+                    lang_answer = self.request.locale_name
+                    lang_answer_name = None
+
                     projectMetadataForm = getProjectMetadataForm(
                         self.request, activeProjectId, metadataId
                     )
 
                     if projectMetadataForm:
                         informationFilled = projectMetadataForm["pmf_json"]
+
+                        if projectMetadataForm["pmf_lang"]:
+                            lang_answer = projectMetadataForm["pmf_lang"]
+                            lang_answer_name = languageByLanguageCode(lang_answer,self.request)["lang_name"]
 
                     PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
                     env = Environment(
@@ -193,6 +201,8 @@ class ShowMetadataForm_view(privateView):
                         "inputs": inputs,
                         "form_to_use": metadataForm["metadata_for_technology_options"],
                         "list_of_affiliations": get_all_affiliations(self.request),
+                        "lang_answer": lang_answer,
+                        "lang_answer_name": lang_answer_name
                     }
                     render_temp = template.render(dict)
 
