@@ -1,0 +1,18 @@
+<script>
+
+    function showExpiredSessionWindow() {
+
+        swal({
+                title: "{{ _("Session expired") }}",
+                text: "You must login again",
+                type: "warning",
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "{{ _("Login") }}",
+                closeOnConfirm: false,
+                closeOnCancel: false
+            },
+            () => window.location.href = '{{ request.route_url('login') }}'
+        );
+    }
+
+</script>
