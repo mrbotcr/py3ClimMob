@@ -1114,7 +1114,29 @@
 {% block script %}
 
     <script>
+        let interval = null;
+
+        async function checkTokens() {
+            const payload = {csrf_token: "{{ request.session.get_csrf_token() }}"};
+
+            try {
+                const response = await fetch('{{ request.route_url('verify_tokens') }}', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: new URLSearchParams(payload)
+                });
+
+                const result = await response.json();
+                if (result.auth === false || result.session === false) {
+                    clearInterval(interval)
+                    showExpiredSessionWindow()
+                }
+             } catch (error) {}
+         }
+
         $(document).ready(function() {
+
+            interval = setInterval(() => checkTokens(), 20000)
 
             var selectedLanguage = readCookie('_LOCALE_');
             if (selectedLanguage != null)
