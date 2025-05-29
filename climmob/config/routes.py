@@ -163,6 +163,7 @@ from climmob.views.basic_views import (
     StoreCookieView,
     TermsView,
     PrivacyView,
+    VerifyTokens,
 )
 from climmob.views.cleanErrorLogs import CleanErrorLogsView
 from climmob.views.cloneProjects.cloneProjects import CloneProjectsView
@@ -383,6 +384,14 @@ def loadRoutes(config):
     )
     routes.append(
         {"name": "logout", "path": "/logout", "view": logout_view, "renderer": None}
+    )
+    routes.append(
+        {
+            "name": "verify_tokens",
+            "path": "/verify_tokens",
+            "view": VerifyTokens,
+            "renderer": "json",
+        }
     )
 
     # User routes

@@ -1,4 +1,5 @@
 import datetime
+import json
 import logging
 import secrets
 import smtplib
@@ -7,6 +8,7 @@ from ast import literal_eval
 
 from jinja2 import ext
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
+from pyramid.response import Response
 from pyramid.security import remember
 from pyramid.session import check_csrf_token
 
@@ -107,6 +109,28 @@ def get_policy(request, policy_name):
         if policy["name"] == policy_name:
             return policy["policy"]
     return None
+
+
+class VerifyTokens(publicView):
+    def processView(self):
+        policies = self.request.policies()
+        main_policy = None
+        for policy in policies:
+            if policy["name"] == "main":
+                main_policy = policy["policy"]
+
+        body = {"auth": True, "session": True}
+
+        login_data = main_policy.authenticated_userid(self.request)
+        if login_data is None:
+            body["auth"] = False
+
+        safe = check_csrf_token(self.request, raises=False)
+
+        if not safe:
+            body["session"] = False
+
+        return Response(body=json.dumps(body))
 
 
 class LoginView(publicView):
