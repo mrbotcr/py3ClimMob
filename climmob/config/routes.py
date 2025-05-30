@@ -289,7 +289,7 @@ from climmob.views.extra_form import ExtraFormPostView
 
 from climmob.views.project_metadata import (
     ProjectMetadataFormView,
-    ShowMetadataForm_view,
+    ShowMetadataFormView,
 )
 
 # -------Api-------#
@@ -1292,7 +1292,7 @@ def loadRoutes(config):
         addRoute(
             "ShowMetadataForm",
             "/user/{user}/project/{project}/metadataform/{metadataform}/ShowMetadata",
-            ShowMetadataForm_view,
+            ShowMetadataFormView,
             "string",
         )
     )

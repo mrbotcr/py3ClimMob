@@ -1,3 +1,11 @@
+<h3>
+    {% if lang_answer_name %}
+        {{_("This form displays the answers in the language they were saved in:")}} {{ lang_answer_name }}
+    {% else %}
+        {{ _("Please check your selected language. Your answers will be saved and displayed in that language. To ensure consistency, use the same language across all metadata fields and match the language chosen for the project.") }}
+    {% endif %}
+</h3>
+<br>
 {% if form_to_use == 1 %}
     {% include template_table %}
 {% else %}
