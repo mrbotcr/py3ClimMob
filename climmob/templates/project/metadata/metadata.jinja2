@@ -104,13 +104,16 @@
         <div class="col-lg-8" id="div_for_show_form" style="display: none">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>{{ _("Form") }}</h5>
+                    <h5 id="spaceForPutTheTitle">{{ _("Trial documentation") }} </h5>
                     <div class="ibox-tools">
                         <button  class="btn btn-xs btn-default pull-right btn_cancel_metadata" ><i class="fa fa-close"></i>  {{ _("Close form") }}</button>
                     </div>
                 </div>
                 <div class="ibox-content">
-                    <h2 id="spaceForPutTheTitle">{{ _("Trial documentation") }} </h2>
+
+{#                    <h2>#}
+{#                        {{ _("Please note that all fields are mandatory unless they include the label “(Optional)” ") }}.#}
+{#                    </h2>#}
                     <br>
 
                     <form class="form-horizontal" id="form_metadata" role="form" method="post" action="{{ request.url }}" >
@@ -157,7 +160,7 @@
 
                 $.get(URL, function (dataString, status) {
                     dataString = dataString.split("@@@@@@@@@@")
-                    $("#spaceForPutTheTitle").text(dataString[0])
+                    $("#spaceForPutTheTitle").text("{{ _("Form") }}: "+dataString[0])
                     $("#spaceForPutTheForm").html(dataString[1])
                     $("#metadata_id").val(formId)
                     $("#div_for_show_form").css("display","block")
