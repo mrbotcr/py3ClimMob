@@ -225,7 +225,7 @@ from climmob.views.question import (
     getUserCategoryDetails_view,
     categories_view,
     deleteQuestion_view,
-    questionsActions_view,
+    QuestionsActionsView,
     getUserLanguages_view,
     addUserLanguage_view,
     changeDefaultLanguage_view,
@@ -579,7 +579,7 @@ def loadRoutes(config):
         {
             "name": "questionActions",
             "path": "/questionActions",
-            "view": questionsActions_view,
+            "view": QuestionsActionsView,
             "renderer": "json",
         }
     )

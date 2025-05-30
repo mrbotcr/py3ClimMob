@@ -387,6 +387,24 @@
             <textarea type="text" rows="2" class="form-control inputForQuestion" id="question_unit" name="question_unit" placeholder=" "></textarea>
         </div>
     </div>
+
+    <div id="div_min_max">
+        <div class="form-group" id="div_min">
+            <label class="col-sm-4 control-label">{{ _("Minimum") }}</label>
+            <div class="col-sm-8">
+                <input type="number" step="any" class="form-control inputForQuestion" id="question_min" name="question_min"></input>
+                <span class="help-block m-b-none text-left">{{ _("Leave empty to not set a minimum.") }}</span>
+            </div>
+        </div>
+        <div class="form-group" id="div_max">
+            <label class="col-sm-4 control-label">{{ _("Maximum") }}</label>
+            <div class="col-sm-8">
+                <input type="number" step="any" class="form-control inputForQuestion" id="question_max" name="question_max"></input>
+                <span class="help-block m-b-none text-left">{{ _("Leave empty to not set a maximum.") }}</span>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <div id="form_characteristics" class="formExtraForQuestion">

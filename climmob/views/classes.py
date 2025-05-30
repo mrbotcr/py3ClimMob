@@ -9,7 +9,7 @@ import climmob.plugins as p
 from ast import literal_eval
 from pyramid.response import Response
 from pyramid.session import check_csrf_token
-from pyramid.httpexceptions import HTTPFound, HTTPMethodNotAllowed
+from pyramid.httpexceptions import HTTPFound, HTTPMethodNotAllowed, HTTPBadRequest
 from pyramid.httpexceptions import HTTPNotFound
 from formencode.variabledecode import variable_decode
 from climmob.config.auth import getUserData, getUserByApiKey
@@ -92,6 +92,15 @@ class BaseView:
         self.context = None
 
     def _validate(self):
+        method_name = self.request.method.lower()
+
+        # Check if subclasses have the method implemented
+        if (
+            "processView" not in self.__class__.__dict__
+            and method_name not in self.__class__.__dict__
+        ):
+            raise HTTPMethodNotAllowed(f"Method {self.request.method} Not Allowed")
+
         for validator in self.validators:
             validator(self).run()
 
@@ -458,7 +467,11 @@ class privateView(BaseView):
             except:
                 pass
 
-        self._validate()
+        try:
+            self._validate()
+        except (HTTPBadRequest, HTTPMethodNotAllowed) as e:
+            return {"result": "error", "error": str(e)}
+
         self.viewResult = self.processView()
 
         if not self.returnRawViewResult:
@@ -511,6 +524,7 @@ class privateView(BaseView):
 
 class apiView(BaseView):
     def __init__(self, request):
+        super().__init__(request)
         self.request = request
         self.user = None
         self.body = None
@@ -549,5 +563,11 @@ class apiView(BaseView):
             )
             return response
 
-        self._validate()
+        try:
+            self._validate()
+        except HTTPBadRequest as e:
+            return Response(status=str(400), body=str(e))
+        except HTTPMethodNotAllowed as e:
+            return Response(status=str(405), body=str(e))
+
         return self.processView()

@@ -40,6 +40,9 @@ from climmob.processes import (
     knowIfUserHasCreatedTranslations,
 )
 from climmob.views.classes import privateView
+from climmob.views.validators.question.QuestionMinMaxValidator import (
+    QuestionMinMaxValidator,
+)
 
 
 class deleteQuestion_view(privateView):
@@ -495,6 +498,7 @@ def actionsInquestion(self, formdata):
         and formdata["question_desc"] != ""
         and formdata["question_dtype"] != ""
     ):
+
         if formdata["action"] == "insert":
             formdata["question_code"] = "qst_" + formdata["question_code"]
             if not questionExists(
@@ -577,24 +581,29 @@ def actionsInquestion(self, formdata):
         return {"result": "error", "error": self._("Incomplete information.")}
 
 
-class questionsActions_view(privateView):
-    def processView(self):
+class QuestionsActionsView(privateView):
+    validators = (QuestionMinMaxValidator,)
 
-        if self.request.method == "POST":
-            postdata = self.getPostDict()
-            postdata["user_name"] = self.user.login
-            self.returnRawViewResult = True
+    def post(self):
 
-            if postdata["action"] == "btn_add_question":
-                del postdata["question_id"]
-                postdata["action"] = "insert"
+        postdata = self.getPostDict()
+        postdata["user_name"] = self.user.login
+        self.returnRawViewResult = True
 
-            if postdata["action"] == "btn_update_question":
-                postdata["action"] = "update"
+        nullable = ["question_min", "question_max"]
 
-            return actionsInquestion(self, postdata)
+        for field in nullable:
+            if postdata[field] == "":
+                postdata[field] = None
 
-        return {}
+        if postdata["action"] == "btn_add_question":
+            del postdata["question_id"]
+            postdata["action"] = "insert"
+
+        if postdata["action"] == "btn_update_question":
+            postdata["action"] = "update"
+
+        return actionsInquestion(self, postdata)
 
 
 class getUserQuestionPreview_view(privateView):
