@@ -1410,6 +1410,8 @@ class ProjectMetadataForm(Base):
         nullable=False,
     )
     pmf_json = Column(JSON, nullable=False)
+    pmf_lang = Column(ForeignKey("i18n.lang_code"), nullable=True)
+    pmf_last_update = Column(DateTime, nullable=True)
 
     Project = relationship("Project")
     MetadataForm = relationship("MetadataForm", backref="project_metadata_form")

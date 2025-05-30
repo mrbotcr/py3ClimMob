@@ -21,9 +21,9 @@
 
         <select data-placeholder="" name="{{ JsonInfo["name"] }}" data-dropdown-id="select_all#{{ JsonInfo["name"] }}" class="chosen-select form-control" {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %} required="" {% endif %} oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')" {% if onlySee %} disabled {% endif %} {% if "allow_changes" in JsonInfo.keys() and JsonInfo["allow_changes"] == "no" %} disabled {% endif %}>
             {% for choice in JsonInfo["choices"] %}
-                <option value="{{ choice["label"][request.locale_name] }}"
+                <option value="{{ choice["label"][lang_answer] }}"
                 {% if choice['is_option_other'] == 'yes' %} data-is-other="yes" {% endif %}
-                >{{ choice["label"][request.locale_name] }}</option>
+                >{{ choice["label"][ lang_answer ] }}</option>
             {% endfor %}
         </select>
 
@@ -31,11 +31,26 @@
 
 {% elif JsonInfo["type"] == "select all that apply" %}
 
-    <select data-placeholder="" name="{{ JsonInfo["name"] }}" data-dropdown-id="select_all#{{ JsonInfo["name"] }}" class="chosen-select form-control" multiple tabindex="1" {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %} required="" {% endif %} oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')" {% if onlySee %} disabled {% endif %} {% if "allow_changes" in JsonInfo.keys() and JsonInfo["allow_changes"] == "no" %} disabled {% endif %}>
+    <select data-placeholder="" name="{{ JsonInfo["name"] }}" data-dropdown-id="select_all#{{ JsonInfo["name"] }}"
+            class="chosen-select form-control" multiple tabindex="1"
+            {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %}
+            required=""
+            {% endif %}
+            oninvalid="this.setCustomValidity(
+                '{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{
+                    JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')"
+            onchange="this.setCustomValidity('')"
+            {% if onlySee %}
+            disabled
+            {% endif %}
+            {% if "allow_changes" in JsonInfo.keys() and JsonInfo["allow_changes"] == "no" %}
+            disabled
+            {% endif %}>
+
         {% for choice in JsonInfo["choices"] %}
-            <option value="{{ choice["label"][request.locale_name] }}"
+            <option value="{{ choice["label"][lang_answer] }}"
             {% if choice['is_option_other'] == 'yes' %} data-is-other="yes" {% endif %}
-            >{{ choice["label"][request.locale_name] }} </option>
+            >{{ choice["label"][lang_answer] }} </option>
         {% endfor %}
     </select>
 

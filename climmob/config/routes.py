@@ -288,8 +288,8 @@ from climmob.views.projectsSummary.projectsSummary import (
 from climmob.views.extra_form import ExtraFormPostView
 
 from climmob.views.project_metadata import (
-    ProjectMetadataForm_view,
-    ShowMetadataForm_view,
+    ProjectMetadataFormView,
+    ShowMetadataFormView,
 )
 
 # -------Api-------#
@@ -1283,7 +1283,7 @@ def loadRoutes(config):
         addRoute(
             "Metadata",
             "/user/{user}/project/{project}/metadata",
-            ProjectMetadataForm_view,
+            ProjectMetadataFormView,
             "project/metadata/metadata.jinja2",
         )
     )
@@ -1292,7 +1292,7 @@ def loadRoutes(config):
         addRoute(
             "ShowMetadataForm",
             "/user/{user}/project/{project}/metadataform/{metadataform}/ShowMetadata",
-            ShowMetadataForm_view,
+            ShowMetadataFormView,
             "string",
         )
     )

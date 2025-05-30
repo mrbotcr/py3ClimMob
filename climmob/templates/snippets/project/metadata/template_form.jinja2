@@ -49,7 +49,7 @@
                 <div class="form-group" div-name="div_{{ JsonInfo.get("name", {}) }}">
 
                     <div class="col-sm-12" >
-                        <h3>{{ JsonInfo["label"][request.locale_name] }} </h3>
+                        <h3>{{ JsonInfo["label"][request.locale_name] }}  {% if ("bind" in JsonInfo.keys() and "required" in JsonInfo["bind"].keys() and JsonInfo["bind"]["required"] == "yes") or JsonInfo["name"][-6:] == '_other' %}{% else %}({{ _("Optional") }}){% endif %}</h3>
                         {% if "hint" in JsonInfo.keys() %} <p>{{ JsonInfo["hint"][request.locale_name] }}</p>{% endif %}
 
                         {% include inputs %}
@@ -147,13 +147,12 @@
         methodRecursiveToShowInformation(postData, $("#spaceForPutTheForm"))
     }
 
-    function searchIntoDictionary(name){
-        dictionary = {{ dictionary }}
-        for (const key in dictionary) {
-            if (dictionary[key]["name"] === name)
-                return dictionary[key]["type"]
-        }
-    }
+    {#function searchIntoDictionary(name){#}
+    {#    dictionary = {{ dictionary }}#}
+    {#    for (const key in dictionary) {#}
+    {#        if (dictionary[key]["name"] === name)#}
+    {#            return dictionary[key]["type"]#}
+    {#    }    }#}
 
 
     function methodRecursiveToShowInformation(postData, parentElement) {

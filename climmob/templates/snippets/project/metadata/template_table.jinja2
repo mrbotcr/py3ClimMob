@@ -175,13 +175,12 @@
         methodRecursiveToShowInformation(postData, $("#spaceForPutTheForm"))
     }
 
-    function searchIntoDictionary(name){
-        dictionary = {{ dictionary }}
-        for (const key in dictionary) {
-            if (dictionary[key]["name"] === name)
-                return dictionary[key]["type"]
-        }
-    }
+    {#function searchIntoDictionary(name){#}
+    {#    dictionary = {{ dictionary }}#}
+    {#    for (const key in dictionary) {#}
+    {#        if (dictionary[key]["name"] === name)#}
+    {#            return dictionary[key]["type"]#}
+    {#    }    }#}
 
 
     function methodRecursiveToShowInformation(postData, parentElement) {
