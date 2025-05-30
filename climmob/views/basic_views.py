@@ -121,7 +121,7 @@ class VerifyTokens(publicView):
 
         body = {"auth": True, "session": True}
 
-        login_data = main_policy.authenticated_userid(self.request)
+        login_data = main_policy.unauthenticated_userid(self.request)
         if login_data is None:
             body["auth"] = False
 

@@ -23,6 +23,36 @@ import sentry_sdk
 from sentry_sdk.integrations.pyramid import PyramidIntegration
 
 
+class NoReissueAuthTktAuthenticationPolicy(AuthTktAuthenticationPolicy):
+    def authenticated_userid(self, request):
+        request.session._reissue_time = float(
+            request.registry.settings.get("session.reissue_time")
+        )
+        self.cookie.reissue_time = float(
+            request.registry.settings.get("auth.secret.cookie.reissue_time")
+        )
+
+        if request.route_path("verify_tokens") in str(request):
+            request.session._reissue_time = None
+            self.cookie.reissue_time = None
+
+        return super().authenticated_userid(request)
+
+    def unauthenticated_userid(self, request):
+        request.session._reissue_time = float(
+            request.registry.settings.get("session.reissue_time")
+        )
+        self.cookie.reissue_time = float(
+            request.registry.settings.get("auth.secret.cookie.reissue_time")
+        )
+
+        if request.route_path("verify_tokens") in str(request):
+            request.session._reissue_time = None
+            self.cookie.reissue_time = None
+
+        return super().unauthenticated_userid(request)
+
+
 def main(global_config, **settings):
 
     apppath = os.path.dirname(os.path.abspath(__file__))
@@ -42,9 +72,10 @@ def main(global_config, **settings):
     auth_policy = AuthenticationStackPolicy()
     policy_array = []
     p.load_all(settings)
-    main_policy = AuthTktAuthenticationPolicy(
+    main_policy = NoReissueAuthTktAuthenticationPolicy(
         settings["auth.secret"],
-        timeout=settings.get("auth.secret.cookie.timeout", 7200),
+        timeout=settings.get("auth.secret.cookie.timeout", 20),
+        reissue_time=settings.get("auth.secret.cookie.reissue_time", 0),
         cookie_name=settings["auth.secret.cookie"],
     )
     auth_policy.add_policy("main", main_policy)
