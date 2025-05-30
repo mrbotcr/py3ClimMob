@@ -95,9 +95,9 @@ def load_environment(settings, config, apppath, policy_array):
     # Add the session factory to the confing
     my_session_factory = SignedCookieSessionFactory(
         settings.get("session.secret"),
-        timeout=settings.get("session.timeout", 20),
+        timeout=settings.get("session.timeout", 3600),
         reissue_time=settings.get("session.reissue_time", 0),
-        max_age=settings.get("session.timeout", 20)
+        max_age=settings.get("session.timeout", 3600),
     )
 
     config.set_session_factory(my_session_factory)

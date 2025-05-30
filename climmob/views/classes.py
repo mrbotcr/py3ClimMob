@@ -450,6 +450,9 @@ class privateView(BaseView):
                         )
                         raise HTTPNotFound()
 
+        # Call just to update session
+        self.request.session.get_csrf_token()
+
         update_last_login(self.request, self.user.login)
 
         for plugin in p.PluginImplementations(p.IUserFlow):
