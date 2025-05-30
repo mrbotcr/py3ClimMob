@@ -35,6 +35,7 @@ class ProjectMetadataFormView(privateView):
 
         error_summary = {}
         dataworking = {}
+        projectMetadataForm = {}
 
         activeProject = getActiveProject(self.user.login, self.request)
 
@@ -99,6 +100,7 @@ class ProjectMetadataFormView(privateView):
             "dataworking": dataworking,
             "metadataForm": metadataForm,
             "listOfProjectMetadata": listOfProjectMetadata,
+            "projectMetadataForm":projectMetadataForm
         }
 
 

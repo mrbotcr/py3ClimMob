@@ -76,8 +76,10 @@
                                                 {{ metadata.metadata_name }}
                                             </td>
                                             <td class="text-center" style="vertical-align: middle">
-                                                {% if metadata.result %}
+                                                {% if metadata.state_of_form == "1" %}
                                                     <span class="label label-success">{{ _("Completed") }}</span>
+                                                {% elif metadata.state_of_form == "0"  %}
+                                                    <span class="label label-danger">{{ _("Empty form") }}</span>
                                                 {% else %}
                                                     <span class="label label-warning">{{ _("Pending") }}</span>
                                                 {% endif %}
@@ -189,5 +191,6 @@
         </script>
 
     </div>
+{{ listOfProjectMetadata }}
 {% endblock pagecontent%}
 
