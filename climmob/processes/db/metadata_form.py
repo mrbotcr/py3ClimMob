@@ -104,22 +104,24 @@ def getMetadataForProject(request, projectId):
                 if not find_key_recursively(data, key):
                     list_of_missing_keys.append(key)
 
-            info["state_of_form"] = "1" if not list_of_missing_keys else list_of_missing_keys
+            info["state_of_form"] = (
+                "1" if not list_of_missing_keys else list_of_missing_keys
+            )
 
         else:
-            info["state_of_form"] = "0"  #empty form
-
+            info["state_of_form"] = "0"  # empty form
 
     return result
+
 
 def look_for_required_key(children):
     name_of_required_keys = []
     for child in children:
         if not isinstance(child, dict):
-                continue
+            continue
 
         if "children" in child and isinstance(child["children"], list):
-                name_of_required_keys.extend(look_for_required_key(child["children"]))
+            name_of_required_keys.extend(look_for_required_key(child["children"]))
         bind = child.get("bind", {})
         if bind.get("required") == "yes":
             name = child.get("name")
@@ -127,6 +129,7 @@ def look_for_required_key(children):
                 name_of_required_keys.append(name)
 
     return name_of_required_keys
+
 
 def find_key_recursively(data, key_name):
     if isinstance(data, dict):
