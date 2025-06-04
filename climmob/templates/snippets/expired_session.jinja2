@@ -1,7 +1,5 @@
 <script>
-
     function showExpiredSessionWindow() {
-
         swal({
                 title: "{{ _("Session expired") }}",
                 text: "You must login again",
@@ -14,5 +12,66 @@
             () => window.location.href = '{{ request.route_url('login') }}'
         );
     }
+
+    function getCookie(name) {
+        const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+        return match ? match[2] : null;
+    }
+
+    function refreshTokens() {
+        const payload = {csrf_token: "{{ request.session.get_csrf_token() }}"};
+
+        fetch('{{ request.route_url("refresh_tokens") }}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: new URLSearchParams(payload)
+        })
+        .then(response => {
+            if (response.status === 401) {
+                sessionIsExpired = true;
+                showExpiredSessionWindow()
+            }
+        })
+        .catch(error => {});
+    }
+
+    function throttle(fn, limit) {
+        let inThrottle;
+        return function(...args) {
+            if (!inThrottle) {
+                fn.apply(this, args);
+                inThrottle = true;
+                setTimeout(() => inThrottle = false, limit);
+            }
+        }
+    }
+
+    let sessionIsExpired = false;
+
+    let inactivityTimer = null;
+
+    const throttleInterval = {{ request.registry.settings.get('session.refresh.throttle_interval', 300) }} * 1000;
+    const throttledPing = throttle(startInactivityTimer, throttleInterval);
+
+    const sessionTimeout = {{ request.registry.settings.get('auth.secret.cookie.timeout', 7200) }} * 1000;
+    function startInactivityTimer() {
+        if (sessionIsExpired) return
+
+        clearTimeout(inactivityTimer);
+        refreshTokens();
+        inactivityTimer = setTimeout(() => {
+            const sessionCookie = getCookie("{{ request.registry.settings.get('auth.secret.cookie') }}");
+            const authCookie = getCookie("{{ request.registry.settings.get('session.cookie') }}");
+            if (!sessionCookie || !authCookie) {
+                sessionIsExpired = true;
+                showExpiredSessionWindow();
+            }
+        }, sessionTimeout);
+    }
+    ["keydown", "click"].forEach(evt =>
+        document.addEventListener(evt, throttledPing)
+    );
 
 </script>
