@@ -524,7 +524,7 @@ class privateView(BaseView):
 
 class apiView(BaseView):
 
-    valid_fields: tuple[Field, ...] = ()
+    valid_fields: tuple[Field, ...] = None
 
     validators = (FieldValidator,)
 
@@ -540,7 +540,10 @@ class apiView(BaseView):
 
         valid_fields = getattr(cls, "valid_fields", None)
 
-        if valid_fields is None or not isinstance(valid_fields, tuple):
+        if valid_fields is None:
+            return
+
+        if not isinstance(valid_fields, tuple):
             raise TypeError(f"{cls.__name__}.valid_fields must be a tuple")
 
         for valid_field in valid_fields:

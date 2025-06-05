@@ -1049,18 +1049,16 @@ class TestApiView(unittest.TestCase):
         self.request.translate = lambda x: x
         self.view = apiView(self.request)
 
-    def test_has_empty_valid_fields(self):
-        self.assertEqual(self.view.valid_fields, ())
+    def test_has_valid_fields_none(self):
+        self.assertEqual(self.view.valid_fields, None)
 
     def test_init_subclass_valid_fields_is_none(self):
-        with self.assertRaises(TypeError) as context:
+        class subclass(apiView):
+            valid_fields = None
 
-            class subclass(apiView):
-                valid_fields = None
-
-        self.assertEqual(
-            str(context.exception), "subclass.valid_fields must be a tuple"
-        )
+    def test_init_subclass_valid_fields_is_an_empty_tuple(self):
+        class subclass(apiView):
+            valid_fields = ()
 
     def test_init_subclass_valid_fields_is_an_empty_list(self):
         with self.assertRaises(TypeError) as context:
