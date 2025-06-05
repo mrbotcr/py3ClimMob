@@ -36,57 +36,45 @@ from climmob.views.classes import apiView
 
 
 class ReadProjectAssessmentsView(apiView):
-    def processView(self):
+    def get(self):
 
-        if self.request.method == "GET":
-            obligatory = ["project_cod", "user_owner"]
-            try:
-                dataworking = json.loads(self.body)
-            except:
-                response = Response(
-                    status=401,
-                    body=self._(
-                        "Error in the JSON, It does not have the 'body' parameter."
-                    ),
-                )
-                return response
+        obligatory = ["project_cod", "user_owner"]
 
-            if sorted(obligatory) == sorted(dataworking.keys()):
-                exitsproject = projectExists(
-                    self.user.login,
-                    dataworking["user_owner"],
-                    dataworking["project_cod"],
+        dataworking = json.loads(self.body)
+
+        if sorted(obligatory) != sorted(dataworking.keys()):
+            response = Response(status=401, body=self._("Error in the JSON."))
+            return response
+
+        exitsproject = projectExists(
+            self.user.login,
+            dataworking["user_owner"],
+            dataworking["project_cod"],
+            self.request,
+        )
+
+        if not exitsproject:
+            response = Response(
+                status=401, body=self._("There is no a project with that code.")
+            )
+            return response
+
+        activeProjectId = getTheProjectIdForOwner(
+            dataworking["user_owner"],
+            dataworking["project_cod"],
+            self.request,
+        )
+
+        response = Response(
+            status=200,
+            body=json.dumps(
+                getProjectAssessments(
+                    activeProjectId,
                     self.request,
                 )
-                if exitsproject:
-
-                    activeProjectId = getTheProjectIdForOwner(
-                        dataworking["user_owner"],
-                        dataworking["project_cod"],
-                        self.request,
-                    )
-
-                    response = Response(
-                        status=200,
-                        body=json.dumps(
-                            getProjectAssessments(
-                                activeProjectId,
-                                self.request,
-                            )
-                        ),
-                    )
-                    return response
-                else:
-                    response = Response(
-                        status=401, body=self._("There is no a project with that code.")
-                    )
-                    return response
-            else:
-                response = Response(status=401, body=self._("Error in the JSON."))
-                return response
-        else:
-            response = Response(status=401, body=self._("Only accepts GET method."))
-            return response
+            ),
+        )
+        return response
 
 
 class AddNewAssessmentView(apiView):

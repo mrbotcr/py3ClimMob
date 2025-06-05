@@ -23,7 +23,6 @@ from climmob.views.Api.projectAssessments import (
 
 class TestReadProjectAssessmentsView(ViewBaseTest):
     view_class = ReadProjectAssessmentsView
-    request_method = "GET"
     request_body = json.dumps({"project_cod": "123", "user_owner": "owner"})
 
     @patch(
@@ -34,13 +33,13 @@ class TestReadProjectAssessmentsView(ViewBaseTest):
         "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
     )
     @patch("climmob.views.Api.projectAssessments.projectExists", return_value=True)
-    def test_process_view_success(
+    def test_get_success(
         self,
         mock_project_exists,
         mock_get_the_project_id_for_owner,
         mock_get_project_assessments,
     ):
-        response = self.view.processView()
+        response = self.view.get()
 
         self.assertEqual(response.status_code, 200)
         response_data = json.loads(response.body)
@@ -53,8 +52,8 @@ class TestReadProjectAssessmentsView(ViewBaseTest):
         )
 
     @patch("climmob.views.Api.projectAssessments.projectExists", return_value=False)
-    def test_process_view_project_not_exist(self, mock_project_exists):
-        response = self.view.processView()
+    def test_get_project_not_exist(self, mock_project_exists):
+        response = self.view.get()
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("There is no a project with that code.", response.body.decode())
@@ -62,45 +61,13 @@ class TestReadProjectAssessmentsView(ViewBaseTest):
             "test_user", "owner", "123", self.view.request
         )
 
-    def test_process_view_invalid_json(self):
+    def test_get_invalid_json(self):
         self.view.body = '{"wrong_key": "value"}'
 
-        response = self.view.processView()
+        response = self.view.get()
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("Error in the JSON.", response.body.decode())
-
-    @patch("json.loads", side_effect=json.JSONDecodeError("Expecting value", "", 0))
-    def test_process_view_invalid_body(self, mock_json_loads):
-        self.view.body = ""
-
-        response = None
-        try:
-            response = self.view.processView()
-        except json.JSONDecodeError:
-            response = Response(
-                status=401,
-                body=self.view._(
-                    "Error in the JSON, It does not have the 'body' parameter."
-                ),
-            )
-
-        self.assertEqual(response.status_code, 401)
-        self.assertIn(
-            "Error in the JSON, It does not have the 'body' parameter.",
-            response.body.decode(),
-        )
-
-        self.assertTrue(mock_json_loads.called)
-        mock_json_loads.assert_called_with(self.view.body)
-
-    def test_process_view_post_method(self):
-        self.view.request.method = "POST"
-
-        response = self.view.processView()
-
-        self.assertEqual(response.status_code, 401)
-        self.assertIn("Only accepts GET method.", response.body.decode())
 
 
 class TestAddNewAssessmentView(ViewBaseTest):
