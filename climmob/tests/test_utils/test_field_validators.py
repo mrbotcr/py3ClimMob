@@ -75,6 +75,23 @@ class TestField(unittest.TestCase):
         mock_checker_1.assert_called_once_with(self.body)
         mock_checker_2.assert_not_called()
 
+    def test_validate_returns_error(self):
+        mock_checker = MagicMock()
+        mock_validation = MagicMock(FieldValidation)
+        mock_checker.return_value = mock_validation
+
+        self.field._stages = [
+            {
+                "validation": mock_validation,
+                "function": mock_checker,
+            }
+        ]
+
+        result = self.field.validate(self.body, MagicMock(FieldValidation))
+
+        mock_checker.assert_called_once_with(self.body)
+        self.assertEqual(result, mock_validation)
+
     def test_check_required_true_invalid_returns_missing(self):
         self.field.required = True
 
