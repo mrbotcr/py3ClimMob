@@ -41,7 +41,7 @@ def render_template(template_filename, context):
     return jinjaEnv.get_template(template_filename).render(context)
 
 
-class RefreshTokens(publicView):
+class RefreshSessionTokensView(publicView):
     def post(self):
         policies = self.request.policies()
         main_policy = None
