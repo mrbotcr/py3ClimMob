@@ -519,6 +519,20 @@ class TestPrivateView(unittest.TestCase):
         self.assertIsInstance(response, HTTPFound)
         self.request.route_url.assert_called_with("login")
 
+    @patch("climmob.views.classes.update_last_login")
+    @patch("climmob.views.classes.getUserData")
+    @patch(
+        "climmob.views.classes.literal_eval",
+        return_value={"group": "mainApp", "login": "test"},
+    )
+    def test_call_get_updates_csrf_token(
+        self, mock_literal_eval, mock_get_user_data, mock_update_last_login
+    ):
+        with patch.object(self.view, "processView"):
+            self.view()
+
+        self.request.session.get_csrf_token.assert_called_once()
+
     @patch("climmob.views.classes.getUserData")
     @patch(
         "climmob.views.classes.literal_eval",
