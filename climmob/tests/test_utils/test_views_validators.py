@@ -5,8 +5,10 @@ from unittest.mock import MagicMock, patch, call, ANY
 from pyramid.httpexceptions import HTTPNotFound, HTTPBadRequest
 
 from climmob.views.classes import apiView, privateView
+from climmob.views.validators import FieldValidation, TextField
 from climmob.views.validators.BaseValidator import BaseValidator
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
+from climmob.views.validators.field.FieldValidator import FieldValidator
 from climmob.views.validators.question.QuestionMinMaxValidator import (
     QuestionMinMaxValidator,
 )
@@ -429,3 +431,119 @@ class TestQuestionUpdateMinMaxValidator(unittest.TestCase):
         self.assertEqual(
             self.validator.question_dtype, self.validator.old_question["question_dtype"]
         )
+
+
+class TestFieldValidator(unittest.TestCase):
+    def setUp(self):
+        self.request = MagicMock()
+        self.request.translate = lambda x: x
+        self.view = MagicMock()
+        self.view.request = self.request
+        self.view.valid_fields = None
+        self.view.body = '{"test_key": "test_value"}'
+        self.validator = FieldValidator(self.view)
+
+    def test_init(self):
+        for validation in FieldValidation:
+            if validation != FieldValidation.SUCCESS:
+                self.assertEqual(self.validator.invalid_fields[validation], [])
+
+    def test_run_for_view_with_valid_fields_none(self):
+        self.view.valid_fields = None
+        self.validator.run()
+
+    def test_run_for_view_with_empty_valid_fields(self):
+        self.view.valid_fields = ()
+        expected_msg = FieldValidation.UNALLOWED.value + "test_key"
+
+        with self.assertRaises(HTTPBadRequest) as context:
+            self.validator.run()
+
+        self.assertEqual(str(context.exception), expected_msg)
+
+    def test_run_for_view_with_valid_fields_none_empty_body(self):
+        self.view.valid_fields = None
+        self.view.body = "{}"
+        self.validator.run()
+
+    def test_run_with_unallowed_fields(self):
+        unallowed_key = MagicMock(str)
+        self.view.body = '{"' + str(unallowed_key) + '": "test_value"}'
+
+        self.view.valid_fields = (TextField("key_1"),)
+
+        expected_msg = FieldValidation.UNALLOWED.value + str(unallowed_key)
+
+        with self.assertRaises(HTTPBadRequest) as context:
+            self.validator.run()
+
+        self.assertEqual(str(context.exception), expected_msg)
+
+    def test_run_with_missing_fields(self):
+        self.view.body = "{}"
+
+        required_key = MagicMock(str)
+        self.view.valid_fields = (TextField(str(required_key), required=True),)
+
+        expected_msg = FieldValidation.MISSING.value + str(required_key)
+
+        with self.assertRaises(HTTPBadRequest) as context:
+            self.validator.run()
+
+        self.assertEqual(str(context.exception), expected_msg)
+
+    def test_run_with_blank_fields(self):
+
+        not_blank_key = MagicMock(str)
+        self.view.body = '{"' + str(not_blank_key) + '": ""}'
+
+        self.view.valid_fields = (TextField(str(not_blank_key), not_blank=True),)
+
+        expected_msg = FieldValidation.BLANK.value + str(not_blank_key)
+
+        with self.assertRaises(HTTPBadRequest) as context:
+            self.validator.run()
+
+        self.assertEqual(str(context.exception), expected_msg)
+
+    def test_run_blank_required(self):
+
+        not_blank_key = MagicMock(str)
+        required_key = MagicMock(str)
+        self.view.body = '{"' + str(not_blank_key) + '": ""}'
+
+        self.view.valid_fields = (
+            TextField(str(not_blank_key), not_blank=True),
+            TextField(str(required_key), required=True),
+        )
+
+        expected_msg = FieldValidation.MISSING.value + str(required_key)
+
+        with self.assertRaises(HTTPBadRequest) as context:
+            self.validator.run()
+
+        self.assertEqual(str(context.exception), expected_msg)
+
+    def test_run_required_blank(self):
+
+        required_key = MagicMock(str)
+        not_blank_key = MagicMock(str)
+
+        self.view.body = '{"' + str(not_blank_key) + '": ""}'
+
+        self.view.valid_fields = (
+            TextField(str(required_key), required=True),
+            TextField(str(not_blank_key), not_blank=True),
+        )
+
+        expected_msg = FieldValidation.MISSING.value + str(required_key)
+
+        with self.assertRaises(HTTPBadRequest) as context, patch.object(
+            self.validator,
+            "add_invalid_field",
+            side_effect=self.validator.add_invalid_field,
+        ) as mock_add_invalid_field:
+            self.validator.run()
+
+        self.assertEqual(str(context.exception), expected_msg)
+        mock_add_invalid_field.assert_called_once()

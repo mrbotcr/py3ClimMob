@@ -16,24 +16,28 @@ class FieldValidator(BaseValidator):
                 self.invalid_fields[validation] = []
 
     def run(self):
+        if self.view.valid_fields is None:
+            return
+
         body = json.loads(self.view.body)
 
         for key in body:
             if key not in [v.key for v in self.view.valid_fields]:
                 self.add_invalid_field(FieldValidation.UNALLOWED, key)
 
-        first_error_found = None
-        for valid_field in self.view.valid_fields:  # type: Field
+        if len(self.invalid_fields[FieldValidation.UNALLOWED]) == 0:
+            first_error_found = None
+            for valid_field in self.view.valid_fields:  # type: Field
 
-            result = valid_field.validate(body, first_error_found)
+                result = valid_field.validate(body, first_error_found)
 
-            if result == FieldValidation.SUCCESS:
-                continue
+                if result == FieldValidation.SUCCESS:
+                    continue
 
-            if first_error_found is None:
-                first_error_found = result
+                if first_error_found is None:
+                    first_error_found = result
 
-            self.add_invalid_field(result, valid_field.key)
+                self.add_invalid_field(result, valid_field.key)
 
         for validation in FieldValidation:
             if validation == FieldValidation.SUCCESS:
