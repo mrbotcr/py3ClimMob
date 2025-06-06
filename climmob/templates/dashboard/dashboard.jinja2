@@ -41,6 +41,10 @@
 
 {% include "snippets/maze_loader.jinja2" %}
 
+{% if request.registry.settings.get('session.show_expired_modal', "false") == 'true' %}
+    {% include 'snippets/expired_session.jinja2'  %}
+{% endif %}
+
 {% set withsidebar = [] %}
 
 <body class="{% block bodyclass %}{% endblock bodyclass %}" {% block bodyattributes %}{% endblock bodyattributes %}>
@@ -1113,6 +1117,7 @@
 {% block script %}
 
     <script>
+
         $(document).ready(function() {
 
             var selectedLanguage = readCookie('_LOCALE_');

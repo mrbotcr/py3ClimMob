@@ -163,6 +163,7 @@ from climmob.views.basic_views import (
     StoreCookieView,
     TermsView,
     PrivacyView,
+    RefreshSessionTokensView,
 )
 from climmob.views.cleanErrorLogs import CleanErrorLogsView
 from climmob.views.cloneProjects.cloneProjects import CloneProjectsView
@@ -383,6 +384,15 @@ def loadRoutes(config):
     )
     routes.append(
         {"name": "logout", "path": "/logout", "view": logout_view, "renderer": None}
+    )
+
+    routes.append(
+        {
+            "name": "refresh_tokens",
+            "path": "/refresh_tokens",
+            "view": RefreshSessionTokensView,
+            "renderer": None,
+        }
     )
 
     # User routes

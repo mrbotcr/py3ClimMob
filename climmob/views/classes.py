@@ -372,31 +372,6 @@ class privateView(BaseView):
             return HTTPFound(location=self.request.route_url("login"))
 
         lastActivity = getLastActivityLogByUser(self.user.login, self.request)
-        # if lastActivity["log_message"] != "Welcome to ClimMob":
-        #     if (
-        #         self.request.matched_route.name
-        #         not in ["otherLanguages", "getUserLanguagesPreview", "addUserLanguage"]
-        #         and not self.user.languages
-        #     ):
-        #         return HTTPFound(
-        #             location=self.request.route_url(
-        #                 "otherLanguages", _query={"help": "languages"}
-        #             )
-        #         )
-        #
-        #     if (
-        #         self.request.matched_route.name
-        #         not in [
-        #             "curationoftechnologies",
-        #             "otherLanguages",
-        #             "getUserLanguagesPreview",
-        #             "addUserLanguage",
-        #         ]
-        #         and not self.user.technologies
-        #     ):
-        #         return HTTPFound(
-        #             location=self.request.route_url("curationoftechnologies")
-        #         )
 
         self.classResult["counterChat"] = counterChat(self.user.login, self.request)
         activeProjectData = getActiveProject(self.user.login, self.request)
@@ -458,6 +433,9 @@ class privateView(BaseView):
                             )
                         )
                         raise HTTPNotFound()
+        elif self.request.method == "GET":
+            # Call just to update session
+            self.request.session.get_csrf_token()
 
         update_last_login(self.request, self.user.login)
 

@@ -1,4 +1,5 @@
 import datetime
+import json
 import logging
 import secrets
 import smtplib
@@ -7,6 +8,7 @@ from ast import literal_eval
 
 from jinja2 import ext
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
+from pyramid.response import Response
 from pyramid.security import remember
 from pyramid.session import check_csrf_token
 
@@ -37,6 +39,31 @@ log = logging.getLogger("climmob")
 
 def render_template(template_filename, context):
     return jinjaEnv.get_template(template_filename).render(context)
+
+
+class RefreshSessionTokensView(publicView):
+    def post(self):
+        policies = self.request.policies()
+        main_policy = None
+        for policy in policies:
+            if policy["name"] == "main":
+                main_policy = policy["policy"]
+
+        login_data = main_policy.authenticated_userid(self.request)
+
+        response_body = {"msg": "Tokens refreshed"}
+
+        if login_data is None:
+            response_body["msg"] = "Authentication token expired"
+            return Response(status="401", body=json.dumps(response_body))
+
+        safe = check_csrf_token(self.request, raises=False)
+
+        if not safe:
+            response_body["msg"] = "Session token expired"
+            return Response(status="401", body=json.dumps(response_body))
+
+        return Response(status="200", body=json.dumps(response_body))
 
 
 class HomeView(publicView):

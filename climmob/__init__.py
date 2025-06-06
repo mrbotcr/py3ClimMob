@@ -45,7 +45,9 @@ def main(global_config, **settings):
     main_policy = AuthTktAuthenticationPolicy(
         settings["auth.secret"],
         timeout=settings.get("auth.secret.cookie.timeout", 7200),
+        reissue_time=settings.get("auth.secret.cookie.reissue_time", 0),
         cookie_name=settings["auth.secret.cookie"],
+        max_age=settings.get("auth.secret.cookie.timeout", 7200),
     )
     auth_policy.add_policy("main", main_policy)
     policy_array.append({"name": "main", "policy": main_policy})
