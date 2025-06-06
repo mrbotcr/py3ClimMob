@@ -78,86 +78,81 @@ class ReadProjectAssessmentsView(apiView):
 
 
 class AddNewAssessmentView(apiView):
-    def processView(self):
-        if self.request.method == "POST":
-            obligatory = [
-                "project_cod",
-                "user_owner",
-                "ass_desc",
-                "ass_days",
-                "ass_final",
-            ]
-            dataworking = json.loads(self.body)
+    def post(self):
+        obligatory = [
+            "project_cod",
+            "user_owner",
+            "ass_desc",
+            "ass_days",
+            "ass_final",
+        ]
+        dataworking = json.loads(self.body)
 
-            if sorted(obligatory) == sorted(dataworking.keys()):
-                dataworking["user_name"] = self.user.login
+        if sorted(obligatory) != sorted(dataworking.keys()):
+            response = Response(status=401, body=self._("Error in the JSON."))
+            return response
 
-                dataInParams = True
-                for key in dataworking.keys():
-                    if dataworking[key] == "":
-                        dataInParams = False
+        dataworking["user_name"] = self.user.login
 
-                if dataInParams:
-                    exitsproject = projectExists(
-                        self.user.login,
-                        dataworking["user_owner"],
-                        dataworking["project_cod"],
-                        self.request,
-                    )
-                    if exitsproject:
+        dataInParams = True
+        for key in dataworking.keys():
+            if dataworking[key] == "":
+                dataInParams = False
 
-                        activeProjectId = getTheProjectIdForOwner(
-                            dataworking["user_owner"],
-                            dataworking["project_cod"],
-                            self.request,
-                        )
-                        accessType = getAccessTypeForProject(
-                            self.user.login, activeProjectId, self.request
-                        )
+        if not dataInParams:
+            response = Response(
+                status=401, body=self._("Not all parameters have data.")
+            )
+            return response
 
-                        if accessType in [4]:
-                            response = Response(
-                                status=401,
-                                body=self._(
-                                    "The access assigned for this project does not allow you to add assessments."
-                                ),
-                            )
-                            return response
+        exitsproject = projectExists(
+            self.user.login,
+            dataworking["user_owner"],
+            dataworking["project_cod"],
+            self.request,
+        )
 
-                        if dataworking["ass_days"].isdigit():
-                            dataworking["userOwner"] = dataworking["user_owner"]
-                            dataworking["project_id"] = activeProjectId
-                            added, msg = addProjectAssessment(
-                                dataworking, self.request, "API"
-                            )
-                            if not added:
-                                response = Response(status=401, body=msg)
-                                return response
-                            else:
-                                response = Response(status=200, body=json.dumps(msg))
-                                return response
-                        else:
-                            response = Response(
-                                status=401,
-                                body=self._("The parameter ass_days must be a number."),
-                            )
-                            return response
-                    else:
-                        response = Response(
-                            status=401,
-                            body=self._("There is no project with that code."),
-                        )
-                        return response
-                else:
-                    response = Response(
-                        status=401, body=self._("Not all parameters have data.")
-                    )
-                    return response
-            else:
-                response = Response(status=401, body=self._("Error in the JSON."))
-                return response
+        if not exitsproject:
+            response = Response(
+                status=401,
+                body=self._("There is no project with that code."),
+            )
+            return response
+
+        activeProjectId = getTheProjectIdForOwner(
+            dataworking["user_owner"],
+            dataworking["project_cod"],
+            self.request,
+        )
+
+        accessType = getAccessTypeForProject(
+            self.user.login, activeProjectId, self.request
+        )
+
+        if accessType in [4]:
+            response = Response(
+                status=401,
+                body=self._(
+                    "The access assigned for this project does not allow you to add assessments."
+                ),
+            )
+            return response
+
+        if not dataworking["ass_days"].isdigit():
+            response = Response(
+                status=401,
+                body=self._("The parameter ass_days must be a number."),
+            )
+            return response
+
+        dataworking["userOwner"] = dataworking["user_owner"]
+        dataworking["project_id"] = activeProjectId
+        added, msg = addProjectAssessment(dataworking, self.request, "API")
+        if not added:
+            response = Response(status=401, body=msg)
+            return response
         else:
-            response = Response(status=401, body=self._("Only accepts POST method."))
+            response = Response(status=200, body=json.dumps(msg))
             return response
 
 

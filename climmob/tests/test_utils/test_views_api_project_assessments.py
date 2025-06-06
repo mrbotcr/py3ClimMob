@@ -94,14 +94,14 @@ class TestAddNewAssessmentView(ViewBaseTest):
         "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
     )
     @patch("climmob.views.Api.projectAssessments.projectExists", return_value=True)
-    def test_process_view_success(
+    def test_post_success(
         self,
         mock_project_exists,
         mock_get_the_project_id_for_owner,
         mock_get_access_type_for_project,
         mock_add_project_assessment,
     ):
-        response = self.view.processView()
+        response = self.view.post()
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("Assessment added successfully", response.body.decode())
@@ -132,8 +132,8 @@ class TestAddNewAssessmentView(ViewBaseTest):
         )
 
     @patch("climmob.views.Api.projectAssessments.projectExists", return_value=False)
-    def test_process_view_project_not_exist(self, mock_project_exists):
-        response = self.view.processView()
+    def test_post_project_not_exist(self, mock_project_exists):
+        response = self.view.post()
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("There is no project with that code.", response.body.decode())
@@ -148,13 +148,13 @@ class TestAddNewAssessmentView(ViewBaseTest):
         "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
     )
     @patch("climmob.views.Api.projectAssessments.projectExists", return_value=True)
-    def test_process_view_no_access(
+    def test_post_no_access(
         self,
         mock_project_exists,
         mock_get_the_project_id_for_owner,
         mock_get_access_type_for_project,
     ):
-        response = self.view.processView()
+        response = self.view.post()
 
         self.assertEqual(response.status_code, 401)
         self.assertIn(
@@ -172,15 +172,14 @@ class TestAddNewAssessmentView(ViewBaseTest):
             "test_user", 1, self.view.request
         )
 
-    def test_process_view_invalid_json(self):
+    def test_post_invalid_json(self):
         self.view.body = '{"wrong_key": "value"}'
 
-        response = self.view.processView()
+        response = self.view.post()
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("Error in the JSON.", response.body.decode())
 
-    @patch("json.loads", side_effect=json.JSONDecodeError("Expecting value", "", 0))
     @patch("climmob.views.Api.projectAssessments.projectExists", return_value=True)
     @patch(
         "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
@@ -188,54 +187,7 @@ class TestAddNewAssessmentView(ViewBaseTest):
     @patch(
         "climmob.views.Api.projectAssessments.getAccessTypeForProject", return_value=1
     )
-    def test_process_view_invalid_body(
-        self,
-        mock_project_exists,
-        mock_get_the_project_id_for_owner,
-        mock_get_access_type_for_project,
-        mock_json_loads,
-    ):
-        self.view.body = ""
-
-        response = None
-        try:
-            response = self.view.processView()
-        except json.JSONDecodeError:
-            response = Response(
-                status=401,
-                body=self.view._(
-                    "Error in the JSON, It does not have the 'body' parameter."
-                ),
-            )
-
-        self.assertEqual(response.status_code, 401)
-        self.assertIn(
-            "Error in the JSON, It does not have the 'body' parameter.",
-            response.body.decode(),
-        )
-
-        mock_json_loads.assert_called_with(self.view.body)
-
-        mock_project_exists.assert_not_called()
-        mock_get_the_project_id_for_owner.assert_not_called()
-        mock_get_access_type_for_project.assert_not_called()
-
-    def test_process_view_post_method(self):
-        self.view.request.method = "GET"
-
-        response = self.view.processView()
-
-        self.assertEqual(response.status_code, 401)
-        self.assertIn("Only accepts POST method.", response.body.decode())
-
-    @patch("climmob.views.Api.projectAssessments.projectExists", return_value=True)
-    @patch(
-        "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.getAccessTypeForProject", return_value=1
-    )
-    def test_process_view_not_all_parameters(
+    def test_post_not_all_parameters(
         self,
         mock_project_exists,
         mock_get_the_project_id_for_owner,
@@ -251,7 +203,7 @@ class TestAddNewAssessmentView(ViewBaseTest):
             }
         )
 
-        response = self.view.processView()
+        response = self.view.post()
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("Not all parameters have data.", response.body.decode())
@@ -267,7 +219,7 @@ class TestAddNewAssessmentView(ViewBaseTest):
     @patch(
         "climmob.views.Api.projectAssessments.getAccessTypeForProject", return_value=1
     )
-    def test_process_view_ass_days_not_number(
+    def test_post_ass_days_not_number(
         self,
         mock_project_exists,
         mock_get_the_project_id_for_owner,
@@ -283,7 +235,7 @@ class TestAddNewAssessmentView(ViewBaseTest):
             }
         )
 
-        response = self.view.processView()
+        response = self.view.post()
 
         self.assertEqual(response.status_code, 401)
         self.assertIn(
@@ -305,14 +257,14 @@ class TestAddNewAssessmentView(ViewBaseTest):
         "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
     )
     @patch("climmob.views.Api.projectAssessments.projectExists", return_value=True)
-    def test_process_view_add_assessment_failed(
+    def test_post_add_assessment_failed(
         self,
         mock_project_exists,
         mock_get_the_project_id_for_owner,
         mock_get_access_type_for_project,
         mock_add_project_assessment,
     ):
-        response = self.view.processView()
+        response = self.view.post()
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("Error adding assessment", response.body.decode())
