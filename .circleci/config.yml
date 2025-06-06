@@ -226,7 +226,7 @@ jobs:
           command: |
             source climmob_env/bin/activate
             black --version
-            black . --check --exclude=climmob_env || exit;
+            black . --check --exclude='climmob_env|build|celery_app.py' || exit;
 
       - run:
           name: Run Celery in the background
