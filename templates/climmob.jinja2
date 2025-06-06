@@ -37,6 +37,20 @@ auth.opaque = {{ auth_opaque }}
 aes.key = {{ aes_key }}
 auth.realm = odkuser@climmob.net
 
+# Session config
+session.secret = b@HdX5Y6nL
+session.cookie = session
+
+session.timeout = 7200
+session.reissue_time = 0
+
+auth.secret.cookie.timeout = 7200
+auth.secret.cookie.reissue_time = 0
+
+session.show_expired_modal = true
+
+session.refresh.throttle_interval = 300
+
 #Authorization settings
 auth.register_users_via_web = true
 
