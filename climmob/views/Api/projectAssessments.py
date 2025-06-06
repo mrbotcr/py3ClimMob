@@ -157,111 +157,94 @@ class AddNewAssessmentView(apiView):
 
 
 class UpdateProjectAssessmentView(apiView):
-    def processView(self):
-        if self.request.method == "POST":
-            obligatory = [
-                "project_cod",
-                "user_owner",
-                "ass_cod",
-                "ass_desc",
-                "ass_days",
-            ]
-            dataworking = json.loads(self.body)
+    def post(self):
 
-            if sorted(obligatory) == sorted(dataworking.keys()):
-                dataworking["user_name"] = self.user.login
+        obligatory = [
+            "project_cod",
+            "user_owner",
+            "ass_cod",
+            "ass_desc",
+            "ass_days",
+        ]
+        dataworking = json.loads(self.body)
 
-                dataInParams = True
-                for key in dataworking.keys():
-                    if dataworking[key] == "":
-                        dataInParams = False
+        if sorted(obligatory) != sorted(dataworking.keys()):
+            response = Response(status=401, body=self._("Error in the JSON."))
+            return response
 
-                if dataInParams:
-                    exitsproject = projectExists(
-                        self.user.login,
-                        dataworking["user_owner"],
-                        dataworking["project_cod"],
-                        self.request,
-                    )
-                    if exitsproject:
+        dataworking["user_name"] = self.user.login
 
-                        activeProjectId = getTheProjectIdForOwner(
-                            dataworking["user_owner"],
-                            dataworking["project_cod"],
-                            self.request,
-                        )
-                        accessType = getAccessTypeForProject(
-                            self.user.login, activeProjectId, self.request
-                        )
+        dataInParams = True
+        for key in dataworking.keys():
+            if dataworking[key] == "":
+                dataInParams = False
 
-                        if accessType in [4]:
-                            response = Response(
-                                status=401,
-                                body=self._(
-                                    "The access assigned for this project does not allow you to update assessments."
-                                ),
-                            )
-                            return response
+        if not dataInParams:
+            response = Response(
+                status=401, body=self._("Not all parameters have data.")
+            )
+            return response
 
-                        if dataworking["ass_days"].isdigit():
-                            if assessmentExists(
-                                activeProjectId,
-                                dataworking["ass_cod"],
-                                self.request,
-                            ):
-                                dataworking["project_id"] = activeProjectId
-                                mdf, msg = modifyProjectAssessment(
-                                    dataworking, self.request
-                                )
-                                if not mdf:
-                                    response = Response(status=401, body=msg)
-                                    return response
-                                else:
-                                    response = Response(
-                                        status=200,
-                                        body=self._(
-                                            "Data collection updated successfully."
-                                        ),
-                                    )
-                                    return response
-                            else:
-                                response = Response(
-                                    status=401,
-                                    body=self._(
-                                        "There is no data collection with that code."
-                                    ),
-                                )
-                                return response
-                        else:
-                            response = Response(
-                                status=401,
-                                body=self._("The parameter ass_days must be a number."),
-                            )
-                            return response
-                        # else:
-                        #    response = Response(
-                        #        status=401,
-                        #        body=self._(
-                        #            "You cannot update data collection moments. You already started the data collection."
-                        #        ),
-                        #    )
-                        #    return response
-                    else:
-                        response = Response(
-                            status=401,
-                            body=self._("There is no project with that code."),
-                        )
-                        return response
-                else:
-                    response = Response(
-                        status=401, body=self._("Not all parameters have data.")
-                    )
-                    return response
-            else:
-                response = Response(status=401, body=self._("Error in the JSON."))
-                return response
+        exitsproject = projectExists(
+            self.user.login,
+            dataworking["user_owner"],
+            dataworking["project_cod"],
+            self.request,
+        )
+
+        if not exitsproject:
+            response = Response(
+                status=401,
+                body=self._("There is no project with that code."),
+            )
+            return response
+
+        activeProjectId = getTheProjectIdForOwner(
+            dataworking["user_owner"],
+            dataworking["project_cod"],
+            self.request,
+        )
+        accessType = getAccessTypeForProject(
+            self.user.login, activeProjectId, self.request
+        )
+
+        if accessType in [4]:
+            response = Response(
+                status=401,
+                body=self._(
+                    "The access assigned for this project does not allow you to update assessments."
+                ),
+            )
+            return response
+
+        if not dataworking["ass_days"].isdigit():
+            response = Response(
+                status=401,
+                body=self._("The parameter ass_days must be a number."),
+            )
+            return response
+
+        if not assessmentExists(
+            activeProjectId,
+            dataworking["ass_cod"],
+            self.request,
+        ):
+            response = Response(
+                status=401,
+                body=self._("There is no data collection with that code."),
+            )
+            return response
+
+        dataworking["project_id"] = activeProjectId
+        mdf, msg = modifyProjectAssessment(dataworking, self.request)
+        if not mdf:
+            response = Response(status=401, body=msg)
+            return response
         else:
-            response = Response(status=401, body=self._("Only accepts POST method."))
+            response = Response(
+                status=200,
+                body=self._("Data collection updated successfully."),
+            )
             return response
 
 
