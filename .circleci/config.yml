@@ -226,7 +226,7 @@ jobs:
           command: |
             source climmob_env/bin/activate
             black --version
-            black climmob --check || exit;
+            black . --check || exit;
 
       - run:
           name: Run Celery in the background
