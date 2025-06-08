@@ -346,132 +346,115 @@ class DeleteProjectAssessmentView(apiView):
 
 # _________________________________________ASSESSMENTS GROUPS___________________________________________________#
 class ReadProjectAssessmentStructureView(apiView):
-    def processView(self):
-        if self.request.method == "GET":
-            obligatory = ["project_cod", "user_owner", "ass_cod"]
-            try:
-                dataworking = json.loads(self.body)
-            except:
-                response = Response(
-                    status=401,
-                    body=self._(
-                        "Error in the JSON, It does not have the 'body' parameter."
-                    ),
-                )
-                return response
+    def get(self):
+        obligatory = ["project_cod", "user_owner", "ass_cod"]
 
-            if sorted(obligatory) == sorted(dataworking.keys()):
-                dataworking["user_name"] = self.user.login
+        dataworking = json.loads(self.body)
 
-                dataInParams = True
-                for key in dataworking.keys():
-                    if dataworking[key] == "":
-                        dataInParams = False
-
-                if dataInParams:
-                    exitsproject = projectExists(
-                        self.user.login,
-                        dataworking["user_owner"],
-                        dataworking["project_cod"],
-                        self.request,
-                    )
-                    if exitsproject:
-
-                        activeProjectId = getTheProjectIdForOwner(
-                            dataworking["user_owner"],
-                            dataworking["project_cod"],
-                            self.request,
-                        )
-
-                        activeProjectId = getTheProjectIdForOwner(
-                            dataworking["user_owner"],
-                            dataworking["project_cod"],
-                            self.request,
-                        )
-
-                        if assessmentExists(
-                            activeProjectId,
-                            dataworking["ass_cod"],
-                            self.request,
-                        ):
-                            projectDetails = getProjectData(
-                                activeProjectId, self.request
-                            )
-                            projectLabels = [
-                                projectDetails["project_label_a"],
-                                projectDetails["project_label_b"],
-                                projectDetails["project_label_c"],
-                            ]
-                            data = getAssessmentQuestions(
-                                dataworking["user_owner"],
-                                activeProjectId,
-                                dataworking["ass_cod"],
-                                self.request,
-                                projectLabels,
-                                onlyShowTheBasicQuestions=True,
-                            )
-                            # The following is to help jinja2 to render the groups and questions
-                            # This because the scope constraint makes it difficult to control
-                            finalCloseQst = ""
-                            if data:
-                                sectionID = -99
-                                grpIndex = -1
-                                for a in range(0, len(data)):
-                                    if data[a]["section_id"] != sectionID:
-                                        grpIndex = a
-                                        data[a]["createGRP"] = True
-                                        data[a]["grpCannotDelete"] = False
-                                        sectionID = data[a]["section_id"]
-                                        if a == 0:
-                                            data[a]["closeQst"] = False
-                                            data[a]["closeGrp"] = False
-                                        else:
-                                            if data[a - 1]["hasQuestions"]:
-                                                data[a]["closeQst"] = True
-                                                data[a]["closeGrp"] = True
-                                            else:
-                                                data[a]["closeGrp"] = False
-                                                data[a]["closeQst"] = False
-                                    else:
-                                        data[a]["createGRP"] = False
-                                        data[a]["closeQst"] = False
-                                        data[a]["closeGrp"] = False
-
-                                    if data[a]["question_id"] != None:
-                                        data[a]["hasQuestions"] = True
-                                        if data[a]["question_reqinasses"] == 1:
-                                            data[grpIndex]["grpCannotDelete"] = True
-                                    else:
-                                        data[a]["hasQuestions"] = False
-                                finalCloseQst = data[len(data) - 1]["hasQuestions"]
-
-                                response = Response(status=200, body=json.dumps(data))
-                                return response
-                        else:
-                            response = Response(
-                                status=401,
-                                body=self._(
-                                    "There is no data collection with that code."
-                                ),
-                            )
-                            return response
-                    else:
-                        response = Response(
-                            status=401,
-                            body=self._("There is no project with that code."),
-                        )
-                        return response
-                else:
-                    response = Response(
-                        status=401, body=self._("Not all parameters have data.")
-                    )
-                    return response
-            else:
-                response = Response(status=401, body=self._("Error in the JSON."))
-                return response
-        else:
-            response = Response(status=401, body=self._("Only accepts GET method."))
+        if sorted(obligatory) != sorted(dataworking.keys()):
+            response = Response(status=401, body=self._("Error in the JSON."))
             return response
+
+        dataworking["user_name"] = self.user.login
+
+        dataInParams = True
+        for key in dataworking.keys():
+            if dataworking[key] == "":
+                dataInParams = False
+
+        if not dataInParams:
+            response = Response(
+                status=401, body=self._("Not all parameters have data.")
+            )
+            return response
+
+        exitsproject = projectExists(
+            self.user.login,
+            dataworking["user_owner"],
+            dataworking["project_cod"],
+            self.request,
+        )
+
+        if not exitsproject:
+            response = Response(
+                status=401,
+                body=self._("There is no project with that code."),
+            )
+            return response
+
+        activeProjectId = getTheProjectIdForOwner(
+            dataworking["user_owner"],
+            dataworking["project_cod"],
+            self.request,
+        )
+
+        if not assessmentExists(
+            activeProjectId,
+            dataworking["ass_cod"],
+            self.request,
+        ):
+            response = Response(
+                status=401,
+                body=self._("There is no data collection with that code."),
+            )
+            return response
+
+        projectDetails = getProjectData(activeProjectId, self.request)
+        projectLabels = [
+            projectDetails["project_label_a"],
+            projectDetails["project_label_b"],
+            projectDetails["project_label_c"],
+        ]
+        data = getAssessmentQuestions(
+            dataworking["user_owner"],
+            activeProjectId,
+            dataworking["ass_cod"],
+            self.request,
+            projectLabels,
+            onlyShowTheBasicQuestions=True,
+        )
+
+        if data:
+            self.set_group_flags(data)
+
+            response = Response(status=200, body=json.dumps(data))
+            return response
+
+    def set_group_flags(self, questions):
+        # The following is to help jinja2 to render the groups and questions
+        # This because the scope constraint makes it difficult to control
+
+        finalCloseQst = ""
+        sectionID = -99
+        grpIndex = -1
+        for i in range(len(questions)):
+            if questions[i]["section_id"] != sectionID:
+                grpIndex = i
+                questions[i]["createGRP"] = True
+                questions[i]["grpCannotDelete"] = False
+                sectionID = questions[i]["section_id"]
+                if i == 0:
+                    questions[i]["closeQst"] = False
+                    questions[i]["closeGrp"] = False
+                else:
+                    if questions[i - 1]["hasQuestions"]:
+                        questions[i]["closeQst"] = True
+                        questions[i]["closeGrp"] = True
+                    else:
+                        questions[i]["closeGrp"] = False
+                        questions[i]["closeQst"] = False
+            else:
+                questions[i]["createGRP"] = False
+                questions[i]["closeQst"] = False
+                questions[i]["closeGrp"] = False
+
+            if questions[i]["question_id"] != None:
+                questions[i]["hasQuestions"] = True
+                if questions[i]["question_reqinasses"] == 1:
+                    questions[grpIndex]["grpCannotDelete"] = True
+            else:
+                questions[i]["hasQuestions"] = False
+        finalCloseQst = questions[len(questions) - 1]["hasQuestions"]
 
 
 class CreateAssessmentGroupView(apiView):
