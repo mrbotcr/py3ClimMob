@@ -792,6 +792,21 @@ class TestCreateAssessmentGroupView(ViewBaseTest):
         }
     )
 
+    def test_has_validators(self):
+        self.assertEqual(self.view.validators, (ProjectExistsValidator,))
+
+    def test_has_valid_fields(self):
+        self.assertEqual(
+            self.view.valid_fields,
+            (
+                TextField("project_cod"),
+                TextField("user_owner"),
+                TextField("ass_cod"),
+                TextField("section_name"),
+                TextField("section_content"),
+            ),
+        )
+
     @patch(
         "climmob.views.Api.projectAssessments.addAssessmentGroup",
         return_value=(True, "Group added successfully"),
@@ -810,10 +825,8 @@ class TestCreateAssessmentGroupView(ViewBaseTest):
     @patch(
         "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
     )
-    @patch("climmob.views.Api.projectAssessments.projectExists", return_value=True)
     def test_post_success(
         self,
-        mock_project_exists,
         mock_get_the_project_id_for_owner,
         mock_get_access_type_for_project,
         mock_assessment_exists,
@@ -827,9 +840,6 @@ class TestCreateAssessmentGroupView(ViewBaseTest):
         self.assertIn("Group added successfully", response.body.decode())
 
         # Verify that all the patched methods were called
-        mock_project_exists.assert_called_with(
-            "test_user", "owner", "123", self.view.request
-        )
         mock_get_the_project_id_for_owner.assert_called_with(
             "owner", "123", self.view.request
         )
@@ -861,10 +871,8 @@ class TestCreateAssessmentGroupView(ViewBaseTest):
     @patch(
         "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
     )
-    @patch("climmob.views.Api.projectAssessments.projectExists", return_value=True)
     def test_post_error_at_add(
         self,
-        mock_project_exists,
         mock_get_the_project_id_for_owner,
         mock_get_access_type_for_project,
         mock_assessment_exists,
@@ -878,9 +886,6 @@ class TestCreateAssessmentGroupView(ViewBaseTest):
         self.assertIn("Error", response.body.decode())
 
         # Verify that all the patched methods were called
-        mock_project_exists.assert_called_with(
-            "test_user", "owner", "123", self.view.request
-        )
         mock_get_the_project_id_for_owner.assert_called_with(
             "owner", "123", self.view.request
         )
@@ -905,10 +910,8 @@ class TestCreateAssessmentGroupView(ViewBaseTest):
     @patch(
         "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
     )
-    @patch("climmob.views.Api.projectAssessments.projectExists", return_value=True)
     def test_post_started_data_collection(
         self,
-        mock_project_exists,
         mock_get_the_project_id_for_owner,
         mock_get_access_type_for_project,
         mock_assessment_exists,
@@ -923,9 +926,6 @@ class TestCreateAssessmentGroupView(ViewBaseTest):
         )
 
         # Verify that all the patched methods were called
-        mock_project_exists.assert_called_with(
-            "test_user", "owner", "123", self.view.request
-        )
         mock_get_the_project_id_for_owner.assert_called_with(
             "owner", "123", self.view.request
         )
@@ -935,26 +935,14 @@ class TestCreateAssessmentGroupView(ViewBaseTest):
         mock_assessment_exists.assert_called_with(1, "456", self.view.request)
         mock_project_asessment_status.assert_called_with(1, "456", self.view.request)
 
-    @patch("climmob.views.Api.projectAssessments.projectExists", return_value=False)
-    def test_post_project_not_exist(self, mock_project_exists):
-        response = self.view.post()
-
-        self.assertEqual(response.status_code, 401)
-        self.assertIn("There is no project with that code.", response.body.decode())
-        mock_project_exists.assert_called_with(
-            "test_user", "owner", "123", self.view.request
-        )
-
     @patch(
         "climmob.views.Api.projectAssessments.getAccessTypeForProject", return_value=4
     )
     @patch(
         "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
     )
-    @patch("climmob.views.Api.projectAssessments.projectExists", return_value=True)
     def test_post_no_access(
         self,
-        mock_project_exists,
         mock_get_the_project_id_for_owner,
         mock_get_access_type_for_project,
     ):
@@ -966,9 +954,6 @@ class TestCreateAssessmentGroupView(ViewBaseTest):
             response.body.decode(),
         )
 
-        mock_project_exists.assert_called_with(
-            "test_user", "owner", "123", self.view.request
-        )
         mock_get_the_project_id_for_owner.assert_called_with(
             "owner", "123", self.view.request
         )
@@ -976,22 +961,12 @@ class TestCreateAssessmentGroupView(ViewBaseTest):
             "test_user", 1, self.view.request
         )
 
-    def test_post_invalid_json(self):
-        self.view.body = '{"wrong_key": "value"}'
-
-        response = self.view.post()
-
-        self.assertEqual(response.status_code, 401)
-        self.assertIn("Error in the JSON.", response.body.decode())
-
-    @patch("climmob.views.Api.projectAssessments.projectExists", return_value=True)
     @patch(
         "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
     )
     @patch("climmob.views.Api.projectAssessments.assessmentExists", return_value=False)
     def test_post_assessment_not_exist(
         self,
-        mock_project_exists,
         mock_get_the_project_id_for_owner,
         mock_assessment_exists,
     ):
@@ -1002,7 +977,6 @@ class TestCreateAssessmentGroupView(ViewBaseTest):
             "There is no data collection with that code.", response.body.decode()
         )
 
-        self.assertTrue(mock_project_exists.called)
         self.assertTrue(mock_get_the_project_id_for_owner.called)
         self.assertTrue(mock_assessment_exists.called)
 
@@ -1024,10 +998,8 @@ class TestCreateAssessmentGroupView(ViewBaseTest):
     @patch(
         "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
     )
-    @patch("climmob.views.Api.projectAssessments.projectExists", return_value=True)
     def test_post_group_name_repeated(
         self,
-        mock_project_exists,
         mock_get_the_project_id_for_owner,
         mock_get_access_type_for_project,
         mock_assessment_exists,
@@ -1048,38 +1020,6 @@ class TestCreateAssessmentGroupView(ViewBaseTest):
         self.assertTrue(mock_project_asessment_status.called)
         self.assertTrue(mock_have_the_basic_structure_assessment.called)
         self.assertTrue(mock_add_assessment_group.called)
-
-    @patch("climmob.views.Api.projectAssessments.projectExists", return_value=True)
-    @patch(
-        "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.getAccessTypeForProject", return_value=1
-    )
-    def test_post_not_all_parameters(
-        self,
-        mock_project_exists,
-        mock_get_the_project_id_for_owner,
-        mock_get_access_type_for_project,
-    ):
-        self.view.body = json.dumps(
-            {
-                "project_cod": "123",
-                "user_owner": "owner",
-                "ass_cod": "",
-                "section_name": "Group 1",
-                "section_content": "Content of Group 1",
-            }
-        )
-
-        response = self.view.post()
-
-        self.assertEqual(response.status_code, 401)
-        self.assertIn("Not all parameters have data.", response.body.decode())
-
-        mock_project_exists.assert_not_called()
-        mock_get_the_project_id_for_owner.assert_not_called()
-        mock_get_access_type_for_project.assert_not_called()
 
 
 class TestUpdateAssessmentGroupView(ViewBaseTest):
