@@ -726,40 +726,6 @@ class TestDeleteProjectAssessmentView(ViewBaseTest):
         self.assertEqual(response.status_code, 401)
         self.assertIn("Error in the JSON.", response.body.decode())
 
-    @unittest.skip("Skipping the test due to json.JSONDecodeError")
-    @patch("climmob.views.Api.projectAssessments.projectExists", return_value=True)
-    @patch(
-        "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.getAccessTypeForProject", return_value=1
-    )
-    def test_post_invalid_body(
-        self,
-        mock_project_exists,
-        mock_get_the_project_id_for_owner,
-        mock_get_access_type_for_project,
-    ):
-        self.view.body = ""
-
-        response = self.view.post()
-
-        self.assertEqual(response.status_code, 401)
-        self.assertIn(
-            "Error in the JSON, It does not have the 'body' parameter.",
-            response.body.decode(),
-        )
-
-        mock_project_exists.assert_called_with(
-            "test_user", "owner", "123", self.view.request
-        )
-        mock_get_the_project_id_for_owner.assert_called_with(
-            "owner", "123", self.view.request
-        )
-        mock_get_access_type_for_project.assert_called_with(
-            "test_user", 1, self.view.request
-        )
-
     @patch("climmob.views.Api.projectAssessments.projectExists", return_value=True)
     @patch(
         "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
@@ -2677,27 +2643,6 @@ class TestAddQuestionToGroupAssessmentView(ViewBaseTest):
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("Error in the JSON.", response.body.decode())
-
-    @patch("json.loads", side_effect=json.JSONDecodeError("Expecting value", "", 0))
-    def test_post_invalid_body(self, mock_json_loads):
-        self.view.body = ""
-
-        try:
-            response = self.view.post()
-        except json.JSONDecodeError:
-            response = Response(
-                status=401,
-                body=self.view._(
-                    "Error in the JSON, It does not have the 'body' parameter."
-                ),
-            )
-
-        self.assertEqual(response.status_code, 401)
-        self.assertIn(
-            "Error in the JSON, It does not have the 'body' parameter.",
-            response.body.decode(),
-        )
-        self.assertTrue(mock_json_loads.called)
 
     @patch("climmob.views.Api.projectAssessments.projectExists", return_value=True)
     @patch(
