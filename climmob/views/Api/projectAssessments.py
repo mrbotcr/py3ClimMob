@@ -33,7 +33,7 @@ from climmob.processes import (
     getProjectData,
 )
 from climmob.views.classes import apiView
-from climmob.views.validators import TextField
+from climmob.views.validators import TextField, IntegerField, BinaryField
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 
 
@@ -66,46 +66,19 @@ class ReadProjectAssessmentsView(apiView):
 
 
 class AddNewAssessmentView(apiView):
+    validators = (ProjectExistsValidator,)
+    valid_fields = (
+        TextField("project_cod"),
+        TextField("user_owner"),
+        TextField("ass_desc"),
+        IntegerField("ass_days"),
+        BinaryField("ass_final"),
+    )
+
     def post(self):
-        obligatory = [
-            "project_cod",
-            "user_owner",
-            "ass_desc",
-            "ass_days",
-            "ass_final",
-        ]
         dataworking = json.loads(self.body)
 
-        if sorted(obligatory) != sorted(dataworking.keys()):
-            response = Response(status=401, body=self._("Error in the JSON."))
-            return response
-
         dataworking["user_name"] = self.user.login
-
-        dataInParams = True
-        for key in dataworking.keys():
-            if dataworking[key] == "":
-                dataInParams = False
-
-        if not dataInParams:
-            response = Response(
-                status=401, body=self._("Not all parameters have data.")
-            )
-            return response
-
-        exitsproject = projectExists(
-            self.user.login,
-            dataworking["user_owner"],
-            dataworking["project_cod"],
-            self.request,
-        )
-
-        if not exitsproject:
-            response = Response(
-                status=401,
-                body=self._("There is no project with that code."),
-            )
-            return response
 
         activeProjectId = getTheProjectIdForOwner(
             dataworking["user_owner"],
@@ -123,13 +96,6 @@ class AddNewAssessmentView(apiView):
                 body=self._(
                     "The access assigned for this project does not allow you to add assessments."
                 ),
-            )
-            return response
-
-        if not dataworking["ass_days"].isdigit():
-            response = Response(
-                status=401,
-                body=self._("The parameter ass_days must be a number."),
             )
             return response
 
