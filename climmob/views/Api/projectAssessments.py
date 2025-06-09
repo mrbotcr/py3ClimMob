@@ -242,41 +242,17 @@ class DeleteProjectAssessmentView(apiView):
 
 # _________________________________________ASSESSMENTS GROUPS___________________________________________________#
 class ReadProjectAssessmentStructureView(apiView):
-    def get(self):
-        obligatory = ["project_cod", "user_owner", "ass_cod"]
+    validators = (ProjectExistsValidator,)
+    valid_fields = (
+        TextField("project_cod"),
+        TextField("user_owner"),
+        TextField("ass_cod"),
+    )
 
+    def get(self):
         dataworking = json.loads(self.body)
 
-        if sorted(obligatory) != sorted(dataworking.keys()):
-            response = Response(status=401, body=self._("Error in the JSON."))
-            return response
-
         dataworking["user_name"] = self.user.login
-
-        dataInParams = True
-        for key in dataworking.keys():
-            if dataworking[key] == "":
-                dataInParams = False
-
-        if not dataInParams:
-            response = Response(
-                status=401, body=self._("Not all parameters have data.")
-            )
-            return response
-
-        exitsproject = projectExists(
-            self.user.login,
-            dataworking["user_owner"],
-            dataworking["project_cod"],
-            self.request,
-        )
-
-        if not exitsproject:
-            response = Response(
-                status=401,
-                body=self._("There is no project with that code."),
-            )
-            return response
 
         activeProjectId = getTheProjectIdForOwner(
             dataworking["user_owner"],
