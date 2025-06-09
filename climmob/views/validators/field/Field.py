@@ -6,8 +6,8 @@ from .FieldValidation import FieldValidation
 @dataclass
 class Field:
     key: str = None
-    required: bool = False
-    not_blank: bool = False
+    required: bool = True
+    not_blank: bool = True
     _stages = []
 
     def __post_init__(self):

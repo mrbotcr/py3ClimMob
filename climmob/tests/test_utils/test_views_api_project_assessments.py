@@ -19,11 +19,25 @@ from climmob.views.Api.projectAssessments import (
     DeleteQuestionFromGroupAssessmentView,
     OrderAssessmentQuestionsView,
 )
+from climmob.views.validators import TextField
+from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 
 
 class TestReadProjectAssessmentsView(ViewBaseTest):
     view_class = ReadProjectAssessmentsView
     request_body = json.dumps({"project_cod": "123", "user_owner": "owner"})
+
+    def test_has_validators(self):
+        self.assertEqual(self.view.validators, (ProjectExistsValidator,))
+
+    def test_has_valid_fields(self):
+        self.assertEqual(
+            self.view.valid_fields,
+            (
+                TextField("project_cod"),
+                TextField("user_owner"),
+            ),
+        )
 
     @patch(
         "climmob.views.Api.projectAssessments.getProjectAssessments",
@@ -32,10 +46,8 @@ class TestReadProjectAssessmentsView(ViewBaseTest):
     @patch(
         "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
     )
-    @patch("climmob.views.Api.projectAssessments.projectExists", return_value=True)
     def test_get_success(
         self,
-        mock_project_exists,
         mock_get_the_project_id_for_owner,
         mock_get_project_assessments,
     ):
@@ -47,27 +59,6 @@ class TestReadProjectAssessmentsView(ViewBaseTest):
 
         mock_get_project_assessments.assert_called_with(1, self.view.request)
         mock_get_the_project_id_for_owner("test_user", "test_code", self.view.request)
-        mock_project_exists.assert_called_with(
-            "test_user", "owner", "123", self.view.request
-        )
-
-    @patch("climmob.views.Api.projectAssessments.projectExists", return_value=False)
-    def test_get_project_not_exist(self, mock_project_exists):
-        response = self.view.get()
-
-        self.assertEqual(response.status_code, 401)
-        self.assertIn("There is no a project with that code.", response.body.decode())
-        mock_project_exists.assert_called_with(
-            "test_user", "owner", "123", self.view.request
-        )
-
-    def test_get_invalid_json(self):
-        self.view.body = '{"wrong_key": "value"}'
-
-        response = self.view.get()
-
-        self.assertEqual(response.status_code, 401)
-        self.assertIn("Error in the JSON.", response.body.decode())
 
 
 class TestAddNewAssessmentView(ViewBaseTest):

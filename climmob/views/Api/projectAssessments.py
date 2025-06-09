@@ -33,31 +33,19 @@ from climmob.processes import (
     getProjectData,
 )
 from climmob.views.classes import apiView
+from climmob.views.validators import TextField
+from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 
 
 class ReadProjectAssessmentsView(apiView):
+    validators = (ProjectExistsValidator,)
+    valid_fields = (
+        TextField("project_cod"),
+        TextField("user_owner"),
+    )
+
     def get(self):
-
-        obligatory = ["project_cod", "user_owner"]
-
         dataworking = json.loads(self.body)
-
-        if sorted(obligatory) != sorted(dataworking.keys()):
-            response = Response(status=401, body=self._("Error in the JSON."))
-            return response
-
-        exitsproject = projectExists(
-            self.user.login,
-            dataworking["user_owner"],
-            dataworking["project_cod"],
-            self.request,
-        )
-
-        if not exitsproject:
-            response = Response(
-                status=401, body=self._("There is no a project with that code.")
-            )
-            return response
 
         activeProjectId = getTheProjectIdForOwner(
             dataworking["user_owner"],
