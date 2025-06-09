@@ -6,7 +6,12 @@ from datetime import timedelta
 from hashlib import md5
 from unittest.mock import MagicMock, patch, mock_open
 
-from pyramid.httpexceptions import HTTPFound, HTTPMethodNotAllowed, HTTPNotFound
+from pyramid.httpexceptions import (
+    HTTPFound,
+    HTTPMethodNotAllowed,
+    HTTPNotFound,
+    HTTPBadRequest,
+)
 from pyramid.testing import DummyRequest
 from webob.multidict import MultiDict
 
@@ -18,6 +23,7 @@ from climmob.views.classes import (
     apiView,
     BaseView,
 )
+from climmob.views.validators import Field
 
 
 class TestResourceCallback(unittest.TestCase):
@@ -98,6 +104,9 @@ class TestBaseView(unittest.TestCase):
     def setUp(self):
         self.request = MagicMock()
         self.view = BaseView(self.request)
+
+    def test_has_empty_validators(self):
+        self.assertEqual(self.view.validators, ())
 
     def test_init(self):
         self.assertEqual(self.view.request, self.request)
@@ -189,6 +198,22 @@ class TestBaseView(unittest.TestCase):
 
         mock_validator_b_class.assert_called_once_with(self.view)
         mock_validator_b_instance.run.assert_called_once()
+
+    def test_subclass_init_validators_is_none(self):
+        with self.assertRaises(TypeError) as context:
+
+            class subclass(BaseView):
+                validators = None
+
+        self.assertEqual(str(context.exception), "subclass.validators must be a tuple")
+
+    def test_subclass_init_validators_is_an_empty_list(self):
+        with self.assertRaises(TypeError) as context:
+
+            class subclass(BaseView):
+                validators = []
+
+        self.assertEqual(str(context.exception), "subclass.validators must be a tuple")
 
     def test_subclass_init_validators_not_a_tuple(self):
         with self.assertRaises(TypeError) as context:
@@ -1038,6 +1063,58 @@ class TestApiView(unittest.TestCase):
         self.request.translate = lambda x: x
         self.view = apiView(self.request)
 
+    def test_has_valid_fields_none(self):
+        self.assertEqual(self.view.valid_fields, None)
+
+    def test_init_subclass_valid_fields_is_none(self):
+        class subclass(apiView):
+            valid_fields = None
+
+    def test_init_subclass_valid_fields_is_an_empty_tuple(self):
+        class subclass(apiView):
+            valid_fields = ()
+
+    def test_init_subclass_valid_fields_is_an_empty_list(self):
+        with self.assertRaises(TypeError) as context:
+
+            class subclass(apiView):
+                valid_fields = []
+
+        self.assertEqual(
+            str(context.exception), "subclass.valid_fields must be a tuple"
+        )
+
+    def test_init_subclass_valid_fields_not_a_tuple(self):
+        with self.assertRaises(TypeError) as context:
+
+            class subclass(apiView):
+                valid_fields = MagicMock()
+
+        self.assertEqual(
+            str(context.exception), "subclass.valid_fields must be a tuple"
+        )
+
+    def test_init_subclass_valid_fields_bad_tuple_format(self):
+        with self.assertRaises(TypeError) as context:
+
+            class subclass(apiView):
+                valid_fields = MagicMock()
+
+        self.assertEqual(
+            str(context.exception), "subclass.valid_fields must be a tuple"
+        )
+
+    def test_init_subclass_valid_fields_invalid_item(self):
+        with self.assertRaises(TypeError) as context:
+
+            class subclass(apiView):
+                valid_fields = (MagicMock(),)
+
+        self.assertEqual(
+            str(context.exception),
+            f"subclass.valid_fields must contain only {Field}",
+        )
+
     @patch("climmob.views.classes.getUserByApiKey", return_value=None)
     def test_call_invalid_apikey(self, mock_getUserByApiKey):
         self.request.params = {"Apikey": "invalid"}
@@ -1089,7 +1166,7 @@ class TestApiView(unittest.TestCase):
         "climmob.views.classes.getUserByApiKey",
         return_value=MagicMock(login="test_user"),
     )
-    def test_call(
+    def test_call_success(
         self,
         mock_getUserByApiKey,
         mock_update_last_login,
@@ -1102,6 +1179,75 @@ class TestApiView(unittest.TestCase):
         response = self.view()
         mock_validate.assert_called_once()
         self.assertEqual(response, mock_process_view.return_value)
+
+    @patch("climmob.views.classes.apiView._validate", side_effect=HTTPBadRequest)
+    @patch("climmob.views.classes.apiView.processView")
+    @patch("climmob.views.classes.update_last_login")
+    @patch(
+        "climmob.views.classes.getUserByApiKey",
+        return_value=MagicMock(login="test_user"),
+    )
+    def test_call_bad_request(
+        self,
+        mock_getUserByApiKey,
+        mock_update_last_login,
+        mock_process_view,
+        mock_validate,
+    ):
+        self.request.params = {"Apikey": "valid", "key1": "value1", "key2": "value2"}
+
+        mock_process_view.return_value = MagicMock()
+        response = self.view()
+        mock_validate.assert_called_once()
+        self.assertEqual(response.status_code, 400)
+
+    @patch("climmob.views.classes.apiView._validate", side_effect=HTTPNotFound)
+    @patch("climmob.views.classes.apiView.processView")
+    @patch("climmob.views.classes.update_last_login")
+    @patch(
+        "climmob.views.classes.getUserByApiKey",
+        return_value=MagicMock(login="test_user"),
+    )
+    def test_call_not_found(
+        self,
+        mock_getUserByApiKey,
+        mock_update_last_login,
+        mock_process_view,
+        mock_validate,
+    ):
+        self.request.params = {"Apikey": "valid", "key1": "value1", "key2": "value2"}
+
+        mock_process_view.return_value = MagicMock()
+        response = self.view()
+        mock_validate.assert_called_once()
+        self.assertEqual(response.status_code, 404)
+
+    @patch("climmob.views.classes.apiView._validate", side_effect=HTTPMethodNotAllowed)
+    @patch("climmob.views.classes.apiView.processView")
+    @patch("climmob.views.classes.update_last_login")
+    @patch(
+        "climmob.views.classes.getUserByApiKey",
+        return_value=MagicMock(login="test_user"),
+    )
+    def test_call_method_not_allowed(
+        self,
+        mock_getUserByApiKey,
+        mock_update_last_login,
+        mock_process_view,
+        mock_validate,
+    ):
+        self.request.params = {"Apikey": "valid", "key1": "value1", "key2": "value2"}
+
+        mock_process_view.return_value = MagicMock()
+        response = self.view()
+        mock_validate.assert_called_once()
+        self.assertEqual(response.status_code, 405)
+
+    @patch("climmob.views.classes.BaseView._validate")
+    def test_validate(self, mock_validate):
+        self.view._validate()
+
+        mock_validate.assert_called_once()
 
 
 if __name__ == "__main__":

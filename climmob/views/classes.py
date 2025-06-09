@@ -1,19 +1,22 @@
-import os
+import datetime
 import io
 import json
-import uuid
 import logging
-import datetime
-from hashlib import md5
-import climmob.plugins as p
+import os
+import uuid
 from ast import literal_eval
-from pyramid.response import Response
-from pyramid.session import check_csrf_token
+from hashlib import md5
+
+from formencode.variabledecode import variable_decode
 from pyramid.httpexceptions import HTTPFound, HTTPMethodNotAllowed, HTTPBadRequest
 from pyramid.httpexceptions import HTTPNotFound
-from formencode.variabledecode import variable_decode
+from pyramid.response import Response
+from pyramid.session import check_csrf_token
+
+import climmob.plugins as p
 from climmob.config.auth import getUserData, getUserByApiKey
 from climmob.views.context.PrivateContext import PrivateContext
+from climmob.views.validators import Field, FieldValidator
 from climmob.views.validators.BaseValidator import BaseValidator
 
 log = logging.getLogger(__name__)
@@ -139,10 +142,7 @@ class BaseView:
 
         validators = getattr(cls, "validators", None)
 
-        if not validators:
-            return
-
-        if not isinstance(validators, tuple):
+        if validators is None or not isinstance(validators, tuple):
             raise TypeError(f"{cls.__name__}.validators must be a tuple")
 
         for item in validators:
@@ -501,12 +501,34 @@ class privateView(BaseView):
 
 
 class apiView(BaseView):
+
+    valid_fields: tuple[Field, ...] = None
+
+    validators = (FieldValidator,)
+
     def __init__(self, request):
         super().__init__(request)
         self.request = request
         self.user = None
         self.body = None
         self._ = self.request.translate
+
+    def __init_subclass__(cls):
+        super().__init_subclass__()
+
+        valid_fields = getattr(cls, "valid_fields", None)
+
+        if valid_fields is None:
+            return
+
+        if not isinstance(valid_fields, tuple):
+            raise TypeError(f"{cls.__name__}.valid_fields must be a tuple")
+
+        for valid_field in valid_fields:
+            if not isinstance(valid_field, Field):
+                raise TypeError(
+                    f"{cls.__name__}.valid_fields must contain only {Field}"
+                )
 
     def __call__(self):
 
@@ -545,7 +567,13 @@ class apiView(BaseView):
             self._validate()
         except HTTPBadRequest as e:
             return Response(status=str(400), body=str(e))
+        except HTTPNotFound as e:
+            return Response(status=str(404), body=str(e))
         except HTTPMethodNotAllowed as e:
             return Response(status=str(405), body=str(e))
 
         return self.processView()
+
+    def _validate(self):
+        self.validators = super().__thisclass__.validators + self.validators
+        super()._validate()
