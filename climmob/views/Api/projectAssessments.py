@@ -1190,167 +1190,142 @@ class DeleteQuestionFromGroupAssessmentView(apiView):
 
 # _________________________________________ASSESSMENTS ORDER GROUPS___________________________________________________#
 class OrderAssessmentQuestionsView(apiView):
-    def processView(self):
+    def post(self):
+        obligatory = ["project_cod", "user_owner", "ass_cod", "order"]
+        dataworking = json.loads(self.body)
 
-        if self.request.method == "POST":
-            obligatory = ["project_cod", "user_owner", "ass_cod", "order"]
-            dataworking = json.loads(self.body)
-
-            if sorted(obligatory) == sorted(dataworking.keys()):
-                dataworking["user_name"] = self.user.login
-
-                dataInParams = True
-                for key in dataworking.keys():
-                    if dataworking[key] == "":
-                        dataInParams = False
-
-                if dataInParams:
-                    exitsproject = projectExists(
-                        self.user.login,
-                        dataworking["user_owner"],
-                        dataworking["project_cod"],
-                        self.request,
-                    )
-                    if exitsproject:
-
-                        activeProjectId = getTheProjectIdForOwner(
-                            dataworking["user_owner"],
-                            dataworking["project_cod"],
-                            self.request,
-                        )
-                        accessType = getAccessTypeForProject(
-                            self.user.login, activeProjectId, self.request
-                        )
-
-                        if accessType in [4]:
-                            response = Response(
-                                status=401,
-                                body=self._(
-                                    "The access assigned for this project does not allow you to order the questions."
-                                ),
-                            )
-                            return response
-
-                        if assessmentExists(
-                            activeProjectId,
-                            dataworking["ass_cod"],
-                            self.request,
-                        ):
-                            if projectAsessmentStatus(
-                                activeProjectId,
-                                dataworking["ass_cod"],
-                                self.request,
-                            ):
-                                try:
-                                    originalData = json.loads(dataworking["order"])
-                                    groups = []
-                                    questions = []
-                                    questionWithoutGroup = False
-
-                                    for item in originalData:
-                                        if item["type"] == "question":
-                                            questionWithoutGroup = True
-                                        else:
-                                            groups.append(
-                                                int(item["id"].replace("GRP", ""))
-                                            )
-                                            if "children" in item.keys():
-                                                for children in item["children"]:
-                                                    questions.append(
-                                                        int(
-                                                            children["id"].replace(
-                                                                "QST", ""
-                                                            )
-                                                        )
-                                                    )
-
-                                    if not questionWithoutGroup:
-                                        dataworking["project_id"] = activeProjectId
-                                        groupsInProject = getAssessmentGroup(
-                                            dataworking, self
-                                        )
-                                        if sorted(groupsInProject) == sorted(groups):
-                                            questionsInProject = (
-                                                getAssessmentQuestionsApi(
-                                                    dataworking, self
-                                                )
-                                            )
-                                            if sorted(questionsInProject) == sorted(
-                                                questions
-                                            ):
-                                                modified, error = saveAssessmentOrder(
-                                                    activeProjectId,
-                                                    dataworking["ass_cod"],
-                                                    originalData,
-                                                    self.request,
-                                                )
-                                                response = Response(
-                                                    status=200,
-                                                    body=self._(
-                                                        "The order of the groups and questions has been changed."
-                                                    ),
-                                                )
-                                                return response
-                                            else:
-                                                response = Response(
-                                                    status=401,
-                                                    body=self._(
-                                                        "You are ordering questions that are not part of the form."
-                                                    ),
-                                                )
-                                                return response
-                                        else:
-                                            response = Response(
-                                                status=401,
-                                                body=self._(
-                                                    "You are ordering groups that are not part of the form."
-                                                ),
-                                            )
-                                            return response
-                                    else:
-                                        response = Response(
-                                            status=401,
-                                            body=self._(
-                                                "Questions cannot be outside a group"
-                                            ),
-                                        )
-                                        return response
-                                except:
-                                    response = Response(
-                                        status=401,
-                                        body=self._("Error in the JSON order."),
-                                    )
-                                    return response
-                            else:
-                                response = Response(
-                                    status=401,
-                                    body=self._(
-                                        "You cannot update data collection moments. You already started the data collection."
-                                    ),
-                                )
-                                return response
-                        else:
-                            response = Response(
-                                status=401,
-                                body=self._(
-                                    "There is no data collection with that code."
-                                ),
-                            )
-                            return response
-                    else:
-                        response = Response(
-                            status=401,
-                            body=self._("There is no project with that code."),
-                        )
-                        return response
-                else:
-                    response = Response(
-                        status=401, body=self._("Not all parameters have data.")
-                    )
-                    return response
-            else:
-                response = Response(status=401, body=self._("Error in the JSON."))
-                return response
-        else:
-            response = Response(status=401, body=self._("Only accepts POST method."))
+        if sorted(obligatory) != sorted(dataworking.keys()):
+            response = Response(status=401, body=self._("Error in the JSON."))
             return response
+
+        dataworking["user_name"] = self.user.login
+
+        dataInParams = True
+        for key in dataworking.keys():
+            if dataworking[key] == "":
+                dataInParams = False
+
+        if not dataInParams:
+            response = Response(
+                status=401, body=self._("Not all parameters have data.")
+            )
+            return response
+
+        exitsproject = projectExists(
+            self.user.login,
+            dataworking["user_owner"],
+            dataworking["project_cod"],
+            self.request,
+        )
+
+        if not exitsproject:
+            response = Response(
+                status=401,
+                body=self._("There is no project with that code."),
+            )
+            return response
+
+        activeProjectId = getTheProjectIdForOwner(
+            dataworking["user_owner"],
+            dataworking["project_cod"],
+            self.request,
+        )
+        accessType = getAccessTypeForProject(
+            self.user.login, activeProjectId, self.request
+        )
+
+        if accessType in [4]:
+            response = Response(
+                status=401,
+                body=self._(
+                    "The access assigned for this project does not allow you to order the questions."
+                ),
+            )
+            return response
+
+        if not assessmentExists(
+            activeProjectId,
+            dataworking["ass_cod"],
+            self.request,
+        ):
+            response = Response(
+                status=401,
+                body=self._("There is no data collection with that code."),
+            )
+            return response
+
+        if not projectAsessmentStatus(
+            activeProjectId,
+            dataworking["ass_cod"],
+            self.request,
+        ):
+            response = Response(
+                status=401,
+                body=self._(
+                    "You cannot update data collection moments. You already started the data collection."
+                ),
+            )
+            return response
+
+        try:
+            originalData = json.loads(dataworking["order"])
+        except:
+            response = Response(
+                status=401,
+                body=self._("Error in the JSON order."),
+            )
+            return response
+
+        groups = []
+        questions = []
+        questionWithoutGroup = False
+
+        for item in originalData:
+            if item["type"] == "question":
+                questionWithoutGroup = True
+            else:
+                groups.append(int(item["id"].replace("GRP", "")))
+                if "children" in item.keys():
+                    for children in item["children"]:
+                        questions.append(int(children["id"].replace("QST", "")))
+
+        if questionWithoutGroup:
+            response = Response(
+                status=401,
+                body=self._("Questions cannot be outside a group"),
+            )
+            return response
+
+        dataworking["project_id"] = activeProjectId
+        groupsInProject = getAssessmentGroup(dataworking, self)
+
+        if sorted(groupsInProject) != sorted(groups):
+            response = Response(
+                status=401,
+                body=self._("You are ordering groups that are not part of the form."),
+            )
+            return response
+
+        questionsInProject = getAssessmentQuestionsApi(dataworking, self)
+
+        if sorted(questionsInProject) != sorted(questions):
+            response = Response(
+                status=401,
+                body=self._(
+                    "You are ordering questions that are not part of the form."
+                ),
+            )
+            return response
+
+        modified, error = saveAssessmentOrder(
+            activeProjectId,
+            dataworking["ass_cod"],
+            originalData,
+            self.request,
+        )
+
+        response = Response(
+            status=200,
+            body=self._("The order of the groups and questions has been changed."),
+        )
+        return response

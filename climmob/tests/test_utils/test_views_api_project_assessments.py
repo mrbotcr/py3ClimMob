@@ -3257,7 +3257,6 @@ class TestDeleteQuestionFromGroupAssessmentView(ViewBaseTest):
 
 class TestOrderAssessmentQuestionsView(ViewBaseTest):
     view_class = OrderAssessmentQuestionsView
-    request_method = "POST"
     request_body = json.dumps(
         {
             "project_cod": "123",
@@ -3305,7 +3304,7 @@ class TestOrderAssessmentQuestionsView(ViewBaseTest):
         "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
     )
     @patch("climmob.views.Api.projectAssessments.projectExists", return_value=True)
-    def test_process_view_success(
+    def test_post_success(
         self,
         mock_project_exists,
         mock_get_project_id,
@@ -3316,7 +3315,7 @@ class TestOrderAssessmentQuestionsView(ViewBaseTest):
         mock_get_assessment_questions_api,
         mock_save_assessment_order,
     ):
-        response = self.view.processView()
+        response = self.view.post()
         self.assertEqual(response.status_code, 200)
         self.assertIn(
             "The order of the groups and questions has been changed.",
@@ -3340,21 +3339,15 @@ class TestOrderAssessmentQuestionsView(ViewBaseTest):
             1, "ass123", json.loads(dataworking["order"]), self.view.request
         )
 
-    def test_process_view_not_post(self):
-        self.view.request.method = "GET"
-        response = self.view.processView()
-        self.assertEqual(response.status_code, 401)
-        self.assertIn("Only accepts POST method.", response.body.decode())
-
-    def test_process_view_missing_parameters(self):
+    def test_post_missing_parameters(self):
         self.view.body = json.dumps(
             {"project_cod": "123", "user_owner": "owner", "ass_cod": "ass123"}
         )
-        response = self.view.processView()
+        response = self.view.post()
         self.assertEqual(response.status_code, 401)
         self.assertIn("Error in the JSON.", response.body.decode())
 
-    def test_process_view_empty_parameters(self):
+    def test_post_empty_parameters(self):
         self.view.body = json.dumps(
             {
                 "project_cod": "123",
@@ -3363,13 +3356,13 @@ class TestOrderAssessmentQuestionsView(ViewBaseTest):
                 "order": "",
             }
         )
-        response = self.view.processView()
+        response = self.view.post()
         self.assertEqual(response.status_code, 401)
         self.assertIn("Not all parameters have data.", response.body.decode())
 
     @patch("climmob.views.Api.projectAssessments.projectExists", return_value=False)
-    def test_process_view_project_not_exist(self, mock_project_exists):
-        response = self.view.processView()
+    def test_post_project_not_exist(self, mock_project_exists):
+        response = self.view.post()
         self.assertEqual(response.status_code, 401)
         self.assertIn("There is no project with that code.", response.body.decode())
         mock_project_exists.assert_called_with(
@@ -3383,10 +3376,10 @@ class TestOrderAssessmentQuestionsView(ViewBaseTest):
         "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
     )
     @patch("climmob.views.Api.projectAssessments.projectExists", return_value=True)
-    def test_process_view_no_permission(
+    def test_post_no_permission(
         self, mock_project_exists, mock_get_project_id, mock_get_access_type
     ):
-        response = self.view.processView()
+        response = self.view.post()
         self.assertEqual(response.status_code, 401)
         self.assertIn(
             "The access assigned for this project does not allow you to order the questions.",
@@ -3403,10 +3396,10 @@ class TestOrderAssessmentQuestionsView(ViewBaseTest):
         "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
     )
     @patch("climmob.views.Api.projectAssessments.projectExists", return_value=True)
-    def test_process_view_assessment_not_exist(
+    def test_post_assessment_not_exist(
         self, mock_project_exists, mock_get_project_id, mock_assessment_exists
     ):
-        response = self.view.processView()
+        response = self.view.post()
         self.assertEqual(response.status_code, 401)
         self.assertIn(
             "There is no data collection with that code.", response.body.decode()
@@ -3426,14 +3419,14 @@ class TestOrderAssessmentQuestionsView(ViewBaseTest):
         "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
     )
     @patch("climmob.views.Api.projectAssessments.projectExists", return_value=True)
-    def test_process_view_data_collection_started(
+    def test_post_data_collection_started(
         self,
         mock_project_exists,
         mock_get_project_id,
         mock_assessment_exists,
         mock_assessment_status,
     ):
-        response = self.view.processView()
+        response = self.view.post()
         self.assertEqual(response.status_code, 401)
         self.assertIn(
             "You cannot update data collection moments. You already started the data collection.",
@@ -3457,7 +3450,7 @@ class TestOrderAssessmentQuestionsView(ViewBaseTest):
     @patch(
         "climmob.views.Api.projectAssessments.projectAsessmentStatus", return_value=True
     )
-    def test_process_view_invalid_order_json(
+    def test_post_invalid_order_json(
         self,
         mock_assessment_status,
         mock_assessment_exists,
@@ -3473,7 +3466,7 @@ class TestOrderAssessmentQuestionsView(ViewBaseTest):
                 "order": "invalid_json",
             }
         )
-        response = self.view.processView()
+        response = self.view.post()
         self.assertEqual(response.status_code, 401)
         self.assertIn("Error in the JSON order.", response.body.decode())
 
@@ -3496,7 +3489,7 @@ class TestOrderAssessmentQuestionsView(ViewBaseTest):
     @patch(
         "climmob.views.Api.projectAssessments.projectAsessmentStatus", return_value=True
     )
-    def test_process_view_questions_outside_groups(
+    def test_post_questions_outside_groups(
         self,
         mock_assessment_status,
         mock_assessment_exists,
@@ -3512,7 +3505,7 @@ class TestOrderAssessmentQuestionsView(ViewBaseTest):
                 "order": json.dumps([{"type": "question", "id": "QST1"}]),
             }
         )
-        response = self.view.processView()
+        response = self.view.post()
         self.assertEqual(response.status_code, 401)
         self.assertIn("Questions cannot be outside a group", response.body.decode())
 
@@ -3536,7 +3529,7 @@ class TestOrderAssessmentQuestionsView(ViewBaseTest):
         "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
     )
     @patch("climmob.views.Api.projectAssessments.projectExists", return_value=True)
-    def test_process_view_groups_not_in_form(
+    def test_post_groups_not_in_form(
         self,
         mock_project_exists,
         mock_get_the_project_id_for_owner,
@@ -3545,7 +3538,7 @@ class TestOrderAssessmentQuestionsView(ViewBaseTest):
         mock_project_asessment_status,
         mock_get_assessment_group,
     ):
-        response = self.view.processView()
+        response = self.view.post()
         self.assertEqual(response.status_code, 401)
         self.assertIn(
             "You are ordering groups that are not part of the form.",
@@ -3586,7 +3579,7 @@ class TestOrderAssessmentQuestionsView(ViewBaseTest):
         "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
     )
     @patch("climmob.views.Api.projectAssessments.projectExists", return_value=True)
-    def test_process_view_questions_not_in_form(
+    def test_post_questions_not_in_form(
         self,
         mock_project_exists,
         mock_get_the_project_id_for_owner,
@@ -3596,7 +3589,7 @@ class TestOrderAssessmentQuestionsView(ViewBaseTest):
         mock_get_assessment_group,
         mock_get_assessment_questions_api,
     ):
-        response = self.view.processView()
+        response = self.view.post()
         self.assertEqual(response.status_code, 401)
         self.assertIn(
             "You are ordering questions that are not part of the form.",
@@ -3642,7 +3635,7 @@ class TestOrderAssessmentQuestionsView(ViewBaseTest):
         "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
     )
     @patch("climmob.views.Api.projectAssessments.projectExists", return_value=True)
-    def test_process_view_save_order_fails(
+    def test_post_save_order_fails(
         self,
         mock_project_exists,
         mock_get_the_project_id_for_owner,
@@ -3653,7 +3646,7 @@ class TestOrderAssessmentQuestionsView(ViewBaseTest):
         mock_get_assessment_questions_api,
         mock_save_assessment_order,
     ):
-        response = self.view.processView()
+        response = self.view.post()
 
         self.assertEqual(response.status_code, 200)
         self.assertIn(
