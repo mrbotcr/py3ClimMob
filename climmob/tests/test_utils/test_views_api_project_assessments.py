@@ -2084,7 +2084,6 @@ class TestDeleteAssessmentGroupView(ViewBaseTest):
 
 class TestReadPossibleQuestionForAssessmentGroupView(ViewBaseTest):
     view_class = ReadPossibleQuestionForAssessmentGroupView
-    request_method = "GET"
     request_body = json.dumps(
         {"project_cod": "123", "user_owner": "owner", "ass_cod": "ass123"}
     )
@@ -2108,7 +2107,7 @@ class TestReadPossibleQuestionForAssessmentGroupView(ViewBaseTest):
         "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
     )
     @patch("climmob.views.Api.projectAssessments.projectExists", return_value=True)
-    def test_process_view_success(
+    def test_get_success(
         self,
         mock_project_exists,
         mock_get_the_project_id_for_owner,
@@ -2118,7 +2117,7 @@ class TestReadPossibleQuestionForAssessmentGroupView(ViewBaseTest):
         mock_available_assessment_questions,
         mock_questions_options,
     ):
-        response = self.view.processView()
+        response = self.view.get()
 
         self.assertEqual(response.status_code, 200)
         response_data = json.loads(response.body)
@@ -2145,13 +2144,13 @@ class TestReadPossibleQuestionForAssessmentGroupView(ViewBaseTest):
         "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
     )
     @patch("climmob.views.Api.projectAssessments.projectExists", return_value=True)
-    def test_process_view_access_not_allow_action(
+    def test_get_access_not_allow_action(
         self,
         mock_project_exists,
         mock_get_the_project_id_for_owner,
         mock_get_access_type_for_project,
     ):
-        response = self.view.processView()
+        response = self.view.get()
 
         self.assertEqual(response.status_code, 401)
         self.assertIn(
@@ -2180,7 +2179,7 @@ class TestReadPossibleQuestionForAssessmentGroupView(ViewBaseTest):
         "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
     )
     @patch("climmob.views.Api.projectAssessments.projectExists", return_value=True)
-    def test_process_view_access_already_start_data_collection(
+    def test_get_access_already_start_data_collection(
         self,
         mock_project_exists,
         mock_get_the_project_id_for_owner,
@@ -2188,7 +2187,7 @@ class TestReadPossibleQuestionForAssessmentGroupView(ViewBaseTest):
         mock_assessmentExists,
         mock_project_assessment_status,
     ):
-        response = self.view.processView()
+        response = self.view.get()
 
         self.assertEqual(response.status_code, 401)
         self.assertIn(
@@ -2206,8 +2205,8 @@ class TestReadPossibleQuestionForAssessmentGroupView(ViewBaseTest):
         )
 
     @patch("climmob.views.Api.projectAssessments.projectExists", return_value=False)
-    def test_process_view_project_not_exist(self, mock_project_exists):
-        response = self.view.processView()
+    def test_get_project_not_exist(self, mock_project_exists):
+        response = self.view.get()
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("There is no project with that code.", response.body.decode())
@@ -2220,13 +2219,13 @@ class TestReadPossibleQuestionForAssessmentGroupView(ViewBaseTest):
         "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
     )
     @patch("climmob.views.Api.projectAssessments.projectExists", return_value=True)
-    def test_process_view_assessment_not_exist(
+    def test_get_assessment_not_exist(
         self,
         mock_project_exists,
         mock_get_the_project_id_for_owner,
         mock_assessment_exists,
     ):
-        response = self.view.processView()
+        response = self.view.get()
 
         self.assertEqual(response.status_code, 401)
         self.assertIn(
@@ -2240,44 +2239,20 @@ class TestReadPossibleQuestionForAssessmentGroupView(ViewBaseTest):
         )
         mock_assessment_exists.assert_called_with(1, "ass123", self.view.request)
 
-    def test_process_view_invalid_json(self):
+    def test_get_invalid_json(self):
         self.view.body = '{"wrong_key": "value"}'
 
-        response = self.view.processView()
+        response = self.view.get()
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("Error in the JSON.", response.body.decode())
-
-    @patch("json.loads", side_effect=json.JSONDecodeError("Expecting value", "", 0))
-    def test_process_view_invalid_body(self, mock_json_loads):
-        self.view.body = ""
-
-        with self.assertRaises(json.JSONDecodeError):
-            json.loads(self.view.body)
-
-        response = self.view.processView()
-
-        self.assertEqual(response.status_code, 401)
-        self.assertIn(
-            "Error in the JSON, It does not have the 'body' parameter.",
-            response.body.decode(),
-        )
-        self.assertTrue(mock_json_loads.called)
-
-    def test_process_view_post_method(self):
-        self.view.request.method = "POST"
-
-        response = self.view.processView()
-
-        self.assertEqual(response.status_code, 401)
-        self.assertIn("Only accepts GET method.", response.body.decode())
 
     @patch("climmob.views.Api.projectAssessments.projectExists", return_value=True)
     @patch(
         "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
     )
     @patch("climmob.views.Api.projectAssessments.assessmentExists", return_value=True)
-    def test_process_view_not_all_parameters(
+    def test_get_not_all_parameters(
         self,
         mock_project_exists,
         mock_get_the_project_id_for_owner,
@@ -2287,7 +2262,7 @@ class TestReadPossibleQuestionForAssessmentGroupView(ViewBaseTest):
             {"project_cod": "123", "user_owner": "owner", "ass_cod": ""}
         )
 
-        response = self.view.processView()
+        response = self.view.get()
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("Not all parameters have data.", response.body.decode())
