@@ -567,130 +567,118 @@ class CreateAssessmentGroupView(apiView):
 
 
 class UpdateAssessmentGroupView(apiView):
-    def processView(self):
-        if self.request.method == "POST":
-            obligatory = [
-                "project_cod",
-                "user_owner",
-                "ass_cod",
-                "group_cod",
-                "section_name",
-                "section_content",
-            ]
-            dataworking = json.loads(self.body)
+    def post(self):
+        obligatory = [
+            "project_cod",
+            "user_owner",
+            "ass_cod",
+            "group_cod",
+            "section_name",
+            "section_content",
+        ]
+        dataworking = json.loads(self.body)
 
-            if sorted(obligatory) == sorted(dataworking.keys()):
-                dataworking["user_name"] = self.user.login
-                dataworking["section_private"] = None
+        if sorted(obligatory) != sorted(dataworking.keys()):
+            response = Response(status=401, body=self._("Error in the JSON."))
+            return response
 
-                dataInParams = True
-                for key in dataworking.keys():
-                    if dataworking[key] == "":
-                        dataInParams = False
+        dataworking["user_name"] = self.user.login
+        dataworking["section_private"] = None
 
-                if dataInParams:
-                    exitsproject = projectExists(
-                        self.user.login,
-                        dataworking["user_owner"],
-                        dataworking["project_cod"],
-                        self.request,
-                    )
-                    if exitsproject:
+        dataInParams = True
+        for key in dataworking.keys():
+            if dataworking[key] == "":
+                dataInParams = False
 
-                        activeProjectId = getTheProjectIdForOwner(
-                            dataworking["user_owner"],
-                            dataworking["project_cod"],
-                            self.request,
-                        )
-                        accessType = getAccessTypeForProject(
-                            self.user.login, activeProjectId, self.request
-                        )
+        if not dataInParams:
+            response = Response(
+                status=401, body=self._("Not all parameters have data.")
+            )
+            return response
 
-                        if accessType in [4]:
-                            response = Response(
-                                status=401,
-                                body=self._(
-                                    "The access assigned for this project does not allow you to update groups."
-                                ),
-                            )
-                            return response
+        exitsproject = projectExists(
+            self.user.login,
+            dataworking["user_owner"],
+            dataworking["project_cod"],
+            self.request,
+        )
 
-                        if assessmentExists(
-                            activeProjectId,
-                            dataworking["ass_cod"],
-                            self.request,
-                        ):
-                            if projectAsessmentStatus(
-                                activeProjectId,
-                                dataworking["ass_cod"],
-                                self.request,
-                            ):
-                                dataworking["project_id"] = activeProjectId
-                                exitsGroup = exitsAssessmentGroup(dataworking, self)
-                                if exitsGroup:
-                                    mdf, message = modifyAssessmentGroup(
-                                        dataworking, self
-                                    )
-                                    if not mdf:
-                                        if message == "repeated":
-                                            response = Response(
-                                                status=401,
-                                                body=self._(
-                                                    "There is already a group with this name."
-                                                ),
-                                            )
-                                            return response
-                                        else:
-                                            response = Response(
-                                                status=401, body=message
-                                            )
-                                            return response
-                                    else:
-                                        response = Response(
-                                            status=200,
-                                            body=self._("Group updated successfully."),
-                                        )
-                                        return response
-                                else:
-                                    response = Response(
-                                        status=401,
-                                        body=self._(
-                                            "There is not a group with that code."
-                                        ),
-                                    )
-                                    return response
-                            else:
-                                response = Response(
-                                    status=401,
-                                    body=self._(
-                                        "You cannot update data collection moments. You already started the data collection."
-                                    ),
-                                )
-                                return response
-                        else:
-                            response = Response(
-                                status=401,
-                                body=self._(
-                                    "There is no data collection with that code."
-                                ),
-                            )
-                            return response
-                    else:
-                        response = Response(
-                            status=401,
-                            body=self._("There is no project with that code."),
-                        )
-                        return response
-                else:
-                    response = Response(
-                        status=401, body=self._("Not all parameters have data.")
-                    )
-                    return response
-            else:
-                response = Response(status=401, body=self._("Error in the JSON."))
-                return response
+        if not exitsproject:
+            response = Response(
+                status=401,
+                body=self._("There is no project with that code."),
+            )
+            return response
+
+        activeProjectId = getTheProjectIdForOwner(
+            dataworking["user_owner"],
+            dataworking["project_cod"],
+            self.request,
+        )
+        accessType = getAccessTypeForProject(
+            self.user.login, activeProjectId, self.request
+        )
+
+        if accessType in [4]:
+            response = Response(
+                status=401,
+                body=self._(
+                    "The access assigned for this project does not allow you to update groups."
+                ),
+            )
+            return response
+
+        if not assessmentExists(
+            activeProjectId,
+            dataworking["ass_cod"],
+            self.request,
+        ):
+            response = Response(
+                status=401,
+                body=self._("There is no data collection with that code."),
+            )
+            return response
+
+        if not projectAsessmentStatus(
+            activeProjectId,
+            dataworking["ass_cod"],
+            self.request,
+        ):
+            response = Response(
+                status=401,
+                body=self._(
+                    "You cannot update data collection moments. You already started the data collection."
+                ),
+            )
+            return response
+
+        dataworking["project_id"] = activeProjectId
+        exitsGroup = exitsAssessmentGroup(dataworking, self)
+
+        if not exitsGroup:
+            response = Response(
+                status=401,
+                body=self._("There is not a group with that code."),
+            )
+            return response
+
+        mdf, message = modifyAssessmentGroup(dataworking, self)
+
+        if mdf:
+            response = Response(
+                status=200,
+                body=self._("Group updated successfully."),
+            )
+            return response
+
+        if message == "repeated":
+            response = Response(
+                status=401,
+                body=self._("There is already a group with this name."),
+            )
+            return response
         else:
-            response = Response(status=401, body=self._("Only accepts POST method."))
+            response = Response(status=401, body=message)
             return response
 
 
