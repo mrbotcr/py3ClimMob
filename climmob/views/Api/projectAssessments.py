@@ -114,9 +114,9 @@ class UpdateProjectAssessmentView(apiView):
     valid_fields = (
         TextField("project_cod"),
         TextField("user_owner"),
+        TextField("ass_cod"),
         TextField("ass_desc"),
         IntegerField("ass_days"),
-        BinaryField("ass_final"),
     )
 
     def post(self):
