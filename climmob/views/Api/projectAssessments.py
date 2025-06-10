@@ -599,41 +599,18 @@ class DeleteAssessmentGroupView(apiView):
 
 
 class ReadPossibleQuestionForAssessmentGroupView(apiView):
-    def get(self):
-        obligatory = ["project_cod", "user_owner", "ass_cod"]
-        dataworking = json.loads(self.body)
+    validators = (ProjectExistsValidator,)
+    valid_fields = (
+        TextField("project_cod"),
+        TextField("user_owner"),
+        TextField("ass_cod"),
+    )
 
-        if sorted(obligatory) != sorted(dataworking.keys()):
-            response = Response(status=401, body=self._("Error in the JSON."))
-            return response
+    def get(self):
+        dataworking = json.loads(self.body)
 
         dataworking["user_name"] = self.user.login
         dataworking["section_private"] = None
-
-        dataInParams = True
-        for key in dataworking.keys():
-            if dataworking[key] == "":
-                dataInParams = False
-
-        if not dataInParams:
-            response = Response(
-                status=401, body=self._("Not all parameters have data.")
-            )
-            return response
-
-        exitsproject = projectExists(
-            self.user.login,
-            dataworking["user_owner"],
-            dataworking["project_cod"],
-            self.request,
-        )
-
-        if not exitsproject:
-            response = Response(
-                status=401,
-                body=self._("There is no project with that code."),
-            )
-            return response
 
         activeProjectId = getTheProjectIdForOwner(
             dataworking["user_owner"],
