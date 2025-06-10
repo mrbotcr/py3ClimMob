@@ -3,7 +3,6 @@ import json
 from pyramid.response import Response
 
 from climmob.processes import (
-    projectExists,
     getProjectAssessments,
     addProjectAssessment,
     projectAsessmentStatus,
@@ -909,40 +908,18 @@ class DeleteQuestionFromGroupAssessmentView(apiView):
 
 # _________________________________________ASSESSMENTS ORDER GROUPS___________________________________________________#
 class OrderAssessmentQuestionsView(apiView):
+    validators = (ProjectExistsValidator,)
+    valid_fields = (
+        TextField("project_cod"),
+        TextField("user_owner"),
+        TextField("ass_cod"),
+        TextField("order"),
+    )
+
     def post(self):
-        obligatory = ["project_cod", "user_owner", "ass_cod", "order"]
         dataworking = json.loads(self.body)
 
-        if sorted(obligatory) != sorted(dataworking.keys()):
-            response = Response(status=401, body=self._("Error in the JSON."))
-            return response
-
         dataworking["user_name"] = self.user.login
-
-        dataInParams = True
-        for key in dataworking.keys():
-            if dataworking[key] == "":
-                dataInParams = False
-
-        if not dataInParams:
-            response = Response(
-                status=401, body=self._("Not all parameters have data.")
-            )
-            return response
-
-        exitsproject = projectExists(
-            self.user.login,
-            dataworking["user_owner"],
-            dataworking["project_cod"],
-            self.request,
-        )
-
-        if not exitsproject:
-            response = Response(
-                status=401,
-                body=self._("There is no project with that code."),
-            )
-            return response
 
         activeProjectId = getTheProjectIdForOwner(
             dataworking["user_owner"],
