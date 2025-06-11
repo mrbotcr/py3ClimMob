@@ -391,9 +391,8 @@ class TestUpdateProjectAssessmentView(ViewBaseTest):
 
 class TestDeleteProjectAssessmentView(ViewBaseTest):
     view_class = DeleteProjectAssessmentView
-    request_body = json.dumps(
-        {"project_cod": "123", "user_owner": "owner", "ass_cod": "ass123"}
-    )
+    body = {"project_cod": "123", "user_owner": "owner", "ass_cod": "ass123"}
+    request_body = json.dumps(body)
 
     def test_has_validators(self):
         self.assertEqual(self.view.validators, (ProjectExistsValidator,))
@@ -430,19 +429,33 @@ class TestDeleteProjectAssessmentView(ViewBaseTest):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn(
-            "Data collection moment deleted succesfully.", response.body.decode()
+            mock_delete_project_assessment.return_value[1], response.body.decode()
         )
 
         mock_get_the_project_id_for_owner.assert_called_with(
-            "owner", "123", self.view.request
+            self.body["user_owner"], self.body["project_cod"], self.view.request
         )
         mock_get_access_type_for_project.assert_called_with(
-            "test_user", 1, self.view.request
+            self.view.user.login,
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
         )
-        mock_assessment_exists.assert_called_with(1, "ass123", self.view.request)
-        mock_project_asessment_status.assert_called_with(1, "ass123", self.view.request)
+        mock_assessment_exists.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.view.request,
+        )
+        mock_project_asessment_status.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.view.request,
+        )
         mock_delete_project_assessment.assert_called_with(
-            "owner", 1, "123", "ass123", self.view.request
+            self.body["user_owner"],
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["project_cod"],
+            self.body["ass_cod"],
+            self.view.request,
         )
 
     @patch(
@@ -465,10 +478,12 @@ class TestDeleteProjectAssessmentView(ViewBaseTest):
         )
 
         mock_get_the_project_id_for_owner.assert_called_with(
-            "owner", "123", self.view.request
+            self.body["user_owner"], self.body["project_cod"], self.view.request
         )
         mock_get_access_type_for_project.assert_called_with(
-            "test_user", 1, self.view.request
+            self.view.user.login,
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
         )
 
     @patch("climmob.views.Api.projectAssessments.assessmentExists", return_value=False)
@@ -492,12 +507,18 @@ class TestDeleteProjectAssessmentView(ViewBaseTest):
         )
 
         mock_get_the_project_id_for_owner.assert_called_with(
-            "owner", "123", self.view.request
+            self.body["user_owner"], self.body["project_cod"], self.view.request
         )
         mock_get_access_type_for_project.assert_called_with(
-            "test_user", 1, self.view.request
+            self.view.user.login,
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
         )
-        mock_assessment_exists.assert_called_with(1, "ass123", self.view.request)
+        mock_assessment_exists.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.view.request,
+        )
 
     @patch(
         "climmob.views.Api.projectAssessments.projectAsessmentStatus",
@@ -526,13 +547,23 @@ class TestDeleteProjectAssessmentView(ViewBaseTest):
         )
 
         mock_get_the_project_id_for_owner.assert_called_with(
-            "owner", "123", self.view.request
+            self.body["user_owner"], self.body["project_cod"], self.view.request
         )
         mock_get_access_type_for_project.assert_called_with(
-            "test_user", 1, self.view.request
+            self.view.user.login,
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
         )
-        mock_assessment_exists.assert_called_with(1, "ass123", self.view.request)
-        mock_project_asessment_status.assert_called_with(1, "ass123", self.view.request)
+        mock_assessment_exists.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.view.request,
+        )
+        mock_project_asessment_status.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.view.request,
+        )
 
     @patch(
         "climmob.views.Api.projectAssessments.deleteProjectAssessment",
@@ -559,18 +590,34 @@ class TestDeleteProjectAssessmentView(ViewBaseTest):
         response = self.view.post()
 
         self.assertEqual(response.status_code, 401)
-        self.assertIn("Error deleting assessment", response.body.decode())
+        self.assertIn(
+            mock_delete_project_assessment.return_value[1], response.body.decode()
+        )
 
         mock_get_the_project_id_for_owner.assert_called_with(
-            "owner", "123", self.view.request
+            self.body["user_owner"], self.body["project_cod"], self.view.request
         )
         mock_get_access_type_for_project.assert_called_with(
-            "test_user", 1, self.view.request
+            self.view.user.login,
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
         )
-        mock_assessment_exists.assert_called_with(1, "ass123", self.view.request)
-        mock_project_asessment_status.assert_called_with(1, "ass123", self.view.request)
+        mock_assessment_exists.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.view.request,
+        )
+        mock_project_asessment_status.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.view.request,
+        )
         mock_delete_project_assessment.assert_called_with(
-            "owner", 1, "123", "ass123", self.view.request
+            self.body["user_owner"],
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["project_cod"],
+            self.body["ass_cod"],
+            self.view.request,
         )
 
 
