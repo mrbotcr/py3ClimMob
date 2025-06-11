@@ -68,15 +68,14 @@ class TestReadProjectAssessmentsView(ViewBaseTest):
 
 class TestAddNewAssessmentView(ViewBaseTest):
     view_class = AddNewAssessmentView
-    request_body = json.dumps(
-        {
-            "project_cod": "123",
-            "user_owner": "owner",
-            "ass_desc": "Description",
-            "ass_days": "10",
-            "ass_final": "Yes",
-        }
-    )
+    body = {
+        "project_cod": "123",
+        "user_owner": "owner",
+        "ass_desc": "Description",
+        "ass_days": "10",
+        "ass_final": "Yes",
+    }
+    request_body = json.dumps(body)
 
     def test_has_validators(self):
         self.assertEqual(self.view.validators, (ProjectExistsValidator,))
@@ -112,25 +111,24 @@ class TestAddNewAssessmentView(ViewBaseTest):
         response = self.view.post()
 
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Assessment added successfully", response.body.decode())
+        self.assertIn(
+            mock_add_project_assessment.return_value[1], response.body.decode()
+        )
 
         mock_get_the_project_id_for_owner.assert_called_with(
-            "owner", "123", self.view.request
+            self.body["user_owner"], self.body["project_cod"], self.view.request
         )
         mock_get_access_type_for_project.assert_called_with(
-            "test_user", 1, self.view.request
+            self.view.user.login,
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
         )
-        self.assertTrue(mock_add_project_assessment.called)
         mock_add_project_assessment.assert_called_with(
-            {
-                "project_cod": "123",
-                "user_owner": "owner",
-                "ass_desc": "Description",
-                "ass_days": "10",
-                "ass_final": "Yes",
-                "user_name": "test_user",
-                "userOwner": "owner",
-                "project_id": 1,
+            self.body
+            | {
+                "user_name": self.view.user.login,
+                "userOwner": self.body["user_owner"],
+                "project_id": mock_get_the_project_id_for_owner.return_value,
             },
             self.view.request,
             "API",
@@ -156,10 +154,12 @@ class TestAddNewAssessmentView(ViewBaseTest):
         )
 
         mock_get_the_project_id_for_owner.assert_called_with(
-            "owner", "123", self.view.request
+            self.body["user_owner"], self.body["project_cod"], self.view.request
         )
         mock_get_access_type_for_project.assert_called_with(
-            "test_user", 1, self.view.request
+            self.view.user.login,
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
         )
 
     @patch(
@@ -181,25 +181,25 @@ class TestAddNewAssessmentView(ViewBaseTest):
         response = self.view.post()
 
         self.assertEqual(response.status_code, 401)
-        self.assertIn("Error adding assessment", response.body.decode())
+        self.assertIn(
+            mock_add_project_assessment.return_value[1], response.body.decode()
+        )
 
         # Verify that all the patched methods were called
         mock_get_the_project_id_for_owner.assert_called_with(
-            "owner", "123", self.view.request
+            self.body["user_owner"], self.body["project_cod"], self.view.request
         )
         mock_get_access_type_for_project.assert_called_with(
-            "test_user", 1, self.view.request
+            self.view.user.login,
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
         )
         mock_add_project_assessment.assert_called_with(
-            {
-                "project_cod": "123",
-                "user_owner": "owner",
-                "ass_desc": "Description",
-                "ass_days": "10",
-                "ass_final": "Yes",
-                "user_name": "test_user",
-                "userOwner": "owner",
-                "project_id": 1,
+            self.body
+            | {
+                "user_name": self.view.user.login,
+                "userOwner": self.body["user_owner"],
+                "project_id": mock_get_the_project_id_for_owner.return_value,
             },
             self.view.request,
             "API",
