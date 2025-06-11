@@ -3,7 +3,6 @@ import json
 from pyramid.response import Response
 
 from climmob.processes import (
-    projectExists,
     getProjectAssessments,
     addProjectAssessment,
     projectAsessmentStatus,
@@ -33,31 +32,19 @@ from climmob.processes import (
     getProjectData,
 )
 from climmob.views.classes import apiView
+from climmob.views.validators import TextField, IntegerField, BinaryField
+from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 
 
 class ReadProjectAssessmentsView(apiView):
+    validators = (ProjectExistsValidator,)
+    valid_fields = (
+        TextField("project_cod"),
+        TextField("user_owner"),
+    )
+
     def get(self):
-
-        obligatory = ["project_cod", "user_owner"]
-
         dataworking = json.loads(self.body)
-
-        if sorted(obligatory) != sorted(dataworking.keys()):
-            response = Response(status=401, body=self._("Error in the JSON."))
-            return response
-
-        exitsproject = projectExists(
-            self.user.login,
-            dataworking["user_owner"],
-            dataworking["project_cod"],
-            self.request,
-        )
-
-        if not exitsproject:
-            response = Response(
-                status=401, body=self._("There is no a project with that code.")
-            )
-            return response
 
         activeProjectId = getTheProjectIdForOwner(
             dataworking["user_owner"],
@@ -78,46 +65,19 @@ class ReadProjectAssessmentsView(apiView):
 
 
 class AddNewAssessmentView(apiView):
+    validators = (ProjectExistsValidator,)
+    valid_fields = (
+        TextField("project_cod"),
+        TextField("user_owner"),
+        TextField("ass_desc"),
+        IntegerField("ass_days"),
+        BinaryField("ass_final"),
+    )
+
     def post(self):
-        obligatory = [
-            "project_cod",
-            "user_owner",
-            "ass_desc",
-            "ass_days",
-            "ass_final",
-        ]
         dataworking = json.loads(self.body)
 
-        if sorted(obligatory) != sorted(dataworking.keys()):
-            response = Response(status=401, body=self._("Error in the JSON."))
-            return response
-
         dataworking["user_name"] = self.user.login
-
-        dataInParams = True
-        for key in dataworking.keys():
-            if dataworking[key] == "":
-                dataInParams = False
-
-        if not dataInParams:
-            response = Response(
-                status=401, body=self._("Not all parameters have data.")
-            )
-            return response
-
-        exitsproject = projectExists(
-            self.user.login,
-            dataworking["user_owner"],
-            dataworking["project_cod"],
-            self.request,
-        )
-
-        if not exitsproject:
-            response = Response(
-                status=401,
-                body=self._("There is no project with that code."),
-            )
-            return response
 
         activeProjectId = getTheProjectIdForOwner(
             dataworking["user_owner"],
@@ -138,13 +98,6 @@ class AddNewAssessmentView(apiView):
             )
             return response
 
-        if not dataworking["ass_days"].isdigit():
-            response = Response(
-                status=401,
-                body=self._("The parameter ass_days must be a number."),
-            )
-            return response
-
         dataworking["userOwner"] = dataworking["user_owner"]
         dataworking["project_id"] = activeProjectId
         added, msg = addProjectAssessment(dataworking, self.request, "API")
@@ -157,47 +110,19 @@ class AddNewAssessmentView(apiView):
 
 
 class UpdateProjectAssessmentView(apiView):
-    def post(self):
+    validators = (ProjectExistsValidator,)
+    valid_fields = (
+        TextField("project_cod"),
+        TextField("user_owner"),
+        TextField("ass_cod"),
+        TextField("ass_desc"),
+        IntegerField("ass_days"),
+    )
 
-        obligatory = [
-            "project_cod",
-            "user_owner",
-            "ass_cod",
-            "ass_desc",
-            "ass_days",
-        ]
+    def post(self):
         dataworking = json.loads(self.body)
 
-        if sorted(obligatory) != sorted(dataworking.keys()):
-            response = Response(status=401, body=self._("Error in the JSON."))
-            return response
-
         dataworking["user_name"] = self.user.login
-
-        dataInParams = True
-        for key in dataworking.keys():
-            if dataworking[key] == "":
-                dataInParams = False
-
-        if not dataInParams:
-            response = Response(
-                status=401, body=self._("Not all parameters have data.")
-            )
-            return response
-
-        exitsproject = projectExists(
-            self.user.login,
-            dataworking["user_owner"],
-            dataworking["project_cod"],
-            self.request,
-        )
-
-        if not exitsproject:
-            response = Response(
-                status=401,
-                body=self._("There is no project with that code."),
-            )
-            return response
 
         activeProjectId = getTheProjectIdForOwner(
             dataworking["user_owner"],
@@ -214,13 +139,6 @@ class UpdateProjectAssessmentView(apiView):
                 body=self._(
                     "The access assigned for this project does not allow you to update assessments."
                 ),
-            )
-            return response
-
-        if not dataworking["ass_days"].isdigit():
-            response = Response(
-                status=401,
-                body=self._("The parameter ass_days must be a number."),
             )
             return response
 
@@ -249,40 +167,17 @@ class UpdateProjectAssessmentView(apiView):
 
 
 class DeleteProjectAssessmentView(apiView):
-    def post(self):
+    validators = (ProjectExistsValidator,)
+    valid_fields = (
+        TextField("project_cod"),
+        TextField("user_owner"),
+        TextField("ass_cod"),
+    )
 
-        obligatory = ["project_cod", "user_owner", "ass_cod"]
+    def post(self):
         dataworking = json.loads(self.body)
 
-        if sorted(obligatory) != sorted(dataworking.keys()):
-            response = Response(status=401, body=self._("Error in the JSON."))
-            return response
-
         dataworking["user_name"] = self.user.login
-
-        dataInParams = True
-        for key in dataworking.keys():
-            if dataworking[key] == "":
-                dataInParams = False
-
-        if not dataInParams:
-            response = Response(
-                status=401, body=self._("Not all parameters have data.")
-            )
-            return response
-
-        exitsproject = projectExists(
-            self.user.login,
-            dataworking["user_owner"],
-            dataworking["project_cod"],
-            self.request,
-        )
-        if not exitsproject:
-            response = Response(
-                status=401,
-                body=self._("There is no project with that code."),
-            )
-            return response
 
         activeProjectId = getTheProjectIdForOwner(
             dataworking["user_owner"],
@@ -346,41 +241,17 @@ class DeleteProjectAssessmentView(apiView):
 
 # _________________________________________ASSESSMENTS GROUPS___________________________________________________#
 class ReadProjectAssessmentStructureView(apiView):
-    def get(self):
-        obligatory = ["project_cod", "user_owner", "ass_cod"]
+    validators = (ProjectExistsValidator,)
+    valid_fields = (
+        TextField("project_cod"),
+        TextField("user_owner"),
+        TextField("ass_cod"),
+    )
 
+    def get(self):
         dataworking = json.loads(self.body)
 
-        if sorted(obligatory) != sorted(dataworking.keys()):
-            response = Response(status=401, body=self._("Error in the JSON."))
-            return response
-
         dataworking["user_name"] = self.user.login
-
-        dataInParams = True
-        for key in dataworking.keys():
-            if dataworking[key] == "":
-                dataInParams = False
-
-        if not dataInParams:
-            response = Response(
-                status=401, body=self._("Not all parameters have data.")
-            )
-            return response
-
-        exitsproject = projectExists(
-            self.user.login,
-            dataworking["user_owner"],
-            dataworking["project_cod"],
-            self.request,
-        )
-
-        if not exitsproject:
-            response = Response(
-                status=401,
-                body=self._("There is no project with that code."),
-            )
-            return response
 
         activeProjectId = getTheProjectIdForOwner(
             dataworking["user_owner"],
@@ -458,47 +329,20 @@ class ReadProjectAssessmentStructureView(apiView):
 
 
 class CreateAssessmentGroupView(apiView):
-    def post(self):
-        obligatory = [
-            "project_cod",
-            "user_owner",
-            "ass_cod",
-            "section_name",
-            "section_content",
-        ]
-        dataworking = json.loads(self.body)
+    validators = (ProjectExistsValidator,)
+    valid_fields = (
+        TextField("project_cod"),
+        TextField("user_owner"),
+        TextField("ass_cod"),
+        TextField("section_name"),
+        TextField("section_content"),
+    )
 
-        if sorted(obligatory) != sorted(dataworking.keys()):
-            response = Response(status=401, body=self._("Error in the JSON."))
-            return response
+    def post(self):
+        dataworking = json.loads(self.body)
 
         dataworking["user_name"] = self.user.login
         dataworking["section_private"] = None
-
-        dataInParams = True
-        for key in dataworking.keys():
-            if dataworking[key] == "":
-                dataInParams = False
-
-        if not dataInParams:
-            response = Response(
-                status=401, body=self._("Not all parameters have data.")
-            )
-            return response
-
-        exitsproject = projectExists(
-            self.user.login,
-            dataworking["user_owner"],
-            dataworking["project_cod"],
-            self.request,
-        )
-
-        if not exitsproject:
-            response = Response(
-                status=401,
-                body=self._("There is no project with that code."),
-            )
-            return response
 
         activeProjectId = getTheProjectIdForOwner(
             dataworking["user_owner"],
@@ -567,48 +411,21 @@ class CreateAssessmentGroupView(apiView):
 
 
 class UpdateAssessmentGroupView(apiView):
-    def post(self):
-        obligatory = [
-            "project_cod",
-            "user_owner",
-            "ass_cod",
-            "group_cod",
-            "section_name",
-            "section_content",
-        ]
-        dataworking = json.loads(self.body)
+    validators = (ProjectExistsValidator,)
+    valid_fields = (
+        TextField("project_cod"),
+        TextField("user_owner"),
+        TextField("ass_cod"),
+        TextField("group_cod"),
+        TextField("section_name"),
+        TextField("section_content"),
+    )
 
-        if sorted(obligatory) != sorted(dataworking.keys()):
-            response = Response(status=401, body=self._("Error in the JSON."))
-            return response
+    def post(self):
+        dataworking = json.loads(self.body)
 
         dataworking["user_name"] = self.user.login
         dataworking["section_private"] = None
-
-        dataInParams = True
-        for key in dataworking.keys():
-            if dataworking[key] == "":
-                dataInParams = False
-
-        if not dataInParams:
-            response = Response(
-                status=401, body=self._("Not all parameters have data.")
-            )
-            return response
-
-        exitsproject = projectExists(
-            self.user.login,
-            dataworking["user_owner"],
-            dataworking["project_cod"],
-            self.request,
-        )
-
-        if not exitsproject:
-            response = Response(
-                status=401,
-                body=self._("There is no project with that code."),
-            )
-            return response
 
         activeProjectId = getTheProjectIdForOwner(
             dataworking["user_owner"],
@@ -683,41 +500,19 @@ class UpdateAssessmentGroupView(apiView):
 
 
 class DeleteAssessmentGroupView(apiView):
-    def post(self):
-        obligatory = ["project_cod", "user_owner", "ass_cod", "group_cod"]
-        dataworking = json.loads(self.body)
+    validators = (ProjectExistsValidator,)
+    valid_fields = (
+        TextField("project_cod"),
+        TextField("user_owner"),
+        TextField("ass_cod"),
+        TextField("group_cod"),
+    )
 
-        if sorted(obligatory) != sorted(dataworking.keys()):
-            response = Response(status=401, body=self._("Error in the JSON."))
-            return response
+    def post(self):
+        dataworking = json.loads(self.body)
 
         dataworking["user_name"] = self.user.login
         dataworking["section_private"] = None
-
-        dataInParams = True
-        for key in dataworking.keys():
-            if dataworking[key] == "":
-                dataInParams = False
-
-        if not dataInParams:
-            response = Response(
-                status=401, body=self._("Not all parameters have data.")
-            )
-            return response
-
-        exitsproject = projectExists(
-            self.user.login,
-            dataworking["user_owner"],
-            dataworking["project_cod"],
-            self.request,
-        )
-
-        if not exitsproject:
-            response = Response(
-                status=401,
-                body=self._("There is no project with that code."),
-            )
-            return response
 
         activeProjectId = getTheProjectIdForOwner(
             dataworking["user_owner"],
@@ -803,41 +598,18 @@ class DeleteAssessmentGroupView(apiView):
 
 
 class ReadPossibleQuestionForAssessmentGroupView(apiView):
-    def get(self):
-        obligatory = ["project_cod", "user_owner", "ass_cod"]
-        dataworking = json.loads(self.body)
+    validators = (ProjectExistsValidator,)
+    valid_fields = (
+        TextField("project_cod"),
+        TextField("user_owner"),
+        TextField("ass_cod"),
+    )
 
-        if sorted(obligatory) != sorted(dataworking.keys()):
-            response = Response(status=401, body=self._("Error in the JSON."))
-            return response
+    def get(self):
+        dataworking = json.loads(self.body)
 
         dataworking["user_name"] = self.user.login
         dataworking["section_private"] = None
-
-        dataInParams = True
-        for key in dataworking.keys():
-            if dataworking[key] == "":
-                dataInParams = False
-
-        if not dataInParams:
-            response = Response(
-                status=401, body=self._("Not all parameters have data.")
-            )
-            return response
-
-        exitsproject = projectExists(
-            self.user.login,
-            dataworking["user_owner"],
-            dataworking["project_cod"],
-            self.request,
-        )
-
-        if not exitsproject:
-            response = Response(
-                status=401,
-                body=self._("There is no project with that code."),
-            )
-            return response
 
         activeProjectId = getTheProjectIdForOwner(
             dataworking["user_owner"],
@@ -902,48 +674,21 @@ class ReadPossibleQuestionForAssessmentGroupView(apiView):
 
 
 class AddQuestionToGroupAssessmentView(apiView):
-    def post(self):
-        obligatory = [
-            "project_cod",
-            "user_owner",
-            "ass_cod",
-            "group_cod",
-            "question_id",
-            "question_user_name",
-        ]
-        dataworking = json.loads(self.body)
+    validators = (ProjectExistsValidator,)
+    valid_fields = (
+        TextField("project_cod"),
+        TextField("user_owner"),
+        TextField("ass_cod"),
+        TextField("group_cod"),
+        TextField("question_id"),
+        TextField("question_user_name"),
+    )
 
-        if sorted(obligatory) != sorted(dataworking.keys()):
-            response = Response(status=401, body=self._("Error in the JSON."))
-            return response
+    def post(self):
+        dataworking = json.loads(self.body)
 
         dataworking["user_name"] = self.user.login
         dataworking["section_private"] = None
-
-        dataInParams = True
-        for key in dataworking.keys():
-            if dataworking[key] == "":
-                dataInParams = False
-
-        if not dataInParams:
-            response = Response(
-                status=401, body=self._("Not all parameters have data.")
-            )
-            return response
-
-        exitsproject = projectExists(
-            self.user.login,
-            dataworking["user_owner"],
-            dataworking["project_cod"],
-            self.request,
-        )
-
-        if not exitsproject:
-            response = Response(
-                status=401,
-                body=self._("There is no project with that code."),
-            )
-            return response
 
         activeProjectId = getTheProjectIdForOwner(
             dataworking["user_owner"],
@@ -1052,48 +797,21 @@ class AddQuestionToGroupAssessmentView(apiView):
 
 
 class DeleteQuestionFromGroupAssessmentView(apiView):
-    def post(self):
-        obligatory = [
-            "project_cod",
-            "user_owner",
-            "ass_cod",
-            "group_cod",
-            "question_id",
-            "question_user_name",
-        ]
-        dataworking = json.loads(self.body)
+    validators = (ProjectExistsValidator,)
+    valid_fields = (
+        TextField("project_cod"),
+        TextField("user_owner"),
+        TextField("ass_cod"),
+        TextField("group_cod"),
+        TextField("question_id"),
+        TextField("question_user_name"),
+    )
 
-        if sorted(obligatory) != sorted(dataworking.keys()):
-            response = Response(status=401, body=self._("Error in the JSON."))
-            return response
+    def post(self):
+        dataworking = json.loads(self.body)
 
         dataworking["user_name"] = self.user.login
         dataworking["section_private"] = None
-
-        dataInParams = True
-        for key in dataworking.keys():
-            if dataworking[key] == "":
-                dataInParams = False
-
-        if not dataInParams:
-            response = Response(
-                status=401, body=self._("Not all parameters have data.")
-            )
-            return response
-
-        exitsproject = projectExists(
-            self.user.login,
-            dataworking["user_owner"],
-            dataworking["project_cod"],
-            self.request,
-        )
-
-        if not exitsproject:
-            response = Response(
-                status=401,
-                body=self._("There is no project with that code."),
-            )
-            return response
 
         activeProjectId = getTheProjectIdForOwner(
             dataworking["user_owner"],
@@ -1190,40 +908,18 @@ class DeleteQuestionFromGroupAssessmentView(apiView):
 
 # _________________________________________ASSESSMENTS ORDER GROUPS___________________________________________________#
 class OrderAssessmentQuestionsView(apiView):
+    validators = (ProjectExistsValidator,)
+    valid_fields = (
+        TextField("project_cod"),
+        TextField("user_owner"),
+        TextField("ass_cod"),
+        TextField("order"),
+    )
+
     def post(self):
-        obligatory = ["project_cod", "user_owner", "ass_cod", "order"]
         dataworking = json.loads(self.body)
 
-        if sorted(obligatory) != sorted(dataworking.keys()):
-            response = Response(status=401, body=self._("Error in the JSON."))
-            return response
-
         dataworking["user_name"] = self.user.login
-
-        dataInParams = True
-        for key in dataworking.keys():
-            if dataworking[key] == "":
-                dataInParams = False
-
-        if not dataInParams:
-            response = Response(
-                status=401, body=self._("Not all parameters have data.")
-            )
-            return response
-
-        exitsproject = projectExists(
-            self.user.login,
-            dataworking["user_owner"],
-            dataworking["project_cod"],
-            self.request,
-        )
-
-        if not exitsproject:
-            response = Response(
-                status=401,
-                body=self._("There is no project with that code."),
-            )
-            return response
 
         activeProjectId = getTheProjectIdForOwner(
             dataworking["user_owner"],
