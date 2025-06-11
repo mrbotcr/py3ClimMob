@@ -25,7 +25,8 @@ from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidat
 
 class TestReadProjectAssessmentsView(ViewBaseTest):
     view_class = ReadProjectAssessmentsView
-    request_body = json.dumps({"project_cod": "123", "user_owner": "owner"})
+    body = {"project_cod": "123", "user_owner": "owner"}
+    request_body = json.dumps(body)
 
     def test_has_validators(self):
         self.assertEqual(self.view.validators, (ProjectExistsValidator,))
@@ -55,10 +56,14 @@ class TestReadProjectAssessmentsView(ViewBaseTest):
 
         self.assertEqual(response.status_code, 200)
         response_data = json.loads(response.body)
-        self.assertEqual(response_data, [{"assessment": "data"}])
+        self.assertEqual(response_data, mock_get_project_assessments.return_value)
 
-        mock_get_project_assessments.assert_called_with(1, self.view.request)
-        mock_get_the_project_id_for_owner("test_user", "test_code", self.view.request)
+        mock_get_project_assessments.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value, self.view.request
+        )
+        mock_get_the_project_id_for_owner.assert_called_with(
+            self.body["user_owner"], self.body["project_cod"], self.view.request
+        )
 
 
 class TestAddNewAssessmentView(ViewBaseTest):
