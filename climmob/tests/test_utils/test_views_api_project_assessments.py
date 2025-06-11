@@ -208,15 +208,14 @@ class TestAddNewAssessmentView(ViewBaseTest):
 
 class TestUpdateProjectAssessmentView(ViewBaseTest):
     view_class = UpdateProjectAssessmentView
-    request_body = json.dumps(
-        {
-            "project_cod": "123",
-            "user_owner": "owner",
-            "ass_cod": "ass123",
-            "ass_desc": "Description",
-            "ass_days": "10",
-        }
-    )
+    body = {
+        "project_cod": "123",
+        "user_owner": "owner",
+        "ass_cod": "ass123",
+        "ass_desc": "Description",
+        "ass_days": "10",
+    }
+    request_body = json.dumps(body)
 
     def test_has_validators(self):
         self.assertEqual(self.view.validators, (ProjectExistsValidator,))
@@ -254,24 +253,28 @@ class TestUpdateProjectAssessmentView(ViewBaseTest):
         response = self.view.post()
 
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Data collection updated successfully.", response.body.decode())
+        self.assertIn(
+            mock_modify_project_assessment.return_value[1], response.body.decode()
+        )
 
         mock_get_the_project_id_for_owner.assert_called_with(
-            "owner", "123", self.view.request
+            self.body["user_owner"], self.body["project_cod"], self.view.request
         )
         mock_get_access_type_for_project.assert_called_with(
-            "test_user", 1, self.view.request
+            self.view.user.login,
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
         )
-        mock_assessment_exists.assert_called_with(1, "ass123", self.view.request)
+        mock_assessment_exists.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.view.request,
+        )
         mock_modify_project_assessment.assert_called_with(
-            {
-                "project_cod": "123",
-                "user_owner": "owner",
-                "ass_cod": "ass123",
-                "ass_desc": "Description",
-                "ass_days": "10",
-                "user_name": "test_user",
-                "project_id": 1,
+            self.body
+            | {
+                "user_name": self.view.user.login,
+                "project_id": mock_get_the_project_id_for_owner.return_value,
             },
             self.view.request,
         )
@@ -296,10 +299,12 @@ class TestUpdateProjectAssessmentView(ViewBaseTest):
         )
 
         mock_get_the_project_id_for_owner.assert_called_with(
-            "owner", "123", self.view.request
+            self.body["user_owner"], self.body["project_cod"], self.view.request
         )
         mock_get_access_type_for_project.assert_called_with(
-            "test_user", 1, self.view.request
+            self.view.user.login,
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
         )
 
     @patch("climmob.views.Api.projectAssessments.assessmentExists", return_value=False)
@@ -323,12 +328,18 @@ class TestUpdateProjectAssessmentView(ViewBaseTest):
         )
 
         mock_get_the_project_id_for_owner.assert_called_with(
-            "owner", "123", self.view.request
+            self.body["user_owner"], self.body["project_cod"], self.view.request
         )
         mock_get_access_type_for_project.assert_called_with(
-            "test_user", 1, self.view.request
+            self.view.user.login,
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
         )
-        mock_assessment_exists.assert_called_with(1, "ass123", self.view.request)
+        mock_assessment_exists.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.view.request,
+        )
 
     @patch(
         "climmob.views.Api.projectAssessments.modifyProjectAssessment",
@@ -351,24 +362,28 @@ class TestUpdateProjectAssessmentView(ViewBaseTest):
         response = self.view.post()
 
         self.assertEqual(response.status_code, 401)
-        self.assertIn("Error updating assessment", response.body.decode())
+        self.assertIn(
+            mock_modify_project_assessment.return_value[1], response.body.decode()
+        )
 
         mock_get_the_project_id_for_owner.assert_called_with(
-            "owner", "123", self.view.request
+            self.body["user_owner"], self.body["project_cod"], self.view.request
         )
         mock_get_access_type_for_project.assert_called_with(
-            "test_user", 1, self.view.request
+            self.view.user.login,
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
         )
-        mock_assessment_exists.assert_called_with(1, "ass123", self.view.request)
+        mock_assessment_exists.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.view.request,
+        )
         mock_modify_project_assessment.assert_called_with(
-            {
-                "project_cod": "123",
-                "user_owner": "owner",
-                "ass_cod": "ass123",
-                "ass_desc": "Description",
-                "ass_days": "10",
-                "user_name": "test_user",
-                "project_id": 1,
+            self.body
+            | {
+                "user_name": self.view.user.login,
+                "project_id": mock_get_the_project_id_for_owner.return_value,
             },
             self.view.request,
         )
