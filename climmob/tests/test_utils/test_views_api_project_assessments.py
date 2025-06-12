@@ -2186,16 +2186,15 @@ class TestReadPossibleQuestionForAssessmentGroupView(ViewBaseTest):
 
 class TestAddQuestionToGroupAssessmentView(ViewBaseTest):
     view_class = AddQuestionToGroupAssessmentView
-    request_body = json.dumps(
-        {
-            "project_cod": "123",
-            "user_owner": "owner",
-            "ass_cod": "ass123",
-            "group_cod": "group123",
-            "question_id": "q123",
-            "question_user_name": "question_user",
-        }
-    )
+    body = {
+        "project_cod": "123",
+        "user_owner": "owner",
+        "ass_cod": "ass123",
+        "group_cod": "group123",
+        "question_id": "q123",
+        "question_user_name": "question_user",
+    }
+    request_body = json.dumps(body)
 
     def test_has_validators(self):
         self.assertEqual(self.view.validators, (ProjectExistsValidator,))
@@ -2264,18 +2263,60 @@ class TestAddQuestionToGroupAssessmentView(ViewBaseTest):
 
         # Verify that all the patched methods were called
         mock_get_the_project_id_for_owner.assert_called_with(
-            "owner", "123", self.view.request
+            self.body["user_owner"], self.body["project_cod"], self.view.request
         )
         mock_get_access_type_for_project.assert_called_with(
-            "test_user", 1, self.view.request
+            self.view.user.login,
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
         )
-        self.assertTrue(mock_the_user_belongs_to_the_project.called)
-        mock_assessment_exists.assert_called_with(1, "ass123", self.view.request)
-        mock_project_asessment_status.assert_called_with(1, "ass123", self.view.request)
-        self.assertTrue(mock_exits_assessment_group.called)
-        self.assertTrue(mock_get_question_data.called)
-        self.assertTrue(mock_can_use_the_question_assessment.called)
-        self.assertTrue(mock_add_assessment_question_to_group.called)
+        mock_the_user_belongs_to_the_project.assert_called_with(
+            self.body["question_user_name"],
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
+        )
+        mock_assessment_exists.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.view.request,
+        )
+        mock_project_asessment_status.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.view.request,
+        )
+        mock_exits_assessment_group.assert_called_with(
+            self.body
+            | {
+                "user_name": self.view.user.login,
+                "section_private": None,
+                "project_id": mock_get_the_project_id_for_owner.return_value,
+                "section_id": self.body["group_cod"],
+            },
+            self.view,
+        )
+        mock_get_question_data.assert_called_with(
+            self.body["question_user_name"],
+            self.body["question_id"],
+            self.view.request,
+        )
+        mock_can_use_the_question_assessment.assert_called_with(
+            self.body["question_user_name"],
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.body["question_id"],
+            self.view.request,
+        )
+        mock_add_assessment_question_to_group.assert_called_with(
+            self.body
+            | {
+                "user_name": self.view.user.login,
+                "section_private": None,
+                "project_id": mock_get_the_project_id_for_owner.return_value,
+                "section_id": self.body["group_cod"],
+            },
+            self.view.request,
+        )
 
     @patch(
         "climmob.views.Api.projectAssessments.addAssessmentQuestionToGroup",
@@ -2322,24 +2363,66 @@ class TestAddQuestionToGroupAssessmentView(ViewBaseTest):
 
         self.assertEqual(response.status_code, 401)
         self.assertIn(
-            "Error.",
+            mock_add_assessment_question_to_group.return_value[1],
             response.body.decode(),
         )
 
         # Verify that all the patched methods were called
         mock_get_the_project_id_for_owner.assert_called_with(
-            "owner", "123", self.view.request
+            self.body["user_owner"], self.body["project_cod"], self.view.request
         )
         mock_get_access_type_for_project.assert_called_with(
-            "test_user", 1, self.view.request
+            self.view.user.login,
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
         )
-        self.assertTrue(mock_the_user_belongs_to_the_project.called)
-        mock_assessment_exists.assert_called_with(1, "ass123", self.view.request)
-        mock_project_asessment_status.assert_called_with(1, "ass123", self.view.request)
-        self.assertTrue(mock_exits_assessment_group.called)
-        self.assertTrue(mock_get_question_data.called)
-        self.assertTrue(mock_can_use_the_question_assessment.called)
-        self.assertTrue(mock_add_assessment_question_to_group.called)
+        mock_the_user_belongs_to_the_project.assert_called_with(
+            self.body["question_user_name"],
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
+        )
+        mock_assessment_exists.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.view.request,
+        )
+        mock_project_asessment_status.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.view.request,
+        )
+        mock_exits_assessment_group.assert_called_with(
+            self.body
+            | {
+                "user_name": self.view.user.login,
+                "section_private": None,
+                "project_id": mock_get_the_project_id_for_owner.return_value,
+                "section_id": self.body["group_cod"],
+            },
+            self.view,
+        )
+        mock_get_question_data.assert_called_with(
+            self.body["question_user_name"],
+            self.body["question_id"],
+            self.view.request,
+        )
+        mock_can_use_the_question_assessment.assert_called_with(
+            self.body["question_user_name"],
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.body["question_id"],
+            self.view.request,
+        )
+        mock_add_assessment_question_to_group.assert_called_with(
+            self.body
+            | {
+                "user_name": self.view.user.login,
+                "section_private": None,
+                "project_id": mock_get_the_project_id_for_owner.return_value,
+                "section_id": self.body["group_cod"],
+            },
+            self.view.request,
+        )
 
     @patch(
         "climmob.views.Api.projectAssessments.getQuestionData",
@@ -2382,16 +2465,42 @@ class TestAddQuestionToGroupAssessmentView(ViewBaseTest):
 
         # Verify that all the patched methods were called
         mock_get_the_project_id_for_owner.assert_called_with(
-            "owner", "123", self.view.request
+            self.body["user_owner"], self.body["project_cod"], self.view.request
         )
         mock_get_access_type_for_project.assert_called_with(
-            "test_user", 1, self.view.request
+            self.view.user.login,
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
         )
-        self.assertTrue(mock_the_user_belongs_to_the_project.called)
-        mock_assessment_exists.assert_called_with(1, "ass123", self.view.request)
-        mock_project_asessment_status.assert_called_with(1, "ass123", self.view.request)
-        self.assertTrue(mock_exits_assessment_group.called)
-        self.assertTrue(mock_get_question_data.called)
+        mock_the_user_belongs_to_the_project.assert_called_with(
+            self.body["question_user_name"],
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
+        )
+        mock_assessment_exists.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.view.request,
+        )
+        mock_project_asessment_status.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.view.request,
+        )
+        mock_exits_assessment_group.assert_called_with(
+            self.body
+            | {
+                "user_name": self.view.user.login,
+                "section_private": None,
+                "project_id": mock_get_the_project_id_for_owner.return_value,
+            },
+            self.view,
+        )
+        mock_get_question_data.assert_called_with(
+            self.body["question_user_name"],
+            self.body["question_id"],
+            self.view.request,
+        )
 
     @patch(
         "climmob.views.Api.projectAssessments.canUseTheQuestionAssessment",
@@ -2427,7 +2536,7 @@ class TestAddQuestionToGroupAssessmentView(ViewBaseTest):
         mock_project_asessment_status,
         mock_exits_assessment_group,
         mock_get_question_data,
-        mock_canUseTheQuestionAssessment,
+        mock_can_use_the_question_assessment,
     ):
         response = self.view.post()
 
@@ -2439,16 +2548,49 @@ class TestAddQuestionToGroupAssessmentView(ViewBaseTest):
 
         # Verify that all the patched methods were called
         mock_get_the_project_id_for_owner.assert_called_with(
-            "owner", "123", self.view.request
+            self.body["user_owner"], self.body["project_cod"], self.view.request
         )
         mock_get_access_type_for_project.assert_called_with(
-            "test_user", 1, self.view.request
+            self.view.user.login,
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
         )
-        self.assertTrue(mock_the_user_belongs_to_the_project.called)
-        mock_assessment_exists.assert_called_with(1, "ass123", self.view.request)
-        mock_project_asessment_status.assert_called_with(1, "ass123", self.view.request)
-        self.assertTrue(mock_exits_assessment_group.called)
-        self.assertTrue(mock_get_question_data.called)
+        mock_the_user_belongs_to_the_project.assert_called_with(
+            self.body["question_user_name"],
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
+        )
+        mock_assessment_exists.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.view.request,
+        )
+        mock_project_asessment_status.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.view.request,
+        )
+        mock_exits_assessment_group.assert_called_with(
+            self.body
+            | {
+                "user_name": self.view.user.login,
+                "section_private": None,
+                "project_id": mock_get_the_project_id_for_owner.return_value,
+            },
+            self.view,
+        )
+        mock_get_question_data.assert_called_with(
+            self.body["question_user_name"],
+            self.body["question_id"],
+            self.view.request,
+        )
+        mock_can_use_the_question_assessment.assert_called_with(
+            self.body["question_user_name"],
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.body["question_id"],
+            self.view.request,
+        )
 
     @patch(
         "climmob.views.Api.projectAssessments.getAccessTypeForProject", return_value=4
@@ -2471,10 +2613,12 @@ class TestAddQuestionToGroupAssessmentView(ViewBaseTest):
 
         # Verify that all the patched methods were called
         mock_get_the_project_id_for_owner.assert_called_with(
-            "owner", "123", self.view.request
+            self.body["user_owner"], self.body["project_cod"], self.view.request
         )
         mock_get_access_type_for_project.assert_called_with(
-            "test_user", 1, self.view.request
+            self.view.user.login,
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
         )
 
     @patch(
@@ -2482,11 +2626,15 @@ class TestAddQuestionToGroupAssessmentView(ViewBaseTest):
         return_value=False,
     )
     @patch(
+        "climmob.views.Api.projectAssessments.getAccessTypeForProject", return_value=1
+    )
+    @patch(
         "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
     )
     def test_post_user_not_belong_to_project(
         self,
         mock_get_the_project_id_for_owner,
+        mock_get_access_type_for_project,
         mock_the_user_belongs_to_the_project,
     ):
         response = self.view.post()
@@ -2497,17 +2645,35 @@ class TestAddQuestionToGroupAssessmentView(ViewBaseTest):
             response.body.decode(),
         )
         mock_get_the_project_id_for_owner.assert_called_with(
-            "owner", "123", self.view.request
+            self.body["user_owner"], self.body["project_cod"], self.view.request
         )
-        self.assertTrue(mock_the_user_belongs_to_the_project.called)
+        mock_get_access_type_for_project.assert_called_with(
+            self.view.user.login,
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
+        )
+        mock_the_user_belongs_to_the_project.assert_called_with(
+            self.body["question_user_name"],
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
+        )
 
     @patch("climmob.views.Api.projectAssessments.assessmentExists", return_value=False)
+    @patch(
+        "climmob.views.Api.projectAssessments.theUserBelongsToTheProject",
+        return_value=True,
+    )
+    @patch(
+        "climmob.views.Api.projectAssessments.getAccessTypeForProject", return_value=1
+    )
     @patch(
         "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
     )
     def test_post_assessment_not_exist(
         self,
         mock_get_the_project_id_for_owner,
+        mock_get_access_type_for_project,
+        mock_the_user_belongs_to_the_project,
         mock_assessment_exists,
     ):
         response = self.view.post()
@@ -2517,9 +2683,23 @@ class TestAddQuestionToGroupAssessmentView(ViewBaseTest):
             "There is no data collection with that code.", response.body.decode()
         )
         mock_get_the_project_id_for_owner.assert_called_with(
-            "owner", "123", self.view.request
+            self.body["user_owner"], self.body["project_cod"], self.view.request
         )
-        mock_assessment_exists.assert_called_with(1, "ass123", self.view.request)
+        mock_get_access_type_for_project.assert_called_with(
+            self.view.user.login,
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
+        )
+        mock_the_user_belongs_to_the_project.assert_called_with(
+            self.body["question_user_name"],
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
+        )
+        mock_assessment_exists.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.view.request,
+        )
 
     @patch(
         "climmob.views.Api.projectAssessments.projectAsessmentStatus",
@@ -2527,11 +2707,20 @@ class TestAddQuestionToGroupAssessmentView(ViewBaseTest):
     )
     @patch("climmob.views.Api.projectAssessments.assessmentExists", return_value=True)
     @patch(
+        "climmob.views.Api.projectAssessments.theUserBelongsToTheProject",
+        return_value=True,
+    )
+    @patch(
+        "climmob.views.Api.projectAssessments.getAccessTypeForProject", return_value=1
+    )
+    @patch(
         "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
     )
     def test_post_assessment_already_started(
         self,
         mock_get_the_project_id_for_owner,
+        mock_get_access_type_for_project,
+        mock_the_user_belongs_to_the_project,
         mock_assessment_exists,
         mock_project_asessment_status,
     ):
@@ -2543,10 +2732,28 @@ class TestAddQuestionToGroupAssessmentView(ViewBaseTest):
             response.body.decode(),
         )
         mock_get_the_project_id_for_owner.assert_called_with(
-            "owner", "123", self.view.request
+            self.body["user_owner"], self.body["project_cod"], self.view.request
         )
-        mock_assessment_exists.assert_called_with(1, "ass123", self.view.request)
-        mock_project_asessment_status.assert_called_with(1, "ass123", self.view.request)
+        mock_get_access_type_for_project.assert_called_with(
+            self.view.user.login,
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
+        )
+        mock_the_user_belongs_to_the_project.assert_called_with(
+            self.body["question_user_name"],
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
+        )
+        mock_assessment_exists.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.view.request,
+        )
+        mock_project_asessment_status.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.view.request,
+        )
 
     @patch(
         "climmob.views.Api.projectAssessments.exitsAssessmentGroup", return_value=False
@@ -2579,15 +2786,37 @@ class TestAddQuestionToGroupAssessmentView(ViewBaseTest):
         self.assertEqual(response.status_code, 401)
         self.assertIn("There is not a group with that code.", response.body.decode())
         mock_get_the_project_id_for_owner.assert_called_with(
-            "owner", "123", self.view.request
+            self.body["user_owner"], self.body["project_cod"], self.view.request
         )
         mock_get_access_type_for_project.assert_called_with(
-            "test_user", 1, self.view.request
+            self.view.user.login,
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
         )
-        self.assertTrue(mock_the_user_belongs_to_the_project.called)
-        mock_assessment_exists.assert_called_with(1, "ass123", self.view.request)
-        mock_project_asessment_status.assert_called_with(1, "ass123", self.view.request)
-        self.assertTrue(mock_exits_assessment_group.called)
+        mock_the_user_belongs_to_the_project.assert_called_with(
+            self.body["question_user_name"],
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
+        )
+        mock_assessment_exists.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.view.request,
+        )
+        mock_project_asessment_status.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.view.request,
+        )
+        mock_exits_assessment_group.assert_called_with(
+            self.body
+            | {
+                "user_name": self.view.user.login,
+                "section_private": None,
+                "project_id": mock_get_the_project_id_for_owner.return_value,
+            },
+            self.view,
+        )
 
 
 class TestDeleteQuestionFromGroupAssessmentView(ViewBaseTest):
