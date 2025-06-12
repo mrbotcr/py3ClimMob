@@ -1020,6 +1020,9 @@ class OrderAssessmentQuestionsView(apiView):
             self.request,
         )
 
+        if not modified:
+            return Response(status="401", body=error)
+
         response = Response(
             status=200,
             body=self._("The order of the groups and questions has been changed."),
