@@ -1996,9 +1996,8 @@ class TestDeleteAssessmentGroupView(ViewBaseTest):
 
 class TestReadPossibleQuestionForAssessmentGroupView(ViewBaseTest):
     view_class = ReadPossibleQuestionForAssessmentGroupView
-    request_body = json.dumps(
-        {"project_cod": "123", "user_owner": "owner", "ass_cod": "ass123"}
-    )
+    body = {"project_cod": "123", "user_owner": "owner", "ass_cod": "ass123"}
+    request_body = json.dumps(body)
 
     def test_has_validators(self):
         self.assertEqual(self.view.validators, (ProjectExistsValidator,))
@@ -2037,25 +2036,48 @@ class TestReadPossibleQuestionForAssessmentGroupView(ViewBaseTest):
         mock_get_access_type_for_project,
         mock_assessment_exists,
         mock_project_asessment_status,
-        mock_available_assessment_questions,
         mock_questions_options,
+        mock_available_assessment_questions,
     ):
         response = self.view.get()
 
         self.assertEqual(response.status_code, 200)
         response_data = json.loads(response.body)
-        self.assertIn("Questions", response_data)
-        self.assertIn("QuestionsOptions", response_data)
+        self.assertEqual(
+            response_data["Questions"], mock_available_assessment_questions.return_value
+        )
+        self.assertEqual(
+            response_data["QuestionsOptions"],
+            mock_questions_options.return_value,
+        )
         mock_get_the_project_id_for_owner.assert_called_with(
-            "owner", "123", self.view.request
+            self.body["user_owner"], self.body["project_cod"], self.view.request
         )
         mock_get_access_type_for_project.assert_called_with(
-            "test_user", 1, self.view.request
+            self.view.user.login,
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
         )
-        mock_assessment_exists.assert_called_with(1, "ass123", self.view.request)
-        mock_project_asessment_status.assert_called_with(1, "ass123", self.view.request)
-        self.assertTrue(mock_available_assessment_questions.called)
-        self.assertTrue(mock_questions_options.called)
+        mock_assessment_exists.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.view.request,
+        )
+        mock_project_asessment_status.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.view.request,
+        )
+        mock_available_assessment_questions.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.view.request,
+        )
+        mock_questions_options.assert_called_with(
+            self.view.user.login,
+            self.body["user_owner"],
+            self.view.request,
+        )
 
     @patch(
         "climmob.views.Api.projectAssessments.getAccessTypeForProject", return_value=4
@@ -2076,10 +2098,12 @@ class TestReadPossibleQuestionForAssessmentGroupView(ViewBaseTest):
             response.body.decode(),
         )
         mock_get_the_project_id_for_owner.assert_called_with(
-            "owner", "123", self.view.request
+            self.body["user_owner"], self.body["project_cod"], self.view.request
         )
         mock_get_access_type_for_project.assert_called_with(
-            "test_user", 1, self.view.request
+            self.view.user.login,
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
         )
 
     @patch(
@@ -2097,7 +2121,7 @@ class TestReadPossibleQuestionForAssessmentGroupView(ViewBaseTest):
         self,
         mock_get_the_project_id_for_owner,
         mock_get_access_type_for_project,
-        mock_assessmentExists,
+        mock_assessment_exists,
         mock_project_assessment_status,
     ):
         response = self.view.get()
@@ -2108,19 +2132,35 @@ class TestReadPossibleQuestionForAssessmentGroupView(ViewBaseTest):
             response.body.decode(),
         )
         mock_get_the_project_id_for_owner.assert_called_with(
-            "owner", "123", self.view.request
+            self.body["user_owner"], self.body["project_cod"], self.view.request
         )
         mock_get_access_type_for_project.assert_called_with(
-            "test_user", 1, self.view.request
+            self.view.user.login,
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
+        )
+        mock_assessment_exists.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.view.request,
+        )
+        mock_project_assessment_status.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.view.request,
         )
 
     @patch("climmob.views.Api.projectAssessments.assessmentExists", return_value=False)
+    @patch(
+        "climmob.views.Api.projectAssessments.getAccessTypeForProject", return_value=1
+    )
     @patch(
         "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
     )
     def test_get_assessment_not_exist(
         self,
         mock_get_the_project_id_for_owner,
+        mock_get_access_type_for_project,
         mock_assessment_exists,
     ):
         response = self.view.get()
@@ -2130,9 +2170,18 @@ class TestReadPossibleQuestionForAssessmentGroupView(ViewBaseTest):
             "There is no data collection with that code.", response.body.decode()
         )
         mock_get_the_project_id_for_owner.assert_called_with(
-            "owner", "123", self.view.request
+            self.body["user_owner"], self.body["project_cod"], self.view.request
         )
-        mock_assessment_exists.assert_called_with(1, "ass123", self.view.request)
+        mock_get_access_type_for_project.assert_called_with(
+            self.view.user.login,
+            mock_get_the_project_id_for_owner.return_value,
+            self.view.request,
+        )
+        mock_assessment_exists.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.view.request,
+        )
 
 
 class TestAddQuestionToGroupAssessmentView(ViewBaseTest):
