@@ -1,6 +1,6 @@
 import json
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 from climmob.tests.test_utils.common import ViewBaseTest
 from climmob.views.Api.projectAssessments import (
@@ -621,9 +621,8 @@ class TestDeleteProjectAssessmentView(ViewBaseTest):
 
 class TestReadProjectAssessmentStructureView(ViewBaseTest):
     view_class = ReadProjectAssessmentStructureView
-    request_body = json.dumps(
-        {"project_cod": "123", "user_owner": "owner", "ass_cod": "ass123"}
-    )
+    body = {"project_cod": "123", "user_owner": "owner", "ass_cod": "ass123"}
+    request_body = json.dumps(body)
 
     def test_has_validators(self):
         self.assertEqual(self.view.validators, (ProjectExistsValidator,))
@@ -636,7 +635,7 @@ class TestReadProjectAssessmentStructureView(ViewBaseTest):
 
     @patch(
         "climmob.views.Api.projectAssessments.getAssessmentQuestions",
-        return_value=[{"section_id": 1, "question_id": 1, "question_reqinasses": 1}],
+        return_value=[{}],
     )
     @patch(
         "climmob.views.Api.projectAssessments.getProjectData",
@@ -657,171 +656,38 @@ class TestReadProjectAssessmentStructureView(ViewBaseTest):
         mock_get_project_data,
         mock_get_assessment_questions,
     ):
-        response = self.view.get()
+        with patch.object(self.view, "set_group_flags") as mock_set_group_flags:
+            response = self.view.get()
 
         self.assertEqual(response.status_code, 200)
         response_data = json.loads(response.body)
-        self.assertIsInstance(response_data, list)
-        self.assertEqual(response_data[0]["section_id"], 1)
+        self.assertEqual(response_data, mock_get_assessment_questions.return_value)
+
         mock_get_the_project_id_for_owner.assert_called_with(
-            "owner", "123", self.view.request
+            self.body["user_owner"], self.body["project_cod"], self.view.request
         )
-        mock_assessment_exists.assert_called_with(1, "ass123", self.view.request)
-        mock_get_project_data.assert_called_with(1, self.view.request)
-        mock_get_assessment_questions.assert_called_with(
-            "owner",
-            1,
-            "ass123",
+        mock_assessment_exists.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
             self.view.request,
-            ["Label A", "Label B", "Label C"],
+        )
+        mock_get_project_data.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value, self.view.request
+        )
+        mock_get_assessment_questions.assert_called_with(
+            self.body["user_owner"],
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.view.request,
+            [
+                mock_get_project_data.return_value["project_label_a"],
+                mock_get_project_data.return_value["project_label_b"],
+                mock_get_project_data.return_value["project_label_c"],
+            ],
             onlyShowTheBasicQuestions=True,
         )
-
-    @patch(
-        "climmob.views.Api.projectAssessments.getAssessmentQuestions",
-        return_value=[
-            {"section_id": -99, "question_id": 1, "question_reqinasses": 1},
-        ],
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.getProjectData",
-        return_value={
-            "project_label_a": "Label A",
-            "project_label_b": "Label B",
-            "project_label_c": "Label C",
-        },
-    )
-    @patch("climmob.views.Api.projectAssessments.assessmentExists", return_value=True)
-    @patch(
-        "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
-    )
-    def test_get_success_2(
-        self,
-        mock_get_the_project_id_for_owner,
-        mock_assessment_exists,
-        mock_get_project_data,
-        mock_get_assessment_questions,
-    ):
-        response = self.view.get()
-
-        self.assertEqual(response.status_code, 200)
-        response_data = json.loads(response.body)
-        self.assertIsInstance(response_data, list)
-        # self.assertEqual(response_data[0]["section_id"], 1)
-        mock_get_the_project_id_for_owner.assert_called_with(
-            "owner", "123", self.view.request
-        )
-        mock_assessment_exists.assert_called_with(1, "ass123", self.view.request)
-        mock_get_project_data.assert_called_with(1, self.view.request)
-        mock_get_assessment_questions.assert_called_with(
-            "owner",
-            1,
-            "ass123",
-            self.view.request,
-            ["Label A", "Label B", "Label C"],
-            onlyShowTheBasicQuestions=True,
-        )
-
-    @patch(
-        "climmob.views.Api.projectAssessments.getAssessmentQuestions",
-        return_value=[
-            {
-                "section_id": 1,
-                "question_id": 10,
-                "question_reqinasses": 0,
-                "hasQuestions": True,
-            },
-            {"section_id": 2, "question_id": None, "question_reqinasses": 0},
-        ],
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.getProjectData",
-        return_value={
-            "project_label_a": "Label A",
-            "project_label_b": "Label B",
-            "project_label_c": "Label C",
-        },
-    )
-    @patch("climmob.views.Api.projectAssessments.assessmentExists", return_value=True)
-    @patch(
-        "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
-    )
-    def test_get_success_3(
-        self,
-        mock_get_the_project_id_for_owner,
-        mock_assessment_exists,
-        mock_get_project_data,
-        mock_get_assessment_questions,
-    ):
-        response = self.view.get()
-
-        self.assertEqual(response.status_code, 200)
-        response_data = json.loads(response.body)
-        self.assertIsInstance(response_data, list)
-        self.assertEqual(response_data[0]["section_id"], 1)
-        mock_get_the_project_id_for_owner.assert_called_with(
-            "owner", "123", self.view.request
-        )
-        mock_assessment_exists.assert_called_with(1, "ass123", self.view.request)
-        mock_get_project_data.assert_called_with(1, self.view.request)
-        mock_get_assessment_questions.assert_called_with(
-            "owner",
-            1,
-            "ass123",
-            self.view.request,
-            ["Label A", "Label B", "Label C"],
-            onlyShowTheBasicQuestions=True,
-        )
-
-    @patch(
-        "climmob.views.Api.projectAssessments.getAssessmentQuestions",
-        return_value=[
-            {
-                "section_id": 1,
-                "question_id": None,
-                "question_reqinasses": 0,
-                "hasQuestions": True,
-            },
-            {"section_id": 2, "question_id": 10, "question_reqinasses": 0},
-        ],
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.getProjectData",
-        return_value={
-            "project_label_a": "Label A",
-            "project_label_b": "Label B",
-            "project_label_c": "Label C",
-        },
-    )
-    @patch("climmob.views.Api.projectAssessments.assessmentExists", return_value=True)
-    @patch(
-        "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
-    )
-    def test_get_success_4(
-        self,
-        mock_get_the_project_id_for_owner,
-        mock_assessment_exists,
-        mock_get_project_data,
-        mock_get_assessment_questions,
-    ):
-        response = self.view.get()
-
-        self.assertEqual(response.status_code, 200)
-        response_data = json.loads(response.body)
-        self.assertIsInstance(response_data, list)
-        self.assertEqual(response_data[0]["section_id"], 1)
-        mock_get_the_project_id_for_owner.assert_called_with(
-            "owner", "123", self.view.request
-        )
-        mock_assessment_exists.assert_called_with(1, "ass123", self.view.request)
-        mock_get_project_data.assert_called_with(1, self.view.request)
-        mock_get_assessment_questions.assert_called_with(
-            "owner",
-            1,
-            "ass123",
-            self.view.request,
-            ["Label A", "Label B", "Label C"],
-            onlyShowTheBasicQuestions=True,
+        mock_set_group_flags.assert_called_with(
+            mock_get_assessment_questions.return_value
         )
 
     @patch("climmob.views.Api.projectAssessments.assessmentExists", return_value=False)
@@ -840,9 +706,92 @@ class TestReadProjectAssessmentStructureView(ViewBaseTest):
             "There is no data collection with that code.", response.body.decode()
         )
         mock_get_the_project_id_for_owner.assert_called_with(
-            "owner", "123", self.view.request
+            self.body["user_owner"], self.body["project_cod"], self.view.request
         )
-        mock_assessment_exists.assert_called_with(1, "ass123", self.view.request)
+        mock_assessment_exists.assert_called_with(
+            mock_get_the_project_id_for_owner.return_value,
+            self.body["ass_cod"],
+            self.view.request,
+        )
+
+
+class TestSetGroupFlags(unittest.TestCase):
+    def setUp(self):
+        self.view = ReadProjectAssessmentStructureView(MagicMock())
+        self.questions = [
+            {"section_id": 1, "question_id": 1, "question_reqinasses": 1},  # 0
+            {"section_id": 1, "question_id": 2, "question_reqinasses": 0},  # 1
+            {"section_id": 1, "question_id": None, "question_reqinasses": 0},  # 2
+            {"section_id": 2, "question_id": 3, "question_reqinasses": 0},  # 3
+            {"section_id": 2, "question_id": None, "question_reqinasses": 0},  # 4
+            {"section_id": 2, "question_id": 4, "question_reqinasses": 1},  # 5
+            {"section_id": 3, "question_id": 5, "question_reqinasses": 0},  # 6
+        ]
+
+    def test_for_create_GRP_value(self):
+        self.view.set_group_flags(self.questions)
+
+        values = [True, False, False, True, False, False, True]
+
+        for i, value in enumerate(values):
+            try:
+                self.assertEqual(value, self.questions[i].get("createGRP"))
+            except AssertionError:
+                raise AssertionError(
+                    f"self.questions[{i}] {value} != {self.questions[i].get('createGRP')}"
+                )
+
+    def test_for_grp_cannot_delete_value(self):
+        self.view.set_group_flags(self.questions)
+
+        values = [True, None, None, True, None, None, False]
+
+        for i, value in enumerate(values):
+            try:
+                self.assertEqual(value, self.questions[i].get("grpCannotDelete"))
+            except AssertionError:
+                raise AssertionError(
+                    f"self.questions[{i}] {value} != {self.questions[i].get('grpCannotDelete')}"
+                )
+
+    def test_for_close_qst_value(self):
+        self.view.set_group_flags(self.questions)
+
+        values = [False, False, False, False, False, False, True]
+
+        for i, value in enumerate(values):
+            try:
+                self.assertEqual(value, self.questions[i].get("closeQst"))
+            except AssertionError:
+                raise AssertionError(
+                    f"self.questions[{i}] {value} != {self.questions[i].get('closeQst')}"
+                )
+
+    def test_for_close_grp_value(self):
+        self.view.set_group_flags(self.questions)
+
+        values = [False, False, False, False, False, False, True]
+
+        for i, value in enumerate(values):
+            try:
+                self.assertEqual(value, self.questions[i].get("closeGrp"))
+            except AssertionError:
+                raise AssertionError(
+                    f"self.questions[{i}] {value} != {self.questions[i].get('closeGrp')}"
+                )
+
+    def test_for_has_questions_value(self):
+        self.view.set_group_flags(self.questions)
+
+        values = [True, True, False, True, False, True, True]
+
+        for i, value in enumerate(values):
+            try:
+                self.assertEqual(value, self.questions[i].get("hasQuestions"))
+            except AssertionError:
+                raise AssertionError(
+                    f"self.questions[{i}] {value} != {self.questions[i].get('hasQuestions')}"
+                )
 
 
 class TestCreateAssessmentGroupView(ViewBaseTest):
