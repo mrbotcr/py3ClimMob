@@ -627,7 +627,7 @@ class TestSetGroupFlags(unittest.TestCase):
                 )
 
 
-class TestCreateAssessmentGroupView(ViewBaseTest):
+class TestCreateAssessmentGroupView(ProjectAssessmentBaseTest):
     view_class = CreateAssessmentGroupView
     body = {
         "project_cod": "123",
@@ -637,6 +637,43 @@ class TestCreateAssessmentGroupView(ViewBaseTest):
         "section_content": "Content of Group 1",
     }
     request_body = json.dumps(body)
+
+    @classmethod
+    def setUpClass(cls):
+        cls.patchers["addAssessmentGroup"] = {
+            "patch": patch(
+                "climmob.views.Api.projectAssessments.addAssessmentGroup",
+            ),
+            "return_value": (True, "Group added successfully"),
+        }
+        cls.patchers["haveTheBasicStructureAssessment"] = {
+            "patch": patch(
+                "climmob.views.Api.projectAssessments.haveTheBasicStructureAssessment",
+            ),
+            "return_value": True,
+        }
+        super().setUpClass()
+
+    def tearDown(self):
+        super().tearDown()
+        if self.get_mock("addAssessmentGroup").called:
+            self.get_mock("addAssessmentGroup").assert_called_with(
+                self.body
+                | {
+                    "user_name": self.view.user.login,
+                    "section_private": None,
+                    "project_id": self.get_mock("getTheProjectIdForOwner").return_value,
+                },
+                self.view,
+                "API",
+            )
+        if self.get_mock("haveTheBasicStructureAssessment").called:
+            self.get_mock("haveTheBasicStructureAssessment").assert_called_with(
+                self.body["user_owner"],
+                self.get_mock("getTheProjectIdForOwner").return_value,
+                self.body["ass_cod"],
+                self.view.request,
+            )
 
     def test_has_validators(self):
         self.assertEqual(self.view.validators, (ProjectExistsValidator,))
@@ -653,160 +690,41 @@ class TestCreateAssessmentGroupView(ViewBaseTest):
             ),
         )
 
-    @patch(
-        "climmob.views.Api.projectAssessments.addAssessmentGroup",
-        return_value=(True, "Group added successfully"),
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.haveTheBasicStructureAssessment",
-        return_value=True,
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.projectAsessmentStatus", return_value=True
-    )
-    @patch("climmob.views.Api.projectAssessments.assessmentExists", return_value=True)
-    @patch(
-        "climmob.views.Api.projectAssessments.getAccessTypeForProject", return_value=1
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
-    )
-    def test_post_success(
-        self,
-        mock_get_the_project_id_for_owner,
-        mock_get_access_type_for_project,
-        mock_assessment_exists,
-        mock_project_asessment_status,
-        mock_have_the_basic_structure_assessment,
-        mock_add_assessment_group,
-    ):
+    def test_post_success(self):
         response = self.view.post()
 
         self.assertEqual(response.status_code, 200)
-        self.assertIn(mock_add_assessment_group.return_value[1], response.body.decode())
+        self.assertIn(
+            self.get_mock("addAssessmentGroup").return_value[1], response.body.decode()
+        )
 
         # Verify that all the patched methods were called
-        mock_get_the_project_id_for_owner.assert_called_with(
-            self.body["user_owner"], self.body["project_cod"], self.view.request
-        )
-        mock_get_access_type_for_project.assert_called_with(
-            self.view.user.login,
-            mock_get_the_project_id_for_owner.return_value,
-            self.view.request,
-        )
-        mock_assessment_exists.assert_called_with(
-            mock_get_the_project_id_for_owner.return_value,
-            self.body["ass_cod"],
-            self.view.request,
-        )
-        mock_project_asessment_status.assert_called_with(
-            mock_get_the_project_id_for_owner.return_value,
-            self.body["ass_cod"],
-            self.view.request,
-        )
-        mock_have_the_basic_structure_assessment.assert_called_with(
-            self.body["user_owner"],
-            mock_get_the_project_id_for_owner.return_value,
-            self.body["ass_cod"],
-            self.view.request,
-        )
-        mock_add_assessment_group.assert_called_with(
-            self.body
-            | {
-                "user_name": self.view.user.login,
-                "section_private": None,
-                "project_id": mock_get_the_project_id_for_owner.return_value,
-            },
-            self.view,
-            "API",
-        )
+        self.get_mock("getTheProjectIdForOwner").assert_called()
+        self.get_mock("getAccessTypeForProject").assert_called()
+        self.get_mock("assessmentExists").assert_called()
+        self.get_mock("projectAsessmentStatus").assert_called()
+        self.get_mock("haveTheBasicStructureAssessment").assert_called()
+        self.get_mock("addAssessmentGroup").assert_called()
 
-    @patch(
-        "climmob.views.Api.projectAssessments.addAssessmentGroup",
-        return_value=(False, "Error"),
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.haveTheBasicStructureAssessment",
-        return_value=True,
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.projectAsessmentStatus", return_value=True
-    )
-    @patch("climmob.views.Api.projectAssessments.assessmentExists", return_value=True)
-    @patch(
-        "climmob.views.Api.projectAssessments.getAccessTypeForProject", return_value=1
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
-    )
-    def test_post_error_at_add(
-        self,
-        mock_get_the_project_id_for_owner,
-        mock_get_access_type_for_project,
-        mock_assessment_exists,
-        mock_project_asessment_status,
-        mock_have_the_basic_structure_assessment,
-        mock_add_assessment_group,
-    ):
+    def test_post_error_at_add(self):
+        self.get_mock("addAssessmentGroup").return_value = (False, "Error")
         response = self.view.post()
 
         self.assertEqual(response.status_code, 401)
-        self.assertIn(mock_add_assessment_group.return_value[1], response.body.decode())
-
-        # Verify that all the patched methods were called
-        mock_get_the_project_id_for_owner.assert_called_with(
-            self.body["user_owner"], self.body["project_cod"], self.view.request
-        )
-        mock_get_access_type_for_project.assert_called_with(
-            self.view.user.login,
-            mock_get_the_project_id_for_owner.return_value,
-            self.view.request,
-        )
-        mock_assessment_exists.assert_called_with(
-            mock_get_the_project_id_for_owner.return_value,
-            self.body["ass_cod"],
-            self.view.request,
-        )
-        mock_project_asessment_status.assert_called_with(
-            mock_get_the_project_id_for_owner.return_value,
-            self.body["ass_cod"],
-            self.view.request,
-        )
-        mock_have_the_basic_structure_assessment.assert_called_with(
-            self.body["user_owner"],
-            mock_get_the_project_id_for_owner.return_value,
-            self.body["ass_cod"],
-            self.view.request,
-        )
-        mock_add_assessment_group.assert_called_with(
-            self.body
-            | {
-                "user_name": self.view.user.login,
-                "section_private": None,
-                "project_id": mock_get_the_project_id_for_owner.return_value,
-            },
-            self.view,
-            "API",
+        self.assertIn(
+            self.get_mock("addAssessmentGroup").return_value[1], response.body.decode()
         )
 
-    @patch(
-        "climmob.views.Api.projectAssessments.projectAsessmentStatus",
-        return_value=False,
-    )
-    @patch("climmob.views.Api.projectAssessments.assessmentExists", return_value=True)
-    @patch(
-        "climmob.views.Api.projectAssessments.getAccessTypeForProject", return_value=1
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
-    )
-    def test_post_started_data_collection(
-        self,
-        mock_get_the_project_id_for_owner,
-        mock_get_access_type_for_project,
-        mock_assessment_exists,
-        mock_project_asessment_status,
-    ):
+        self.get_mock("getTheProjectIdForOwner").assert_called()
+        self.get_mock("getAccessTypeForProject").assert_called()
+        self.get_mock("assessmentExists").assert_called()
+        self.get_mock("projectAsessmentStatus").assert_called()
+        self.get_mock("haveTheBasicStructureAssessment").assert_called()
+        self.get_mock("addAssessmentGroup").assert_called()
+
+    def test_post_started_data_collection(self):
+        self.get_mock("projectAsessmentStatus").return_value = False
+
         response = self.view.post()
 
         self.assertEqual(response.status_code, 401)
@@ -815,37 +733,14 @@ class TestCreateAssessmentGroupView(ViewBaseTest):
             response.body.decode(),
         )
 
-        # Verify that all the patched methods were called
-        mock_get_the_project_id_for_owner.assert_called_with(
-            self.body["user_owner"], self.body["project_cod"], self.view.request
-        )
-        mock_get_access_type_for_project.assert_called_with(
-            self.view.user.login,
-            mock_get_the_project_id_for_owner.return_value,
-            self.view.request,
-        )
-        mock_assessment_exists.assert_called_with(
-            mock_get_the_project_id_for_owner.return_value,
-            self.body["ass_cod"],
-            self.view.request,
-        )
-        mock_project_asessment_status.assert_called_with(
-            mock_get_the_project_id_for_owner.return_value,
-            self.body["ass_cod"],
-            self.view.request,
-        )
+        self.get_mock("getTheProjectIdForOwner").assert_called()
+        self.get_mock("getAccessTypeForProject").assert_called()
+        self.get_mock("assessmentExists").assert_called()
+        self.get_mock("projectAsessmentStatus").assert_called()
 
-    @patch(
-        "climmob.views.Api.projectAssessments.getAccessTypeForProject", return_value=4
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
-    )
-    def test_post_no_access(
-        self,
-        mock_get_the_project_id_for_owner,
-        mock_get_access_type_for_project,
-    ):
+    def test_post_no_access(self):
+        self.get_mock("getAccessTypeForProject").return_value = 4
+
         response = self.view.post()
 
         self.assertEqual(response.status_code, 401)
@@ -854,66 +749,26 @@ class TestCreateAssessmentGroupView(ViewBaseTest):
             response.body.decode(),
         )
 
-        mock_get_the_project_id_for_owner.assert_called_with(
-            self.body["user_owner"], self.body["project_cod"], self.view.request
-        )
-        mock_get_access_type_for_project.assert_called_with(
-            self.view.user.login,
-            mock_get_the_project_id_for_owner.return_value,
-            self.view.request,
-        )
+        self.get_mock("getTheProjectIdForOwner").assert_called()
+        self.get_mock("getAccessTypeForProject").assert_called()
 
-    @patch(
-        "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
-    )
-    @patch("climmob.views.Api.projectAssessments.assessmentExists", return_value=False)
-    def test_post_assessment_not_exist(
-        self,
-        mock_assessment_exists,
-        mock_get_the_project_id_for_owner,
-    ):
+    def test_post_assessment_not_exist(self):
+        self.get_mock("assessmentExists").return_value = False
+
         response = self.view.post()
 
         self.assertEqual(response.status_code, 401)
         self.assertIn(
             "There is no data collection with that code.", response.body.decode()
         )
-        mock_get_the_project_id_for_owner.assert_called_with(
-            self.body["user_owner"], self.body["project_cod"], self.view.request
-        )
-        mock_assessment_exists.assert_called_with(
-            mock_get_the_project_id_for_owner.return_value,
-            self.body["ass_cod"],
-            self.view.request,
-        )
 
-    @patch(
-        "climmob.views.Api.projectAssessments.addAssessmentGroup",
-        return_value=(False, "repeated"),
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.haveTheBasicStructureAssessment",
-        return_value=True,
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.projectAsessmentStatus", return_value=True
-    )
-    @patch("climmob.views.Api.projectAssessments.assessmentExists", return_value=True)
-    @patch(
-        "climmob.views.Api.projectAssessments.getAccessTypeForProject", return_value=1
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
-    )
-    def test_post_group_name_repeated(
-        self,
-        mock_get_the_project_id_for_owner,
-        mock_get_access_type_for_project,
-        mock_assessment_exists,
-        mock_project_asessment_status,
-        mock_have_the_basic_structure_assessment,
-        mock_add_assessment_group,
-    ):
+        self.get_mock("getTheProjectIdForOwner").assert_called()
+        self.get_mock("getAccessTypeForProject").assert_called()
+        self.get_mock("assessmentExists").assert_called()
+
+    def test_post_group_name_repeated(self):
+        self.get_mock("addAssessmentGroup").return_value = (False, "repeated")
+
         response = self.view.post()
 
         self.assertEqual(response.status_code, 401)
@@ -921,40 +776,12 @@ class TestCreateAssessmentGroupView(ViewBaseTest):
             "There is already a group with this name.", response.body.decode()
         )
 
-        mock_get_the_project_id_for_owner.assert_called_with(
-            self.body["user_owner"], self.body["project_cod"], self.view.request
-        )
-        mock_get_access_type_for_project.assert_called_with(
-            self.view.user.login,
-            mock_get_the_project_id_for_owner.return_value,
-            self.view.request,
-        )
-        mock_assessment_exists.assert_called_with(
-            mock_get_the_project_id_for_owner.return_value,
-            self.body["ass_cod"],
-            self.view.request,
-        )
-        mock_project_asessment_status.assert_called_with(
-            mock_get_the_project_id_for_owner.return_value,
-            self.body["ass_cod"],
-            self.view.request,
-        )
-        mock_have_the_basic_structure_assessment.assert_called_with(
-            self.body["user_owner"],
-            mock_get_the_project_id_for_owner.return_value,
-            self.body["ass_cod"],
-            self.view.request,
-        )
-        mock_add_assessment_group.assert_called_with(
-            self.body
-            | {
-                "user_name": self.view.user.login,
-                "section_private": None,
-                "project_id": mock_get_the_project_id_for_owner.return_value,
-            },
-            self.view,
-            "API",
-        )
+        self.get_mock("getTheProjectIdForOwner").assert_called()
+        self.get_mock("getAccessTypeForProject").assert_called()
+        self.get_mock("assessmentExists").assert_called()
+        self.get_mock("projectAsessmentStatus").assert_called()
+        self.get_mock("haveTheBasicStructureAssessment").assert_called()
+        self.get_mock("addAssessmentGroup").assert_called()
 
 
 class TestUpdateAssessmentGroupView(ViewBaseTest):
