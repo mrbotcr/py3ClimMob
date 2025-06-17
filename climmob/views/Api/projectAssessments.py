@@ -234,7 +234,7 @@ class DeleteProjectAssessmentView(apiView):
         else:
             response = Response(
                 status=200,
-                body=self._("Data collection moment deleted succesfully."),
+                body=self._("Data collection moment deleted successfully."),
             )
             return response
 
