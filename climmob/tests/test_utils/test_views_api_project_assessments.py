@@ -117,7 +117,8 @@ class TestReadProjectAssessmentsView(ProjectAssessmentBaseTest):
         self.get_mock("getTheProjectIdForOwner").assert_called()
         self.get_mock("getProjectAssessments").assert_called()
 
-class TestAddNewAssessmentView(ViewBaseTest):
+
+class TestAddNewAssessmentView(ProjectAssessmentBaseTest):
     view_class = AddNewAssessmentView
     body = {
         "project_cod": "123",
@@ -127,6 +128,30 @@ class TestAddNewAssessmentView(ViewBaseTest):
         "ass_final": "Yes",
     }
     request_body = json.dumps(body)
+
+    @classmethod
+    def setUpClass(cls):
+        cls.patchers["addProjectAssessment"] = {
+            "patch": patch(
+                "climmob.views.Api.projectAssessments.addProjectAssessment",
+            ),
+            "return_value": (True, "Assessment added successfully"),
+        }
+        super().setUpClass()
+
+    def tearDown(self):
+        super().tearDown()
+        if self.get_mock("addProjectAssessment").called:
+            self.get_mock("addProjectAssessment").assert_called_with(
+                self.body
+                | {
+                    "user_name": self.view.user.login,
+                    "userOwner": self.body["user_owner"],
+                    "project_id": self.get_mock("getTheProjectIdForOwner").return_value,
+                },
+                self.view.request,
+                "API",
+            )
 
     def test_has_validators(self):
         self.assertEqual(self.view.validators, (ProjectExistsValidator,))
@@ -143,59 +168,21 @@ class TestAddNewAssessmentView(ViewBaseTest):
             ),
         )
 
-    @patch(
-        "climmob.views.Api.projectAssessments.addProjectAssessment",
-        return_value=(True, "Assessment added successfully"),
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.getAccessTypeForProject", return_value=1
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
-    )
-    def test_post_success(
-        self,
-        mock_get_the_project_id_for_owner,
-        mock_get_access_type_for_project,
-        mock_add_project_assessment,
-    ):
+    def test_post_success(self):
         response = self.view.post()
 
         self.assertEqual(response.status_code, 200)
         self.assertIn(
-            mock_add_project_assessment.return_value[1], response.body.decode()
+            self.get_mock("addProjectAssessment").return_value[1],
+            response.body.decode(),
         )
+        self.get_mock("getTheProjectIdForOwner").assert_called()
+        self.get_mock("getAccessTypeForProject").assert_called()
+        self.get_mock("addProjectAssessment").assert_called()
 
-        mock_get_the_project_id_for_owner.assert_called_with(
-            self.body["user_owner"], self.body["project_cod"], self.view.request
-        )
-        mock_get_access_type_for_project.assert_called_with(
-            self.view.user.login,
-            mock_get_the_project_id_for_owner.return_value,
-            self.view.request,
-        )
-        mock_add_project_assessment.assert_called_with(
-            self.body
-            | {
-                "user_name": self.view.user.login,
-                "userOwner": self.body["user_owner"],
-                "project_id": mock_get_the_project_id_for_owner.return_value,
-            },
-            self.view.request,
-            "API",
-        )
+    def test_post_no_access(self):
+        self.get_mock("getAccessTypeForProject").return_value = 4
 
-    @patch(
-        "climmob.views.Api.projectAssessments.getAccessTypeForProject", return_value=4
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
-    )
-    def test_post_no_access(
-        self,
-        mock_get_the_project_id_for_owner,
-        mock_get_access_type_for_project,
-    ):
         response = self.view.post()
 
         self.assertEqual(response.status_code, 401)
@@ -204,57 +191,25 @@ class TestAddNewAssessmentView(ViewBaseTest):
             response.body.decode(),
         )
 
-        mock_get_the_project_id_for_owner.assert_called_with(
-            self.body["user_owner"], self.body["project_cod"], self.view.request
-        )
-        mock_get_access_type_for_project.assert_called_with(
-            self.view.user.login,
-            mock_get_the_project_id_for_owner.return_value,
-            self.view.request,
-        )
+        self.get_mock("getTheProjectIdForOwner").assert_called()
+        self.get_mock("getAccessTypeForProject").assert_called()
 
-    @patch(
-        "climmob.views.Api.projectAssessments.addProjectAssessment",
-        return_value=(False, "Error adding assessment"),
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.getAccessTypeForProject", return_value=1
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
-    )
-    def test_post_add_assessment_failed(
-        self,
-        mock_get_the_project_id_for_owner,
-        mock_get_access_type_for_project,
-        mock_add_project_assessment,
-    ):
+    def test_post_add_assessment_failed(self):
+        self.get_mock("addProjectAssessment").return_value = (
+            False,
+            "Error adding assessment",
+        )
         response = self.view.post()
 
         self.assertEqual(response.status_code, 401)
         self.assertIn(
-            mock_add_project_assessment.return_value[1], response.body.decode()
+            self.get_mock("addProjectAssessment").return_value[1],
+            response.body.decode(),
         )
 
-        # Verify that all the patched methods were called
-        mock_get_the_project_id_for_owner.assert_called_with(
-            self.body["user_owner"], self.body["project_cod"], self.view.request
-        )
-        mock_get_access_type_for_project.assert_called_with(
-            self.view.user.login,
-            mock_get_the_project_id_for_owner.return_value,
-            self.view.request,
-        )
-        mock_add_project_assessment.assert_called_with(
-            self.body
-            | {
-                "user_name": self.view.user.login,
-                "userOwner": self.body["user_owner"],
-                "project_id": mock_get_the_project_id_for_owner.return_value,
-            },
-            self.view.request,
-            "API",
-        )
+        self.get_mock("getTheProjectIdForOwner").assert_called()
+        self.get_mock("getAccessTypeForProject").assert_called()
+        self.get_mock("addProjectAssessment").assert_called()
 
 
 class TestUpdateProjectAssessmentView(ViewBaseTest):
