@@ -21,10 +21,77 @@ from climmob.views.validators import TextField, IntegerField, BinaryField
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 
 
-class TestReadProjectAssessmentsView(ViewBaseTest):
+class ProjectAssessmentBaseTest(ViewBaseTest):
+    body = {}
+    patchers = {}
+    mocks = {}
+
+    def setUp(self):
+        super().setUp()
+
+        for key in self.mocks:
+            self.mocks[key].reset_mock()
+            self.mocks[key].return_value = self.patchers[key]["return_value"]
+
+    @classmethod
+    def setUpClass(cls):
+        cls.patchers["getTheProjectIdForOwner"] = {
+            "patch": patch(
+                "climmob.views.Api.projectAssessments.getTheProjectIdForOwner"
+            ),
+            "return_value": 1,
+        }
+        cls.patchers["getAccessTypeForProject"] = {
+            "patch": patch(
+                "climmob.views.Api.projectAssessments.getAccessTypeForProject"
+            ),
+            "return_value": 1,
+        }
+        for key in cls.patchers:
+            cls.mocks[key] = cls.patchers[key]["patch"].start()
+
+    def tearDown(self):
+        if self.get_mock("getTheProjectIdForOwner").called:
+            self.get_mock("getTheProjectIdForOwner").assert_called_with(
+                self.body["user_owner"], self.body["project_cod"], self.view.request
+            )
+        if self.get_mock("getAccessTypeForProject").called:
+            self.get_mock("getAccessTypeForProject").assert_called_with(
+                self.view.user.login,
+                self.get_mock("getTheProjectIdForOwner").return_value,
+                self.view.request,
+            )
+
+    @classmethod
+    def tearDownClass(cls):
+        for key in cls.patchers:
+            cls.patchers[key]["patch"].stop()
+
+    def get_mock(self, name):
+        return self.mocks[name]
+
+
+class TestReadProjectAssessmentsView(ProjectAssessmentBaseTest):
     view_class = ReadProjectAssessmentsView
     body = {"project_cod": "123", "user_owner": "owner"}
     request_body = json.dumps(body)
+
+    @classmethod
+    def setUpClass(cls):
+        cls.patchers["getProjectAssessments"] = {
+            "patch": patch(
+                "climmob.views.Api.projectAssessments.getProjectAssessments",
+            ),
+            "return_value": [{}],
+        }
+        super().setUpClass()
+
+    def tearDown(self):
+        super().tearDown()
+        if self.get_mock("getProjectAssessments").called:
+            self.get_mock("getProjectAssessments").assert_called_with(
+                self.get_mock("getTheProjectIdForOwner").return_value, self.view.request
+            )
 
     def test_has_validators(self):
         self.assertEqual(self.view.validators, (ProjectExistsValidator,))
@@ -38,31 +105,17 @@ class TestReadProjectAssessmentsView(ViewBaseTest):
             ),
         )
 
-    @patch(
-        "climmob.views.Api.projectAssessments.getProjectAssessments",
-        return_value=[{"assessment": "data"}],
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
-    )
-    def test_get_success(
-        self,
-        mock_get_the_project_id_for_owner,
-        mock_get_project_assessments,
-    ):
+    def test_get_success(self):
         response = self.view.get()
 
         self.assertEqual(response.status_code, 200)
         response_data = json.loads(response.body)
-        self.assertEqual(response_data, mock_get_project_assessments.return_value)
-
-        mock_get_project_assessments.assert_called_with(
-            mock_get_the_project_id_for_owner.return_value, self.view.request
-        )
-        mock_get_the_project_id_for_owner.assert_called_with(
-            self.body["user_owner"], self.body["project_cod"], self.view.request
+        self.assertEqual(
+            response_data, self.get_mock("getProjectAssessments").return_value
         )
 
+        self.get_mock("getTheProjectIdForOwner").assert_called()
+        self.get_mock("getProjectAssessments").assert_called()
 
 class TestAddNewAssessmentView(ViewBaseTest):
     view_class = AddNewAssessmentView
