@@ -957,7 +957,7 @@ class TestUpdateAssessmentGroupView(ProjectAssessmentBaseTest):
         self.get_mock("modifyAssessmentGroup").assert_called()
 
 
-class TestDeleteAssessmentGroupView(ViewBaseTest):
+class TestDeleteAssessmentGroupView(ProjectAssessmentBaseTest):
     view_class = DeleteAssessmentGroupView
     body = {
         "project_cod": "123",
@@ -966,6 +966,58 @@ class TestDeleteAssessmentGroupView(ViewBaseTest):
         "group_cod": "789",
     }
     request_body = json.dumps(body)
+
+    @classmethod
+    def setUpClass(cls):
+        cls.patchers["exitsAssessmentGroup"] = {
+            "patch": patch(
+                "climmob.views.Api.projectAssessments.exitsAssessmentGroup",
+            ),
+            "return_value": True,
+        }
+        cls.patchers["canDeleteTheAssessmentGroup"] = {
+            "patch": patch(
+                "climmob.views.Api.projectAssessments.canDeleteTheAssessmentGroup",
+            ),
+            "return_value": True,
+        }
+        cls.patchers["deleteAssessmentGroup"] = {
+            "patch": patch(
+                "climmob.views.Api.projectAssessments.deleteAssessmentGroup",
+            ),
+            "return_value": (True, "Group deleted successfully"),
+        }
+        super().setUpClass()
+
+    def tearDown(self):
+        super().tearDown()
+        if self.get_mock("exitsAssessmentGroup").called:
+            self.get_mock("exitsAssessmentGroup").assert_called_with(
+                self.body
+                | {
+                    "user_name": self.view.user.login,
+                    "section_private": None,
+                    "project_id": self.get_mock("getTheProjectIdForOwner").return_value,
+                },
+                self.view,
+            )
+        if self.get_mock("canDeleteTheAssessmentGroup").called:
+            self.get_mock("canDeleteTheAssessmentGroup").assert_called_with(
+                self.body
+                | {
+                    "user_name": self.view.user.login,
+                    "section_private": None,
+                    "project_id": self.get_mock("getTheProjectIdForOwner").return_value,
+                },
+                self.view.request,
+            )
+        if self.get_mock("deleteAssessmentGroup").called:
+            self.get_mock("deleteAssessmentGroup").assert_called_with(
+                self.get_mock("getTheProjectIdForOwner").return_value,
+                self.body["ass_cod"],
+                self.body["group_cod"],
+                self.view.request,
+            )
 
     def test_has_validators(self):
         self.assertEqual(self.view.validators, (ProjectExistsValidator,))
@@ -981,105 +1033,26 @@ class TestDeleteAssessmentGroupView(ViewBaseTest):
             ),
         )
 
-    @patch(
-        "climmob.views.Api.projectAssessments.deleteAssessmentGroup",
-        return_value=(True, "Group deleted successfully"),
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.canDeleteTheAssessmentGroup",
-        return_value=True,
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.exitsAssessmentGroup", return_value=True
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.projectAsessmentStatus", return_value=True
-    )
-    @patch("climmob.views.Api.projectAssessments.assessmentExists", return_value=True)
-    @patch(
-        "climmob.views.Api.projectAssessments.getAccessTypeForProject", return_value=1
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
-    )
-    def test_post_success(
-        self,
-        mock_get_the_project_id_for_owner,
-        mock_get_access_type_for_project,
-        mock_assessment_exists,
-        mock_project_asessment_status,
-        mock_exits_assessment_group,
-        mock_canDeleteTheAssessmentGroup,
-        mock_deleteAssessmentGroup,
-    ):
+    def test_post_success(self):
         response = self.view.post()
 
         self.assertEqual(response.status_code, 200)
         self.assertIn(
-            mock_deleteAssessmentGroup.return_value[1], response.body.decode()
+            self.get_mock("deleteAssessmentGroup").return_value[1],
+            response.body.decode(),
         )
 
-        mock_get_the_project_id_for_owner.assert_called_with(
-            self.body["user_owner"], self.body["project_cod"], self.view.request
-        )
-        mock_get_access_type_for_project.assert_called_with(
-            self.view.user.login,
-            mock_get_the_project_id_for_owner.return_value,
-            self.view.request,
-        )
-        mock_assessment_exists.assert_called_with(
-            mock_get_the_project_id_for_owner.return_value,
-            self.body["ass_cod"],
-            self.view.request,
-        )
-        mock_project_asessment_status.assert_called_with(
-            mock_get_the_project_id_for_owner.return_value,
-            self.body["ass_cod"],
-            self.view.request,
-        )
-        mock_exits_assessment_group.assert_called_with(
-            self.body
-            | {
-                "user_name": self.view.user.login,
-                "section_private": None,
-                "project_id": mock_get_the_project_id_for_owner.return_value,
-            },
-            self.view,
-        )
-        mock_canDeleteTheAssessmentGroup.assert_called_with(
-            self.body
-            | {
-                "user_name": self.view.user.login,
-                "section_private": None,
-                "project_id": mock_get_the_project_id_for_owner.return_value,
-            },
-            self.view.request,
-        )
-        mock_deleteAssessmentGroup.assert_called_with(
-            mock_get_the_project_id_for_owner.return_value,
-            self.body["ass_cod"],
-            self.body["group_cod"],
-            self.view.request,
-        )
+        self.get_mock("getTheProjectIdForOwner").assert_called()
+        self.get_mock("getAccessTypeForProject").assert_called()
+        self.get_mock("assessmentExists").assert_called()
+        self.get_mock("projectAsessmentStatus").assert_called()
+        self.get_mock("exitsAssessmentGroup").assert_called()
+        self.get_mock("canDeleteTheAssessmentGroup").assert_called()
+        self.get_mock("deleteAssessmentGroup").assert_called()
 
-    @patch(
-        "climmob.views.Api.projectAssessments.projectAsessmentStatus",
-        return_value=False,
-    )
-    @patch("climmob.views.Api.projectAssessments.assessmentExists", return_value=True)
-    @patch(
-        "climmob.views.Api.projectAssessments.getAccessTypeForProject", return_value=1
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
-    )
-    def test_post_started_data_collection(
-        self,
-        mock_get_the_project_id_for_owner,
-        mock_get_access_type_for_project,
-        mock_assessment_exists,
-        mock_project_asessment_status,
-    ):
+    def test_post_started_data_collection(self):
+        self.get_mock("projectAsessmentStatus").return_value = False
+
         response = self.view.post()
 
         self.assertEqual(response.status_code, 401)
@@ -1088,69 +1061,27 @@ class TestDeleteAssessmentGroupView(ViewBaseTest):
             response.body.decode(),
         )
 
-        mock_get_the_project_id_for_owner.assert_called_with(
-            self.body["user_owner"], self.body["project_cod"], self.view.request
-        )
-        mock_get_access_type_for_project.assert_called_with(
-            self.view.user.login,
-            mock_get_the_project_id_for_owner.return_value,
-            self.view.request,
-        )
-        mock_assessment_exists.assert_called_with(
-            mock_get_the_project_id_for_owner.return_value,
-            self.body["ass_cod"],
-            self.view.request,
-        )
-        mock_project_asessment_status.assert_called_with(
-            mock_get_the_project_id_for_owner.return_value,
-            self.body["ass_cod"],
-            self.view.request,
-        )
+        self.get_mock("getTheProjectIdForOwner").assert_called()
+        self.get_mock("getAccessTypeForProject").assert_called()
+        self.get_mock("assessmentExists").assert_called()
+        self.get_mock("projectAsessmentStatus").assert_called()
 
-    @patch("climmob.views.Api.projectAssessments.assessmentExists", return_value=False)
-    @patch(
-        "climmob.views.Api.projectAssessments.getAccessTypeForProject", return_value=1
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
-    )
-    def test_post_assessment_not_exist(
-        self,
-        mock_get_the_project_id_for_owner,
-        mock_get_access_type_for_project,
-        mock_assessment_exists,
-    ):
+    def test_post_assessment_not_exist(self):
+        self.get_mock("assessmentExists").return_value = False
+
         response = self.view.post()
 
         self.assertEqual(response.status_code, 401)
         self.assertIn(
             "There is no data collection with that code.", response.body.decode()
         )
-        mock_get_the_project_id_for_owner.assert_called_with(
-            self.body["user_owner"], self.body["project_cod"], self.view.request
-        )
-        mock_get_access_type_for_project.assert_called_with(
-            self.view.user.login,
-            mock_get_the_project_id_for_owner.return_value,
-            self.view.request,
-        )
-        mock_assessment_exists.assert_called_with(
-            mock_get_the_project_id_for_owner.return_value,
-            self.body["ass_cod"],
-            self.view.request,
-        )
+        self.get_mock("getTheProjectIdForOwner").assert_called()
+        self.get_mock("getAccessTypeForProject").assert_called()
+        self.get_mock("assessmentExists").assert_called()
 
-    @patch(
-        "climmob.views.Api.projectAssessments.getAccessTypeForProject", return_value=4
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
-    )
-    def test_post_no_access(
-        self,
-        mock_get_the_project_id_for_owner,
-        mock_get_access_type_for_project,
-    ):
+    def test_post_no_access(self):
+        self.get_mock("getAccessTypeForProject").return_value = 4
+
         response = self.view.post()
 
         self.assertEqual(response.status_code, 401)
@@ -1159,95 +1090,26 @@ class TestDeleteAssessmentGroupView(ViewBaseTest):
             response.body.decode(),
         )
 
-        mock_get_the_project_id_for_owner.assert_called_with(
-            self.body["user_owner"], self.body["project_cod"], self.view.request
-        )
-        mock_get_access_type_for_project.assert_called_with(
-            self.view.user.login,
-            mock_get_the_project_id_for_owner.return_value,
-            self.view.request,
-        )
+        self.get_mock("getTheProjectIdForOwner").assert_called()
+        self.get_mock("getAccessTypeForProject").assert_called()
 
-    @patch(
-        "climmob.views.Api.projectAssessments.exitsAssessmentGroup", return_value=False
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.projectAsessmentStatus", return_value=True
-    )
-    @patch("climmob.views.Api.projectAssessments.assessmentExists", return_value=True)
-    @patch(
-        "climmob.views.Api.projectAssessments.getAccessTypeForProject", return_value=1
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
-    )
-    def test_post_group_not_exist(
-        self,
-        mock_get_the_project_id_for_owner,
-        mock_get_access_type_for_project,
-        mock_assessment_exists,
-        mock_project_asessment_status,
-        mock_exits_assessment_group,
-    ):
+    def test_post_group_not_exist(self):
+        self.get_mock("exitsAssessmentGroup").return_value = False
+
         response = self.view.post()
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("There is not a group with that code.", response.body.decode())
 
-        mock_get_the_project_id_for_owner.assert_called_with(
-            self.body["user_owner"], self.body["project_cod"], self.view.request
-        )
-        mock_get_access_type_for_project.assert_called_with(
-            self.view.user.login,
-            mock_get_the_project_id_for_owner.return_value,
-            self.view.request,
-        )
-        mock_assessment_exists.assert_called_with(
-            mock_get_the_project_id_for_owner.return_value,
-            self.body["ass_cod"],
-            self.view.request,
-        )
-        mock_project_asessment_status.assert_called_with(
-            mock_get_the_project_id_for_owner.return_value,
-            self.body["ass_cod"],
-            self.view.request,
-        )
-        mock_exits_assessment_group.assert_called_with(
-            self.body
-            | {
-                "user_name": self.view.user.login,
-                "section_private": None,
-                "project_id": mock_get_the_project_id_for_owner.return_value,
-            },
-            self.view,
-        )
+        self.get_mock("getTheProjectIdForOwner").assert_called()
+        self.get_mock("getAccessTypeForProject").assert_called()
+        self.get_mock("assessmentExists").assert_called()
+        self.get_mock("projectAsessmentStatus").assert_called()
+        self.get_mock("exitsAssessmentGroup").assert_called()
 
-    @patch(
-        "climmob.views.Api.projectAssessments.canDeleteTheAssessmentGroup",
-        return_value=False,
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.exitsAssessmentGroup", return_value=True
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.projectAsessmentStatus", return_value=True
-    )
-    @patch("climmob.views.Api.projectAssessments.assessmentExists", return_value=True)
-    @patch(
-        "climmob.views.Api.projectAssessments.getAccessTypeForProject", return_value=1
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
-    )
-    def test_post_group_cannot_be_deleted(
-        self,
-        mock_get_the_project_id_for_owner,
-        mock_get_access_type_for_project,
-        mock_assessment_exists,
-        mock_project_asessment_status,
-        mock_exits_assessment_group,
-        mock_canDeleteTheAssessmentGroup,
-    ):
+    def test_post_group_cannot_be_deleted(self):
+        self.get_mock("canDeleteTheAssessmentGroup").return_value = False
+
         response = self.view.post()
 
         self.assertEqual(response.status_code, 401)
@@ -1256,125 +1118,31 @@ class TestDeleteAssessmentGroupView(ViewBaseTest):
             response.body.decode(),
         )
 
-        mock_get_the_project_id_for_owner.assert_called_with(
-            self.body["user_owner"], self.body["project_cod"], self.view.request
-        )
-        mock_get_access_type_for_project.assert_called_with(
-            self.view.user.login,
-            mock_get_the_project_id_for_owner.return_value,
-            self.view.request,
-        )
-        mock_assessment_exists.assert_called_with(
-            mock_get_the_project_id_for_owner.return_value,
-            self.body["ass_cod"],
-            self.view.request,
-        )
-        mock_project_asessment_status.assert_called_with(
-            mock_get_the_project_id_for_owner.return_value,
-            self.body["ass_cod"],
-            self.view.request,
-        )
-        self.assertTrue(mock_exits_assessment_group.called)
-        mock_exits_assessment_group.assert_called_with(
-            self.body
-            | {
-                "user_name": self.view.user.login,
-                "section_private": None,
-                "project_id": mock_get_the_project_id_for_owner.return_value,
-            },
-            self.view,
-        )
-        mock_canDeleteTheAssessmentGroup.assert_called_with(
-            self.body
-            | {
-                "user_name": self.view.user.login,
-                "section_private": None,
-                "project_id": mock_get_the_project_id_for_owner.return_value,
-            },
-            self.view.request,
-        )
+        self.get_mock("getTheProjectIdForOwner").assert_called()
+        self.get_mock("getAccessTypeForProject").assert_called()
+        self.get_mock("assessmentExists").assert_called()
+        self.get_mock("projectAsessmentStatus").assert_called()
+        self.get_mock("exitsAssessmentGroup").assert_called()
+        self.get_mock("canDeleteTheAssessmentGroup").assert_called()
 
-    @patch(
-        "climmob.views.Api.projectAssessments.deleteAssessmentGroup",
-        return_value=(False, "Deletion failed"),
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.canDeleteTheAssessmentGroup",
-        return_value=True,
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.exitsAssessmentGroup", return_value=True
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.projectAsessmentStatus", return_value=True
-    )
-    @patch("climmob.views.Api.projectAssessments.assessmentExists", return_value=True)
-    @patch(
-        "climmob.views.Api.projectAssessments.getAccessTypeForProject", return_value=1
-    )
-    @patch(
-        "climmob.views.Api.projectAssessments.getTheProjectIdForOwner", return_value=1
-    )
-    def test_post_deletion_failed(
-        self,
-        mock_get_the_project_id_for_owner,
-        mock_get_access_type_for_project,
-        mock_assessment_exists,
-        mock_project_asessment_status,
-        mock_exits_assessment_group,
-        mock_canDeleteTheAssessmentGroup,
-        mock_deleteAssessmentGroup,
-    ):
+    def test_post_deletion_failed(self):
+        self.get_mock("deleteAssessmentGroup").return_value = (False, "Deletion failed")
+
         response = self.view.post()
 
         self.assertEqual(response.status_code, 401)
         self.assertIn(
-            mock_deleteAssessmentGroup.return_value[1], response.body.decode()
+            self.get_mock("deleteAssessmentGroup").return_value[1],
+            response.body.decode(),
         )
 
-        mock_get_the_project_id_for_owner.assert_called_with(
-            self.body["user_owner"], self.body["project_cod"], self.view.request
-        )
-        mock_get_access_type_for_project.assert_called_with(
-            self.view.user.login,
-            mock_get_the_project_id_for_owner.return_value,
-            self.view.request,
-        )
-        mock_assessment_exists.assert_called_with(
-            mock_get_the_project_id_for_owner.return_value,
-            self.body["ass_cod"],
-            self.view.request,
-        )
-        mock_project_asessment_status.assert_called_with(
-            mock_get_the_project_id_for_owner.return_value,
-            self.body["ass_cod"],
-            self.view.request,
-        )
-        self.assertTrue(mock_exits_assessment_group.called)
-        mock_exits_assessment_group.assert_called_with(
-            self.body
-            | {
-                "user_name": self.view.user.login,
-                "section_private": None,
-                "project_id": mock_get_the_project_id_for_owner.return_value,
-            },
-            self.view,
-        )
-        mock_canDeleteTheAssessmentGroup.assert_called_with(
-            self.body
-            | {
-                "user_name": self.view.user.login,
-                "section_private": None,
-                "project_id": mock_get_the_project_id_for_owner.return_value,
-            },
-            self.view.request,
-        )
-        mock_deleteAssessmentGroup.assert_called_with(
-            mock_get_the_project_id_for_owner.return_value,
-            self.body["ass_cod"],
-            self.body["group_cod"],
-            self.view.request,
-        )
+        self.get_mock("getTheProjectIdForOwner").assert_called()
+        self.get_mock("getAccessTypeForProject").assert_called()
+        self.get_mock("assessmentExists").assert_called()
+        self.get_mock("projectAsessmentStatus").assert_called()
+        self.get_mock("exitsAssessmentGroup").assert_called()
+        self.get_mock("canDeleteTheAssessmentGroup").assert_called()
+        self.get_mock("deleteAssessmentGroup").assert_called()
 
 
 class TestReadPossibleQuestionForAssessmentGroupView(ViewBaseTest):
