@@ -149,7 +149,7 @@ from climmob.views.assessment import (
     CancelAssessmentView,
     assessmentFormCreation_view,
     assessmentSectionActions_view,
-    getAssessmentSection_view,
+    getAssessmentSection_view, CloneAssessmentView,
 )
 from climmob.views.basic_views import (
     HomeView,
@@ -974,6 +974,14 @@ def loadRoutes(config):
             "/user/{user}/project/{project}/assessment/{assessmentid}",
             assessment_view,
             "project/assessment/assessmentdetail.jinja2",
+        )
+    )
+    routes.append(
+        addRoute(
+            "clone_assessment",
+            "/user/{user}/project/{project}/assessment/{assessmentid}/clone",
+            CloneAssessmentView,
+            None,
         )
     )
     routes.append(
