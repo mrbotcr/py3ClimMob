@@ -744,7 +744,7 @@ class AddQuestionToGroupAssessmentView(apiView):
             return response
 
         dataworking["project_id"] = activeProjectId
-        exitsGroup = exitsAssessmentGroup(dataworking, self)
+        exitsGroup = exitsAssessmentGroup(dataworking.copy(), self)
 
         if not exitsGroup:
             response = Response(
