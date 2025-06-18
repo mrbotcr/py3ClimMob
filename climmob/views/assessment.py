@@ -402,6 +402,24 @@ class assessment_view(privateView):
 
             return dictreturn
 
+class CloneAssessmentView(privateView):
+    validators = (ProjectExistsValidator, )
+
+    def post(self):
+        active_project_user = self.request.user
+        active_project_cod = self.request.project
+        assessment_id = self.request.assessmentid
+
+        assessment = getProjectAssessmentInfo(
+            self.context.active_project_id, assessment_id, self.request
+        )
+        assessment["userOwner"] = self.user.login
+        assessment["ass_status"] = 0
+
+        added, msg = addProjectAssessment(assessment, self.request)
+
+        self.returnRawViewResult = True
+        return HTTPFound(location=self.request.route_url("assessment", user=active_project_user, project=active_project_cod))
 
 class assessmentFormCreation_view(privateView):
     def processView(self):
