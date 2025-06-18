@@ -65,23 +65,23 @@ class ProjectAssessmentBaseTest(ViewBaseTest):
 
     def tearDown(self):
         if self.get_mock("getTheProjectIdForOwner").called:
-            self.get_mock("getTheProjectIdForOwner").assert_called_with(
+            self.get_mock("getTheProjectIdForOwner").assert_called_once_with(
                 self.body["user_owner"], self.body["project_cod"], self.view.request
             )
         if self.get_mock("getAccessTypeForProject").called:
-            self.get_mock("getAccessTypeForProject").assert_called_with(
+            self.get_mock("getAccessTypeForProject").assert_called_once_with(
                 self.view.user.login,
                 self.get_mock("getTheProjectIdForOwner").return_value,
                 self.view.request,
             )
         if self.get_mock("assessmentExists").called:
-            self.get_mock("assessmentExists").assert_called_with(
+            self.get_mock("assessmentExists").assert_called_once_with(
                 self.get_mock("getTheProjectIdForOwner").return_value,
                 self.body["ass_cod"],
                 self.view.request,
             )
         if self.get_mock("projectAsessmentStatus").called:
-            self.get_mock("projectAsessmentStatus").assert_called_with(
+            self.get_mock("projectAsessmentStatus").assert_called_once_with(
                 self.get_mock("getTheProjectIdForOwner").return_value,
                 self.body["ass_cod"],
                 self.view.request,
@@ -114,7 +114,7 @@ class TestReadProjectAssessmentsView(ProjectAssessmentBaseTest):
     def tearDown(self):
         super().tearDown()
         if self.get_mock("getProjectAssessments").called:
-            self.get_mock("getProjectAssessments").assert_called_with(
+            self.get_mock("getProjectAssessments").assert_called_once_with(
                 self.get_mock("getTheProjectIdForOwner").return_value, self.view.request
             )
 
@@ -139,8 +139,8 @@ class TestReadProjectAssessmentsView(ProjectAssessmentBaseTest):
             response_data, self.get_mock("getProjectAssessments").return_value
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getProjectAssessments").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getProjectAssessments").assert_called_once()
 
 
 class TestAddNewAssessmentView(ProjectAssessmentBaseTest):
@@ -167,7 +167,7 @@ class TestAddNewAssessmentView(ProjectAssessmentBaseTest):
     def tearDown(self):
         super().tearDown()
         if self.get_mock("addProjectAssessment").called:
-            self.get_mock("addProjectAssessment").assert_called_with(
+            self.get_mock("addProjectAssessment").assert_called_once_with(
                 self.body
                 | {
                     "user_name": self.view.user.login,
@@ -201,9 +201,9 @@ class TestAddNewAssessmentView(ProjectAssessmentBaseTest):
             self.get_mock("addProjectAssessment").return_value[1],
             response.body.decode(),
         )
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("addProjectAssessment").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("addProjectAssessment").assert_called_once()
 
     def test_post_no_access(self):
         self.get_mock("getAccessTypeForProject").return_value = 4
@@ -216,8 +216,8 @@ class TestAddNewAssessmentView(ProjectAssessmentBaseTest):
             response.body.decode(),
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
 
     def test_post_add_assessment_failed(self):
         self.get_mock("addProjectAssessment").return_value = (
@@ -232,9 +232,9 @@ class TestAddNewAssessmentView(ProjectAssessmentBaseTest):
             response.body.decode(),
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("addProjectAssessment").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("addProjectAssessment").assert_called_once()
 
 
 class TestUpdateProjectAssessmentView(ProjectAssessmentBaseTest):
@@ -261,7 +261,7 @@ class TestUpdateProjectAssessmentView(ProjectAssessmentBaseTest):
     def tearDown(self):
         super().tearDown()
         if self.get_mock("modifyProjectAssessment").called:
-            self.get_mock("modifyProjectAssessment").assert_called_with(
+            self.get_mock("modifyProjectAssessment").assert_called_once_with(
                 self.body
                 | {
                     "user_name": self.view.user.login,
@@ -294,10 +294,10 @@ class TestUpdateProjectAssessmentView(ProjectAssessmentBaseTest):
             response.body.decode(),
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("modifyProjectAssessment").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("modifyProjectAssessment").assert_called_once()
 
     def test_post_no_access(self):
         self.get_mock("getAccessTypeForProject").return_value = 4
@@ -310,8 +310,8 @@ class TestUpdateProjectAssessmentView(ProjectAssessmentBaseTest):
             response.body.decode(),
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
 
     def test_post_assessment_not_exist(self):
         self.get_mock("assessmentExists").return_value = False
@@ -323,9 +323,9 @@ class TestUpdateProjectAssessmentView(ProjectAssessmentBaseTest):
             "There is no data collection with that code.", response.body.decode()
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
 
     def test_post_update_assessment_failed(self):
         self.get_mock("modifyProjectAssessment").return_value = (
@@ -341,10 +341,10 @@ class TestUpdateProjectAssessmentView(ProjectAssessmentBaseTest):
             response.body.decode(),
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("modifyProjectAssessment").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("modifyProjectAssessment").assert_called_once()
 
 
 class TestDeleteProjectAssessmentView(ProjectAssessmentBaseTest):
@@ -365,7 +365,7 @@ class TestDeleteProjectAssessmentView(ProjectAssessmentBaseTest):
     def tearDown(self):
         super().tearDown()
         if self.get_mock("deleteProjectAssessment").called:
-            self.get_mock("deleteProjectAssessment").assert_called_with(
+            self.get_mock("deleteProjectAssessment").assert_called_once_with(
                 self.body["user_owner"],
                 self.get_mock("getTheProjectIdForOwner").return_value,
                 self.body["project_cod"],
@@ -391,11 +391,11 @@ class TestDeleteProjectAssessmentView(ProjectAssessmentBaseTest):
             response.body.decode(),
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
-        self.get_mock("deleteProjectAssessment").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
+        self.get_mock("deleteProjectAssessment").assert_called_once()
 
     def test_post_no_access(self):
         self.get_mock("getAccessTypeForProject").return_value = 4
@@ -408,8 +408,8 @@ class TestDeleteProjectAssessmentView(ProjectAssessmentBaseTest):
             response.body.decode(),
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
 
     def test_post_assessment_not_exist(self):
         self.get_mock("assessmentExists").return_value = False
@@ -421,9 +421,9 @@ class TestDeleteProjectAssessmentView(ProjectAssessmentBaseTest):
             "There is no data collection with that code.", response.body.decode()
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
 
     def test_post_assessment_cannot_be_deleted(self):
         self.get_mock("projectAsessmentStatus").return_value = False
@@ -436,10 +436,10 @@ class TestDeleteProjectAssessmentView(ProjectAssessmentBaseTest):
             response.body.decode(),
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
 
     def test_post_delete_assessment_failed(self):
         self.get_mock("deleteProjectAssessment").return_value = (
@@ -455,11 +455,11 @@ class TestDeleteProjectAssessmentView(ProjectAssessmentBaseTest):
             response.body.decode(),
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
-        self.get_mock("deleteProjectAssessment").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
+        self.get_mock("deleteProjectAssessment").assert_called_once()
 
 
 class TestReadProjectAssessmentStructureView(ProjectAssessmentBaseTest):
@@ -499,7 +499,7 @@ class TestReadProjectAssessmentStructureView(ProjectAssessmentBaseTest):
     def tearDown(self):
         super().tearDown()
         if self.get_mock("getAssessmentQuestions").called:
-            self.get_mock("getAssessmentQuestions").assert_called_with(
+            self.get_mock("getAssessmentQuestions").assert_called_once_with(
                 self.body["user_owner"],
                 self.get_mock("getTheProjectIdForOwner").return_value,
                 self.body["ass_cod"],
@@ -512,7 +512,7 @@ class TestReadProjectAssessmentStructureView(ProjectAssessmentBaseTest):
                 onlyShowTheBasicQuestions=True,
             )
         if self.get_mock("getProjectData").called:
-            self.get_mock("getProjectData").assert_called_with(
+            self.get_mock("getProjectData").assert_called_once_with(
                 self.get_mock("getTheProjectIdForOwner").return_value, self.view.request
             )
 
@@ -526,12 +526,12 @@ class TestReadProjectAssessmentStructureView(ProjectAssessmentBaseTest):
             response_data, self.get_mock("getAssessmentQuestions").return_value
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("getProjectData").assert_called()
-        self.get_mock("getAssessmentQuestions").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("getProjectData").assert_called_once()
+        self.get_mock("getAssessmentQuestions").assert_called_once()
 
-        mock_set_group_flags.assert_called_with(
+        mock_set_group_flags.assert_called_once_with(
             self.get_mock("getAssessmentQuestions").return_value
         )
 
@@ -544,8 +544,8 @@ class TestReadProjectAssessmentStructureView(ProjectAssessmentBaseTest):
         self.assertIn(
             "There is no data collection with that code.", response.body.decode()
         )
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("assessmentExists").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
 
 
 class TestSetGroupFlags(unittest.TestCase):
@@ -657,7 +657,7 @@ class TestCreateAssessmentGroupView(ProjectAssessmentBaseTest):
     def tearDown(self):
         super().tearDown()
         if self.get_mock("addAssessmentGroup").called:
-            self.get_mock("addAssessmentGroup").assert_called_with(
+            self.get_mock("addAssessmentGroup").assert_called_once_with(
                 self.body
                 | {
                     "user_name": self.view.user.login,
@@ -668,7 +668,7 @@ class TestCreateAssessmentGroupView(ProjectAssessmentBaseTest):
                 "API",
             )
         if self.get_mock("haveTheBasicStructureAssessment").called:
-            self.get_mock("haveTheBasicStructureAssessment").assert_called_with(
+            self.get_mock("haveTheBasicStructureAssessment").assert_called_once_with(
                 self.body["user_owner"],
                 self.get_mock("getTheProjectIdForOwner").return_value,
                 self.body["ass_cod"],
@@ -699,12 +699,12 @@ class TestCreateAssessmentGroupView(ProjectAssessmentBaseTest):
         )
 
         # Verify that all the patched methods were called
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
-        self.get_mock("haveTheBasicStructureAssessment").assert_called()
-        self.get_mock("addAssessmentGroup").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
+        self.get_mock("haveTheBasicStructureAssessment").assert_called_once()
+        self.get_mock("addAssessmentGroup").assert_called_once()
 
     def test_post_error_at_add(self):
         self.get_mock("addAssessmentGroup").return_value = (False, "Error")
@@ -715,12 +715,12 @@ class TestCreateAssessmentGroupView(ProjectAssessmentBaseTest):
             self.get_mock("addAssessmentGroup").return_value[1], response.body.decode()
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
-        self.get_mock("haveTheBasicStructureAssessment").assert_called()
-        self.get_mock("addAssessmentGroup").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
+        self.get_mock("haveTheBasicStructureAssessment").assert_called_once()
+        self.get_mock("addAssessmentGroup").assert_called_once()
 
     def test_post_started_data_collection(self):
         self.get_mock("projectAsessmentStatus").return_value = False
@@ -733,10 +733,10 @@ class TestCreateAssessmentGroupView(ProjectAssessmentBaseTest):
             response.body.decode(),
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
 
     def test_post_no_access(self):
         self.get_mock("getAccessTypeForProject").return_value = 4
@@ -749,8 +749,8 @@ class TestCreateAssessmentGroupView(ProjectAssessmentBaseTest):
             response.body.decode(),
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
 
     def test_post_assessment_not_exist(self):
         self.get_mock("assessmentExists").return_value = False
@@ -762,9 +762,9 @@ class TestCreateAssessmentGroupView(ProjectAssessmentBaseTest):
             "There is no data collection with that code.", response.body.decode()
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
 
     def test_post_group_name_repeated(self):
         self.get_mock("addAssessmentGroup").return_value = (False, "repeated")
@@ -776,12 +776,12 @@ class TestCreateAssessmentGroupView(ProjectAssessmentBaseTest):
             "There is already a group with this name.", response.body.decode()
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
-        self.get_mock("haveTheBasicStructureAssessment").assert_called()
-        self.get_mock("addAssessmentGroup").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
+        self.get_mock("haveTheBasicStructureAssessment").assert_called_once()
+        self.get_mock("addAssessmentGroup").assert_called_once()
 
 
 class TestUpdateAssessmentGroupView(ProjectAssessmentBaseTest):
@@ -815,7 +815,7 @@ class TestUpdateAssessmentGroupView(ProjectAssessmentBaseTest):
     def tearDown(self):
         super().tearDown()
         if self.get_mock("modifyAssessmentGroup").called:
-            self.get_mock("modifyAssessmentGroup").assert_called_with(
+            self.get_mock("modifyAssessmentGroup").assert_called_once_with(
                 self.body
                 | {
                     "user_name": self.view.user.login,
@@ -825,7 +825,7 @@ class TestUpdateAssessmentGroupView(ProjectAssessmentBaseTest):
                 self.view,
             )
         if self.get_mock("exitsAssessmentGroup").called:
-            self.get_mock("exitsAssessmentGroup").assert_called_with(
+            self.get_mock("exitsAssessmentGroup").assert_called_once_with(
                 self.body
                 | {
                     "user_name": self.view.user.login,
@@ -860,12 +860,12 @@ class TestUpdateAssessmentGroupView(ProjectAssessmentBaseTest):
             response.body.decode(),
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
-        self.get_mock("exitsAssessmentGroup").assert_called()
-        self.get_mock("modifyAssessmentGroup").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
+        self.get_mock("exitsAssessmentGroup").assert_called_once()
+        self.get_mock("modifyAssessmentGroup").assert_called_once()
 
     def test_post_error_to_modify(self):
         self.get_mock("modifyAssessmentGroup").return_value = (False, "Error")
@@ -877,12 +877,12 @@ class TestUpdateAssessmentGroupView(ProjectAssessmentBaseTest):
             response.body.decode(),
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
-        self.get_mock("exitsAssessmentGroup").assert_called()
-        self.get_mock("modifyAssessmentGroup").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
+        self.get_mock("exitsAssessmentGroup").assert_called_once()
+        self.get_mock("modifyAssessmentGroup").assert_called_once()
 
     def test_post_already_started_collection(self):
         self.get_mock("projectAsessmentStatus").return_value = False
@@ -894,10 +894,10 @@ class TestUpdateAssessmentGroupView(ProjectAssessmentBaseTest):
             response.body.decode(),
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
 
     def test_post_no_access(self):
         self.get_mock("getAccessTypeForProject").return_value = 4
@@ -910,8 +910,8 @@ class TestUpdateAssessmentGroupView(ProjectAssessmentBaseTest):
             response.body.decode(),
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
 
     def test_post_assessment_not_exist(self):
         self.get_mock("assessmentExists").return_value = False
@@ -922,9 +922,9 @@ class TestUpdateAssessmentGroupView(ProjectAssessmentBaseTest):
         self.assertIn(
             "There is no data collection with that code.", response.body.decode()
         )
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
 
     def test_post_group_not_exist(self):
         self.get_mock("exitsAssessmentGroup").return_value = False
@@ -934,11 +934,11 @@ class TestUpdateAssessmentGroupView(ProjectAssessmentBaseTest):
         self.assertEqual(response.status_code, 401)
         self.assertIn("There is not a group with that code.", response.body.decode())
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
-        self.get_mock("exitsAssessmentGroup").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
+        self.get_mock("exitsAssessmentGroup").assert_called_once()
 
     def test_post_group_name_repeated(self):
         self.get_mock("modifyAssessmentGroup").return_value = (False, "repeated")
@@ -949,12 +949,12 @@ class TestUpdateAssessmentGroupView(ProjectAssessmentBaseTest):
             "There is already a group with this name.", response.body.decode()
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
-        self.get_mock("exitsAssessmentGroup").assert_called()
-        self.get_mock("modifyAssessmentGroup").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
+        self.get_mock("exitsAssessmentGroup").assert_called_once()
+        self.get_mock("modifyAssessmentGroup").assert_called_once()
 
 
 class TestDeleteAssessmentGroupView(ProjectAssessmentBaseTest):
@@ -992,7 +992,7 @@ class TestDeleteAssessmentGroupView(ProjectAssessmentBaseTest):
     def tearDown(self):
         super().tearDown()
         if self.get_mock("exitsAssessmentGroup").called:
-            self.get_mock("exitsAssessmentGroup").assert_called_with(
+            self.get_mock("exitsAssessmentGroup").assert_called_once_with(
                 self.body
                 | {
                     "user_name": self.view.user.login,
@@ -1002,7 +1002,7 @@ class TestDeleteAssessmentGroupView(ProjectAssessmentBaseTest):
                 self.view,
             )
         if self.get_mock("canDeleteTheAssessmentGroup").called:
-            self.get_mock("canDeleteTheAssessmentGroup").assert_called_with(
+            self.get_mock("canDeleteTheAssessmentGroup").assert_called_once_with(
                 self.body
                 | {
                     "user_name": self.view.user.login,
@@ -1012,7 +1012,7 @@ class TestDeleteAssessmentGroupView(ProjectAssessmentBaseTest):
                 self.view.request,
             )
         if self.get_mock("deleteAssessmentGroup").called:
-            self.get_mock("deleteAssessmentGroup").assert_called_with(
+            self.get_mock("deleteAssessmentGroup").assert_called_once_with(
                 self.get_mock("getTheProjectIdForOwner").return_value,
                 self.body["ass_cod"],
                 self.body["group_cod"],
@@ -1042,13 +1042,13 @@ class TestDeleteAssessmentGroupView(ProjectAssessmentBaseTest):
             response.body.decode(),
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
-        self.get_mock("exitsAssessmentGroup").assert_called()
-        self.get_mock("canDeleteTheAssessmentGroup").assert_called()
-        self.get_mock("deleteAssessmentGroup").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
+        self.get_mock("exitsAssessmentGroup").assert_called_once()
+        self.get_mock("canDeleteTheAssessmentGroup").assert_called_once()
+        self.get_mock("deleteAssessmentGroup").assert_called_once()
 
     def test_post_started_data_collection(self):
         self.get_mock("projectAsessmentStatus").return_value = False
@@ -1061,10 +1061,10 @@ class TestDeleteAssessmentGroupView(ProjectAssessmentBaseTest):
             response.body.decode(),
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
 
     def test_post_assessment_not_exist(self):
         self.get_mock("assessmentExists").return_value = False
@@ -1075,9 +1075,9 @@ class TestDeleteAssessmentGroupView(ProjectAssessmentBaseTest):
         self.assertIn(
             "There is no data collection with that code.", response.body.decode()
         )
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
 
     def test_post_no_access(self):
         self.get_mock("getAccessTypeForProject").return_value = 4
@@ -1090,8 +1090,8 @@ class TestDeleteAssessmentGroupView(ProjectAssessmentBaseTest):
             response.body.decode(),
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
 
     def test_post_group_not_exist(self):
         self.get_mock("exitsAssessmentGroup").return_value = False
@@ -1101,11 +1101,11 @@ class TestDeleteAssessmentGroupView(ProjectAssessmentBaseTest):
         self.assertEqual(response.status_code, 401)
         self.assertIn("There is not a group with that code.", response.body.decode())
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
-        self.get_mock("exitsAssessmentGroup").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
+        self.get_mock("exitsAssessmentGroup").assert_called_once()
 
     def test_post_group_cannot_be_deleted(self):
         self.get_mock("canDeleteTheAssessmentGroup").return_value = False
@@ -1118,12 +1118,12 @@ class TestDeleteAssessmentGroupView(ProjectAssessmentBaseTest):
             response.body.decode(),
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
-        self.get_mock("exitsAssessmentGroup").assert_called()
-        self.get_mock("canDeleteTheAssessmentGroup").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
+        self.get_mock("exitsAssessmentGroup").assert_called_once()
+        self.get_mock("canDeleteTheAssessmentGroup").assert_called_once()
 
     def test_post_deletion_failed(self):
         self.get_mock("deleteAssessmentGroup").return_value = (False, "Deletion failed")
@@ -1136,13 +1136,13 @@ class TestDeleteAssessmentGroupView(ProjectAssessmentBaseTest):
             response.body.decode(),
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
-        self.get_mock("exitsAssessmentGroup").assert_called()
-        self.get_mock("canDeleteTheAssessmentGroup").assert_called()
-        self.get_mock("deleteAssessmentGroup").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
+        self.get_mock("exitsAssessmentGroup").assert_called_once()
+        self.get_mock("canDeleteTheAssessmentGroup").assert_called_once()
+        self.get_mock("deleteAssessmentGroup").assert_called_once()
 
 
 class TestReadPossibleQuestionForAssessmentGroupView(ProjectAssessmentBaseTest):
@@ -1182,13 +1182,13 @@ class TestReadPossibleQuestionForAssessmentGroupView(ProjectAssessmentBaseTest):
     def tearDown(self):
         super().tearDown()
         if self.get_mock("availableAssessmentQuestions").called:
-            self.get_mock("availableAssessmentQuestions").assert_called_with(
+            self.get_mock("availableAssessmentQuestions").assert_called_once_with(
                 self.get_mock("getTheProjectIdForOwner").return_value,
                 self.body["ass_cod"],
                 self.view.request,
             )
         if self.get_mock("QuestionsOptions").called:
-            self.get_mock("QuestionsOptions").assert_called_with(
+            self.get_mock("QuestionsOptions").assert_called_once_with(
                 self.view.user.login,
                 self.body["user_owner"],
                 self.view.request,
@@ -1208,12 +1208,12 @@ class TestReadPossibleQuestionForAssessmentGroupView(ProjectAssessmentBaseTest):
             self.get_mock("QuestionsOptions").return_value,
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
-        self.get_mock("availableAssessmentQuestions").assert_called()
-        self.get_mock("QuestionsOptions").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
+        self.get_mock("availableAssessmentQuestions").assert_called_once()
+        self.get_mock("QuestionsOptions").assert_called_once()
 
     def test_get_access_not_allow_action(self):
         self.get_mock("getAccessTypeForProject").return_value = 4
@@ -1225,8 +1225,8 @@ class TestReadPossibleQuestionForAssessmentGroupView(ProjectAssessmentBaseTest):
             "The access assigned for this project does not allow you to do this action.",
             response.body.decode(),
         )
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
 
     def test_get_access_already_start_data_collection(self):
         self.get_mock("projectAsessmentStatus").return_value = False
@@ -1238,10 +1238,10 @@ class TestReadPossibleQuestionForAssessmentGroupView(ProjectAssessmentBaseTest):
             "You cannot update data collection moments. You already started the data collection.",
             response.body.decode(),
         )
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
 
     def test_get_assessment_not_exist(self):
         self.get_mock("assessmentExists").return_value = False
@@ -1252,9 +1252,9 @@ class TestReadPossibleQuestionForAssessmentGroupView(ProjectAssessmentBaseTest):
         self.assertIn(
             "There is no data collection with that code.", response.body.decode()
         )
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
 
 
 class TestAddQuestionToGroupAssessmentView(ProjectAssessmentBaseTest):
@@ -1306,7 +1306,7 @@ class TestAddQuestionToGroupAssessmentView(ProjectAssessmentBaseTest):
     def tearDown(self):
         super().tearDown()
         if self.get_mock("addAssessmentQuestionToGroup").called:
-            self.get_mock("addAssessmentQuestionToGroup").assert_called_with(
+            self.get_mock("addAssessmentQuestionToGroup").assert_called_once_with(
                 self.body
                 | {
                     "user_name": self.view.user.login,
@@ -1317,7 +1317,7 @@ class TestAddQuestionToGroupAssessmentView(ProjectAssessmentBaseTest):
                 self.view.request,
             )
         if self.get_mock("canUseTheQuestionAssessment").called:
-            self.get_mock("canUseTheQuestionAssessment").assert_called_with(
+            self.get_mock("canUseTheQuestionAssessment").assert_called_once_with(
                 self.body["question_user_name"],
                 self.get_mock("getTheProjectIdForOwner").return_value,
                 self.body["ass_cod"],
@@ -1325,7 +1325,7 @@ class TestAddQuestionToGroupAssessmentView(ProjectAssessmentBaseTest):
                 self.view.request,
             )
         if self.get_mock("getQuestionData").called:
-            self.get_mock("getQuestionData").assert_called_with(
+            self.get_mock("getQuestionData").assert_called_once_with(
                 self.body["question_user_name"],
                 self.body["question_id"],
                 self.view.request,
@@ -1341,7 +1341,7 @@ class TestAddQuestionToGroupAssessmentView(ProjectAssessmentBaseTest):
                 self.view,
             )
         if self.get_mock("theUserBelongsToTheProject").called:
-            self.get_mock("theUserBelongsToTheProject").assert_called_with(
+            self.get_mock("theUserBelongsToTheProject").assert_called_once_with(
                 self.body["question_user_name"],
                 self.get_mock("getTheProjectIdForOwner").return_value,
                 self.view.request,
@@ -1371,15 +1371,15 @@ class TestAddQuestionToGroupAssessmentView(ProjectAssessmentBaseTest):
             "The question was added to the data collection moment.",
             response.body.decode(),
         )
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("theUserBelongsToTheProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
-        self.get_mock("exitsAssessmentGroup").assert_called()
-        self.get_mock("getQuestionData").assert_called()
-        self.get_mock("canUseTheQuestionAssessment").assert_called()
-        self.get_mock("addAssessmentQuestionToGroup").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("theUserBelongsToTheProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
+        self.get_mock("exitsAssessmentGroup").assert_called_once()
+        self.get_mock("getQuestionData").assert_called_once()
+        self.get_mock("canUseTheQuestionAssessment").assert_called_once()
+        self.get_mock("addAssessmentQuestionToGroup").assert_called_once()
 
     def test_post_error_add(self):
         self.get_mock("addAssessmentQuestionToGroup").return_value = (False, "Error.")
@@ -1391,15 +1391,15 @@ class TestAddQuestionToGroupAssessmentView(ProjectAssessmentBaseTest):
             self.get_mock("addAssessmentQuestionToGroup").return_value[1],
             response.body.decode(),
         )
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("theUserBelongsToTheProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
-        self.get_mock("exitsAssessmentGroup").assert_called()
-        self.get_mock("getQuestionData").assert_called()
-        self.get_mock("canUseTheQuestionAssessment").assert_called()
-        self.get_mock("addAssessmentQuestionToGroup").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("theUserBelongsToTheProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
+        self.get_mock("exitsAssessmentGroup").assert_called_once()
+        self.get_mock("getQuestionData").assert_called_once()
+        self.get_mock("canUseTheQuestionAssessment").assert_called_once()
+        self.get_mock("addAssessmentQuestionToGroup").assert_called_once()
 
     def test_post_question_no_question_id(self):
         self.get_mock("getQuestionData").return_value = (False, False)
@@ -1411,13 +1411,13 @@ class TestAddQuestionToGroupAssessmentView(ProjectAssessmentBaseTest):
             "You do not have a question with this ID.",
             response.body.decode(),
         )
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("theUserBelongsToTheProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
-        self.get_mock("exitsAssessmentGroup").assert_called()
-        self.get_mock("getQuestionData").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("theUserBelongsToTheProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
+        self.get_mock("exitsAssessmentGroup").assert_called_once()
+        self.get_mock("getQuestionData").assert_called_once()
 
     def test_post_question_cannot_be_used(self):
         self.get_mock("canUseTheQuestionAssessment").return_value = False
@@ -1429,14 +1429,14 @@ class TestAddQuestionToGroupAssessmentView(ProjectAssessmentBaseTest):
             "The question is already assigned to the data collection moment or cannot be used in this section.",
             response.body.decode(),
         )
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("theUserBelongsToTheProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
-        self.get_mock("exitsAssessmentGroup").assert_called()
-        self.get_mock("getQuestionData").assert_called()
-        self.get_mock("canUseTheQuestionAssessment").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("theUserBelongsToTheProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
+        self.get_mock("exitsAssessmentGroup").assert_called_once()
+        self.get_mock("getQuestionData").assert_called_once()
+        self.get_mock("canUseTheQuestionAssessment").assert_called_once()
 
     def test_post_access_not_allow_to_add(self):
         self.get_mock("getAccessTypeForProject").return_value = 4
@@ -1448,8 +1448,8 @@ class TestAddQuestionToGroupAssessmentView(ProjectAssessmentBaseTest):
             "The access assigned for this project does not allow you to add question to groups.",
             response.body.decode(),
         )
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
 
     def test_post_user_not_belong_to_project(self):
         self.get_mock("theUserBelongsToTheProject").return_value = False
@@ -1461,9 +1461,9 @@ class TestAddQuestionToGroupAssessmentView(ProjectAssessmentBaseTest):
             "You are trying to add a question from a user that does not belong to this project.",
             response.body.decode(),
         )
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("theUserBelongsToTheProject").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("theUserBelongsToTheProject").assert_called_once()
 
     def test_post_assessment_not_exist(self):
         self.get_mock("assessmentExists").return_value = False
@@ -1474,10 +1474,10 @@ class TestAddQuestionToGroupAssessmentView(ProjectAssessmentBaseTest):
         self.assertIn(
             "There is no data collection with that code.", response.body.decode()
         )
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("theUserBelongsToTheProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("theUserBelongsToTheProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
 
     def test_post_assessment_already_started(self):
         self.get_mock("projectAsessmentStatus").return_value = False
@@ -1489,11 +1489,11 @@ class TestAddQuestionToGroupAssessmentView(ProjectAssessmentBaseTest):
             "You cannot update data collection moments. You already started the data collection.",
             response.body.decode(),
         )
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("theUserBelongsToTheProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("theUserBelongsToTheProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
 
     def test_post_group_not_exist(self):
         self.get_mock("exitsAssessmentGroup").return_value = False
@@ -1502,12 +1502,12 @@ class TestAddQuestionToGroupAssessmentView(ProjectAssessmentBaseTest):
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("There is not a group with that code.", response.body.decode())
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("theUserBelongsToTheProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
-        self.get_mock("exitsAssessmentGroup").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("theUserBelongsToTheProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
+        self.get_mock("exitsAssessmentGroup").assert_called_once()
 
 
 class TestDeleteQuestionFromGroupAssessmentView(ProjectAssessmentBaseTest):
@@ -1558,23 +1558,23 @@ class TestDeleteQuestionFromGroupAssessmentView(ProjectAssessmentBaseTest):
             "project_id": self.get_mock("getTheProjectIdForOwner").return_value,
         }
         if self.get_mock("deleteAssessmentQuestionFromGroup").called:
-            self.get_mock("deleteAssessmentQuestionFromGroup").assert_called_with(
+            self.get_mock("deleteAssessmentQuestionFromGroup").assert_called_once_with(
                 self.body,
                 self.view.request,
             )
         if self.get_mock("exitsQuestionInGroupAssessment").called:
-            self.get_mock("exitsQuestionInGroupAssessment").assert_called_with(
+            self.get_mock("exitsQuestionInGroupAssessment").assert_called_once_with(
                 self.body,
                 self.view.request,
             )
         if self.get_mock("getQuestionData").called:
-            self.get_mock("getQuestionData").assert_called_with(
+            self.get_mock("getQuestionData").assert_called_once_with(
                 self.body["question_user_name"],
                 self.body["question_id"],
                 self.view.request,
             )
         if self.get_mock("exitsAssessmentGroup").called:
-            self.get_mock("exitsAssessmentGroup").assert_called_with(
+            self.get_mock("exitsAssessmentGroup").assert_called_once_with(
                 self.body,
                 self.view,
             )
@@ -1603,14 +1603,14 @@ class TestDeleteQuestionFromGroupAssessmentView(ProjectAssessmentBaseTest):
             self.get_mock("deleteAssessmentQuestionFromGroup").return_value[1],
             response.body.decode(),
         )
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
-        self.get_mock("exitsAssessmentGroup").assert_called()
-        self.get_mock("getQuestionData").assert_called()
-        self.get_mock("exitsQuestionInGroupAssessment").assert_called()
-        self.get_mock("deleteAssessmentQuestionFromGroup").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
+        self.get_mock("exitsAssessmentGroup").assert_called_once()
+        self.get_mock("getQuestionData").assert_called_once()
+        self.get_mock("exitsQuestionInGroupAssessment").assert_called_once()
+        self.get_mock("deleteAssessmentQuestionFromGroup").assert_called_once()
 
     def test_post_error_to_delete(self):
         self.get_mock("deleteAssessmentQuestionFromGroup").return_value = (
@@ -1625,14 +1625,14 @@ class TestDeleteQuestionFromGroupAssessmentView(ProjectAssessmentBaseTest):
             self.get_mock("deleteAssessmentQuestionFromGroup").return_value[1],
             response.body.decode(),
         )
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
-        self.get_mock("exitsAssessmentGroup").assert_called()
-        self.get_mock("getQuestionData").assert_called()
-        self.get_mock("exitsQuestionInGroupAssessment").assert_called()
-        self.get_mock("deleteAssessmentQuestionFromGroup").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
+        self.get_mock("exitsAssessmentGroup").assert_called_once()
+        self.get_mock("getQuestionData").assert_called_once()
+        self.get_mock("exitsQuestionInGroupAssessment").assert_called_once()
+        self.get_mock("deleteAssessmentQuestionFromGroup").assert_called_once()
 
     def test_post_no_exist_question(self):
         self.get_mock("exitsQuestionInGroupAssessment").return_value = False
@@ -1644,13 +1644,13 @@ class TestDeleteQuestionFromGroupAssessmentView(ProjectAssessmentBaseTest):
             "You do not have a question with this ID in this group.",
             response.body.decode(),
         )
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
-        self.get_mock("exitsAssessmentGroup").assert_called()
-        self.get_mock("getQuestionData").assert_called()
-        self.get_mock("exitsQuestionInGroupAssessment").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
+        self.get_mock("exitsAssessmentGroup").assert_called_once()
+        self.get_mock("getQuestionData").assert_called_once()
+        self.get_mock("exitsQuestionInGroupAssessment").assert_called_once()
 
     def test_post_no_group_whit_this_code(self):
         self.get_mock("exitsAssessmentGroup").return_value = False
@@ -1659,11 +1659,11 @@ class TestDeleteQuestionFromGroupAssessmentView(ProjectAssessmentBaseTest):
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("There is not a group with that code.", response.body.decode())
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
-        self.get_mock("exitsAssessmentGroup").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
+        self.get_mock("exitsAssessmentGroup").assert_called_once()
 
     def test_post_already_started_data_collection(self):
         self.get_mock("projectAsessmentStatus").return_value = False
@@ -1674,10 +1674,10 @@ class TestDeleteQuestionFromGroupAssessmentView(ProjectAssessmentBaseTest):
             "You cannot update data collection moments. You already started the data collection.",
             response.body.decode(),
         )
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
 
     def test_post_already_no_data_collection(self):
         self.get_mock("assessmentExists").return_value = False
@@ -1687,9 +1687,9 @@ class TestDeleteQuestionFromGroupAssessmentView(ProjectAssessmentBaseTest):
         self.assertIn(
             "There is no data collection with that code.", response.body.decode()
         )
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
 
     def test_post_no_access(self):
         self.get_mock("getAccessTypeForProject").return_value = 4
@@ -1701,8 +1701,8 @@ class TestDeleteQuestionFromGroupAssessmentView(ProjectAssessmentBaseTest):
             "The access assigned for this project does not allow you to delete questions from a group.",
             response.body.decode(),
         )
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
 
     def test_post_question_not_exist(self):
         self.get_mock("getQuestionData").return_value = (None, False)
@@ -1713,12 +1713,12 @@ class TestDeleteQuestionFromGroupAssessmentView(ProjectAssessmentBaseTest):
         self.assertIn(
             "You do not have a question with this ID.", response.body.decode()
         )
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
-        self.get_mock("exitsAssessmentGroup").assert_called()
-        self.get_mock("getQuestionData").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
+        self.get_mock("exitsAssessmentGroup").assert_called_once()
+        self.get_mock("getQuestionData").assert_called_once()
 
     def test_post_question_required(self):
         self.get_mock("getQuestionData").return_value = (
@@ -1733,12 +1733,12 @@ class TestDeleteQuestionFromGroupAssessmentView(ProjectAssessmentBaseTest):
             "You can not delete this question because is required for this data collection moment.",
             response.body.decode(),
         )
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
-        self.get_mock("exitsAssessmentGroup").assert_called()
-        self.get_mock("getQuestionData").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
+        self.get_mock("exitsAssessmentGroup").assert_called_once()
+        self.get_mock("getQuestionData").assert_called_once()
 
 
 class TestOrderAssessmentQuestionsView(ProjectAssessmentBaseTest):
@@ -1796,19 +1796,19 @@ class TestOrderAssessmentQuestionsView(ProjectAssessmentBaseTest):
             "project_id": self.get_mock("getTheProjectIdForOwner").return_value,
         }
         if self.get_mock("saveAssessmentOrder").called:
-            self.get_mock("saveAssessmentOrder").assert_called_with(
+            self.get_mock("saveAssessmentOrder").assert_called_once_with(
                 self.get_mock("getTheProjectIdForOwner").return_value,
                 self.body["ass_cod"],
                 json.loads(self.body["order"]),
                 self.view.request,
             )
         if self.get_mock("getAssessmentQuestionsApi").called:
-            self.get_mock("getAssessmentQuestionsApi").assert_called_with(
+            self.get_mock("getAssessmentQuestionsApi").assert_called_once_with(
                 self.body,
                 self.view,
             )
         if self.get_mock("getAssessmentGroup").called:
-            self.get_mock("getAssessmentGroup").assert_called_with(
+            self.get_mock("getAssessmentGroup").assert_called_once_with(
                 self.body,
                 self.view,
             )
@@ -1834,13 +1834,13 @@ class TestOrderAssessmentQuestionsView(ProjectAssessmentBaseTest):
             "The order of the groups and questions has been changed.",
             response.body.decode(),
         )
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
-        self.get_mock("getAssessmentGroup").assert_called()
-        self.get_mock("getAssessmentQuestionsApi").assert_called()
-        self.get_mock("saveAssessmentOrder").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
+        self.get_mock("getAssessmentGroup").assert_called_once()
+        self.get_mock("getAssessmentQuestionsApi").assert_called_once()
+        self.get_mock("saveAssessmentOrder").assert_called_once()
 
     def test_post_no_permission(self):
         self.get_mock("getAccessTypeForProject").return_value = 4
@@ -1851,8 +1851,8 @@ class TestOrderAssessmentQuestionsView(ProjectAssessmentBaseTest):
             "The access assigned for this project does not allow you to order the questions.",
             response.body.decode(),
         )
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
 
     def test_post_assessment_not_exist(self):
         self.get_mock("assessmentExists").return_value = False
@@ -1862,9 +1862,9 @@ class TestOrderAssessmentQuestionsView(ProjectAssessmentBaseTest):
         self.assertIn(
             "There is no data collection with that code.", response.body.decode()
         )
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
 
     def test_post_data_collection_started(self):
         self.get_mock("projectAsessmentStatus").return_value = False
@@ -1875,10 +1875,10 @@ class TestOrderAssessmentQuestionsView(ProjectAssessmentBaseTest):
             "You cannot update data collection moments. You already started the data collection.",
             response.body.decode(),
         )
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
 
     def test_post_invalid_order_json(self):
         self.view.body = json.dumps(
@@ -1892,10 +1892,10 @@ class TestOrderAssessmentQuestionsView(ProjectAssessmentBaseTest):
         response = self.view.post()
         self.assertEqual(response.status_code, 401)
         self.assertIn("Error in the JSON order.", response.body.decode())
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
 
     def test_post_questions_outside_groups(self):
         self.view.body = json.dumps(
@@ -1909,10 +1909,10 @@ class TestOrderAssessmentQuestionsView(ProjectAssessmentBaseTest):
         response = self.view.post()
         self.assertEqual(response.status_code, 401)
         self.assertIn("Questions cannot be outside a group", response.body.decode())
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
 
     def test_post_groups_not_in_form(self):
         self.get_mock("getAssessmentGroup").return_value = [1]
@@ -1924,11 +1924,11 @@ class TestOrderAssessmentQuestionsView(ProjectAssessmentBaseTest):
             response.body.decode(),
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
-        self.get_mock("getAssessmentGroup").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
+        self.get_mock("getAssessmentGroup").assert_called_once()
 
     def test_post_questions_not_in_form(self):
         self.get_mock("getAssessmentQuestionsApi").return_value = [1, 2]
@@ -1940,12 +1940,12 @@ class TestOrderAssessmentQuestionsView(ProjectAssessmentBaseTest):
             response.body.decode(),
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
-        self.get_mock("getAssessmentGroup").assert_called()
-        self.get_mock("getAssessmentQuestionsApi").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
+        self.get_mock("getAssessmentGroup").assert_called_once()
+        self.get_mock("getAssessmentQuestionsApi").assert_called_once()
 
     def test_post_save_order_fails(self):
         self.get_mock("saveAssessmentOrder").return_value = (
@@ -1961,13 +1961,13 @@ class TestOrderAssessmentQuestionsView(ProjectAssessmentBaseTest):
             response.body.decode(),
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called()
-        self.get_mock("getAccessTypeForProject").assert_called()
-        self.get_mock("assessmentExists").assert_called()
-        self.get_mock("projectAsessmentStatus").assert_called()
-        self.get_mock("getAssessmentGroup").assert_called()
-        self.get_mock("getAssessmentQuestionsApi").assert_called()
-        self.get_mock("saveAssessmentOrder").assert_called()
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("projectAsessmentStatus").assert_called_once()
+        self.get_mock("getAssessmentGroup").assert_called_once()
+        self.get_mock("getAssessmentQuestionsApi").assert_called_once()
+        self.get_mock("saveAssessmentOrder").assert_called_once()
 
 
 if __name__ == "__main__":
