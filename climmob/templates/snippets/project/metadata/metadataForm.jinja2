@@ -11,8 +11,10 @@
         {% if lang_answer_name %}
             {{_("This form displays the answers in the language they were saved in:")}} {{ lang_answer_name }}
         {% else %}
-            {{ _("Please check your selected language. <br>
-            Your answers will be saved and displayed in that language. For consistency, use the same language across all metadata fields and make sure it matches the project language.") }}
+            {{ _("Please check your selected language.")}} <br>
+            {{_("Your answers will be saved and displayed in that language.
+            For consistency, use the same language across all metadata fields and make sure it matches the project
+            language.") }}
     {% endif %}
         </strong>
         </div>
