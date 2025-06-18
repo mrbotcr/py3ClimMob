@@ -295,9 +295,8 @@ class ReadProjectAssessmentStructureView(apiView):
         # The following is to help jinja2 to render the groups and questions
         # This because the scope constraint makes it difficult to control
 
-        finalCloseQst = ""
-        sectionID = -99
-        grpIndex = -1
+        sectionID = None
+        grpIndex = None
         for i in range(len(questions)):
             if questions[i]["section_id"] != sectionID:
                 grpIndex = i
@@ -319,13 +318,12 @@ class ReadProjectAssessmentStructureView(apiView):
                 questions[i]["closeQst"] = False
                 questions[i]["closeGrp"] = False
 
-            if questions[i]["question_id"] != None:
+            if questions[i]["question_id"] is not None:
                 questions[i]["hasQuestions"] = True
                 if questions[i]["question_reqinasses"] == 1:
                     questions[grpIndex]["grpCannotDelete"] = True
             else:
                 questions[i]["hasQuestions"] = False
-        finalCloseQst = questions[len(questions) - 1]["hasQuestions"]
 
 
 class CreateAssessmentGroupView(apiView):
@@ -1019,6 +1017,9 @@ class OrderAssessmentQuestionsView(apiView):
             originalData,
             self.request,
         )
+
+        if not modified:
+            return Response(status="401", body=error)
 
         response = Response(
             status=200,
