@@ -33,9 +33,7 @@ from climmob.processes import (
     languageExistInTheProject,
     getPhraseTranslationInLanguage,
     update_project_status,
-    getAllAssessmentGroups,
-    get_assessment_questions_unformatted,
-    add_assessment_question,
+    clone_assessment,
 )
 from climmob.products.forms.form import create_document_form
 from climmob.views.classes import privateView
@@ -414,34 +412,7 @@ class CloneAssessmentView(privateView):
         active_project_cod = self.request.project
         assessment_id = self.request.assessmentid
 
-        assessment = getProjectAssessmentInfo(
-            self.context.active_project_id, assessment_id, self.request
-        )
-        assessment["userOwner"] = self.user.login
-        assessment["ass_status"] = 0
-
-        sections = getAllAssessmentGroups(assessment, self.request)
-
-        questions = get_assessment_questions_unformatted(
-            self.context.active_project_id, assessment_id, self.request
-        )
-
-        added, msg = addProjectAssessment(assessment, self.request)
-
-        error = not added
-
-        for section in sections:
-            section["ass_cod"] = assessment["ass_cod"]
-            added, msg = addAssessmentGroup(section, self)
-            if not added and msg != "repeated":
-                error = True
-
-        for question in questions:
-            question["ass_cod"] = assessment["ass_cod"]
-            question["section_assessment"] = assessment["ass_cod"]
-            added, msg = add_assessment_question(question, self.request)
-            if not added and msg != "repeated":
-                error = True
+        error = clone_assessment(self, self.context.active_project_id, assessment_id)
 
         if error:
             self.request.session.flash(
