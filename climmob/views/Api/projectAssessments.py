@@ -234,7 +234,7 @@ class DeleteProjectAssessmentView(apiView):
         else:
             response = Response(
                 status=200,
-                body=self._("Data collection moment deleted succesfully."),
+                body=self._("Data collection moment deleted successfully."),
             )
             return response
 
@@ -744,7 +744,7 @@ class AddQuestionToGroupAssessmentView(apiView):
             return response
 
         dataworking["project_id"] = activeProjectId
-        exitsGroup = exitsAssessmentGroup(dataworking, self)
+        exitsGroup = exitsAssessmentGroup(dataworking.copy(), self)
 
         if not exitsGroup:
             response = Response(
