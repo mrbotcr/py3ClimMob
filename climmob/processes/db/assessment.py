@@ -3,6 +3,9 @@ import os
 import shutil
 import uuid
 from subprocess import Popen, PIPE
+
+from sqlalchemy.exc import IntegrityError
+
 import climmob.plugins as p
 from jinja2 import Environment
 from sqlalchemy import func, and_
@@ -77,6 +80,8 @@ __all__ = [
     "assessmentHaveQuestionOfMultimediaType",
     "deleteProjectAssessments",
     "getFinalizedAssessments",
+    "get_assessment_questions_unformatted",
+    "add_assessment_question",
 ]
 
 log = logging.getLogger(__name__)
@@ -334,7 +339,7 @@ def setAssessmentStatus(userOwner, projectCod, projectId, status, request):
             try:
                 path = os.path.join(
                     request.registry.settings["user.repository"],
-                    *[userOwner, projectCod, "data", "ass", assessment.ass_cod]
+                    *[userOwner, projectCod, "data", "ass", assessment.ass_cod],
                 )
                 shutil.rmtree(path)
             except:
@@ -564,7 +569,7 @@ def deleteProjectAssessment(userOwner, projectId, projectCod, assessment, reques
         ).filter(Assessment.ass_cod == assessment).delete()
         dropFile = os.path.join(
             request.registry.settings["user.repository"],
-            *[userOwner, projectCod, "db", "ass", assessment, "drop.sql"]
+            *[userOwner, projectCod, "db", "ass", assessment, "drop.sql"],
         )
         # Drop the schema if the file exists
         if os.path.exists(dropFile):
@@ -740,6 +745,44 @@ def haveTheBasicStructureAssessment(userOwner, projectId, assessmentId, request)
     if hasSections is None:
         addQuestionsToAssessment(userOwner, projectId, assessmentId, request)
 
+def get_assessment_questions_unformatted(project_id, ass_cod, request):
+    result = (
+        request.dbsession.query(AssDetail)
+        .filter(AssDetail.project_id == project_id)
+        .filter(AssDetail.ass_cod == ass_cod)
+        .all()
+    )
+
+    return mapFromSchema(result)
+
+def add_assessment_question(question, request):
+    result = mapFromSchema(
+        request.dbsession.query(AssDetail)
+        .filter(AssDetail.project_id == question["project_id"])
+        .filter(AssDetail.ass_cod == question["ass_cod"])
+        .filter(AssDetail.question_id == question["question_id"])
+        .all()
+    )
+
+    if len(result) > 0:
+        return False, "repeated"
+
+    new_question = AssDetail(
+        ass_cod=question["ass_cod"],
+        question_id=question["question_id"],
+        section_assessment=question["section_assessment"],
+        section_id=question["section_id"],
+        question_order=question["question_order"],
+        project_id=question["project_id"],
+        section_project_id=question["section_project_id"],
+    )
+    try:
+        request.dbsession.add(new_question)
+        return True, ""
+    except IntegrityError as e:
+        return False, "repeated"
+    except Exception as e:
+        return False, e
 
 def getAssessmentQuestions(
     userOwner,
