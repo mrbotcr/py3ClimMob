@@ -36,6 +36,7 @@ from climmob.views.Api.projectAssessments import (
     AddQuestionToGroupAssessmentView,
     DeleteQuestionFromGroupAssessmentView,
     OrderAssessmentQuestionsView,
+    CloneAssessmentApiView,
 )
 from climmob.views.Api.projectCreation import (
     CreateProjectView,
@@ -2021,6 +2022,14 @@ def loadRoutes(config):
             "closeprojectassessment",
             "/api/closeProjectAssessment",
             CloseAssessmentApiView,
+            None,
+        )
+    )
+    routes.append(
+        addRoute(
+            "api_clone_assessment",
+            "/api/assessment/clone",
+            CloneAssessmentApiView,
             None,
         )
     )

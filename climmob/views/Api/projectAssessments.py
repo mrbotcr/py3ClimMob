@@ -30,6 +30,7 @@ from climmob.processes import (
     getAccessTypeForProject,
     theUserBelongsToTheProject,
     getProjectData,
+    clone_assessment,
 )
 from climmob.views.classes import apiView
 from climmob.views.validators import TextField, IntegerField, BinaryField
@@ -237,6 +238,48 @@ class DeleteProjectAssessmentView(apiView):
                 body=self._("Data collection moment deleted successfully."),
             )
             return response
+
+
+class CloneAssessmentApiView(apiView):
+    validators = (ProjectExistsValidator,)
+    valid_fields = (
+        TextField("project_cod"),
+        TextField("user_owner"),
+        TextField("ass_cod"),
+    )
+
+    def post(self):
+        body = json.loads(self.body)
+
+        active_project_id = getTheProjectIdForOwner(
+            body["user_owner"],
+            body["project_cod"],
+            self.request,
+        )
+
+        if not assessmentExists(
+            active_project_id,
+            body["ass_cod"],
+            self.request,
+        ):
+            response = Response(
+                status="400",
+                body=self._("There is no data collection with that code."),
+            )
+            return response
+
+        error = clone_assessment(self, active_project_id, body["ass_cod"])
+
+        if error:
+            return Response(
+                status="500",
+                body=self._("Could not clone the assessment."),
+            )
+        else:
+            return Response(
+                status="200",
+                body=self._("Assessment cloned successfully."),
+            )
 
 
 # _________________________________________ASSESSMENTS GROUPS___________________________________________________#
