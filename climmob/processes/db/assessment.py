@@ -801,21 +801,28 @@ def clone_assessment(self, project_id, assessment_id):
     added, msg = add_project_assessment_empty(assessment, self.request)
     new_assessment_id = assessment["ass_cod"]
 
-    error = not added
+    if not added:
+        return False
 
-    error = error or clone_assessment_sections(
+    success = clone_assessment_sections(
         self, project_id, assessment_id, new_assessment_id
     )
 
-    error = error or clone_assessment_questions(
+    if not success:
+        return False
+
+    success = clone_assessment_questions(
         self, project_id, assessment_id, new_assessment_id
     )
 
-    return error
+    if not success:
+        return False
+
+    return True
 
 
 def clone_assessment_questions(self, project_id, assessment_id, new_assessment_id):
-    error = False
+    success = True
     questions = get_assessment_questions_unformatted(
         project_id, assessment_id, self.request
     )
@@ -824,12 +831,12 @@ def clone_assessment_questions(self, project_id, assessment_id, new_assessment_i
         question["section_assessment"] = new_assessment_id
         added, msg = add_assessment_question(question, self.request)
         if not added and msg != "repeated":
-            error = True
-    return error
+            success = False
+    return success
 
 
 def clone_assessment_sections(self, project_id, assessment_id, new_assessment_id):
-    error = False
+    success = True
     sections = getAllAssessmentGroups(
         {"project_id": project_id, "ass_cod": assessment_id}, self.request
     )
@@ -837,8 +844,8 @@ def clone_assessment_sections(self, project_id, assessment_id, new_assessment_id
         section["ass_cod"] = new_assessment_id
         added, msg = addAssessmentGroup(section, self)
         if not added and msg != "repeated":
-            error = True
-    return error
+            success = False
+    return success
 
 
 def getAssessmentQuestions(

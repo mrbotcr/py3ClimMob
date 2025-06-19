@@ -412,9 +412,9 @@ class CloneAssessmentView(privateView):
         active_project_cod = self.request.project
         assessment_id = self.request.assessmentid
 
-        error = clone_assessment(self, self.context.active_project_id, assessment_id)
+        success = clone_assessment(self, self.context.active_project_id, assessment_id)
 
-        if error:
+        if not success:
             self.request.session.flash(
                 self._("Error. The assessment could not be cloned")
             )

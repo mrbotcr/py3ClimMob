@@ -268,9 +268,9 @@ class CloneAssessmentApiView(apiView):
             )
             return response
 
-        error = clone_assessment(self, active_project_id, body["ass_cod"])
+        success = clone_assessment(self, active_project_id, body["ass_cod"])
 
-        if error:
+        if not success:
             return Response(
                 status="500",
                 body=self._("Could not clone the assessment."),
