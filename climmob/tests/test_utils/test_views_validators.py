@@ -46,14 +46,13 @@ class TestProjectExistsValidator(unittest.TestCase):
         view = MagicMock(privateView)
         view.request = MagicMock()
         view.request.translate = lambda s: s
-        view.request.matchdict = {"user": "test_owner", "project": "test_cod"}
+        view.request.user = "test_owner"
+        view.request.project = "test_cod"
 
         validator = ProjectExistsValidator(view)
 
-        self.assertEqual(
-            validator.project_owner_username, view.request.matchdict["user"]
-        )
-        self.assertEqual(validator.project_cod, view.request.matchdict["project"])
+        self.assertEqual(validator.project_owner_username, view.request.user)
+        self.assertEqual(validator.project_cod, view.request.project)
 
     def test_init_for_unknown_type(self):
         view = MagicMock()
