@@ -745,6 +745,7 @@ def haveTheBasicStructureAssessment(userOwner, projectId, assessmentId, request)
     if hasSections is None:
         addQuestionsToAssessment(userOwner, projectId, assessmentId, request)
 
+
 def get_assessment_questions_unformatted(project_id, ass_cod, request):
     result = (
         request.dbsession.query(AssDetail)
@@ -754,6 +755,7 @@ def get_assessment_questions_unformatted(project_id, ass_cod, request):
     )
 
     return mapFromSchema(result)
+
 
 def add_assessment_question(question, request):
     result = mapFromSchema(
@@ -783,6 +785,7 @@ def add_assessment_question(question, request):
         return False, "repeated"
     except Exception as e:
         return False, e
+
 
 def getAssessmentQuestions(
     userOwner,

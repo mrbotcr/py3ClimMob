@@ -444,8 +444,9 @@ class CloneAssessmentView(privateView):
                 error = True
 
         if error:
-            # TODO? make it appear in red color
-            self.request.session.flash(self._("The assessment could not be cloned"))
+            self.request.session.flash(
+                self._("Error. The assessment could not be cloned")
+            )
         else:
             self.request.session.flash(self._("The assessment was successfully cloned"))
 
