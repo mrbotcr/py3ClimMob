@@ -257,6 +257,19 @@ class CloneAssessmentApiView(apiView):
             self.request,
         )
 
+        access_type = getAccessTypeForProject(
+            self.user.login, active_project_id, self.request
+        )
+
+        if access_type in [4]:
+            response = Response(
+                status="401",
+                body=self._(
+                    "The access assigned for this project does not allow you to clone assessments."
+                ),
+            )
+            return response
+
         if not assessmentExists(
             active_project_id,
             body["ass_cod"],

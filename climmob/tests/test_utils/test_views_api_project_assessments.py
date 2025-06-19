@@ -16,6 +16,7 @@ from climmob.views.Api.projectAssessments import (
     AddQuestionToGroupAssessmentView,
     DeleteQuestionFromGroupAssessmentView,
     OrderAssessmentQuestionsView,
+    CloneAssessmentApiView,
 )
 from climmob.views.validators import TextField, IntegerField, BinaryField
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
@@ -460,6 +461,92 @@ class TestDeleteProjectAssessmentView(ProjectAssessmentBaseTest):
         self.get_mock("assessmentExists").assert_called_once()
         self.get_mock("projectAsessmentStatus").assert_called_once()
         self.get_mock("deleteProjectAssessment").assert_called_once()
+
+
+class TestCloneAssessmentApiView(ProjectAssessmentBaseTest):
+    view_class = CloneAssessmentApiView
+    body = {"project_cod": "123", "user_owner": "owner", "ass_cod": "ass123"}
+    request_body = json.dumps(body)
+
+    @classmethod
+    def setUpClass(cls):
+        cls.patchers["clone_assessment"] = {
+            "patch": patch(
+                "climmob.views.Api.projectAssessments.clone_assessment",
+            ),
+            "return_value": True,
+        }
+        super().setUpClass()
+
+    def tearDown(self):
+        super().tearDown()
+        if self.get_mock("clone_assessment").called:
+            self.get_mock("clone_assessment").assert_called_once_with(
+                self.view,
+                self.get_mock("getTheProjectIdForOwner").return_value,
+                self.body["ass_cod"],
+            )
+
+    def test_has_validators(self):
+        self.assertEqual(self.view.validators, (ProjectExistsValidator,))
+
+    def test_has_valid_fields(self):
+        self.assertEqual(
+            self.view.valid_fields,
+            (TextField("project_cod"), TextField("user_owner"), TextField("ass_cod")),
+        )
+
+    def test_success(self):
+        response = self.view.post()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Assessment cloned successfully.", response.body.decode())
+
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("clone_assessment").assert_called_once()
+
+    def test_post_no_access(self):
+        self.get_mock("getAccessTypeForProject").return_value = 4
+
+        response = self.view.post()
+
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "The access assigned for this project does not allow you to clone assessments.",
+            response.body.decode(),
+        )
+
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+
+    def test_post_assessment_not_exist(self):
+        self.get_mock("assessmentExists").return_value = False
+
+        response = self.view.post()
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn(
+            "There is no data collection with that code.", response.body.decode()
+        )
+
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+
+    def test_error(self):
+        self.get_mock("clone_assessment").return_value = False
+
+        response = self.view.post()
+
+        self.assertEqual(response.status_code, 500)
+        self.assertIn("Could not clone the assessment.", response.body.decode())
+
+        self.get_mock("getTheProjectIdForOwner").assert_called_once()
+        self.get_mock("getAccessTypeForProject").assert_called_once()
+        self.get_mock("assessmentExists").assert_called_once()
+        self.get_mock("clone_assessment").assert_called_once()
 
 
 class TestReadProjectAssessmentStructureView(ProjectAssessmentBaseTest):
