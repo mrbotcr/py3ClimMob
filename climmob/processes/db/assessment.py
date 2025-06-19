@@ -82,6 +82,7 @@ __all__ = [
     "getFinalizedAssessments",
     "get_assessment_questions_unformatted",
     "add_assessment_question",
+    "clone_assessment",
 ]
 
 log = logging.getLogger(__name__)
@@ -500,6 +501,19 @@ def assessmentExists(projectId, assessmentId, request):
         return True
 
 
+def add_project_assessment_empty(data, request):
+    new_id = uuid.uuid4().hex[-12:]
+    data["ass_cod"] = new_id
+    mapped_data = mapToSchema(Assessment, data)
+    new_assessment = Assessment(**mapped_data)
+    try:
+        request.dbsession.add(new_assessment)
+        request.dbsession.flush()
+        return True, ""
+    except Exception as e:
+        return False, e
+
+
 def addProjectAssessment(data, request, _from=""):
     id = uuid.uuid4().hex[-12:]
     data["ass_cod"] = id
@@ -769,22 +783,62 @@ def add_assessment_question(question, request):
     if len(result) > 0:
         return False, "repeated"
 
-    new_question = AssDetail(
-        ass_cod=question["ass_cod"],
-        question_id=question["question_id"],
-        section_assessment=question["section_assessment"],
-        section_id=question["section_id"],
-        question_order=question["question_order"],
-        project_id=question["project_id"],
-        section_project_id=question["section_project_id"],
-    )
+    new_question = AssDetail(**question)
     try:
         request.dbsession.add(new_question)
         return True, ""
     except IntegrityError as e:
-        return False, "repeated"
+        return False, e
     except Exception as e:
         return False, e
+
+
+def clone_assessment(self, project_id, assessment_id):
+    assessment = getProjectAssessmentInfo(project_id, assessment_id, self.request)
+    assessment["ass_status"] = 0
+    assessment["ass_final"] = 0
+
+    added, msg = add_project_assessment_empty(assessment, self.request)
+    new_assessment_id = assessment["ass_cod"]
+
+    error = not added
+
+    error = error or clone_assessment_sections(
+        self, project_id, assessment_id, new_assessment_id
+    )
+
+    error = error or clone_assessment_questions(
+        self, project_id, assessment_id, new_assessment_id
+    )
+
+    return error
+
+
+def clone_assessment_questions(self, project_id, assessment_id, new_assessment_id):
+    error = False
+    questions = get_assessment_questions_unformatted(
+        project_id, assessment_id, self.request
+    )
+    for question in questions:
+        question["ass_cod"] = new_assessment_id
+        question["section_assessment"] = new_assessment_id
+        added, msg = add_assessment_question(question, self.request)
+        if not added and msg != "repeated":
+            error = True
+    return error
+
+
+def clone_assessment_sections(self, project_id, assessment_id, new_assessment_id):
+    error = False
+    sections = getAllAssessmentGroups(
+        {"project_id": project_id, "ass_cod": assessment_id}, self.request
+    )
+    for section in sections:
+        section["ass_cod"] = new_assessment_id
+        added, msg = addAssessmentGroup(section, self)
+        if not added and msg != "repeated":
+            error = True
+    return error
 
 
 def getAssessmentQuestions(
