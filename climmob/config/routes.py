@@ -149,7 +149,8 @@ from climmob.views.assessment import (
     CancelAssessmentView,
     assessmentFormCreation_view,
     assessmentSectionActions_view,
-    getAssessmentSection_view, CloneAssessmentView,
+    getAssessmentSection_view,
+    CloneAssessmentView,
 )
 from climmob.views.basic_views import (
     HomeView,

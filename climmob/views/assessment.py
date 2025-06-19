@@ -33,6 +33,9 @@ from climmob.processes import (
     languageExistInTheProject,
     getPhraseTranslationInLanguage,
     update_project_status,
+    getAllAssessmentGroups,
+    get_assessment_questions_unformatted,
+    add_assessment_question,
 )
 from climmob.products.forms.form import create_document_form
 from climmob.views.classes import privateView
@@ -402,8 +405,9 @@ class assessment_view(privateView):
 
             return dictreturn
 
+
 class CloneAssessmentView(privateView):
-    validators = (ProjectExistsValidator, )
+    validators = (ProjectExistsValidator,)
 
     def post(self):
         active_project_user = self.request.user
@@ -416,10 +420,42 @@ class CloneAssessmentView(privateView):
         assessment["userOwner"] = self.user.login
         assessment["ass_status"] = 0
 
+        sections = getAllAssessmentGroups(assessment, self.request)
+
+        questions = get_assessment_questions_unformatted(
+            self.context.active_project_id, assessment_id, self.request
+        )
+
         added, msg = addProjectAssessment(assessment, self.request)
 
+        error = not added
+
+        for section in sections:
+            section["ass_cod"] = assessment["ass_cod"]
+            added, msg = addAssessmentGroup(section, self)
+            if not added and msg != "repeated":
+                error = True
+
+        for question in questions:
+            question["ass_cod"] = assessment["ass_cod"]
+            question["section_assessment"] = assessment["ass_cod"]
+            added, msg = add_assessment_question(question, self.request)
+            if not added and msg != "repeated":
+                error = True
+
+        if error:
+            # TODO? make it appear in red color
+            self.request.session.flash(self._("The assessment could not be cloned"))
+        else:
+            self.request.session.flash(self._("The assessment was successfully cloned"))
+
         self.returnRawViewResult = True
-        return HTTPFound(location=self.request.route_url("assessment", user=active_project_user, project=active_project_cod))
+        return HTTPFound(
+            location=self.request.route_url(
+                "assessment", user=active_project_user, project=active_project_cod
+            )
+        )
+
 
 class assessmentFormCreation_view(privateView):
     def processView(self):
@@ -450,6 +486,7 @@ class assessmentFormCreation_view(privateView):
 
             if self.request.method == "POST":
                 newOrder = d = json.loads(self.request.POST.get("neworder", "{}"))
+                print(json.dumps(newOrder, indent=2))
                 questionWithoutGroup = False
                 for item in newOrder:
                     if item["type"] == "question":
