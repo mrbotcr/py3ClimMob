@@ -501,19 +501,6 @@ def assessmentExists(projectId, assessmentId, request):
         return True
 
 
-def add_project_assessment_empty(data, request):
-    new_id = uuid.uuid4().hex[-12:]
-    data["ass_cod"] = new_id
-    mapped_data = mapToSchema(Assessment, data)
-    new_assessment = Assessment(**mapped_data)
-    try:
-        request.dbsession.add(new_assessment)
-        request.dbsession.flush()
-        return True, ""
-    except Exception as e:
-        return False, e
-
-
 def addProjectAssessment(data, request, _from=""):
     id = uuid.uuid4().hex[-12:]
     data["ass_cod"] = id
@@ -798,21 +785,20 @@ def clone_assessment(self, project_id, assessment_id):
     assessment["ass_status"] = 0
     assessment["ass_final"] = 0
 
-    added, msg = add_project_assessment_empty(assessment, self.request)
-    new_assessment_id = assessment["ass_cod"]
+    added, cloned_assessment_id = addProjectAssessmentClone(assessment, self.request)
 
     if not added:
         return False
 
     success = clone_assessment_sections(
-        self, project_id, assessment_id, new_assessment_id
+        self, project_id, assessment_id, cloned_assessment_id
     )
 
     if not success:
         return False
 
     success = clone_assessment_questions(
-        self, project_id, assessment_id, new_assessment_id
+        self, project_id, assessment_id, cloned_assessment_id
     )
 
     if not success:
