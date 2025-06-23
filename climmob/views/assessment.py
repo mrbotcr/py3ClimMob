@@ -458,7 +458,6 @@ class assessmentFormCreation_view(privateView):
 
             if self.request.method == "POST":
                 newOrder = d = json.loads(self.request.POST.get("neworder", "{}"))
-                print(json.dumps(newOrder, indent=2))
                 questionWithoutGroup = False
                 for item in newOrder:
                     if item["type"] == "question":
