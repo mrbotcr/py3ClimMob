@@ -3,9 +3,6 @@ import os
 import shutil
 import uuid
 from subprocess import Popen, PIPE
-
-from sqlalchemy.exc import IntegrityError
-
 import climmob.plugins as p
 from jinja2 import Environment
 from sqlalchemy import func, and_
@@ -83,6 +80,8 @@ __all__ = [
     "get_assessment_questions_unformatted",
     "add_assessment_question",
     "clone_assessment",
+    "copy_assessment_questions",
+    "copy_assessment_sections",
 ]
 
 log = logging.getLogger(__name__)
@@ -774,8 +773,6 @@ def add_assessment_question(question, request):
     try:
         request.dbsession.add(new_question)
         return True, ""
-    except IntegrityError as e:
-        return False, e
     except Exception as e:
         return False, e
 
@@ -790,14 +787,14 @@ def clone_assessment(self, project_id, assessment_id):
     if not added:
         return False
 
-    success = clone_assessment_sections(
+    success = copy_assessment_sections(
         self, project_id, assessment_id, cloned_assessment_id
     )
 
     if not success:
         return False
 
-    success = clone_assessment_questions(
+    success = copy_assessment_questions(
         self, project_id, assessment_id, cloned_assessment_id
     )
 
@@ -807,30 +804,38 @@ def clone_assessment(self, project_id, assessment_id):
     return True
 
 
-def clone_assessment_questions(self, project_id, assessment_id, new_assessment_id):
+def copy_assessment_questions(self, project_id, src_assessment_id, other_assessment_id):
+    """
+    Copies question of Assessment with ass_cod==src_assessment_id to ass_cod==other_assessment_id
+    """
     success = True
     questions = get_assessment_questions_unformatted(
-        project_id, assessment_id, self.request
+        project_id, src_assessment_id, self.request
     )
     for question in questions:
-        question["ass_cod"] = new_assessment_id
-        question["section_assessment"] = new_assessment_id
+        question["ass_cod"] = other_assessment_id
+        question["section_assessment"] = other_assessment_id
         added, msg = add_assessment_question(question, self.request)
         if not added and msg != "repeated":
             success = False
+            break
     return success
 
 
-def clone_assessment_sections(self, project_id, assessment_id, new_assessment_id):
+def copy_assessment_sections(self, project_id, src_assessment_id, other_assessment_id):
+    """
+    Copies sections of Assessment with ass_cod==src_assessment_id to ass_cod==other_assessment_id
+    """
     success = True
     sections = getAllAssessmentGroups(
-        {"project_id": project_id, "ass_cod": assessment_id}, self.request
+        {"project_id": project_id, "ass_cod": src_assessment_id}, self.request
     )
     for section in sections:
-        section["ass_cod"] = new_assessment_id
+        section["ass_cod"] = other_assessment_id
         added, msg = addAssessmentGroup(section, self)
         if not added and msg != "repeated":
             success = False
+            break
     return success
 
 
