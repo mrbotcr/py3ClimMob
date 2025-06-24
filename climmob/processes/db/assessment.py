@@ -47,7 +47,7 @@ __all__ = [
     "getProjectAssessments",
     "addProjectAssessment",
     "modifyProjectAssessment",
-    "getProjectAssessmentInfo",
+    "get_project_assessment_info",
     "deleteProjectAssessment",
     "isAssessmentOpen",
     "assessmentExists",
@@ -516,7 +516,7 @@ def addProjectAssessment(data, request, _from=""):
         else:
             return (
                 True,
-                getProjectAssessmentInfo(
+                get_project_assessment_info(
                     data["project_id"],
                     newAssessment.ass_cod,
                     request,
@@ -541,11 +541,11 @@ def addProjectAssessmentClone(data, request):
         return False, e
 
 
-def getProjectAssessmentInfo(projectId, assessmentId, request):
+def get_project_assessment_info(project_id, assessment_id, request):
     data = (
         request.dbsession.query(Assessment)
-        .filter(Assessment.project_id == projectId)
-        .filter(Assessment.ass_cod == assessmentId)
+        .filter(Assessment.project_id == project_id)
+        .filter(Assessment.ass_cod == assessment_id)
         .first()
     )
     return mapFromSchema(data)
@@ -778,7 +778,7 @@ def add_assessment_question(question, request):
 
 
 def clone_assessment(self, project_id, assessment_id):
-    assessment = getProjectAssessmentInfo(project_id, assessment_id, self.request)
+    assessment = get_project_assessment_info(project_id, assessment_id, self.request)
     assessment["ass_status"] = 0
     assessment["ass_final"] = 0
 

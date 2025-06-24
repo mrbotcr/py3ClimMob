@@ -1,7 +1,7 @@
 from unittest.mock import patch, MagicMock, call
 
 from climmob.processes import (
-    getProjectAssessmentInfo,
+    get_project_assessment_info,
     clone_assessment,
     get_assessment_questions_unformatted,
     add_assessment_question,
@@ -29,7 +29,7 @@ class TestAssessmentDBProcess(DBProcessBaseTest):
 class TestGetProjectAssessmentInfo(TestAssessmentDBProcess):
     def setUp(self):
         super().setUp()
-        self.process = getProjectAssessmentInfo
+        self.process = get_project_assessment_info
 
     def test_success(self):
         expected = self.get_mock("mapFromSchema").return_value
@@ -56,8 +56,10 @@ class TestCloneAssessment(TestAssessmentDBProcess):
 
     @classmethod
     def setUpClass(cls):
-        cls.patchers["getProjectAssessmentInfo"] = {
-            "patch": patch("climmob.processes.db.assessment.getProjectAssessmentInfo"),
+        cls.patchers["get_project_assessment_info"] = {
+            "patch": patch(
+                "climmob.processes.db.assessment.get_project_assessment_info"
+            ),
             "return_value": {"key": "value"},
         }
         cls.patchers["addProjectAssessmentClone"] = {
@@ -77,13 +79,13 @@ class TestCloneAssessment(TestAssessmentDBProcess):
 
     def tearDown(self):
         super().tearDown()
-        if self.get_mock("getProjectAssessmentInfo").called:
-            self.get_mock("getProjectAssessmentInfo").assert_called_once_with(
+        if self.get_mock("get_project_assessment_info").called:
+            self.get_mock("get_project_assessment_info").assert_called_once_with(
                 self.project_id, self.assessment_id, self.request
             )
         if self.get_mock("addProjectAssessmentClone").called:
             self.get_mock("addProjectAssessmentClone").assert_called_once_with(
-                self.patchers["getProjectAssessmentInfo"]["return_value"]
+                self.patchers["get_project_assessment_info"]["return_value"]
                 | {"ass_status": 0, "ass_final": 0},
                 self.request,
             )
@@ -107,7 +109,7 @@ class TestCloneAssessment(TestAssessmentDBProcess):
 
         self.assertTrue(result)
 
-        self.get_mock("getProjectAssessmentInfo").assert_called_once()
+        self.get_mock("get_project_assessment_info").assert_called_once()
         self.get_mock("addProjectAssessmentClone").assert_called_once()
         self.get_mock("copy_assessment_sections").assert_called_once()
         self.get_mock("copy_assessment_questions").assert_called_once()
@@ -119,7 +121,7 @@ class TestCloneAssessment(TestAssessmentDBProcess):
 
         self.assertFalse(result)
 
-        self.get_mock("getProjectAssessmentInfo").assert_called_once()
+        self.get_mock("get_project_assessment_info").assert_called_once()
         self.get_mock("addProjectAssessmentClone").assert_called_once()
 
     def test_sections_not_cloned(self):
@@ -129,7 +131,7 @@ class TestCloneAssessment(TestAssessmentDBProcess):
 
         self.assertFalse(result)
 
-        self.get_mock("getProjectAssessmentInfo").assert_called_once()
+        self.get_mock("get_project_assessment_info").assert_called_once()
         self.get_mock("addProjectAssessmentClone").assert_called_once()
         self.get_mock("copy_assessment_sections").assert_called_once()
 
@@ -140,7 +142,7 @@ class TestCloneAssessment(TestAssessmentDBProcess):
 
         self.assertFalse(result)
 
-        self.get_mock("getProjectAssessmentInfo").assert_called_once()
+        self.get_mock("get_project_assessment_info").assert_called_once()
         self.get_mock("addProjectAssessmentClone").assert_called_once()
         self.get_mock("copy_assessment_sections").assert_called_once()
         self.get_mock("copy_assessment_questions").assert_called_once()
