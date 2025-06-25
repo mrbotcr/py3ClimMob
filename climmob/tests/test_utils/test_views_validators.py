@@ -2,13 +2,16 @@ import json
 import unittest
 from unittest.mock import MagicMock, patch, call, ANY
 
-from pyramid.httpexceptions import HTTPNotFound, HTTPBadRequest
+from pyramid.httpexceptions import HTTPNotFound, HTTPBadRequest, HTTPForbidden
 
 from climmob.views.classes import apiView, privateView
 from climmob.views.validators import FieldValidation, TextField
 from climmob.views.validators.BaseValidator import BaseValidator
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 from climmob.views.validators.field.FieldValidator import FieldValidator
+from climmob.views.validators.project.CanEditProjectValidator import (
+    CanEditProjectValidator,
+)
 from climmob.views.validators.question.QuestionMinMaxValidator import (
     QuestionMinMaxValidator,
 )
@@ -108,6 +111,47 @@ class TestProjectExistsValidatorRun(unittest.TestCase):
             self.validator.view.user.login,
             self.validator.project_owner_username,
             self.validator.project_cod,
+            self.request,
+        )
+
+
+class TestCanEditProjectValidatorRun(unittest.TestCase):
+    def setUp(self):
+        self.request = MagicMock()
+
+        self.view = MagicMock()
+        self.view.user = MagicMock()
+        self.view.user.login = "test_user_login"
+        self.view.request = self.request
+
+        self.validator = CanEditProjectValidator(self.view)
+
+    @patch(
+        "climmob.views.validators.project.CanEditProjectValidator.getAccessTypeForProject",
+        return_value=MagicMock(int),
+    )
+    def test_run_valid(self, mock_get_access_type_for_project):
+        result = self.validator.run()
+
+        mock_get_access_type_for_project.assert_called_once_with(
+            self.validator.view.user.login,
+            self.validator.view.context.active_project_id,
+            self.request,
+        )
+
+        self.assertEqual(result, None)
+
+    @patch(
+        "climmob.views.validators.project.CanEditProjectValidator.getAccessTypeForProject",
+        return_value=4,
+    )
+    def test_run_invalid(self, mock_get_access_type_for_project):
+        with self.assertRaises(HTTPForbidden):
+            self.validator.run()
+
+        mock_get_access_type_for_project.assert_called_once_with(
+            self.validator.view.user.login,
+            self.validator.view.context.active_project_id,
             self.request,
         )
 

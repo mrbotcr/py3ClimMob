@@ -8,7 +8,12 @@ from ast import literal_eval
 from hashlib import md5
 
 from formencode.variabledecode import variable_decode
-from pyramid.httpexceptions import HTTPFound, HTTPMethodNotAllowed, HTTPBadRequest
+from pyramid.httpexceptions import (
+    HTTPFound,
+    HTTPMethodNotAllowed,
+    HTTPBadRequest,
+    HTTPClientError,
+)
 from pyramid.httpexceptions import HTTPNotFound
 from pyramid.response import Response
 from pyramid.session import check_csrf_token
@@ -568,12 +573,8 @@ class apiView(BaseView):
 
         try:
             self._validate()
-        except HTTPBadRequest as e:
-            return Response(status=str(400), body=str(e))
-        except HTTPNotFound as e:
-            return Response(status=str(404), body=str(e))
-        except HTTPMethodNotAllowed as e:
-            return Response(status=str(405), body=str(e))
+        except HTTPClientError as e:
+            return Response(status=str(e.status_code), body=str(e))
 
         return self.processView()
 

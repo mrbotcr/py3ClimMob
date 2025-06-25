@@ -1,3 +1,4 @@
+# TODO Move file to validators/project
 import json
 
 from pyramid.httpexceptions import HTTPNotFound
