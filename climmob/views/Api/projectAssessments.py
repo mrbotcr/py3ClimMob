@@ -35,6 +35,9 @@ from climmob.processes import (
 from climmob.views.classes import apiView
 from climmob.views.validators import TextField, IntegerField, BinaryField
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
+from climmob.views.validators.project.CanEditProjectValidator import (
+    CanEditProjectValidator,
+)
 
 
 class ReadProjectAssessmentsView(apiView):
@@ -241,7 +244,10 @@ class DeleteProjectAssessmentView(apiView):
 
 
 class CloneAssessmentApiView(apiView):
-    validators = (ProjectExistsValidator,)
+    validators = (
+        ProjectExistsValidator,
+        CanEditProjectValidator,
+    )
     valid_fields = (
         TextField("project_cod"),
         TextField("user_owner"),
@@ -256,19 +262,6 @@ class CloneAssessmentApiView(apiView):
             body["project_cod"],
             self.request,
         )
-
-        access_type = getAccessTypeForProject(
-            self.user.login, active_project_id, self.request
-        )
-
-        if access_type in [4]:
-            response = Response(
-                status="401",
-                body=self._(
-                    "The access assigned for this project does not allow you to clone assessments."
-                ),
-            )
-            return response
 
         if not assessmentExists(
             active_project_id,

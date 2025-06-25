@@ -20,6 +20,9 @@ from climmob.views.Api.projectAssessments import (
 )
 from climmob.views.validators import TextField, IntegerField, BinaryField
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
+from climmob.views.validators.project.CanEditProjectValidator import (
+    CanEditProjectValidator,
+)
 
 
 class ProjectAssessmentBaseTest(ViewBaseTest):
@@ -488,7 +491,9 @@ class TestCloneAssessmentApiView(ProjectAssessmentBaseTest):
             )
 
     def test_has_validators(self):
-        self.assertEqual(self.view.validators, (ProjectExistsValidator,))
+        self.assertEqual(
+            self.view.validators, (ProjectExistsValidator, CanEditProjectValidator)
+        )
 
     def test_has_valid_fields(self):
         self.assertEqual(
@@ -503,23 +508,8 @@ class TestCloneAssessmentApiView(ProjectAssessmentBaseTest):
         self.assertIn("Assessment cloned successfully.", response.body.decode())
 
         self.get_mock("getTheProjectIdForOwner").assert_called_once()
-        self.get_mock("getAccessTypeForProject").assert_called_once()
         self.get_mock("assessmentExists").assert_called_once()
         self.get_mock("clone_assessment").assert_called_once()
-
-    def test_post_no_access(self):
-        self.get_mock("getAccessTypeForProject").return_value = 4
-
-        response = self.view.post()
-
-        self.assertEqual(response.status_code, 401)
-        self.assertIn(
-            "The access assigned for this project does not allow you to clone assessments.",
-            response.body.decode(),
-        )
-
-        self.get_mock("getTheProjectIdForOwner").assert_called_once()
-        self.get_mock("getAccessTypeForProject").assert_called_once()
 
     def test_post_assessment_not_exist(self):
         self.get_mock("assessmentExists").return_value = False
@@ -532,7 +522,6 @@ class TestCloneAssessmentApiView(ProjectAssessmentBaseTest):
         )
 
         self.get_mock("getTheProjectIdForOwner").assert_called_once()
-        self.get_mock("getAccessTypeForProject").assert_called_once()
         self.get_mock("assessmentExists").assert_called_once()
 
     def test_error(self):
@@ -544,7 +533,6 @@ class TestCloneAssessmentApiView(ProjectAssessmentBaseTest):
         self.assertIn("Could not clone the assessment.", response.body.decode())
 
         self.get_mock("getTheProjectIdForOwner").assert_called_once()
-        self.get_mock("getAccessTypeForProject").assert_called_once()
         self.get_mock("assessmentExists").assert_called_once()
         self.get_mock("clone_assessment").assert_called_once()
 
