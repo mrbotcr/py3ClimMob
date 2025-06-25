@@ -15,6 +15,7 @@ from pyramid.session import check_csrf_token
 
 import climmob.plugins as p
 from climmob.config.auth import getUserData, getUserByApiKey
+from climmob.views.context.ApiContext import ApiContext
 from climmob.views.context.PrivateContext import PrivateContext
 from climmob.views.validators import Field, FieldValidator
 from climmob.views.validators.BaseValidator import BaseValidator
@@ -512,6 +513,7 @@ class apiView(BaseView):
         self.user = None
         self.body = None
         self._ = self.request.translate
+        self.context = ApiContext(request)
 
     def __init_subclass__(cls):
         super().__init_subclass__()
@@ -546,6 +548,7 @@ class apiView(BaseView):
                 )
                 return response
 
+            # TODO Replace with self.body = get_get_body_from_api_request
             try:
                 self.body = self.request.params["Body"]
             except:
