@@ -70,7 +70,7 @@ __all__ = [
     "get_usable_assessments",
     "getAnalysisControl",
     "getAllAssessmentGroups",
-    "addProjectAssessmentClone",
+    "add_project_assessment_clone",
     "getQuestionsByGroupInAssessment",
     "getTheGroupOfThePackageCodeAssessment",
     "formattingQuestions",
@@ -526,7 +526,7 @@ def addProjectAssessment(data, request, _from=""):
         return False, e
 
 
-def addProjectAssessmentClone(data, request):
+def add_project_assessment_clone(data, request):
     id = uuid.uuid4().hex[-12:]
     data["ass_cod"] = id
     mappedData = mapToSchema(Assessment, data)
@@ -782,7 +782,7 @@ def clone_assessment(self, project_id, assessment_id):
     assessment["ass_status"] = 0
     assessment["ass_final"] = 0
 
-    added, cloned_assessment_id = addProjectAssessmentClone(assessment, self.request)
+    added, cloned_assessment_id = add_project_assessment_clone(assessment, self.request)
 
     if not added:
         return False

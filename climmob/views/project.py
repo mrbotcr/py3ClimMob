@@ -27,7 +27,7 @@ from climmob.processes import (
     getQuestionsByGroupInRegistry,
     addRegistryQuestionToGroup,
     getAllAssessmentGroups,
-    addProjectAssessmentClone,
+    add_project_assessment_clone,
     addAssessmentGroup,
     getQuestionsByGroupInAssessment,
     addAssessmentQuestionToGroup,
@@ -457,7 +457,7 @@ def function_create_clone(self, projectId, newProjectId, structureToBeCloned):
             newAssessment["ass_final"] = assessment["ass_final"]
             newAssessment["project_id"] = newProjectId
             newAssessment["ass_status"] = 0
-            added, msg = addProjectAssessmentClone(newAssessment, self.request)
+            added, msg = add_project_assessment_clone(newAssessment, self.request)
 
             if added:
                 newAssessment["ass_cod"] = msg

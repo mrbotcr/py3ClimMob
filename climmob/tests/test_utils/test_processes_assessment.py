@@ -62,8 +62,10 @@ class TestCloneAssessment(TestAssessmentDBProcess):
             ),
             "return_value": {"key": "value"},
         }
-        cls.patchers["addProjectAssessmentClone"] = {
-            "patch": patch("climmob.processes.db.assessment.addProjectAssessmentClone"),
+        cls.patchers["add_project_assessment_clone"] = {
+            "patch": patch(
+                "climmob.processes.db.assessment.add_project_assessment_clone"
+            ),
             "return_value": (True, MagicMock()),
         }
         cls.patchers["copy_assessment_sections"] = {
@@ -83,8 +85,8 @@ class TestCloneAssessment(TestAssessmentDBProcess):
             self.get_mock("get_project_assessment_info").assert_called_once_with(
                 self.project_id, self.assessment_id, self.request
             )
-        if self.get_mock("addProjectAssessmentClone").called:
-            self.get_mock("addProjectAssessmentClone").assert_called_once_with(
+        if self.get_mock("add_project_assessment_clone").called:
+            self.get_mock("add_project_assessment_clone").assert_called_once_with(
                 self.patchers["get_project_assessment_info"]["return_value"]
                 | {"ass_status": 0, "ass_final": 0},
                 self.request,
@@ -94,14 +96,14 @@ class TestCloneAssessment(TestAssessmentDBProcess):
                 self.view,
                 self.project_id,
                 self.assessment_id,
-                self.get_mock("addProjectAssessmentClone").return_value[1],
+                self.get_mock("add_project_assessment_clone").return_value[1],
             )
         if self.get_mock("copy_assessment_questions").called:
             self.get_mock("copy_assessment_questions").assert_called_once_with(
                 self.view,
                 self.project_id,
                 self.assessment_id,
-                self.get_mock("addProjectAssessmentClone").return_value[1],
+                self.get_mock("add_project_assessment_clone").return_value[1],
             )
 
     def test_success(self):
@@ -110,19 +112,19 @@ class TestCloneAssessment(TestAssessmentDBProcess):
         self.assertTrue(result)
 
         self.get_mock("get_project_assessment_info").assert_called_once()
-        self.get_mock("addProjectAssessmentClone").assert_called_once()
+        self.get_mock("add_project_assessment_clone").assert_called_once()
         self.get_mock("copy_assessment_sections").assert_called_once()
         self.get_mock("copy_assessment_questions").assert_called_once()
 
     def test_assessment_not_added(self):
-        self.get_mock("addProjectAssessmentClone").return_value = (False, None)
+        self.get_mock("add_project_assessment_clone").return_value = (False, None)
 
         result = self.process(self.view, self.project_id, self.assessment_id)
 
         self.assertFalse(result)
 
         self.get_mock("get_project_assessment_info").assert_called_once()
-        self.get_mock("addProjectAssessmentClone").assert_called_once()
+        self.get_mock("add_project_assessment_clone").assert_called_once()
 
     def test_sections_not_cloned(self):
         self.get_mock("copy_assessment_sections").return_value = False
@@ -132,7 +134,7 @@ class TestCloneAssessment(TestAssessmentDBProcess):
         self.assertFalse(result)
 
         self.get_mock("get_project_assessment_info").assert_called_once()
-        self.get_mock("addProjectAssessmentClone").assert_called_once()
+        self.get_mock("add_project_assessment_clone").assert_called_once()
         self.get_mock("copy_assessment_sections").assert_called_once()
 
     def test_questions_not_cloned(self):
@@ -143,7 +145,7 @@ class TestCloneAssessment(TestAssessmentDBProcess):
         self.assertFalse(result)
 
         self.get_mock("get_project_assessment_info").assert_called_once()
-        self.get_mock("addProjectAssessmentClone").assert_called_once()
+        self.get_mock("add_project_assessment_clone").assert_called_once()
         self.get_mock("copy_assessment_sections").assert_called_once()
         self.get_mock("copy_assessment_questions").assert_called_once()
 
