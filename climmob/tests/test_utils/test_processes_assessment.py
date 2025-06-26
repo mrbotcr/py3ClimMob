@@ -308,8 +308,8 @@ class TestCopyAssessmentSections(TestAssessmentDBProcess):
             "patch": patch("climmob.processes.db.assessment.get_all_assessment_groups"),
             "return_value": [{"key1": "value1"}, {"key2": "value2"}],
         }
-        cls.patchers["addAssessmentGroup"] = {
-            "patch": patch("climmob.processes.db.assessment.addAssessmentGroup"),
+        cls.patchers["add_assessment_group"] = {
+            "patch": patch("climmob.processes.db.assessment.add_assessment_group"),
             "return_value": (True, MagicMock()),
         }
 
@@ -339,13 +339,13 @@ class TestCopyAssessmentSections(TestAssessmentDBProcess):
             }
             for section in sections
         ]
-        self.get_mock("addAssessmentGroup").assert_has_calls(
+        self.get_mock("add_assessment_group").assert_has_calls(
             [call(value, self.view) for value in expected_parameters],
             any_order=False,
         )
 
     def test_question_not_copied(self):
-        self.get_mock("addAssessmentGroup").return_value = (False, None)
+        self.get_mock("add_assessment_group").return_value = (False, None)
         sections = self.patchers["get_all_assessment_groups"]["return_value"]
 
         result = self.process(
@@ -356,7 +356,7 @@ class TestCopyAssessmentSections(TestAssessmentDBProcess):
 
         self.get_mock("get_all_assessment_groups").assert_called_once()
 
-        self.get_mock("addAssessmentGroup").assert_called_once_with(
+        self.get_mock("add_assessment_group").assert_called_once_with(
             sections[0]
             | {
                 "ass_cod": self.other_assessment_id,

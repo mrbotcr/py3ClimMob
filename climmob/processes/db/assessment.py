@@ -39,7 +39,7 @@ __all__ = [
     "getAssessmentQuestions",
     "getAssessmentGroupInformation",
     "saveAssessmentOrder",
-    "addAssessmentGroup",
+    "add_assessment_group",
     "modifyAssessmentGroup",
     "getAssessmentGroupData",
     "addAssessmentQuestionToGroup",
@@ -832,7 +832,7 @@ def copy_assessment_sections(self, project_id, src_assessment_id, other_assessme
     )
     for section in sections:
         section["ass_cod"] = other_assessment_id
-        added, msg = addAssessmentGroup(section, self)
+        added, msg = add_assessment_group(section, self)
         if not added and msg != "repeated":
             success = False
             break
@@ -945,7 +945,7 @@ def saveAssessmentOrder(projectId, assessmentId, order, request):
     return True, ""
 
 
-def addAssessmentGroup(data, self, _from=""):
+def add_assessment_group(data, self, _from=""):
     result = (
         self.request.dbsession.query(func.count(Asssection.section_id).label("total"))
         .filter(Asssection.project_id == data["project_id"])

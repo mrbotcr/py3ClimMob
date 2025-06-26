@@ -7,7 +7,7 @@ from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 import climmob.plugins as p
 from climmob.processes import (
     projectExists,
-    addAssessmentGroup,
+    add_assessment_group,
     deleteAssessmentGroup,
     modifyAssessmentGroup,
     saveAssessmentOrder,
@@ -88,7 +88,7 @@ class deleteAssessmentSection_view(privateView):
 def actionsInSections(self, postdata):
 
     if postdata["action"] == "insert":
-        addgroup, message = addAssessmentGroup(postdata, self)
+        addgroup, message = add_assessment_group(postdata, self)
         if not addgroup:
             if message == "repeated":
                 return {

@@ -28,7 +28,7 @@ from climmob.processes import (
     addRegistryQuestionToGroup,
     get_all_assessment_groups,
     add_project_assessment_clone,
-    addAssessmentGroup,
+    add_assessment_group,
     getQuestionsByGroupInAssessment,
     addAssessmentQuestionToGroup,
     getProjectEnumerators,
@@ -468,7 +468,7 @@ def function_create_clone(self, projectId, newProjectId, structureToBeCloned):
                 for group in groupsInAssessment:
                     group["project_id"] = newProjectId
                     group["ass_cod"] = newAssessment["ass_cod"]
-                    addgroup, message = addAssessmentGroup(group, self)
+                    addgroup, message = add_assessment_group(group, self)
 
                     if addgroup:
                         questionInAssessment = getQuestionsByGroupInAssessment(
