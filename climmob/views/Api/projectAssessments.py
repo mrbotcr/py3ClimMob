@@ -255,14 +255,8 @@ class CloneAssessmentApiView(apiView):
     def post(self):
         body = json.loads(self.body)
 
-        active_project_id = getTheProjectIdForOwner(
-            body["user_owner"],
-            body["project_cod"],
-            self.request,
-        )
-
         if not assessmentExists(
-            active_project_id,
+            self.context.active_project_id,
             body["ass_cod"],
             self.request,
         ):
@@ -272,7 +266,9 @@ class CloneAssessmentApiView(apiView):
             )
             return response
 
-        success = clone_assessment(self, active_project_id, body["ass_cod"])
+        success = clone_assessment(
+            self, self.context.active_project_id, body["ass_cod"]
+        )
 
         if not success:
             return Response(

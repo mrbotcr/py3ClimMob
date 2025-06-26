@@ -480,11 +480,22 @@ class TestCloneAssessmentApiView(ProjectAssessmentBaseTest):
         super().setUpClass()
 
     def tearDown(self):
-        super().tearDown()
+        if self.get_mock("assessmentExists").called:
+            self.get_mock("assessmentExists").assert_called_once_with(
+                self.context.active_project_id,
+                self.body["ass_cod"],
+                self.view.request,
+            )
+        if self.get_mock("projectAsessmentStatus").called:
+            self.get_mock("projectAsessmentStatus").assert_called_once_with(
+                self.context.active_project_id,
+                self.body["ass_cod"],
+                self.view.request,
+            )
         if self.get_mock("clone_assessment").called:
             self.get_mock("clone_assessment").assert_called_once_with(
                 self.view,
-                self.get_mock("getTheProjectIdForOwner").return_value,
+                self.context.active_project_id,
                 self.body["ass_cod"],
             )
 
@@ -505,7 +516,6 @@ class TestCloneAssessmentApiView(ProjectAssessmentBaseTest):
         self.assertEqual(response.status_code, 200)
         self.assertIn("Assessment cloned successfully.", response.body.decode())
 
-        self.get_mock("getTheProjectIdForOwner").assert_called_once()
         self.get_mock("assessmentExists").assert_called_once()
         self.get_mock("clone_assessment").assert_called_once()
 
@@ -519,7 +529,6 @@ class TestCloneAssessmentApiView(ProjectAssessmentBaseTest):
             "There is no data collection with that code.", response.body.decode()
         )
 
-        self.get_mock("getTheProjectIdForOwner").assert_called_once()
         self.get_mock("assessmentExists").assert_called_once()
 
     def test_error(self):
@@ -530,7 +539,6 @@ class TestCloneAssessmentApiView(ProjectAssessmentBaseTest):
         self.assertEqual(response.status_code, 500)
         self.assertIn("Could not clone the assessment.", response.body.decode())
 
-        self.get_mock("getTheProjectIdForOwner").assert_called_once()
         self.get_mock("assessmentExists").assert_called_once()
         self.get_mock("clone_assessment").assert_called_once()
 
