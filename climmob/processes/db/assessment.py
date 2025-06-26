@@ -69,7 +69,7 @@ __all__ = [
     "is_assessment_final",
     "get_usable_assessments",
     "getAnalysisControl",
-    "getAllAssessmentGroups",
+    "get_all_assessment_groups",
     "add_project_assessment_clone",
     "getQuestionsByGroupInAssessment",
     "getTheGroupOfThePackageCodeAssessment",
@@ -121,7 +121,7 @@ def getQuestionsByGroupInAssessment(projectId, ass_cod, section_id, request):
     return mapFromSchema(data)
 
 
-def getAllAssessmentGroups(data, request):
+def get_all_assessment_groups(data, request):
     result = (
         request.dbsession.query(Asssection)
         .filter(Asssection.project_id == data["project_id"])
@@ -827,7 +827,7 @@ def copy_assessment_sections(self, project_id, src_assessment_id, other_assessme
     Copies sections of Assessment with ass_cod==src_assessment_id to ass_cod==other_assessment_id
     """
     success = True
-    sections = getAllAssessmentGroups(
+    sections = get_all_assessment_groups(
         {"project_id": project_id, "ass_cod": src_assessment_id}, self.request
     )
     for section in sections:

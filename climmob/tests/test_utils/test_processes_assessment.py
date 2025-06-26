@@ -304,8 +304,8 @@ class TestCopyAssessmentSections(TestAssessmentDBProcess):
 
     @classmethod
     def setUpClass(cls):
-        cls.patchers["getAllAssessmentGroups"] = {
-            "patch": patch("climmob.processes.db.assessment.getAllAssessmentGroups"),
+        cls.patchers["get_all_assessment_groups"] = {
+            "patch": patch("climmob.processes.db.assessment.get_all_assessment_groups"),
             "return_value": [{"key1": "value1"}, {"key2": "value2"}],
         }
         cls.patchers["addAssessmentGroup"] = {
@@ -317,21 +317,21 @@ class TestCopyAssessmentSections(TestAssessmentDBProcess):
 
     def tearDown(self):
         super().tearDown()
-        if self.get_mock("getAllAssessmentGroups").called:
-            self.get_mock("getAllAssessmentGroups").assert_called_once_with(
+        if self.get_mock("get_all_assessment_groups").called:
+            self.get_mock("get_all_assessment_groups").assert_called_once_with(
                 {"project_id": self.project_id, "ass_cod": self.src_assessment_id},
                 self.request,
             )
 
     def test_success(self):
-        sections = self.patchers["getAllAssessmentGroups"]["return_value"]
+        sections = self.patchers["get_all_assessment_groups"]["return_value"]
 
         result = self.process(
             self.view, self.project_id, self.src_assessment_id, self.other_assessment_id
         )
 
         self.assertTrue(result)
-        self.get_mock("getAllAssessmentGroups").assert_called_once()
+        self.get_mock("get_all_assessment_groups").assert_called_once()
         expected_parameters = [
             section
             | {
@@ -346,7 +346,7 @@ class TestCopyAssessmentSections(TestAssessmentDBProcess):
 
     def test_question_not_copied(self):
         self.get_mock("addAssessmentGroup").return_value = (False, None)
-        sections = self.patchers["getAllAssessmentGroups"]["return_value"]
+        sections = self.patchers["get_all_assessment_groups"]["return_value"]
 
         result = self.process(
             self.view, self.project_id, self.src_assessment_id, self.other_assessment_id
@@ -354,7 +354,7 @@ class TestCopyAssessmentSections(TestAssessmentDBProcess):
 
         self.assertFalse(result)
 
-        self.get_mock("getAllAssessmentGroups").assert_called_once()
+        self.get_mock("get_all_assessment_groups").assert_called_once()
 
         self.get_mock("addAssessmentGroup").assert_called_once_with(
             sections[0]
