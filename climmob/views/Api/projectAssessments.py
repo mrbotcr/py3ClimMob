@@ -35,9 +35,7 @@ from climmob.processes import (
 from climmob.views.classes import apiView
 from climmob.views.validators import TextField, IntegerField, BinaryField
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
-from climmob.views.validators.project.CanEditProjectValidator import (
-    CanEditProjectValidator,
-)
+from climmob.views.validators.project import CanEditProjectValidator
 
 
 class ReadProjectAssessmentsView(apiView):

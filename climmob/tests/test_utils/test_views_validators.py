@@ -9,9 +9,8 @@ from climmob.views.validators import FieldValidation, TextField
 from climmob.views.validators.BaseValidator import BaseValidator
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 from climmob.views.validators.field.FieldValidator import FieldValidator
-from climmob.views.validators.project.CanEditProjectValidator import (
-    CanEditProjectValidator,
-)
+from climmob.views.validators.project import CanEditProjectValidator
+
 from climmob.views.validators.question.QuestionMinMaxValidator import (
     QuestionMinMaxValidator,
 )
@@ -118,42 +117,18 @@ class TestProjectExistsValidatorRun(unittest.TestCase):
 class TestCanEditProjectValidatorRun(unittest.TestCase):
     def setUp(self):
         self.request = MagicMock()
-
         self.view = MagicMock()
-        self.view.user = MagicMock()
-        self.view.user.login = "test_user_login"
         self.view.request = self.request
 
         self.validator = CanEditProjectValidator(self.view)
 
-    @patch(
-        "climmob.views.validators.project.CanEditProjectValidator.getAccessTypeForProject",
-        return_value=MagicMock(int),
-    )
-    def test_run_valid(self, mock_get_access_type_for_project):
-        result = self.validator.run()
+    def test_run_valid(self):
+        self.validator.run()
 
-        mock_get_access_type_for_project.assert_called_once_with(
-            self.validator.view.user.login,
-            self.validator.view.context.active_project_id,
-            self.request,
-        )
-
-        self.assertEqual(result, None)
-
-    @patch(
-        "climmob.views.validators.project.CanEditProjectValidator.getAccessTypeForProject",
-        return_value=4,
-    )
-    def test_run_invalid(self, mock_get_access_type_for_project):
+    def test_run_invalid(self):
+        self.view.context.access_type = 4
         with self.assertRaises(HTTPForbidden):
             self.validator.run()
-
-        mock_get_access_type_for_project.assert_called_once_with(
-            self.validator.view.user.login,
-            self.validator.view.context.active_project_id,
-            self.request,
-        )
 
 
 class TestQuestionMinMaxValidator(unittest.TestCase):

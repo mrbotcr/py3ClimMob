@@ -1,7 +1,8 @@
 import json
 from functools import cached_property
 
-from climmob.processes import getTheProjectIdForOwner
+from climmob.config.auth import getUserByApiKey
+from climmob.processes import getTheProjectIdForOwner, getAccessTypeForProject
 from climmob.utility.request import get_body_from_api_request
 from climmob.views.context.BaseContext import BaseContext
 
@@ -23,3 +24,13 @@ class ApiContext(BaseContext):
             self.request,
         )
         return active_project_id
+
+    @cached_property
+    def user(self):
+        return getUserByApiKey(self.request.params["Apikey"], self.request)
+
+    @cached_property
+    def access_type(self):
+        return getAccessTypeForProject(
+            self.user.login, self.active_project_id, self.request
+        )
