@@ -35,6 +35,7 @@ from climmob.processes import (
 from climmob.views.classes import apiView
 from climmob.views.validators import TextField, IntegerField, BinaryField
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
+from climmob.views.validators.assessment import AssessmentExistsValidator
 from climmob.views.validators.project import CanEditProjectValidator
 
 
@@ -245,6 +246,7 @@ class CloneAssessmentApiView(apiView):
     validators = (
         ProjectExistsValidator,
         CanEditProjectValidator,
+        AssessmentExistsValidator,
     )
     valid_fields = (
         TextField("project_cod"),
@@ -254,17 +256,6 @@ class CloneAssessmentApiView(apiView):
 
     def post(self):
         body = json.loads(self.body)
-
-        if not assessmentExists(
-            self.context.active_project_id,
-            body["ass_cod"],
-            self.request,
-        ):
-            response = Response(
-                status="400",
-                body=self._("There is no data collection with that code."),
-            )
-            return response
 
         success = clone_assessment(
             self, self.context.active_project_id, body["ass_cod"]

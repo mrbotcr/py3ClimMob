@@ -20,6 +20,7 @@ from climmob.views.Api.projectAssessments import (
 )
 from climmob.views.validators import TextField, IntegerField, BinaryField
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
+from climmob.views.validators.assessment import AssessmentExistsValidator
 from climmob.views.validators.project import CanEditProjectValidator
 
 
@@ -480,18 +481,6 @@ class TestCloneAssessmentApiView(ProjectAssessmentBaseTest):
         super().setUpClass()
 
     def tearDown(self):
-        if self.get_mock("assessmentExists").called:
-            self.get_mock("assessmentExists").assert_called_once_with(
-                self.context.active_project_id,
-                self.body["ass_cod"],
-                self.view.request,
-            )
-        if self.get_mock("projectAsessmentStatus").called:
-            self.get_mock("projectAsessmentStatus").assert_called_once_with(
-                self.context.active_project_id,
-                self.body["ass_cod"],
-                self.view.request,
-            )
         if self.get_mock("clone_assessment").called:
             self.get_mock("clone_assessment").assert_called_once_with(
                 self.view,
@@ -501,7 +490,12 @@ class TestCloneAssessmentApiView(ProjectAssessmentBaseTest):
 
     def test_has_validators(self):
         self.assertEqual(
-            self.view.validators, (ProjectExistsValidator, CanEditProjectValidator)
+            self.view.validators,
+            (
+                ProjectExistsValidator,
+                CanEditProjectValidator,
+                AssessmentExistsValidator,
+            ),
         )
 
     def test_has_valid_fields(self):
@@ -516,20 +510,7 @@ class TestCloneAssessmentApiView(ProjectAssessmentBaseTest):
         self.assertEqual(response.status_code, 200)
         self.assertIn("Assessment cloned successfully.", response.body.decode())
 
-        self.get_mock("assessmentExists").assert_called_once()
         self.get_mock("clone_assessment").assert_called_once()
-
-    def test_post_assessment_not_exist(self):
-        self.get_mock("assessmentExists").return_value = False
-
-        response = self.view.post()
-
-        self.assertEqual(response.status_code, 400)
-        self.assertIn(
-            "There is no data collection with that code.", response.body.decode()
-        )
-
-        self.get_mock("assessmentExists").assert_called_once()
 
     def test_error(self):
         self.get_mock("clone_assessment").return_value = False
@@ -539,7 +520,6 @@ class TestCloneAssessmentApiView(ProjectAssessmentBaseTest):
         self.assertEqual(response.status_code, 500)
         self.assertIn("Could not clone the assessment.", response.body.decode())
 
-        self.get_mock("assessmentExists").assert_called_once()
         self.get_mock("clone_assessment").assert_called_once()
 
 
