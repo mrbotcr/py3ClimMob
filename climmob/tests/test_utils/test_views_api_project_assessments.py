@@ -484,7 +484,7 @@ class TestCloneAssessmentApiView(ProjectAssessmentBaseTest):
         if self.get_mock("clone_assessment").called:
             self.get_mock("clone_assessment").assert_called_once_with(
                 self.view,
-                self.context.active_project_id,
+                self.view.context.active_project_id,
                 self.body["ass_cod"],
             )
 
