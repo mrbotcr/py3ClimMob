@@ -39,7 +39,7 @@ __all__ = [
     "getAssessmentQuestions",
     "getAssessmentGroupInformation",
     "saveAssessmentOrder",
-    "addAssessmentGroup",
+    "add_assessment_group",
     "modifyAssessmentGroup",
     "getAssessmentGroupData",
     "addAssessmentQuestionToGroup",
@@ -47,7 +47,7 @@ __all__ = [
     "getProjectAssessments",
     "addProjectAssessment",
     "modifyProjectAssessment",
-    "getProjectAssessmentInfo",
+    "get_project_assessment_info",
     "deleteProjectAssessment",
     "isAssessmentOpen",
     "assessmentExists",
@@ -69,14 +69,19 @@ __all__ = [
     "is_assessment_final",
     "get_usable_assessments",
     "getAnalysisControl",
-    "getAllAssessmentGroups",
-    "addProjectAssessmentClone",
+    "get_all_assessment_groups",
+    "add_project_assessment_clone",
     "getQuestionsByGroupInAssessment",
     "getTheGroupOfThePackageCodeAssessment",
     "formattingQuestions",
     "assessmentHaveQuestionOfMultimediaType",
     "deleteProjectAssessments",
     "getFinalizedAssessments",
+    "get_assessment_questions_unformatted",
+    "add_assessment_question",
+    "clone_assessment",
+    "copy_assessment_questions",
+    "copy_assessment_sections",
 ]
 
 log = logging.getLogger(__name__)
@@ -116,7 +121,7 @@ def getQuestionsByGroupInAssessment(projectId, ass_cod, section_id, request):
     return mapFromSchema(data)
 
 
-def getAllAssessmentGroups(data, request):
+def get_all_assessment_groups(data, request):
     result = (
         request.dbsession.query(Asssection)
         .filter(Asssection.project_id == data["project_id"])
@@ -334,7 +339,7 @@ def setAssessmentStatus(userOwner, projectCod, projectId, status, request):
             try:
                 path = os.path.join(
                     request.registry.settings["user.repository"],
-                    *[userOwner, projectCod, "data", "ass", assessment.ass_cod]
+                    *[userOwner, projectCod, "data", "ass", assessment.ass_cod],
                 )
                 shutil.rmtree(path)
             except:
@@ -511,7 +516,7 @@ def addProjectAssessment(data, request, _from=""):
         else:
             return (
                 True,
-                getProjectAssessmentInfo(
+                get_project_assessment_info(
                     data["project_id"],
                     newAssessment.ass_cod,
                     request,
@@ -521,7 +526,7 @@ def addProjectAssessment(data, request, _from=""):
         return False, e
 
 
-def addProjectAssessmentClone(data, request):
+def add_project_assessment_clone(data, request):
     id = uuid.uuid4().hex[-12:]
     data["ass_cod"] = id
     mappedData = mapToSchema(Assessment, data)
@@ -536,11 +541,11 @@ def addProjectAssessmentClone(data, request):
         return False, e
 
 
-def getProjectAssessmentInfo(projectId, assessmentId, request):
+def get_project_assessment_info(project_id, assessment_id, request):
     data = (
         request.dbsession.query(Assessment)
-        .filter(Assessment.project_id == projectId)
-        .filter(Assessment.ass_cod == assessmentId)
+        .filter(Assessment.project_id == project_id)
+        .filter(Assessment.ass_cod == assessment_id)
         .first()
     )
     return mapFromSchema(data)
@@ -564,7 +569,7 @@ def deleteProjectAssessment(userOwner, projectId, projectCod, assessment, reques
         ).filter(Assessment.ass_cod == assessment).delete()
         dropFile = os.path.join(
             request.registry.settings["user.repository"],
-            *[userOwner, projectCod, "db", "ass", assessment, "drop.sql"]
+            *[userOwner, projectCod, "db", "ass", assessment, "drop.sql"],
         )
         # Drop the schema if the file exists
         if os.path.exists(dropFile):
@@ -741,6 +746,99 @@ def haveTheBasicStructureAssessment(userOwner, projectId, assessmentId, request)
         addQuestionsToAssessment(userOwner, projectId, assessmentId, request)
 
 
+def get_assessment_questions_unformatted(project_id, ass_cod, request):
+    result = (
+        request.dbsession.query(AssDetail)
+        .filter(AssDetail.project_id == project_id)
+        .filter(AssDetail.ass_cod == ass_cod)
+        .all()
+    )
+
+    return mapFromSchema(result)
+
+
+def add_assessment_question(question, request):
+    result = mapFromSchema(
+        request.dbsession.query(AssDetail)
+        .filter(AssDetail.project_id == question["project_id"])
+        .filter(AssDetail.ass_cod == question["ass_cod"])
+        .filter(AssDetail.question_id == question["question_id"])
+        .all()
+    )
+
+    if len(result) > 0:
+        return False, "repeated"
+
+    new_question = AssDetail(**question)
+    try:
+        request.dbsession.add(new_question)
+        return True, ""
+    except Exception as e:
+        return False, e
+
+
+def clone_assessment(self, project_id, assessment_id):
+    assessment = get_project_assessment_info(project_id, assessment_id, self.request)
+    assessment["ass_status"] = 0
+    assessment["ass_final"] = 0
+
+    added, cloned_assessment_id = add_project_assessment_clone(assessment, self.request)
+
+    if not added:
+        return False
+
+    success = copy_assessment_sections(
+        self, project_id, assessment_id, cloned_assessment_id
+    )
+
+    if not success:
+        return False
+
+    success = copy_assessment_questions(
+        self, project_id, assessment_id, cloned_assessment_id
+    )
+
+    if not success:
+        return False
+
+    return True
+
+
+def copy_assessment_questions(self, project_id, src_assessment_id, other_assessment_id):
+    """
+    Copies question of Assessment with ass_cod==src_assessment_id to ass_cod==other_assessment_id
+    """
+    success = True
+    questions = get_assessment_questions_unformatted(
+        project_id, src_assessment_id, self.request
+    )
+    for question in questions:
+        question["ass_cod"] = other_assessment_id
+        question["section_assessment"] = other_assessment_id
+        added, msg = add_assessment_question(question, self.request)
+        if not added and msg != "repeated":
+            success = False
+            break
+    return success
+
+
+def copy_assessment_sections(self, project_id, src_assessment_id, other_assessment_id):
+    """
+    Copies sections of Assessment with ass_cod==src_assessment_id to ass_cod==other_assessment_id
+    """
+    success = True
+    sections = get_all_assessment_groups(
+        {"project_id": project_id, "ass_cod": src_assessment_id}, self.request
+    )
+    for section in sections:
+        section["ass_cod"] = other_assessment_id
+        added, msg = add_assessment_group(section, self)
+        if not added and msg != "repeated":
+            success = False
+            break
+    return success
+
+
 def getAssessmentQuestions(
     userOwner,
     projectId,
@@ -847,7 +945,7 @@ def saveAssessmentOrder(projectId, assessmentId, order, request):
     return True, ""
 
 
-def addAssessmentGroup(data, self, _from=""):
+def add_assessment_group(data, self, _from=""):
     result = (
         self.request.dbsession.query(func.count(Asssection.section_id).label("total"))
         .filter(Asssection.project_id == data["project_id"])

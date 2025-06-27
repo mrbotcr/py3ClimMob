@@ -2,13 +2,16 @@ import json
 import unittest
 from unittest.mock import MagicMock, patch, call, ANY
 
-from pyramid.httpexceptions import HTTPNotFound, HTTPBadRequest
+from pyramid.httpexceptions import HTTPNotFound, HTTPBadRequest, HTTPForbidden
 
 from climmob.views.classes import apiView, privateView
 from climmob.views.validators import FieldValidation, TextField
 from climmob.views.validators.BaseValidator import BaseValidator
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
+from climmob.views.validators.assessment import AssessmentExistsValidator
 from climmob.views.validators.field.FieldValidator import FieldValidator
+from climmob.views.validators.project import CanEditProjectValidator
+
 from climmob.views.validators.question.QuestionMinMaxValidator import (
     QuestionMinMaxValidator,
 )
@@ -46,14 +49,13 @@ class TestProjectExistsValidator(unittest.TestCase):
         view = MagicMock(privateView)
         view.request = MagicMock()
         view.request.translate = lambda s: s
-        view.request.matchdict = {"user": "test_owner", "project": "test_cod"}
+        view.request.user = "test_owner"
+        view.request.project = "test_cod"
 
         validator = ProjectExistsValidator(view)
 
-        self.assertEqual(
-            validator.project_owner_username, view.request.matchdict["user"]
-        )
-        self.assertEqual(validator.project_cod, view.request.matchdict["project"])
+        self.assertEqual(validator.project_owner_username, view.request.user)
+        self.assertEqual(validator.project_cod, view.request.project)
 
     def test_init_for_unknown_type(self):
         view = MagicMock()
@@ -109,6 +111,95 @@ class TestProjectExistsValidatorRun(unittest.TestCase):
             self.validator.view.user.login,
             self.validator.project_owner_username,
             self.validator.project_cod,
+            self.request,
+        )
+
+
+class TestCanEditProjectValidatorRun(unittest.TestCase):
+    def setUp(self):
+        self.request = MagicMock()
+        self.view = MagicMock()
+        self.view.request = self.request
+
+        self.validator = CanEditProjectValidator(self.view)
+
+    def test_run_valid(self):
+        self.validator.run()
+
+    def test_run_invalid(self):
+        self.view.context.access_type = 4
+        with self.assertRaises(HTTPForbidden):
+            self.validator.run()
+
+
+class TestAssessmentExistsValidator(unittest.TestCase):
+    def test_init_for_api(self):
+        view = MagicMock(apiView)
+        view.request = MagicMock()
+        view.body = '{"ass_cod": "assessment_123"}'
+
+        validator = AssessmentExistsValidator(view)
+
+        body = json.loads(view.body)
+
+        self.assertEqual(validator.ass_cod, body["ass_cod"])
+
+    def test_init_for_private(self):
+        view = MagicMock(privateView)
+        view.request = MagicMock()
+        view.request.translate = lambda s: s
+        view.request.assessmentid = "assessment_123"
+
+        validator = AssessmentExistsValidator(view)
+
+        self.assertEqual(validator.ass_cod, view.request.assessmentid)
+
+    def test_init_for_unknown_type(self):
+        view = MagicMock()
+        view.request = MagicMock()
+        view.request.translate = lambda s: s
+
+        with self.assertRaises(TypeError):
+            AssessmentExistsValidator(view)
+
+
+class TestAssessmentExistsValidatorRun(unittest.TestCase):
+    @patch("climmob.views.validators.assessment.AssessmentExistsValidator.extract")
+    def setUp(self, mock_extract):
+        self.request = MagicMock()
+
+        self.view = MagicMock()
+        self.view.request = self.request
+
+        self.validator = AssessmentExistsValidator(self.view)
+        self.validator.ass_cod = "assessment_123"
+
+    @patch(
+        "climmob.views.validators.assessment.assessment_exists_validator.assessmentExists",
+        return_value=True,
+    )
+    def test_run_valid(self, mock_assessment_exists):
+        result = self.validator.run()
+
+        mock_assessment_exists.assert_called_once_with(
+            self.validator.view.context.active_project_id,
+            self.validator.ass_cod,
+            self.request,
+        )
+
+        self.assertEqual(result, None)
+
+    @patch(
+        "climmob.views.validators.assessment.assessment_exists_validator.assessmentExists",
+        return_value=False,
+    )
+    def test_run_invalid(self, mock_assessment_exists):
+        with self.assertRaises(HTTPNotFound):
+            self.validator.run()
+
+        mock_assessment_exists.assert_called_once_with(
+            self.validator.view.context.active_project_id,
+            self.validator.ass_cod,
             self.request,
         )
 

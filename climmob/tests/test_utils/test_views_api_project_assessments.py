@@ -16,9 +16,12 @@ from climmob.views.Api.projectAssessments import (
     AddQuestionToGroupAssessmentView,
     DeleteQuestionFromGroupAssessmentView,
     OrderAssessmentQuestionsView,
+    CloneAssessmentApiView,
 )
 from climmob.views.validators import TextField, IntegerField, BinaryField
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
+from climmob.views.validators.assessment import AssessmentExistsValidator
+from climmob.views.validators.project import CanEditProjectValidator
 
 
 class ProjectAssessmentBaseTest(ViewBaseTest):
@@ -462,6 +465,64 @@ class TestDeleteProjectAssessmentView(ProjectAssessmentBaseTest):
         self.get_mock("deleteProjectAssessment").assert_called_once()
 
 
+class TestCloneAssessmentApiView(ProjectAssessmentBaseTest):
+    view_class = CloneAssessmentApiView
+    body = {"project_cod": "123", "user_owner": "owner", "ass_cod": "ass123"}
+    request_body = json.dumps(body)
+
+    @classmethod
+    def setUpClass(cls):
+        cls.patchers["clone_assessment"] = {
+            "patch": patch(
+                "climmob.views.Api.projectAssessments.clone_assessment",
+            ),
+            "return_value": True,
+        }
+        super().setUpClass()
+
+    def tearDown(self):
+        if self.get_mock("clone_assessment").called:
+            self.get_mock("clone_assessment").assert_called_once_with(
+                self.view,
+                self.view.context.active_project_id,
+                self.body["ass_cod"],
+            )
+
+    def test_has_validators(self):
+        self.assertEqual(
+            self.view.validators,
+            (
+                ProjectExistsValidator,
+                CanEditProjectValidator,
+                AssessmentExistsValidator,
+            ),
+        )
+
+    def test_has_valid_fields(self):
+        self.assertEqual(
+            self.view.valid_fields,
+            (TextField("project_cod"), TextField("user_owner"), TextField("ass_cod")),
+        )
+
+    def test_success(self):
+        response = self.view.post()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Assessment cloned successfully.", response.body.decode())
+
+        self.get_mock("clone_assessment").assert_called_once()
+
+    def test_error(self):
+        self.get_mock("clone_assessment").return_value = False
+
+        response = self.view.post()
+
+        self.assertEqual(response.status_code, 500)
+        self.assertIn("Could not clone the assessment.", response.body.decode())
+
+        self.get_mock("clone_assessment").assert_called_once()
+
+
 class TestReadProjectAssessmentStructureView(ProjectAssessmentBaseTest):
     view_class = ReadProjectAssessmentStructureView
     body = {"project_cod": "123", "user_owner": "owner", "ass_cod": "ass123"}
@@ -640,9 +701,9 @@ class TestCreateAssessmentGroupView(ProjectAssessmentBaseTest):
 
     @classmethod
     def setUpClass(cls):
-        cls.patchers["addAssessmentGroup"] = {
+        cls.patchers["add_assessment_group"] = {
             "patch": patch(
-                "climmob.views.Api.projectAssessments.addAssessmentGroup",
+                "climmob.views.Api.projectAssessments.add_assessment_group",
             ),
             "return_value": (True, "Group added successfully"),
         }
@@ -656,8 +717,8 @@ class TestCreateAssessmentGroupView(ProjectAssessmentBaseTest):
 
     def tearDown(self):
         super().tearDown()
-        if self.get_mock("addAssessmentGroup").called:
-            self.get_mock("addAssessmentGroup").assert_called_once_with(
+        if self.get_mock("add_assessment_group").called:
+            self.get_mock("add_assessment_group").assert_called_once_with(
                 self.body
                 | {
                     "user_name": self.view.user.login,
@@ -695,7 +756,8 @@ class TestCreateAssessmentGroupView(ProjectAssessmentBaseTest):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn(
-            self.get_mock("addAssessmentGroup").return_value[1], response.body.decode()
+            self.get_mock("add_assessment_group").return_value[1],
+            response.body.decode(),
         )
 
         # Verify that all the patched methods were called
@@ -704,15 +766,16 @@ class TestCreateAssessmentGroupView(ProjectAssessmentBaseTest):
         self.get_mock("assessmentExists").assert_called_once()
         self.get_mock("projectAsessmentStatus").assert_called_once()
         self.get_mock("haveTheBasicStructureAssessment").assert_called_once()
-        self.get_mock("addAssessmentGroup").assert_called_once()
+        self.get_mock("add_assessment_group").assert_called_once()
 
     def test_post_error_at_add(self):
-        self.get_mock("addAssessmentGroup").return_value = (False, "Error")
+        self.get_mock("add_assessment_group").return_value = (False, "Error")
         response = self.view.post()
 
         self.assertEqual(response.status_code, 401)
         self.assertIn(
-            self.get_mock("addAssessmentGroup").return_value[1], response.body.decode()
+            self.get_mock("add_assessment_group").return_value[1],
+            response.body.decode(),
         )
 
         self.get_mock("getTheProjectIdForOwner").assert_called_once()
@@ -720,7 +783,7 @@ class TestCreateAssessmentGroupView(ProjectAssessmentBaseTest):
         self.get_mock("assessmentExists").assert_called_once()
         self.get_mock("projectAsessmentStatus").assert_called_once()
         self.get_mock("haveTheBasicStructureAssessment").assert_called_once()
-        self.get_mock("addAssessmentGroup").assert_called_once()
+        self.get_mock("add_assessment_group").assert_called_once()
 
     def test_post_started_data_collection(self):
         self.get_mock("projectAsessmentStatus").return_value = False
@@ -767,7 +830,7 @@ class TestCreateAssessmentGroupView(ProjectAssessmentBaseTest):
         self.get_mock("assessmentExists").assert_called_once()
 
     def test_post_group_name_repeated(self):
-        self.get_mock("addAssessmentGroup").return_value = (False, "repeated")
+        self.get_mock("add_assessment_group").return_value = (False, "repeated")
 
         response = self.view.post()
 
@@ -781,7 +844,7 @@ class TestCreateAssessmentGroupView(ProjectAssessmentBaseTest):
         self.get_mock("assessmentExists").assert_called_once()
         self.get_mock("projectAsessmentStatus").assert_called_once()
         self.get_mock("haveTheBasicStructureAssessment").assert_called_once()
-        self.get_mock("addAssessmentGroup").assert_called_once()
+        self.get_mock("add_assessment_group").assert_called_once()
 
 
 class TestUpdateAssessmentGroupView(ProjectAssessmentBaseTest):
