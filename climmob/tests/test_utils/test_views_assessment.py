@@ -1,10 +1,10 @@
 from unittest.mock import MagicMock, patch
 
-from climmob.tests.test_utils.common import PrivateViewBaseTest
+from climmob.tests.test_utils.common import ViewBaseTest
 from climmob.views.assessment import CloneAssessmentView
 
 
-class AssessmentPrivateViewBaseTest(PrivateViewBaseTest):
+class AssessmentPrivateViewBaseTest(ViewBaseTest):
     @classmethod
     def setUpClass(cls):
         cls.patchers["HTTPFound"] = {
