@@ -115,17 +115,12 @@ class NotFoundView(publicView):
 
 
 class StoreCookieView(publicView):
-    def processView(self):
-        if self.request.method == "GET":
-            raise HTTPNotFound()
-        else:
-            next_url = self.request.params.get("next") or self.request.route_url("home")
-            response = HTTPFound(location=next_url)
-            if "accept" in self.request.POST:
-                response.set_cookie(
-                    "climmob_cookie_question", "accept", max_age=31536000
-                )
-            return response
+    def post(self):
+        next_url = self.request.params.get("next") or self.request.route_url("home")
+        response = HTTPFound(location=next_url)
+        if "accept" in self.request.POST:
+            response.set_cookie("climmob_cookie_question", "accept", max_age=31536000)
+        return response
 
 
 def get_policy(request, policy_name):

@@ -150,24 +150,14 @@ class TestNotFoundView(ViewBaseTest):
 
 class TestStoreCookieView(ViewBaseTest):
     view_class = StoreCookieView
-    request_method = "POST"
 
-    def test_process_view_store_cookie_view_with_get(self):
-        self.view.request.method = "GET"
-        with self.assertRaises(HTTPNotFound) as context:
-            self.view.processView()
-        self.assertEqual(context.exception.code, 404)
-        self.assertEqual(
-            context.exception.explanation, "The resource could not be found."
-        )
-
-    def test_process_view_store_cookie_view_success(self):
+    def test_post_store_cookie_view_success(self):
         self.view.request.cookies = {"climmob_cookie_question": 1}
         self.view.request.route_url.return_value = "home"
         self.view.request.params.get.return_value = "next"
         self.view.request.POST = "accept"
         with patch.object(HTTPFound, "set_cookie", autospec=True) as mock_set_cookie:
-            result = self.view.processView()
+            result = self.view.post()
             self.assertIsInstance(result, HTTPFound)
             self.assertEqual(result.status_code, 302)
             self.assertEqual(result.location, "next")
