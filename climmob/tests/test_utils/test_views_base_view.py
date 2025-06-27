@@ -91,8 +91,8 @@ class TestHealthView(ViewBaseTest):
         self.view.request.add_response_callback = MagicMock()
         self.view = HealthView(self.view.request)
 
-    def test_process_view_health_view_thread_connected(self):
-        result = self.view.processView()
+    def test_get_health_view_thread_connected(self):
+        result = self.view.get()
         self.mock_dbsession.get_bind.assert_called_once()
         self.mock_dbsession.execute.assert_called_once_with(
             "show status like 'Threads_connected%'"
@@ -108,9 +108,9 @@ class TestHealthView(ViewBaseTest):
             },
         )
 
-    def test_process_view_health_view_exception(self):
+    def test_get_health_view_exception(self):
         self.mock_dbsession.execute.side_effect = Exception("Database error")
-        result = self.view.processView()
+        result = self.view.get()
         self.mock_dbsession.get_bind.assert_called_once()
         self.assertEqual(
             result,

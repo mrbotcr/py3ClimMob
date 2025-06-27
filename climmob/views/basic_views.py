@@ -81,7 +81,7 @@ class HomeView(publicView):
 
 
 class HealthView(publicView):
-    def processView(self):
+    def get(self):
         engine = self.request.dbsession.get_bind()
         try:
             res = self.request.dbsession.execute(
