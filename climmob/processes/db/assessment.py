@@ -39,7 +39,7 @@ __all__ = [
     "getAssessmentQuestions",
     "getAssessmentGroupInformation",
     "saveAssessmentOrder",
-    "add_assessment_group",
+    "addAssessmentGroup",
     "modifyAssessmentGroup",
     "getAssessmentGroupData",
     "addAssessmentQuestionToGroup",
@@ -47,7 +47,7 @@ __all__ = [
     "getProjectAssessments",
     "addProjectAssessment",
     "modifyProjectAssessment",
-    "get_project_assessment_info",
+    "getProjectAssessmentInfo",
     "deleteProjectAssessment",
     "isAssessmentOpen",
     "assessmentExists",
@@ -69,8 +69,8 @@ __all__ = [
     "is_assessment_final",
     "get_usable_assessments",
     "getAnalysisControl",
-    "get_all_assessment_groups",
-    "add_project_assessment_clone",
+    "getAllAssessmentGroups",
+    "addProjectAssessmentClone",
     "getQuestionsByGroupInAssessment",
     "getTheGroupOfThePackageCodeAssessment",
     "formattingQuestions",
@@ -121,7 +121,7 @@ def getQuestionsByGroupInAssessment(projectId, ass_cod, section_id, request):
     return mapFromSchema(data)
 
 
-def get_all_assessment_groups(data, request):
+def getAllAssessmentGroups(data, request):
     result = (
         request.dbsession.query(Asssection)
         .filter(Asssection.project_id == data["project_id"])
@@ -516,7 +516,7 @@ def addProjectAssessment(data, request, _from=""):
         else:
             return (
                 True,
-                get_project_assessment_info(
+                getProjectAssessmentInfo(
                     data["project_id"],
                     newAssessment.ass_cod,
                     request,
@@ -526,7 +526,7 @@ def addProjectAssessment(data, request, _from=""):
         return False, e
 
 
-def add_project_assessment_clone(data, request):
+def addProjectAssessmentClone(data, request):
     id = uuid.uuid4().hex[-12:]
     data["ass_cod"] = id
     mappedData = mapToSchema(Assessment, data)
@@ -541,11 +541,11 @@ def add_project_assessment_clone(data, request):
         return False, e
 
 
-def get_project_assessment_info(project_id, assessment_id, request):
+def getProjectAssessmentInfo(projectId, assessmentId, request):
     data = (
         request.dbsession.query(Assessment)
-        .filter(Assessment.project_id == project_id)
-        .filter(Assessment.ass_cod == assessment_id)
+        .filter(Assessment.project_id == projectId)
+        .filter(Assessment.ass_cod == assessmentId)
         .first()
     )
     return mapFromSchema(data)
@@ -778,11 +778,11 @@ def add_assessment_question(question, request):
 
 
 def clone_assessment(self, project_id, assessment_id):
-    assessment = get_project_assessment_info(project_id, assessment_id, self.request)
+    assessment = getProjectAssessmentInfo(project_id, assessment_id, self.request)
     assessment["ass_status"] = 0
     assessment["ass_final"] = 0
 
-    added, cloned_assessment_id = add_project_assessment_clone(assessment, self.request)
+    added, cloned_assessment_id = addProjectAssessmentClone(assessment, self.request)
 
     if not added:
         return False
@@ -827,12 +827,12 @@ def copy_assessment_sections(self, project_id, src_assessment_id, other_assessme
     Copies sections of Assessment with ass_cod==src_assessment_id to ass_cod==other_assessment_id
     """
     success = True
-    sections = get_all_assessment_groups(
+    sections = getAllAssessmentGroups(
         {"project_id": project_id, "ass_cod": src_assessment_id}, self.request
     )
     for section in sections:
         section["ass_cod"] = other_assessment_id
-        added, msg = add_assessment_group(section, self)
+        added, msg = addAssessmentGroup(section, self)
         if not added and msg != "repeated":
             success = False
             break
@@ -945,7 +945,7 @@ def saveAssessmentOrder(projectId, assessmentId, order, request):
     return True, ""
 
 
-def add_assessment_group(data, self, _from=""):
+def addAssessmentGroup(data, self, _from=""):
     result = (
         self.request.dbsession.query(func.count(Asssection.section_id).label("total"))
         .filter(Asssection.project_id == data["project_id"])

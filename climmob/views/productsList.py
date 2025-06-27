@@ -23,7 +23,7 @@ from climmob.processes import (
     getProjectAssessments,
     getInformationFromProject,
     getInformationForMaps,
-    get_project_assessment_info,
+    getProjectAssessmentInfo,
     generateStructureForInterfaceForms,
     get_registry_logs,
     get_assessment_logs,
@@ -118,7 +118,7 @@ class productsView(climmobPrivateView):
                         if product["product_id"] == "dataxlsx":
                             assessId = product["process_name"].split("_")[4]
 
-                        product["extraInformation"] = get_project_assessment_info(
+                        product["extraInformation"] = getProjectAssessmentInfo(
                             activeProjectData["project_id"],
                             assessId,
                             self.request,
