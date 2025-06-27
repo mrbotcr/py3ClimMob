@@ -50,27 +50,27 @@ class TestHomeView(ViewBaseTest):
 
     @patch("climmob.views.basic_views.getProjectCount", return_value=8)
     @patch("climmob.views.basic_views.getUserCount", return_value=2)
-    def test_process_view_home_view_cookie_none(
-        self, mock_getUserCount, mock_getProjectCount
+    def test_get_home_view_cookie_none(
+        self, mock_get_user_count, mock_get_project_count
     ):
         self.view.request.cookies = {}
-        result = self.view.processView()
+        result = self.view.get()
         self.assertEqual(
-            result, {"numUsers": 2, "numProjs": 8, "ask_for_cookies": True}
+            result, {"user_count": 2, "project_count": 8, "ask_for_cookies": True}
         )
-        mock_getUserCount.assert_called_once_with(self.view.request)
-        mock_getProjectCount.assert_called_once_with(self.view.request)
+        mock_get_user_count.assert_called_once_with(self.view.request)
+        mock_get_project_count.assert_called_once_with(self.view.request)
 
     @patch("climmob.views.basic_views.getProjectCount", return_value=8)
     @patch("climmob.views.basic_views.getUserCount", return_value=2)
-    def test_process_view_cookie_true(self, mock_getUserCount, mock_getProjectCount):
+    def test_get_cookie_true(self, mock_get_user_count, mock_get_project_count):
         self.view.request.cookies = {"climmob_cookie_question": 1}
-        result = self.view.processView()
+        result = self.view.get()
         self.assertEqual(
-            result, {"numUsers": 2, "numProjs": 8, "ask_for_cookies": False}
+            result, {"user_count": 2, "project_count": 8, "ask_for_cookies": False}
         )
-        mock_getUserCount.assert_called_once_with(self.view.request)
-        mock_getProjectCount.assert_called_once_with(self.view.request)
+        mock_get_user_count.assert_called_once_with(self.view.request)
+        mock_get_project_count.assert_called_once_with(self.view.request)
 
 
 ##*****##

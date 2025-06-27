@@ -67,15 +67,15 @@ class RefreshSessionTokensView(publicView):
 
 
 class HomeView(publicView):
-    def processView(self):
+    def get(self):
         cookies = self.request.cookies
         if "climmob_cookie_question" in cookies.keys():
             ask_for_cookies = False
         else:
             ask_for_cookies = True
         return {
-            "numUsers": getUserCount(self.request),
-            "numProjs": getProjectCount(self.request),
+            "user_count": getUserCount(self.request),
+            "project_count": getProjectCount(self.request),
             "ask_for_cookies": ask_for_cookies,
         }
 
