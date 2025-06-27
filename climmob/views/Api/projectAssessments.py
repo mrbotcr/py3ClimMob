@@ -11,7 +11,7 @@ from climmob.processes import (
     deleteProjectAssessment,
     getAssessmentQuestions,
     haveTheBasicStructureAssessment,
-    addAssessmentGroup,
+    add_assessment_group,
     exitsAssessmentGroup,
     modifyAssessmentGroup,
     canDeleteTheAssessmentGroup,
@@ -425,7 +425,7 @@ class CreateAssessmentGroupView(apiView):
             self.request,
         )
         dataworking["project_id"] = activeProjectId
-        addgroup, message = addAssessmentGroup(dataworking, self, "API")
+        addgroup, message = add_assessment_group(dataworking, self, "API")
 
         if addgroup:
             response = Response(status=200, body=json.dumps(message))
