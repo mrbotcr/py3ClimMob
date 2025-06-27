@@ -126,24 +126,24 @@ class TestHealthView(ViewBaseTest):
 class TestTermsView(ViewBaseTest):
     view_class = TermsView
 
-    def test_process_view_terms_view_success(self):
-        result = self.view.processView()
+    def test_get_terms_view_success(self):
+        result = self.view.get()
         self.assertEqual(result, {})
 
 
 class TestPrivacyView(ViewBaseTest):
     view_class = PrivacyView
 
-    def test_process_view_privacy_view_success(self):
-        result = self.view.processView()
+    def test_get_privacy_view_success(self):
+        result = self.view.get()
         self.assertEqual(result, {})
 
 
 class TestNotFoundView(ViewBaseTest):
     view_class = NotFoundView
 
-    def test_process_view_not_found_view_success(self):
-        result = self.view.processView()
+    def test_get_not_found_view_success(self):
+        result = self.view.get()
         self.assertEqual(result, {})
         self.assertEqual(self.view.request.response.status, 404)
 

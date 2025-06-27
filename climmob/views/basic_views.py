@@ -99,17 +99,17 @@ class HealthView(publicView):
 
 
 class TermsView(publicView):
-    def processView(self):
+    def get(self):
         return {}
 
 
 class PrivacyView(publicView):
-    def processView(self):
+    def get(self):
         return {}
 
 
 class NotFoundView(publicView):
-    def processView(self):
+    def get(self):
         self.request.response.status = 404
         return {}
 
