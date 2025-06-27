@@ -1,7 +1,7 @@
 from unittest.mock import patch, MagicMock, call
 
 from climmob.processes import (
-    get_project_assessment_info,
+    getProjectAssessmentInfo,
     clone_assessment,
     get_assessment_questions_unformatted,
     add_assessment_question,
@@ -29,7 +29,7 @@ class TestAssessmentDBProcess(DBProcessBaseTest):
 class TestGetProjectAssessmentInfo(TestAssessmentDBProcess):
     def setUp(self):
         super().setUp()
-        self.process = get_project_assessment_info
+        self.process = getProjectAssessmentInfo
 
     def test_success(self):
         expected = self.get_mock("mapFromSchema").return_value
@@ -56,16 +56,12 @@ class TestCloneAssessment(TestAssessmentDBProcess):
 
     @classmethod
     def setUpClass(cls):
-        cls.patchers["get_project_assessment_info"] = {
-            "patch": patch(
-                "climmob.processes.db.assessment.get_project_assessment_info"
-            ),
+        cls.patchers["getProjectAssessmentInfo"] = {
+            "patch": patch("climmob.processes.db.assessment.getProjectAssessmentInfo"),
             "return_value": {"key": "value"},
         }
-        cls.patchers["add_project_assessment_clone"] = {
-            "patch": patch(
-                "climmob.processes.db.assessment.add_project_assessment_clone"
-            ),
+        cls.patchers["addProjectAssessmentClone"] = {
+            "patch": patch("climmob.processes.db.assessment.addProjectAssessmentClone"),
             "return_value": (True, MagicMock()),
         }
         cls.patchers["copy_assessment_sections"] = {
@@ -81,13 +77,13 @@ class TestCloneAssessment(TestAssessmentDBProcess):
 
     def tearDown(self):
         super().tearDown()
-        if self.get_mock("get_project_assessment_info").called:
-            self.get_mock("get_project_assessment_info").assert_called_once_with(
+        if self.get_mock("getProjectAssessmentInfo").called:
+            self.get_mock("getProjectAssessmentInfo").assert_called_once_with(
                 self.project_id, self.assessment_id, self.request
             )
-        if self.get_mock("add_project_assessment_clone").called:
-            self.get_mock("add_project_assessment_clone").assert_called_once_with(
-                self.patchers["get_project_assessment_info"]["return_value"]
+        if self.get_mock("addProjectAssessmentClone").called:
+            self.get_mock("addProjectAssessmentClone").assert_called_once_with(
+                self.patchers["getProjectAssessmentInfo"]["return_value"]
                 | {"ass_status": 0, "ass_final": 0},
                 self.request,
             )
@@ -96,14 +92,14 @@ class TestCloneAssessment(TestAssessmentDBProcess):
                 self.view,
                 self.project_id,
                 self.assessment_id,
-                self.get_mock("add_project_assessment_clone").return_value[1],
+                self.get_mock("addProjectAssessmentClone").return_value[1],
             )
         if self.get_mock("copy_assessment_questions").called:
             self.get_mock("copy_assessment_questions").assert_called_once_with(
                 self.view,
                 self.project_id,
                 self.assessment_id,
-                self.get_mock("add_project_assessment_clone").return_value[1],
+                self.get_mock("addProjectAssessmentClone").return_value[1],
             )
 
     def test_success(self):
@@ -111,20 +107,20 @@ class TestCloneAssessment(TestAssessmentDBProcess):
 
         self.assertTrue(result)
 
-        self.get_mock("get_project_assessment_info").assert_called_once()
-        self.get_mock("add_project_assessment_clone").assert_called_once()
+        self.get_mock("getProjectAssessmentInfo").assert_called_once()
+        self.get_mock("addProjectAssessmentClone").assert_called_once()
         self.get_mock("copy_assessment_sections").assert_called_once()
         self.get_mock("copy_assessment_questions").assert_called_once()
 
     def test_assessment_not_added(self):
-        self.get_mock("add_project_assessment_clone").return_value = (False, None)
+        self.get_mock("addProjectAssessmentClone").return_value = (False, None)
 
         result = self.process(self.view, self.project_id, self.assessment_id)
 
         self.assertFalse(result)
 
-        self.get_mock("get_project_assessment_info").assert_called_once()
-        self.get_mock("add_project_assessment_clone").assert_called_once()
+        self.get_mock("getProjectAssessmentInfo").assert_called_once()
+        self.get_mock("addProjectAssessmentClone").assert_called_once()
 
     def test_sections_not_cloned(self):
         self.get_mock("copy_assessment_sections").return_value = False
@@ -133,8 +129,8 @@ class TestCloneAssessment(TestAssessmentDBProcess):
 
         self.assertFalse(result)
 
-        self.get_mock("get_project_assessment_info").assert_called_once()
-        self.get_mock("add_project_assessment_clone").assert_called_once()
+        self.get_mock("getProjectAssessmentInfo").assert_called_once()
+        self.get_mock("addProjectAssessmentClone").assert_called_once()
         self.get_mock("copy_assessment_sections").assert_called_once()
 
     def test_questions_not_cloned(self):
@@ -144,8 +140,8 @@ class TestCloneAssessment(TestAssessmentDBProcess):
 
         self.assertFalse(result)
 
-        self.get_mock("get_project_assessment_info").assert_called_once()
-        self.get_mock("add_project_assessment_clone").assert_called_once()
+        self.get_mock("getProjectAssessmentInfo").assert_called_once()
+        self.get_mock("addProjectAssessmentClone").assert_called_once()
         self.get_mock("copy_assessment_sections").assert_called_once()
         self.get_mock("copy_assessment_questions").assert_called_once()
 
@@ -304,12 +300,12 @@ class TestCopyAssessmentSections(TestAssessmentDBProcess):
 
     @classmethod
     def setUpClass(cls):
-        cls.patchers["get_all_assessment_groups"] = {
-            "patch": patch("climmob.processes.db.assessment.get_all_assessment_groups"),
+        cls.patchers["getAllAssessmentGroups"] = {
+            "patch": patch("climmob.processes.db.assessment.getAllAssessmentGroups"),
             "return_value": [{"key1": "value1"}, {"key2": "value2"}],
         }
-        cls.patchers["add_assessment_group"] = {
-            "patch": patch("climmob.processes.db.assessment.add_assessment_group"),
+        cls.patchers["addAssessmentGroup"] = {
+            "patch": patch("climmob.processes.db.assessment.addAssessmentGroup"),
             "return_value": (True, MagicMock()),
         }
 
@@ -317,21 +313,21 @@ class TestCopyAssessmentSections(TestAssessmentDBProcess):
 
     def tearDown(self):
         super().tearDown()
-        if self.get_mock("get_all_assessment_groups").called:
-            self.get_mock("get_all_assessment_groups").assert_called_once_with(
+        if self.get_mock("getAllAssessmentGroups").called:
+            self.get_mock("getAllAssessmentGroups").assert_called_once_with(
                 {"project_id": self.project_id, "ass_cod": self.src_assessment_id},
                 self.request,
             )
 
     def test_success(self):
-        sections = self.patchers["get_all_assessment_groups"]["return_value"]
+        sections = self.patchers["getAllAssessmentGroups"]["return_value"]
 
         result = self.process(
             self.view, self.project_id, self.src_assessment_id, self.other_assessment_id
         )
 
         self.assertTrue(result)
-        self.get_mock("get_all_assessment_groups").assert_called_once()
+        self.get_mock("getAllAssessmentGroups").assert_called_once()
         expected_parameters = [
             section
             | {
@@ -339,14 +335,14 @@ class TestCopyAssessmentSections(TestAssessmentDBProcess):
             }
             for section in sections
         ]
-        self.get_mock("add_assessment_group").assert_has_calls(
+        self.get_mock("addAssessmentGroup").assert_has_calls(
             [call(value, self.view) for value in expected_parameters],
             any_order=False,
         )
 
     def test_question_not_copied(self):
-        self.get_mock("add_assessment_group").return_value = (False, None)
-        sections = self.patchers["get_all_assessment_groups"]["return_value"]
+        self.get_mock("addAssessmentGroup").return_value = (False, None)
+        sections = self.patchers["getAllAssessmentGroups"]["return_value"]
 
         result = self.process(
             self.view, self.project_id, self.src_assessment_id, self.other_assessment_id
@@ -354,9 +350,9 @@ class TestCopyAssessmentSections(TestAssessmentDBProcess):
 
         self.assertFalse(result)
 
-        self.get_mock("get_all_assessment_groups").assert_called_once()
+        self.get_mock("getAllAssessmentGroups").assert_called_once()
 
-        self.get_mock("add_assessment_group").assert_called_once_with(
+        self.get_mock("addAssessmentGroup").assert_called_once_with(
             sections[0]
             | {
                 "ass_cod": self.other_assessment_id,

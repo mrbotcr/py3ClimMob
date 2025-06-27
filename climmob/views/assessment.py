@@ -7,7 +7,7 @@ from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 import climmob.plugins as p
 from climmob.processes import (
     projectExists,
-    add_assessment_group,
+    addAssessmentGroup,
     deleteAssessmentGroup,
     modifyAssessmentGroup,
     saveAssessmentOrder,
@@ -15,7 +15,7 @@ from climmob.processes import (
     availableAssessmentQuestions,
     getProjectAssessments,
     addProjectAssessment,
-    get_project_assessment_info,
+    getProjectAssessmentInfo,
     modifyProjectAssessment,
     deleteProjectAssessment,
     checkAssessments,
@@ -88,7 +88,7 @@ class deleteAssessmentSection_view(privateView):
 def actionsInSections(self, postdata):
 
     if postdata["action"] == "insert":
-        addgroup, message = add_assessment_group(postdata, self)
+        addgroup, message = addAssessmentGroup(postdata, self)
         if not addgroup:
             if message == "repeated":
                 return {
@@ -170,7 +170,7 @@ class getAssessmentDetails_view(privateView):
                     activeProjectUser, activeProjectCod, self.request
                 )
 
-                assessment = get_project_assessment_info(
+                assessment = getProjectAssessmentInfo(
                     activeProjectId, assessmentid, self.request
                 )
                 self.returnRawViewResult = True
@@ -291,9 +291,7 @@ class deleteassessmenthead_view(privateView):
                 activeProjectUser, activeProjectCod, self.request
             )
 
-            data = get_project_assessment_info(
-                activeProjectId, assessmentid, self.request
-            )
+            data = getProjectAssessmentInfo(activeProjectId, assessmentid, self.request)
 
             error_summary = {}
             if self.request.method == "POST":
@@ -387,7 +385,7 @@ class assessment_view(privateView):
                 "error_summary": error_summary,
                 "activeProject": getActiveProject(self.user.login, self.request),
                 "assessmentid": assessmentid,
-                "assinfo": get_project_assessment_info(
+                "assinfo": getProjectAssessmentInfo(
                     activeProjectId, assessmentid, self.request
                 ),
                 "UserQuestion": availableAssessmentQuestions(
@@ -544,7 +542,7 @@ class startAssessments_view(privateView):
                 print("checkAssessments")
 
                 isExternal = False
-                assessInfo = get_project_assessment_info(
+                assessInfo = getProjectAssessmentInfo(
                     activeProjectId, assessment_id, self.request
                 )
                 # for plugin in p.PluginImplementations(p.IRhomis):
@@ -747,7 +745,7 @@ class closeAssessment_view(privateView):
             assessmentid,
             self.request,
         )
-        assessmentData = get_project_assessment_info(
+        assessmentData = getProjectAssessmentInfo(
             activeProjectId, assessmentid, self.request
         )
         if self.request.method == "POST":
@@ -798,7 +796,7 @@ class CancelAssessmentView(privateView):
             assessmentid,
             self.request,
         )
-        assessmentData = get_project_assessment_info(
+        assessmentData = getProjectAssessmentInfo(
             activeProjectId, assessmentid, self.request
         )
         if self.request.method == "POST":
