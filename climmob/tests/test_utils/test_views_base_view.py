@@ -273,15 +273,9 @@ class TestLoginView(ViewBaseTest):
         self.get_mock("getUserData").assert_not_called()
 
     def test_process_view_login_no_cookies_no_login_data_no_submit_dataw(self):
-        mock_policy = MagicMock()
-        mock_policy.authenticated_userid.return_value = None
-        self.get_mock("get_policy").return_value = mock_policy
-        self.view.request.policy = MagicMock()
-        self.view.request.policy.authenticated_userid.return_value = None
         self.view.request.params.get.return_value = "next"
-        self.view.request.POST = {}
-        result = self.view.processView()
-        self.get_mock("get_policy").assert_called_once()
+        with patch.object(self.view, "is_user_logged_in", return_value=False):
+            result = self.view.processView()
         self.assertEqual(
             result,
             {
@@ -292,78 +286,50 @@ class TestLoginView(ViewBaseTest):
             },
         )
 
-    @patch(
-        "climmob.views.basic_views.getUserData",
-        return_value=({"user_email": "climmob@climmob.com"}),
-    )
-    def test_process_view_login_cookies_login_data(self, mock_get_user_data):
-        mock_policy = MagicMock()
-        mock_policy.authenticated_userid.return_value = (
-            "{'login': 'user_test', 'group': 'mainApp'}"
-        )
-        self.get_mock("get_policy").return_value = mock_policy
-        self.view.request.policy = MagicMock()
-        self.view.request.policy.authenticated_userid.return_value = None
-        self.view.request.cookies = {"climmob_cookie_question": True}
+    def test_process_view_login_cookies_login_data(self):
         self.view.request.route_url.return_value = "dashboard"
-        result = self.view.processView()
+        with patch.object(self.view, "is_user_logged_in", return_value=True):
+            result = self.view.processView()
         self.assertIsInstance(result, HTTPFound)
-        self.get_mock("get_policy").assert_called_once()
         self.assertEqual(result.location, "dashboard")
 
     @patch("climmob.views.basic_views.remember")
-    @patch(
-        "climmob.views.basic_views.getUserData", return_value=({"user_name": "climmob"})
-    )
     def test_process_view_login_no_cookies_no_login_data_submit_dataw(
-        self, mock_get_user_data, mock_remember
+        self, mock_remember
     ):
-        mock_policy = MagicMock()
-        mock_policy.authenticated_userid.return_value = None
-        self.get_mock("get_policy").return_value = mock_policy
-        self.view.request.policy = MagicMock()
-        self.view.request.policy.authenticated_userid.return_value = None
         self.view.request.params.get.return_value = "next"
         self.view.request.POST = {
             "submit": True,
-            "login": "LOGIN_USER",
+            "login": self.username,
             "passwd": "PASS_USER",
         }
         mock_user = MagicMock()
         mock_user.check_password.return_value = True
-        mock_get_user_data.return_value = mock_user
-        result = self.view.processView()
-        self.get_mock("get_policy").assert_called_once()
-        mock_get_user_data.assert_called_once_with("LOGIN_USER", self.view.request)
+        self.get_mock("getUserData").return_value = mock_user
+        with patch.object(self.view, "is_user_logged_in", return_value=False):
+            result = self.view.processView()
         mock_remember.assert_called_once_with(
             self.view.request,
-            "{'login': 'LOGIN_USER', 'group': 'mainApp'}",
+            "{'login': '" + self.username + "', 'group': 'mainApp'}",
             policies=["main"],
         )
         self.assertIsInstance(result, HTTPFound)
         self.assertEqual(result.location, "next")
 
-    @patch("climmob.views.basic_views.getUserData", return_value=None)
-    def test_process_view_login_no_cookies_no_login_data_submit_no_user(
-        self, mock_get_user_data
-    ):
-        mock_policy = MagicMock()
-        mock_policy.authenticated_userid.return_value = None
-        self.get_mock("get_policy").return_value = mock_policy
-        self.view.request.policy = MagicMock()
-        self.view.request.policy.authenticated_userid.return_value = None
+    def test_process_view_login_no_cookies_no_login_data_submit_no_user(self):
+        self.get_mock("getUserData").return_value = None
         self.view.request.params.get.return_value = "next"
         self.view.request.POST = {
             "submit": True,
-            "login": "LOGIN_USER",
+            "login": self.username,
             "passwd": "PASS_USER",
         }
-        result = self.view.processView()
-        self.get_mock("get_policy").assert_called_once()
+        with patch.object(self.view, "is_user_logged_in", return_value=False):
+            result = self.view.processView()
         self.assertEqual(
             result,
             {
-                "login": "LOGIN_USER",
+                "login": self.username,
                 "failed_attempt": True,
                 "next": "next",
                 "ask_for_cookies": True,

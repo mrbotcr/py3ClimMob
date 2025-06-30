@@ -141,15 +141,8 @@ class LoginView(publicView):
             ask_for_cookies = True
 
         # If we logged in then go to dashboard
-        policy = get_policy(self.request, "main")
-        login_data = policy.authenticated_userid(self.request)
-        if login_data:
-            login_data = literal_eval(login_data)
-            if login_data["group"] == "mainApp":
-                currentUser = getUserData(login_data["login"], self.request)
-                if currentUser is not None:
-                    self.returnRawViewResult = True
-                    return HTTPFound(location=self.request.route_url("dashboard"))
+        if self.is_user_logged_in():
+            return HTTPFound(location=self.request.route_url("dashboard"))
 
         next = self.request.params.get("next") or self.request.route_url("dashboard")
         login = ""
