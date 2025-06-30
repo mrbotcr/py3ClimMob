@@ -137,11 +137,7 @@ class LoginView(publicView):
         if self.is_user_logged_in():
             return HTTPFound(location=self.request.route_url("dashboard"))
 
-        cookies = self.request.cookies
-        if "climmob_cookie_question" in cookies.keys():
-            ask_for_cookies = False
-        else:
-            ask_for_cookies = True
+        is_cookie_set = self.is_cookie_question_set()
 
         next_page = self.request.params.get("next") or self.request.route_url(
             "dashboard"
@@ -153,15 +149,11 @@ class LoginView(publicView):
             "login": login,
             "failed_attempt": did_fail,
             "next": next_page,
-            "ask_for_cookies": ask_for_cookies,
+            "ask_for_cookies": not is_cookie_set,
         }
 
     def post(self):
-        cookies = self.request.cookies
-        if "climmob_cookie_question" in cookies.keys():
-            ask_for_cookies = False
-        else:
-            ask_for_cookies = True
+        is_cookie_set = self.is_cookie_question_set()
 
         next_page = self.request.params.get("next") or self.request.route_url(
             "dashboard"
@@ -181,8 +173,12 @@ class LoginView(publicView):
             "login": login,
             "failed_attempt": did_fail,
             "next": next_page,
-            "ask_for_cookies": ask_for_cookies,
+            "ask_for_cookies": not is_cookie_set,
         }
+
+    def is_cookie_question_set(self):
+        cookies = self.request.cookies
+        return "climmob_cookie_question" in cookies.keys()
 
     def is_user_logged_in(self):
         policy = get_policy(self.request, "main")

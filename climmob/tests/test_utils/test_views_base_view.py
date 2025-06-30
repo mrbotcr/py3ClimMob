@@ -356,6 +356,17 @@ class TestLoginView(ViewBaseTest):
             },
         )
 
+    def test_is_cookie_question_set_false(self):
+        result = self.view.is_cookie_question_set()
+
+        self.assertFalse(result)
+
+    def test_is_cookie_question_set_true(self):
+        self.request.cookies = {"climmob_cookie_question": MagicMock()}
+        result = self.view.is_cookie_question_set()
+
+        self.assertTrue(result)
+
 
 class TestRecoverPasswordView(unittest.TestCase):
     @patch("climmob.views.basic_views.smtplib.SMTP")
