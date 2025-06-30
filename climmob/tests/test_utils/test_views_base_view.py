@@ -368,41 +368,46 @@ class TestLoginView(ViewBaseTest):
         self.assertTrue(result)
 
 
-class TestRecoverPasswordView(unittest.TestCase):
+class TestRecoverPasswordView(ViewBaseTest):
+    view_class = RecoverPasswordView
+
+    @patch("climmob.views.basic_views.build_email_message")
     @patch("climmob.views.basic_views.smtplib.SMTP")
-    def test_send_password_by_email_success(self, mock_smtp_server):
-        self.request = MagicMock()
+    def test_send_password_by_email_success(
+        self, mock_smtp_server, mock_build_email_message
+    ):
         mock_server = MagicMock()
         mock_smtp_server.return_value = mock_server
-        body = "THIS_IS_THE_BODY_OF_THE_EMAIL_TEST"
-        subject = "SUBJECT_TEST_EMAIL"
-        target_name = "YOUR_EMAIL"
-        target_email = "YOUR_EMAIL@CLIMMOB.COM"
-        mail_from = "TEST@CLIMMOB.COM"
-        msg = build_email_message(body, subject, target_name, target_email, mail_from)
+        body = MagicMock(str)
+        subject = MagicMock(str)
+        target_name = MagicMock(str)
+        target_email = MagicMock(str)
+        mail_from = MagicMock(str)
 
-        self.view = RecoverPasswordView(self.request)
         self.view.send_password_by_email(
+            body, subject, target_name, target_email, mail_from
+        )
+        mock_build_email_message.assert_called_once_with(
             body, subject, target_name, target_email, mail_from
         )
         mock_smtp_server.assert_called_once()
         mock_server.sendmail.assert_called_once_with(
-            mail_from, [target_email], msg.as_string()
+            mail_from, [target_email], mock_build_email_message.return_value.as_string()
         )
-        self.assertIn("Subject", mock_server.sendmail.call_args[0][2])
+        mock_server.quit.assert_called_once()
 
+    @patch("climmob.views.basic_views.build_email_message")
     @patch("climmob.views.basic_views.print")
     @patch("climmob.views.basic_views.smtplib.SMTP")
-    def test_send_password_by_email_fail(self, mock_smtp_server, mock_print):
-        self.request = MagicMock()
+    def test_send_password_by_email_fail(self, mock_smtp_server, mock_print, mock_build_email_message):
         mock_smtp_server.side_effect = Exception("Connection failed")
-        body = "THIS_IS_THE_BODY_OF_THE_EMAIL_TEST"
-        subject = "SUBJECT_TEST_EMAIL"
-        target_name = "YOUR_EMAIL"
-        target_email = "YOUR_EMAIL@CLIMMOB.COM"
-        mail_from = "TEST@CLIMMOB.COM"
 
-        self.view = RecoverPasswordView(self.request)
+        body = MagicMock(str)
+        subject = MagicMock(str)
+        target_name = MagicMock(str)
+        target_email = MagicMock(str)
+        mail_from = MagicMock(str)
+
         self.view.send_password_by_email(
             body, subject, target_name, target_email, mail_from
         )
@@ -411,7 +416,6 @@ class TestRecoverPasswordView(unittest.TestCase):
 
     @patch("climmob.views.basic_views.log.error")
     def test_send_password_email_no_email(self, mock_log_error):
-        self.request = MagicMock()
         self.request.registry = MagicMock()
         self.request.registry.settings = {"email.from": None}
         email_to = "YOUR_EMAIL@CLIMMOB.COM"
@@ -419,7 +423,6 @@ class TestRecoverPasswordView(unittest.TestCase):
         reset_key = "RESET_KEY"
         user_dict = {"user": "USER", "password": "PASSWORD"}
 
-        self.view = RecoverPasswordView(self.request)
         result = self.view.send_password_email(
             email_to, reset_token, reset_key, user_dict
         )
@@ -429,7 +432,6 @@ class TestRecoverPasswordView(unittest.TestCase):
         self.assertEqual(result, False)
 
     def test_send_password_email_empty_email(self):
-        self.request = MagicMock()
         self.request.registry = MagicMock()
         self.request.registry.settings = {"email.from": ""}
         email_to = "YOUR_EMAIL@CLIMMOB.COM"
@@ -437,7 +439,6 @@ class TestRecoverPasswordView(unittest.TestCase):
         reset_key = "RESET_KEY"
         user_dict = {"user": "USER", "password": "PASSWORD"}
 
-        self.view = RecoverPasswordView(self.request)
         result = self.view.send_password_email(
             email_to, reset_token, reset_key, user_dict
         )
@@ -459,11 +460,9 @@ class TestRecoverPasswordView(unittest.TestCase):
         user_dict.fullName = "FULL_NAME_USER"
         user_dict.user = "USER"
         user_dict.password = "PASSWORD"
-        self.request = MagicMock()
         self.request.registry = MagicMock()
         self.request.registry.settings = {"email.from": "TEST@CLIMMOB.COM"}
         self.request.route_url = MagicMock(return_value="/reset/RESET_KEY/password")
-        self.view = RecoverPasswordView(self.request)
         result = self.view.send_password_email(
             email_to, reset_token, reset_key, user_dict
         )
@@ -478,11 +477,9 @@ class TestRecoverPasswordView(unittest.TestCase):
     def test_process_view_recovery_password_user_exist(
         self, mock_get_policy, mock_get_user_data
     ):
-        self.request = MagicMock()
         mock_policy = MagicMock()
         mock_policy.authenticated_userid.return_value = "True"
         mock_get_policy.return_value = mock_policy
-        self.view = RecoverPasswordView(self.request)
         with self.assertRaises(HTTPNotFound) as context:
             self.view.processView()
             self.assertEqual(context.exception.code, 404)
@@ -500,8 +497,6 @@ class TestRecoverPasswordView(unittest.TestCase):
         mock_policy = MagicMock()
         mock_policy.authenticated_userid.return_value = "True"
         mock_get_policy.return_value = mock_policy
-        self.request = MagicMock()
-        self.view = RecoverPasswordView(self.request)
         self.view._ = MagicMock(side_effect=lambda x: x)
         self.request.POST = {"submit": "1", "user_email": None}
 
@@ -522,8 +517,6 @@ class TestRecoverPasswordView(unittest.TestCase):
         mock_policy = MagicMock()
         mock_policy.authenticated_userid.return_value = "True"
         mock_get_policy.return_value = mock_policy
-        self.request = MagicMock()
-        self.view = RecoverPasswordView(self.request)
         self.view._ = MagicMock(side_effect=lambda x: x)
         self.request.POST = {"submit": "1", "user_email": "YOUR_EMAIL@CLIMMOB.COM"}
 
@@ -561,8 +554,6 @@ class TestRecoverPasswordView(unittest.TestCase):
         mock_policy.authenticated_userid.return_value = "True"
         mock_get_policy.return_value = mock_policy
 
-        self.request = MagicMock()
-        self.view = RecoverPasswordView(self.request)
         self.view._ = MagicMock(side_effect=lambda x: x)
         self.request.locale_name = "en"
         self.request.POST = {"submit": "1", "user_email": "YOUR_EMAIL@CLIMMOB.COM"}
