@@ -132,7 +132,10 @@ def get_policy(request, policy_name):
 
 
 class LoginView(publicView):
-    def processView(self):
+    def get(self):
+        # If we logged in then go to dashboard
+        if self.is_user_logged_in():
+            return HTTPFound(location=self.request.route_url("dashboard"))
 
         cookies = self.request.cookies
         if "climmob_cookie_question" in cookies.keys():
@@ -140,9 +143,23 @@ class LoginView(publicView):
         else:
             ask_for_cookies = True
 
-        # If we logged in then go to dashboard
-        if self.is_user_logged_in():
-            return HTTPFound(location=self.request.route_url("dashboard"))
+        next = self.request.params.get("next") or self.request.route_url("dashboard")
+        login = ""
+        did_fail = False
+
+        return {
+            "login": login,
+            "failed_attempt": did_fail,
+            "next": next,
+            "ask_for_cookies": ask_for_cookies,
+        }
+
+    def post(self):
+        cookies = self.request.cookies
+        if "climmob_cookie_question" in cookies.keys():
+            ask_for_cookies = False
+        else:
+            ask_for_cookies = True
 
         next = self.request.params.get("next") or self.request.route_url("dashboard")
         login = ""
@@ -164,6 +181,7 @@ class LoginView(publicView):
             "next": next,
             "ask_for_cookies": ask_for_cookies,
         }
+
 
     def is_user_logged_in(self):
         policy = get_policy(self.request, "main")

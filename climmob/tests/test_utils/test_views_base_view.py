@@ -272,10 +272,10 @@ class TestLoginView(ViewBaseTest):
         self.assertFalse(result)
         self.get_mock("getUserData").assert_not_called()
 
-    def test_process_view_login_no_cookies_no_login_data_no_submit_dataw(self):
+    def test_get_no_cookies_no_login_data_no_submit_data(self):
         self.view.request.params.get.return_value = "next"
         with patch.object(self.view, "is_user_logged_in", return_value=False):
-            result = self.view.processView()
+            result = self.view.get()
         self.assertEqual(
             result,
             {
@@ -286,17 +286,15 @@ class TestLoginView(ViewBaseTest):
             },
         )
 
-    def test_process_view_login_cookies_login_data(self):
+    def test_get_already_logged_in(self):
         self.view.request.route_url.return_value = "dashboard"
         with patch.object(self.view, "is_user_logged_in", return_value=True):
-            result = self.view.processView()
+            result = self.view.get()
         self.assertIsInstance(result, HTTPFound)
         self.assertEqual(result.location, "dashboard")
 
     @patch("climmob.views.basic_views.remember")
-    def test_process_view_login_no_cookies_no_login_data_submit_dataw(
-        self, mock_remember
-    ):
+    def test_post_success(self, mock_remember):
         self.view.request.params.get.return_value = "next"
         self.view.request.POST = {
             "submit": True,
@@ -307,7 +305,7 @@ class TestLoginView(ViewBaseTest):
         mock_user.check_password.return_value = True
         self.get_mock("getUserData").return_value = mock_user
         with patch.object(self.view, "is_user_logged_in", return_value=False):
-            result = self.view.processView()
+            result = self.view.post()
         mock_remember.assert_called_once_with(
             self.view.request,
             "{'login': '" + self.username + "', 'group': 'mainApp'}",
@@ -316,7 +314,7 @@ class TestLoginView(ViewBaseTest):
         self.assertIsInstance(result, HTTPFound)
         self.assertEqual(result.location, "next")
 
-    def test_process_view_login_no_cookies_no_login_data_submit_no_user(self):
+    def test_post_invalid_user(self):
         self.get_mock("getUserData").return_value = None
         self.view.request.params.get.return_value = "next"
         self.view.request.POST = {
@@ -325,7 +323,7 @@ class TestLoginView(ViewBaseTest):
             "passwd": "PASS_USER",
         }
         with patch.object(self.view, "is_user_logged_in", return_value=False):
-            result = self.view.processView()
+            result = self.view.post()
         self.assertEqual(
             result,
             {
