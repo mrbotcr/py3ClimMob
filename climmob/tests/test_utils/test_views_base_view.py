@@ -196,15 +196,19 @@ class TestLoginView(ViewBaseTest):
     def setUp(self):
         super().setUp()
         self.view.request.cookies = {}
-        self.view.user = MagicMock(login="test_user")
+        self.username = "test_user"
 
     @classmethod
     def setUpClass(cls):
         cls.patchers["get_policy"] = {
             "patch": patch(
                 "climmob.views.basic_views.get_policy",
-            ),
-            "return_value": MagicMock(),
+            )
+        }
+        cls.patchers["getUserData"] = {
+            "patch": patch(
+                "climmob.views.basic_views.getUserData",
+            )
         }
         super().setUpClass()
 
@@ -215,6 +219,58 @@ class TestLoginView(ViewBaseTest):
                 self.view.request,
                 "main",
             )
+        if self.get_mock("getUserData").called:
+            self.get_mock("getUserData").assert_called_once_with(
+                self.username,
+                self.view.request,
+            )
+
+    def test_is_user_logged_in_true(self):
+        mock_policy = MagicMock()
+        mock_policy.authenticated_userid.return_value = (
+            "{'login': '" + self.username + "', 'group': 'mainApp'}"
+        )
+        self.get_mock("get_policy").return_value = mock_policy
+
+        result = self.view.is_user_logged_in()
+
+        self.assertTrue(result)
+        self.get_mock("getUserData").assert_called_once()
+
+    def test_is_user_logged_in_no_user(self):
+        mock_policy = MagicMock()
+        mock_policy.authenticated_userid.return_value = None
+        self.get_mock("get_policy").return_value = mock_policy
+
+        result = self.view.is_user_logged_in()
+
+        self.assertFalse(result)
+        self.get_mock("getUserData").assert_not_called()
+
+    def test_is_user_logged_in_no_invalid_user(self):
+        mock_policy = MagicMock()
+        mock_policy.authenticated_userid.return_value = (
+            "{'login': '" + self.username + "', 'group': 'mainApp'}"
+        )
+        self.get_mock("get_policy").return_value = mock_policy
+        self.get_mock("getUserData").return_value = None
+
+        result = self.view.is_user_logged_in()
+
+        self.assertFalse(result)
+        self.get_mock("getUserData").assert_called()
+
+    def test_is_user_logged_in_no_invalid_group(self):
+        mock_policy = MagicMock()
+        mock_policy.authenticated_userid.return_value = (
+            "{'login': '" + self.username + "', 'group': 'test_group'}"
+        )
+        self.get_mock("get_policy").return_value = mock_policy
+
+        result = self.view.is_user_logged_in()
+
+        self.assertFalse(result)
+        self.get_mock("getUserData").assert_not_called()
 
     def test_process_view_login_no_cookies_no_login_data_no_submit_dataw(self):
         mock_policy = MagicMock()

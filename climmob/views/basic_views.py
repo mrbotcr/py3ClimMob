@@ -172,6 +172,19 @@ class LoginView(publicView):
             "ask_for_cookies": ask_for_cookies,
         }
 
+    def is_user_logged_in(self):
+        policy = get_policy(self.request, "main")
+        login_data = policy.authenticated_userid(self.request)
+        if not login_data:
+            return False
+
+        login_data = literal_eval(login_data)
+        if login_data["group"] == "mainApp":
+            current_user = getUserData(login_data["login"], self.request)
+            return current_user is not None
+
+        return False
+
 
 class RecoverPasswordView(publicView):
     def send_password_by_email(
