@@ -371,6 +371,47 @@ class TestLoginView(ViewBaseTest):
 class TestRecoverPasswordView(ViewBaseTest):
     view_class = RecoverPasswordView
 
+    def setUp(self):
+        super().setUp()
+        self.username = "test_user"
+        self.email = "test_email"
+
+    @classmethod
+    def setUpClass(cls):
+        cls.patchers["get_policy"] = {
+            "patch": patch(
+                "climmob.views.basic_views.get_policy",
+            )
+        }
+        cls.patchers["getUserData"] = {
+            "patch": patch(
+                "climmob.views.basic_views.getUserData",
+            )
+        }
+        cls.patchers["getUserByEmail"] = {
+            "patch": patch(
+                "climmob.views.basic_views.getUserByEmail",
+            )
+        }
+        super().setUpClass()
+
+    def tearDown(self):
+        super().tearDown()
+        if self.get_mock("get_policy").called:
+            self.get_mock("get_policy").assert_called_once_with(
+                self.view.request,
+                "main",
+            )
+        if self.get_mock("getUserData").called:
+            self.get_mock("getUserData").assert_called_once_with(
+                self.username,
+                self.view.request,
+            )
+        if self.get_mock("getUserByEmail").called:
+            self.get_mock("getUserByEmail").assert_called_once_with(
+                self.email, self.request
+            )
+
     @patch("climmob.views.basic_views.build_email_message")
     @patch("climmob.views.basic_views.smtplib.SMTP")
     def test_send_password_by_email_success(
@@ -494,99 +535,78 @@ class TestRecoverPasswordView(ViewBaseTest):
         )
         self.assertEqual(result, None)
 
-    @patch("climmob.views.basic_views.getUserData", return_value="USER")
-    @patch("climmob.views.basic_views.get_policy")
-    def test_process_view_recovery_password_user_exist(
-        self, mock_get_policy, mock_get_user_data
-    ):
+    def test_process_view_recovery_password_user_exist(self):
         mock_policy = MagicMock()
-        mock_policy.authenticated_userid.return_value = "True"
-        mock_get_policy.return_value = mock_policy
+        mock_policy.authenticated_userid.return_value = self.username
+        self.get_mock("get_policy").return_value = mock_policy
         with self.assertRaises(HTTPNotFound) as context:
             self.view.processView()
             self.assertEqual(context.exception.code, 404)
             self.assertEqual(
                 context.exception.explanation, "The resource could not be found."
             )
-        mock_get_policy.assert_called_once_with(self.request, "main")
-        mock_get_user_data.assert_called_once_with("True", self.request)
+        self.get_mock("get_policy").assert_called_once()
+        self.get_mock("getUserData").assert_called_once()
 
-    @patch("climmob.views.basic_views.getUserData", return_value=None)
-    @patch("climmob.views.basic_views.get_policy")
-    def test_process_view_recovery_password_user_no_exist_submit_it_no_email(
-        self, mock_get_policy, mock_get_user_data
-    ):
+    def test_process_view_recovery_password_user_no_exist_submit_it_no_email(self):
+        self.get_mock("getUserData").return_value = None
         mock_policy = MagicMock()
-        mock_policy.authenticated_userid.return_value = "True"
-        mock_get_policy.return_value = mock_policy
+        mock_policy.authenticated_userid.return_value = self.username
+        self.get_mock("get_policy").return_value = mock_policy
         self.view._ = MagicMock(side_effect=lambda x: x)
         self.request.POST = {"submit": "1", "user_email": None}
 
         response = self.view.processView()
-        mock_get_policy.assert_called_once_with(self.request, "main")
-        mock_get_user_data.assert_called_once_with("True", self.request)
+        self.get_mock("get_policy").assert_called_once()
+        self.get_mock("getUserData").assert_called_once()
         self.assertEqual(
             response,
             {"error_summary": {"email": "You need to provide an email address"}},
         )
 
-    @patch("climmob.views.basic_views.getUserByEmail", return_value=(None, None))
-    @patch("climmob.views.basic_views.getUserData", return_value=None)
-    @patch("climmob.views.basic_views.get_policy")
-    def test_process_view_recovery_password_user_no_exist_submit_it_no_user(
-        self, mock_get_policy, mock_get_user_data, mock_getUserByEmail
-    ):
+    def test_process_view_recovery_password_user_no_exist_submit_it_no_user(self):
+        self.get_mock("getUserData").return_value = None
+        self.get_mock("getUserByEmail").return_value = (None, None)
         mock_policy = MagicMock()
-        mock_policy.authenticated_userid.return_value = "True"
-        mock_get_policy.return_value = mock_policy
+        mock_policy.authenticated_userid.return_value = self.username
+        self.get_mock("get_policy").return_value = mock_policy
         self.view._ = MagicMock(side_effect=lambda x: x)
-        self.request.POST = {"submit": "1", "user_email": "YOUR_EMAIL@CLIMMOB.COM"}
+        self.request.POST = {"submit": "1", "user_email": self.email}
 
         response = self.view.processView()
-        mock_get_policy.assert_called_once_with(self.request, "main")
-        mock_get_user_data.assert_called_once_with("True", self.request)
+        self.get_mock("get_policy").assert_called_once()
+        self.get_mock("getUserData").assert_called_once()
         self.assertEqual(
             response,
             {"error_summary": {"email": "Cannot find an user with such email address"}},
         )
-        mock_getUserByEmail.assert_called_once_with(
-            "YOUR_EMAIL@CLIMMOB.COM", self.request
-        )
+        self.get_mock("getUserByEmail").assert_called_once()
 
     @patch.object(RecoverPasswordView, "send_password_email", return_value=None)
     @patch("climmob.views.basic_views.setPasswordResetToken", return_value=None)
-    @patch(
-        "climmob.views.basic_views.getUserByEmail",
-        return_value=(
-            MagicMock(login="USER", email="YOUR_EMAIL@CLIMMOB.COM"),
-            "PASSWORD",
-        ),
-    )
-    @patch("climmob.views.basic_views.getUserData", return_value=None)
-    @patch("climmob.views.basic_views.get_policy")
     def test_process_view_recovery_password_success(
         self,
-        mock_get_policy,
-        mock_get_user_data,
-        mock_get_user_by_email,
-        mock_set_password_email,
         mock_send_password_reset_token,
+        mock_set_password_email,
     ):
+        self.get_mock("getUserData").return_value = None
+        self.get_mock("getUserByEmail").return_value = (
+            MagicMock(login=self.username, email=self.email),
+            "PASSWORD",
+        )
         mock_policy = MagicMock()
-        mock_policy.authenticated_userid.return_value = "True"
-        mock_get_policy.return_value = mock_policy
+        mock_policy.authenticated_userid.return_value = self.username
+        self.get_mock("get_policy").return_value = mock_policy
 
         self.view._ = MagicMock(side_effect=lambda x: x)
         self.request.locale_name = "en"
-        self.request.POST = {"submit": "1", "user_email": "YOUR_EMAIL@CLIMMOB.COM"}
+        self.request.POST = {"submit": "1", "user_email": self.email}
 
         result = self.view.processView()
         self.assertEqual(result.status_code, 302)
-        mock_get_policy.assert_called_once_with(self.request, "main")
-        mock_get_user_data.assert_called_once_with("True", self.request)
-        mock_get_user_by_email.assert_called_once_with(
-            "YOUR_EMAIL@CLIMMOB.COM", self.request
-        )
+        self.get_mock("get_policy").assert_called_once()
+        self.get_mock("getUserData").assert_called_once()
+        self.get_mock("getUserByEmail").assert_called_once()
         mock_set_password_email.assert_called_once()
         mock_send_password_reset_token.assert_called_once()
 
