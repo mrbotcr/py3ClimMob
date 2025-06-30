@@ -287,11 +287,11 @@ class TestLoginView(ViewBaseTest):
         )
 
     def test_get_already_logged_in(self):
-        self.view.request.route_url.return_value = "dashboard"
         with patch.object(self.view, "is_user_logged_in", return_value=True):
             result = self.view.get()
+        self.view.request.route_url.assert_called_with("dashboard")
         self.assertIsInstance(result, HTTPFound)
-        self.assertEqual(result.location, "dashboard")
+        self.assertEqual(result.location, self.view.request.route_url.return_value)
 
     @patch("climmob.views.basic_views.remember")
     def test_post_success(self, mock_remember):
@@ -314,6 +314,29 @@ class TestLoginView(ViewBaseTest):
         self.assertIsInstance(result, HTTPFound)
         self.assertEqual(result.location, "next")
 
+    def test_post_success_wrong_password(self):
+        self.view.request.params.get.return_value = "next"
+        self.view.request.POST = {
+            "submit": True,
+            "login": self.username,
+            "passwd": "PASS_USER",
+        }
+        mock_user = MagicMock()
+        mock_user.check_password.return_value = False
+        self.get_mock("getUserData").return_value = mock_user
+
+        result = self.view.post()
+
+        self.assertEqual(
+            result,
+            {
+                "login": self.username,
+                "failed_attempt": True,
+                "next": "next",
+                "ask_for_cookies": True,
+            },
+        )
+
     def test_post_invalid_user(self):
         self.get_mock("getUserData").return_value = None
         self.view.request.params.get.return_value = "next"
@@ -322,8 +345,7 @@ class TestLoginView(ViewBaseTest):
             "login": self.username,
             "passwd": "PASS_USER",
         }
-        with patch.object(self.view, "is_user_logged_in", return_value=False):
-            result = self.view.post()
+        result = self.view.post()
         self.assertEqual(
             result,
             {
