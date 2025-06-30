@@ -143,14 +143,16 @@ class LoginView(publicView):
         else:
             ask_for_cookies = True
 
-        next = self.request.params.get("next") or self.request.route_url("dashboard")
+        next_page = self.request.params.get("next") or self.request.route_url(
+            "dashboard"
+        )
         login = ""
         did_fail = False
 
         return {
             "login": login,
             "failed_attempt": did_fail,
-            "next": next,
+            "next": next_page,
             "ask_for_cookies": ask_for_cookies,
         }
 
@@ -161,27 +163,26 @@ class LoginView(publicView):
         else:
             ask_for_cookies = True
 
-        next = self.request.params.get("next") or self.request.route_url("dashboard")
-        login = ""
-        did_fail = False
-        if "submit" in self.request.POST:
-            login = self.request.POST.get("login", "")
-            passwd = self.request.POST.get("passwd", "")
-            user = getUserData(login, self.request)
-            if not user == None and user.check_password(passwd, self.request):
-                login_data = {"login": login, "group": "mainApp"}
-                headers = remember(self.request, str(login_data), policies=["main"])
-                response = HTTPFound(location=next, headers=headers)
-                return response
-            did_fail = True
+        next_page = self.request.params.get("next") or self.request.route_url(
+            "dashboard"
+        )
+
+        login = self.request.POST.get("login", "")
+        passwd = self.request.POST.get("passwd", "")
+        user = getUserData(login, self.request)
+        if user is not None and user.check_password(passwd, self.request):
+            login_data = {"login": login, "group": "mainApp"}
+            headers = remember(self.request, str(login_data), policies=["main"])
+            response = HTTPFound(location=next_page, headers=headers)
+            return response
+        did_fail = True
 
         return {
             "login": login,
             "failed_attempt": did_fail,
-            "next": next,
+            "next": next_page,
             "ask_for_cookies": ask_for_cookies,
         }
-
 
     def is_user_logged_in(self):
         policy = get_policy(self.request, "main")
