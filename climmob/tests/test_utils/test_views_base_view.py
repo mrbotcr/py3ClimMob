@@ -399,7 +399,9 @@ class TestRecoverPasswordView(ViewBaseTest):
     @patch("climmob.views.basic_views.build_email_message")
     @patch("climmob.views.basic_views.print")
     @patch("climmob.views.basic_views.smtplib.SMTP")
-    def test_send_password_by_email_fail(self, mock_smtp_server, mock_print, mock_build_email_message):
+    def test_send_password_by_email_fail(
+        self, mock_smtp_server, mock_print, mock_build_email_message
+    ):
         mock_smtp_server.side_effect = Exception("Connection failed")
 
         body = MagicMock(str)
@@ -415,13 +417,14 @@ class TestRecoverPasswordView(ViewBaseTest):
         mock_print.assert_called_with("Connection failed")
 
     @patch("climmob.views.basic_views.log.error")
-    def test_send_password_email_no_email(self, mock_log_error):
+    @patch("climmob.views.basic_views.jinjaEnv")
+    def test_send_password_email_no_email(self, mock_jinja_env, mock_log_error):
         self.request.registry = MagicMock()
         self.request.registry.settings = {"email.from": None}
-        email_to = "YOUR_EMAIL@CLIMMOB.COM"
-        reset_token = "NEW_TOKEN"
-        reset_key = "RESET_KEY"
-        user_dict = {"user": "USER", "password": "PASSWORD"}
+        email_to = MagicMock(str)
+        reset_token = MagicMock(str)
+        reset_key = MagicMock(str)
+        user_dict = MagicMock()
 
         result = self.view.send_password_email(
             email_to, reset_token, reset_key, user_dict
@@ -431,13 +434,14 @@ class TestRecoverPasswordView(ViewBaseTest):
         )
         self.assertEqual(result, False)
 
-    def test_send_password_email_empty_email(self):
+    @patch("climmob.views.basic_views.jinjaEnv")
+    def test_send_password_email_empty_email(self, mock_jinja_env):
         self.request.registry = MagicMock()
         self.request.registry.settings = {"email.from": ""}
-        email_to = "YOUR_EMAIL@CLIMMOB.COM"
-        reset_token = "NEW_TOKEN"
-        reset_key = "RESET_KEY"
-        user_dict = {"user": "USER", "password": "PASSWORD"}
+        email_to = MagicMock(str)
+        reset_token = MagicMock(str)
+        reset_key = MagicMock(str)
+        user_dict = MagicMock()
 
         result = self.view.send_password_email(
             email_to, reset_token, reset_key, user_dict
@@ -446,30 +450,48 @@ class TestRecoverPasswordView(ViewBaseTest):
 
     @patch("climmob.views.basic_views.RecoverPasswordView.send_password_by_email")
     @patch("climmob.views.basic_views.render_template")
-    @patch(
-        "climmob.views.basic_views.readble_date",
-        return_value=("Monday 01th of May, 2025", "en"),
-    )
+    @patch("climmob.views.basic_views.datetime")
+    @patch("climmob.views.basic_views.readble_date")
     def test_send_password_email_success(
-        self, mock_readable_date, mock_render_template, mock_send_password_by_email
+        self,
+        mock_readable_date,
+        mock_datetime,
+        mock_render_template,
+        mock_send_password_by_email,
     ):
-        email_to = "YOUR_EMAIL@CLIMMOB.COM"
-        reset_token = "NEW_TOKEN"
-        reset_key = "RESET_KEY"
+        email_to = MagicMock(str)
+        reset_token = MagicMock(str)
+        reset_key = MagicMock(str)
         user_dict = MagicMock()
-        user_dict.fullName = "FULL_NAME_USER"
-        user_dict.user = "USER"
-        user_dict.password = "PASSWORD"
         self.request.registry = MagicMock()
-        self.request.registry.settings = {"email.from": "TEST@CLIMMOB.COM"}
-        self.request.route_url = MagicMock(return_value="/reset/RESET_KEY/password")
+        self.request.registry.settings = {"email.from": MagicMock(str)}
         result = self.view.send_password_email(
             email_to, reset_token, reset_key, user_dict
         )
 
-        mock_send_password_by_email.assert_called_once()
-        mock_readable_date.assert_called_once()
-        mock_render_template.assert_called_once()
+        mock_send_password_by_email.assert_called_once_with(
+            mock_render_template.return_value,
+            "ClimMob - Password reset request",
+            user_dict.fullName,
+            email_to,
+            self.request.registry.settings.get("email.from"),
+        )
+        mock_readable_date.assert_called_once_with(
+            mock_datetime.datetime.now.return_value, self.request.locale_name
+        )
+        self.request.route_url.assert_called_once_with(
+            "reset_password", reset_key=reset_key
+        )
+        mock_render_template.assert_called_once_with(
+            "email/recover_email.jinja2",
+            {
+                "recovery_date": mock_readable_date.return_value,
+                "reset_token": reset_token,
+                "user_dict": user_dict,
+                "reset_url": self.request.route_url.return_value,
+                "_": self.request.translate,
+            },
+        )
         self.assertEqual(result, None)
 
     @patch("climmob.views.basic_views.getUserData", return_value="USER")
