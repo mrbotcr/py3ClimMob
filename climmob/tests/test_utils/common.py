@@ -9,7 +9,9 @@ class BaseTest(unittest.TestCase):
     def setUp(self):
         for key in self.mocks:
             self.mocks[key].reset_mock()
-            self.mocks[key].return_value = self.patchers[key]["return_value"]
+            self.mocks[key].return_value = (
+                self.patchers[key].get("return_value") or MagicMock()
+            )
 
     @classmethod
     def setUpClass(cls):
