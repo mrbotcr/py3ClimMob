@@ -6,7 +6,6 @@ from dateutil.relativedelta import relativedelta
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 
 from climmob.tests.test_utils.common import ViewBaseTest
-from climmob.utility.email import build_email_message
 from climmob.views.basic_views import (
     HomeView,
     HealthView,
@@ -535,16 +534,19 @@ class TestRecoverPasswordView(ViewBaseTest):
         )
         self.assertEqual(result, None)
 
-    @patch("climmob.views.basic_views.literal_eval")
-    def test_get_already_logged_in(self, mock_literal_eval):
-        mock_literal_eval.return_value = {"login": self.username}
-        mock_policy = MagicMock()
-        mock_policy.authenticated_userid.return_value = self.username
-        self.get_mock("get_policy").return_value = mock_policy
-        result = self.view.get()
-        self.assertEqual(result.status_code, 302)
-        self.get_mock("get_policy").assert_called_once()
-        self.get_mock("getUserData").assert_called_once()
+    @patch("climmob.views.basic_views.HTTPFound")
+    def test_get_already_logged_in(self, mock_http_found):
+        with patch.object(self.view, "is_user_logged_in", return_value=True):
+            result = self.view.get()
+        self.request.route_url.assert_called_once_with("dashboard")
+        mock_http_found.assert_called_once_with(location=self.request.route_url.return_value)
+        self.assertEqual(result, mock_http_found.return_value)
+
+
+    def test_get_not_logged_in(self):
+        with patch.object(self.view, "is_user_logged_in", return_value=False):
+            result = self.view.get()
+        self.assertEqual(result, {"error_summary": {}})
 
     def test_post_user_does_no_email(self):
         self.view._ = MagicMock(side_effect=lambda x: x)
@@ -604,6 +606,54 @@ class TestRecoverPasswordView(ViewBaseTest):
             str(mock_uuid.uuid4.return_value),
             mock_secrets.token_hex.return_value,
         )
+
+    def test_is_user_logged_in_true(self):
+        mock_policy = MagicMock()
+        mock_policy.authenticated_userid.return_value = (
+            "{'login': '" + self.username + "', 'group': 'mainApp'}"
+        )
+        self.get_mock("get_policy").return_value = mock_policy
+
+        result = self.view.is_user_logged_in()
+
+        self.assertTrue(result)
+        self.get_mock("getUserData").assert_called_once()
+
+    def test_is_user_logged_in_no_user(self):
+        mock_policy = MagicMock()
+        mock_policy.authenticated_userid.return_value = None
+        self.get_mock("get_policy").return_value = mock_policy
+
+        result = self.view.is_user_logged_in()
+
+        self.assertFalse(result)
+        self.get_mock("getUserData").assert_not_called()
+
+    def test_is_user_logged_in_no_invalid_user(self):
+        mock_policy = MagicMock()
+        mock_policy.authenticated_userid.return_value = (
+            "{'login': '" + self.username + "', 'group': 'mainApp'}"
+        )
+        self.get_mock("get_policy").return_value = mock_policy
+        self.get_mock("getUserData").return_value = None
+
+        result = self.view.is_user_logged_in()
+
+        self.assertFalse(result)
+        self.get_mock("getUserData").assert_called()
+
+    def test_is_user_logged_in_no_invalid_group(self):
+        mock_policy = MagicMock()
+        mock_policy.authenticated_userid.return_value = (
+            "{'login': '" + self.username + "', 'group': 'test_group'}"
+        )
+        self.get_mock("get_policy").return_value = mock_policy
+
+        result = self.view.is_user_logged_in()
+
+        self.assertFalse(result)
+        self.get_mock("getUserData").assert_not_called()
+
 
 
 class TestResetPasswordView(ViewBaseTest):

@@ -122,7 +122,7 @@ class StoreCookieView(publicView):
             response.set_cookie("climmob_cookie_question", "accept", max_age=31536000)
         return response
 
-
+# TODO Add as a method to BaseView
 def get_policy(request, policy_name):
     policies = request.policies()
     for policy in policies:
@@ -180,6 +180,7 @@ class LoginView(publicView):
         cookies = self.request.cookies
         return "climmob_cookie_question" in cookies.keys()
 
+    # TODO Move method to publicView
     def is_user_logged_in(self):
         policy = get_policy(self.request, "main")
         login_data = policy.authenticated_userid(self.request)
@@ -252,20 +253,11 @@ class RecoverPasswordView(publicView):
         )
 
     def get(self):
-        response = {"error_summary": {}}
-
         # If we logged in then go to dashboard
-        policy = get_policy(self.request, "main")
-        login = policy.authenticated_userid(self.request)
-        if not login:
-            return response
-
-        login_data = literal_eval(login)
-        current_user = getUserData(login_data["login"], self.request)
-        if current_user is not None:
+        if self.is_user_logged_in():
             return HTTPFound(location=self.request.route_url("dashboard"))
 
-        return response
+        return {"error_summary": {}}
 
     def post(self):
         error_summary = {}
@@ -289,6 +281,19 @@ class RecoverPasswordView(publicView):
         self.send_password_email(user.email, reset_token, reset_key, user)
         return HTTPFound(location=self.request.route_url("login"))
 
+    # TODO Move method to publicView
+    def is_user_logged_in(self):
+        policy = get_policy(self.request,"main")
+        login_data = policy.authenticated_userid(self.request)
+        if not login_data:
+            return False
+
+        login_data = literal_eval(login_data)
+        if login_data["group"] == "mainApp":
+            current_user = getUserData(login_data["login"], self.request)
+            return current_user is not None
+
+        return False
 
 class ResetPasswordView(publicView):
     def processView(self):
