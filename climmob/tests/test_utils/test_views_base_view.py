@@ -539,9 +539,10 @@ class TestRecoverPasswordView(ViewBaseTest):
         with patch.object(self.view, "is_user_logged_in", return_value=True):
             result = self.view.get()
         self.request.route_url.assert_called_once_with("dashboard")
-        mock_http_found.assert_called_once_with(location=self.request.route_url.return_value)
+        mock_http_found.assert_called_once_with(
+            location=self.request.route_url.return_value
+        )
         self.assertEqual(result, mock_http_found.return_value)
-
 
     def test_get_not_logged_in(self):
         with patch.object(self.view, "is_user_logged_in", return_value=False):
@@ -653,7 +654,6 @@ class TestRecoverPasswordView(ViewBaseTest):
 
         self.assertFalse(result)
         self.get_mock("getUserData").assert_not_called()
-
 
 
 class TestResetPasswordView(ViewBaseTest):

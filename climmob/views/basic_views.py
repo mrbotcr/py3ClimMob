@@ -122,6 +122,7 @@ class StoreCookieView(publicView):
             response.set_cookie("climmob_cookie_question", "accept", max_age=31536000)
         return response
 
+
 # TODO Add as a method to BaseView
 def get_policy(request, policy_name):
     policies = request.policies()
@@ -283,7 +284,7 @@ class RecoverPasswordView(publicView):
 
     # TODO Move method to publicView
     def is_user_logged_in(self):
-        policy = get_policy(self.request,"main")
+        policy = get_policy(self.request, "main")
         login_data = policy.authenticated_userid(self.request)
         if not login_data:
             return False
@@ -294,6 +295,7 @@ class RecoverPasswordView(publicView):
             return current_user is not None
 
         return False
+
 
 class ResetPasswordView(publicView):
     def processView(self):
