@@ -269,27 +269,25 @@ class RecoverPasswordView(publicView):
 
     def post(self):
         error_summary = {}
-        if "submit" in self.request.POST:
-            email = self.request.POST.get("user_email", None)
-            if email is not None:
-                user, password = getUserByEmail(email, self.request)
-                if user is not None:
+        email = self.request.POST.get("user_email", None)
 
-                    reset_key = str(uuid.uuid4())
-                    reset_token = secrets.token_hex(16)
-                    setPasswordResetToken(
-                        self.request, user.login, reset_key, reset_token
-                    )
-                    self.send_password_email(user.email, reset_token, reset_key, user)
-                    return HTTPFound(location=self.request.route_url("login"))
-                else:
-                    error_summary["email"] = self._(
-                        "Cannot find an user with such email address"
-                    )
-            else:
-                error_summary["email"] = self._("You need to provide an email address")
+        if email is None:
+            error_summary["email"] = self._("You need to provide an email address")
+            return {"error_summary": error_summary}
 
-        return {"error_summary": error_summary}
+        user, password = getUserByEmail(email, self.request)
+
+        if user is None:
+            error_summary["email"] = self._(
+                "Cannot find an user with such email address"
+            )
+            return {"error_summary": error_summary}
+
+        reset_key = str(uuid.uuid4())
+        reset_token = secrets.token_hex(16)
+        setPasswordResetToken(self.request, user.login, reset_key, reset_token)
+        self.send_password_email(user.email, reset_token, reset_key, user)
+        return HTTPFound(location=self.request.route_url("login"))
 
 
 class ResetPasswordView(publicView):
