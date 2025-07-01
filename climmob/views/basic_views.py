@@ -251,15 +251,23 @@ class RecoverPasswordView(publicView):
             email_from,
         )
 
-    def processView(self):
+    def get(self):
+        response = {"error_summary": {}}
 
         # If we logged in then go to dashboard
         policy = get_policy(self.request, "main")
         login = policy.authenticated_userid(self.request)
-        currentUser = getUserData(login, self.request)
-        if currentUser is not None:
-            raise HTTPNotFound()
+        if not login:
+            return response
 
+        login_data = literal_eval(login)
+        current_user = getUserData(login_data["login"], self.request)
+        if current_user is not None:
+            return HTTPFound(location=self.request.route_url("dashboard"))
+
+        return response
+
+    def post(self):
         error_summary = {}
         if "submit" in self.request.POST:
             email = self.request.POST.get("user_email", None)
@@ -273,7 +281,6 @@ class RecoverPasswordView(publicView):
                         self.request, user.login, reset_key, reset_token
                     )
                     self.send_password_email(user.email, reset_token, reset_key, user)
-                    self.returnRawViewResult = True
                     return HTTPFound(location=self.request.route_url("login"))
                 else:
                     error_summary["email"] = self._(
