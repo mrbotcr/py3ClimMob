@@ -690,18 +690,26 @@ class TestResetPasswordView(ViewBaseTest):
 
     def setUp(self):
         super().setUp()
-        self.view.request.reset_key = "DUMMY_RESET_KEY"
-        self.view.getPostDict = MagicMock(
-            return_value={
-                "user": "SOME_VALUE",
-                "token": "TOKEN",
-                "password": "PASSWORD",
-                "password2": "PASSWORD",
-                "email": "EMAIL",
-            }
-        )
+        self.view.request.reset_key = MagicMock(str, name="reset_key")
+        self.username = MagicMock(str, name="username")
+        self.token = MagicMock(str, name="token")
+        self.password = MagicMock(str, name="password")
+        self.email = MagicMock(str, name="email")
+        self.post_dict = {
+            "user": self.username,
+            "token": self.token,
+            "password": self.password,
+            "password2": self.password,
+            "email": self.email,
+        }
+        self.view.getPostDict = MagicMock(return_value=self.post_dict)
+
         self.view.request.remote_addr = "127.0.0.1"
         self.view.request.user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
+
+    def update_post_dict(self, update):
+        self.post_dict.update(update)
+        self.view.getPostDict = MagicMock(return_value=self.post_dict)
 
     def test_process_view_reset_password_view_no_reset_key(self):
         self.get_mock("resetKeyExists").return_value = False
@@ -735,13 +743,7 @@ class TestResetPasswordView(ViewBaseTest):
         self.assertEqual(
             response,
             {
-                "dataworking": {
-                    "email": "EMAIL",
-                    "password": "PASSWORD",
-                    "password2": "PASSWORD",
-                    "token": "TOKEN",
-                    "user": "SOME_VALUE",
-                },
+                "dataworking": self.post_dict,
                 "error_summary": {"Error": "User does not exist"},
             },
         )
@@ -752,9 +754,9 @@ class TestResetPasswordView(ViewBaseTest):
             + self.view.request.remote_addr
             + ". Agent: "
             + self.view.request.user_agent
-            + ". Email: EMAIL"
+            + f". Email: {self.email}"
         )
-        mock_get_user_data.assert_called_once_with("SOME_VALUE", self.view.request)
+        mock_get_user_data.assert_called_once_with(self.username, self.view.request)
 
     @patch("climmob.views.basic_views.getUserData")
     @patch("climmob.views.basic_views.log.error")
@@ -765,8 +767,8 @@ class TestResetPasswordView(ViewBaseTest):
     ):
         mock_user = MagicMock()
         mock_user.userData = {
-            "user_password_reset_key": "RESET_KEY",
-            "user_password_reset_token": "RESET_TOKEN",
+            "user_password_reset_key": MagicMock(str, name="other_reset_key"),
+            "user_password_reset_token": self.token,
             "user_password_reset_expires_on": datetime(2025, 5, 12, 15, 0, 0),
         }
         mock_get_user_data.return_value = mock_user
@@ -774,13 +776,7 @@ class TestResetPasswordView(ViewBaseTest):
         self.assertEqual(
             response,
             {
-                "dataworking": {
-                    "email": "EMAIL",
-                    "password": "PASSWORD",
-                    "password2": "PASSWORD",
-                    "token": "TOKEN",
-                    "user": "SOME_VALUE",
-                },
+                "dataworking": self.post_dict,
                 "error_summary": {"Error": "Invalid key"},
             },
         )
@@ -792,9 +788,9 @@ class TestResetPasswordView(ViewBaseTest):
             + self.view.request.remote_addr
             + ". Agent: "
             + self.view.request.user_agent
-            + ". Email: EMAIL"
+            + f". Email: {self.email}"
         )
-        mock_get_user_data.assert_called_once_with("SOME_VALUE", self.view.request)
+        mock_get_user_data.assert_called_once_with(self.username, self.view.request)
 
     @patch("climmob.views.basic_views.getUserData")
     @patch("climmob.views.basic_views.log.error")
@@ -806,7 +802,7 @@ class TestResetPasswordView(ViewBaseTest):
         mock_user = MagicMock()
         mock_user.userData = {
             "user_password_reset_key": self.view.request.reset_key,
-            "user_password_reset_token": "RESET_TOKEN",
+            "user_password_reset_token": MagicMock(str, name="other_token"),
             "user_password_reset_expires_on": "2025-05-12 15:00:00",
         }
         mock_get_user_data.return_value = mock_user
@@ -814,13 +810,7 @@ class TestResetPasswordView(ViewBaseTest):
         self.assertEqual(
             response,
             {
-                "dataworking": {
-                    "email": "EMAIL",
-                    "password": "PASSWORD",
-                    "password2": "PASSWORD",
-                    "token": "TOKEN",
-                    "user": "SOME_VALUE",
-                },
+                "dataworking": self.post_dict,
                 "error_summary": {"Error": "Invalid token"},
             },
         )
@@ -832,9 +822,9 @@ class TestResetPasswordView(ViewBaseTest):
             + self.view.request.remote_addr
             + ". Agent: "
             + self.view.request.user_agent
-            + ". Email: EMAIL"
+            + f". Email: {self.email}"
         )
-        mock_get_user_data.assert_called_once_with("SOME_VALUE", self.view.request)
+        mock_get_user_data.assert_called_once_with(self.username, self.view.request)
 
     @patch("climmob.views.basic_views.getUserData")
     @patch("climmob.views.basic_views.log.error")
@@ -846,30 +836,15 @@ class TestResetPasswordView(ViewBaseTest):
         mock_user = MagicMock()
         mock_user.userData = {
             "user_password_reset_key": self.view.request.reset_key,
-            "user_password_reset_token": "RESET_TOKEN",
+            "user_password_reset_token": self.token,
             "user_password_reset_expires_on": datetime(2025, 5, 12, 15, 0, 0),
         }
         mock_get_user_data.return_value = mock_user
-        self.view.getPostDict = MagicMock(
-            return_value={
-                "user": "SOME_VALUE",
-                "token": "RESET_TOKEN",
-                "password": "PASSWORD",
-                "password2": "PASSWORD",
-                "email": "EMAIL",
-            }
-        )
         response = self.view.processView()
         self.assertEqual(
             response,
             {
-                "dataworking": {
-                    "email": "EMAIL",
-                    "password": "PASSWORD",
-                    "password2": "PASSWORD",
-                    "token": "RESET_TOKEN",
-                    "user": "SOME_VALUE",
-                },
+                "dataworking": self.post_dict,
                 "error_summary": {"Error": "Invalid token"},
             },
         )
@@ -880,9 +855,9 @@ class TestResetPasswordView(ViewBaseTest):
             + self.view.request.remote_addr
             + ". Agent: "
             + self.view.request.user_agent
-            + ". Email: EMAIL"
+            + f". Email: {self.email}"
         )
-        mock_get_user_data.assert_called_once_with("SOME_VALUE", self.view.request)
+        mock_get_user_data.assert_called_once_with(self.username, self.view.request)
 
     @patch("climmob.views.basic_views.getUserData")
     @patch("climmob.views.basic_views.log.error")
@@ -894,30 +869,16 @@ class TestResetPasswordView(ViewBaseTest):
         mock_user = MagicMock()
         mock_user.userData = {
             "user_password_reset_key": self.view.request.reset_key,
-            "user_password_reset_token": "RESET_TOKEN",
+            "user_password_reset_token": self.token,
             "user_password_reset_expires_on": datetime.now() + relativedelta(hours=+1),
         }
         mock_get_user_data.return_value = mock_user
-        self.view.getPostDict = MagicMock(
-            return_value={
-                "user": "SOME_VALUE",
-                "token": "RESET_TOKEN",
-                "password": "",
-                "password2": "",
-                "email": "EMAIL",
-            }
-        )
+        self.update_post_dict({"password": "", "password2": ""})
         response = self.view.processView()
         self.assertEqual(
             response,
             {
-                "dataworking": {
-                    "email": "EMAIL",
-                    "password": "",
-                    "password2": "",
-                    "token": "RESET_TOKEN",
-                    "user": "SOME_VALUE",
-                },
+                "dataworking": self.post_dict,
                 "error_summary": {"Error": "The password cannot be empty"},
             },
         )
@@ -928,9 +889,9 @@ class TestResetPasswordView(ViewBaseTest):
             + self.view.request.remote_addr
             + ". Agent: "
             + self.view.request.user_agent
-            + ". Email: EMAIL"
+            + f". Email: {self.email}"
         )
-        mock_get_user_data.assert_called_once_with("SOME_VALUE", self.view.request)
+        mock_get_user_data.assert_called_once_with(self.username, self.view.request)
 
     @patch("climmob.views.basic_views.getUserData")
     @patch("climmob.views.basic_views.log.error")
@@ -942,30 +903,17 @@ class TestResetPasswordView(ViewBaseTest):
         mock_user = MagicMock()
         mock_user.userData = {
             "user_password_reset_key": self.view.request.reset_key,
-            "user_password_reset_token": "RESET_TOKEN",
+            "user_password_reset_token": self.token,
             "user_password_reset_expires_on": datetime.now() + relativedelta(hours=+1),
         }
         mock_get_user_data.return_value = mock_user
-        self.view.getPostDict = MagicMock(
-            return_value={
-                "user": "SOME_VALUE",
-                "token": "RESET_TOKEN",
-                "password": "PASSWORD",
-                "password2": "OTHER_PASSWORD",
-                "email": "EMAIL",
-            }
-        )
+        other_password = MagicMock(str, name="other_password")
+        self.update_post_dict({"password2": other_password})
         response = self.view.processView()
         self.assertEqual(
             response,
             {
-                "dataworking": {
-                    "email": "EMAIL",
-                    "password": "PASSWORD",
-                    "password2": "OTHER_PASSWORD",
-                    "token": "RESET_TOKEN",
-                    "user": "SOME_VALUE",
-                },
+                "dataworking": self.post_dict,
                 "error_summary": {
                     "Error": "The password and the confirmation are not the same"
                 },
@@ -978,9 +926,9 @@ class TestResetPasswordView(ViewBaseTest):
             + self.view.request.remote_addr
             + ". Agent: "
             + self.view.request.user_agent
-            + ". Email: EMAIL"
+            + f". Email: {self.email}"
         )
-        mock_get_user_data.assert_called_once_with("SOME_VALUE", self.view.request)
+        mock_get_user_data.assert_called_once_with(self.username, self.view.request)
 
     @patch("climmob.views.basic_views.resetPassword")
     @patch("climmob.views.basic_views.encodeData", return_value="data")
@@ -995,9 +943,9 @@ class TestResetPasswordView(ViewBaseTest):
     ):
         mock_user = MagicMock()
         mock_user.userData = {
-            "user_name": "SOME_VALUE",
+            "user_name": self.username,
             "user_password_reset_key": self.view.request.reset_key,
-            "user_password_reset_token": "TOKEN",
+            "user_password_reset_token": self.token,
             "user_password_reset_expires_on": datetime.now() + relativedelta(hours=+1),
         }
         mock_get_user_data.return_value = mock_user
@@ -1010,15 +958,17 @@ class TestResetPasswordView(ViewBaseTest):
             + self.view.request.remote_addr
             + ". Agent: "
             + self.view.request.user_agent
-            + ". Email: EMAIL"
+            + f". Email: {self.email}"
         )
-        mock_get_user_data.assert_called_once_with("SOME_VALUE", self.view.request)
-        mock_encode_data.assert_called_once_with(self.view.request, "PASSWORD")
+        mock_get_user_data.assert_called_once_with(self.username, self.view.request)
+        mock_encode_data.assert_called_once_with(
+            self.view.request, self.password.strip.return_value
+        )
         mock_reset_password.assert_called_once_with(
             self.view.request,
-            "SOME_VALUE",
+            self.username,
             self.view.request.reset_key,
-            "TOKEN",
+            self.token,
             "data",
         )
 
