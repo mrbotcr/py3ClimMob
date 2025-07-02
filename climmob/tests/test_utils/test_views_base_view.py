@@ -661,9 +661,36 @@ class TestResetPasswordView(ViewBaseTest):
     _ = MagicMock(side_effect=lambda x: x)
     request_method = "POST"
 
+    @classmethod
+    def setUpClass(cls):
+        cls.patchers["resetKeyExists"] = {
+            "patch": patch(
+                "climmob.views.basic_views.resetKeyExists",
+            ),
+            "return_value": True,
+        }
+        cls.patchers["check_csrf_token"] = {
+            "patch": patch(
+                "climmob.views.basic_views.check_csrf_token",
+            ),
+            "return_value": True,
+        }
+        super().setUpClass()
+
+    def tearDown(self):
+        super().tearDown()
+        if self.get_mock("resetKeyExists").called:
+            self.get_mock("resetKeyExists").assert_called_once_with(
+                self.view.request, self.view.request.reset_key
+            )
+        if self.get_mock("check_csrf_token").called:
+            self.get_mock("check_csrf_token").assert_called_once_with(
+                self.view.request, raises=False
+            )
+
     def setUp(self):
         super().setUp()
-        self.view.request.matchdict = {"reset_key": "DUMMY_RESET_KEY"}
+        self.view.request.reset_key = "DUMMY_RESET_KEY"
         self.view.getPostDict = MagicMock(
             return_value={
                 "user": "SOME_VALUE",
@@ -676,45 +703,31 @@ class TestResetPasswordView(ViewBaseTest):
         self.view.request.remote_addr = "127.0.0.1"
         self.view.request.user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
 
-    @patch("climmob.views.basic_views.resetKeyExists", return_value=False)
-    def test_process_view_reset_password_view_no_reset_key(self, mock_reset_Key_exists):
+    def test_process_view_reset_password_view_no_reset_key(self):
+        self.get_mock("resetKeyExists").return_value = False
         with self.assertRaises(HTTPNotFound) as context:
             self.view.processView()
         self.assertEqual(context.exception.status_code, 404)
-        mock_reset_Key_exists.assert_called_once_with(
-            self.view.request, "DUMMY_RESET_KEY"
-        )
+        self.get_mock("resetKeyExists").assert_called_once()
 
-    @patch("climmob.views.basic_views.resetKeyExists", return_value=True)
-    def test_process_view_reset_password_view_no_post(self, mock_reset_Key_exists):
+    def test_process_view_reset_password_view_no_post(self):
         self.view.request.method = "GET"
         response = self.view.processView()
         self.assertEqual(response, {"error_summary": {}, "dataworking": {}})
-        mock_reset_Key_exists.assert_called_once_with(
-            self.view.request, "DUMMY_RESET_KEY"
-        )
+        self.get_mock("resetKeyExists").assert_called_once()
 
-    @patch("climmob.views.basic_views.check_csrf_token", return_value=False)
-    @patch("climmob.views.basic_views.resetKeyExists", return_value=True)
-    def test_process_view_reset_password_view_user_no_safe(
-        self, mock_reset_Key_exists, mock_check_csrf_token
-    ):
+    def test_process_view_reset_password_view_user_no_safe(self):
+        self.get_mock("check_csrf_token").return_value = False
         with self.assertRaises(HTTPNotFound) as context:
             self.view.processView()
         self.assertEqual(context.exception.status_code, 404)
-        mock_reset_Key_exists.assert_called_once_with(
-            self.view.request, "DUMMY_RESET_KEY"
-        )
-        mock_check_csrf_token.assert_called_once_with(self.view.request, raises=False)
+        self.get_mock("resetKeyExists").assert_called_once()
+        self.get_mock("check_csrf_token").assert_called_once()
 
     @patch("climmob.views.basic_views.getUserData", return_value=None)
     @patch("climmob.views.basic_views.log.error")
-    @patch("climmob.views.basic_views.check_csrf_token", return_value=True)
-    @patch("climmob.views.basic_views.resetKeyExists", return_value=True)
     def test_process_view_reset_password_view_user_no_user(
         self,
-        mock_reset_Key_exists,
-        mock_check_csrf_token,
         mock_log_error,
         mock_get_user_data,
     ):
@@ -732,10 +745,8 @@ class TestResetPasswordView(ViewBaseTest):
                 "error_summary": {"Error": "User does not exist"},
             },
         )
-        mock_reset_Key_exists.assert_called_once_with(
-            self.view.request, "DUMMY_RESET_KEY"
-        )
-        mock_check_csrf_token.assert_called_once_with(self.view.request, raises=False)
+        self.get_mock("resetKeyExists").assert_called_once()
+        self.get_mock("check_csrf_token").assert_called_once()
         mock_log_error.assert_called_once_with(
             "Suspicious bot password recovery from IP: "
             + self.view.request.remote_addr
@@ -747,12 +758,8 @@ class TestResetPasswordView(ViewBaseTest):
 
     @patch("climmob.views.basic_views.getUserData")
     @patch("climmob.views.basic_views.log.error")
-    @patch("climmob.views.basic_views.check_csrf_token", return_value=True)
-    @patch("climmob.views.basic_views.resetKeyExists", return_value=True)
     def test_process_view_reset_password_view_user_invalid_Key(
         self,
-        mock_reset_Key_exists,
-        mock_check_csrf_token,
         mock_log_error,
         mock_get_user_data,
     ):
@@ -778,10 +785,8 @@ class TestResetPasswordView(ViewBaseTest):
             },
         )
 
-        mock_reset_Key_exists.assert_called_once_with(
-            self.view.request, "DUMMY_RESET_KEY"
-        )
-        mock_check_csrf_token.assert_called_once_with(self.view.request, raises=False)
+        self.get_mock("resetKeyExists").assert_called_once()
+        self.get_mock("check_csrf_token").assert_called_once()
         mock_log_error.assert_called_once_with(
             "Suspicious bot password recovery from IP: "
             + self.view.request.remote_addr
@@ -793,18 +798,14 @@ class TestResetPasswordView(ViewBaseTest):
 
     @patch("climmob.views.basic_views.getUserData")
     @patch("climmob.views.basic_views.log.error")
-    @patch("climmob.views.basic_views.check_csrf_token", return_value=True)
-    @patch("climmob.views.basic_views.resetKeyExists", return_value=True)
     def test_process_view_reset_password_view_user_invalid_token(
         self,
-        mock_reset_Key_exists,
-        mock_check_csrf_token,
         mock_log_error,
         mock_get_user_data,
     ):
         mock_user = MagicMock()
         mock_user.userData = {
-            "user_password_reset_key": "DUMMY_RESET_KEY",
+            "user_password_reset_key": self.view.request.reset_key,
             "user_password_reset_token": "RESET_TOKEN",
             "user_password_reset_expires_on": "2025-05-12 15:00:00",
         }
@@ -824,10 +825,8 @@ class TestResetPasswordView(ViewBaseTest):
             },
         )
 
-        mock_reset_Key_exists.assert_called_once_with(
-            self.view.request, "DUMMY_RESET_KEY"
-        )
-        mock_check_csrf_token.assert_called_once_with(self.view.request, raises=False)
+        self.get_mock("resetKeyExists").assert_called_once()
+        self.get_mock("check_csrf_token").assert_called_once()
         mock_log_error.assert_called_once_with(
             "Suspicious bot password recovery from IP: "
             + self.view.request.remote_addr
@@ -839,18 +838,14 @@ class TestResetPasswordView(ViewBaseTest):
 
     @patch("climmob.views.basic_views.getUserData")
     @patch("climmob.views.basic_views.log.error")
-    @patch("climmob.views.basic_views.check_csrf_token", return_value=True)
-    @patch("climmob.views.basic_views.resetKeyExists", return_value=True)
     def test_process_view_reset_password_view_user_invalid_token_by_time(
         self,
-        mock_reset_Key_exists,
-        mock_check_csrf_token,
         mock_log_error,
         mock_get_user_data,
     ):
         mock_user = MagicMock()
         mock_user.userData = {
-            "user_password_reset_key": "DUMMY_RESET_KEY",
+            "user_password_reset_key": self.view.request.reset_key,
             "user_password_reset_token": "RESET_TOKEN",
             "user_password_reset_expires_on": datetime(2025, 5, 12, 15, 0, 0),
         }
@@ -878,10 +873,8 @@ class TestResetPasswordView(ViewBaseTest):
                 "error_summary": {"Error": "Invalid token"},
             },
         )
-        mock_reset_Key_exists.assert_called_once_with(
-            self.view.request, "DUMMY_RESET_KEY"
-        )
-        mock_check_csrf_token.assert_called_once_with(self.view.request, raises=False)
+        self.get_mock("resetKeyExists").assert_called_once()
+        self.get_mock("check_csrf_token").assert_called_once()
         mock_log_error.assert_called_once_with(
             "Suspicious bot password recovery from IP: "
             + self.view.request.remote_addr
@@ -893,18 +886,14 @@ class TestResetPasswordView(ViewBaseTest):
 
     @patch("climmob.views.basic_views.getUserData")
     @patch("climmob.views.basic_views.log.error")
-    @patch("climmob.views.basic_views.check_csrf_token", return_value=True)
-    @patch("climmob.views.basic_views.resetKeyExists", return_value=True)
     def test_process_view_reset_password_view_password_empty(
         self,
-        mock_reset_Key_exists,
-        mock_check_csrf_token,
         mock_log_error,
         mock_get_user_data,
     ):
         mock_user = MagicMock()
         mock_user.userData = {
-            "user_password_reset_key": "DUMMY_RESET_KEY",
+            "user_password_reset_key": self.view.request.reset_key,
             "user_password_reset_token": "RESET_TOKEN",
             "user_password_reset_expires_on": datetime.now() + relativedelta(hours=+1),
         }
@@ -932,10 +921,8 @@ class TestResetPasswordView(ViewBaseTest):
                 "error_summary": {"Error": "The password cannot be empty"},
             },
         )
-        mock_reset_Key_exists.assert_called_once_with(
-            self.view.request, "DUMMY_RESET_KEY"
-        )
-        mock_check_csrf_token.assert_called_once_with(self.view.request, raises=False)
+        self.get_mock("resetKeyExists").assert_called_once()
+        self.get_mock("check_csrf_token").assert_called_once()
         mock_log_error.assert_called_once_with(
             "Suspicious bot password recovery from IP: "
             + self.view.request.remote_addr
@@ -947,18 +934,14 @@ class TestResetPasswordView(ViewBaseTest):
 
     @patch("climmob.views.basic_views.getUserData")
     @patch("climmob.views.basic_views.log.error")
-    @patch("climmob.views.basic_views.check_csrf_token", return_value=True)
-    @patch("climmob.views.basic_views.resetKeyExists", return_value=True)
     def test_process_view_reset_password_view_pass1_different_pass2(
         self,
-        mock_reset_Key_exists,
-        mock_check_csrf_token,
         mock_log_error,
         mock_get_user_data,
     ):
         mock_user = MagicMock()
         mock_user.userData = {
-            "user_password_reset_key": "DUMMY_RESET_KEY",
+            "user_password_reset_key": self.view.request.reset_key,
             "user_password_reset_token": "RESET_TOKEN",
             "user_password_reset_expires_on": datetime.now() + relativedelta(hours=+1),
         }
@@ -988,10 +971,8 @@ class TestResetPasswordView(ViewBaseTest):
                 },
             },
         )
-        mock_reset_Key_exists.assert_called_once_with(
-            self.view.request, "DUMMY_RESET_KEY"
-        )
-        mock_check_csrf_token.assert_called_once_with(self.view.request, raises=False)
+        self.get_mock("resetKeyExists").assert_called_once()
+        self.get_mock("check_csrf_token").assert_called_once()
         mock_log_error.assert_called_once_with(
             "Suspicious bot password recovery from IP: "
             + self.view.request.remote_addr
@@ -1005,12 +986,8 @@ class TestResetPasswordView(ViewBaseTest):
     @patch("climmob.views.basic_views.encodeData", return_value="data")
     @patch("climmob.views.basic_views.getUserData")
     @patch("climmob.views.basic_views.log.error")
-    @patch("climmob.views.basic_views.check_csrf_token", return_value=True)
-    @patch("climmob.views.basic_views.resetKeyExists", return_value=True)
     def test_process_view_reset_password_view_success(
         self,
-        mock_reset_Key_exists,
-        mock_check_csrf_token,
         mock_log_error,
         mock_get_user_data,
         mock_encode_data,
@@ -1019,17 +996,15 @@ class TestResetPasswordView(ViewBaseTest):
         mock_user = MagicMock()
         mock_user.userData = {
             "user_name": "SOME_VALUE",
-            "user_password_reset_key": "DUMMY_RESET_KEY",
+            "user_password_reset_key": self.view.request.reset_key,
             "user_password_reset_token": "TOKEN",
             "user_password_reset_expires_on": datetime.now() + relativedelta(hours=+1),
         }
         mock_get_user_data.return_value = mock_user
         response = self.view.processView()
         self.assertIsInstance(response, HTTPFound)
-        mock_reset_Key_exists.assert_called_once_with(
-            self.view.request, "DUMMY_RESET_KEY"
-        )
-        mock_check_csrf_token.assert_called_once_with(self.view.request, raises=False)
+        self.get_mock("resetKeyExists").assert_called_once()
+        self.get_mock("check_csrf_token").assert_called_once()
         mock_log_error.assert_called_once_with(
             "Suspicious bot password recovery from IP: "
             + self.view.request.remote_addr
@@ -1040,7 +1015,11 @@ class TestResetPasswordView(ViewBaseTest):
         mock_get_user_data.assert_called_once_with("SOME_VALUE", self.view.request)
         mock_encode_data.assert_called_once_with(self.view.request, "PASSWORD")
         mock_reset_password.assert_called_once_with(
-            self.view.request, "SOME_VALUE", "DUMMY_RESET_KEY", "TOKEN", "data"
+            self.view.request,
+            "SOME_VALUE",
+            self.view.request.reset_key,
+            "TOKEN",
+            "data",
         )
 
 

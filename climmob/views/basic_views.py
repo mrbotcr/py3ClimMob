@@ -302,7 +302,7 @@ class ResetPasswordView(publicView):
         error_summary = {}
         dataworking = {}
 
-        reset_key = self.request.matchdict["reset_key"]
+        reset_key = self.request.reset_key
 
         if not resetKeyExists(self.request, reset_key):
             raise HTTPNotFound()
