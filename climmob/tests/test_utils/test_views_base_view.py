@@ -735,30 +735,36 @@ class TestResetPasswordView(ViewBaseTest):
         self.post_dict.update(update)
         self.view.getPostDict = MagicMock(return_value=self.post_dict)
 
-    def test_process_view_reset_password_view_no_reset_key(self):
+    def test_get_no_reset_key(self):
         self.get_mock("resetKeyExists").return_value = False
         with self.assertRaises(HTTPNotFound) as context:
-            self.view.processView()
+            self.view.get()
         self.assertEqual(context.exception.status_code, 404)
         self.get_mock("resetKeyExists").assert_called_once()
 
-    def test_process_view_reset_password_view_no_post(self):
-        self.view.request.method = "GET"
-        response = self.view.processView()
+    def test_post_no_reset_key(self):
+        self.get_mock("resetKeyExists").return_value = False
+        with self.assertRaises(HTTPNotFound) as context:
+            self.view.post()
+        self.assertEqual(context.exception.status_code, 404)
+        self.get_mock("resetKeyExists").assert_called_once()
+
+    def test_get_success(self):
+        response = self.view.get()
         self.assertEqual(response, {"error_summary": {}, "dataworking": {}})
         self.get_mock("resetKeyExists").assert_called_once()
 
-    def test_process_view_reset_password_view_user_no_safe(self):
+    def test_post_user_no_safe(self):
         self.get_mock("check_csrf_token").return_value = False
         with self.assertRaises(HTTPNotFound) as context:
-            self.view.processView()
+            self.view.post()
         self.assertEqual(context.exception.status_code, 404)
         self.get_mock("resetKeyExists").assert_called_once()
         self.get_mock("check_csrf_token").assert_called_once()
 
-    def test_process_view_reset_password_view_user_no_user(self):
+    def test_post_user_no_user(self):
         self.get_mock("getUserData").return_value = None
-        response = self.view.processView()
+        response = self.view.post()
         self.assertEqual(
             response,
             {
@@ -771,7 +777,7 @@ class TestResetPasswordView(ViewBaseTest):
         self.get_mock("log.error").assert_called_once()
         self.get_mock("getUserData").assert_called_once()
 
-    def test_process_view_reset_password_view_user_invalid_Key(self):
+    def test_post_user_invalid_Key(self):
         mock_user = MagicMock()
         mock_user.userData = {
             "user_password_reset_key": MagicMock(str, name="other_reset_key"),
@@ -779,7 +785,7 @@ class TestResetPasswordView(ViewBaseTest):
             "user_password_reset_expires_on": datetime(2025, 5, 12, 15, 0, 0),
         }
         self.get_mock("getUserData").return_value = mock_user
-        response = self.view.processView()
+        response = self.view.post()
         self.assertEqual(
             response,
             {
@@ -792,7 +798,7 @@ class TestResetPasswordView(ViewBaseTest):
         self.get_mock("log.error").assert_called_once()
         self.get_mock("getUserData").assert_called_once()
 
-    def test_process_view_reset_password_view_user_invalid_token(self):
+    def test_post_user_invalid_token(self):
         mock_user = MagicMock()
         mock_user.userData = {
             "user_password_reset_key": self.view.request.reset_key,
@@ -800,7 +806,7 @@ class TestResetPasswordView(ViewBaseTest):
             "user_password_reset_expires_on": "2025-05-12 15:00:00",
         }
         self.get_mock("getUserData").return_value = mock_user
-        response = self.view.processView()
+        response = self.view.post()
         self.assertEqual(
             response,
             {
@@ -813,7 +819,7 @@ class TestResetPasswordView(ViewBaseTest):
         self.get_mock("log.error").assert_called_once()
         self.get_mock("getUserData").assert_called_once()
 
-    def test_process_view_reset_password_view_user_invalid_token_by_time(self):
+    def test_post_user_invalid_token_by_time(self):
         mock_user = MagicMock()
         mock_user.userData = {
             "user_password_reset_key": self.view.request.reset_key,
@@ -821,7 +827,7 @@ class TestResetPasswordView(ViewBaseTest):
             "user_password_reset_expires_on": datetime(2025, 5, 12, 15, 0, 0),
         }
         self.get_mock("getUserData").return_value = mock_user
-        response = self.view.processView()
+        response = self.view.post()
         self.assertEqual(
             response,
             {
@@ -834,7 +840,7 @@ class TestResetPasswordView(ViewBaseTest):
         self.get_mock("log.error").assert_called_once()
         self.get_mock("getUserData").assert_called_once()
 
-    def test_process_view_reset_password_view_password_empty(self):
+    def test_post_password_empty(self):
         mock_user = MagicMock()
         mock_user.userData = {
             "user_password_reset_key": self.view.request.reset_key,
@@ -843,7 +849,7 @@ class TestResetPasswordView(ViewBaseTest):
         }
         self.get_mock("getUserData").return_value = mock_user
         self.update_post_dict({"password": "", "password2": ""})
-        response = self.view.processView()
+        response = self.view.post()
         self.assertEqual(
             response,
             {
@@ -856,7 +862,7 @@ class TestResetPasswordView(ViewBaseTest):
         self.get_mock("log.error").assert_called_once()
         self.get_mock("getUserData").assert_called_once()
 
-    def test_process_view_reset_password_view_pass1_different_pass2(self):
+    def test_post_pass1_different_pass2(self):
         mock_user = MagicMock()
         mock_user.userData = {
             "user_password_reset_key": self.view.request.reset_key,
@@ -866,7 +872,7 @@ class TestResetPasswordView(ViewBaseTest):
         self.get_mock("getUserData").return_value = mock_user
         other_password = MagicMock(str, name="other_password")
         self.update_post_dict({"password2": other_password})
-        response = self.view.processView()
+        response = self.view.post()
         self.assertEqual(
             response,
             {
@@ -883,7 +889,7 @@ class TestResetPasswordView(ViewBaseTest):
 
     @patch("climmob.views.basic_views.resetPassword")
     @patch("climmob.views.basic_views.encodeData", return_value="data")
-    def test_process_view_reset_password_view_success(
+    def test_post_success(
         self,
         mock_encode_data,
         mock_reset_password,
@@ -896,7 +902,7 @@ class TestResetPasswordView(ViewBaseTest):
             "user_password_reset_expires_on": datetime.now() + relativedelta(hours=+1),
         }
         self.get_mock("getUserData").return_value = mock_user
-        response = self.view.processView()
+        response = self.view.post()
         self.assertIsInstance(response, HTTPFound)
         self.get_mock("resetKeyExists").assert_called_once()
         self.get_mock("check_csrf_token").assert_called_once()

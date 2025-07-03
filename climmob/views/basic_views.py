@@ -298,78 +298,79 @@ class RecoverPasswordView(publicView):
 
 
 class ResetPasswordView(publicView):
-    def processView(self):
-        error_summary = {}
-        dataworking = {}
-
+    def get(self):
         reset_key = self.request.reset_key
 
         if not resetKeyExists(self.request, reset_key):
             raise HTTPNotFound()
 
-        if self.request.method == "POST":
+        return {"error_summary": {}, "dataworking": {}}
 
-            safe = check_csrf_token(self.request, raises=False)
-            if not safe:
-                raise HTTPNotFound()
+    def post(self):
+        reset_key = self.request.reset_key
 
-            dataworking = self.getPostDict()
-            login = dataworking["user"]
-            token = dataworking["token"]
-            new_password = dataworking["password"].strip()
-            new_password2 = dataworking["password2"].strip()
-            user = dataworking["user"]
-            if user != "":
-                log.error(
-                    "Suspicious bot password recovery from IP: {}. Agent: {}. Email: {}".format(
-                        self.request.remote_addr,
-                        self.request.user_agent,
-                        dataworking["email"],
-                    )
+        if not resetKeyExists(self.request, reset_key):
+            raise HTTPNotFound()
+
+        safe = check_csrf_token(self.request, raises=False)
+        if not safe:
+            raise HTTPNotFound()
+
+        dataworking = self.getPostDict()
+        login = dataworking["user"]
+        token = dataworking["token"]
+        new_password = dataworking["password"].strip()
+        new_password2 = dataworking["password2"].strip()
+        user = dataworking["user"]
+        if user != "":
+            log.error(
+                "Suspicious bot password recovery from IP: {}. Agent: {}. Email: {}".format(
+                    self.request.remote_addr,
+                    self.request.user_agent,
+                    dataworking["email"],
                 )
-            user = getUserData(login, self.request)
+            )
+        user = getUserData(login, self.request)
 
-            if user is not None:
-                if user.userData["user_password_reset_key"] == reset_key:
-                    if user.userData["user_password_reset_token"] == token:
-                        if (
-                            user.userData["user_password_reset_expires_on"]
-                            > datetime.datetime.now()
-                        ):
-                            if new_password != "":
-                                if new_password == new_password2:
-                                    new_password = encodeData(
-                                        self.request, new_password
-                                    )
-                                    resetPassword(
-                                        self.request,
-                                        user.userData["user_name"],
-                                        reset_key,
-                                        token,
-                                        new_password,
-                                    )
-                                    self.returnRawViewResult = True
-                                    return HTTPFound(
-                                        location=self.request.route_url("login")
-                                    )
-                                else:
-                                    error_summary = {
-                                        "Error": self._(
-                                            "The password and the confirmation are not the same"
-                                        )
-                                    }
+        if user is not None:
+            if user.userData["user_password_reset_key"] == reset_key:
+                if user.userData["user_password_reset_token"] == token:
+                    if (
+                        user.userData["user_password_reset_expires_on"]
+                        > datetime.datetime.now()
+                    ):
+                        if new_password != "":
+                            if new_password == new_password2:
+                                new_password = encodeData(self.request, new_password)
+                                resetPassword(
+                                    self.request,
+                                    user.userData["user_name"],
+                                    reset_key,
+                                    token,
+                                    new_password,
+                                )
+                                self.returnRawViewResult = True
+                                return HTTPFound(
+                                    location=self.request.route_url("login")
+                                )
                             else:
                                 error_summary = {
-                                    "Error": self._("The password cannot be empty")
+                                    "Error": self._(
+                                        "The password and the confirmation are not the same"
+                                    )
                                 }
                         else:
-                            error_summary = {"Error": self._("Invalid token")}
+                            error_summary = {
+                                "Error": self._("The password cannot be empty")
+                            }
                     else:
                         error_summary = {"Error": self._("Invalid token")}
                 else:
-                    error_summary = {"Error": self._("Invalid key")}
+                    error_summary = {"Error": self._("Invalid token")}
             else:
-                error_summary = {"Error": self._("User does not exist")}
+                error_summary = {"Error": self._("Invalid key")}
+        else:
+            error_summary = {"Error": self._("User does not exist")}
 
         return {"error_summary": error_summary, "dataworking": dataworking}
 
