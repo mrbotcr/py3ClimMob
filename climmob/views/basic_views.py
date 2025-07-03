@@ -332,47 +332,41 @@ class ResetPasswordView(publicView):
             )
         user = getUserData(login, self.request)
 
-        if user is not None:
-            if user.userData["user_password_reset_key"] == reset_key:
-                if user.userData["user_password_reset_token"] == token:
-                    if (
-                        user.userData["user_password_reset_expires_on"]
-                        > datetime.datetime.now()
-                    ):
-                        if new_password != "":
-                            if new_password == new_password2:
-                                new_password = encodeData(self.request, new_password)
-                                resetPassword(
-                                    self.request,
-                                    user.userData["user_name"],
-                                    reset_key,
-                                    token,
-                                    new_password,
-                                )
-                                self.returnRawViewResult = True
-                                return HTTPFound(
-                                    location=self.request.route_url("login")
-                                )
-                            else:
-                                error_summary = {
-                                    "Error": self._(
-                                        "The password and the confirmation are not the same"
-                                    )
-                                }
-                        else:
-                            error_summary = {
-                                "Error": self._("The password cannot be empty")
-                            }
-                    else:
-                        error_summary = {"Error": self._("Invalid token")}
-                else:
-                    error_summary = {"Error": self._("Invalid token")}
-            else:
-                error_summary = {"Error": self._("Invalid key")}
-        else:
+        if user is None:
             error_summary = {"Error": self._("User does not exist")}
+            return {"error_summary": error_summary, "dataworking": dataworking}
 
-        return {"error_summary": error_summary, "dataworking": dataworking}
+        if user.userData["user_password_reset_key"] != reset_key:
+            error_summary = {"Error": self._("Invalid key")}
+            return {"error_summary": error_summary, "dataworking": dataworking}
+
+        if user.userData["user_password_reset_token"] != token:
+            error_summary = {"Error": self._("Invalid token")}
+            return {"error_summary": error_summary, "dataworking": dataworking}
+
+        if user.userData["user_password_reset_expires_on"] < datetime.datetime.now():
+            error_summary = {"Error": self._("Invalid token")}
+            return {"error_summary": error_summary, "dataworking": dataworking}
+
+        if new_password == "":
+            error_summary = {"Error": self._("The password cannot be empty")}
+            return {"error_summary": error_summary, "dataworking": dataworking}
+
+        if new_password != new_password2:
+            error_summary = {
+                "Error": self._("The password and the confirmation are not the same")
+            }
+            return {"error_summary": error_summary, "dataworking": dataworking}
+
+        new_password = encodeData(self.request, new_password)
+        resetPassword(
+            self.request,
+            user.userData["user_name"],
+            reset_key,
+            token,
+            new_password,
+        )
+        return HTTPFound(location=self.request.route_url("login"))
 
 
 def logout_view(request):
