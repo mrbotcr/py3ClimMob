@@ -12,7 +12,7 @@ from climmob.views.basic_views import (
     NotFoundView,
     LoginView,
     RegisterView,
-    logout_view,
+    LogoutView,
     RecoverPasswordView,
     ResetPasswordView,
     StoreCookieView,
@@ -920,21 +920,19 @@ class TestResetPasswordView(ViewBaseTest):
         )
 
 
-class TestLogOutView(unittest.TestCase):
+class TestLogOutView(ViewBaseTest):
+    view_class = LogoutView
+
     @patch("climmob.views.basic_views.get_policy")
-    def test_logout_view_success(self, mock_get_policy):
-        self.request = MagicMock()
+    def test_get_success(self, mock_get_policy):
         self.request.route_url = MagicMock(return_value="/home")
         mock_policy = MagicMock()
         mock_policy.forget.return_value = [("Forget", "Session=deleted")]
         mock_get_policy.return_value = mock_policy
-        result = logout_view(self.request)
+        result = self.view.get()
         mock_get_policy.assert_called_once_with(self.request, "main")
         self.request.route_url.assert_called_once_with("home")
         self.assertIsInstance(result, HTTPFound)
-
-        def mock_translation(self, message, **kwargs):
-            return message
 
 
 class TestRegisterView(ViewBaseTest):

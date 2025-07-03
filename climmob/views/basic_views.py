@@ -369,11 +369,12 @@ class ResetPasswordView(publicView):
         return HTTPFound(location=self.request.route_url("login"))
 
 
-def logout_view(request):
-    policy = get_policy(request, "main")
-    headers = policy.forget(request)
-    loc = request.route_url("home")
-    return HTTPFound(location=loc, headers=headers)
+class LogoutView(publicView):
+    def get(self):
+        policy = get_policy(self.request, "main")
+        headers = policy.forget(self.request)
+        loc = self.request.route_url("home")
+        return HTTPFound(location=loc, headers=headers)
 
 
 class RegisterView(publicView):
