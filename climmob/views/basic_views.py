@@ -123,15 +123,6 @@ class StoreCookieView(publicView):
         return response
 
 
-# TODO Add as a method to BaseView
-def get_policy(request, policy_name):
-    policies = request.policies()
-    for policy in policies:
-        if policy["name"] == policy_name:
-            return policy["policy"]
-    return None
-
-
 class LoginView(publicView):
     def get(self):
         # If we logged in then go to dashboard
@@ -183,7 +174,7 @@ class LoginView(publicView):
 
     # TODO Move method to publicView
     def is_user_logged_in(self):
-        policy = get_policy(self.request, "main")
+        policy = self.get_policy("main")
         login_data = policy.authenticated_userid(self.request)
         if not login_data:
             return False
@@ -284,7 +275,7 @@ class RecoverPasswordView(publicView):
 
     # TODO Move method to publicView
     def is_user_logged_in(self):
-        policy = get_policy(self.request, "main")
+        policy = self.get_policy("main")
         login_data = policy.authenticated_userid(self.request)
         if not login_data:
             return False
@@ -371,7 +362,7 @@ class ResetPasswordView(publicView):
 
 class LogoutView(publicView):
     def get(self):
-        policy = get_policy(self.request, "main")
+        policy = self.get_policy("main")
         headers = policy.forget(self.request)
         loc = self.request.route_url("home")
         return HTTPFound(location=loc, headers=headers)
@@ -386,7 +377,7 @@ class RegisterView(publicView):
             raise HTTPNotFound()
 
         # If we logged in then go to dashboard
-        policy = get_policy(self.request, "main")
+        policy = self.get_policy("main")
         login_data = policy.authenticated_userid(self.request)
         if login_data is not None:
             login_data = literal_eval(login_data)

@@ -19,7 +19,6 @@ from climmob.views.basic_views import (
     TermsView,
     PrivacyView,
     render_template,
-    get_policy,
     RefreshSessionTokensView,
 )
 
@@ -165,30 +164,6 @@ class TestStoreCookieView(ViewBaseTest):
             )
 
 
-class TestGetPolicy(unittest.TestCase):
-    def setUp(self):
-        self.request = MagicMock()
-
-    def test_process_view_get_policy_found(self):
-        self.request.policies.return_value = [
-            {"name": "Trust", "policy": "Trust on this process"}
-        ]
-        result = get_policy(self.request, "Trust")
-        self.assertEqual(result, "Trust on this process")
-
-    def test_process_view_get_policy_no_found(self):
-        self.request.policies.return_value = [
-            {"name": "Forbidden", "policy": "Trust on this process"}
-        ]
-        result = get_policy(self.request, "Trust")
-        self.assertIsNone(result)
-
-    def test_process_view_get_policy_empty(self):
-        self.request.policies.return_value = []
-        result = get_policy(self.request, "Trust")
-        self.assertIsNone(result)
-
-
 class TestLoginView(ViewBaseTest):
     view_class = LoginView
 
@@ -200,8 +175,9 @@ class TestLoginView(ViewBaseTest):
     @classmethod
     def setUpClass(cls):
         cls.patchers["get_policy"] = {
-            "patch": patch(
-                "climmob.views.basic_views.get_policy",
+            "patch": patch.object(
+                LoginView,
+                "get_policy",
             )
         }
         cls.patchers["getUserData"] = {
@@ -215,7 +191,6 @@ class TestLoginView(ViewBaseTest):
         super().tearDown()
         if self.get_mock("get_policy").called:
             self.get_mock("get_policy").assert_called_once_with(
-                self.view.request,
                 "main",
             )
         if self.get_mock("getUserData").called:
@@ -378,8 +353,9 @@ class TestRecoverPasswordView(ViewBaseTest):
     @classmethod
     def setUpClass(cls):
         cls.patchers["get_policy"] = {
-            "patch": patch(
-                "climmob.views.basic_views.get_policy",
+            "patch": patch.object(
+                RecoverPasswordView,
+                "get_policy",
             )
         }
         cls.patchers["getUserData"] = {
@@ -398,7 +374,6 @@ class TestRecoverPasswordView(ViewBaseTest):
         super().tearDown()
         if self.get_mock("get_policy").called:
             self.get_mock("get_policy").assert_called_once_with(
-                self.view.request,
                 "main",
             )
         if self.get_mock("getUserData").called:
@@ -923,14 +898,14 @@ class TestResetPasswordView(ViewBaseTest):
 class TestLogOutView(ViewBaseTest):
     view_class = LogoutView
 
-    @patch("climmob.views.basic_views.get_policy")
+    @patch.object(LogoutView, "get_policy")
     def test_get_success(self, mock_get_policy):
         self.request.route_url = MagicMock(return_value="/home")
         mock_policy = MagicMock()
         mock_policy.forget.return_value = [("Forget", "Session=deleted")]
         mock_get_policy.return_value = mock_policy
         result = self.view.get()
-        mock_get_policy.assert_called_once_with(self.request, "main")
+        mock_get_policy.assert_called_once_with("main")
         self.request.route_url.assert_called_once_with("home")
         self.assertIsInstance(result, HTTPFound)
 
@@ -967,7 +942,7 @@ class TestRegisterView(ViewBaseTest):
         "climmob.views.basic_views.literal_eval",
         return_value={"group": "mainApp", "login": "LOGIN"},
     )
-    @patch("climmob.views.basic_views.get_policy")
+    @patch.object(RegisterView, "get_policy")
     def test_process_view_auth_via_web_login_data_no_none(
         self, mock_get_policy, mock_literal_eval, mock_get_user_data
     ):
@@ -986,7 +961,7 @@ class TestRegisterView(ViewBaseTest):
         return_value=(False, "Error to create new user."),
     )
     @patch("climmob.views.basic_views.valideRegisterForm", return_value=(False, {}))
-    @patch("climmob.views.basic_views.get_policy")
+    @patch.object(RegisterView, "get_policy")
     def test_process_view_auth_via_web_login_data_no_create_user(
         self, mock_get_policy, mock_valid_register_form, mock_add_user
     ):
@@ -1035,7 +1010,7 @@ class TestRegisterView(ViewBaseTest):
     @patch("climmob.views.basic_views.getUserData", return_value=(None))
     @patch("climmob.views.basic_views.addUser", return_value=(True, ""))
     @patch("climmob.views.basic_views.valideRegisterForm", return_value=(False, {}))
-    @patch("climmob.views.basic_views.get_policy")
+    @patch.object(RegisterView, "get_policy")
     def test_process_view_auth_via_web_login_data_none_user(
         self,
         mock_get_policy,
@@ -1073,7 +1048,7 @@ class TestRegisterView(ViewBaseTest):
     @patch("climmob.views.basic_views.getUserData")
     @patch("climmob.views.basic_views.addUser", return_value=(True, ""))
     @patch("climmob.views.basic_views.valideRegisterForm", return_value=(False, {}))
-    @patch("climmob.views.basic_views.get_policy")
+    @patch.object(RegisterView, "get_policy")
     def test_process_view_auth_via_web_login_data_bad_password(
         self,
         mock_get_policy,
@@ -1124,7 +1099,7 @@ class TestRegisterView(ViewBaseTest):
     @patch("climmob.views.basic_views.getUserData")
     @patch("climmob.views.basic_views.addUser", return_value=(True, ""))
     @patch("climmob.views.basic_views.valideRegisterForm", return_value=(False, {}))
-    @patch("climmob.views.basic_views.get_policy")
+    @patch.object(RegisterView, "get_policy")
     def test_process_view_auth_via_web_login_data_success(
         self,
         mock_get_policy,

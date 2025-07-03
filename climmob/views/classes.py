@@ -142,6 +142,13 @@ class BaseView:
         else:
             raise HTTPMethodNotAllowed
 
+    def get_policy(self, policy_name):
+        policies = self.request.policies()
+        for policy in policies:
+            if policy["name"] == policy_name:
+                return policy["policy"]
+        return None
+
     # Check if subclasses' validators match the type hint
     def __init_subclass__(cls):
         super().__init_subclass__()
@@ -497,13 +504,6 @@ class privateView(BaseView):
                 except:
                     pass
         return dct
-
-    def get_policy(self, policy_name):
-        policies = self.request.policies()
-        for policy in policies:
-            if policy["name"] == policy_name:
-                return policy["policy"]
-        return None
 
 
 class apiView(BaseView):
