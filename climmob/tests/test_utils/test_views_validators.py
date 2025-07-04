@@ -2,8 +2,14 @@ import json
 import unittest
 from unittest.mock import MagicMock, patch, call, ANY
 
-from pyramid.httpexceptions import HTTPNotFound, HTTPBadRequest, HTTPForbidden
+from pyramid.httpexceptions import (
+    HTTPNotFound,
+    HTTPBadRequest,
+    HTTPForbidden,
+    HTTPFound,
+)
 
+from climmob.tests.test_utils.common import BaseTest
 from climmob.views.classes import apiView, privateView
 from climmob.views.validators import FieldValidation, TextField
 from climmob.views.validators.BaseValidator import BaseValidator
@@ -18,6 +24,7 @@ from climmob.views.validators.question.QuestionMinMaxValidator import (
 from climmob.views.validators.question.QuestionUpdateMinMaxValidator import (
     QuestionUpdateMinMaxValidator,
 )
+from climmob.views.validators.session import NotLoggedInValidator
 
 
 class TestBaseValidator(unittest.TestCase):
@@ -638,3 +645,77 @@ class TestFieldValidator(unittest.TestCase):
 
         self.assertEqual(str(context.exception), expected_msg)
         mock_add_invalid_field.assert_called_once()
+
+
+class TestNotLoggedInValidator(BaseTest):
+    def setUp(self):
+        super().setUp()
+        self.request = MagicMock()
+        self.view = MagicMock()
+        self.view.request = self.request
+        self.view.get_policy = MagicMock()
+        self.validator = NotLoggedInValidator(self.view)
+        self.username = "test_user"
+
+    @classmethod
+    def setUpClass(cls):
+        cls.patchers["getUserData"] = {
+            "patch": patch(
+                "climmob.views.validators.session.not_logged_in_validator.getUserData"
+            )
+        }
+        super().setUpClass()
+
+    def tearDown(self):
+        super().tearDown()
+        if self.view.get_policy.called:
+            self.view.get_policy.assert_called_once_with("main")
+        if self.get_mock("getUserData").called:
+            self.get_mock("getUserData").assert_called_once_with(
+                self.username,
+                self.view.request,
+            )
+
+    def test_is_user_logged_in_true(self):
+        mock_policy = MagicMock()
+        mock_policy.authenticated_userid.return_value = (
+            "{'login': '" + self.username + "', 'group': 'mainApp'}"
+        )
+        self.view.get_policy.return_value = mock_policy
+
+        with self.assertRaises(HTTPFound):
+            self.validator.run()
+        self.view.get_policy.assert_called_once()
+        self.get_mock("getUserData").assert_called_once()
+
+    def test_is_user_logged_in_no_user(self):
+        mock_policy = MagicMock()
+        mock_policy.authenticated_userid.return_value = None
+        self.view.get_policy.return_value = mock_policy
+
+        self.validator.run()
+        self.view.get_policy.assert_called_once()
+        self.get_mock("getUserData").assert_not_called()
+
+    def test_is_user_logged_in_no_invalid_user(self):
+        mock_policy = MagicMock()
+        mock_policy.authenticated_userid.return_value = (
+            "{'login': '" + self.username + "', 'group': 'mainApp'}"
+        )
+        self.view.get_policy.return_value = mock_policy
+        self.get_mock("getUserData").return_value = None
+
+        self.validator.run()
+        self.view.get_policy.assert_called_once()
+        self.get_mock("getUserData").assert_called()
+
+    def test_is_user_logged_in_no_invalid_group(self):
+        mock_policy = MagicMock()
+        mock_policy.authenticated_userid.return_value = (
+            "{'login': '" + self.username + "', 'group': 'test_group'}"
+        )
+        self.view.get_policy.return_value = mock_policy
+
+        self.validator.run()
+        self.view.get_policy.assert_called_once()
+        self.get_mock("getUserData").assert_not_called()
