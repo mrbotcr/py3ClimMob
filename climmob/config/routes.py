@@ -283,7 +283,9 @@ from climmob.views.Api.languages import (
 )
 from climmob.views.projectsSummary.projectsSummary import (
     projectsSummary_view,
-    downloadProjectsSummary_view,
+    DownloadProjectsSummary_view,
+    projectsSummaryCuration_view,
+    save_project_row,
 )
 
 from climmob.views.extra_form import ExtraFormPostView
@@ -1357,10 +1359,26 @@ def loadRoutes(config):
     )
 
     routes.append(
+        {
+            "name": "projectsSummaryCuration",
+            "path": "/projectsSummaryCuration",
+            "view": projectsSummaryCuration_view,
+            "renderer": "projectsSummary/projectsSummaryCuration.jinja2",
+        }
+    )
+
+    routes.append({
+        "name": 'projectsSummaryCurationUpdateRow',
+        "path": "/projectsSummaryCurationUpdateRow",
+        "view": save_project_row,
+        "renderer": "json"
+    })
+
+    routes.append(
         addRoute(
             "downloadProjectsSummary",
             "/download/{celery_taskid}/{product_id}/downloadProjectsSummary",
-            downloadProjectsSummary_view,
+            DownloadProjectsSummary_view,
             None,
         )
     )

@@ -24,6 +24,7 @@ from climmob.models import (
     AssessmentJsonLog,
     userProject,
     Country,
+    CustomColumn
 )
 from climmob.models.repository import sql_fetch_all, sql_fetch_one
 from climmob.processes.db.enumerator import countEnumeratorsOfAllCollaborators
@@ -355,6 +356,12 @@ def deleteProject(projectId, request):
     except Exception as e:
         return False, str(e)
 
+def get_project_summary_columns(request):
+    try:
+        result = request.dbsession.query(CustomColumn).order_by(CustomColumn.id).all()
+        return True, result
+    except Exception as e:
+        return False, str(e)
 
 def getProjectData(projectId, request):
     mappedData = mapFromSchema(

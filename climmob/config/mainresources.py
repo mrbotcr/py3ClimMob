@@ -170,6 +170,28 @@ def createResources(apppath, config):
     r.add_css_resource("map", "normalize", "normalize.min.css")
     r.add_css_resource("map", "leaflet", "leaflet.css")
 
+    # css dataTable 2.0.7
+    r.add_css_resource(
+        "coreresources",
+        "dataTable_2-0-7",
+        "inspinia/css/plugins/DataTables_2-0-7/dataTables.dataTables.min.css",
+        None,
+    )
+
+    r.add_css_resource(
+        "coreresources",
+        "dataTables_buttons",
+        "inspinia/css/plugins/DataTables_2-0-7/buttons.dataTables.min.css",
+        "dataTable_2-0-7",
+    )
+
+    r.add_css_resource(
+        "coreresources",
+        "sweetAlert",
+        "inspinia/css/plugins/sweetalert/sweetalert.css",
+        None,
+    )
+
     # ----------------------------------------------------------------------------------------------------------
 
     # Add core JS
@@ -442,4 +464,40 @@ def createResources(apppath, config):
         "jqueryvalidate",
         "inspinia/js/plugins/jquery-validation/jquery.validate.min.js",
         "jquery",
+    )
+
+# js DataTable
+    r.add_js_resource(
+        "coreresources",
+        "dataTablesjs_2-0-7",
+        "inspinia/js/DataTables_2-0-7/dataTables.min.js",
+        None
+    )
+
+    r.add_js_resource(
+        "coreresources",
+        "ButtonsDataTables_2-0-7",
+        "inspinia/js/DataTables_2-0-7/dataTables.buttons.min.js",
+        "dataTablesjs_2-0-7"
+    )
+
+    r.add_js_resource(
+        "coreresources",
+        "ColvisDataTables_2-0-7",
+        "inspinia/js/DataTables_2-0-7/buttons.colVis.min.js",
+        "dataTablesjs_2-0-7"
+    )
+
+    r.add_js_resource(
+        "coreresources",
+        "bootstrapDataTables_2-0-7",
+        "inspinia/js/DataTables_2-0-7/buttons.bootstrap5.min.js",
+        "dataTablesjs_2-0-7"
+    )
+
+    r.add_js_resource(
+        "coreresources",
+        "sweetAlert",
+        "inspinia/js/plugins/sweetalert/sweetalert.min.js",
+        None,
     )
