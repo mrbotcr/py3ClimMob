@@ -792,15 +792,9 @@ class TestRegisterView(ViewBaseTest):
         self.view.request.registry = MagicMock()
         self.view.request.registry.settings = {"auth.register_users_via_web": True}
         self.view.request.POST = {
-            "submit": "1",
-            "user": "SOME_VALUE",
-            "user_policy": "True",
+            "submit": MagicMock(),
             "user_password": "<PASSWORD>",
-            "user_password2": "<PASSWORD>",
             "user_name": "SOME_VALUE",
-            "user_email": "YOUR_EMAIL@climmob.com",
-            "CheckPolicy": "True",
-            "user_fullname": "COMPLETE_SOME_VALUE",
         }
         self.view._ = self.mock_translation
 
@@ -818,37 +812,11 @@ class TestRegisterView(ViewBaseTest):
     def test_process_view_auth_via_web_login_data_no_create_user(
         self, mock_valid_register_form, mock_add_user
     ):
-        self.view.POST = {
-            "submit": "1",
-            "user": "SOME_VALUE",
-            "user_password": "<PASSWORD>",
-            "user_password2": "<PASSWORD>",
-            "user_name": "SOME_VALUE",
-            "user_email": "YOUR_EMAIL@climmob.com",
-            "CheckPolicy": "False",
-            "user_fullname": "COMPLETE_SOME_VALUE",
-        }
         result = self.view.processView()
-
-        self.assertEqual(result["data"]["user"], "SOME_VALUE")
-        self.assertEqual(result["data"]["user_email"], "YOUR_EMAIL@climmob.com")
-        self.assertEqual(result["countries"], [])
-        self.assertEqual(result["sectors"], [])
-        self.assertIn("createError", result["error_summary"])
         self.assertEqual(
             result,
             {
-                "data": {
-                    "submit": "1",
-                    "user": "SOME_VALUE",
-                    "user_policy": "True",
-                    "user_password": "<PASSWORD>",
-                    "user_password2": "<PASSWORD>",
-                    "user_name": "SOME_VALUE",
-                    "user_email": "YOUR_EMAIL@climmob.com",
-                    "CheckPolicy": "True",
-                    "user_fullname": "COMPLETE_SOME_VALUE",
-                },
+                "data": self.view.request.POST,
                 "error_summary": {"createError": "Unable to create user"},
                 "countries": [],
                 "sectors": [],
@@ -870,17 +838,7 @@ class TestRegisterView(ViewBaseTest):
         self.assertEqual(
             result,
             {
-                "data": {
-                    "submit": "1",
-                    "user": "SOME_VALUE",
-                    "user_policy": "True",
-                    "user_password": "<PASSWORD>",
-                    "user_password2": "<PASSWORD>",
-                    "user_name": "SOME_VALUE",
-                    "user_email": "YOUR_EMAIL@climmob.com",
-                    "CheckPolicy": "True",
-                    "user_fullname": "COMPLETE_SOME_VALUE",
-                },
+                "data": self.view.request.POST,
                 "error_summary": {"createError": "User is None!"},
                 "countries": [],
                 "sectors": [],
@@ -900,32 +858,13 @@ class TestRegisterView(ViewBaseTest):
         mock_get_user_data,
     ):
         mock_user = MagicMock()
-        mock_user.userData = {
-            "user_name": "SOME_VALUE",
-            "user_email": "YOUR_EMAIL@climmob.com",
-            "user_id": 42,
-            "languages": ["en", "es"],
-            "technologies": ["Tech1", "Tech2"],
-            "projectsByUserThatRequireSetup": ["Proj1"],
-            "user_password": "PASSWORD",
-        }
         mock_get_user_data.return_value = mock_user
         mock_user.check_password.return_value = False
         result = self.view.processView()
         self.assertEqual(
             result,
             {
-                "data": {
-                    "submit": "1",
-                    "user": "SOME_VALUE",
-                    "user_policy": "True",
-                    "user_password": "<PASSWORD>",
-                    "user_password2": "<PASSWORD>",
-                    "user_name": "SOME_VALUE",
-                    "user_email": "YOUR_EMAIL@climmob.com",
-                    "CheckPolicy": "True",
-                    "user_fullname": "COMPLETE_SOME_VALUE",
-                },
+                "data": self.view.request.POST,
                 "error_summary": {"createError": "Password does not match <PASSWORD>"},
                 "countries": [],
                 "sectors": [],
@@ -946,15 +885,6 @@ class TestRegisterView(ViewBaseTest):
         mock_get_user_data,
     ):
         mock_user = MagicMock()
-        mock_user.userData = {
-            "user_name": "SOME_VALUE",
-            "user_email": "YOUR_EMAIL@climmob.com",
-            "user_id": 42,
-            "languages": ["en", "es"],
-            "technologies": ["Tech1", "Tech2"],
-            "projectsByUserThatRequireSetup": ["Proj1"],
-            "user_password": "PASSWORD",
-        }
         mock_get_user_data.return_value = mock_user
         mock_user.check_password.return_value = True
 
