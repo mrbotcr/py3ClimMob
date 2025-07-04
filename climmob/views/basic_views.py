@@ -4,7 +4,6 @@ import logging
 import secrets
 import smtplib
 import uuid
-from ast import literal_eval
 
 from jinja2 import ext
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
@@ -33,6 +32,7 @@ from climmob.utility import valideRegisterForm
 from climmob.utility.email import build_email_message
 from climmob.utility.helpers import readble_date
 from climmob.views.classes import publicView
+from climmob.views.validators.session import NotLoggedInValidator
 
 log = logging.getLogger("climmob")
 
@@ -124,11 +124,9 @@ class StoreCookieView(publicView):
 
 
 class LoginView(publicView):
-    def get(self):
-        # If we logged in then go to dashboard
-        if self.is_user_logged_in():
-            return HTTPFound(location=self.request.route_url("dashboard"))
+    validators = (NotLoggedInValidator,)
 
+    def get(self):
         is_cookie_set = self.is_cookie_question_set()
 
         next_page = self.request.params.get("next") or self.request.route_url(
@@ -172,22 +170,10 @@ class LoginView(publicView):
         cookies = self.request.cookies
         return "climmob_cookie_question" in cookies.keys()
 
-    # TODO Move method to publicView
-    def is_user_logged_in(self):
-        policy = self.get_policy("main")
-        login_data = policy.authenticated_userid(self.request)
-        if not login_data:
-            return False
-
-        login_data = literal_eval(login_data)
-        if login_data["group"] == "mainApp":
-            current_user = getUserData(login_data["login"], self.request)
-            return current_user is not None
-
-        return False
-
 
 class RecoverPasswordView(publicView):
+    validators = (NotLoggedInValidator,)
+
     def send_password_by_email(
         self, body, subject, target_name, target_email, mail_from
     ):
@@ -245,11 +231,7 @@ class RecoverPasswordView(publicView):
         )
 
     def get(self):
-        # If we logged in then go to dashboard
-        if self.is_user_logged_in():
-            return HTTPFound(location=self.request.route_url("dashboard"))
-
-        return {"error_summary": {}}
+        return {}
 
     def post(self):
         error_summary = {}
@@ -272,20 +254,6 @@ class RecoverPasswordView(publicView):
         setPasswordResetToken(self.request, user.login, reset_key, reset_token)
         self.send_password_email(user.email, reset_token, reset_key, user)
         return HTTPFound(location=self.request.route_url("login"))
-
-    # TODO Move method to publicView
-    def is_user_logged_in(self):
-        policy = self.get_policy("main")
-        login_data = policy.authenticated_userid(self.request)
-        if not login_data:
-            return False
-
-        login_data = literal_eval(login_data)
-        if login_data["group"] == "mainApp":
-            current_user = getUserData(login_data["login"], self.request)
-            return current_user is not None
-
-        return False
 
 
 class ResetPasswordView(publicView):
@@ -369,23 +337,14 @@ class LogoutView(publicView):
 
 
 class RegisterView(publicView):
+    validators = (NotLoggedInValidator,)
+
     def processView(self):
         if (
             self.request.registry.settings.get("auth.register_users_via_web", "true")
             == "false"
         ):
             raise HTTPNotFound()
-
-        # If we logged in then go to dashboard
-        policy = self.get_policy("main")
-        login_data = policy.authenticated_userid(self.request)
-        if login_data is not None:
-            login_data = literal_eval(login_data)
-            if login_data["group"] == "mainApp":
-                currentUser = getUserData(login_data["login"], self.request)
-                if currentUser is not None:
-                    self.returnRawViewResult = True
-                    return HTTPFound(location=self.request.route_url("dashboard"))
 
         data = {}
         error_summary = {}
