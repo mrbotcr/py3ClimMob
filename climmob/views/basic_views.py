@@ -339,78 +339,64 @@ class LogoutView(publicView):
 class RegisterView(publicView):
     validators = (NotLoggedInValidator,)
 
-    def processView(self):
-        if (
-            self.request.registry.settings.get("auth.register_users_via_web", "true")
-            == "false"
-        ):
+    def get(self):
+        register_users_via_web = self.request.registry.settings.get(
+            "auth.register_users_via_web", "true"
+        )
+        if register_users_via_web == "false":
             raise HTTPNotFound()
+        return {
+            "data": {},
+            "error_summary": {},
+            "countries": getCountryList(self.request),
+            "sectors": getSectorList(self.request),
+        }
 
-        data = {}
-        error_summary = {}
+    def post(self):
+        data = self.getPostDict()
+        if "user_policy" in data.keys():
+            data["user_policy"] = "True"
+        else:
+            data["user_policy"] = "False"
 
-        data["user_name"] = ""
-        data["user_fullname"] = ""
-        data["user_password"] = ""
-        data["user_organization"] = ""
-        data["user_email"] = ""
-        data["user_cnty"] = ""
-        data["user_sector"] = ""
-        data["user_policy"] = "no"
-
-        if "submit" in self.request.POST:
-            errors = False
-            data = self.getPostDict()
-            if "user_policy" in data.keys():
-                data["user_policy"] = "True"
-            else:
-                data["user_policy"] = "False"
-
-            errors, error_summary = validate_register_form(data, self.request, self._)
-            if not errors:
-                res, message = add_user(data, self.request)
-                # print("res ---->" + str(res))
-                # print("message ---->" +str(message))
-
-                if res:
-                    user = getUserData(data["user_name"], self.request)
-                    if user is not None:
-                        if user.check_password(data["user_password"], self.request):
-                            addToLog(
-                                user.login,
-                                "PRF",
-                                "Welcome to ClimMob",
-                                datetime.datetime.now(),
-                                self.request,
-                            )
-                            login_data = {
-                                "login": data["user_name"],
-                                "group": "mainApp",
-                            }
-                            headers = remember(
-                                self.request, str(login_data), policies=["main"]
-                            )
-                            self.returnRawViewResult = True
-                            return HTTPFound(
-                                location=self.request.route_url("dashboard"),
-                                headers=headers,
-                            )
-                        else:
-                            error_summary["createError"] = self._(
-                                "Password does not match {}".format(
-                                    data["user_password"]
-                                )
-                            )
+        errors, error_summary = validate_register_form(data, self.request, self._)
+        if not errors:
+            res, message = add_user(data, self.request)
+            if res:
+                user = getUserData(data["user_name"], self.request)
+                if user is not None:
+                    if user.check_password(data["user_password"], self.request):
+                        addToLog(
+                            user.login,
+                            "PRF",
+                            "Welcome to ClimMob",
+                            datetime.datetime.now(),
+                            self.request,
+                        )
+                        login_data = {
+                            "login": data["user_name"],
+                            "group": "mainApp",
+                        }
+                        headers = remember(
+                            self.request, str(login_data), policies=["main"]
+                        )
+                        return HTTPFound(
+                            location=self.request.route_url("dashboard"),
+                            headers=headers,
+                        )
                     else:
-                        error_summary["createError"] = self._("User is None!")
+                        error_summary["createError"] = self._(
+                            "Password does not match {}".format(data["user_password"])
+                        )
                 else:
-                    error_summary["createError"] = self._(
-                        "Unable to create user",
-                        default="Unable to create user: ${user}",
-                        mapping={"user": message},
-                    )
+                    error_summary["createError"] = self._("User is None!")
+            else:
+                error_summary["createError"] = self._(
+                    "Unable to create user",
+                    default="Unable to create user: ${user}",
+                    mapping={"user": message},
+                )
 
-        # return {'data': self.decodeDict(data), 'error_summary': error_summary,'countries':getCountryList(self.request),'sectors':getSectorList(self.request)}
         return {
             "data": data,
             "error_summary": error_summary,

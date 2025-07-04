@@ -785,17 +785,15 @@ class TestLogOutView(ViewBaseTest):
 
 class TestRegisterView(ViewBaseTest):
     view_class = RegisterView
-    request_method = "POST"
 
     def setUp(self):
         super().setUp()
-        self.view.request.registry = MagicMock()
-        self.view.request.registry.settings = {"auth.register_users_via_web": True}
         self.request.POST = {
             "submit": MagicMock(),
             "user_password": MagicMock(str, name="password"),
             "user_name": MagicMock(str, name="user_name"),
         }
+        self.request.registry.settings.get = MagicMock(return_value="true")
         self.view.getPostDict = MagicMock(return_value=self.view.request.POST)
         self.view._ = self.mock_translation
 
@@ -842,10 +840,30 @@ class TestRegisterView(ViewBaseTest):
     def test_has_validators(self):
         self.assertEqual(self.view.validators, (NotLoggedInValidator,))
 
-    def test_process_view_auth_via_web_login_data_no_create_user(self):
+    def test_get_register_via_web_true(self):
+        result = self.view.get()
+        self.assertEqual(
+            result,
+            {
+                "data": {},
+                "error_summary": {},
+                "countries": [],
+                "sectors": [],
+            },
+        )
+
+    def test_get_register_via_web_false(self):
+        self.request.registry.settings.get.return_value = "false"
+        with self.assertRaises(HTTPNotFound):
+            self.view.get()
+        self.request.registry.settings.get.assert_called_once_with(
+            "auth.register_users_via_web", "true"
+        )
+
+    def test_post_no_create_user(self):
         self.get_mock("add_user").return_value = (False, "Error to create new user.")
 
-        result = self.view.processView()
+        result = self.view.post()
 
         self.assertEqual(
             result,
@@ -859,10 +877,10 @@ class TestRegisterView(ViewBaseTest):
         self.get_mock("validate_register_form").assert_called_once()
         self.get_mock("add_user").assert_called_once()
 
-    def test_process_view_auth_via_web_login_data_none_user(self):
+    def test_post_none_user(self):
         self.get_mock("getUserData").return_value = None
 
-        result = self.view.processView()
+        result = self.view.post()
 
         self.assertEqual(
             result,
@@ -877,12 +895,12 @@ class TestRegisterView(ViewBaseTest):
         self.get_mock("add_user").assert_called_once()
         self.get_mock("getUserData").assert_called_once()
 
-    def test_process_view_auth_via_web_login_data_bad_password(self):
+    def test_post_bad_password(self):
         mock_user = MagicMock()
         self.get_mock("getUserData").return_value = mock_user
         mock_user.check_password.return_value = False
 
-        result = self.view.processView()
+        result = self.view.post()
 
         self.assertEqual(
             result,
@@ -899,12 +917,12 @@ class TestRegisterView(ViewBaseTest):
         self.get_mock("add_user").assert_called_once()
         self.get_mock("getUserData").assert_called_once()
 
-    def test_process_view_auth_via_web_login_data_success(self):
+    def test_post_success(self):
         mock_user = MagicMock()
         self.get_mock("getUserData").return_value = mock_user
         mock_user.check_password.return_value = True
 
-        result = self.view.processView()
+        result = self.view.post()
 
         self.assertIsInstance(result, HTTPFound)
         self.get_mock("validate_register_form").assert_called_once()
