@@ -792,6 +792,7 @@ class TestRegisterView(ViewBaseTest):
             "submit": MagicMock(),
             "user_password": MagicMock(str, name="password"),
             "user_name": MagicMock(str, name="user_name"),
+            "user_policy": MagicMock(str, name="user_policy"),
         }
         self.request.registry.settings.get = MagicMock(return_value="true")
         self.view.getPostDict = MagicMock(return_value=self.view.request.POST)
@@ -817,6 +818,18 @@ class TestRegisterView(ViewBaseTest):
             ),
             "return_value": MagicMock(),
         }
+        cls.patchers["getCountryList"] = {
+            "patch": patch(
+                "climmob.views.basic_views.getCountryList",
+            ),
+            "return_value": MagicMock(),
+        }
+        cls.patchers["getSectorList"] = {
+            "patch": patch(
+                "climmob.views.basic_views.getSectorList",
+            ),
+            "return_value": MagicMock(),
+        }
         super().setUpClass()
 
     def tearDown(self):
@@ -833,6 +846,10 @@ class TestRegisterView(ViewBaseTest):
             self.get_mock("getUserData").assert_called_once_with(
                 self.request.POST["user_name"], self.view.request
             )
+        if self.get_mock("getCountryList").called:
+            self.get_mock("getCountryList").assert_called_once_with(self.view.request)
+        if self.get_mock("getSectorList").called:
+            self.get_mock("getSectorList").assert_called_once_with(self.view.request)
 
     def mock_translation(self, message, **kwargs):
         return message
@@ -847,8 +864,8 @@ class TestRegisterView(ViewBaseTest):
             {
                 "data": {},
                 "error_summary": {},
-                "countries": [],
-                "sectors": [],
+                "countries": self.get_mock("getCountryList").return_value,
+                "sectors": self.get_mock("getSectorList").return_value,
             },
         )
 
@@ -860,6 +877,17 @@ class TestRegisterView(ViewBaseTest):
             "auth.register_users_via_web", "true"
         )
 
+    def test_post_with_user_policy(self):
+        self.get_mock("validate_register_form").return_value = (True, {})
+        result = self.view.post()
+        self.assertEqual(result["data"]["user_policy"], "True")
+
+    def test_post_without_user_policy(self):
+        del self.request.POST["user_policy"]
+        self.get_mock("validate_register_form").return_value = (True, {})
+        result = self.view.post()
+        self.assertEqual(result["data"]["user_policy"], "False")
+
     def test_post_no_create_user(self):
         self.get_mock("add_user").return_value = (False, "Error to create new user.")
 
@@ -870,8 +898,8 @@ class TestRegisterView(ViewBaseTest):
             {
                 "data": self.view.request.POST,
                 "error_summary": {"createError": "Unable to create user"},
-                "countries": [],
-                "sectors": [],
+                "countries": self.get_mock("getCountryList").return_value,
+                "sectors": self.get_mock("getSectorList").return_value,
             },
         )
         self.get_mock("validate_register_form").assert_called_once()
@@ -887,8 +915,8 @@ class TestRegisterView(ViewBaseTest):
             {
                 "data": self.view.request.POST,
                 "error_summary": {"createError": "User is None!"},
-                "countries": [],
-                "sectors": [],
+                "countries": self.get_mock("getCountryList").return_value,
+                "sectors": self.get_mock("getSectorList").return_value,
             },
         )
         self.get_mock("validate_register_form").assert_called_once()
@@ -909,8 +937,8 @@ class TestRegisterView(ViewBaseTest):
                 "error_summary": {
                     "createError": f"Password does not match {self.request.POST['user_password']}"
                 },
-                "countries": [],
-                "sectors": [],
+                "countries": self.get_mock("getCountryList").return_value,
+                "sectors": self.get_mock("getSectorList").return_value,
             },
         )
         self.get_mock("validate_register_form").assert_called_once()
