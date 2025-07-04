@@ -21,14 +21,14 @@ from climmob.config.auth import (
 from climmob.config.encdecdata import encodeData
 from climmob.config.jinja_extensions import jinjaEnv, extendThis
 from climmob.processes import (
-    addUser,
+    add_user,
     addToLog,
     getCountryList,
     getSectorList,
     getUserCount,
     getProjectCount,
 )
-from climmob.utility import valideRegisterForm
+from climmob.utility import validate_register_form
 from climmob.utility.email import build_email_message
 from climmob.utility.helpers import readble_date
 from climmob.views.classes import publicView
@@ -366,9 +366,9 @@ class RegisterView(publicView):
             else:
                 data["user_policy"] = "False"
 
-            errors, error_summary = valideRegisterForm(data, self.request, self._)
+            errors, error_summary = validate_register_form(data, self.request, self._)
             if not errors:
-                res, message = addUser(data, self.request)
+                res, message = add_user(data, self.request)
                 # print("res ---->" + str(res))
                 # print("message ---->" +str(message))
 

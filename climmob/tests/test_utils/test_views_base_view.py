@@ -799,21 +799,54 @@ class TestRegisterView(ViewBaseTest):
         self.view.getPostDict = MagicMock(return_value=self.view.request.POST)
         self.view._ = self.mock_translation
 
+    @classmethod
+    def setUpClass(cls):
+        cls.patchers["validate_register_form"] = {
+            "patch": patch(
+                "climmob.views.basic_views.validate_register_form",
+            ),
+            "return_value": (False, {}),
+        }
+        cls.patchers["add_user"] = {
+            "patch": patch(
+                "climmob.views.basic_views.add_user",
+            ),
+            "return_value": (True, ""),
+        }
+        cls.patchers["getUserData"] = {
+            "patch": patch(
+                "climmob.views.basic_views.getUserData",
+            ),
+            "return_value": MagicMock(),
+        }
+        super().setUpClass()
+
+    def tearDown(self):
+        super().tearDown()
+        if self.get_mock("validate_register_form").called:
+            self.get_mock("validate_register_form").assert_called_once_with(
+                self.request.POST, self.view.request, self.view._
+            )
+        if self.get_mock("add_user").called:
+            self.get_mock("add_user").assert_called_once_with(
+                self.request.POST, self.view.request
+            )
+        if self.get_mock("getUserData").called:
+            self.get_mock("getUserData").assert_called_once_with(
+                self.request.POST["user_name"], self.view.request
+            )
+
     def mock_translation(self, message, **kwargs):
         return message
 
     def test_has_validators(self):
         self.assertEqual(self.view.validators, (NotLoggedInValidator,))
 
-    @patch(
-        "climmob.views.basic_views.addUser",
-        return_value=(False, "Error to create new user."),
-    )
-    @patch("climmob.views.basic_views.valideRegisterForm", return_value=(False, {}))
-    def test_process_view_auth_via_web_login_data_no_create_user(
-        self, mock_valid_register_form, mock_add_user
-    ):
+    def test_process_view_auth_via_web_login_data_no_create_user(self):
+        self.get_mock("add_user").return_value = (False, "Error to create new user.")
+
         result = self.view.processView()
+
         self.assertEqual(
             result,
             {
@@ -823,19 +856,14 @@ class TestRegisterView(ViewBaseTest):
                 "sectors": [],
             },
         )
-        mock_valid_register_form.assert_called_once()
-        mock_add_user.assert_called_once()
+        self.get_mock("validate_register_form").assert_called_once()
+        self.get_mock("add_user").assert_called_once()
 
-    @patch("climmob.views.basic_views.getUserData", return_value=(None))
-    @patch("climmob.views.basic_views.addUser", return_value=(True, ""))
-    @patch("climmob.views.basic_views.valideRegisterForm", return_value=(False, {}))
-    def test_process_view_auth_via_web_login_data_none_user(
-        self,
-        mock_valid_register_form,
-        mock_add_user,
-        mock_get_user_data,
-    ):
+    def test_process_view_auth_via_web_login_data_none_user(self):
+        self.get_mock("getUserData").return_value = None
+
         result = self.view.processView()
+
         self.assertEqual(
             result,
             {
@@ -845,25 +873,17 @@ class TestRegisterView(ViewBaseTest):
                 "sectors": [],
             },
         )
-        mock_valid_register_form.assert_called_once()
-        mock_add_user.assert_called_once()
-        mock_get_user_data.assert_called_once_with(
-            self.request.POST["user_name"], self.view.request
-        )
+        self.get_mock("validate_register_form").assert_called_once()
+        self.get_mock("add_user").assert_called_once()
+        self.get_mock("getUserData").assert_called_once()
 
-    @patch("climmob.views.basic_views.getUserData")
-    @patch("climmob.views.basic_views.addUser", return_value=(True, ""))
-    @patch("climmob.views.basic_views.valideRegisterForm", return_value=(False, {}))
-    def test_process_view_auth_via_web_login_data_bad_password(
-        self,
-        mock_valid_register_form,
-        mock_add_user,
-        mock_get_user_data,
-    ):
+    def test_process_view_auth_via_web_login_data_bad_password(self):
         mock_user = MagicMock()
-        mock_get_user_data.return_value = mock_user
+        self.get_mock("getUserData").return_value = mock_user
         mock_user.check_password.return_value = False
+
         result = self.view.processView()
+
         self.assertEqual(
             result,
             {
@@ -875,34 +895,21 @@ class TestRegisterView(ViewBaseTest):
                 "sectors": [],
             },
         )
-        mock_valid_register_form.assert_called_once()
-        mock_add_user.assert_called_once()
-        mock_add_user.assert_called_once()
-        mock_get_user_data.assert_called_once_with(
-            self.request.POST["user_name"], self.view.request
-        )
+        self.get_mock("validate_register_form").assert_called_once()
+        self.get_mock("add_user").assert_called_once()
+        self.get_mock("getUserData").assert_called_once()
 
-    @patch("climmob.views.basic_views.getUserData")
-    @patch("climmob.views.basic_views.addUser", return_value=(True, ""))
-    @patch("climmob.views.basic_views.valideRegisterForm", return_value=(False, {}))
-    def test_process_view_auth_via_web_login_data_success(
-        self,
-        mock_valid_register_form,
-        mock_add_user,
-        mock_get_user_data,
-    ):
+    def test_process_view_auth_via_web_login_data_success(self):
         mock_user = MagicMock()
-        mock_get_user_data.return_value = mock_user
+        self.get_mock("getUserData").return_value = mock_user
         mock_user.check_password.return_value = True
 
         result = self.view.processView()
+
         self.assertIsInstance(result, HTTPFound)
-        mock_valid_register_form.assert_called_once()
-        mock_add_user.assert_called_once()
-        mock_add_user.assert_called_once()
-        mock_get_user_data.assert_called_once_with(
-            self.request.POST["user_name"], self.view.request
-        )
+        self.get_mock("validate_register_form").assert_called_once()
+        self.get_mock("add_user").assert_called_once()
+        self.get_mock("getUserData").assert_called_once()
 
     if __name__ == "__main__":
         unittest.main()

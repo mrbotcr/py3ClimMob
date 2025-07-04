@@ -9,7 +9,7 @@ from climmob.models import (
 from climmob.models.repository import sql_execute
 
 __all__ = [
-    "addUser",
+    "add_user",
     "updateProfile",
     "changeUserPassword",
     "getUserCount",
@@ -24,7 +24,7 @@ def getUserCount(request):
     return numUsers
 
 
-def addUser(userData, request):
+def add_user(userData, request):
     userData2 = userData.copy()
     userData2["user_apikey"] = str(uuid.uuid4())
     userData2["user_about"] = ""
