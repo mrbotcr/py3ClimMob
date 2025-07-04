@@ -969,63 +969,59 @@ class TestRegisterView(ViewBaseTest):
 
 class TestRefreshSessionTokensView(ViewBaseTest):
     view_class = RefreshSessionTokensView
-    request_method = "POST"
 
     def setUp(self):
         super().setUp()
-
-    @patch("climmob.views.basic_views.check_csrf_token")
-    def test_post_success(self, mock_check_csrf_token):
-        authenticated_userid = MagicMock()
-        authenticated_userid.return_value = MagicMock(str)
+        self.authenticated_userid = MagicMock()
+        self.authenticated_userid.return_value = MagicMock(str)
         self.view.request.policies.return_value = [
             {
                 "name": "main",
-                "policy": MagicMock(authenticated_userid=authenticated_userid),
+                "policy": MagicMock(authenticated_userid=self.authenticated_userid),
             }
         ]
-        mock_check_csrf_token.return_value = True
+
+    @classmethod
+    def setUpClass(cls):
+        cls.patchers["check_csrf_token"] = {
+            "patch": patch(
+                "climmob.views.basic_views.check_csrf_token",
+            ),
+            "return_value": True,
+        }
+        super().setUpClass()
+
+    def tearDown(self):
+        super().tearDown()
+        if self.get_mock("check_csrf_token").called:
+            self.get_mock("check_csrf_token").assert_called_once_with(
+                self.view.request, raises=False
+            )
+
+    def test_post_success(self):
+        self.get_mock("check_csrf_token").return_value = True
+
         response = self.view.post()
 
-        authenticated_userid.assert_called_once_with(self.view.request)
-        mock_check_csrf_token.assert_called_once_with(self.view.request, raises=False)
-
+        self.authenticated_userid.assert_called_once_with(self.view.request)
+        self.get_mock("check_csrf_token").assert_called_once()
         self.assertEqual(response.status, "200 OK")
 
-    @patch("climmob.views.basic_views.check_csrf_token")
-    def test_post_auth_expired(self, mock_check_csrf_token):
-        authenticated_userid = MagicMock()
-        authenticated_userid.return_value = None
-        self.view.request.policies.return_value = [
-            {
-                "name": "main",
-                "policy": MagicMock(authenticated_userid=authenticated_userid),
-            }
-        ]
-        mock_check_csrf_token.return_value = True
+    def test_post_auth_expired(self):
+        self.authenticated_userid.return_value = None
+        self.get_mock("check_csrf_token").return_value = True
+
         response = self.view.post()
 
-        authenticated_userid.assert_called_once_with(self.view.request)
-
-        mock_check_csrf_token.assert_not_called()
-
+        self.authenticated_userid.assert_called_once_with(self.view.request)
+        self.get_mock("check_csrf_token").assert_not_called()
         self.assertEqual(response.status, "401 Unauthorized")
 
-    @patch("climmob.views.basic_views.check_csrf_token")
-    def test_post_session_expired(self, mock_check_csrf_token):
-        authenticated_userid = MagicMock()
-        authenticated_userid.return_value = MagicMock(str)
-        self.view.request.policies.return_value = [
-            {
-                "name": "main",
-                "policy": MagicMock(authenticated_userid=authenticated_userid),
-            }
-        ]
-        mock_check_csrf_token.return_value = False
+    def test_post_session_expired(self):
+        self.get_mock("check_csrf_token").return_value = False
+
         response = self.view.post()
 
-        authenticated_userid.assert_called_once_with(self.view.request)
-
-        mock_check_csrf_token.assert_called_once_with(self.view.request, raises=False)
-
+        self.authenticated_userid.assert_called_once_with(self.view.request)
+        self.get_mock("check_csrf_token").assert_called_once()
         self.assertEqual(response.status, "401 Unauthorized")
