@@ -791,11 +791,12 @@ class TestRegisterView(ViewBaseTest):
         super().setUp()
         self.view.request.registry = MagicMock()
         self.view.request.registry.settings = {"auth.register_users_via_web": True}
-        self.view.request.POST = {
+        self.request.POST = {
             "submit": MagicMock(),
-            "user_password": "<PASSWORD>",
-            "user_name": "SOME_VALUE",
+            "user_password": MagicMock(str, name="password"),
+            "user_name": MagicMock(str, name="user_name"),
         }
+        self.view.getPostDict = MagicMock(return_value=self.view.request.POST)
         self.view._ = self.mock_translation
 
     def mock_translation(self, message, **kwargs):
@@ -846,7 +847,9 @@ class TestRegisterView(ViewBaseTest):
         )
         mock_valid_register_form.assert_called_once()
         mock_add_user.assert_called_once()
-        mock_get_user_data.assert_called_once_with("SOME_VALUE", self.view.request)
+        mock_get_user_data.assert_called_once_with(
+            self.request.POST["user_name"], self.view.request
+        )
 
     @patch("climmob.views.basic_views.getUserData")
     @patch("climmob.views.basic_views.addUser", return_value=(True, ""))
@@ -865,7 +868,9 @@ class TestRegisterView(ViewBaseTest):
             result,
             {
                 "data": self.view.request.POST,
-                "error_summary": {"createError": "Password does not match <PASSWORD>"},
+                "error_summary": {
+                    "createError": f"Password does not match {self.request.POST['user_password']}"
+                },
                 "countries": [],
                 "sectors": [],
             },
@@ -873,7 +878,9 @@ class TestRegisterView(ViewBaseTest):
         mock_valid_register_form.assert_called_once()
         mock_add_user.assert_called_once()
         mock_add_user.assert_called_once()
-        mock_get_user_data.assert_called_once_with("SOME_VALUE", self.view.request)
+        mock_get_user_data.assert_called_once_with(
+            self.request.POST["user_name"], self.view.request
+        )
 
     @patch("climmob.views.basic_views.getUserData")
     @patch("climmob.views.basic_views.addUser", return_value=(True, ""))
@@ -893,7 +900,9 @@ class TestRegisterView(ViewBaseTest):
         mock_valid_register_form.assert_called_once()
         mock_add_user.assert_called_once()
         mock_add_user.assert_called_once()
-        mock_get_user_data.assert_called_once_with("SOME_VALUE", self.view.request)
+        mock_get_user_data.assert_called_once_with(
+            self.request.POST["user_name"], self.view.request
+        )
 
     if __name__ == "__main__":
         unittest.main()
