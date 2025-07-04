@@ -359,47 +359,52 @@ class RegisterView(publicView):
         else:
             data["user_policy"] = "False"
 
-        errors, error_summary = validate_register_form(data, self.request, self._)
-        if not errors:
-            res, message = add_user(data, self.request)
-            if res:
-                user = getUserData(data["user_name"], self.request)
-                if user is not None:
-                    if user.check_password(data["user_password"], self.request):
-                        addToLog(
-                            user.login,
-                            "PRF",
-                            "Welcome to ClimMob",
-                            datetime.datetime.now(),
-                            self.request,
-                        )
-                        login_data = {
-                            "login": data["user_name"],
-                            "group": "mainApp",
-                        }
-                        headers = remember(
-                            self.request, str(login_data), policies=["main"]
-                        )
-                        return HTTPFound(
-                            location=self.request.route_url("dashboard"),
-                            headers=headers,
-                        )
-                    else:
-                        error_summary["createError"] = self._(
-                            "Password does not match {}".format(data["user_password"])
-                        )
-                else:
-                    error_summary["createError"] = self._("User is None!")
-            else:
-                error_summary["createError"] = self._(
-                    "Unable to create user",
-                    default="Unable to create user: ${user}",
-                    mapping={"user": message},
-                )
-
-        return {
+        response = {
             "data": data,
-            "error_summary": error_summary,
+            "error_summary": {},
             "countries": getCountryList(self.request),
             "sectors": getSectorList(self.request),
         }
+        errors, error_summary = validate_register_form(data, self.request, self._)
+
+        if errors:
+            response["error_summary"] = error_summary
+            return response
+
+        res, message = add_user(data, self.request)
+
+        if not res:
+            response["error_summary"]["createError"] = self._(
+                "Unable to create user",
+                default="Unable to create user: ${user}",
+                mapping={"user": message},
+            )
+            return response
+
+        user = getUserData(data["user_name"], self.request)
+        if user is None:
+            response["error_summary"]["createError"] = self._("User is None!")
+            return response
+
+        if not user.check_password(data["user_password"], self.request):
+            response["error_summary"]["createError"] = self._(
+                "Password does not match {}".format(data["user_password"])
+            )
+            return response
+
+        addToLog(
+            user.login,
+            "PRF",
+            "Welcome to ClimMob",
+            datetime.datetime.now(),
+            self.request,
+        )
+        login_data = {
+            "login": data["user_name"],
+            "group": "mainApp",
+        }
+        headers = remember(self.request, str(login_data), policies=["main"])
+        return HTTPFound(
+            location=self.request.route_url("dashboard"),
+            headers=headers,
+        )

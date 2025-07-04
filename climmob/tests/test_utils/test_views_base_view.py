@@ -888,6 +888,12 @@ class TestRegisterView(ViewBaseTest):
         result = self.view.post()
         self.assertEqual(result["data"]["user_policy"], "False")
 
+    def test_post_invalid_form(self):
+        error_summary = MagicMock(dict)
+        self.get_mock("validate_register_form").return_value = (True, error_summary)
+        result = self.view.post()
+        self.assertEqual(result["error_summary"], error_summary)
+
     def test_post_no_create_user(self):
         self.get_mock("add_user").return_value = (False, "Error to create new user.")
 
