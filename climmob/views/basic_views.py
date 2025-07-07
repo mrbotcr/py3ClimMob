@@ -67,21 +67,21 @@ class RefreshSessionTokensView(publicView):
 
 
 class HomeView(publicView):
-    def processView(self):
+    def get(self):
         cookies = self.request.cookies
         if "climmob_cookie_question" in cookies.keys():
             ask_for_cookies = False
         else:
             ask_for_cookies = True
         return {
-            "numUsers": getUserCount(self.request),
-            "numProjs": getProjectCount(self.request),
+            "user_count": getUserCount(self.request),
+            "project_count": getProjectCount(self.request),
             "ask_for_cookies": ask_for_cookies,
         }
 
 
 class HealthView(publicView):
-    def processView(self):
+    def get(self):
         engine = self.request.dbsession.get_bind()
         try:
             res = self.request.dbsession.execute(
@@ -99,35 +99,31 @@ class HealthView(publicView):
 
 
 class TermsView(publicView):
-    def processView(self):
+    def get(self):
         return {}
 
 
 class PrivacyView(publicView):
-    def processView(self):
+    def get(self):
         return {}
 
 
 class NotFoundView(publicView):
-    def processView(self):
+    def get(self):
         self.request.response.status = 404
         return {}
 
 
 class StoreCookieView(publicView):
-    def processView(self):
-        if self.request.method == "GET":
-            raise HTTPNotFound()
-        else:
-            next_url = self.request.params.get("next") or self.request.route_url("home")
-            response = HTTPFound(location=next_url)
-            if "accept" in self.request.POST:
-                response.set_cookie(
-                    "climmob_cookie_question", "accept", max_age=31536000
-                )
-            return response
+    def post(self):
+        next_url = self.request.params.get("next") or self.request.route_url("home")
+        response = HTTPFound(location=next_url)
+        if "accept" in self.request.POST:
+            response.set_cookie("climmob_cookie_question", "accept", max_age=31536000)
+        return response
 
 
+# TODO Add as a method to BaseView
 def get_policy(request, policy_name):
     policies = request.policies()
     for policy in policies:
@@ -137,45 +133,67 @@ def get_policy(request, policy_name):
 
 
 class LoginView(publicView):
-    def processView(self):
-
-        cookies = self.request.cookies
-        if "climmob_cookie_question" in cookies.keys():
-            ask_for_cookies = False
-        else:
-            ask_for_cookies = True
-
+    def get(self):
         # If we logged in then go to dashboard
-        policy = get_policy(self.request, "main")
-        login_data = policy.authenticated_userid(self.request)
-        if login_data:
-            login_data = literal_eval(login_data)
-            if login_data["group"] == "mainApp":
-                currentUser = getUserData(login_data["login"], self.request)
-                if currentUser is not None:
-                    self.returnRawViewResult = True
-                    return HTTPFound(location=self.request.route_url("dashboard"))
+        if self.is_user_logged_in():
+            return HTTPFound(location=self.request.route_url("dashboard"))
 
-        next = self.request.params.get("next") or self.request.route_url("dashboard")
+        is_cookie_set = self.is_cookie_question_set()
+
+        next_page = self.request.params.get("next") or self.request.route_url(
+            "dashboard"
+        )
         login = ""
         did_fail = False
-        if "submit" in self.request.POST:
-            login = self.request.POST.get("login", "")
-            passwd = self.request.POST.get("passwd", "")
-            user = getUserData(login, self.request)
-            if not user == None and user.check_password(passwd, self.request):
-                login_data = {"login": login, "group": "mainApp"}
-                headers = remember(self.request, str(login_data), policies=["main"])
-                response = HTTPFound(location=next, headers=headers)
-                return response
-            did_fail = True
 
         return {
             "login": login,
             "failed_attempt": did_fail,
-            "next": next,
-            "ask_for_cookies": ask_for_cookies,
+            "next": next_page,
+            "ask_for_cookies": not is_cookie_set,
         }
+
+    def post(self):
+        is_cookie_set = self.is_cookie_question_set()
+
+        next_page = self.request.params.get("next") or self.request.route_url(
+            "dashboard"
+        )
+
+        login = self.request.POST.get("login", "")
+        passwd = self.request.POST.get("passwd", "")
+        user = getUserData(login, self.request)
+        if user is not None and user.check_password(passwd, self.request):
+            login_data = {"login": login, "group": "mainApp"}
+            headers = remember(self.request, str(login_data), policies=["main"])
+            response = HTTPFound(location=next_page, headers=headers)
+            return response
+        did_fail = True
+
+        return {
+            "login": login,
+            "failed_attempt": did_fail,
+            "next": next_page,
+            "ask_for_cookies": not is_cookie_set,
+        }
+
+    def is_cookie_question_set(self):
+        cookies = self.request.cookies
+        return "climmob_cookie_question" in cookies.keys()
+
+    # TODO Move method to publicView
+    def is_user_logged_in(self):
+        policy = get_policy(self.request, "main")
+        login_data = policy.authenticated_userid(self.request)
+        if not login_data:
+            return False
+
+        login_data = literal_eval(login_data)
+        if login_data["group"] == "mainApp":
+            current_user = getUserData(login_data["login"], self.request)
+            return current_user is not None
+
+        return False
 
 
 class RecoverPasswordView(publicView):
@@ -235,38 +253,48 @@ class RecoverPasswordView(publicView):
             email_from,
         )
 
-    def processView(self):
-
+    def get(self):
         # If we logged in then go to dashboard
-        policy = get_policy(self.request, "main")
-        login = policy.authenticated_userid(self.request)
-        currentUser = getUserData(login, self.request)
-        if currentUser is not None:
-            raise HTTPNotFound()
+        if self.is_user_logged_in():
+            return HTTPFound(location=self.request.route_url("dashboard"))
 
+        return {"error_summary": {}}
+
+    def post(self):
         error_summary = {}
-        if "submit" in self.request.POST:
-            email = self.request.POST.get("user_email", None)
-            if email is not None:
-                user, password = getUserByEmail(email, self.request)
-                if user is not None:
+        email = self.request.POST.get("user_email", None)
 
-                    reset_key = str(uuid.uuid4())
-                    reset_token = secrets.token_hex(16)
-                    setPasswordResetToken(
-                        self.request, user.login, reset_key, reset_token
-                    )
-                    self.send_password_email(user.email, reset_token, reset_key, user)
-                    self.returnRawViewResult = True
-                    return HTTPFound(location=self.request.route_url("login"))
-                else:
-                    error_summary["email"] = self._(
-                        "Cannot find an user with such email address"
-                    )
-            else:
-                error_summary["email"] = self._("You need to provide an email address")
+        if email is None:
+            error_summary["email"] = self._("You need to provide an email address")
+            return {"error_summary": error_summary}
 
-        return {"error_summary": error_summary}
+        user, password = getUserByEmail(email, self.request)
+
+        if user is None:
+            error_summary["email"] = self._(
+                "Cannot find an user with such email address"
+            )
+            return {"error_summary": error_summary}
+
+        reset_key = str(uuid.uuid4())
+        reset_token = secrets.token_hex(16)
+        setPasswordResetToken(self.request, user.login, reset_key, reset_token)
+        self.send_password_email(user.email, reset_token, reset_key, user)
+        return HTTPFound(location=self.request.route_url("login"))
+
+    # TODO Move method to publicView
+    def is_user_logged_in(self):
+        policy = get_policy(self.request, "main")
+        login_data = policy.authenticated_userid(self.request)
+        if not login_data:
+            return False
+
+        login_data = literal_eval(login_data)
+        if login_data["group"] == "mainApp":
+            current_user = getUserData(login_data["login"], self.request)
+            return current_user is not None
+
+        return False
 
 
 class ResetPasswordView(publicView):
