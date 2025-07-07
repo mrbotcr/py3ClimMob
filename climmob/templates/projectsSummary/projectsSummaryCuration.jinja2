@@ -28,8 +28,10 @@
         }
 
         td {
+            overflow: hidden;
+            white-space: nowrap;
             max-width: 400px;
-            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
     </style>
 
@@ -79,8 +81,10 @@
 
                 <div class="row mb-3">
                     <div class="col-md-6" id="custom-buttons">
+                        {#on this space the js put the filters#}
                     </div>
                     <div class="col-md-6 text-end" id="custom-search">
+                        {#on this space the js put the filters#}
                     </div>
                 </div>
                 <br>
@@ -106,59 +110,53 @@
                 </div>
             </div>
             <div class="ibox-content">
-                <div class="table-responsive">
+                <div style="overflow-x: auto;">
                     <div id="footable-wrapper">
-                        <table class="footable table table-stripped display " data-filter=#filter id="curation-table">
+                        <table class="display nowrap table table-stripped display " data-filter=#filter id="curation-table">
                             <thead>
                             <tr>
                                 <th>#</th>
                                 {% for col in tableStructure %}
-                                    {% if col["show"] %}
-                                        <th>{{ col["column_name"] }}</th>
-                                    {% endif %}
+                                        <th>{{ _(col["name"]) }}</th>
                                 {% endfor %}
                                 <th></th>
-                                <th></th>
+
                             </tr>
                             </thead>
                             <tbody>
                             {% for project in listOfProjects %}
                                 <tr>
                                     <td data-column="index">{{ '%04d' % loop.index }}</td>
+                                        {% for col in tableStructure %}
+                                            <td data-column="{{ col["key"] }}">
+                                                {% if col['type'] == "static" %}
+                                                    {% if not col['options'] %}
+                                                         {{ project[col["key"]] }}
+                                                    {% endif %}
+                                                    {% if col['options'] %}
+                                                        {{ _(col["options"][ project[col["key"]]]) }}
+                                                    {% endif %}
+                                                {% endif %}
 
-                                    {% for col in tableStructure %}
-                                        {% if col["show"] %}
-                                            {% if not col['field_editable'] %}
-                                                <td data-column="{{ col["key"] }}">{{ project[col["key"]] }}</td>
-                                            {% else %}
                                                 {% if col['type'] == "input" %}
-                                                    <td contenteditable="true" data-column="{{ col["key"] }}">
-                                                        <input value="{{ project[col["key"]] if project[col["key"]] }}">
-                                                    </td>
+                                                    <input class="form-control" value="{{ project[col["key"]] if project[col["key"]] }}">
                                                 {% endif %}
                                                 {% if col['type'] == "dropdown" %}
-                                                    <td contenteditable="true" data-column="{{ col["key"] }}">
-                                                        <select>
-                                                            <option value="2" {% if project[col["key"]] == 2 %}
-                                                                    selected="selected" {% endif %}>{{ _("Verify") }}</option>
-                                                            <option value="1" {% if project[col["key"]] == 1 %}
-                                                                    selected="selected" {% endif %}>{{ _("Yes") }}</option>
-                                                            <option value="0" {% if project[col["key"]] == 0 %}
-                                                                    selected="selected" {% endif %}>{{ _("No") }}</option>
-                                                        </select>
-                                                    </td>
+                                                    <select class="form-control">
+                                                        <option value="" selected >{{ _("Choice an option") }}</option>
+                                                            {% for option in col["options"] %}
+                                                                <option value="{{ option.id }}"
+                                                                    {% if option.id == project[col["key"]] %} selected="selected" {% endif %}>
+                                                                    {{ option.desc }}
+                                                                </option>
+                                                        {% endfor %}
+                                                    </select>
                                                 {% endif %}
-                                            {% endif %}
-                                        {% endif %}
-                                    {% endfor %}
+                                            </td>
+                                        {% endfor %}
                                     <td class="no-filter">
                                         <button data-column="save" class="btn btn-primary pull-right" onclick="checkInputs(this)">
                                             {{ _("Save") }}
-                                        </button>
-                                    </td>
-                                    <td class="no-filter">
-                                        <button data-column="summary" class="btn btn-outline btn-info" onclick="CheckInfo(this)">
-                                            {{ _("Summary") }}
                                         </button>
                                     </td>
                                 </tr>
@@ -168,16 +166,11 @@
                                 <tr>
                                     <th>#</th>
                                     {% for col in tableStructure %}
-                                        {% if col["show"] %}
-                                            <th>{{ col["column_name"] }}</th>
-                                        {% endif %}
+                                        <th>{{ _(col["name"]) }}</th>
                                     {% endfor %}
                                     <th></th>
-                                    <th></th>
                                 </tr>
-
                             </tfoot>
-
                         </table>
                     </div>
                 </div>
@@ -186,37 +179,82 @@
     </div>
 </div>
 
-
-
-
-
     <script>
+
+        const hiddenIndexes = [
+            {% for col in tableStructure %}
+                {% if not col.show %}
+                    {{ loop.index }},
+                {% endif %}
+            {% endfor %}
+        ];
+
+        const ToggleableColumns = [
+            {% for col in tableStructure %}
+                {% if col.type == 'static' %}
+                    {{ loop.index }}{{ "," if not loop.last }}
+                {% endif %}
+            {% endfor %}
+        ];
+
         const minEl = document.querySelector('#min-farm-registered');
         const maxEl = document.querySelector('#max-farm-registered');
 
         const table = new DataTable('#curation-table', {
+            scrollX: true,
+            columnDefs: [
+                {
+                    targets: hiddenIndexes,
+                    visible: false
+                },
 
+                {
+                    targets: '_all',
+                    render: function (data, type, row, meta) {
+                        if (type === 'filter' || type === 'sort') {
+                            const cell = meta.settings.aoData[meta.row].anCells[meta.col];
+                            if (!cell) return data;
+
+                            const input = cell.querySelector('input');
+                            const select = cell.querySelector('select');
+
+                            if (input) {
+                                return input.value.trim();
+                            } else if (select) {
+                                return select.options[select.selectedIndex].text.trim();
+                            } else {
+                                return cell.textContent.trim();
+                            }
+                        }
+                        return data;
+                    }
+                }
+
+            ],
             layout: {
                 topStart: {
                     buttons: [
                         {
                             extend: 'colvis',
-                            text: '{{ _("Show/Hide Columns") }}',
-                            className: 'btn btn-primary '
+                            text: '{{ _("Show / Hide columns") }}',
+                            className: 'btn btn-primary',
+                            columns: ToggleableColumns
                         },
                         {
                             extend: 'pageLength',
                             text: '{{ _("Rows per Page") }}',
                             className: 'btn btn-default '
                         }
-                    ],
+                    ]
                 },
                 topEnd: {
                     search: {
                         return: true,
-                        text: '{{ _("Search: ") }}',
+                        text: '{{ _("Search :") }}',
+                        className: 'form-control'
                     },
                 },
+
                 bottomStart: {
                     info: {
                         return: true,
@@ -235,16 +273,10 @@
                     document.getElementById('custom-search').appendChild(searchInputContainer);
                 }
 
-                const paginationContainer = document.querySelector('#curation-table_wrapper .dt-paging');
-                if (paginationContainer) {
-                    document.getElementById('custom-pagination').appendChild(paginationContainer);
-                }
-
                 this.api()
                     .columns()
-                    .every(function (colIdx) {
+                    .every(function () {
 
-                        if (colIdx === 38 || colIdx === 39 ) return;
                         const column = this;
 
                         const select = document.createElement('select');
@@ -256,8 +288,11 @@
                         column.nodes().each(function (cell) {
                             let value;
                             const selectEl = cell.querySelector('select');
+                            const inputEl = cell.querySelector('input');
                             if (selectEl) {
                                 value = selectEl.options[selectEl.selectedIndex].text.trim();
+                            } else if (inputEl) {
+                                value = inputEl.value.trim();
                             } else {
                                 value = cell.textContent.trim();
                             }
@@ -284,7 +319,9 @@
         table.search.fixed('range', function (searchStr, data) {
             const min1 = parseInt(minEl.value, 10);
             const max1 = parseInt(maxEl.value, 10);
-            const val1 = parseFloat(data[12]) || 0;
+            const colIndex = Array.from(document.querySelectorAll('#curation-table tbody tr:first-child td'))
+                .findIndex(td => td.getAttribute('data-column') === 'number_of_registered');
+            const val1 = parseFloat(data[colIndex]) || 0;
 
 
             const pass1 =
@@ -295,7 +332,6 @@
 
             return pass1;
         });
-
 
         [minEl, maxEl].forEach(el => {
             el.addEventListener('input', () => table.draw());
@@ -356,23 +392,6 @@
 
             }
         }
-
-        function CheckInfo(button) {
-            const row = button.closest('tr');
-            const cells = row.querySelectorAll('td');
-            let summary = '';
-            cells.forEach(cell => {
-                const column = cell.getAttribute('data-column');
-                const value = cell.textContent.trim();
-
-                if (!column) return;
-                summary += `${column}: ${value}\n`;
-
-              });
-            swal("",summary);
-        }
-
-
     </script>
 
 {% endblock pagecontent %}

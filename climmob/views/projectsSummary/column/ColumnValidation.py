@@ -6,8 +6,8 @@ def _(x):
 
 class ColumnValidation(Enum):
     SUCCESS = None
-    BLANK_KEY = _("The Key requires a value")
-    BLANK_NAME = _("The Name requires a value")
+    BLANK_KEY = _("The Key requires a value.")
+    BLANK_NAME = _("The Name requires a value.")
     LONG_KEY = _("The 'key' is too long (max 50 characters).")
     LONG_NAME = _("The 'column_name' is too long (max 50 characters).")
     REPEAT_KEY = _("This key column already exists.")
@@ -17,8 +17,8 @@ class ColumnValidation(Enum):
     EMPTY_OPTION_LIST = _("The option list cannot be empty.")
     INVALID_OPTION_ITEM = _("All options must be non-empty strings.")
     UNIQUE_KEY = _("The key should be unique, the used already exists.")
-    REQUIRE_BOOL =_("The data should be boolean")
-    REQUIRE_INT = _("The data should be integer")
+    REQUIRE_BOOL =_("The data should be boolean.")
+    REQUIRE_INT = _("The data should be integer.")
 
 
 

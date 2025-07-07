@@ -2,19 +2,20 @@ from dataclasses import dataclass, field
 from typing import List, Optional
 from climmob.views.projectsSummary.column.ColumnValidation import ColumnValidation
 
+
 MAX_KEY_LENGTH = 50
 MAX_NAME_LENGTH = 50
-VALID_TYPES = ("static", "input", "dropdown")
+VALID_TYPES = ['static', 'input', 'dropdown']
 
 @dataclass
 class Column:
     id: int
     key: str
-    column_name: str
+    name: str
     type: str = "static"
-    field_editable: bool = False
     show: bool = True
     options: Optional[List[str]] = field(default_factory=list)
+    existing_keys: Optional[set] = None
 
     def __post_init__(self):
         self._stages = [
@@ -25,7 +26,6 @@ class Column:
             {"validation": ColumnValidation.LONG_NAME, "function": self.check_name_length},
             {"validation": ColumnValidation.REQUIRE_BOOL, "function": self.check_show},
             {"validation": ColumnValidation.INVALID_TYPE, "function": self.check_type},
-            {"validation": ColumnValidation.INCONSISTENT_EDITABLE, "function": self.check_editable_consistency},
             {"validation": ColumnValidation.UNIQUE_KEY, "function": self.check_unique_key},
         ]
 
@@ -47,9 +47,11 @@ class Column:
 
     # ====== basic check ======
     def check_int(self):
-        if not self.id or not isinstance(id, int):
+        try:
+            int(self.id)
+            return ColumnValidation.SUCCESS
+        except (TypeError, ValueError):
             return ColumnValidation.REQUIRE_INT
-        return ColumnValidation.SUCCESS
 
     def check_required_key(self):
         if not self.key or not self.key.strip():
@@ -62,33 +64,29 @@ class Column:
         return ColumnValidation.SUCCESS
 
     def check_required_name(self):
-        if not self.column_name or not self.column_name.strip():
+        if not self.name or not self.name.strip():
             return ColumnValidation.BLANK_NAME
         return ColumnValidation.SUCCESS
 
     def check_name_length(self):
-        if len(self.column_name) > MAX_NAME_LENGTH:
+        if len(self.name) > MAX_NAME_LENGTH:
             return ColumnValidation.LONG_NAME
         return ColumnValidation.SUCCESS
 
     def check_show(self):
-        if self.field_editable:
-            return ColumnValidation.INVALID_TYPE
+        if not isinstance(self.show, bool):
+            return ColumnValidation.REQUIRE_BOOL
         return ColumnValidation.SUCCESS
 
     def check_type(self):
-        if self.type not in VALID_TYPES:
+        if not self.type or self.type.strip().lower() not in VALID_TYPES:
             return ColumnValidation.INVALID_TYPE
         return ColumnValidation.SUCCESS
 
-    def check_editable_consistency(self):
-        if self.type == "static" and self.field_editable:
-            return ColumnValidation.INCONSISTENT_EDITABLE
-        return ColumnValidation.SUCCESS
-
-    # espacio para exepcion por coliciones (elementos iguales) necesito la BD para consultar
     def check_unique_key(self):
-        # TODO: Implementar con lista o DB externa
+        if self.existing_keys is not None:
+            if self.key in self.existing_keys and self.id is None:
+                return ColumnValidation.UNIQUE_KEY
         return ColumnValidation.SUCCESS
 
     # ====== dropdown check ======

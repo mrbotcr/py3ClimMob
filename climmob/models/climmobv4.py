@@ -14,7 +14,7 @@ from sqlalchemy import (
     BLOB,
     JSON,
     UniqueConstraint,
-    Float, Boolean,
+    Float,
 )
 from sqlalchemy.dialects.mysql import MEDIUMTEXT
 from sqlalchemy.orm import relationship
@@ -725,17 +725,6 @@ class Project(Base):
     project_checked = Column(Integer, server_default=text("'0'"))
 
     country = relationship("Country")
-
-class CustomColumn(Base):
-    __tablename__ = 'custom_columns'
-
-    id = Column(Integer, nullable=False)
-    key = Column(Unicode(50), primary_key=True)
-    column_name = Column(Unicode(50), nullable=False)
-    field_editable = Column(Boolean, nullable=False, default=False)
-    type = Column(Unicode(10), nullable=False)
-    options = Column(JSON, nullable=True)
-    show = Column(Boolean, nullable=False, default=True)
 
 class Qstoption(Base):
     __tablename__ = "qstoption"

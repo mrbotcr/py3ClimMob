@@ -1,4 +1,4 @@
-from climmob.processes.db.project import get_project_summary_columns
+
 from climmob.products.projectsSummary.projectsSummary import create_projects_summary
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound, HTTPBadRequest
 from climmob.processes import getProductData, getUserInfo, modifyProject
@@ -7,6 +7,9 @@ from climmob.products import product_found
 from pyramid.response import FileResponse
 import json
 import os
+
+
+from climmob.views.projectsSummary.column.DataColumn import get_project_summary_columns
 
 
 def getDataProduct(request):
@@ -141,26 +144,7 @@ class projectsSummaryCuration_view(privateView):
                     ),
                 )
             ):
-                success, table_structure = get_project_summary_columns(self.request)
-
-                if not success:
-                    return {
-                        'message': f'Error: {table_structure}',
-                        "status": 500,
-                    }
-
-                table_structure_dicts = [
-                    {
-                        "id": c.id,
-                        "key": c.key,
-                        "column_name": c.column_name,
-                        "field_editable": c.field_editable,
-                        "type": c.type,
-                        "options": c.options,
-                        "show": c.show
-                    }
-                    for c in table_structure
-                ]
+                table_structure = get_project_summary_columns(self.request)
 
                 jsonFile = open(
                     os.path.join(
@@ -177,7 +161,7 @@ class projectsSummaryCuration_view(privateView):
                 listOfProjects = json.loads(jsonFile.read())
 
                 return {
-                    "tableStructure": table_structure_dicts,
+                    "tableStructure": table_structure,
                     "listOfProjects": listOfProjects,
                     "lastReport": lastReport,
                     "sectionActive": "projectssummary",
