@@ -8,13 +8,19 @@ from ast import literal_eval
 from hashlib import md5
 
 from formencode.variabledecode import variable_decode
-from pyramid.httpexceptions import HTTPFound, HTTPMethodNotAllowed, HTTPBadRequest
+from pyramid.httpexceptions import (
+    HTTPFound,
+    HTTPMethodNotAllowed,
+    HTTPBadRequest,
+    HTTPClientError,
+)
 from pyramid.httpexceptions import HTTPNotFound
 from pyramid.response import Response
 from pyramid.session import check_csrf_token
 
 import climmob.plugins as p
 from climmob.config.auth import getUserData, getUserByApiKey
+from climmob.views.context.ApiContext import ApiContext
 from climmob.views.context.PrivateContext import PrivateContext
 from climmob.views.validators import Field, FieldValidator
 from climmob.views.validators.BaseValidator import BaseValidator
@@ -512,6 +518,7 @@ class apiView(BaseView):
         self.user = None
         self.body = None
         self._ = self.request.translate
+        self.context = ApiContext(request)
 
     def __init_subclass__(cls):
         super().__init_subclass__()
@@ -546,6 +553,7 @@ class apiView(BaseView):
                 )
                 return response
 
+            # TODO Replace with self.body = get_get_body_from_api_request
             try:
                 self.body = self.request.params["Body"]
             except:
@@ -565,12 +573,8 @@ class apiView(BaseView):
 
         try:
             self._validate()
-        except HTTPBadRequest as e:
-            return Response(status=str(400), body=str(e))
-        except HTTPNotFound as e:
-            return Response(status=str(404), body=str(e))
-        except HTTPMethodNotAllowed as e:
-            return Response(status=str(405), body=str(e))
+        except HTTPClientError as e:
+            return Response(status=str(e.status_code), body=str(e))
 
         return self.processView()
 

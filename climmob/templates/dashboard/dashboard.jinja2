@@ -1109,7 +1109,11 @@
                 showMethod: 'slideDown',
                 timeOut: 4000
             };
-            toastr.success("{{ toastrmessage[0] }}");
+            {% if toastrmessage[0].startswith("Error. ") %}
+                toastr.error("{{ toastrmessage[0].replace("Error. ", "") }}");
+            {% else %}
+                toastr.success("{{ toastrmessage[0] }}");
+            {% endif %}
         </script>
     {% endif %}
 {% endblock toastr %}

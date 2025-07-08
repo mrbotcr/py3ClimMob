@@ -11,7 +11,7 @@ from climmob.processes import (
     deleteProjectAssessment,
     getAssessmentQuestions,
     haveTheBasicStructureAssessment,
-    addAssessmentGroup,
+    add_assessment_group,
     exitsAssessmentGroup,
     modifyAssessmentGroup,
     canDeleteTheAssessmentGroup,
@@ -30,10 +30,13 @@ from climmob.processes import (
     getAccessTypeForProject,
     theUserBelongsToTheProject,
     getProjectData,
+    clone_assessment,
 )
 from climmob.views.classes import apiView
 from climmob.views.validators import TextField, IntegerField, BinaryField
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
+from climmob.views.validators.assessment import AssessmentExistsValidator
+from climmob.views.validators.project import CanEditProjectValidator
 
 
 class ReadProjectAssessmentsView(apiView):
@@ -239,6 +242,37 @@ class DeleteProjectAssessmentView(apiView):
             return response
 
 
+class CloneAssessmentApiView(apiView):
+    validators = (
+        ProjectExistsValidator,
+        CanEditProjectValidator,
+        AssessmentExistsValidator,
+    )
+    valid_fields = (
+        TextField("project_cod"),
+        TextField("user_owner"),
+        TextField("ass_cod"),
+    )
+
+    def post(self):
+        body = json.loads(self.body)
+
+        success = clone_assessment(
+            self, self.context.active_project_id, body["ass_cod"]
+        )
+
+        if not success:
+            return Response(
+                status="500",
+                body=self._("Could not clone the assessment."),
+            )
+        else:
+            return Response(
+                status="200",
+                body=self._("Assessment cloned successfully."),
+            )
+
+
 # _________________________________________ASSESSMENTS GROUPS___________________________________________________#
 class ReadProjectAssessmentStructureView(apiView):
     validators = (ProjectExistsValidator,)
@@ -391,7 +425,7 @@ class CreateAssessmentGroupView(apiView):
             self.request,
         )
         dataworking["project_id"] = activeProjectId
-        addgroup, message = addAssessmentGroup(dataworking, self, "API")
+        addgroup, message = add_assessment_group(dataworking, self, "API")
 
         if addgroup:
             response = Response(status=200, body=json.dumps(message))

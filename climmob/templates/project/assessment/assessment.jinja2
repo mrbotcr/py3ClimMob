@@ -127,9 +127,17 @@
                                     {% endblock dataExchange_row_event %}
 
                                     <td class="text-center" style="vertical-align: middle">
+                                        <div style="display: flex; gap: 0.2em;">
+
+
                                         {% block rhomis_BtnSeeAssessment scoped%}
-                                            <a class="btn btn-default " href="{{ request.route_url('assessmentdetail', user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}" title="{{ _("Add questions") }}"><i class="fa fa-list-ul"></i> {{ _("Add questions") }}</a>
+                                            <a class="btn btn-default" href="{{ request.route_url('assessmentdetail', user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}" title="{{ _("Add questions") }}"><i class="fa fa-list-ul"></i> {{ _("Add questions") }}</a>
                                         {% endblock rhomis_BtnSeeAssessment  %}
+
+                                        <form method="post" action="{{ request.route_url('clone_assessment', user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}">
+                                            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                                            <button class="btn btn-default" title="{{ _("Clone") }}"><i class="fa fa-clone"></i>  {{ _("Clone") }}</button>
+                                        </form>
 
                                         {% if assessment.ass_status == 0 %}
                                             {% if not onlySee %}
@@ -144,6 +152,7 @@
                                                 {{ _('Closed') }}
                                             {% endif %}
                                         {% endif %}
+                                        </div>
                                     </td>
                                 </tr>
                             {% endfor %}

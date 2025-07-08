@@ -1,3 +1,4 @@
+# TODO Move file to validators/project
 import json
 
 from pyramid.httpexceptions import HTTPNotFound
@@ -16,8 +17,8 @@ class ProjectExistsValidator(BaseValidator):
 
     def extract(self):
         if issubclass(self.view.__class__, privateView):
-            self.project_owner_username = self.view.request.matchdict["user"]
-            self.project_cod = self.view.request.matchdict["project"]
+            self.project_owner_username = self.view.request.user
+            self.project_cod = self.view.request.project
 
         elif issubclass(self.view.__class__, apiView):
             body = json.loads(self.view.body)

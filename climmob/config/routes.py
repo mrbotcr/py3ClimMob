@@ -36,6 +36,7 @@ from climmob.views.Api.projectAssessments import (
     AddQuestionToGroupAssessmentView,
     DeleteQuestionFromGroupAssessmentView,
     OrderAssessmentQuestionsView,
+    CloneAssessmentApiView,
 )
 from climmob.views.Api.projectCreation import (
     CreateProjectView,
@@ -150,6 +151,7 @@ from climmob.views.assessment import (
     assessmentFormCreation_view,
     assessmentSectionActions_view,
     getAssessmentSection_view,
+    CloneAssessmentView,
 )
 from climmob.views.basic_views import (
     HomeView,
@@ -976,6 +978,14 @@ def loadRoutes(config):
             "/user/{user}/project/{project}/assessment/{assessmentid}",
             assessment_view,
             "project/assessment/assessmentdetail.jinja2",
+        )
+    )
+    routes.append(
+        addRoute(
+            "clone_assessment",
+            "/user/{user}/project/{project}/assessment/{assessmentid}/clone",
+            CloneAssessmentView,
+            None,
         )
     )
     routes.append(
@@ -2030,6 +2040,14 @@ def loadRoutes(config):
             "closeprojectassessment",
             "/api/closeProjectAssessment",
             CloseAssessmentApiView,
+            None,
+        )
+    )
+    routes.append(
+        addRoute(
+            "api_clone_assessment",
+            "/api/assessment/clone",
+            CloneAssessmentApiView,
             None,
         )
     )
