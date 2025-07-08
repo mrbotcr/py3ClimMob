@@ -291,24 +291,22 @@ class ResetPasswordView(publicView):
             )
         user = getUserData(login, self.request)
 
+        # fmt: off
         errors = {
-            user is None: self._("User does not exist"),
-            user
-            and user.userData["user_password_reset_key"]
-            != reset_key: self._("Invalid key"),
-            user
-            and user.userData["user_password_reset_token"]
-            != token: self._("Invalid token"),
-            user
-            and user.userData["user_password_reset_expires_on"]
-            < datetime.now(): self._("Invalid token"),
-            user and new_password == "": self._("The password cannot be empty"),
-            user
-            and new_password
-            != new_password2: self._(
-                "The password and the confirmation are not the same"
-            ),
+            user is None:
+                self._("User does not exist"),
+            user and user.userData["user_password_reset_key"] != reset_key:
+                self._("Invalid key"),
+            user and user.userData["user_password_reset_token"] != token:
+                self._("Invalid token"),
+            user and user.userData["user_password_reset_expires_on"] < datetime.now():
+                self._("Invalid token"),
+            user and new_password == "":
+                self._("The password cannot be empty"),
+            user and new_password != new_password2:
+                self._("The password and the confirmation are not the same"),
         }
+        # fmt: on
 
         for condition, message in errors.items():
             if condition:
