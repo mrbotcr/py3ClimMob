@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import json
 import logging
 import secrets
@@ -209,7 +209,7 @@ class RecoverPasswordView(publicView):
             return False
         if email_from == "":
             return False
-        date_string = readble_date(datetime.datetime.now(), self.request.locale_name)
+        date_string = readble_date(datetime.now(), self.request.locale_name)
         reset_url = self.request.route_url("reset_password", reset_key=reset_key)
         text = render_template(
             "email/recover_email.jinja2",
@@ -291,31 +291,28 @@ class ResetPasswordView(publicView):
             )
         user = getUserData(login, self.request)
 
-        if user is None:
-            error_summary = {"Error": self._("User does not exist")}
-            return {"error_summary": error_summary, "dataworking": dataworking}
+        errors = {
+            user is None: self._("User does not exist"),
+            user
+            and user.userData["user_password_reset_key"]
+            != reset_key: self._("Invalid key"),
+            user
+            and user.userData["user_password_reset_token"]
+            != token: self._("Invalid token"),
+            user
+            and user.userData["user_password_reset_expires_on"]
+            < datetime.now(): self._("Invalid token"),
+            user and new_password == "": self._("The password cannot be empty"),
+            user
+            and new_password
+            != new_password2: self._(
+                "The password and the confirmation are not the same"
+            ),
+        }
 
-        if user.userData["user_password_reset_key"] != reset_key:
-            error_summary = {"Error": self._("Invalid key")}
-            return {"error_summary": error_summary, "dataworking": dataworking}
-
-        if user.userData["user_password_reset_token"] != token:
-            error_summary = {"Error": self._("Invalid token")}
-            return {"error_summary": error_summary, "dataworking": dataworking}
-
-        if user.userData["user_password_reset_expires_on"] < datetime.datetime.now():
-            error_summary = {"Error": self._("Invalid token")}
-            return {"error_summary": error_summary, "dataworking": dataworking}
-
-        if new_password == "":
-            error_summary = {"Error": self._("The password cannot be empty")}
-            return {"error_summary": error_summary, "dataworking": dataworking}
-
-        if new_password != new_password2:
-            error_summary = {
-                "Error": self._("The password and the confirmation are not the same")
-            }
-            return {"error_summary": error_summary, "dataworking": dataworking}
+        for condition, message in errors.items():
+            if condition:
+                return {"error_summary": {"Error": message}, "dataworking": dataworking}
 
         new_password = encodeData(self.request, new_password)
         resetPassword(
@@ -396,7 +393,7 @@ class RegisterView(publicView):
             user.login,
             "PRF",
             "Welcome to ClimMob",
-            datetime.datetime.now(),
+            datetime.now(),
             self.request,
         )
         login_data = {

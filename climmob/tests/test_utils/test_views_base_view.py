@@ -423,7 +423,7 @@ class TestRecoverPasswordView(ViewBaseTest):
             self.request.registry.settings.get("email.from"),
         )
         mock_readable_date.assert_called_once_with(
-            mock_datetime.datetime.now.return_value, self.request.locale_name
+            mock_datetime.now.return_value, self.request.locale_name
         )
         self.request.route_url.assert_called_once_with(
             "reset_password", reset_key=reset_key
@@ -567,6 +567,7 @@ class TestResetPasswordView(ViewBaseTest):
         self.token = MagicMock(str, name="token")
         self.password = MagicMock(str, name="password")
         self.email = MagicMock(str, name="email")
+        self.expires_on = datetime.now() + relativedelta(hours=1)
         self.post_dict = {
             "user": self.username,
             "token": self.token,
@@ -630,7 +631,7 @@ class TestResetPasswordView(ViewBaseTest):
         mock_user.userData = {
             "user_password_reset_key": MagicMock(str, name="other_reset_key"),
             "user_password_reset_token": self.token,
-            "user_password_reset_expires_on": datetime(2025, 5, 12, 15, 0, 0),
+            "user_password_reset_expires_on": self.expires_on,
         }
         self.get_mock("getUserData").return_value = mock_user
         response = self.view.post()
@@ -651,7 +652,7 @@ class TestResetPasswordView(ViewBaseTest):
         mock_user.userData = {
             "user_password_reset_key": self.view.request.reset_key,
             "user_password_reset_token": MagicMock(str, name="other_token"),
-            "user_password_reset_expires_on": "2025-05-12 15:00:00",
+            "user_password_reset_expires_on": self.expires_on,
         }
         self.get_mock("getUserData").return_value = mock_user
         response = self.view.post()
@@ -668,11 +669,12 @@ class TestResetPasswordView(ViewBaseTest):
         self.get_mock("getUserData").assert_called_once()
 
     def test_post_user_invalid_token_by_time(self):
+        self.expires_on = datetime.now() - relativedelta(hours=1)
         mock_user = MagicMock()
         mock_user.userData = {
             "user_password_reset_key": self.view.request.reset_key,
             "user_password_reset_token": self.token,
-            "user_password_reset_expires_on": datetime(2025, 5, 12, 15, 0, 0),
+            "user_password_reset_expires_on": self.expires_on,
         }
         self.get_mock("getUserData").return_value = mock_user
         response = self.view.post()
@@ -693,7 +695,7 @@ class TestResetPasswordView(ViewBaseTest):
         mock_user.userData = {
             "user_password_reset_key": self.view.request.reset_key,
             "user_password_reset_token": self.token,
-            "user_password_reset_expires_on": datetime.now() + relativedelta(hours=+1),
+            "user_password_reset_expires_on": self.expires_on,
         }
         self.get_mock("getUserData").return_value = mock_user
         self.update_post_dict({"password": "", "password2": ""})
@@ -715,7 +717,7 @@ class TestResetPasswordView(ViewBaseTest):
         mock_user.userData = {
             "user_password_reset_key": self.view.request.reset_key,
             "user_password_reset_token": self.token,
-            "user_password_reset_expires_on": datetime.now() + relativedelta(hours=+1),
+            "user_password_reset_expires_on": self.expires_on,
         }
         self.get_mock("getUserData").return_value = mock_user
         other_password = MagicMock(str, name="other_password")
@@ -747,7 +749,7 @@ class TestResetPasswordView(ViewBaseTest):
             "user_name": self.username,
             "user_password_reset_key": self.view.request.reset_key,
             "user_password_reset_token": self.token,
-            "user_password_reset_expires_on": datetime.now() + relativedelta(hours=+1),
+            "user_password_reset_expires_on": self.expires_on,
         }
         self.get_mock("getUserData").return_value = mock_user
         response = self.view.post()
