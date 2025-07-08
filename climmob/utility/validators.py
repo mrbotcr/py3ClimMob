@@ -4,10 +4,10 @@ from climmob.processes import userExists, emailExists
 
 # Form validation
 
-__all__ = ["valideRegisterForm"]
+__all__ = ["validate_register_form"]
 
 
-def valideRegisterForm(data, request, _):
+def validate_register_form(data, request, _):
     error_summary = {}
     errors = False
 

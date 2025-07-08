@@ -1,10 +1,9 @@
-import datetime
+from datetime import datetime
 import json
 import logging
 import secrets
 import smtplib
 import uuid
-from ast import literal_eval
 
 from jinja2 import ext
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
@@ -22,17 +21,18 @@ from climmob.config.auth import (
 from climmob.config.encdecdata import encodeData
 from climmob.config.jinja_extensions import jinjaEnv, extendThis
 from climmob.processes import (
-    addUser,
+    add_user,
     addToLog,
     getCountryList,
     getSectorList,
     getUserCount,
     getProjectCount,
 )
-from climmob.utility import valideRegisterForm
+from climmob.utility import validate_register_form
 from climmob.utility.email import build_email_message
 from climmob.utility.helpers import readble_date
 from climmob.views.classes import publicView
+from climmob.views.validators.session import NotLoggedInValidator
 
 log = logging.getLogger("climmob")
 
@@ -123,21 +123,10 @@ class StoreCookieView(publicView):
         return response
 
 
-# TODO Add as a method to BaseView
-def get_policy(request, policy_name):
-    policies = request.policies()
-    for policy in policies:
-        if policy["name"] == policy_name:
-            return policy["policy"]
-    return None
-
-
 class LoginView(publicView):
-    def get(self):
-        # If we logged in then go to dashboard
-        if self.is_user_logged_in():
-            return HTTPFound(location=self.request.route_url("dashboard"))
+    validators = (NotLoggedInValidator,)
 
+    def get(self):
         is_cookie_set = self.is_cookie_question_set()
 
         next_page = self.request.params.get("next") or self.request.route_url(
@@ -181,22 +170,10 @@ class LoginView(publicView):
         cookies = self.request.cookies
         return "climmob_cookie_question" in cookies.keys()
 
-    # TODO Move method to publicView
-    def is_user_logged_in(self):
-        policy = get_policy(self.request, "main")
-        login_data = policy.authenticated_userid(self.request)
-        if not login_data:
-            return False
-
-        login_data = literal_eval(login_data)
-        if login_data["group"] == "mainApp":
-            current_user = getUserData(login_data["login"], self.request)
-            return current_user is not None
-
-        return False
-
 
 class RecoverPasswordView(publicView):
+    validators = (NotLoggedInValidator,)
+
     def send_password_by_email(
         self, body, subject, target_name, target_email, mail_from
     ):
@@ -232,7 +209,7 @@ class RecoverPasswordView(publicView):
             return False
         if email_from == "":
             return False
-        date_string = readble_date(datetime.datetime.now(), self.request.locale_name)
+        date_string = readble_date(datetime.now(), self.request.locale_name)
         reset_url = self.request.route_url("reset_password", reset_key=reset_key)
         text = render_template(
             "email/recover_email.jinja2",
@@ -254,11 +231,7 @@ class RecoverPasswordView(publicView):
         )
 
     def get(self):
-        # If we logged in then go to dashboard
-        if self.is_user_logged_in():
-            return HTTPFound(location=self.request.route_url("dashboard"))
-
-        return {"error_summary": {}}
+        return {}
 
     def post(self):
         error_summary = {}
@@ -282,192 +255,151 @@ class RecoverPasswordView(publicView):
         self.send_password_email(user.email, reset_token, reset_key, user)
         return HTTPFound(location=self.request.route_url("login"))
 
-    # TODO Move method to publicView
-    def is_user_logged_in(self):
-        policy = get_policy(self.request, "main")
-        login_data = policy.authenticated_userid(self.request)
-        if not login_data:
-            return False
-
-        login_data = literal_eval(login_data)
-        if login_data["group"] == "mainApp":
-            current_user = getUserData(login_data["login"], self.request)
-            return current_user is not None
-
-        return False
-
 
 class ResetPasswordView(publicView):
-    def processView(self):
-        error_summary = {}
-        dataworking = {}
-
-        reset_key = self.request.matchdict["reset_key"]
+    def get(self):
+        reset_key = self.request.reset_key
 
         if not resetKeyExists(self.request, reset_key):
             raise HTTPNotFound()
 
-        if self.request.method == "POST":
+        return {"error_summary": {}, "dataworking": {}}
 
-            safe = check_csrf_token(self.request, raises=False)
-            if not safe:
-                raise HTTPNotFound()
+    def post(self):
+        reset_key = self.request.reset_key
 
-            dataworking = self.getPostDict()
-            login = dataworking["user"]
-            token = dataworking["token"]
-            new_password = dataworking["password"].strip()
-            new_password2 = dataworking["password2"].strip()
-            user = dataworking["user"]
-            if user != "":
-                log.error(
-                    "Suspicious bot password recovery from IP: {}. Agent: {}. Email: {}".format(
-                        self.request.remote_addr,
-                        self.request.user_agent,
-                        dataworking["email"],
-                    )
+        if not resetKeyExists(self.request, reset_key):
+            raise HTTPNotFound()
+
+        safe = check_csrf_token(self.request, raises=False)
+        if not safe:
+            raise HTTPNotFound()
+
+        dataworking = self.getPostDict()
+        login = dataworking["user"]
+        token = dataworking["token"]
+        new_password = dataworking["password"].strip()
+        new_password2 = dataworking["password2"].strip()
+        user = dataworking["user"]
+        if user != "":
+            log.error(
+                "Suspicious bot password recovery from IP: {}. Agent: {}. Email: {}".format(
+                    self.request.remote_addr,
+                    self.request.user_agent,
+                    dataworking["email"],
                 )
-            user = getUserData(login, self.request)
+            )
+        user = getUserData(login, self.request)
 
-            if user is not None:
-                if user.userData["user_password_reset_key"] == reset_key:
-                    if user.userData["user_password_reset_token"] == token:
-                        if (
-                            user.userData["user_password_reset_expires_on"]
-                            > datetime.datetime.now()
-                        ):
-                            if new_password != "":
-                                if new_password == new_password2:
-                                    new_password = encodeData(
-                                        self.request, new_password
-                                    )
-                                    resetPassword(
-                                        self.request,
-                                        user.userData["user_name"],
-                                        reset_key,
-                                        token,
-                                        new_password,
-                                    )
-                                    self.returnRawViewResult = True
-                                    return HTTPFound(
-                                        location=self.request.route_url("login")
-                                    )
-                                else:
-                                    error_summary = {
-                                        "Error": self._(
-                                            "The password and the confirmation are not the same"
-                                        )
-                                    }
-                            else:
-                                error_summary = {
-                                    "Error": self._("The password cannot be empty")
-                                }
-                        else:
-                            error_summary = {"Error": self._("Invalid token")}
-                    else:
-                        error_summary = {"Error": self._("Invalid token")}
-                else:
-                    error_summary = {"Error": self._("Invalid key")}
-            else:
-                error_summary = {"Error": self._("User does not exist")}
+        # fmt: off
+        errors = {
+            user is None:
+                self._("User does not exist"),
+            user and user.userData["user_password_reset_key"] != reset_key:
+                self._("Invalid key"),
+            user and user.userData["user_password_reset_token"] != token:
+                self._("Invalid token"),
+            user and user.userData["user_password_reset_expires_on"] < datetime.now():
+                self._("Invalid token"),
+            user and new_password == "":
+                self._("The password cannot be empty"),
+            user and new_password != new_password2:
+                self._("The password and the confirmation are not the same"),
+        }
+        # fmt: on
 
-        return {"error_summary": error_summary, "dataworking": dataworking}
+        for condition, message in errors.items():
+            if condition:
+                return {"error_summary": {"Error": message}, "dataworking": dataworking}
+
+        new_password = encodeData(self.request, new_password)
+        resetPassword(
+            self.request,
+            user.userData["user_name"],
+            reset_key,
+            token,
+            new_password,
+        )
+        return HTTPFound(location=self.request.route_url("login"))
 
 
-def logout_view(request):
-    policy = get_policy(request, "main")
-    headers = policy.forget(request)
-    loc = request.route_url("home")
-    return HTTPFound(location=loc, headers=headers)
+class LogoutView(publicView):
+    def get(self):
+        policy = self.get_policy("main")
+        headers = policy.forget(self.request)
+        loc = self.request.route_url("home")
+        return HTTPFound(location=loc, headers=headers)
 
 
 class RegisterView(publicView):
-    def processView(self):
-        if (
-            self.request.registry.settings.get("auth.register_users_via_web", "true")
-            == "false"
-        ):
+    validators = (NotLoggedInValidator,)
+
+    def get(self):
+        register_users_via_web = self.request.registry.settings.get(
+            "auth.register_users_via_web", "true"
+        )
+        if register_users_via_web == "false":
             raise HTTPNotFound()
-
-        # If we logged in then go to dashboard
-        policy = get_policy(self.request, "main")
-        login_data = policy.authenticated_userid(self.request)
-        if login_data is not None:
-            login_data = literal_eval(login_data)
-            if login_data["group"] == "mainApp":
-                currentUser = getUserData(login_data["login"], self.request)
-                if currentUser is not None:
-                    self.returnRawViewResult = True
-                    return HTTPFound(location=self.request.route_url("dashboard"))
-
-        data = {}
-        error_summary = {}
-
-        data["user_name"] = ""
-        data["user_fullname"] = ""
-        data["user_password"] = ""
-        data["user_organization"] = ""
-        data["user_email"] = ""
-        data["user_cnty"] = ""
-        data["user_sector"] = ""
-        data["user_policy"] = "no"
-
-        if "submit" in self.request.POST:
-            errors = False
-            data = self.getPostDict()
-            if "user_policy" in data.keys():
-                data["user_policy"] = "True"
-            else:
-                data["user_policy"] = "False"
-
-            errors, error_summary = valideRegisterForm(data, self.request, self._)
-            if not errors:
-                res, message = addUser(data, self.request)
-                # print("res ---->" + str(res))
-                # print("message ---->" +str(message))
-
-                if res:
-                    user = getUserData(data["user_name"], self.request)
-                    if user is not None:
-                        if user.check_password(data["user_password"], self.request):
-                            addToLog(
-                                user.login,
-                                "PRF",
-                                "Welcome to ClimMob",
-                                datetime.datetime.now(),
-                                self.request,
-                            )
-                            login_data = {
-                                "login": data["user_name"],
-                                "group": "mainApp",
-                            }
-                            headers = remember(
-                                self.request, str(login_data), policies=["main"]
-                            )
-                            self.returnRawViewResult = True
-                            return HTTPFound(
-                                location=self.request.route_url("dashboard"),
-                                headers=headers,
-                            )
-                        else:
-                            error_summary["createError"] = self._(
-                                "Password does not match {}".format(
-                                    data["user_password"]
-                                )
-                            )
-                    else:
-                        error_summary["createError"] = self._("User is None!")
-                else:
-                    error_summary["createError"] = self._(
-                        "Unable to create user",
-                        default="Unable to create user: ${user}",
-                        mapping={"user": message},
-                    )
-
-        # return {'data': self.decodeDict(data), 'error_summary': error_summary,'countries':getCountryList(self.request),'sectors':getSectorList(self.request)}
         return {
-            "data": data,
-            "error_summary": error_summary,
+            "data": {},
+            "error_summary": {},
             "countries": getCountryList(self.request),
             "sectors": getSectorList(self.request),
         }
+
+    def post(self):
+        data = self.getPostDict()
+        if "user_policy" in data.keys():
+            data["user_policy"] = "True"
+        else:
+            data["user_policy"] = "False"
+
+        response = {
+            "data": data,
+            "error_summary": {},
+            "countries": getCountryList(self.request),
+            "sectors": getSectorList(self.request),
+        }
+        errors, error_summary = validate_register_form(data, self.request, self._)
+
+        if errors:
+            response["error_summary"] = error_summary
+            return response
+
+        res, message = add_user(data, self.request)
+
+        if not res:
+            response["error_summary"]["createError"] = self._(
+                "Unable to create user",
+                default="Unable to create user: ${user}",
+                mapping={"user": message},
+            )
+            return response
+
+        user = getUserData(data["user_name"], self.request)
+        if user is None:
+            response["error_summary"]["createError"] = self._("User is None!")
+            return response
+
+        if not user.check_password(data["user_password"], self.request):
+            response["error_summary"]["createError"] = self._(
+                "Password does not match {}".format(data["user_password"])
+            )
+            return response
+
+        addToLog(
+            user.login,
+            "PRF",
+            "Welcome to ClimMob",
+            datetime.now(),
+            self.request,
+        )
+        login_data = {
+            "login": data["user_name"],
+            "group": "mainApp",
+        }
+        headers = remember(self.request, str(login_data), policies=["main"])
+        return HTTPFound(
+            location=self.request.route_url("dashboard"),
+            headers=headers,
+        )
