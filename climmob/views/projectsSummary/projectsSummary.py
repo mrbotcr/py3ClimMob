@@ -114,17 +114,6 @@ class projectsSummaryCuration_view(privateView):
         if self.user.admin not in [1]:
             raise HTTPNotFound()
 
-        if self.request.method == "POST":
-
-            if "btn_generate_report" in self.request.POST:
-                create_projects_summary(self.request)
-                self.returnRawViewResult = True
-                return HTTPFound(
-                    location=self.request.route_url(
-                        "projectsSummary",
-                    )
-                )
-
         lastReport = getDataProduct(self.request)
         listOfProjects = {}
 
@@ -163,8 +152,6 @@ class projectsSummaryCuration_view(privateView):
                 return {
                     "tableStructure": table_structure,
                     "listOfProjects": listOfProjects,
-                    "lastReport": lastReport,
-                    "sectionActive": "projectssummary",
                 }
 
 class DownloadProjectsSummary_view(privateView):
@@ -233,7 +220,7 @@ def save_project_row(request):
             else:
                 return {
                     "status": 200,
-                    'message': 'Row updated right'
+                    'message': _('Row updated right')
                 }
 
 

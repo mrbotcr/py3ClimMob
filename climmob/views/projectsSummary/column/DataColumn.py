@@ -1,5 +1,32 @@
+from enum import Enum
 
 from climmob.views.projectsSummary.column.Column import Column
+
+def _(x):
+    return x
+
+class OptionsAnalytic(Enum):
+    VERIFY = 2
+    YES = 1
+    NO = 0
+
+    def __init__(self, id):
+        self.id = id
+
+class OptionsYN(Enum):
+    YES = 1
+    NO = 0
+
+    def __init__(self, id ):
+        self.id = id
+
+
+options = {}
+option_y_N ={}
+
+options_dict = {opt.name.capitalize(): opt.id for opt in OptionsAnalytic}
+
+option_dict_y_n = {opt.name.capitalize(): opt.id for opt in OptionsYN}
 
 DATA_COLUMNS = [
     {"key": "user_owner", "name": "User owner", "type": "static", "options": None, "id": 0, "show": True},
@@ -29,22 +56,21 @@ DATA_COLUMNS = [
     {"key": "LongitudeRegistry", "name": "Longitude Registry", "type": "static", "options": None, "id": 24, "show": True},
     {"key": "LatitudeAssessment", "name": "Latitude Assessment", "type": "static", "options": None, "id": 25, "show": True},
     {"key": "LongitudeAssessment", "name": "Longitude Assessment", "type": "static", "options": None, "id": 26, "show": True},
-    {"key": "project_active", "name": "Active", "type": "static", "options": ["No", "Yes"], "id": 27, "show": True},
+    {"key": "project_active", "name": "Active", "type": "static", "options": option_dict_y_n, "id": 27, "show": True},
     {"key": "project_continent", "name": "Continent", "type": "static", "options": None, "id": 28, "show": True},
-    {"key": "project_status", "name": "Status", "type": "static", "options": None, "id": 29, "show": False},
+    {"key": "project_status", "name": "Status", "type": "static", "options": None, "id": 29, "show": True},
     {"key": "project_type", "name": "Type", "type": "static", "options": None, "id": 30, "show": True},
     {"key": "project_experimental_site", "name": "Experimental site", "type": "static", "options": None, "id": 31, "show": True},
     {"key": "project_unit_of_analysis", "name": "Unit of analysis", "type": "static", "options": None, "id": 32, "show": True},
     {"key": "project_objective", "name": "Objective", "type": "static", "options": None, "id": 33, "show": True},
     {"key": "affiliation", "name": "Affiliation", "type": "input", "options": None, "id": 34, "show": True},
     {"key": "cropname", "name": "Curated crop name", "type": "input", "options": None, "id": 35, "show": True},
-    {"key": "climmob_analytics", "name": "Dashboard", "type": "dropdown", "options": ["No", "Yes", "Verify"], "id": 36, "show": True
+    {"key": "climmob_analytics", "name": "Dashboard", "type": "dropdown", "options": options_dict, "id": 36, "show": True
      }
 ]
 
 
 def get_project_summary_columns(request):
-    # table_structure = sorted(DATA_COLUMNS, key=lambda x: x["id"]) ##order by id
 
     keys = get_key_project_summary(request)
 
@@ -69,4 +95,3 @@ def get_key_project_summary(request):
         keys.append(key["key"])
     return keys
 
-def

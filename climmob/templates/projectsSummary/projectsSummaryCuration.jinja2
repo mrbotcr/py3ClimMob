@@ -7,7 +7,6 @@
 {% block css %}
 
     {% cssresource request,'coreresources','chosen' %}
-    {% cssresource request,'coreresources','jquery' %}
     {% cssresource request, 'coreresources', 'dataTable_2-0-7' %}
     {% cssresource request, 'coreresources', 'dataTables_buttons' %}
     {% cssresource request, 'coreresources', 'sweetAlert' %}
@@ -15,23 +14,23 @@
         th {
             text-align: left;
             max-width: 400px;
-            text-overflow: ellipsis;
             overflow: hidden;
             white-space: nowrap;
+            text-overflow: ellipsis;
         }
 
         table.dataTable tfoot select {
             width: 100%;
-            text-overflow: ellipsis;
-            overflow: hidden;
             white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         td {
-            overflow: hidden;
-            white-space: nowrap;
             max-width: 400px;
-            overflow-wrap: break-word;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
     </style>
 
@@ -42,11 +41,11 @@
     {% jsresource request,'coreresources','toastr' %}
     {% jsresource request,'coreresources','datapicker' %}
     {% jsresource request,'coreresources','chosen' %}
-    {% jsresource request, 'coreresources', 'dataTablesjs_2-0-7' %}
-    {% jsresource request, 'coreresources', 'ButtonsDataTables_2-0-7' %}
-    {% jsresource request, 'coreresources', 'ColvisDataTables_2-0-7' %}
-    {% jsresource request, 'coreresources', 'bootstrapDataTables_2-0-7' %}
-    {% jsresource request, 'coreresources', 'sweetAlert' %}
+    {% jsresource request,'coreresources','dataTablesjs_2-0-7' %}
+    {% jsresource request,'coreresources','ButtonsDataTables_2-0-7' %}
+    {% jsresource request,'coreresources','ColvisDataTables_2-0-7' %}
+    {% jsresource request,'coreresources','bootstrapDataTables_2-0-7' %}
+    {% jsresource request,'coreresources','sweetAlert' %}
 
 {% endblock topScripts %}
 
@@ -81,18 +80,13 @@
 
                 <div class="row mb-3">
                     <div class="col-md-6" id="custom-buttons">
-                        {#on this space the js put the filters#}
+                        {#on this space the js put the filters dont delete#}
                     </div>
                     <div class="col-md-6 text-end" id="custom-search">
-                        {#on this space the js put the filters#}
+                        {#on this space the js put the filters dont delete#}
                     </div>
                 </div>
                 <br>
-                <div class="row mb-3">
-                    <div class="btn-group col-md-6" id="custom-pagination">
-                    </div>
-
-                </div>
             </div>
         </div>
     </div>
@@ -131,23 +125,25 @@
                                             <td data-column="{{ col["key"] }}">
                                                 {% if col['type'] == "static" %}
                                                     {% if not col['options'] %}
-                                                         {{ project[col["key"]] }}
+                                                         {{ project[col["key"]] if project[col["key"]] }}
                                                     {% endif %}
                                                     {% if col['options'] %}
-                                                        {{ _(col["options"][ project[col["key"]]]) }}
+                                                        {% for key, id in col["options"].items() %}
+                                                            {% if id == project[col["key"]]%} {{ _(key) }}
+                                                            {% endif %}
+                                                        {% endfor %}
                                                     {% endif %}
                                                 {% endif %}
-
                                                 {% if col['type'] == "input" %}
                                                     <input class="form-control" value="{{ project[col["key"]] if project[col["key"]] }}">
                                                 {% endif %}
                                                 {% if col['type'] == "dropdown" %}
                                                     <select class="form-control">
                                                         <option value="" selected >{{ _("Choice an option") }}</option>
-                                                            {% for option in col["options"] %}
-                                                                <option value="{{ option.id }}"
-                                                                    {% if option.id == project[col["key"]] %} selected="selected" {% endif %}>
-                                                                    {{ option.desc }}
+                                                            {% for key, id in col["options"].items() %}
+                                                                <option value="{{ id }}"
+                                                                    {% if id == project[col["key"]] %} selected="selected" {% endif %}>
+                                                                        {{ _(key) }}
                                                                 </option>
                                                         {% endfor %}
                                                     </select>
@@ -320,7 +316,7 @@
             const min1 = parseInt(minEl.value, 10);
             const max1 = parseInt(maxEl.value, 10);
             const colIndex = Array.from(document.querySelectorAll('#curation-table tbody tr:first-child td'))
-                .findIndex(td => td.getAttribute('data-column') === 'number_of_registered');
+                .findIndex(td => td.getAttribute('data-column') === 'farmers_registered');
             const val1 = parseFloat(data[colIndex]) || 0;
 
 
@@ -354,7 +350,7 @@
                 error.push('{{ _("Curated crop name") }}');
             }
 
-            if (!fieldAnalytics || fieldAnalytics.value.trim() === '2') {
+            if (!fieldAnalytics || fieldAnalytics.value.trim() === '') {
                 error.push('{{ _("Dashboard") }}');
             }
             if (error.length > 0) {
@@ -388,7 +384,8 @@
                     })
                     .catch(error => {
                         swal("{{ _('Error') }}", error.message, "error");
-                    });
+                    })
+                ;
 
             }
         }

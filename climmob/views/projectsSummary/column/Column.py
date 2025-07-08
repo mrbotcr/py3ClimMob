@@ -14,7 +14,8 @@ class Column:
     name: str
     type: str = "static"
     show: bool = True
-    options: Optional[List[str]] = field(default_factory=list)
+    options: Optional[dict] = field(default_factory=dict)
+
     existing_keys: Optional[set] = None
 
     def __post_init__(self):
@@ -32,8 +33,8 @@ class Column:
         # check for dropdown
         if self.type == "dropdown":
             self._stages.extend([
-                {"validation": ColumnValidation.OPTION_NOT_LIST, "function": self.check_options_type},
-                {"validation": ColumnValidation.EMPTY_OPTION_LIST, "function": self.check_options_non_empty},
+                {"validation": ColumnValidation.OPTION_NOT_DICT, "function": self.check_options_type},
+                {"validation": ColumnValidation.EMPTY_OPTION_DICT, "function": self.check_options_non_empty},
                 {"validation": ColumnValidation.INVALID_OPTION_ITEM, "function": self.check_options_items},
             ])
 
@@ -91,17 +92,19 @@ class Column:
 
     # ====== dropdown check ======
     def check_options_type(self):
-        if not isinstance(self.options, list):
-            return ColumnValidation.OPTION_NOT_LIST
+        if not isinstance(self.options, dict):
+            return ColumnValidation.OPTION_NOT_DICT
         return ColumnValidation.SUCCESS
 
     def check_options_non_empty(self):
         if not self.options:
-            return ColumnValidation.EMPTY_OPTION_LIST
+            return ColumnValidation.EMPTY_OPTION_DICT
         return ColumnValidation.SUCCESS
 
     def check_options_items(self):
-        for opt in self.options:
-            if not isinstance(opt, str) or not opt.strip():
-                return ColumnValidation.INVALID_OPTION_ITEM
+        for key, value in self.options.items():
+            if not isinstance(key, str) or not key.strip():
+                return ColumnValidation.INVALID_OPTION_KEY
+            if not isinstance(value, int):
+                return ColumnValidation.INVALID_OPTION_VALUE
         return ColumnValidation.SUCCESS
