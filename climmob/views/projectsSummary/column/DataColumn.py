@@ -5,7 +5,7 @@ from climmob.views.projectsSummary.column.Column import Column
 def _(x):
     return x
 
-class OptionsAnalytic(Enum):
+class ProjectClimMobAnalytics(Enum):
     VERIFY = 2
     YES = 1
     NO = 0
@@ -13,20 +13,15 @@ class OptionsAnalytic(Enum):
     def __init__(self, id):
         self.id = id
 
-class OptionsYN(Enum):
+class ProjectActive(Enum):
     YES = 1
     NO = 0
 
     def __init__(self, id ):
         self.id = id
 
-
-options = {}
-option_y_N ={}
-
-options_dict = {opt.name.capitalize(): opt.id for opt in OptionsAnalytic}
-
-option_dict_y_n = {opt.name.capitalize(): opt.id for opt in OptionsYN}
+options_dict = {opt.name.capitalize(): opt.id for opt in ProjectClimMobAnalytics}
+option_dict_y_n = {opt.name.capitalize(): opt.id for opt in ProjectActive}
 
 DATA_COLUMNS = [
     {"key": "user_owner", "name": "User owner", "type": "static", "options": None, "id": 0, "show": True},
