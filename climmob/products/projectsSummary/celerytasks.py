@@ -1,7 +1,9 @@
-from climmob.models import get_engine, get_session_factory, get_tm_session
 from climmob.models.repository import sql_execute
 from climmob.models.meta import Base
 from climmob.models import (
+    get_engine,
+    get_session_factory,
+    get_tm_session,
     Project,
     mapFromSchema,
     Registry,
@@ -21,11 +23,21 @@ from climmob.models import (
     ProjectObjectives,
     LocationUnitOfAnalysisObjectives,
     ProjectLocaUnitObjective,
+    ProjectSummary,
+    mapToSchema,
+    initialize_schema,
+    add_modules_to_schema
+)
+from climmob.processes import (
+    add_project_summary,
+    update_project_summary,
+    get_project_summary
 )
 import shutil as sh
 import pandas as pd
 import numpy as np
 import transaction
+import requests
 import datetime
 import json
 import os
@@ -559,7 +571,12 @@ def createProjectsSummary(self, settings, otro):
     session_factory = get_session_factory(engine)
     with transaction.manager:
         dbsession = get_tm_session(session_factory, transaction.manager)
-        # try:
+
+        initialize_schema()
+
+        request = requests.Session()
+        request.dbsession = dbsession
+
         cantidad = 0
         listOfProjects = []
         listOfGenotypes = []
@@ -692,6 +709,16 @@ def createProjectsSummary(self, settings, otro):
             )
 
             listOfProjects.append(result)
+
+            data_project_summary = {}
+            data_project_summary["project_id"] = project["project_id"]
+            data_project_summary["psm_json"] = result
+
+            project_summary_exists = get_project_summary(project["project_id"], request)
+            if project_summary_exists:
+                update_project_summary(data_project_summary, project["project_id"], request)
+            else:
+                add_project_summary(data_project_summary, request)
 
             resultGeno, genotypes = processForGetTheGenotypes(project["project_id"])
 

@@ -5,8 +5,8 @@ options_dict = project_climmob_analytics_get_dict()
 option_dict_y_n = project_active_get_dict()
 
 DATA_COLUMNS = [
-    {"key": "user_owner", "name": "User owner", "type": "static", "options": None, "id": 0, "show": False},
-    {"key": "project_id", "name": "ID (Internal)", "type": "static", "options": None, "id": 1, "show": False},
+    {"key": "user_owner", "name": "User owner", "type": "static", "options": None, "id": 0, "show": True},
+    {"key": "project_id", "name": "ID (Internal)", "type": "static", "options": None, "id": 1, "show": True},
     {"key": "project_cod", "name": "Project ID", "type": "static", "options": None, "id": 2, "show": True},
     # {"key": "projectTitle", "name": "Name", "type": "static", "options": None, "id": 3, "show": True},
     # {"key": "projectDesc", "name": "Project Description", "type": "static", "options": None, "id": 4, "show": True},

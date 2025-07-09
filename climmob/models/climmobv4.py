@@ -1475,3 +1475,15 @@ class Affiliation(Base):
 
     affiliation_id = Column(Integer, primary_key=True, autoincrement=True)
     affiliation_name = Column(Unicode(120), nullable=False)
+
+class ProjectSummary(Base):
+    __tablename__ = "project_summary"
+
+    project_id = Column(
+        ForeignKey("project.project_id", ondelete="CASCADE"),
+        primary_key=True,
+        nullable=False,
+    )
+    psm_json = Column(JSON, nullable=False)
+
+    Project = relationship("Project")

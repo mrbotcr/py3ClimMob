@@ -1,19 +1,18 @@
-
-from climmob.products.projectsSummary.projectsSummary import create_projects_summary
-from pyramid.httpexceptions import HTTPFound, HTTPNotFound, HTTPBadRequest
-from climmob.processes import getProductData, getUserInfo, modifyProject
-from climmob.views.classes import privateView
-from climmob.products import product_found
-from pyramid.response import FileResponse
 import json
 import os
 
+from pyramid.httpexceptions import HTTPFound, HTTPNotFound, HTTPBadRequest
+from pyramid.response import FileResponse
 
+from climmob.processes import getProductData, getUserInfo, modifyProject, get_all_project_summary
+from climmob.products import product_found
+from climmob.products.projectsSummary.projectsSummary import create_projects_summary
+from climmob.views.classes import privateView
 from climmob.views.projectsSummary.column.DataColumn import get_project_summary_columns
+from climmob.views.validators import TextField
 
 
 def getDataProduct(request):
-
     sql = (
         "select edited.celery_taskid,edited.project_id,edited.product_id, edited.datetime_added, edited.output_id,edited.state, edited.output_mimetype, edited.output_mimetype, edited.process_name "
         "from "
@@ -73,15 +72,15 @@ class projectsSummary_view(privateView):
             )
             projectsSummary = "projectsSummary"
             if os.path.exists(
-                os.path.join(
-                    jsonLocation,
-                    "{}_{}.json".format(
-                        projectsSummary,
-                        self.request.registry.settings.get(
-                            "analytics.instancename", ""
+                    os.path.join(
+                        jsonLocation,
+                        "{}_{}.json".format(
+                            projectsSummary,
+                            self.request.registry.settings.get(
+                                "analytics.instancename", ""
+                            ),
                         ),
-                    ),
-                )
+                    )
             ):
                 jsonFile = open(
                     os.path.join(
@@ -96,63 +95,19 @@ class projectsSummary_view(privateView):
                     "r",
                 )
                 listOfProjects = json.loads(jsonFile.read())
+
+        valid_fields = (
+            TextField("project_cod"),
+            TextField("user_owner"),
+        )
 
         return {
             "listOfProjects": listOfProjects,
             "lastReport": lastReport,
             "sectionActive": "projectssummary",
+            "valid_fields": valid_fields
         }
 
-
-class projectsSummaryCuration_view(privateView):
-    def myconverter(o):
-        if isinstance(o, datetime.datetime):
-            return o.__str__()
-
-    def processView(self):
-
-        if self.user.admin not in [1]:
-            raise HTTPNotFound()
-
-        lastReport = getDataProduct(self.request)
-
-
-        if lastReport:
-            jsonLocation = os.path.join(
-                self.request.registry.settings["user.repository"], "_report"
-            )
-            projectsSummary = "projectsSummary"
-            if os.path.exists(
-                os.path.join(
-                    jsonLocation,
-                    "{}_{}.json".format(
-                        projectsSummary,
-                        self.request.registry.settings.get(
-                            "analytics.instancename", ""
-                        ),
-                    ),
-                )
-            ):
-                table_structure = get_project_summary_columns(self.request)
-
-                jsonFile = open(
-                    os.path.join(
-                        jsonLocation,
-                        "{}_{}.json".format(
-                            projectsSummary,
-                            self.request.registry.settings.get(
-                                "analytics.instancename", ""
-                            ),
-                        ),
-                    ),
-                    "r",
-                )
-                listOfProjects = json.loads(jsonFile.read())
-
-                return {
-                    "tableStructure": table_structure,
-                    "listOfProjects": listOfProjects,
-                }
 
 class DownloadProjectsSummary_view(privateView):
     def processView(self):
@@ -195,41 +150,49 @@ class DownloadProjectsSummary_view(privateView):
             return False
 
 
+class projectsSummaryCuration_view(privateView):
+    def myconverter(o):
+        if isinstance(o, datetime.datetime):
+            return o.__str__()
+
+    def processView(self):
+
+        if self.user.admin not in [1]:
+            raise HTTPNotFound()
+
+        table_structure = get_project_summary_columns(self.request)
+        listOfProjects = get_all_project_summary(self.request)
+
+        return {
+            "tableStructure": table_structure,
+            "listOfProjects": listOfProjects,
+        }
+
+
 def save_project_row(request):
-        if request.method == "POST":
-            try:
-                data = request.json_body
-                dataworking = {}
-                project_id = data["project_id"]
+    if request.method == "POST":
+        try:
+            data = request.json_body
+            dataworking = {}
+            project_id = data["project_id"]
 
-                dataworking['project_affiliation'] = data.get('affiliation')
-                dataworking['climmob_analytics'] = data.get('analytics')
-                dataworking['project_curated_cropname'] = data.get('crop')
-                dataworking['project_checked'] = 1
+            dataworking['project_affiliation'] = data.get('affiliation')
+            dataworking['climmob_analytics'] = data.get('analytics')
+            dataworking['project_curated_cropname'] = data.get('crop')
+            dataworking['project_checked'] = 1
 
-            except Exception as e:
-                return HTTPBadRequest(json_body={'message': f'Internal Error : {str(e)}'})
+        except Exception as e:
+            return HTTPBadRequest(json_body={'message': f'Internal Error : {str(e)}'})
 
-            modify, message = modifyProject(project_id, dataworking, request)
+        modify, message = modifyProject(project_id, dataworking, request)
 
-            if not modify:
-                return {
-                    'message': f'Error: {str(message)}',
-                    "status": 500,
-                }
-            else:
-                return {
-                    "status": 200,
-                    'message': 'Row updated right'
-                }
-
-
-
-
-
-
-
-
-
-
-
+        if not modify:
+            return {
+                'message': f'Error: {str(message)}',
+                "status": 500,
+            }
+        else:
+            return {
+                "status": 200,
+                'message': 'Row updated right'
+            }

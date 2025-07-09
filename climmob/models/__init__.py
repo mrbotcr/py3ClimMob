@@ -74,7 +74,8 @@ from climmob.models.climmobv4 import (
     MetadaFormLocationUnitOfAnalysis,
     ProjectLocaUnitObjective,
     LocationUnitOfAnalysisObjectives,
-    Affiliation
+    Affiliation,
+    ProjectSummary
 )
 from climmob.models.schema import *
 
