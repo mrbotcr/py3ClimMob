@@ -275,17 +275,22 @@ def getData(userOwner, projectCod, registry, assessments, request):
     assessmentKey = data.question_code
 
     fields = []
+
+    reg_alias = "reg"
+
     for field in registry["fields"]:
-        fields.append(
-            userOwner
-            + "_"
-            + projectCod
-            + ".REG_geninfo."
-            + field["name"]
-            + " AS "
-            + "REG_"
-            + field["name"]
-        )
+        if field["is_sensitive"]:
+            fields.append(
+                f"COALESCE(MAX("
+                f"CASE WHEN da.col_name = '{field['name']}' AND da.form_id='-'"
+                f"THEN da.value END),"
+                f"{reg_alias}.{field['name']}) "
+                f"AS REG_{field['name']}"
+            )
+        else:
+            fields.append(
+                reg_alias + "." + field["name"] + " AS " + "REG_" + field["name"]
+            )
     for assessment in assessments:
         for field in assessment["fields"]:
             fields.append(
@@ -311,7 +316,9 @@ def getData(userOwner, projectCod, registry, assessments, request):
         + "_"
         + projectCod
         + ".REG_geninfo "
+        + reg_alias
     )
+
     for assessment in assessments:
         sql = (
             sql
@@ -325,10 +332,8 @@ def getData(userOwner, projectCod, registry, assessments, request):
         )
         sql = (
             sql
-            + userOwner
-            + "_"
-            + projectCod
-            + ".REG_geninfo."
+            + reg_alias
+            + "."
             + registryKey
             + " = "
             + userOwner
@@ -339,13 +344,21 @@ def getData(userOwner, projectCod, registry, assessments, request):
             + "_geninfo."
             + assessmentKey
         )
+
     sql = (
         sql
-        + " ORDER BY cast("
+        + " LEFT JOIN "
         + userOwner
         + "_"
         + projectCod
-        + ".REG_geninfo."
+        + ".anony da"
+        + f" ON da.reg_id = {reg_alias}.qst162 "
+        + f" GROUP BY {reg_alias}.qst162"
+    )
+    sql = (
+        sql
+        + " ORDER BY cast("
+        + f"{reg_alias}."
         + registryKey
         + " AS unsigned)"
     )
@@ -569,7 +582,7 @@ def getJSONResult(
             if includeRegistry:
                 registryXML = os.path.join(
                     request.registry.settings["user.repository"],
-                    *[userOwner, projectCod, "db", "reg", "create.xml"]
+                    *[userOwner, projectCod, "db", "reg", "create.xml"],
                 )
                 if os.path.exists(registryXML):
                     data["registry"] = {
@@ -605,7 +618,7 @@ def getJSONResult(
                                     "ass",
                                     assessment.ass_cod,
                                     "create.xml",
-                                ]
+                                ],
                             )
                             if os.path.exists(assessmentXML):
                                 data["assessments"].append(
