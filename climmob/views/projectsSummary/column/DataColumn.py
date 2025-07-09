@@ -1,34 +1,15 @@
-from enum import Enum
-
+from climmob.utility.project import project_climmob_analytics_get_dict, project_active_get_dict
 from climmob.views.projectsSummary.column.Column import Column
 
-def _(x):
-    return x
-
-class ProjectClimMobAnalytics(Enum):
-    VERIFY = 2
-    YES = 1
-    NO = 0
-
-    def __init__(self, id):
-        self.id = id
-
-class ProjectActive(Enum):
-    YES = 1
-    NO = 0
-
-    def __init__(self, id ):
-        self.id = id
-
-options_dict = {opt.name.capitalize(): opt.id for opt in ProjectClimMobAnalytics}
-option_dict_y_n = {opt.name.capitalize(): opt.id for opt in ProjectActive}
+options_dict = project_climmob_analytics_get_dict()
+option_dict_y_n = project_active_get_dict()
 
 DATA_COLUMNS = [
-    {"key": "user_owner", "name": "User owner", "type": "static", "options": None, "id": 0, "show": True},
-    {"key": "project_id", "name": "ID (Internal)", "type": "static", "options": None, "id": 1, "show": True},
+    {"key": "user_owner", "name": "User owner", "type": "static", "options": None, "id": 0, "show": False},
+    {"key": "project_id", "name": "ID (Internal)", "type": "static", "options": None, "id": 1, "show": False},
     {"key": "project_cod", "name": "Project ID", "type": "static", "options": None, "id": 2, "show": True},
-    {"key": "projectTitle", "name": "Name", "type": "static", "options": None, "id": 3, "show": True},
-    {"key": "projectDesc", "name": "Project Description", "type": "static", "options": None, "id": 4, "show": True},
+    # {"key": "projectTitle", "name": "Name", "type": "static", "options": None, "id": 3, "show": True},
+    # {"key": "projectDesc", "name": "Project Description", "type": "static", "options": None, "id": 4, "show": True},
     {"key": "project_pi", "name": "Trial coordinator", "type": "static", "options": None, "id": 5, "show": True},
     {"key": "project_piorganization", "name": "Organization", "type": "static", "options": None, "id": 6, "show": True},
     {"key": "project_piemail", "name": "Trial coordinator's email", "type": "static", "options": None, "id": 7, "show": True},
@@ -45,7 +26,7 @@ DATA_COLUMNS = [
     {"key": "technology", "name": "Technology", "type": "static", "options": None, "id": 18, "show": True},
     {"key": "startDate", "name": "Start date", "type": "static", "options": None, "id": 19, "show": True},
     {"key": "endDate", "name": "End date", "type": "static", "options": None, "id": 20, "show": True},
-    {"key": "instance_name", "name": "Instance Name", "type": "static", "options": None, "id": 21, "show": True},
+    # {"key": "instance_name", "name": "Instance Name", "type": "static", "options": None, "id": 21, "show": True},
     {"key": "varieties_quantity", "name": "Varieties Quantity", "type": "static", "options": None, "id": 22, "show": True},
     {"key": "LatitudeRegistry", "name": "Latitude Registry", "type": "static", "options": None, "id": 23, "show": True},
     {"key": "LongitudeRegistry", "name": "Longitude Registry", "type": "static", "options": None, "id": 24, "show": True},

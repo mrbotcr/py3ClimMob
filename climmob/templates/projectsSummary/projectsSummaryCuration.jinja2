@@ -32,6 +32,8 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
+
     </style>
 
 {% endblock css %}
@@ -85,6 +87,11 @@
                     <div class="col-md-6 text-end" id="custom-search">
                         {#on this space the js put the filters dont delete#}
                     </div>
+                    <div class="col-md-6 text-end" id="custom-search">
+                        <button class="btn btn-outline btn-primary" onclick="clearAllFilters(this)">
+                            {{ _("Clear Filters") }}
+                        </button>
+                    </div>
                 </div>
                 <br>
             </div>
@@ -126,25 +133,25 @@
                                                 {% if col['type'] == "static" %}
                                                     {% if not col['options'] %}
                                                          {{ project[col["key"]] if project[col["key"]] }}
-                                                    {% endif %}
-                                                    {% if col['options'] %}
+                                                    {% else %}
                                                         {% for key, id in col["options"].items() %}
-                                                            {% if id == project[col["key"]]%} {{ _(key) }}
+                                                            {% if id == project[col["key"]]%}
+                                                                {{ key }}
                                                             {% endif %}
                                                         {% endfor %}
                                                     {% endif %}
-                                                {% endif %}
-                                                {% if col['type'] == "input" %}
+
+                                                {% elif col['type'] == "input" %}
                                                     <input class="form-control" value="{{ project[col["key"]] if project[col["key"]] }}">
-                                                {% endif %}
-                                                {% if col['type'] == "dropdown" %}
+
+                                                {% elif col['type'] == "dropdown" %}
                                                     <select class="form-control">
                                                         <option value="" selected >{{ _("Choice an option") }}</option>
-                                                            {% for key, id in col["options"].items() %}
-                                                                <option value="{{ id }}"
-                                                                    {% if id == project[col["key"]] %} selected="selected" {% endif %}>
-                                                                        {{ _(key) }}
-                                                                </option>
+                                                        {% for key, id in col["options"].items() %}
+                                                            <option value="{{ id }}"
+                                                                {% if id == project[col["key"]] %} selected="selected" {% endif %}>
+                                                                    {{ key }}
+                                                            </option>
                                                         {% endfor %}
                                                     </select>
                                                 {% endif %}
@@ -198,6 +205,7 @@
 
         const table = new DataTable('#curation-table', {
             scrollX: true,
+            deferRender: true,
             columnDefs: [
                 {
                     targets: hiddenIndexes,
@@ -246,7 +254,7 @@
                 topEnd: {
                     search: {
                         return: true,
-                        text: '{{ _("Search :") }}',
+                        text: '',
                         className: 'form-control'
                     },
                 },
@@ -267,11 +275,20 @@
                 const searchInputContainer = document.querySelector('#curation-table_wrapper div.dt-search');
                 if (searchInputContainer) {
                     document.getElementById('custom-search').appendChild(searchInputContainer);
+                    const searchInput = searchInputContainer.querySelector('input[type="search"]');
+                    if (searchInput) {
+                        searchInput.classList.add('form-control');
+                        searchInput.placeholder = '{{ _("General search...") }}';
+                    }
                 }
 
-                this.api()
-                    .columns()
-                    .every(function () {
+
+                const api = this.api();
+                api.columns().every(function () {
+                    const currentIndex = this.index();
+                    if (currentIndex === api.columns().nodes().length - 1) {
+                        return;
+                    }
 
                         const column = this;
 
@@ -332,6 +349,23 @@
         [minEl, maxEl].forEach(el => {
             el.addEventListener('input', () => table.draw());
         });
+
+        function clearAllFilters() {
+            table.search('').draw();
+
+            table.columns().every(function () {
+                const column = this;
+                const select = column.footer().querySelector('select');
+                if (select) {
+                    select.value = '';
+                    column.search('').draw();
+                }
+            });
+
+            document.getElementById('min-farm-registered').value = '';
+            document.getElementById('max-farm-registered').value = '';
+            table.draw();
+        }
 
         function checkInputs(button) {
             const row = button.closest('tr');

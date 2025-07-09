@@ -115,7 +115,7 @@ class projectsSummaryCuration_view(privateView):
             raise HTTPNotFound()
 
         lastReport = getDataProduct(self.request)
-        listOfProjects = {}
+
 
         if lastReport:
             jsonLocation = os.path.join(
@@ -220,7 +220,7 @@ def save_project_row(request):
             else:
                 return {
                     "status": 200,
-                    'message': _('Row updated right')
+                    'message': 'Row updated right'
                 }
 
 
