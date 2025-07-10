@@ -726,6 +726,7 @@ class Project(Base):
 
     country = relationship("Country")
 
+
 class Qstoption(Base):
     __tablename__ = "qstoption"
     __table_args__ = ({"mysql_engine": "InnoDB", "mysql_charset": "utf8"},)
@@ -1475,6 +1476,7 @@ class Affiliation(Base):
 
     affiliation_id = Column(Integer, primary_key=True, autoincrement=True)
     affiliation_name = Column(Unicode(120), nullable=False)
+
 
 class ProjectSummary(Base):
     __tablename__ = "project_summary"

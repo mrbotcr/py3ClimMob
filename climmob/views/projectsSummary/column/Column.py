@@ -1,11 +1,12 @@
 from dataclasses import dataclass, field
-from typing import List, Optional
-from climmob.views.projectsSummary.column.ColumnValidation import ColumnValidation
+from typing import Optional
 
+from climmob.views.projectsSummary.column.ColumnValidation import ColumnValidation
 
 MAX_KEY_LENGTH = 50
 MAX_NAME_LENGTH = 50
-VALID_TYPES = ['static', 'input', 'dropdown']
+VALID_TYPES = ["static", "input", "dropdown"]
+
 
 @dataclass
 class Column:
@@ -21,22 +22,48 @@ class Column:
     def __post_init__(self):
         self._stages = [
             {"validation": ColumnValidation.REQUIRE_INT, "function": self.check_int},
-            {"validation": ColumnValidation.BLANK_KEY, "function": self.check_required_key},
-            {"validation": ColumnValidation.LONG_KEY, "function": self.check_key_length},
-            {"validation": ColumnValidation.BLANK_NAME, "function": self.check_required_name},
-            {"validation": ColumnValidation.LONG_NAME, "function": self.check_name_length},
+            {
+                "validation": ColumnValidation.BLANK_KEY,
+                "function": self.check_required_key,
+            },
+            {
+                "validation": ColumnValidation.LONG_KEY,
+                "function": self.check_key_length,
+            },
+            {
+                "validation": ColumnValidation.BLANK_NAME,
+                "function": self.check_required_name,
+            },
+            {
+                "validation": ColumnValidation.LONG_NAME,
+                "function": self.check_name_length,
+            },
             {"validation": ColumnValidation.REQUIRE_BOOL, "function": self.check_show},
             {"validation": ColumnValidation.INVALID_TYPE, "function": self.check_type},
-            {"validation": ColumnValidation.UNIQUE_KEY, "function": self.check_unique_key},
+            {
+                "validation": ColumnValidation.UNIQUE_KEY,
+                "function": self.check_unique_key,
+            },
         ]
 
         # check for dropdown
         if self.type == "dropdown":
-            self._stages.extend([
-                {"validation": ColumnValidation.OPTION_NOT_DICT, "function": self.check_options_type},
-                {"validation": ColumnValidation.EMPTY_OPTION_DICT, "function": self.check_options_non_empty},
-                {"validation": ColumnValidation.INVALID_OPTION_ITEM, "function": self.check_options_items},
-            ])
+            self._stages.extend(
+                [
+                    {
+                        "validation": ColumnValidation.OPTION_NOT_DICT,
+                        "function": self.check_options_type,
+                    },
+                    {
+                        "validation": ColumnValidation.EMPTY_OPTION_DICT,
+                        "function": self.check_options_non_empty,
+                    },
+                    {
+                        "validation": ColumnValidation.INVALID_OPTION_ITEM,
+                        "function": self.check_options_items,
+                    },
+                ]
+            )
 
         self.validate()
 

@@ -466,33 +466,33 @@ def createResources(apppath, config):
         "jquery",
     )
 
-# js DataTable
+    # js DataTable
     r.add_js_resource(
         "coreresources",
         "dataTablesjs_2-0-7",
         "inspinia/js/DataTables_2-0-7/dataTables.min.js",
-        None
+        None,
     )
 
     r.add_js_resource(
         "coreresources",
         "ButtonsDataTables_2-0-7",
         "inspinia/js/DataTables_2-0-7/dataTables.buttons.min.js",
-        "dataTablesjs_2-0-7"
+        "dataTablesjs_2-0-7",
     )
 
     r.add_js_resource(
         "coreresources",
         "ColvisDataTables_2-0-7",
         "inspinia/js/DataTables_2-0-7/buttons.colVis.min.js",
-        "dataTablesjs_2-0-7"
+        "dataTablesjs_2-0-7",
     )
 
     r.add_js_resource(
         "coreresources",
         "bootstrapDataTables_2-0-7",
         "inspinia/js/DataTables_2-0-7/buttons.bootstrap5.min.js",
-        "dataTablesjs_2-0-7"
+        "dataTablesjs_2-0-7",
     )
 
     r.add_js_resource(

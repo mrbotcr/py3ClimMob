@@ -1,5 +1,18 @@
-from climmob.models.repository import sql_execute
-from climmob.models.meta import Base
+import datetime
+import json
+import os
+import shutil as sh
+
+import numpy as np
+import pandas as pd
+import requests
+import transaction
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import NullPool
+
+from climmob.config.celery_app import celeryApp
+from climmob.config.celery_class import celeryTask
 from climmob.models import (
     get_engine,
     get_session_factory,
@@ -23,31 +36,15 @@ from climmob.models import (
     ProjectObjectives,
     LocationUnitOfAnalysisObjectives,
     ProjectLocaUnitObjective,
-    ProjectSummary,
-    mapToSchema,
     initialize_schema,
-    add_modules_to_schema
 )
+from climmob.models.meta import Base
+from climmob.models.repository import sql_execute
 from climmob.processes import (
     add_project_summary,
     update_project_summary,
-    get_project_summary
+    get_project_summary,
 )
-import shutil as sh
-import pandas as pd
-import numpy as np
-import transaction
-import requests
-import datetime
-import json
-import os
-
-from climmob.config.celery_app import celeryApp
-from climmob.config.celery_class import celeryTask
-
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine
-from sqlalchemy.pool import NullPool
 
 
 def get_list_of_locations(dbsession):
@@ -716,7 +713,9 @@ def createProjectsSummary(self, settings, otro):
 
             project_summary_exists = get_project_summary(project["project_id"], request)
             if project_summary_exists:
-                update_project_summary(data_project_summary, project["project_id"], request)
+                update_project_summary(
+                    data_project_summary, project["project_id"], request
+                )
             else:
                 add_project_summary(data_project_summary, request)
 

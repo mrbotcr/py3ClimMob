@@ -75,7 +75,7 @@ from climmob.models.climmobv4 import (
     ProjectLocaUnitObjective,
     LocationUnitOfAnalysisObjectives,
     Affiliation,
-    ProjectSummary
+    ProjectSummary,
 )
 from climmob.models.schema import *
 

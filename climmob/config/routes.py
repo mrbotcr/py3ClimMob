@@ -7,12 +7,21 @@ These functions setup the routes for the host application and any plugins connec
 import climmob.plugins as p
 from climmob.plugins.utilities import addRoute
 from climmob.utility import factory
+from climmob.views.Affiliation import SearchAffiliationView
 from climmob.views.Api.enumerators import (
     CreateEnumeratorView,
     ReadEnumeratorsView,
     UpdateEnumeratorView,
     UpdatePasswordEnumeratorView,
     ApiDeleteEnumeratorView,
+)
+from climmob.views.Api.languages import (
+    ReadListOfLanguagesView,
+    AddLanguageForUseView,
+    DeleteLanguageView,
+    ReadListOfUnusedLanguagesView,
+    ReadAllGeneralPhrasesView,
+    ChangeGeneralPhrasesView,
 )
 from climmob.views.Api.projectAssessmentStart import (
     CreateProjectAssessmentView,
@@ -138,7 +147,6 @@ from climmob.views.Share.projectShare import (
     API_all_users_view,
     removeprojectShare_view,
 )
-from climmob.views.Affiliation import SearchAffiliationView
 from climmob.views.assessment import (
     assessment_view,
     deleteAssessmentSection_view,
@@ -180,8 +188,15 @@ from climmob.views.enumerator import (
     enumerators_view,
     deleteEnumerator_view,
 )
+from climmob.views.extra_form import ExtraFormPostView
 from climmob.views.mapForProjectVisualization.mapForProjectVisualization import (
     showMapForProjectVisualization_view,
+)
+from climmob.views.metadata import (
+    MetadataForms_view,
+    MetadataFormDetails_view,
+    DownloadMetadataForm_view,
+    DeleteMetadataForms_view,
 )
 from climmob.views.odk import (
     FormlistView,
@@ -195,6 +210,12 @@ from climmob.views.odk import (
     AssessmentXMLFormView,
     AssessmentMediaFileView,
     AssessmentManifestView,
+)
+from climmob.views.otherLanguages import (
+    OtherLanguagesView,
+    SaveOtherLanguagesView,
+    GetOtherLanguagesView,
+    requestLanguageTranslation_view,
 )
 from climmob.views.productsList import (
     productsView,
@@ -220,7 +241,17 @@ from climmob.views.project_enumerators import (
     projectEnumerators_view,
     removeProjectEnumerators_view,
 )
+from climmob.views.project_metadata import (
+    ProjectMetadataFormView,
+    ShowMetadataFormView,
+)
 from climmob.views.project_technologies import projectTecnologies_view
+from climmob.views.projectsSummary.projectsSummary import (
+    ProjectsSummaryView,
+    DownloadProjectsSummaryView,
+    ProjectsSummaryCurationView,
+    save_project_row,
+)
 from climmob.views.question import (
     qlibrary_view,
     getUserQuestionDetails_view,
@@ -234,6 +265,11 @@ from climmob.views.question import (
     changeDefaultLanguage_view,
     deleteUserLanguage_view,
     getUserLanguagesPreview_view,
+)
+from climmob.views.questionTranslations import (
+    QuestionTranslationsView,
+    APILanguagesView,
+    ChangeDefaultQuestionLanguageView,
 )
 from climmob.views.registry import (
     RegistryView,
@@ -254,48 +290,7 @@ from climmob.views.technologies import (
     getUserTechnologyAliasDetails_view,
     APICropsView,
 )
-from climmob.views.metadata import (
-    MetadataForms_view,
-    MetadataFormDetails_view,
-    DownloadMetadataForm_view,
-    DeleteMetadataForms_view,
-)
 from climmob.views.test import test_view, sentry_debug_view
-
-from climmob.views.questionTranslations import (
-    QuestionTranslationsView,
-    APILanguagesView,
-    ChangeDefaultQuestionLanguageView,
-)
-
-from climmob.views.otherLanguages import (
-    OtherLanguagesView,
-    SaveOtherLanguagesView,
-    GetOtherLanguagesView,
-    requestLanguageTranslation_view,
-)
-
-from climmob.views.Api.languages import (
-    ReadListOfLanguagesView,
-    AddLanguageForUseView,
-    DeleteLanguageView,
-    ReadListOfUnusedLanguagesView,
-    ReadAllGeneralPhrasesView,
-    ChangeGeneralPhrasesView,
-)
-from climmob.views.projectsSummary.projectsSummary import (
-    projectsSummary_view,
-    DownloadProjectsSummary_view,
-    projectsSummaryCuration_view,
-    save_project_row,
-)
-
-from climmob.views.extra_form import ExtraFormPostView
-
-from climmob.views.project_metadata import (
-    ProjectMetadataFormView,
-    ShowMetadataFormView,
-)
 
 # -------Api-------#
 
@@ -1363,7 +1358,7 @@ def loadRoutes(config):
         {
             "name": "projectsSummary",
             "path": "/projectsSummary",
-            "view": projectsSummary_view,
+            "view": ProjectsSummaryView,
             "renderer": "projectsSummary/projectsSummary.jinja2",
         }
     )
@@ -1372,23 +1367,25 @@ def loadRoutes(config):
         {
             "name": "projectsSummaryCuration",
             "path": "/projectsSummaryCuration",
-            "view": projectsSummaryCuration_view,
+            "view": ProjectsSummaryCurationView,
             "renderer": "projectsSummary/projectsSummaryCuration.jinja2",
         }
     )
 
-    routes.append({
-        "name": 'projectsSummaryCurationUpdateRow',
-        "path": "/projectsSummaryCurationUpdateRow",
-        "view": save_project_row,
-        "renderer": "json"
-    })
+    routes.append(
+        {
+            "name": "projectsSummaryCurationUpdateRow",
+            "path": "/projectsSummaryCurationUpdateRow",
+            "view": save_project_row,
+            "renderer": "json",
+        }
+    )
 
     routes.append(
         addRoute(
             "downloadProjectsSummary",
             "/download/{celery_taskid}/{product_id}/downloadProjectsSummary",
-            DownloadProjectsSummary_view,
+            DownloadProjectsSummaryView,
             None,
         )
     )

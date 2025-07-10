@@ -6,6 +6,7 @@ import uuid
 from ago import human
 from sqlalchemy import func
 
+import climmob.plugins as p
 from climmob.models import (
     Project,
     mapToSchema,
@@ -23,20 +24,19 @@ from climmob.models import (
     RegistryJsonLog,
     AssessmentJsonLog,
     userProject,
-    Country
+    Country,
 )
 from climmob.models.repository import sql_fetch_all, sql_fetch_one
 from climmob.processes.db.enumerator import countEnumeratorsOfAllCollaborators
-from climmob.processes.db.project_technologies import numberOfCombinationsForTheProject
-from climmob.processes.db.question import getQuestionOptions
 from climmob.processes.db.prjlang import getPrjLangInProject
-from climmob.processes.db.project_metadata_form import (
-    knowIfTheProjectMetadataIsComplete,
-)
 from climmob.processes.db.project_location_unit_objective import (
     get_project_objectives_by_project_id,
 )
-import climmob.plugins as p
+from climmob.processes.db.project_metadata_form import (
+    knowIfTheProjectMetadataIsComplete,
+)
+from climmob.processes.db.project_technologies import numberOfCombinationsForTheProject
+from climmob.processes.db.question import getQuestionOptions
 
 __all__ = [
     "getTotalNumberOfProjectsInClimMob",

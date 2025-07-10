@@ -19,8 +19,5 @@ class ColumnValidation(Enum):
     INVALID_OPTION_KEY = _("All options must be non-empty strings.")
     INVALID_OPTION_VALUE = _("All options must be non-empty integer")
     UNIQUE_KEY = _("The key should be unique, the used already exists.")
-    REQUIRE_BOOL =_("The data should be boolean.")
+    REQUIRE_BOOL = _("The data should be boolean.")
     REQUIRE_INT = _("The data should be integer.")
-
-
-

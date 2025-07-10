@@ -57,114 +57,118 @@
 
 {% block pagecontent %}
 
-<div class="row">
-    <div class="col-lg-12">
-        <div class="ibox">
-            <div class="ibox-title">
-                <h5>Data Filter</h5>
-                <div class="ibox-tools">
-                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                </div>
-            </div>
-            <div class="ibox-content">
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="min-farm-registered">{{ _("Minimum Farmers Registered: ") }}</label>
-                        <input type="text" id="min-farm-registered" name="min-farm-registered" class="form-control">
-                    </div>
-                    <div class="col-md-6">
-                        <label for="max-farm-registered">{{ _("Maximum Farmers Registered: ") }}</label>
-                        <input type="text" id="max-farm-registered" name="max-farm-registered" class="form-control">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5>Data Filter</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                     </div>
                 </div>
-                <br>
+                <div class="ibox-content">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="min-farm-registered">{{ _("Minimum Farmers Registered: ") }}</label>
+                            <input type="text" id="min-farm-registered" name="min-farm-registered" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="max-farm-registered">{{ _("Maximum Farmers Registered: ") }}</label>
+                            <input type="text" id="max-farm-registered" name="max-farm-registered" class="form-control">
+                        </div>
+                    </div>
+                    <br>
 
-                <div class="row mb-3">
-                    <div class="col-md-6" id="custom-buttons">
-                        {#on this space the js put the filters dont delete#}
+                    <div class="row mb-3">
+                        <div class="col-md-6" id="custom-buttons">
+                            {#on this space the js put the filters dont delete#}
+                        </div>
+                        <div class="col-md-6 text-end" id="custom-search">
+                            {#on this space the js put the filters dont delete#}
+                        </div>
+                        <div class="col-md-6 text-end" id="custom-search">
+                            <button class="btn btn-outline btn-primary" onclick="clearAllFilters(this)">
+                                {{ _("Clear Filters") }}
+                            </button>
+                        </div>
                     </div>
-                    <div class="col-md-6 text-end" id="custom-search">
-                        {#on this space the js put the filters dont delete#}
-                    </div>
-                    <div class="col-md-6 text-end" id="custom-search">
-                        <button class="btn btn-outline btn-primary" onclick="clearAllFilters(this)">
-                            {{ _("Clear Filters") }}
-                        </button>
-                    </div>
+                    <br>
                 </div>
-                <br>
             </div>
         </div>
     </div>
-</div>
 
-<div class="row">
-    <div class="col-lg-12">
-        <div class="ibox ">
-            <div class="ibox-title">
-                <h5>{{ _("Curation Table") }}</h5>
-                <div class="ibox-tools">
-                    <a class="collapse-link">
-                        <i class="fa fa-chevron-up"></i>
-                    </a>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox ">
+                <div class="ibox-title">
+                    <h5>{{ _("Curation Table") }}</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                    </div>
                 </div>
-            </div>
-            <div class="ibox-content">
-                <div style="overflow-x: auto;">
-                    <div id="footable-wrapper">
-                        <table class="display nowrap table table-stripped display " data-filter=#filter id="curation-table">
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                {% for col in tableStructure %}
-                                        <th>{{ _(col["name"]) }}</th>
-                                {% endfor %}
-                                <th></th>
-
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for project in listOfProjects %}
+                <div class="ibox-content">
+                    <div style="overflow-x: auto;">
+                        <div id="footable-wrapper">
+                            <table class="display nowrap table table-stripped display " data-filter=#filter
+                                   id="curation-table">
+                                <thead>
                                 <tr>
-                                    <td data-column="index">{{ '%04d' % loop.index }}</td>
+                                    <th>#</th>
+                                    {% for col in tableStructure %}
+                                        <th>{{ _(col["name"]) }}</th>
+                                    {% endfor %}
+                                    <th></th>
+
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for project in listOfProjects %}
+                                    <tr>
+                                        <td data-column="index">{{ '%04d' % loop.index }}</td>
                                         {% for col in tableStructure %}
                                             <td data-column="{{ col["key"] }}">
                                                 {% if col['type'] == "static" %}
                                                     {% if not col['options'] %}
-                                                         {{ project[col["key"]] if project[col["key"]] }}
+                                                        {{ project[col["key"]] if project[col["key"]] }}
                                                     {% else %}
                                                         {% for key, id in col["options"].items() %}
-                                                            {% if id == project[col["key"]]%}
+                                                            {% if id == project[col["key"]] %}
                                                                 {{ key }}
                                                             {% endif %}
                                                         {% endfor %}
                                                     {% endif %}
 
                                                 {% elif col['type'] == "input" %}
-                                                    <input class="form-control" value="{{ project[col["key"]] if project[col["key"]] }}">
+                                                    <input class="form-control"
+                                                           value="{{ project[col["key"]] if project[col["key"]] }}">
 
                                                 {% elif col['type'] == "dropdown" %}
                                                     <select class="form-control">
-                                                        <option value="" selected >{{ _("Choice an option") }}</option>
+                                                        <option value="" selected>{{ _("Choice an option") }}</option>
                                                         {% for key, id in col["options"].items() %}
                                                             <option value="{{ id }}"
-                                                                {% if id == project[col["key"]] %} selected="selected" {% endif %}>
-                                                                    {{ key }}
+                                                                    {% if id == project[col["key"]] %}
+                                                                    selected="selected" {% endif %}>
+                                                                {{ key }}
                                                             </option>
                                                         {% endfor %}
                                                     </select>
                                                 {% endif %}
                                             </td>
                                         {% endfor %}
-                                    <td class="no-filter">
-                                        <button data-column="save" class="btn btn-primary pull-right" onclick="checkInputs(this)">
-                                            {{ _("Save") }}
-                                        </button>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                            <tfoot>
+                                        <td class="no-filter">
+                                            <button data-column="save" class="btn btn-primary pull-right"
+                                                    onclick="checkInputs(this)">
+                                                {{ _("Save") }}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                                <tfoot>
                                 <tr>
                                     <th>#</th>
                                     {% for col in tableStructure %}
@@ -172,14 +176,14 @@
                                     {% endfor %}
                                     <th></th>
                                 </tr>
-                            </tfoot>
-                        </table>
+                                </tfoot>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
     <script>
 
@@ -289,42 +293,42 @@
                         return;
                     }
 
-                        const column = this;
+                    const column = this;
 
-                        const select = document.createElement('select');
-                        select.add(new Option(''));
-                        column.footer().replaceChildren(select);
+                    const select = document.createElement('select');
+                    select.add(new Option(''));
+                    column.footer().replaceChildren(select);
 
-                        const uniqueValues = new Set();
+                    const uniqueValues = new Set();
 
-                        column.nodes().each(function (cell) {
-                            let value;
-                            const selectEl = cell.querySelector('select');
-                            const inputEl = cell.querySelector('input');
-                            if (selectEl) {
-                                value = selectEl.options[selectEl.selectedIndex].text.trim();
-                            } else if (inputEl) {
-                                value = inputEl.value.trim();
-                            } else {
-                                value = cell.textContent.trim();
-                            }
-                            if (value && !uniqueValues.has(value)) {
-                                uniqueValues.add(value);
-                                select.add(new Option(value));
-                            }
-                        });
-
-                        select.addEventListener('change', function () {
-                            const selectedValue = this.value;
-
-                            column
-                                .search(selectedValue ? '^' + selectedValue + '$' : '', {
-                                    regex: true,
-                                    caseInsensitive: true
-                                })
-                                .draw();
-                        });
+                    column.nodes().each(function (cell) {
+                        let value;
+                        const selectEl = cell.querySelector('select');
+                        const inputEl = cell.querySelector('input');
+                        if (selectEl) {
+                            value = selectEl.options[selectEl.selectedIndex].text.trim();
+                        } else if (inputEl) {
+                            value = inputEl.value.trim();
+                        } else {
+                            value = cell.textContent.trim();
+                        }
+                        if (value && !uniqueValues.has(value)) {
+                            uniqueValues.add(value);
+                            select.add(new Option(value));
+                        }
                     });
+
+                    select.addEventListener('change', function () {
+                        const selectedValue = this.value;
+
+                        column
+                            .search(selectedValue ? '^' + selectedValue + '$' : '', {
+                                regex: true,
+                                caseInsensitive: true
+                            })
+                            .draw();
+                    });
+                });
             }
         });
 
@@ -401,8 +405,8 @@
                     analytics: fieldAnalytics.value.trim()
                 }
 
-                fetch('/climmob3/projectsSummaryCurationUpdateRow',{
-                    method:'POST',
+                fetch('/climmob3/projectsSummaryCurationUpdateRow', {
+                    method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
@@ -424,5 +428,32 @@
         }
     </script>
 
+
+    {#                 const data = {#}
+    {#                    project_id: project_id,#}
+    {#                    affiliation: fieldAffiliation.value.trim(),#}
+    {#                    crop: fieldCrop.value.trim(),#}
+    {#                    analytics: fieldAnalytics.value.trim(),#}
+    {#                    csrf_token: "{{ request.session.get_csrf_token() }}"#}
+    {#                }#}
+    {##}
+    {#                fetch('/climmob3/projectsSummaryCurationUpdateRow',{#}
+    {#                    method:'POST',#}
+    {#                    headers: {#}
+    {#                        'Content-Type': 'application/x-www-form-urlencoded'#}
+    {#                    },#}
+    {#                    body: new URLSearchParams(data)#}
+    {#                })#}
+    {##}
+    {#                    .then(data => {#}
+    {#                        swal("{{ _('Data Update, row ') }}" + rowNumber, data.message, "success");#}
+    {#                    })#}
+    {#                    .catch(error => {#}
+    {#                        swal("{{ _('Error') }}", error.message, "error");#}
+    {#                    })#}
+    {#                ;#}
+    {##}
+    {#            }#}
+    {#        }#}
 {% endblock pagecontent %}
 

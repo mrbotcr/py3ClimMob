@@ -1,9 +1,12 @@
+import sys
+
 from climmob.products.projectsSummary.projectsSummary import create_projects_summary
 from pyramid.paster import get_appsettings, setup_logging
 import requests
 import argparse
 import pyramid
 import os
+
 
 def main(raw_args=None):
     parser = argparse.ArgumentParser()
