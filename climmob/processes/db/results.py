@@ -292,21 +292,28 @@ def getData(userOwner, projectCod, registry, assessments, request):
                 reg_alias + "." + field["name"] + " AS " + "REG_" + field["name"]
             )
     for assessment in assessments:
+        assessment_alias = "assess_" + assessment["code"]
         for field in assessment["fields"]:
-            fields.append(
-                userOwner
-                + "_"
-                + projectCod
-                + ".ASS"
-                + assessment["code"]
-                + "_geninfo."
-                + field["name"]
-                + " AS "
-                + "ASS"
-                + assessment["code"]
-                + "_"
-                + field["name"]
-            )
+            if field["is_sensitive"]:
+                fields.append(
+                    f"COALESCE(MAX("
+                    f"CASE WHEN da.col_name = '{field['name']}' AND da.form_id='{assessment['code']}'"
+                    f"THEN da.value END),"
+                    f"{assessment_alias}.{field['name']}) "
+                    f"AS " + "ASS" + assessment["code"] + "_"
+                    f"{field['name']}"
+                )
+            else:
+                fields.append(
+                    assessment_alias
+                    + "."
+                    + field["name"]
+                    + " AS "
+                    + "ASS"
+                    + assessment["code"]
+                    + "_"
+                    + field["name"]
+                )
 
     sql = (
         "SELECT "
@@ -320,6 +327,7 @@ def getData(userOwner, projectCod, registry, assessments, request):
     )
 
     for assessment in assessments:
+        assessment_alias = "assess_" + assessment["code"]
         sql = (
             sql
             + " LEFT JOIN "
@@ -328,7 +336,9 @@ def getData(userOwner, projectCod, registry, assessments, request):
             + projectCod
             + ".ASS"
             + assessment["code"]
-            + "_geninfo ON "
+            + "_geninfo "
+            + assessment_alias
+            + " ON "
         )
         sql = (
             sql
@@ -336,12 +346,8 @@ def getData(userOwner, projectCod, registry, assessments, request):
             + "."
             + registryKey
             + " = "
-            + userOwner
-            + "_"
-            + projectCod
-            + ".ASS"
-            + assessment["code"]
-            + "_geninfo."
+            + assessment_alias
+            + "."
             + assessmentKey
         )
 
@@ -355,13 +361,9 @@ def getData(userOwner, projectCod, registry, assessments, request):
         + f" ON da.reg_id = {reg_alias}.qst162 "
         + f" GROUP BY {reg_alias}.qst162"
     )
-    sql = (
-        sql
-        + " ORDER BY cast("
-        + f"{reg_alias}."
-        + registryKey
-        + " AS unsigned)"
-    )
+    sql = sql + f" ORDER BY cast({reg_alias}.{registryKey} AS unsigned)"
+
+    print(sql)
 
     data = sql_fetch_all(sql)
 
