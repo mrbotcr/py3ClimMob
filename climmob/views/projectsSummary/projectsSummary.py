@@ -2,7 +2,7 @@ import datetime
 import json
 import os
 
-from pyramid.httpexceptions import HTTPFound, HTTPNotFound, HTTPBadRequest
+from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 from pyramid.response import FileResponse
 
 from climmob.processes import (
@@ -14,7 +14,7 @@ from climmob.processes import (
 from climmob.products import product_found
 from climmob.products.projectsSummary.projectsSummary import create_projects_summary
 from climmob.views.classes import privateView
-from climmob.views.projectsSummary.column.DataColumn import get_project_summary_columns
+from climmob.views.projectsSummary.column.DataColumn import DataColumn
 from climmob.views.validators import TextField
 
 
@@ -163,7 +163,7 @@ class ProjectsSummaryCurationView(privateView):
         if self.user.admin not in [1]:
             raise HTTPNotFound()
 
-        table_structure = get_project_summary_columns()
+        table_structure = DataColumn.get_project_summary_columns(self)
         listOfProjects = get_all_project_summary(self.request)
 
         return {
@@ -172,27 +172,36 @@ class ProjectsSummaryCurationView(privateView):
         }
 
 
-def save_project_row(request):
-    if request.method == "POST":
-        try:
-            data = request.json_body
-            dataworking = {}
-            project_id = data["project_id"]
+class SaveProjectRow(privateView):
+    def post(self):
+        request = self.request
 
-            dataworking["project_affiliation"] = data.get("affiliation")
-            dataworking["climmob_analytics"] = data.get("analytics")
-            dataworking["project_curated_cropname"] = data.get("crop")
-            dataworking["project_checked"] = 1
+        try:
+            data = request.POST
+            project_id = data.get("project_id")
+            dataworking = {
+                "project_affiliation": data.get("affiliation"),
+                "climmob_analytics": data.get("analytics"),
+                "project_curated_cropname": data.get("crop"),
+                "project_checked": 1,
+            }
+
+            user_dict = self.user.to_dict() if hasattr(self.user, "to_dict") else None
+            self.classResult["activeUser"] = user_dict
 
         except Exception as e:
-            return HTTPBadRequest(json_body={"message": f"Internal Error : {str(e)}"})
+            return {"status": 400, "message": f"Data Error: {str(e)}"}
 
         modify, message = modifyProject(project_id, dataworking, request)
 
         if not modify:
             return {
                 "message": f"Error: {str(message)}",
-                "status": 500,
+                "status": 400,
             }
-        else:
-            return {"status": 200, "message": "Row updated right"}
+
+        return {
+            "status": 200,
+            "message": "Row updated right",
+            "activeUser": user_dict,
+        }

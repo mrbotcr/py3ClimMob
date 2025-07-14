@@ -4,6 +4,7 @@ from enum import Enum
 def _(x):
     return x
 
+
 class ColumnValidation(Enum):
     SUCCESS = None
     BLANK_KEY = _("The Key requires a value.")

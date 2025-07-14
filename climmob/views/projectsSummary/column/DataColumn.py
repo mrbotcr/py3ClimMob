@@ -286,28 +286,27 @@ DATA_COLUMNS = [
 ]
 
 
-def get_project_summary_columns():
+class DataColumn:
+    def get_project_summary_columns(self):
 
-    keys = get_key_project_summary()
+        keys = DataColumn.get_key_project_summary(self)
 
-    existing_keys = set(keys)
-    validated_columns = []
-    errors = []
-    for col_dict in DATA_COLUMNS:
-        try:
-            col = Column(**col_dict, existing_keys=existing_keys)
-            validated_columns.append(col)
-        except ValueError as e:
-            errors.append(f"Error on the column '{col_dict['key']}': {e}")
-    if errors:
-        print("ERRORS:", errors)
-        return errors
+        existing_keys = set(keys)
+        validated_columns = []
+        errors = []
+        for col_dict in DATA_COLUMNS:
+            try:
+                col = Column(**col_dict, existing_keys=existing_keys)
+                validated_columns.append(col)
+            except ValueError as e:
+                errors.append(f"Error on the column '{col_dict['key']}': {e}")
+        if errors:
+            return errors
 
-    return validated_columns
+        return validated_columns
 
-
-def get_key_project_summary():
-    keys = []
-    for key in DATA_COLUMNS:
-        keys.append(key["key"])
-    return keys
+    def get_key_project_summary(self):
+        keys = []
+        for key in DATA_COLUMNS:
+            keys.append(key["key"])
+        return keys

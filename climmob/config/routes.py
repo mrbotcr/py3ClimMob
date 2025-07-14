@@ -250,7 +250,7 @@ from climmob.views.projectsSummary.projectsSummary import (
     ProjectsSummaryView,
     DownloadProjectsSummaryView,
     ProjectsSummaryCurationView,
-    save_project_row,
+    SaveProjectRow,
 )
 from climmob.views.question import (
     qlibrary_view,
@@ -1376,7 +1376,7 @@ def loadRoutes(config):
         {
             "name": "projectsSummaryCurationUpdateRow",
             "path": "/projectsSummaryCurationUpdateRow",
-            "view": save_project_row,
+            "view": SaveProjectRow,
             "renderer": "json",
         }
     )

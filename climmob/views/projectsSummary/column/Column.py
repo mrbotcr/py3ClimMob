@@ -107,7 +107,11 @@ class Column:
         return ColumnValidation.SUCCESS
 
     def check_type(self):
-        if not self.type or self.type.strip().lower() not in VALID_TYPES:
+        if (
+            not self.type
+            or not isinstance(self.type, str)
+            or self.type.strip().lower() not in VALID_TYPES
+        ):
             return ColumnValidation.INVALID_TYPE
         return ColumnValidation.SUCCESS
 
@@ -129,6 +133,8 @@ class Column:
         return ColumnValidation.SUCCESS
 
     def check_options_items(self):
+        if not isinstance(self.options, dict):
+            return ColumnValidation.OPTION_NOT_DICT
         for key, value in self.options.items():
             if not isinstance(key, str) or not key.strip():
                 return ColumnValidation.INVALID_OPTION_KEY

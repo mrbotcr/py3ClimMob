@@ -402,15 +402,16 @@
                     project_id: project_id,
                     affiliation: fieldAffiliation.value.trim(),
                     crop: fieldCrop.value.trim(),
-                    analytics: fieldAnalytics.value.trim()
+                    analytics: fieldAnalytics.value.trim(),
+                    csrf_token: "{{ request.session.get_csrf_token() }}"
                 }
 
                 fetch('/climmob3/projectsSummaryCurationUpdateRow', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/x-www-form-urlencoded'
                     },
-                    body: JSON.stringify(data)
+                    body: new URLSearchParams(data)
                 })
                     .then(response => {
                         if (!response.ok) throw new Error("{{ _('Error') }}");
@@ -428,32 +429,5 @@
         }
     </script>
 
-
-    {#                 const data = {#}
-    {#                    project_id: project_id,#}
-    {#                    affiliation: fieldAffiliation.value.trim(),#}
-    {#                    crop: fieldCrop.value.trim(),#}
-    {#                    analytics: fieldAnalytics.value.trim(),#}
-    {#                    csrf_token: "{{ request.session.get_csrf_token() }}"#}
-    {#                }#}
-    {##}
-    {#                fetch('/climmob3/projectsSummaryCurationUpdateRow',{#}
-    {#                    method:'POST',#}
-    {#                    headers: {#}
-    {#                        'Content-Type': 'application/x-www-form-urlencoded'#}
-    {#                    },#}
-    {#                    body: new URLSearchParams(data)#}
-    {#                })#}
-    {##}
-    {#                    .then(data => {#}
-    {#                        swal("{{ _('Data Update, row ') }}" + rowNumber, data.message, "success");#}
-    {#                    })#}
-    {#                    .catch(error => {#}
-    {#                        swal("{{ _('Error') }}", error.message, "error");#}
-    {#                    })#}
-    {#                ;#}
-    {##}
-    {#            }#}
-    {#        }#}
 {% endblock pagecontent %}
 
