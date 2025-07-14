@@ -1282,10 +1282,17 @@ def get_constraint(question, prjLanguages, userOwner, request):
         if question.question_min is None and question.question_max is None:
             return constraint, constraint_message
 
+        minimum = question.question_min
+        maximum = question.question_max
+
         if question.question_min is not None:
+            if question.question_dtype == 3:
+                minimum = int(minimum)
             constraint += f".>= {question.question_min}"
             constraint_type = 38  # Just minimum
         if question.question_max is not None:
+            if question.question_dtype == 3:
+                maximum = int(maximum)
             if question.question_min is not None:
                 constraint += " and "
                 constraint_type = 40  # Both minimum and maximum
@@ -1304,14 +1311,14 @@ def get_constraint(question, prjLanguages, userOwner, request):
 
         if isinstance(constraint_message, str):
             constraint_message = constraint_message.replace(
-                "{minimum}", str(question.question_min)
-            ).replace("{maximum}", str(question.question_max))
+                "{minimum}", str(minimum)
+            ).replace("{maximum}", str(maximum))
         elif isinstance(constraint_message, list):
             for i, item in enumerate(constraint_message):
                 constraint_message[i]["value"] = (
                     item["value"]
-                    .replace("{minimum}", str(question.question_min))
-                    .replace("{maximum}", str(question.question_max))
+                    .replace("{minimum}", str(minimum))
+                    .replace("{maximum}", str(maximum))
                 )
 
     return constraint, constraint_message
