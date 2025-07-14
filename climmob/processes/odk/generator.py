@@ -1274,10 +1274,12 @@ def translateQuestionOption(prjLanguages, questionId, option, request):
 
 
 def get_constraint(question, prjLanguages, userOwner, request):
+    from climmob.utility import is_type_numerical, QuestionType
+
     constraint = ""
     constraint_type = None
     constraint_message = ""
-    if question.question_dtype == 2 or question.question_dtype == 3:
+    if is_type_numerical(question.question_dtype):
 
         if question.question_min is None and question.question_max is None:
             return constraint, constraint_message
@@ -1286,12 +1288,12 @@ def get_constraint(question, prjLanguages, userOwner, request):
         maximum = question.question_max
 
         if question.question_min is not None:
-            if question.question_dtype == 3:
+            if question.question_dtype == QuestionType.INTEGER.value:
                 minimum = int(minimum)
             constraint += f".>= {question.question_min}"
             constraint_type = 38  # Just minimum
         if question.question_max is not None:
-            if question.question_dtype == 3:
+            if question.question_dtype == QuestionType.INTEGER.value:
                 maximum = int(maximum)
             if question.question_min is not None:
                 constraint += " and "
