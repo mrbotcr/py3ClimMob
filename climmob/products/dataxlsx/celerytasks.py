@@ -141,7 +141,7 @@ def create_XLSX(
             else:
                 print(
                     "Unknown error while creating the XLSX. Sorry about this. "
-                    "Please report this error as an issue on https://github.com/BioversityCostaRica/py3climmob"
+                    "Please report this error as an issue on https://github.com/mrbotcr/py3climmob"
                 )
 
     if len(listOfGeneratedXLSX) > 0:

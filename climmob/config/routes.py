@@ -167,7 +167,7 @@ from climmob.views.basic_views import (
     NotFoundView,
     LoginView,
     RegisterView,
-    logout_view,
+    LogoutView,
     RecoverPasswordView,
     ResetPasswordView,
     StoreCookieView,
@@ -382,7 +382,7 @@ def loadRoutes(config):
         }
     )
     routes.append(
-        {"name": "logout", "path": "/logout", "view": logout_view, "renderer": None}
+        {"name": "logout", "path": "/logout", "view": LogoutView, "renderer": None}
     )
 
     routes.append(

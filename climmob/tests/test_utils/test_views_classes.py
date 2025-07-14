@@ -282,6 +282,26 @@ class TestBaseView(unittest.TestCase):
 
         subclass(self.request)._validate()
 
+    def test_get_policy_found(self):
+        policy = MagicMock(name="policy")
+        policy_name = MagicMock(str, name="policy_name")
+        self.request.policies.return_value = [{"name": policy_name, "policy": policy}]
+        result = self.view.get_policy(policy_name)
+        self.assertEqual(result, policy)
+
+    def test_get_policy_no_found(self):
+        policy = MagicMock(name="policy")
+        policy_name = MagicMock(str, name="policy_name")
+        self.request.policies.return_value = [{"name": policy_name, "policy": policy}]
+        result = self.view.get_policy(MagicMock(str, name="other_policy_name"))
+        self.assertIsNone(result)
+
+    def test_get_policy_empty(self):
+        policy_name = MagicMock(str, name="policy_name")
+        self.request.policies.return_value = []
+        result = self.view.get_policy(policy_name)
+        self.assertIsNone(result)
+
 
 class TestOdkView(unittest.TestCase):
     def setUp(self):
@@ -672,14 +692,6 @@ class TestPrivateView(unittest.TestCase):
         expected_dict = {"key1": "value1", "key2": "value2"}
         result = self.view.decodeDict(input_dict)
         self.assertEqual(result, expected_dict)
-
-    def test_get_policy(self):
-        policy = self.view.get_policy("main")
-        self.assertIsNotNone(policy)
-
-    def test_get_policy_not_found(self):
-        policy = self.view.get_policy("nonexistent")
-        self.assertIsNone(policy)
 
     @patch("climmob.views.classes.check_csrf_token", return_value=False)
     @patch("climmob.views.classes.getUserData")

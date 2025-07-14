@@ -216,7 +216,7 @@ RUN qmake
 RUN make
 
 WORKDIR /opt
-RUN git clone https://github.com/BioversityCostaRica/wkhtmltopdf.git
+RUN git clone https://github.com/mrbotcr/wkhtmltopdf.git
 WORKDIR wkhtmltopdf
 RUN qmake
 RUN make -j 4
