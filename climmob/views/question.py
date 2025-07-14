@@ -593,7 +593,7 @@ class QuestionsActionsView(privateView):
         nullable = ["question_min", "question_max"]
 
         for field in nullable:
-            if postdata[field] == "":
+            if postdata.get(field) == "":
                 postdata[field] = None
 
         if postdata["action"] == "btn_add_question":
