@@ -40,6 +40,7 @@ __all__ = [
     "getDefaultQuestionLanguage",
     "getQuestionOwner",
     "knowIfUserHasCreatedTranslations",
+    "get_question_sensitivity_by_project_id",
 ]
 
 log = logging.getLogger(__name__)
@@ -514,3 +515,17 @@ def knowIfUserHasCreatedTranslations(request, userId):
         return True
 
     return False
+
+
+def get_question_sensitivity_by_project_id(project_id, request):
+    query = (
+        request.dbsession.query(Question.question_code, Question.question_sensitive)
+        .join(Registry, Registry.question_id == Question.question_id)
+        .filter(Registry.project_id == project_id)
+        .union(
+            request.dbsession.query(Question.question_code, Question.question_sensitive)
+            .join(AssDetail, AssDetail.question_id == Question.question_id)
+            .filter(AssDetail.project_id == project_id)
+        )
+    )
+    return query.all()

@@ -1,12 +1,13 @@
 import datetime
 import decimal
 import os
+import re
 
 from lxml import etree
 
-from climmob.models import Assessment, Question, Project, mapFromSchema
+from climmob.models import Assessment, Question, Project, mapFromSchema, Registry
 from climmob.models.repository import sql_fetch_all, sql_fetch_one
-from climmob.processes import getCombinations
+from climmob.processes import getCombinations, get_question_sensitivity_by_project_id
 
 __all__ = ["getJSONResult", "getCombinationsData"]
 
@@ -264,7 +265,22 @@ def getPackageData(userOwner, projectId, projectCod, request):
     return packages
 
 
-def getData(userOwner, projectCod, registry, assessments, request):
+def is_field_sensitive(field, questions):
+    for q in questions:
+        if q.question_sensitive == 0:
+            continue
+        patterns = [
+            rf"^{q.question_code}(_[abc])?(_oth)?$",
+            rf"^perf_{q.question_code}_[123]$",
+            rf"^char_{q.question_code}_(pos|neg)$",
+        ]
+        for pattern in patterns:
+            if re.fullmatch(pattern, field["name"]):
+                return True
+    return False
+
+
+def getData(userOwner, project_id, projectCod, registry, assessments, request):
     data = (
         request.dbsession.query(Question).filter(Question.question_regkey == 1).first()
     )
@@ -274,12 +290,14 @@ def getData(userOwner, projectCod, registry, assessments, request):
     )
     assessmentKey = data.question_code
 
+    questions = get_question_sensitivity_by_project_id(project_id, request)
+
     fields = []
 
     reg_alias = "reg"
 
     for field in registry["fields"]:
-        if field["is_sensitive"]:
+        if is_field_sensitive(field, questions):
             fields.append(
                 f"COALESCE(MAX("
                 f"CASE WHEN da.col_name = '{field['name']}' AND da.form_id='-'"
@@ -294,7 +312,7 @@ def getData(userOwner, projectCod, registry, assessments, request):
     for assessment in assessments:
         assessment_alias = "assess_" + assessment["code"]
         for field in assessment["fields"]:
-            if field["is_sensitive"]:
+            if is_field_sensitive(field, questions):
                 fields.append(
                     f"COALESCE(MAX("
                     f"CASE WHEN da.col_name = '{field['name']}' AND da.form_id='{assessment['code']}'"
@@ -362,8 +380,6 @@ def getData(userOwner, projectCod, registry, assessments, request):
         + f" GROUP BY {reg_alias}.qst162"
     )
     sql = sql + f" ORDER BY cast({reg_alias}.{registryKey} AS unsigned)"
-
-    print(sql)
 
     data = sql_fetch_all(sql)
 
@@ -653,6 +669,7 @@ def getJSONResult(
                 )
                 data["data"] = getData(
                     userOwner,
+                    projectId,
                     projectCod,
                     data["registry"],
                     data["assessments"],
@@ -664,6 +681,7 @@ def getJSONResult(
                 data["specialfields"] = []
                 data["data"] = getData(
                     userOwner,
+                    projectId,
                     projectCod,
                     data["registry"],
                     data["assessments"],
