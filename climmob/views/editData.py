@@ -30,6 +30,7 @@ class downloadDataView(privateView):
         activeProjectCod = self.request.matchdict["project"]
         formId = self.request.matchdict["formid"]
         formatId = self.request.matchdict["formatid"]
+        anonymize = bool(self.request.params.get("anonymize"))
         includeRegistry = True
         includeAssessment = True
         code = ""
@@ -56,6 +57,9 @@ class downloadDataView(privateView):
                 else:
                     raise HTTPNotFound()
 
+        if anonymize:
+            formId += "_anonymized"
+
         info = getJSONResult(
             activeProjectUser,
             activeProjectId,
@@ -64,6 +68,7 @@ class downloadDataView(privateView):
             includeRegistry,
             includeAssessment,
             code,
+            anonymize=anonymize,
         )
 
         if formatId not in ["csv", "xlsx"]:
@@ -216,7 +221,7 @@ class editDataView(privateView):
 
             path = os.path.join(
                 self.request.registry.settings["user.repository"],
-                *[activeProjectUser, activeProjectCod]
+                *[activeProjectUser, activeProjectCod],
             )
             if code == "":
                 paths = ["db", formId, "create.xml"]

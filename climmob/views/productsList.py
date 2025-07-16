@@ -1,4 +1,5 @@
 import os
+import re
 
 from pyramid.httpexceptions import HTTPFound
 from pyramid.httpexceptions import HTTPNotFound
@@ -114,15 +115,19 @@ class productsView(climmobPrivateView):
                         "observationcards",
                         "climmobexplanationkit",
                     ]:
-                        assessId = product["process_name"].split("_")[3]
-                        if product["product_id"] == "dataxlsx":
-                            assessId = product["process_name"].split("_")[4]
-
-                        product["extraInformation"] = get_project_assessment_info(
-                            activeProjectData["project_id"],
-                            assessId,
-                            self.request,
+                        product["extraInformation"] = None
+                        pattern = re.compile(
+                            r".+?(?:(?:Assessment))_(?:anonymized_)?"  # not captured
+                            r"([a-f0-9]{12})"  # captured (group 1)
                         )
+                        match = pattern.fullmatch(product["process_name"])
+                        if match:
+                            assess_id = match.group(1)
+                            product["extraInformation"] = get_project_assessment_info(
+                                activeProjectData["project_id"],
+                                assess_id,
+                                self.request,
+                            )
 
                     productsAvailable.append(product)
 

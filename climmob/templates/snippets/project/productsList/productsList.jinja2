@@ -72,6 +72,10 @@
                                         {% else %}
                                             {% if product.process_name == "create_data_Registration_" %}
                                                 {{ _("Information collected in the participant registration form in .CSV format") }}
+                                            {% elif product.process_name == "create_data_Registration_anonymized_" %}
+                                                {{ _("Information collected in the participant registration form in .CSV format (anonymized)") }}
+                                            {% elif "anonymized" in product.process_name %}
+                                                {{ _("Information collected in the trial data collection moment form") }}: {{ product.extraInformation.ass_desc }} {{ _("in .CSV format (anonymized)") }}
                                             {% else %}
                                                 {{ _("Information collected in the trial data collection moment form") }}: {{ product.extraInformation.ass_desc }} {{ _("in .CSV format") }}
                                             {% endif %}
@@ -137,6 +141,10 @@
                                                                                         {% else %}
                                                                                             {% if product.process_name == "create_data_xlsx_Registration_" %}
                                                                                                 {{ _("Information collected in the participant registration form in .XLSX format") }}
+                                                                                            {% elif product.process_name == "create_data_xlsx_Registration_anonymized_" %}
+                                                                                                {{ _("Information collected in the participant registration form in .XLSX format (anonymized)") }}
+                                                                                            {% elif "anonymized" in product.process_name %}
+                                                                                                {{ _("Information collected in the trial data collection moment form") }}: {{ product.extraInformation.ass_desc }} {{ _("in .XLSX format (anonymized)") }}
                                                                                             {% else %}
                                                                                                 {{ _("Information collected in the trial data collection moment form") }}: {{ product.extraInformation.ass_desc }} {{ _("in .XLSX format") }}
                                                                                             {% endif %}

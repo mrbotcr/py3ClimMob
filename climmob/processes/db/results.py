@@ -677,6 +677,7 @@ def getJSONResult(
                     data["registry"],
                     data["assessments"],
                     request,
+                    anonymize=anonymize,
                 )
                 data["importantfields"] = getImportantFields(projectId, request)
 
