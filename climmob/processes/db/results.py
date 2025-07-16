@@ -280,7 +280,9 @@ def is_field_sensitive(field, questions):
     return False
 
 
-def getData(userOwner, project_id, projectCod, registry, assessments, request):
+def getData(
+    userOwner, project_id, projectCod, registry, assessments, request, anonymize=False
+):
     data = (
         request.dbsession.query(Question).filter(Question.question_regkey == 1).first()
     )
@@ -297,7 +299,7 @@ def getData(userOwner, project_id, projectCod, registry, assessments, request):
     reg_alias = "reg"
 
     for field in registry["fields"]:
-        if is_field_sensitive(field, questions):
+        if anonymize and is_field_sensitive(field, questions):
             fields.append(
                 f"COALESCE(MAX("
                 f"CASE WHEN da.col_name = '{field['name']}' AND da.form_id='-'"
@@ -312,7 +314,7 @@ def getData(userOwner, project_id, projectCod, registry, assessments, request):
     for assessment in assessments:
         assessment_alias = "assess_" + assessment["code"]
         for field in assessment["fields"]:
-            if is_field_sensitive(field, questions):
+            if anonymize and is_field_sensitive(field, questions):
                 fields.append(
                     f"COALESCE(MAX("
                     f"CASE WHEN da.col_name = '{field['name']}' AND da.form_id='{assessment['code']}'"
@@ -575,6 +577,7 @@ def getJSONResult(
     includeRegistry=True,
     includeAssessment=True,
     assessmentCode="",
+    anonymize=False,
 ):
     data = {}
     res = (
@@ -686,6 +689,7 @@ def getJSONResult(
                     data["registry"],
                     data["assessments"],
                     request,
+                    anonymize=anonymize,
                 )
                 data["importantfields"] = []
 
