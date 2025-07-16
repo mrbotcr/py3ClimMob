@@ -55,44 +55,25 @@ class TestProjectsSummaryView(ViewBaseTest):
         self.assertEqual(response.location, "/projectsSummary")
         mock_create_projects_summary.assert_called_once_with(self.view.request)
 
-    @patch(
-        "climmob.views.projectsSummary.projectsSummary.open",
-        new_callable=mock_open,
-        read_data='{"key":"value"}',
-    )
-    @patch(
-        "climmob.views.projectsSummary.projectsSummary.os.path.exists",
-        return_value=True,
-    )
-    @patch("climmob.views.projectsSummary.projectsSummary.os.path.join")
+    @patch('climmob.views.projectsSummary.projectsSummary.get_all_project_summary')
     @patch(
         "climmob.views.projectsSummary.projectsSummary.ProjectsSummaryView.get_data_product"
     )
     def test_projects_summary_view_processView_success(
-        self, mock_get_data_product, mock_path_join, mock_path_exists, mock_open
+        self, mock_get_data_product, mock_get_all_project_summary
     ):
         self.view.user.admin = 1
         mock_get_data_product.return_value = [
-            {
-                "celery_taskid": "some_value_celery_task",
-                "project_id": None,
-                "product_id": "projects_summary",
-                "datetime_added": datetime.datetime(2025, 1, 1, 12, 0),
-                "output_id": "projectsSummary_mock.json",
-                "state": "Success",
-                "output_mimetype": "application/sheet",
-                "process_name": "create_projects_summary_csv",
-            }
+            {"data":"data"}
         ]
-        mock_path_join1 = "/mocked/path/_report"
-        mock_path_join2 = "/mocked/path/_report/projectsSummary_mock.json"
-        mock_path_join.side_effect = [mock_path_join1, mock_path_join2, mock_path_join2]
+        mock_get_all_project_summary.return_value = {"data1":"data1"}
+
         result = self.view.processView()
 
         self.assertEqual(
             result,
             {
-                "listOfProjects": {"key": "value"},
+                "listOfProjects":mock_get_all_project_summary.return_value,
                 "lastReport": mock_get_data_product.return_value,
                 "sectionActive": "projectssummary",
                 "valid_fields": (
@@ -102,25 +83,8 @@ class TestProjectsSummaryView(ViewBaseTest):
             },
         )
         mock_get_data_product.assert_called_once_with(self.view, self.view.request)
-        mock_path_join.assert_has_calls(
-            [
-                call(self.view.request.registry.settings["user.repository"], "_report"),
-                call(
-                    "/mocked/path/_report",
-                    "{}_{}.json".format(
-                        "projectsSummary",
-                        self.view.request.registry.settings.get(
-                            "analytics.instancename"
-                        ),
-                        "",
-                    ),
-                ),
-            ]
-        )
-        mock_path_exists.assert_called_once_with(
-            "/mocked/path/_report/projectsSummary_mock.json"
-        )
-        mock_open.assert_called_once_with(mock_path_join2, "r")
+        mock_get_all_project_summary.assert_called_once_with(self.view.request)
+
 
 
 class TestDownloadProjectsSummaryView(ViewBaseTest):
@@ -141,6 +105,7 @@ class TestDownloadProjectsSummaryView(ViewBaseTest):
         mock_get_user_info.asser_called_once(self.view.request, self.view.user.login)
 
     @patch("climmob.views.projectsSummary.projectsSummary.FileResponse")
+    @patch("climmob.views.projectsSummary.projectsSummary.DownloadProjectsSummaryView.create_projects_summary_json_xlsx")
     @patch("climmob.views.projectsSummary.projectsSummary.os.path.join")
     @patch(
         "climmob.views.projectsSummary.projectsSummary.product_found", return_value=True
@@ -153,6 +118,7 @@ class TestDownloadProjectsSummaryView(ViewBaseTest):
         mock_get_product_data,
         mock_product_found,
         mock_join,
+        mock_create_projects_summary_json_xlsx,
         mock_file_response,
     ):
         self.view.request.matchdict["celery_taskid"] = "some_value_celery_taskid"
@@ -164,17 +130,19 @@ class TestDownloadProjectsSummaryView(ViewBaseTest):
         mock_get_product_data.return_value = {
             "product_id": "some_value_product_id",
             "output_mimetype": "application/sheet",
-            "output_id": "projectsSummary_mock.json",
+            "output_id": "projectsSummary_mock.xlsx",
         }
-        mock_join.return_value = "/mocked/path/_report/projectsSummary_mock.json"
+        mock_join.side_effect = ["/mocked/path/_report", "/mocked/path/_report/projectsSummary_mock.xlsx"]
+        mock_create_projects_summary_json_xlsx.return_value = None
         mock_response = MagicMock()
         mock_file_response.return_value = mock_response
 
         response = self.view.processView()
+
         self.assertTrue(hasattr(response, "content_disposition"))
         self.assertEqual(
             response.content_disposition,
-            'attachment; filename="projectsSummary_mock.json"',
+            'attachment; filename="projectsSummary_mock.xlsx"',
         )
         mock_get_user_info.asser_called_once(self.view.request, self.view.user.login)
         mock_get_product_data.assert_called_once_with(
@@ -186,13 +154,13 @@ class TestDownloadProjectsSummaryView(ViewBaseTest):
         mock_product_found.assert_called_once_with(
             mock_get_product_data.return_value["product_id"]
         )
-        mock_join.assert_called_once_with(
-            self.view.request.registry.settings["user.repository"],
-            "_report",
-            mock_get_product_data.return_value["output_id"],
-        )
+        mock_join.assert_has_calls([
+            call(self.view.request.registry.settings["user.repository"], "_report"),
+            call("/mocked/path/_report", mock_get_product_data.return_value["output_id"])
+        ])
+
         mock_file_response.assert_called_once_with(
-            mock_join.return_value,
+            "/mocked/path/_report/projectsSummary_mock.xlsx",
             request=self.view.request,
             content_type="application/sheet",
         )
@@ -232,6 +200,39 @@ class TestDownloadProjectsSummaryView(ViewBaseTest):
         )
         mock_product_found.assert_called_once_with(
             mock_get_product_data.return_value["product_id"]
+        )
+
+
+    @patch('climmob.views.projectsSummary.projectsSummary.create_json_exel_file')
+    @patch('climmob.views.projectsSummary.projectsSummary.get_all_project_summary')
+    def test_create_projects_summary_json_xlsx(self, mock_get_all_projects, mock_create_json_excel):
+        mock_request = MagicMock()
+        mock_request.registry.settings = {
+            'setting1': 'value1',
+            'setting2': 'value2',
+        }
+        mock_get_all_projects.return_value = ['proj1', 'proj2']
+
+
+        result = self.view.create_projects_summary_json_xlsx(
+            mock_request,
+            jsonLocation='/fake/path',
+            process_name='projectsSummaryTest'
+        )
+
+        self.assertIsNone(result)
+
+        expected_settings = {
+            'setting1': 'value1',
+            'setting2': 'value2',
+        }
+
+        mock_get_all_projects.assert_called_once_with(mock_request)
+        mock_create_json_excel.assert_called_once_with(
+            '/fake/path',
+            'projectsSummaryTest',
+            expected_settings,
+            ['proj1', 'proj2']
         )
 
 
@@ -284,6 +285,7 @@ class TestSaveProjectRow(ViewBaseTest):
             "crop": "fake_crop",
             "analytics": "1",
             "csrf_token": "fake_csrf_token",
+            "psm_json": json.dumps({"fake_psm_json": "fake_psm_json"}),
         }
         self.data = self.view.request.POST
         self.dataworking = {
@@ -300,26 +302,30 @@ class TestSaveProjectRow(ViewBaseTest):
         self.assertEqual(response["status"], 400)
         self.assertIn("Data Error: Test error", response["message"])
 
+    @patch("climmob.views.projectsSummary.projectsSummary.update_row_project_summary", return_value=(False, "Error #1"))
     @patch(
         "climmob.views.projectsSummary.projectsSummary.modifyProject",
-        return_value=(False, "Error"),
+        return_value=(False, "This Error"),
     )
-    def test_save_project_row_post_modify_error(self, mock_modify_project):
+    def test_save_project_row_post_modify_error(self, mock_modify_project, mock_update_row_project_summary):
         response = self.view.post()
         self.assertEqual(response["status"], 400)
-        self.assertIn("Error: Error", response["message"])
+        self.assertIn("Error: ['This Error', 'Error #1']", response["message"])
         mock_modify_project.assert_called_once_with(
             self.data.get("project_id"), self.dataworking, self.view.request
         )
 
+    @patch("climmob.views.projectsSummary.projectsSummary.update_row_project_summary", return_value=(True, ""))
     @patch(
         "climmob.views.projectsSummary.projectsSummary.modifyProject",
         return_value=(True, ""),
     )
-    def test_save_project_row_post_success(self, mock_modify_project):
+    def test_save_project_row_post_success(self, mock_modify_project, mock_update_row_project_summary):
         response = self.view.post()
         self.assertEqual(response["status"], 200)
         self.assertIn("Row updated right", response["message"])
         mock_modify_project.assert_called_once_with(
             self.data.get("project_id"), self.dataworking, self.view.request
         )
+
+

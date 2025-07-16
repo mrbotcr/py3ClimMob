@@ -11,11 +11,14 @@ from climmob.processes import (
     modifyProject,
     get_all_project_summary,
 )
+from climmob.processes.db.project_summary import update_row_project_summary, get_user_project_summary
 from climmob.products import product_found
+from climmob.products.projectsSummary import create_json_exel_file
 from climmob.products.projectsSummary.projectsSummary import create_projects_summary
+from climmob.utility.project import ProjectAdmin
 from climmob.views.classes import privateView
 from climmob.views.projectsSummary.column.DataColumn import DataColumn
-from climmob.views.validators import TextField
+
 
 
 class ProjectsSummaryView(privateView):
@@ -49,9 +52,23 @@ class ProjectsSummaryView(privateView):
 
         return result
 
-    def processView(self):
+    def post(self):
 
-        if self.user.admin not in [1]:
+        if self.user.admin == ProjectAdmin.NO.value:
+            raise HTTPNotFound()
+
+        if "btn_generate_report" in self.request.POST:
+            create_projects_summary(self.request)
+            self.returnRawViewResult = True
+            return HTTPFound(
+                location=self.request.route_url(
+                    "projectsSummary",
+                )
+            )
+
+    def get(self):
+
+        if self.user.admin == ProjectAdmin.NO.value:
             raise HTTPNotFound()
 
         if self.request.method == "POST":
@@ -69,50 +86,17 @@ class ProjectsSummaryView(privateView):
         listOfProjects = {}
 
         if lastReport:
-            jsonLocation = os.path.join(
-                self.request.registry.settings["user.repository"], "_report"
-            )
-            projectsSummary = "projectsSummary"
-            if os.path.exists(
-                os.path.join(
-                    jsonLocation,
-                    "{}_{}.json".format(
-                        projectsSummary,
-                        self.request.registry.settings.get(
-                            "analytics.instancename", ""
-                        ),
-                    ),
-                )
-            ):
-                jsonFile = open(
-                    os.path.join(
-                        jsonLocation,
-                        "{}_{}.json".format(
-                            projectsSummary,
-                            self.request.registry.settings.get(
-                                "analytics.instancename", ""
-                            ),
-                        ),
-                    ),
-                    "r",
-                )
-                listOfProjects = json.loads(jsonFile.read())
-
-        valid_fields = (
-            TextField("project_cod"),
-            TextField("user_owner"),
-        )
+            listOfProjects = get_all_project_summary(self.request)
 
         return {
             "listOfProjects": listOfProjects,
             "lastReport": lastReport,
             "sectionActive": "projectssummary",
-            "valid_fields": valid_fields,
         }
 
 
 class DownloadProjectsSummaryView(privateView):
-    def processView(self):
+    def get(self):
         celery_taskid = self.request.matchdict["celery_taskid"]
         product_id = self.request.matchdict["product_id"]
 
@@ -134,12 +118,14 @@ class DownloadProjectsSummaryView(privateView):
             contentType = dataworking["output_mimetype"]
             filename = dataworking["output_id"]
 
-            path = os.path.join(
-                self.request.registry.settings["user.repository"], "_report", filename
-            )
+            path_folder = os.path.join(self.request.registry.settings["user.repository"], "_report")
+
+            DownloadProjectsSummaryView.create_projects_summary_json_xlsx(self, self.request, path_folder,
+                                                                          process_name="projectsSummary")
+            path_file = os.path.join(path_folder, filename)
 
             response = FileResponse(
-                path,
+                path_file,
                 request=self.request,
                 content_type=contentType,
             )
@@ -152,23 +138,36 @@ class DownloadProjectsSummaryView(privateView):
             self.returnRawViewResult = True
             return False
 
+    def create_projects_summary_json_xlsx(self, request, jsonLocation, process_name="projectsSummary"):
+        settings = {}
+        for key, value in request.registry.settings.items():
+            if isinstance(value, str):
+                settings[key] = value
+        listOfProjects = get_all_project_summary(request)
+
+        create_json_exel_file(jsonLocation, process_name, settings, listOfProjects)
+        return None
+
 
 class ProjectsSummaryCurationView(privateView):
     def myconverter(o):
         if isinstance(o, datetime.datetime):
             return o.__str__()
 
-    def processView(self):
-
-        if self.user.admin not in [1]:
-            raise HTTPNotFound()
-
+    def get(self):
+        edit_mode = False
         table_structure = DataColumn.get_project_summary_columns(self)
-        listOfProjects = get_all_project_summary(self.request)
+        if self.user.admin == ProjectAdmin.YES.value:
+            edit_mode = True
+            listOfProjects = get_all_project_summary(self.request)
+
+        else:
+            listOfProjects = get_user_project_summary(self.request, self.user.userData['user_name'])
 
         return {
             "tableStructure": table_structure,
             "listOfProjects": listOfProjects,
+            "edit_mode": edit_mode,
         }
 
 
@@ -184,19 +183,34 @@ class SaveProjectRow(privateView):
                 "climmob_analytics": data.get("analytics"),
                 "project_curated_cropname": data.get("crop"),
                 "project_checked": 1,
+
             }
+
+            psm_json = json.loads(data.get("psm_json"))
 
             user_dict = self.user.to_dict() if hasattr(self.user, "to_dict") else None
             self.classResult["activeUser"] = user_dict
 
         except Exception as e:
             return {"status": 400, "message": f"Data Error: {str(e)}"}
-
+        messages=[]
+        error = None
+        ##modify on the project
         modify, message = modifyProject(project_id, dataworking, request)
 
         if not modify:
+            error = True
+            messages.append(message)
+        ##modify on the row of the table data
+        modify_table, message = update_row_project_summary(psm_json, project_id, request)
+
+        if not modify_table:
+            error = True
+            messages.append(message)
+
+        if error:
             return {
-                "message": f"Error: {str(message)}",
+                "message": f"Error: {str(messages)}",
                 "status": 400,
             }
 

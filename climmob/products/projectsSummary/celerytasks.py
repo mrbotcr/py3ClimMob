@@ -763,107 +763,13 @@ def createProjectsSummary(self, settings, otro):
                     }
                     listOfDataCollectionMoments.append(resultDataCollectionMoment)
 
-        projectsSummary = "projectsSummary"
+        # projectsSummary = "projectsSummary"
         genotypesSummary = "genotypesSummary"
         dataCollectionMomentsSummary = "dataCollectionMomentsSummary"
 
-        with open(
-            os.path.join(
-                jsonLocation,
-                "{}_{}.json".format(
-                    projectsSummary, settings.get("analytics.instancename", "")
-                ),
-            ),
-            "w",
-        ) as json_data:
-            json.dump(listOfProjects, json_data, default=myconverter)
+        create_json_exel_file(jsonLocation,genotypesSummary,settings,listOfGenotypes)
+        create_json_exel_file(jsonLocation,dataCollectionMomentsSummary,settings,listOfDataCollectionMoments)
 
-        df = pd.read_json(
-            os.path.join(
-                jsonLocation,
-                "{}_{}.json".format(
-                    projectsSummary, settings.get("analytics.instancename", "")
-                ),
-            )
-        )
-        df.to_excel(
-            os.path.join(
-                jsonLocation,
-                "{}_{}.xlsx".format(
-                    projectsSummary, settings.get("analytics.instancename", "")
-                ),
-            ),
-            index=False,
-        )
-
-        with open(
-            os.path.join(
-                jsonLocation,
-                "{}_{}.json".format(
-                    genotypesSummary, settings.get("analytics.instancename", "")
-                ),
-            ),
-            "w",
-        ) as jsongeno_data:
-            json.dump(listOfGenotypes, jsongeno_data, default=myconverter)
-
-        df = pd.read_json(
-            os.path.join(
-                jsonLocation,
-                "{}_{}.json".format(
-                    genotypesSummary, settings.get("analytics.instancename", "")
-                ),
-            )
-        )
-        df.to_excel(
-            os.path.join(
-                jsonLocation,
-                "{}_{}.xlsx".format(
-                    genotypesSummary, settings.get("analytics.instancename", "")
-                ),
-            ),
-            index=False,
-        )
-
-        with open(
-            os.path.join(
-                jsonLocation,
-                "{}_{}.json".format(
-                    dataCollectionMomentsSummary,
-                    settings.get("analytics.instancename", ""),
-                ),
-            ),
-            "w",
-        ) as jsondatacollection_data:
-            json.dump(
-                listOfDataCollectionMoments,
-                jsondatacollection_data,
-                default=myconverter,
-            )
-
-        df = pd.read_json(
-            os.path.join(
-                jsonLocation,
-                "{}_{}.json".format(
-                    dataCollectionMomentsSummary,
-                    settings.get("analytics.instancename", ""),
-                ),
-            )
-        )
-        df.to_excel(
-            os.path.join(
-                jsonLocation,
-                "{}_{}.xlsx".format(
-                    dataCollectionMomentsSummary,
-                    settings.get("analytics.instancename", ""),
-                ),
-            ),
-            index=False,
-        )
-
-        # except Exception as e:
-        #    print(str(e))
-        #    error = 1
     engine.dispose()
 
     if settings.get("analytics.active", "false") == "true":
@@ -919,3 +825,37 @@ def createProjectsSummary(self, settings, otro):
             dbsession.close()
 
     return ""
+
+def create_json_exel_file(json_location, process_name, settings, dataCollection):
+    with open(
+        os.path.join(
+            json_location,
+            "{}_{}.json".format(
+                process_name, settings.get("analytics.instancename", "")
+            ),
+        ),
+        "w",
+    ) as jsonData:
+        json.dump(dataCollection, jsonData, default=myconverter)
+
+    df = pd.read_json(
+        os.path.join(
+            json_location,
+            "{}_{}.json".format(
+                process_name, settings.get("analytics.instancename", "")
+            ),
+        )
+    )
+    df.to_excel(
+        os.path.join(
+            json_location,
+            "{}_{}.xlsx".format(
+                process_name, settings.get("analytics.instancename", "")
+            ),
+        ),
+        index=False,
+    )
+    return None
+
+
+

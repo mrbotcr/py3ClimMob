@@ -1,4 +1,4 @@
-from climmob.models import ProjectSummary, mapToSchema, mapFromSchema
+from climmob.models import ProjectSummary, mapToSchema, mapFromSchema, userProject, Project
 
 __all__ = [
     "add_project_summary",
@@ -29,6 +29,18 @@ def update_project_summary(data, project_id, request):
         return False, e
 
 
+def update_row_project_summary(data, project_id, request):
+    try:
+        request.dbsession.query(ProjectSummary).filter(
+            ProjectSummary.project_id == project_id
+        ).update({
+            ProjectSummary.psm_json: data
+        })
+        return True, ""
+    except Exception as e:
+        return False, e
+
+
 def get_project_summary(project_id, request):
 
     res = mapFromSchema(
@@ -48,3 +60,23 @@ def get_all_project_summary(request):
         all_project.append(data["psm_json"])
 
     return all_project
+
+def get_user_project_summary(request, user):
+
+    projects = mapFromSchema(
+        request.dbsession.query(ProjectSummary)
+        .filter(userProject.user_name == user)
+        .filter(Project.project_id == userProject.project_id) ###revisar acá
+        .filter(ProjectSummary.project_id == Project.project_id)
+        .order_by(userProject.project_dashboard.desc())
+        .order_by(Project.project_creationdate.desc())
+        .all()
+    )
+
+    user_projects = []
+    for project in projects:
+        user_projects.append(project["psm_json"])
+    return user_projects
+
+
+

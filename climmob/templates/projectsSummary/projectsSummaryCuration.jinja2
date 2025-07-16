@@ -120,7 +120,10 @@
                                     {% for col in tableStructure %}
                                         <th>{{ _(col["name"]) }}</th>
                                     {% endfor %}
-                                    <th></th>
+                                    {% if edit_mode == True %}
+                                        <th></th>
+                                    {% endif %}
+
 
                                 </tr>
                                 </thead>
@@ -130,7 +133,7 @@
                                         <td data-column="index">{{ '%04d' % loop.index }}</td>
                                         {% for col in tableStructure %}
                                             <td data-column="{{ col["key"] }}">
-                                                {% if col['type'] == "static" %}
+                                                {% if col['type'] == "static" or edit_mode == false %}
                                                     {% if not col['options'] %}
                                                         {{ project[col["key"]] if project[col["key"]] }}
                                                     {% else %}
@@ -159,12 +162,14 @@
                                                 {% endif %}
                                             </td>
                                         {% endfor %}
-                                        <td class="no-filter">
-                                            <button data-column="save" class="btn btn-primary pull-right"
-                                                    onclick="checkInputs(this)">
-                                                {{ _("Save") }}
-                                            </button>
-                                        </td>
+                                        {% if edit_mode == True %}
+                                            <td class="no-filter">
+                                                <button data-column="save" class="btn btn-primary pull-right"
+                                                        onclick="checkInputs(this)">
+                                                    {{ _("Save") }}
+                                                </button>
+                                            </td>
+                                    {% endif %}
                                     </tr>
                                 {% endfor %}
                                 </tbody>
@@ -174,7 +179,9 @@
                                     {% for col in tableStructure %}
                                         <th>{{ _(col["name"]) }}</th>
                                     {% endfor %}
-                                    <th></th>
+                                    {% if edit_mode == True %}
+                                        <th></th>
+                                    {% endif %}
                                 </tr>
                                 </tfoot>
                             </table>
@@ -289,9 +296,11 @@
                 const api = this.api();
                 api.columns().every(function () {
                     const currentIndex = this.index();
+                    {% if edit_mode == True %}
                     if (currentIndex === api.columns().nodes().length - 1) {
                         return;
                     }
+                    {% endif %}
 
                     const column = this;
 
@@ -370,6 +379,67 @@
             table.draw();
         }
 
+        const numericFields = new Set([
+            "farmers_target",
+            "farmers_registered",
+            "varieties_quantity",
+            "climmob_analytics",
+            "gender_man",
+            "gender_woman",
+            "gender_other",
+            "gender_unreported",
+            "project_active",
+            "project_continent"
+        ]);
+
+        function getRowDataAsJson(row) {
+            const cells = row.querySelectorAll('[data-column]');
+            const jsonData = {};
+            const ignoredKeys = new Set([
+                'index',
+                'save',
+            ]);
+            cells.forEach(cell => {
+                const key = cell.getAttribute('data-column');
+                if (!key || ignoredKeys.has(key)) return;
+                let value = '';
+                const input = cell.querySelector('input, select, textarea');
+
+                if (input) {
+                    if (input.tagName === 'SELECT') {
+                        value = input.options[input.selectedIndex]?.value.trim() ?? '';
+                    } else {
+                        value = input.value.trim();
+                    }
+                } else {
+                    value = cell.textContent.trim();
+                }
+                jsonData[key] = parseValue(cell, value);
+            });
+            return jsonData;
+        }
+
+        function parseValue(cell, rawValue) {
+            const key = cell.getAttribute('data-column');
+            let value = rawValue;
+
+            if (key === "project_active") {
+                if (value.toLowerCase() === "yes") return 1;
+                if (value.toLowerCase() === "no") return 0;
+            }
+            if (key === "farmers_registered" && value === "0") {
+                return "0";
+            }
+            if (value === "" || value === null || value === undefined) {
+                return 0;
+            }
+
+            if (value === "") return "";
+            if (!isNaN(value)) return Number(value);
+
+            return value;
+        }
+
         function checkInputs(button) {
             const row = button.closest('tr');
             const project_id = row.querySelector('[data-column="project_id"]').textContent.trim();
@@ -377,6 +447,7 @@
             const fieldAffiliation = row.querySelector('[data-column="affiliation"] input');
             const fieldCrop = row.querySelector('[data-column="cropname"] input');
             const fieldAnalytics = row.querySelector('[data-column="climmob_analytics"] select');
+
 
             let error = [];
             if (!fieldAffiliation || fieldAffiliation.value.trim() === '') {
@@ -398,11 +469,13 @@
                 );
 
             } else {
+                const json_row = getRowDataAsJson(row)
                 const data = {
                     project_id: project_id,
                     affiliation: fieldAffiliation.value.trim(),
                     crop: fieldCrop.value.trim(),
                     analytics: fieldAnalytics.value.trim(),
+                    psm_json: JSON.stringify(json_row),
                     csrf_token: "{{ request.session.get_csrf_token() }}"
                 }
 
@@ -413,17 +486,17 @@
                     },
                     body: new URLSearchParams(data)
                 })
-                    .then(response => {
-                        if (!response.ok) throw new Error("{{ _('Error') }}");
-                        return response.json();
-                    })
+                    .then(response => response.json())
                     .then(data => {
+                        if (data.status !== 200) {
+                            throw new Error(data.message || "Unknown error");
+                        }
                         swal("{{ _('Data Update, row ') }}" + rowNumber, data.message, "success");
                     })
                     .catch(error => {
                         swal("{{ _('Error') }}", error.message, "error");
-                    })
-                ;
+                    });
+
 
             }
         }
