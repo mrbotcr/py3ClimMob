@@ -12,8 +12,7 @@ from climmob.processes import (
     projectExists,
     getJSONResult,
 )
-from climmob.products.analysisdata.analysisdata import create_datacsv
-from climmob.products.dataxlsx.dataxlsx import create_XLSXToDownload
+from climmob.products.analysisdata.analysisdata import create_raw_data
 from climmob.products.errorLogDocument.errorLogDocument import create_error_log_document
 from climmob.views.classes import privateView
 from climmob.views.editDataDB import (
@@ -57,9 +56,6 @@ class downloadDataView(privateView):
                 else:
                     raise HTTPNotFound()
 
-        if anonymize:
-            formId += "_anonymized"
-
         info = getJSONResult(
             activeProjectUser,
             activeProjectId,
@@ -74,31 +70,23 @@ class downloadDataView(privateView):
         if formatId not in ["csv", "xlsx"]:
             raise HTTPNotFound()
 
-        if formatId == "csv":
-            create_datacsv(
-                activeProjectUser,
-                activeProjectId,
-                activeProjectCod,
-                info,
-                self.request,
-                formId,
-                code,
-            )
+        create_raw_data(
+            activeProjectUser,
+            activeProjectId,
+            activeProjectCod,
+            info["data"],
+            self.request,
+            formId,
+            code,
+            file_type=formatId,
+            anonymized=anonymize
+        )
 
-        if formatId == "xlsx":
-            formatExtra = formatId + "_"
-            create_XLSXToDownload(
-                activeProjectUser,
-                activeProjectId,
-                activeProjectCod,
-                self.request,
-                formId,
-                code,
-            )
+        extra = "-anonymized" if anonymize else ""
 
         url = self.request.route_url(
             "productList",
-            _query={"product1": "create_data_" + formatExtra + formId + "_" + code},
+            _query={"product1": f"create_data{extra}_{'xlsx_' if formatId == 'xlsx' else ''}" + formatExtra + formId + "_" + code},
         )
         self.returnRawViewResult = True
         return HTTPFound(location=url)

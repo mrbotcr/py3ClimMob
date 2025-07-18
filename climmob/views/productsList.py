@@ -31,8 +31,7 @@ from climmob.processes import (
     getPrjLangDefaultInProject,
 )
 from climmob.products import product_found
-from climmob.products.analysisdata.analysisdata import create_datacsv
-from climmob.products.dataxlsx.dataxlsx import create_XLSXToDownload
+from climmob.products.analysisdata.analysisdata import create_raw_data
 from climmob.products.colors.colors import create_colors_cards
 from climmob.products.errorLogDocument.errorLogDocument import create_error_log_document
 from climmob.products.fieldagents.fieldagents import create_fieldagents_report
@@ -282,9 +281,13 @@ class generateProductView(privateView):
                             listOfLabels,
                         )
 
-        if productid == "datacsv":
-            locale = self.request.locale_name
+        if productid in ["datacsv", "datacsv-anonymized", "dataxlsx", "dataxlsx-anonymized"]:
+            anonymized = productid in ["datacsv-anonymized", "dataxlsx-anonymized"]
+            file_type = "csv" if "csv" in productid else "xlsx"
             infoProduct = processname.split("_")
+            if file_type == "xlsx":
+                infoProduct[2] = infoProduct[3]
+                infoProduct[3] = infoProduct[4]
             if infoProduct[2] == "Registration":
                 info = getJSONResult(
                     activeProjectData["owner"]["user_name"],
@@ -292,6 +295,7 @@ class generateProductView(privateView):
                     activeProjectData["project_cod"],
                     self.request,
                     includeAssessment=False,
+                    anonymize=anonymized
                 )
             else:
                 if infoProduct[2] == "Assessment":
@@ -301,6 +305,7 @@ class generateProductView(privateView):
                         activeProjectData["project_cod"],
                         self.request,
                         assessmentCode=infoProduct[3],
+                        anonymize=anonymized
                     )
                 else:
                     info = getJSONResult(
@@ -308,27 +313,19 @@ class generateProductView(privateView):
                         activeProjectData["project_id"],
                         activeProjectData["project_cod"],
                         self.request,
+                        anonymize=anonymized
                     )
 
-            create_datacsv(
+            create_raw_data(
                 activeProjectData["owner"]["user_name"],
                 activeProjectData["project_id"],
                 activeProjectData["project_cod"],
-                info,
+                info["data"],
                 self.request,
                 infoProduct[2],
                 infoProduct[3],
-            )
-
-        if productid == "dataxlsx":
-            infoProduct = processname.split("_")
-            create_XLSXToDownload(
-                activeProjectData["owner"]["user_name"],
-                activeProjectData["project_id"],
-                activeProjectData["project_cod"],
-                self.request,
-                infoProduct[3],
-                infoProduct[4],
+                file_type=file_type,
+                anonymized=anonymized
             )
 
         if productid == "documentform":

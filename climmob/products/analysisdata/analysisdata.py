@@ -3,34 +3,45 @@ from climmob.processes import (
     registryHaveQuestionOfMultimediaType,
     assessmentHaveQuestionOfMultimediaType,
 )
-from climmob.products.analysisdata.celerytasks import create_CSV
+from climmob.products.analysisdata.celerytasks import create_raw_data_file
 from climmob.products.climmob_products import (
     createProductDirectory,
     registerProductInstance,
 )
 
 
-def create_datacsv(userOwner, projectId, projectCod, info, request, form, code):
+def create_raw_data(userOwner, projectId, projectCod, info, request, form, code, file_type="csv", anonymized=False):
     # We create the plugin directory if it does not exists and return it
-    # The path user.repository in development.ini/user/project/products/product and
-    # user.repository in development.ini/user/project/products/product/outputs
-    path = createProductDirectory(request, userOwner, projectCod, "datacsv")
+    extra = "-anonymized" if anonymized else ""
+
+    name_output = form + f"_data{extra}"
+    if code != "":
+        name_output += "_" + code
+
+    name_output += "_" + projectCod
+
+    path = createProductDirectory(request, userOwner, projectCod, f"data{file_type}{extra}")
     # We call the Celery task that will generate the output packages.pdf
-    task = create_CSV.apply_async((path, info, projectCod, form, code), queue="ClimMob")
+    task = create_raw_data_file.apply_async((path, info, name_output, file_type), queue="ClimMob")
     # We register the instance of the output with the task ID of celery
     # This will go to the products table that then you can monitor and use
     # in the nice product interface
     # u.registerProductInstance(user, project, 'cards', 'cards.pdf', task.id, request)
-    nameOutput = form + "_data"
-    if code != "":
-        nameOutput += "_" + code
+
+    mimetypes = {
+        "csv": "text/csv",
+        "xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    }
+    mimetype = mimetypes.get(file_type)
+
+    process_name = f"create_data{extra}_{'xlsx_' if file_type == 'xlsx' else ''}" + form + "_" + code
 
     registerProductInstance(
         projectId,
-        "datacsv",
-        nameOutput + "_" + projectCod + ".csv",
-        "text/csv",
-        "create_data_" + form + "_" + code,
+        f"data{file_type}{extra}",
+        name_output + f".{file_type}",
+        mimetype,
+        process_name,
         task.id,
         request,
     )

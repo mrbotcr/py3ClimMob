@@ -228,6 +228,16 @@ def register_products(config):
     )
     products.append(datacsv)
 
+    datacsv_anonymized = addProduct("datacsv-anonymized", "Information collected in the project anonymized.")
+    addMetadataToProduct(datacsv_anonymized, "author", "Johann Ávalos")
+    addMetadataToProduct(datacsv_anonymized, "version", "1.0")
+    addMetadataToProduct(
+        datacsv_anonymized,
+        "Licence",
+        "Copyright 2025, MrBot Software Solutions",
+    )
+    products.append(datacsv_anonymized)
+
     # FORM
     documentform = addProduct(
         "documentform", "Create a document pdf to collect information."
@@ -361,6 +371,16 @@ def register_products(config):
         "Copyright 2022, MrBot Software Solutions",
     )
     products.append(dataxlsx)
+
+    dataxlsx_anonymized = addProduct("dataxlsx-anonymized", "Information collected in the project anonymized in XLSX format.")
+    addMetadataToProduct(dataxlsx_anonymized, "author", "Johann Ávalos")
+    addMetadataToProduct(dataxlsx_anonymized, "version", "1.0")
+    addMetadataToProduct(
+        dataxlsx_anonymized,
+        "Licence",
+        "Copyright 2025, MrBot Software Solutions",
+    )
+    products.append(dataxlsx_anonymized)
 
     # INPUT FILES
     datajson = addProduct(

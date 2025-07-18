@@ -8,7 +8,7 @@ from climmob.processes import (
     getProjectProgress,
 )
 from climmob.products.analysis.analysis import create_analysis
-from climmob.products.analysisdata.analysisdata import create_datacsv
+from climmob.products.analysisdata.analysisdata import create_raw_data
 from climmob.views.classes import privateView
 
 
@@ -155,7 +155,7 @@ def processToGenerateTheReport(
         combinationRerence,
     )
 
-    create_datacsv(
+    create_raw_data(
         activeProjectData["owner"]["user_name"],
         activeProjectData["project_id"],
         activeProjectData["project_cod"],
