@@ -10,7 +10,17 @@ from climmob.products.climmob_products import (
 )
 
 
-def create_raw_data(userOwner, projectId, projectCod, info, request, form, code, file_type="csv", anonymized=False):
+def create_raw_data(
+    user_owner,
+    project_id,
+    project_cod,
+    info,
+    request,
+    form,
+    code,
+    file_type="csv",
+    anonymized=False,
+):
     # We create the plugin directory if it does not exists and return it
     extra = "-anonymized" if anonymized else ""
 
@@ -18,11 +28,15 @@ def create_raw_data(userOwner, projectId, projectCod, info, request, form, code,
     if code != "":
         name_output += "_" + code
 
-    name_output += "_" + projectCod
+    name_output += "_" + project_cod
 
-    path = createProductDirectory(request, userOwner, projectCod, f"data{file_type}{extra}")
+    path = createProductDirectory(
+        request, user_owner, project_cod, f"data{file_type}{extra}"
+    )
     # We call the Celery task that will generate the output packages.pdf
-    task = create_raw_data_file.apply_async((path, info, name_output, file_type), queue="ClimMob")
+    task = create_raw_data_file.apply_async(
+        (path, info, name_output, file_type), queue="ClimMob"
+    )
     # We register the instance of the output with the task ID of celery
     # This will go to the products table that then you can monitor and use
     # in the nice product interface
@@ -30,14 +44,17 @@ def create_raw_data(userOwner, projectId, projectCod, info, request, form, code,
 
     mimetypes = {
         "csv": "text/csv",
-        "xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        "xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     }
     mimetype = mimetypes.get(file_type)
 
-    process_name = f"create_data{extra}_{'xlsx_' if file_type == 'xlsx' else ''}" + form + "_" + code
+    process_name = (
+        f"create_data{extra}_"
+        f"{'xlsx_' if file_type == 'xlsx' else ''}" + form + "_" + code
+    )
 
     registerProductInstance(
-        projectId,
+        project_id,
         f"data{file_type}{extra}",
         name_output + f".{file_type}",
         mimetype,
@@ -47,18 +64,18 @@ def create_raw_data(userOwner, projectId, projectCod, info, request, form, code,
     )
 
     for plugin in p.PluginImplementations(p.IMultimedia):
-        thereAreMultimedia = False
+        there_are_multimedia = False
         if form == "Registration":
-            thereAreMultimedia = registryHaveQuestionOfMultimediaType(
-                request, projectId
+            there_are_multimedia = registryHaveQuestionOfMultimediaType(
+                request, project_id
             )
 
         if form == "Assessment":
-            thereAreMultimedia = assessmentHaveQuestionOfMultimediaType(
-                request, projectId, code
+            there_are_multimedia = assessmentHaveQuestionOfMultimediaType(
+                request, project_id, code
             )
 
-        if thereAreMultimedia:
+        if there_are_multimedia:
             plugin.start_multimedia_download(
-                request, userOwner, projectId, projectCod, form, code
+                request, user_owner, project_id, project_cod, form, code
             )

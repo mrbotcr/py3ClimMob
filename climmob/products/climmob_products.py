@@ -228,7 +228,9 @@ def register_products(config):
     )
     products.append(datacsv)
 
-    datacsv_anonymized = addProduct("datacsv-anonymized", "Information collected in the project anonymized.")
+    datacsv_anonymized = addProduct(
+        "datacsv-anonymized", "Information collected in the project anonymized."
+    )
     addMetadataToProduct(datacsv_anonymized, "author", "Johann Ávalos")
     addMetadataToProduct(datacsv_anonymized, "version", "1.0")
     addMetadataToProduct(
@@ -372,7 +374,10 @@ def register_products(config):
     )
     products.append(dataxlsx)
 
-    dataxlsx_anonymized = addProduct("dataxlsx-anonymized", "Information collected in the project anonymized in XLSX format.")
+    dataxlsx_anonymized = addProduct(
+        "dataxlsx-anonymized",
+        "Information collected in the project anonymized in XLSX format.",
+    )
     addMetadataToProduct(dataxlsx_anonymized, "author", "Johann Ávalos")
     addMetadataToProduct(dataxlsx_anonymized, "version", "1.0")
     addMetadataToProduct(

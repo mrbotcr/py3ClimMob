@@ -107,16 +107,18 @@ class productsView(climmobPrivateView):
                     if product["product_id"] in [
                         "documentform",
                         "datacsv",
+                        "dataxlsx",
+                        "datacsv-anonymized",
+                        "dataxlsx-anonymized",
                         "errorlogdocument",
                         "multimediadownloads",
                         "uploaddata",
-                        "dataxlsx",
                         "observationcards",
                         "climmobexplanationkit",
                     ]:
                         product["extraInformation"] = None
                         pattern = re.compile(
-                            r".+?(?:(?:Assessment))_(?:anonymized_)?"  # not captured
+                            r".+?(?:(?:Assessment))_"  # not captured
                             r"([a-f0-9]{12})"  # captured (group 1)
                         )
                         match = pattern.fullmatch(product["process_name"])
@@ -281,7 +283,12 @@ class generateProductView(privateView):
                             listOfLabels,
                         )
 
-        if productid in ["datacsv", "datacsv-anonymized", "dataxlsx", "dataxlsx-anonymized"]:
+        if productid in [
+            "datacsv",
+            "datacsv-anonymized",
+            "dataxlsx",
+            "dataxlsx-anonymized",
+        ]:
             anonymized = productid in ["datacsv-anonymized", "dataxlsx-anonymized"]
             file_type = "csv" if "csv" in productid else "xlsx"
             infoProduct = processname.split("_")
@@ -295,7 +302,7 @@ class generateProductView(privateView):
                     activeProjectData["project_cod"],
                     self.request,
                     includeAssessment=False,
-                    anonymize=anonymized
+                    anonymize=anonymized,
                 )
             else:
                 if infoProduct[2] == "Assessment":
@@ -305,7 +312,7 @@ class generateProductView(privateView):
                         activeProjectData["project_cod"],
                         self.request,
                         assessmentCode=infoProduct[3],
-                        anonymize=anonymized
+                        anonymize=anonymized,
                     )
                 else:
                     info = getJSONResult(
@@ -313,7 +320,7 @@ class generateProductView(privateView):
                         activeProjectData["project_id"],
                         activeProjectData["project_cod"],
                         self.request,
-                        anonymize=anonymized
+                        anonymize=anonymized,
                     )
 
             create_raw_data(
@@ -325,7 +332,7 @@ class generateProductView(privateView):
                 infoProduct[2],
                 infoProduct[3],
                 file_type=file_type,
-                anonymized=anonymized
+                anonymized=anonymized,
             )
 
         if productid == "documentform":

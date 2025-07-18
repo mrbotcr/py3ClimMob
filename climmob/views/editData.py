@@ -33,7 +33,6 @@ class downloadDataView(privateView):
         includeRegistry = True
         includeAssessment = True
         code = ""
-        formatExtra = ""
 
         if not projectExists(
             self.user.login, activeProjectUser, activeProjectCod, self.request
@@ -79,14 +78,17 @@ class downloadDataView(privateView):
             formId,
             code,
             file_type=formatId,
-            anonymized=anonymize
+            anonymized=anonymize,
         )
 
-        extra = "-anonymized" if anonymize else ""
+        format_extra = "xlsx_" if formatId == "xlsx" else ""
+        product_id_extra = "-anonymized" if anonymize else ""
 
         url = self.request.route_url(
             "productList",
-            _query={"product1": f"create_data{extra}_{'xlsx_' if formatId == 'xlsx' else ''}" + formatExtra + formId + "_" + code},
+            _query={
+                "product1": f"create_data{product_id_extra}_{format_extra}{formId}_{code}"
+            },
         )
         self.returnRawViewResult = True
         return HTTPFound(location=url)

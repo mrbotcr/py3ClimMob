@@ -23,7 +23,6 @@ def create_raw_data_file(path, info, name_output, file_type):
     elif file_type == "csv":
         df.to_csv(os.path.join(path_out, name_output) + f".{file_type}", index=False)
 
-
     # if os.path.exists(path):
     #    sh.rmtree(path)
 
