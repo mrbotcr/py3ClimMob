@@ -11,7 +11,8 @@ from climmob.processes import (
     modifyProject,
     get_all_project_summary,
 )
-from climmob.processes.db.project_summary import update_row_project_summary, get_user_project_summary
+from climmob.processes.db.project_summary import update_row_project_summary, get_user_project_summary, \
+    get_recent_project_summary, get_project_id_row
 from climmob.products import product_found
 from climmob.products.projectsSummary import create_json_exel_file
 from climmob.products.projectsSummary.projectsSummary import create_projects_summary
@@ -53,9 +54,7 @@ class ProjectsSummaryView(privateView):
         return result
 
     def post(self):
-
-        if self.user.admin == ProjectAdmin.NO.value:
-            raise HTTPNotFound()
+        no_admin_redirect_not_found(self)
 
         if "btn_generate_report" in self.request.POST:
             create_projects_summary(self.request)
@@ -67,20 +66,7 @@ class ProjectsSummaryView(privateView):
             )
 
     def get(self):
-
-        if self.user.admin == ProjectAdmin.NO.value:
-            raise HTTPNotFound()
-
-        if self.request.method == "POST":
-
-            if "btn_generate_report" in self.request.POST:
-                create_projects_summary(self.request)
-                self.returnRawViewResult = True
-                return HTTPFound(
-                    location=self.request.route_url(
-                        "projectsSummary",
-                    )
-                )
+        no_admin_redirect_not_found(self)
 
         lastReport = ProjectsSummaryView.get_data_product(self, self.request)
         listOfProjects = {}
@@ -97,13 +83,12 @@ class ProjectsSummaryView(privateView):
 
 class DownloadProjectsSummaryView(privateView):
     def get(self):
+        userInSession = getUserInfo(self.request, self.user.login)
+        if userInSession["user_admin"] == ProjectAdmin.NO.value:
+            raise HTTPNotFound()
+
         celery_taskid = self.request.matchdict["celery_taskid"]
         product_id = self.request.matchdict["product_id"]
-
-        userInSession = getUserInfo(self.request, self.user.login)
-
-        if userInSession["user_admin"] not in [1]:
-            raise HTTPNotFound()
 
         dataworking = getProductData(
             None,
@@ -146,7 +131,7 @@ class DownloadProjectsSummaryView(privateView):
         listOfProjects = get_all_project_summary(request)
 
         create_json_exel_file(jsonLocation, process_name, settings, listOfProjects)
-        return None
+        return
 
 
 class ProjectsSummaryCurationView(privateView):
@@ -173,6 +158,7 @@ class ProjectsSummaryCurationView(privateView):
 
 class SaveProjectRow(privateView):
     def post(self):
+        no_admin_redirect_not_found(self)
         request = self.request
 
         try:
@@ -183,10 +169,9 @@ class SaveProjectRow(privateView):
                 "climmob_analytics": data.get("analytics"),
                 "project_curated_cropname": data.get("crop"),
                 "project_checked": 1,
-
             }
 
-            psm_json = json.loads(data.get("psm_json"))
+            # psm_json = json.loads(data.get("psm_json"))
 
             user_dict = self.user.to_dict() if hasattr(self.user, "to_dict") else None
             self.classResult["activeUser"] = user_dict
@@ -195,12 +180,21 @@ class SaveProjectRow(privateView):
             return {"status": 400, "message": f"Data Error: {str(e)}"}
         messages=[]
         error = None
+
+        psm_json = get_project_id_row(request, project_id)["psm_json"]
+        psm_json.update({
+            'affiliation': data.get('affiliation'),
+            'climmob_analytics': int(data.get('analytics')),
+            'cropname': data.get('crop')
+        })
+
+
         ##modify on the project
         modify, message = modifyProject(project_id, dataworking, request)
-
         if not modify:
             error = True
             messages.append(message)
+
         ##modify on the row of the table data
         modify_table, message = update_row_project_summary(psm_json, project_id, request)
 
@@ -219,3 +213,19 @@ class SaveProjectRow(privateView):
             "message": "Row updated right",
             "activeUser": user_dict,
         }
+
+class ProjectSummaryRecentView(privateView):
+    def get(self):
+        no_admin_redirect_not_found(self)
+        table_structure = DataColumn.get_project_summary_columns(self)
+        listOfProjects = get_recent_project_summary(self.request)
+        print(listOfProjects)
+        return {
+            "tableStructure": table_structure,
+            "listOfProjects": listOfProjects,
+            "edit_mode": True,
+        }
+
+def no_admin_redirect_not_found(self):
+    if ProjectAdmin.NO.value == self.user.admin:
+        raise HTTPNotFound()

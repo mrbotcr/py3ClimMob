@@ -1,3 +1,5 @@
+from sqlalchemy import func, or_
+
 from climmob.models import ProjectSummary, mapToSchema, mapFromSchema, userProject, Project
 
 __all__ = [
@@ -79,4 +81,14 @@ def get_user_project_summary(request, user):
     return user_projects
 
 
+def get_recent_project_summary(request):
+    res = request.dbsession.query(ProjectSummary.psm_json).filter(
+        func.json_unquote(func.json_extract(ProjectSummary.psm_json, '$.climmob_analytics')) == 'null'
+    )
+    return [row.psm_json for row in res.all()]
 
+def get_project_id_row(request, project_id):
+    res = request.dbsession.query(ProjectSummary.psm_json).filter(ProjectSummary.project_id == project_id).first()
+
+
+    return res

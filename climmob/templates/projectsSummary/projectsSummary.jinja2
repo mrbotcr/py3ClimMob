@@ -203,7 +203,7 @@
 
         $("#btn_refresh_report").click(function (){
             {% if lastReport %}
-            location.href = "{{ request.route_url('downloadProjectsSummary', celery_taskid=lastReport[0].celery_taskid, product_id= lastReport[0].product_id) }}"
+            location.href = "{{ request.route_url('projectsSummary') }}"
             {% endif %}
         })
     </script>

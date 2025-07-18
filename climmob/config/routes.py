@@ -250,7 +250,7 @@ from climmob.views.projectsSummary.projectsSummary import (
     ProjectsSummaryView,
     DownloadProjectsSummaryView,
     ProjectsSummaryCurationView,
-    SaveProjectRow,
+    SaveProjectRow, ProjectSummaryRecentView,
 )
 from climmob.views.question import (
     qlibrary_view,
@@ -1368,6 +1368,15 @@ def loadRoutes(config):
             "name": "projectsSummaryCuration",
             "path": "/projectsSummaryCuration",
             "view": ProjectsSummaryCurationView,
+            "renderer": "projectsSummary/projectsSummaryCuration.jinja2",
+        }
+    )
+
+    routes.append(
+        {
+            "name": "projectsSummaryRecent",
+            "path": "/projectsSummaryRecent",
+            "view": ProjectSummaryRecentView,
             "renderer": "projectsSummary/projectsSummaryCuration.jinja2",
         }
     )

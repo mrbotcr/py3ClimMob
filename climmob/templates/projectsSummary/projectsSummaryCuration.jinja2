@@ -348,14 +348,10 @@
                 .findIndex(td => td.getAttribute('data-column') === 'farmers_registered');
             const val1 = parseFloat(data[colIndex]) || 0;
 
+            const minCheck = isNaN(min1) || val1 >= min1;
+            const maxCheck = isNaN(max1) || val1 <= max1;
 
-            const pass1 =
-                (isNaN(min1) && isNaN(max1)) ||
-                (isNaN(min1) && val1 <= max1) ||
-                (min1 <= val1 && isNaN(max1)) ||
-                (min1 <= val1 && val1 <= max1);
-
-            return pass1;
+            return minCheck && maxCheck;
         });
 
         [minEl, maxEl].forEach(el => {
