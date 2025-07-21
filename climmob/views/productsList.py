@@ -327,7 +327,7 @@ class generateProductView(privateView):
                 activeProjectData["owner"]["user_name"],
                 activeProjectData["project_id"],
                 activeProjectData["project_cod"],
-                info["data"],
+                info,
                 self.request,
                 infoProduct[2],
                 infoProduct[3],

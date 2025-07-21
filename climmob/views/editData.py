@@ -73,7 +73,7 @@ class downloadDataView(privateView):
             activeProjectUser,
             activeProjectId,
             activeProjectCod,
-            info["data"],
+            info,
             self.request,
             formId,
             code,
