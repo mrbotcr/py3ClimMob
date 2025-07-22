@@ -40,87 +40,104 @@ __all__ = [
 ]
 
 
+def execute_command(args, error_msg):
+    error = False
+    try:
+        check_call(args)
+    except CalledProcessError as e:
+        msg = f"{error_msg}\nError:\n{str(e)}\n"
+        log.error(msg)
+        print(msg)
+        error = True
+    return error
+
+
+def create_schema(schema, cnf_file):
+    print(f"****buildDatabase**Dropping schema {schema}******")
+    args = [
+        "mysql",
+        f"--defaults-file={cnf_file}",
+        f"--execute=DROP SCHEMA IF EXISTS {schema}",
+    ]
+    error = execute_command(args, "Error dropping schema")
+    if error:
+        return error
+
+    print(f"****buildDatabase**Creating new schema {schema}******")
+    args = [
+        "mysql",
+        f"--defaults-file={cnf_file}",
+        f"--execute=CREATE SCHEMA {schema}"
+        " DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci",
+    ]
+    error = execute_command(args, "Error creating schema")
+    if error:
+        return error
+
+    args = [
+        "mysql",
+        f"--defaults-file={cnf_file}",
+        f"--execute=CREATE TABLE IF NOT EXISTS {schema}.anonymized "
+        "(`form_id` varchar(255) NOT NULL,"
+        "`reg_id` int NOT NULL,"
+        "`col_name` varchar(255) NOT NULL,"
+        "`value` varchar(255) DEFAULT NULL,"
+        "PRIMARY KEY (`form_id`,`reg_id`,`col_name`)"
+        ") ENGINE=InnoDB DEFAULT CHARSET=utf8;",
+    ]
+
+    error = execute_command(args, "Error creating anonymized table")
+    return error
+
+
 def buildDatabase(
     cnfFile, createFile, insertFile, schema, dropSchema, settings, outputDir
 ):
     error = False
 
     if dropSchema:
-        print("****buildDatabase**Dropping schema******")
-        args = []
-        args.append("mysql")
-        args.append("--defaults-file=" + cnfFile)
-        args.append("--execute=DROP SCHEMA IF EXISTS " + schema)
-        try:
-            check_call(args)
-        except CalledProcessError as e:
-            msg = "Error dropping schema \n"
+        error = create_schema(schema, cnfFile)
+    if error:
+        return error
+
+    print(f"****buildDatabase**Creating tables {schema}******")
+    args = ["mysql", f"--defaults-file={cnfFile}", schema]
+    with open(createFile) as input_file:
+        proc = Popen(args, stdin=input_file, stderr=PIPE, stdout=PIPE)
+        output, error = proc.communicate()
+        # if output != "" or error != "":
+        if proc.returncode != 0:
+            # print("3")
+            msg = "Error creating database \n"
+            msg = msg + "File: " + createFile + "\n"
             msg = msg + "Error: \n"
-            msg = msg + str(e) + "\n"
+            msg = msg + str(error) + "\n"
+            msg = msg + "Output: \n"
+            msg = msg + str(output) + "\n"
             log.error(msg)
-            print(msg)
             error = True
+    if error:
+        return error
 
-        if not error:
-            print("****buildDatabase**Creating new schema******")
-            args = []
-            args.append("mysql")
-            args.append("--defaults-file=" + cnfFile)
-            args.append(
-                "--execute=CREATE SCHEMA "
-                + schema
-                + " DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci"
-            )
-            try:
-                check_call(args)
-            except CalledProcessError as e:
-                msg = "Error dropping schema \n"
-                msg = msg + "Error: \n"
-                msg = msg + str(e) + "\n"
-                log.error(msg)
-                error = True
+    print(f"****buildDatabase**Inserting into lookup tables for {schema}******")
+    with open(insertFile) as input_file:
+        proc = Popen(args, stdin=input_file, stderr=PIPE, stdout=PIPE)
+        output, error = proc.communicate()
+        # if output != "" or error != "":
+        if proc.returncode != 0:
+            msg = "Error loading lookup tables \n"
+            msg = msg + "File: " + createFile + "\n"
+            msg = msg + "Error: \n"
+            msg = msg + str(error) + "\n"
+            msg = msg + "Output: \n"
+            msg = msg + str(output) + "\n"
+            log.error(msg)
+            error = True
+    if error:
+        return error
 
-    if not error:
-        print("****buildDatabase**Creating tables******")
-        args = []
-        args.append("mysql")
-        args.append("--defaults-file=" + cnfFile)
-        args.append(schema)
-
-        with open(createFile) as input_file:
-            proc = Popen(args, stdin=input_file, stderr=PIPE, stdout=PIPE)
-            output, error = proc.communicate()
-            # if output != "" or error != "":
-            if proc.returncode != 0:
-                # print("3")
-                msg = "Error creating database \n"
-                msg = msg + "File: " + createFile + "\n"
-                msg = msg + "Error: \n"
-                msg = msg + str(error) + "\n"
-                msg = msg + "Output: \n"
-                msg = msg + str(output) + "\n"
-                log.error(msg)
-                error = True
-
-    if not error:
-        print("****buildDatabase**Inserting into lookup tables******")
-        with open(insertFile) as input_file:
-            proc = Popen(args, stdin=input_file, stderr=PIPE, stdout=PIPE)
-            output, error = proc.communicate()
-            # if output != "" or error != "":
-            if proc.returncode != 0:
-                msg = "Error loading lookup tables \n"
-                msg = msg + "File: " + createFile + "\n"
-                msg = msg + "Error: \n"
-                msg = msg + str(error) + "\n"
-                msg = msg + "Output: \n"
-                msg = msg + str(output) + "\n"
-                log.error(msg)
-                error = True
-
-    if not error:
-        print("****buildDatabase**Creating triggers******")
-        functionForCreateTheTriggers(schema, settings, outputDir, cnfFile)
+    print(f"****buildDatabase**Creating triggers for {schema}******")
+    functionForCreateTheTriggers(schema, settings, outputDir, cnfFile)
 
     return error
 

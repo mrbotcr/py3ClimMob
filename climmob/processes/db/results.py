@@ -377,7 +377,7 @@ def getData(
         + userOwner
         + "_"
         + projectCod
-        + ".anony da"
+        + ".anonymized da"
         + f" ON da.reg_id = {reg_alias}.qst162 "
         + f" GROUP BY {reg_alias}.qst162"
     )
