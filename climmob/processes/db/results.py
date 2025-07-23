@@ -56,7 +56,7 @@ def getFields(XMLFile, table):
     return fields
 
 
-def getLookups(XMLFile, userOwner, projectCod, request):
+def getLookups(XMLFile, userOwner, projectCod, anonymize):
     lktables = []
     tree = etree.parse(XMLFile)
     root = tree.getroot()
@@ -95,6 +95,10 @@ def getLookups(XMLFile, userOwner, projectCod, request):
                     avalue = {}
                     for field in atable["fields"]:
                         avalue[field["name"]] = value[field["name"]]
+                    if anonymize and atable["name"].endswith("lkpqst163_opts"):
+                        avalue[
+                            "qst163_opts_des"
+                        ] = f'Farmer #{avalue["qst163_opts_cod"]}'
                     atable["values"].append(avalue)
             lktables.append(atable)
     return lktables
@@ -608,7 +612,7 @@ def getJSONResult(
                 if os.path.exists(registryXML):
                     data["registry"] = {
                         "lkptables": getLookups(
-                            registryXML, userOwner, projectCod, request
+                            registryXML, userOwner, projectCod, anonymize
                         ),
                         "fields": getFields(registryXML, "REG_geninfo"),
                     }
@@ -651,7 +655,7 @@ def getJSONResult(
                                             assessmentXML,
                                             userOwner,
                                             projectCod,
-                                            request,
+                                            anonymize,
                                         ),
                                         "fields": getFields(
                                             assessmentXML,

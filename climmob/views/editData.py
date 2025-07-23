@@ -29,7 +29,7 @@ class downloadDataView(privateView):
         activeProjectCod = self.request.matchdict["project"]
         formId = self.request.matchdict["formid"]
         formatId = self.request.matchdict["formatid"]
-        anonymize = bool(self.request.params.get("anonymize"))
+        anonymize = str(self.request.params.get("anonymize")).lower() == "true"
         includeRegistry = True
         includeAssessment = True
         code = ""
