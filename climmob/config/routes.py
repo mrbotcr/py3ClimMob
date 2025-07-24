@@ -250,7 +250,8 @@ from climmob.views.projectsSummary.projectsSummary import (
     ProjectsSummaryView,
     DownloadProjectsSummaryView,
     ProjectsSummaryCurationView,
-    SaveProjectRow, ProjectSummaryRecentView,
+    SaveProjectRow,
+    ProjectSummaryRecentView,
 )
 from climmob.views.question import (
     qlibrary_view,
@@ -1393,7 +1394,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "downloadProjectsSummary",
-            "/download/{celery_taskid}/{product_id}/downloadProjectsSummary",
+            "/download/downloadProjectsSummary",
             DownloadProjectsSummaryView,
             None,
         )

@@ -476,6 +476,7 @@ def getListOfProjects(dbsession):
             ProjectType.prjtype_name,
             Project.project_location,
             Project.project_unit_of_analysis,
+            Project.project_checked,
         )
         .filter(Project.project_id == userProject.project_id)
         .filter(Project.project_cnty == Country.cnty_cod)
@@ -510,6 +511,7 @@ def getListOfProjects(dbsession):
             ProjectType.prjtype_name,
             Project.project_location,
             Project.project_unit_of_analysis,
+            Project.project_checked,
         )
         .filter(Project.project_id == userProject.project_id)
         .filter(Project.project_cnty.is_(None))
@@ -646,12 +648,13 @@ def createProjectsSummary(self, settings, otro):
                 "gender_woman": genderWoman,
                 "gender_other": genderOther,
                 "gender_unreported": int(num) - genderMan - genderWoman - genderOther,
-                "crop": crop,
+                "scientific_name": crop,
                 "technology": tech,
                 "startDate": startDate,
                 "endDate": endDate,
                 "instance_name": settings.get("analytics.instancename", ""),
                 "varieties_quantity": aliasNumber,
+                "project_checked": project["project_checked"],
             }
 
             registry, infoOfCoordinates = getTheFirstGeoPointQuestionCodeInRegistry(
@@ -705,6 +708,8 @@ def createProjectsSummary(self, settings, otro):
                 dbsession, project["project_id"]
             )
 
+            result["project_checked"] = project["project_checked"]
+
             listOfProjects.append(result)
 
             data_project_summary = {}
@@ -729,7 +734,8 @@ def createProjectsSummary(self, settings, otro):
                         "trial_pi": genotype.trial_pi,
                         "pi_email": genotype.pi_email,
                         "country": project["cnty_name"],
-                        "crop_name": genotype.crop_name,
+                        "crop_taxonomy": crop,
+                        "technology": genotype.crop_name,
                         "genotype": genotype.genotype,
                         "tech_id": genotype.tech_id,
                         "alias_id": genotype.alias_id,
@@ -767,8 +773,13 @@ def createProjectsSummary(self, settings, otro):
         genotypesSummary = "genotypesSummary"
         dataCollectionMomentsSummary = "dataCollectionMomentsSummary"
 
-        create_json_exel_file(jsonLocation,genotypesSummary,settings,listOfGenotypes)
-        create_json_exel_file(jsonLocation,dataCollectionMomentsSummary,settings,listOfDataCollectionMoments)
+        create_json_exel_file(jsonLocation, genotypesSummary, settings, listOfGenotypes)
+        create_json_exel_file(
+            jsonLocation,
+            dataCollectionMomentsSummary,
+            settings,
+            listOfDataCollectionMoments,
+        )
 
     engine.dispose()
 
@@ -826,6 +837,7 @@ def createProjectsSummary(self, settings, otro):
 
     return ""
 
+
 def create_json_exel_file(json_location, process_name, settings, dataCollection):
     with open(
         os.path.join(
@@ -856,6 +868,3 @@ def create_json_exel_file(json_location, process_name, settings, dataCollection)
         index=False,
     )
     return None
-
-
-

@@ -10,24 +10,20 @@
     {% cssresource request, 'coreresources', 'dataTable_2-0-7' %}
     {% cssresource request, 'coreresources', 'dataTables_buttons' %}
     {% cssresource request, 'coreresources', 'sweetAlert' %}
+{% cssresource request,'coreresources','select2' %}
     <style>
         th {
             text-align: left;
+            min-width: 180px;
             max-width: 400px;
             overflow: hidden;
             white-space: nowrap;
-            text-overflow: ellipsis;
-        }
-
-        table.dataTable tfoot select {
-            width: 100%;
-            white-space: nowrap;
-            overflow: hidden;
             text-overflow: ellipsis;
         }
 
         td {
             max-width: 400px;
+            min-width: 180px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -47,6 +43,7 @@
     {% jsresource request,'coreresources','ColvisDataTables_2-0-7' %}
     {% jsresource request,'coreresources','bootstrapDataTables_2-0-7' %}
     {% jsresource request,'coreresources','sweetAlert' %}
+    {% jsresource request,'coreresources','select2' %}
 
 {% endblock topScripts %}
 
@@ -121,10 +118,9 @@
                                         <th>{{ _(col["name"]) }}</th>
                                     {% endfor %}
                                     {% if edit_mode == True %}
+                                        <th>Notify Area</th>
                                         <th></th>
                                     {% endif %}
-
-
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -146,7 +142,8 @@
 
                                                 {% elif col['type'] == "input" %}
                                                     <input class="form-control"
-                                                           value="{{ project[col["key"]] if project[col["key"]] }}">
+                                                           value="{{ project[col["key"]] if project[col["key"]] }}"
+                                                           style="width: 250px" maxlength="50">
 
                                                 {% elif col['type'] == "dropdown" %}
                                                     <select class="form-control">
@@ -163,13 +160,17 @@
                                             </td>
                                         {% endfor %}
                                         {% if edit_mode == True %}
-                                            <td class="no-filter">
-                                                <button data-column="save" class="btn btn-primary pull-right"
+                                            <td data-column="admin_msj">
+                                                <textarea placeholder="{{ _('Modify this field to send a message for the
+                                                project user') }}" maxlength="500"></textarea>
+                                            </td>
+                                            <td data-column="save" >
+                                                <button class="btn btn-primary pull-right"
                                                         onclick="checkInputs(this)">
                                                     {{ _("Save") }}
                                                 </button>
                                             </td>
-                                    {% endif %}
+                                        {% endif %}
                                     </tr>
                                 {% endfor %}
                                 </tbody>
@@ -204,7 +205,7 @@
 
         const ToggleableColumns = [
             {% for col in tableStructure %}
-                {% if col.type == 'static' %}
+                {% if col.type == 'static' and not col.key == "project_id" %}
                     {{ loop.index }}{{ "," if not loop.last }}
                 {% endif %}
             {% endfor %}
@@ -279,6 +280,7 @@
             },
 
             initComplete: function () {
+                //change the position of the elements
                 const buttonsContainer = document.querySelector('#curation-table_wrapper .dt-buttons');
                 document.getElementById('custom-buttons').appendChild(buttonsContainer);
 
@@ -292,52 +294,59 @@
                     }
                 }
 
-
                 const api = this.api();
                 api.columns().every(function () {
-                    const currentIndex = this.index();
-                    {% if edit_mode == True %}
-                    if (currentIndex === api.columns().nodes().length - 1) {
-                        return;
+                const column = this;
+                const currentIndex = column.index();
+
+                {% if edit_mode %}
+                // Omit columns "Notify" & "Save"
+                if (currentIndex >= api.columns().nodes().length - 2) return;
+                {% endif %}
+
+                const select = document.createElement('select');
+                select.className = 'form-select column-filter-select';
+                select.setAttribute('data-column-index', currentIndex);
+                select.style.width = '100%';
+
+                select.add(new Option('', '')); // empty option
+
+                const uniqueValues = new Set();
+                column.nodes().each(function (cell) {
+                    let value;
+                    const selectEl = cell.querySelector('select');
+                    const inputEl = cell.querySelector('input');
+
+                    if (selectEl) {
+                        value = selectEl.options[selectEl.selectedIndex].text.trim();
+                    } else if (inputEl) {
+                        value = inputEl.value.trim();
+                    } else {
+                        value = cell.textContent.trim();
                     }
-                    {% endif %}
 
-                    const column = this;
-
-                    const select = document.createElement('select');
-                    select.add(new Option(''));
-                    column.footer().replaceChildren(select);
-
-                    const uniqueValues = new Set();
-
-                    column.nodes().each(function (cell) {
-                        let value;
-                        const selectEl = cell.querySelector('select');
-                        const inputEl = cell.querySelector('input');
-                        if (selectEl) {
-                            value = selectEl.options[selectEl.selectedIndex].text.trim();
-                        } else if (inputEl) {
-                            value = inputEl.value.trim();
-                        } else {
-                            value = cell.textContent.trim();
-                        }
-                        if (value && !uniqueValues.has(value)) {
-                            uniqueValues.add(value);
-                            select.add(new Option(value));
-                        }
-                    });
-
-                    select.addEventListener('change', function () {
-                        const selectedValue = this.value;
-
-                        column
-                            .search(selectedValue ? '^' + selectedValue + '$' : '', {
-                                regex: true,
-                                caseInsensitive: true
-                            })
-                            .draw();
-                    });
+                    if (value && !uniqueValues.has(value)) {
+                        uniqueValues.add(value);
+                        select.add(new Option(value, value));
+                    }
                 });
+
+                column.footer().innerHTML = ''; // cleans
+                column.footer().appendChild(select);
+
+                // starts select2
+                $(select).select2({
+                    width: '100%',
+                    placeholder: '{{ _("Search or select...") }}',
+                    allowClear: true
+                });
+
+                $(select).on('change', function () {
+                    const val = this.value.trim();
+                    column.search(val ? '^' + val + '$' : '', true, false).draw();
+                });
+            });
+
             }
         });
 
@@ -366,74 +375,13 @@
                 const select = column.footer().querySelector('select');
                 if (select) {
                     select.value = '';
-                    column.search('').draw();
+                    $(select).val('').trigger('change');
                 }
             });
 
             document.getElementById('min-farm-registered').value = '';
             document.getElementById('max-farm-registered').value = '';
             table.draw();
-        }
-
-        const numericFields = new Set([
-            "farmers_target",
-            "farmers_registered",
-            "varieties_quantity",
-            "climmob_analytics",
-            "gender_man",
-            "gender_woman",
-            "gender_other",
-            "gender_unreported",
-            "project_active",
-            "project_continent"
-        ]);
-
-        function getRowDataAsJson(row) {
-            const cells = row.querySelectorAll('[data-column]');
-            const jsonData = {};
-            const ignoredKeys = new Set([
-                'index',
-                'save',
-            ]);
-            cells.forEach(cell => {
-                const key = cell.getAttribute('data-column');
-                if (!key || ignoredKeys.has(key)) return;
-                let value = '';
-                const input = cell.querySelector('input, select, textarea');
-
-                if (input) {
-                    if (input.tagName === 'SELECT') {
-                        value = input.options[input.selectedIndex]?.value.trim() ?? '';
-                    } else {
-                        value = input.value.trim();
-                    }
-                } else {
-                    value = cell.textContent.trim();
-                }
-                jsonData[key] = parseValue(cell, value);
-            });
-            return jsonData;
-        }
-
-        function parseValue(cell, rawValue) {
-            const key = cell.getAttribute('data-column');
-            let value = rawValue;
-
-            if (key === "project_active") {
-                if (value.toLowerCase() === "yes") return 1;
-                if (value.toLowerCase() === "no") return 0;
-            }
-            if (key === "farmers_registered" && value === "0") {
-                return "0";
-            }
-            if (value === "" || value === null || value === undefined) {
-                return 0;
-            }
-
-            if (value === "") return "";
-            if (!isNaN(value)) return Number(value);
-
-            return value;
         }
 
         function checkInputs(button) {
@@ -443,7 +391,7 @@
             const fieldAffiliation = row.querySelector('[data-column="affiliation"] input');
             const fieldCrop = row.querySelector('[data-column="cropname"] input');
             const fieldAnalytics = row.querySelector('[data-column="climmob_analytics"] select');
-
+            const adminMessage = row.querySelector('[data-column="admin_msj"] textarea');
 
             let error = [];
             if (!fieldAffiliation || fieldAffiliation.value.trim() === '') {
@@ -451,11 +399,11 @@
             }
 
             if (!fieldCrop || fieldCrop.value.trim() === '') {
-                error.push('{{ _("Curated crop name") }}');
+                error.push('{{ _("Cropname") }}');
             }
 
             if (!fieldAnalytics || fieldAnalytics.value.trim() === '') {
-                error.push('{{ _("Dashboard") }}');
+                error.push('{{ _("Data_WareHouse") }}');
             }
             if (error.length > 0) {
                 swal(
@@ -465,13 +413,12 @@
                 );
 
             } else {
-                const json_row = getRowDataAsJson(row)
                 const data = {
                     project_id: project_id,
                     affiliation: fieldAffiliation.value.trim(),
                     crop: fieldCrop.value.trim(),
                     analytics: fieldAnalytics.value.trim(),
-                    psm_json: JSON.stringify(json_row),
+                    admin_message:adminMessage.value,
                     csrf_token: "{{ request.session.get_csrf_token() }}"
                 }
 

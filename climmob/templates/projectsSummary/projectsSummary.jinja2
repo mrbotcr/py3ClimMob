@@ -197,7 +197,8 @@
 
         $("#btn_download_report").click(function (){
             {% if lastReport %}
-            location.href = "{{ request.route_url('downloadProjectsSummary', celery_taskid=lastReport[0].celery_taskid, product_id= lastReport[0].product_id) }}"
+                const url = "{{ request.route_url('downloadProjectsSummary') }}?celery_taskid={{ lastReport[0].celery_taskid }}&product_id={{ lastReport[0].product_id }}"
+                location.href = url;
             {% endif %}
         })
 

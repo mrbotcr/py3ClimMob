@@ -1,12 +1,22 @@
 from sqlalchemy import func, or_
 
-from climmob.models import ProjectSummary, mapToSchema, mapFromSchema, userProject, Project
+from climmob.models import (
+    ProjectSummary,
+    mapToSchema,
+    mapFromSchema,
+    userProject,
+    Project,
+)
 
 __all__ = [
     "add_project_summary",
     "update_project_summary",
     "get_project_summary",
     "get_all_project_summary",
+    "update_row_project_summary",
+    "get_user_project_summary",
+    "get_recent_project_summary",
+    "get_project_id_row",
 ]
 
 
@@ -35,9 +45,7 @@ def update_row_project_summary(data, project_id, request):
     try:
         request.dbsession.query(ProjectSummary).filter(
             ProjectSummary.project_id == project_id
-        ).update({
-            ProjectSummary.psm_json: data
-        })
+        ).update({ProjectSummary.psm_json: data})
         return True, ""
     except Exception as e:
         return False, e
@@ -63,14 +71,14 @@ def get_all_project_summary(request):
 
     return all_project
 
+
 def get_user_project_summary(request, user):
 
     projects = mapFromSchema(
         request.dbsession.query(ProjectSummary)
         .filter(userProject.user_name == user)
-        .filter(Project.project_id == userProject.project_id) ###revisar acá
+        .filter(Project.project_id == userProject.project_id)  ###revisar acá
         .filter(ProjectSummary.project_id == Project.project_id)
-        .order_by(userProject.project_dashboard.desc())
         .order_by(Project.project_creationdate.desc())
         .all()
     )
@@ -83,12 +91,19 @@ def get_user_project_summary(request, user):
 
 def get_recent_project_summary(request):
     res = request.dbsession.query(ProjectSummary.psm_json).filter(
-        func.json_unquote(func.json_extract(ProjectSummary.psm_json, '$.climmob_analytics')) == 'null'
+        func.json_unquote(
+            func.json_extract(ProjectSummary.psm_json, "$.project_checked")
+        )
+        == "0"
     )
     return [row.psm_json for row in res.all()]
 
-def get_project_id_row(request, project_id):
-    res = request.dbsession.query(ProjectSummary.psm_json).filter(ProjectSummary.project_id == project_id).first()
 
+def get_project_id_row(request, project_id):
+    res = (
+        request.dbsession.query(ProjectSummary.psm_json)
+        .filter(ProjectSummary.project_id == project_id)
+        .first()
+    )
 
     return res
