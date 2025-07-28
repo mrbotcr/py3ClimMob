@@ -787,6 +787,16 @@ class Question_subgroup(Base):
     parent_id = Column(Unicode(80), primary_key=True, nullable=True)
 
 
+class QuestionType(Base):
+    __tablename__ = "question_type"
+
+    id = Column(Integer, primary_key=True, nullable=False)
+    name = Column(Unicode(64), nullable=False)
+    anonymity_id = Column(
+        Integer, ForeignKey("question_anonymity.id"), primary_key=True, nullable=False
+    )
+
+
 class Question(Base):
     __tablename__ = "question"
     __table_args__ = (
@@ -805,7 +815,7 @@ class Question(Base):
     question_unit = Column(Unicode(120))
     question_min = Column(Float, nullable=True)
     question_max = Column(Float, nullable=True)
-    question_dtype = Column(Integer)
+    question_dtype = Column(Integer, ForeignKey("question_type.id"))
     question_cmp = Column(Unicode(120))
     question_reqinreg = Column(Integer, server_default=text("'0'"))
     question_reqinasses = Column(Integer, server_default=text("'0'"))
@@ -835,10 +845,18 @@ class Question(Base):
     qstgroups_user = Column(Unicode(80), nullable=True)
     qstgroups_id = Column(Unicode(80), nullable=True)
     question_sensitive = Column(Integer, server_default=text("'0'"))
+    question_anonymity = Column(Integer, ForeignKey("question_anonymity.id"))
     question_lang = Column(ForeignKey("i18n.lang_code"), nullable=True)
     extra = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
     i18n = relationship("I18n")
     user = relationship("User")
+
+
+class QuestionAnonymity(Base):
+    __tablename__ = "question_anonymity"
+
+    id = Column(Integer, primary_key=True, nullable=False)
+    name = Column(Unicode(64), nullable=False)
 
 
 class Registry(Base):
