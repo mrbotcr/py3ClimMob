@@ -112,16 +112,24 @@
                             <table class="display nowrap table table-stripped display " data-filter=#filter
                                    id="curation-table">
                                 <thead>
-                                <tr>
-                                    <th>#</th>
-                                    {% for col in tableStructure %}
-                                        <th>{{ _(col["name"]) }}</th>
-                                    {% endfor %}
-                                    {% if edit_mode == True %}
-                                        <th>Notify Area</th>
+                                    <tr>
+                                        <th>#</th>
+                                        {% for col in tableStructure %}
+                                            <th>{{ _(col["name"]) }}</th>
+                                        {% endfor %}
+                                        {% if edit_mode == True %}
+                                            <th>Notify Area</th>
+                                            <th></th>
+                                        {% endif %}
+                                    </tr>
+                                    <tr class="filters">
                                         <th></th>
-                                    {% endif %}
-                                </tr>
+                                        {% for col in tableStructure %}
+                                            <th>{{ _(col["name"]) }}</th>
+                                        {% endfor %}
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
                                 </thead>
                                 <tbody>
                                 {% for project in listOfProjects %}
@@ -174,17 +182,6 @@
                                     </tr>
                                 {% endfor %}
                                 </tbody>
-                                <tfoot>
-                                <tr>
-                                    <th>#</th>
-                                    {% for col in tableStructure %}
-                                        <th>{{ _(col["name"]) }}</th>
-                                    {% endfor %}
-                                    {% if edit_mode == True %}
-                                        <th></th>
-                                    {% endif %}
-                                </tr>
-                                </tfoot>
                             </table>
                         </div>
                     </div>
@@ -216,11 +213,12 @@
 
         const table = new DataTable('#curation-table', {
             scrollX: true,
+            ordering: false,
             deferRender: true,
             columnDefs: [
                 {
                     targets: hiddenIndexes,
-                    visible: false
+                    visible: false,
                 },
 
                 {
@@ -309,7 +307,7 @@
                 select.setAttribute('data-column-index', currentIndex);
                 select.style.width = '100%';
 
-                select.add(new Option('', '')); // empty option
+                select.add(new Option('', '')); // empty option for fill
 
                 const uniqueValues = new Set();
                 column.nodes().each(function (cell) {
@@ -331,8 +329,8 @@
                     }
                 });
 
-                column.footer().innerHTML = ''; // cleans
-                column.footer().appendChild(select);
+                column.header().innerHTML = ''; // cleans
+                column.header().appendChild(select);
 
                 // starts select2
                 $(select).select2({
@@ -372,7 +370,7 @@
 
             table.columns().every(function () {
                 const column = this;
-                const select = column.footer().querySelector('select');
+                const select = column.header().querySelector('select');
                 if (select) {
                     select.value = '';
                     $(select).val('').trigger('change');

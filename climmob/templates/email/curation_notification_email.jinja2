@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <body style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px; color: #333; line-height: 1.6; margin: 0;">
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f9f9f9;">
+<table style="background-color: #f9f9f9;">
     <tr>
         <td align="center">
-            <table width="600" cellpadding="0" cellspacing="0" border="0"
+            <table width="600"
                    style="background-color: #ffffff; border: 1px solid #ddd; padding: 30px; border-radius: 6px;">
                 <tr>
                     <td>
@@ -18,15 +18,15 @@
                                 <p style="margin-bottom: 15px;">{{ _('We are writing to notify you that some updates have been made to your project') }}
                                     <strong>{{ project_name }}</strong> {{ _('(Project Code:') }} {{ project_id }}).</p>
 
-                                <table width="100%" cellpadding="0" cellspacing="0" border="0"
+                                <table width="100%"
                                        style="background-color: #f1f1f1; border-left: 4px solid #1ab394; padding: 10px 15px; margin-bottom: 20px;">
                                     <tr>
                                         <td style="padding: 10px;">
                                             <p style="margin-bottom: 10px;">
-                                                <strong>{{ _('Affiliation updated to:') }}</strong><br>{{ affiliation }}
+                                                <strong>{{ _('Affiliation updated to:') }}</strong><br>{{ prev_affiliation }} → {{ affiliation }}
                                             </p>
                                             <p style="margin-bottom: 0;">
-                                                <strong>{{ _('Crop name updated to:') }}</strong><br>{{ cropname }}</p>
+                                                <strong>{{ _('Crop name updated to:') }}</strong><br>{{ prev_crop }} → {{ cropname }}</p>
                                         </td>
                                     </tr>
                                 </table>
@@ -39,7 +39,7 @@
                                 {% if admin_message is not none and admin_message != '' %}
                                     <p style="margin-bottom: 10px;">
                                         <strong>{{ _('This person notified you with this message:') }}</strong></p>
-                                    <table width="100%" cellpadding="0" cellspacing="0" border="0"
+                                    <table width="100%"
                                            style="background-color: #f1f1f1; border-left: 4px solid #1ab394; padding: 10px 15px; margin-bottom: 20px;">
                                         <tr>
                                             <td style="padding: 10px;">

@@ -189,6 +189,8 @@ class SaveProjectRow(privateView):
         error = None
 
         psm_json = get_project_id_row(request, project_id)["psm_json"]
+        prev_affiliation = psm_json["affiliation"]
+        prev_crop = psm_json["cropname"]
         psm_json.update(
             {
                 "affiliation": data.get("affiliation"),
@@ -241,6 +243,8 @@ class SaveProjectRow(privateView):
             admin_message,
             dataworking["project_curated_cropname"],
             dataworking["project_affiliation"],
+            prev_affiliation,
+            prev_crop
         )
 
         return {
@@ -259,6 +263,8 @@ class SaveProjectRow(privateView):
         admin_message,
         cropname,
         affiliation,
+        prev_affiliation,
+        prev_crop
     ):
         _ = self.request.translate
         mail_from = self.request.registry.settings.get("email.from", None)
@@ -284,6 +290,8 @@ class SaveProjectRow(privateView):
                 "admin_message": admin_message,
                 "cropname": cropname,
                 "affiliation": affiliation,
+                "prev_affiliation": prev_affiliation,
+                "prev_crop":prev_crop,
                 "_": _,
             },
         )
