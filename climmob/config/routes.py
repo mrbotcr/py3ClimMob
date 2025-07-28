@@ -245,6 +245,7 @@ from climmob.views.registry import (
     GetRegistrySectionView,
     ChangeProjectMainLanguage_view,
 )
+from climmob.views.results import ResultsView
 from climmob.views.techaliases import deletealias_view
 from climmob.views.technologies import (
     technologies_view,
@@ -2162,6 +2163,15 @@ def loadRoutes(config):
             "/api/generateAnalysisByApi",
             GenerateAnalysisByApiViewApi,
             None,
+        )
+    )
+
+    routes.append(
+        addRoute(
+            "results",
+            "/api/results",
+            ResultsView,
+            "json",
         )
     )
 
