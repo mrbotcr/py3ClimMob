@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import MagicMock, call
-from unittest.mock import patch, mock_open
+from unittest.mock import patch
 
 from climmob.tests.test_utils.common import ViewBaseTest
 from climmob.views.projectsSummary.projectsSummary import *
@@ -442,6 +442,9 @@ class TestSaveProjectRow(ViewBaseTest):
             self.view.request.POST["admin_message"],
             self.view.request.POST["crop"],
             self.view.request.POST["affiliation"],
+            self.view.request.POST["analytics"],
+            "old_affiliation",
+            "old_crop",
         )
 
 
@@ -461,6 +464,9 @@ class TestSendEmailNotification(ViewBaseTest):
             "admin_message": MagicMock(str, name="admin_message"),
             "cropname": MagicMock(str, name="cropname"),
             "affiliation": MagicMock(str, name="affiliation"),
+            "prev_crop": MagicMock(str, name="prev_crop"),
+            "prev_affiliation": MagicMock(str, name="prev_affiliation"),
+            "climmob_analytics": "1",
         }
 
         self.view.request = MagicMock()
@@ -525,12 +531,15 @@ class TestSendEmailNotification(ViewBaseTest):
                 "admin_message": self.mocks["admin_message"],
                 "cropname": self.mocks["cropname"],
                 "affiliation": self.mocks["affiliation"],
+                "climmob_analytics": int(self.mocks["climmob_analytics"]),
+                "prev_affiliation": self.mocks["prev_affiliation"],
+                "prev_crop": self.mocks["prev_crop"],
                 "_": self.view.request.translate,
             },
         )
 
         expected_subject = (
-            f"Update on Your Climmob Project({self.mocks['project_name']})"
+            f"Update on Your ClimMob Project({self.mocks['project_name']})"
         )
         self.mock_build_email.assert_called_once_with(
             self.mock_render.return_value,

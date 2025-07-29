@@ -47,11 +47,32 @@ class TestDataColumn(BaseTest):
 
         self.mock_column.side_effect = mock_column_side_effect
 
-        result = self.view_class().get_project_summary_columns()
-        calls = self.mock_column.call_args_list
-        self.assertIsInstance(result, list)
-        self.assertEqual(len(result), 1)
-        self.assertEqual(result, ["Error on the column 'project_id': Invalid label"])
-        self.assertEqual(calls[0].kwargs["key"], "project_id")
-        self.assertEqual(calls[1].kwargs["label"], "Nombre")
-        self.mock_data_columns.__iter__.assert_called()
+        with self.assertRaises(ValueError) as context:
+            self.view_class().get_project_summary_columns()
+
+        self.assertIn(
+            "Error on the column 'project_id': Invalid label", str(context.exception)
+        )
+
+    def test_duplicate_key_validation(self):
+        self.mock_data_columns.__iter__.return_value = [
+            {
+                "key": "project_id",
+                "name": "ID",
+                "type": "static",
+                "id": 1,
+                "show": True,
+            },
+            {
+                "key": "project_id",
+                "name": "ID duplicate",
+                "type": "static",
+                "id": 2,
+                "show": True,
+            },
+        ]
+
+        with self.assertRaises(ValueError) as context:
+            self.view_class().get_project_summary_columns()
+
+        self.assertIn("Duplicate key found: 'project_id'", str(context.exception))

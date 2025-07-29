@@ -1,7 +1,6 @@
 import datetime
-import json
-import os
 import logging
+import os
 import smtplib
 
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
@@ -18,7 +17,6 @@ from climmob.processes import (
     get_project_id_row,
     getProjectUserAndOwner,
 )
-
 from climmob.products import product_found
 from climmob.products.projectsSummary import create_json_exel_file
 from climmob.products.projectsSummary.projectsSummary import create_projects_summary
@@ -188,6 +186,11 @@ class SaveProjectRow(privateView):
         messages = []
         error = None
 
+        admin_message = data.get("admin_message")
+
+        admin_name = self.user.fullName
+        admin_email = self.user.email
+
         psm_json = get_project_id_row(request, project_id)["psm_json"]
         prev_affiliation = psm_json["affiliation"]
         prev_crop = psm_json["cropname"]
@@ -197,6 +200,8 @@ class SaveProjectRow(privateView):
                 "climmob_analytics": int(data.get("analytics")),
                 "cropname": data.get("crop"),
                 "project_checked": 1,
+                "admin_last_update": admin_name,
+                "date_modification": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
             }
         )
 
@@ -221,10 +226,6 @@ class SaveProjectRow(privateView):
                 "status": 400,
             }
 
-        admin_message = data.get("admin_message")
-
-        admin_name = self.user.fullName
-        admin_email = self.user.email
         user_project_name = getProjectUserAndOwner(project_id, self.request)[
             "user_name"
         ]
@@ -243,8 +244,9 @@ class SaveProjectRow(privateView):
             admin_message,
             dataworking["project_curated_cropname"],
             dataworking["project_affiliation"],
+            dataworking["climmob_analytics"],
             prev_affiliation,
-            prev_crop
+            prev_crop,
         )
 
         return {
@@ -263,8 +265,9 @@ class SaveProjectRow(privateView):
         admin_message,
         cropname,
         affiliation,
+        climmob_analytics,
         prev_affiliation,
-        prev_crop
+        prev_crop,
     ):
         _ = self.request.translate
         mail_from = self.request.registry.settings.get("email.from", None)
@@ -278,7 +281,8 @@ class SaveProjectRow(privateView):
             (admin_name, admin_email),
             (user_project_full_name, user_project_email),
         ]
-        subject = "Update on Your Climmob Project(" + project_name + ")"
+
+        subject = "Update on Your ClimMob Project(" + project_name + ")"
         text = render_template(
             "email/curation_notification_email.jinja2",
             {
@@ -290,8 +294,9 @@ class SaveProjectRow(privateView):
                 "admin_message": admin_message,
                 "cropname": cropname,
                 "affiliation": affiliation,
+                "climmob_analytics": int(climmob_analytics),
                 "prev_affiliation": prev_affiliation,
-                "prev_crop":prev_crop,
+                "prev_crop": prev_crop,
                 "_": _,
             },
         )

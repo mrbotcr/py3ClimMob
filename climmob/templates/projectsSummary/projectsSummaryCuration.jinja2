@@ -13,7 +13,7 @@
 {% cssresource request,'coreresources','select2' %}
     <style>
         th {
-            text-align: left;
+            text-align: left !important;
             min-width: 180px;
             max-width: 400px;
             overflow: hidden;
@@ -27,6 +27,15 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+
+        .select2-selection__clear {
+            font-size: 19px !important;
+            position: absolute;
+            right: 10px;
+            color: red !important;
+            padding-right: 8px;
+            cursor: pointer;
         }
 
     </style>
@@ -113,28 +122,30 @@
                                    id="curation-table">
                                 <thead>
                                     <tr>
-                                        <th>#</th>
+
                                         {% for col in tableStructure %}
                                             <th>{{ _(col["name"]) }}</th>
                                         {% endfor %}
                                         {% if edit_mode == True %}
-                                            <th>Notify Area</th>
+                                            <th>Notification</th>
                                             <th></th>
                                         {% endif %}
                                     </tr>
                                     <tr class="filters">
-                                        <th></th>
+
                                         {% for col in tableStructure %}
                                             <th>{{ _(col["name"]) }}</th>
                                         {% endfor %}
-                                        <th></th>
-                                        <th></th>
+                                        {% if edit_mode == True %}
+                                            <th></th>
+                                            <th></th>
+                                        {% endif %}
                                     </tr>
                                 </thead>
                                 <tbody>
                                 {% for project in listOfProjects %}
                                     <tr>
-                                        <td data-column="index">{{ '%04d' % loop.index }}</td>
+
                                         {% for col in tableStructure %}
                                             <td data-column="{{ col["key"] }}">
                                                 {% if col['type'] == "static" or edit_mode == false %}
@@ -195,15 +206,15 @@
         const hiddenIndexes = [
             {% for col in tableStructure %}
                 {% if not col.show %}
-                    {{ loop.index }},
+                    {{ loop.index - 1 }},
                 {% endif %}
             {% endfor %}
         ];
 
         const ToggleableColumns = [
             {% for col in tableStructure %}
-                {% if col.type == 'static' and not col.key == "project_id" %}
-                    {{ loop.index }}{{ "," if not loop.last }}
+                {% if col.type == 'static' and not (col.key == "project_id" or col.key == "projectTitle") %}
+                    {{ loop.index - 1 }}{{ "," if not loop.last }}
                 {% endif %}
             {% endfor %}
         ];
@@ -299,7 +310,8 @@
 
                 {% if edit_mode %}
                 // Omit columns "Notify" & "Save"
-                if (currentIndex >= api.columns().nodes().length - 2) return;
+                const columnCount = api.columns().nodes().length;
+                if (currentIndex >= columnCount - 2) return;
                 {% endif %}
 
                 const select = document.createElement('select');
@@ -385,7 +397,7 @@
         function checkInputs(button) {
             const row = button.closest('tr');
             const project_id = row.querySelector('[data-column="project_id"]').textContent.trim();
-            const rowNumber = row.querySelector('[data-column="index"]').textContent.trim();
+            const project_title = row.querySelector('[data-column="projectTitle"]').textContent.trim();
             const fieldAffiliation = row.querySelector('[data-column="affiliation"] input');
             const fieldCrop = row.querySelector('[data-column="cropname"] input');
             const fieldAnalytics = row.querySelector('[data-column="climmob_analytics"] select');
@@ -405,7 +417,7 @@
             }
             if (error.length > 0) {
                 swal(
-                    "{{ _('Check the row ') }}" + rowNumber,
+                    "{{ _('Check the project ') }}" + project_title,
                     "{{ _('Please, complete these empty fields: ') }}" + error.join(', ') + "{{ _(' to continue') }}",
                     "error"
                 );
@@ -432,7 +444,7 @@
                         if (data.status !== 200) {
                             throw new Error(data.message || "Unknown error");
                         }
-                        swal("{{ _('Data Update, row ') }}" + rowNumber, data.message, "success");
+                        swal("{{ _('Data Update, project ') }}" + project_title, data.message, "success");
                     })
                     .catch(error => {
                         swal("{{ _('Error') }}", error.message, "error");

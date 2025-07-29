@@ -70,7 +70,7 @@ class Column:
     def validate(self):
         for stage in self._stages:
             result = stage["function"]()
-            if result != ColumnValidation.SUCCESS:
+            if result is not ColumnValidation.SUCCESS:
                 raise ValueError(result.value)
 
     # ====== basic check ======

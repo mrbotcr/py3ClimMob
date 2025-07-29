@@ -5,6 +5,12 @@ from time import time
 
 from climmob.config.jinja_extensions import jinjaEnv
 
+__all__ = [
+    "render_template",
+    "build_email_message",
+    "build_email_message_multiple_recipients",
+]
+
 
 def render_template(template_filename, context):
     return jinjaEnv.get_template(template_filename).render(context)
@@ -17,7 +23,7 @@ def build_email_message(body, subject, target_name, target_email, mail_from):
     msg["Subject"] = subject
     msg["From"] = "{} <{}>".format("ClimMob", mail_from)
     recipient = "{} <{}>".format(target_name.encode("utf-8"), target_email)
-    msg["To"] = Header(recipient, "utf-8")
+    msg["To"] = recipient
     msg["Date"] = utils.formatdate(time())
     return msg
 
@@ -31,7 +37,7 @@ def build_email_message_multiple_recipients(body, subject, recipients, mail_from
     msg["From"] = "ClimMob <{}>".format(mail_from)
 
     to_header = ", ".join(["{} <{}>".format(name, email) for name, email in recipients])
-    msg["To"] = Header(to_header, "utf-8")
+    msg["To"] = to_header
     msg["Date"] = utils.formatdate(time())
 
     return msg

@@ -34,7 +34,7 @@ def project_access_type_get_dict():
 
 
 def project_admin_get_dict():
-    return {opt.name.capitalize(): opt.value for opt in ProjectAccessType}
+    return {opt.name.capitalize(): opt.value for opt in ProjectAdmin}
 
 
 def project_climmob_analytics_get_dict():

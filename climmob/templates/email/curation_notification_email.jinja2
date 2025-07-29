@@ -1,67 +1,87 @@
 <!DOCTYPE html>
 <html>
-<body style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px; color: #333; line-height: 1.6; margin: 0;">
-<table style="background-color: #f9f9f9;">
-    <tr>
-        <td align="center">
-            <table width="600"
-                   style="background-color: #ffffff; border: 1px solid #ddd; padding: 30px; border-radius: 6px;">
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            padding: 20px;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            text-align: center; !important;
+        }
+
+        .email-container {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            padding: 30px;
+            border-radius: 6px;
+            margin: 0 auto;
+            width: 600px;
+            display: inline-block; !important;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+<div class="email-container">
+    {% block email_body %}
+        {% block email_hello %}
+            <p style="margin-bottom: 15px;"><strong>{{ _('Dear ') }}{{ name_user }},</strong></p>
+        {% endblock email_hello %}
+
+        {% block email_message %}
+            <p style="margin-bottom: 15px;">{{ _('We are writing to notify you that some updates have been made to your project') }}
+                <strong>{{ project_name }}</strong>
+            </p>
+
+            <table width="100%"
+                   style="background-color: #f1f1f1; border-left: 4px solid #1ab394; padding: 10px 15px; margin-bottom: 20px;">
                 <tr>
-                    <td>
+                    <td style="padding: 10px;">
+                        <p style="margin-bottom: 10px;">
+                            <strong>{{ _('Affiliation updated:') }}</strong><br>
+                            {{ _('From: ') }} {{ prev_affiliation }} → {{ _('To: ') }} {{ affiliation }}
+                        </p>
+                        <p style="margin-bottom: 0;">
+                            <strong>{{ _('Crop name updated:') }}</strong><br>
+                            {{ _('From: ') }} {{ prev_crop }} → {{ _('To: ') }} {{ cropname }}
+                        </p>
+                        <br>
+                        {% if climmob_analytics == 1 %}
+                            <p style="margin: 0;">
+                                <strong>{{ _('Included in 1000FARMS project dashboard report') }}</strong><br>
+                                {{ _('This dashboard presents general statistics such as the number of active projects, projects by country, institutional networks, and more.
+                                    It serves as a reporting tool for donors and stakeholders to monitor overall platform activity.') }}
+                            </p>
+                        {% endif %}
 
-                        {% block email_body %}
-                            {% block email_hello %}
-                                <p style="margin-bottom: 15px;"><strong>{{ _('Dear ') }}{{ name_user }},</strong></p>
-                            {% endblock email_hello %}
+                        {% if admin_message is not none and admin_message != '' %}
+                            <p style="margin-bottom: 0;">
+                                <strong>{{ _('The platform administrator has the following message for you:') }}</strong>
+                            </p>
+                            <p style="margin: 0;">{{ admin_message }}</p>
 
-                            {% block email_message %}
-                                <p style="margin-bottom: 15px;">{{ _('We are writing to notify you that some updates have been made to your project') }}
-                                    <strong>{{ project_name }}</strong> {{ _('(Project Code:') }} {{ project_id }}).</p>
-
-                                <table width="100%"
-                                       style="background-color: #f1f1f1; border-left: 4px solid #1ab394; padding: 10px 15px; margin-bottom: 20px;">
-                                    <tr>
-                                        <td style="padding: 10px;">
-                                            <p style="margin-bottom: 10px;">
-                                                <strong>{{ _('Affiliation updated to:') }}</strong><br>{{ prev_affiliation }} → {{ affiliation }}
-                                            </p>
-                                            <p style="margin-bottom: 0;">
-                                                <strong>{{ _('Crop name updated to:') }}</strong><br>{{ prev_crop }} → {{ cropname }}</p>
-                                        </td>
-                                    </tr>
-                                </table>
-
-                                <p style="margin-bottom: 15px;">{{ _('If you have any questions or concerns, feel free to reach out to the admin who made the change:') }}</p>
-
-                                <p style="margin-top: 10px; font-style: italic; color: #555;">{{ admin_name }}<br>{{ admin_email }}
-                                </p>
-
-                                {% if admin_message is not none and admin_message != '' %}
-                                    <p style="margin-bottom: 10px;">
-                                        <strong>{{ _('This person notified you with this message:') }}</strong></p>
-                                    <table width="100%"
-                                           style="background-color: #f1f1f1; border-left: 4px solid #1ab394; padding: 10px 15px; margin-bottom: 20px;">
-                                        <tr>
-                                            <td style="padding: 10px;">
-                                                <p style="margin: 0;">{{ admin_message }}</p>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                {% endif %}
-
-                                <p style="margin-bottom: 15px;">{{ _('Thank you for your continued collaboration.') }}</p>
-                            {% endblock email_message %}
-
-                            {% block email_goodbye %}
-                                <p style="margin-bottom: 0;">{{ _('Best regards,') }}<br>{{ _('The ClimMob team') }}</p>
-                            {% endblock email_goodbye %}
-                        {% endblock email_body %}
-
+                        {% endif %}
                     </td>
                 </tr>
             </table>
-        </td>
-    </tr>
-</table>
+
+
+
+
+            <p style="margin-bottom: 15px;">
+                {{ _('If you have any questions or concerns, don’t hesitate to reach out to and reply this message, the admin is on copy and will be
+                happy of help you. The platform administrator who suggested the changes to your project was ') }} {{ admin_name }} {{ admin_email }}.
+            </p>
+            <p style="margin-bottom: 15px;">{{ _('Thank you for your continued collaboration.') }}</p>
+        {% endblock email_message %}
+
+        {% block email_goodbye %}
+            <p style="margin-bottom: 0;">{{ _('Best regards,') }}<br>{{ _('The ClimMob team') }}</p>
+        {% endblock email_goodbye %}
+    {% endblock email_body %}
+</div>
 </body>
 </html>

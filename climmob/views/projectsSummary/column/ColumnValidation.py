@@ -6,7 +6,7 @@ def _(x):
 
 
 class ColumnValidation(Enum):
-    SUCCESS = None
+    SUCCESS = "success"
     BLANK_KEY = _("The Key requires a value.")
     BLANK_NAME = _("The Name requires a value.")
     LONG_KEY = _("The 'key' is too long (max 50 characters).")

@@ -123,22 +123,22 @@ DATA_COLUMNS = [
         "id": 14,
         "show": False,
     },
-    # {
-    #     "key": "gender_other",
-    #     "name": "Other gender farmers",
-    #     "type": "static",
-    #     "options": None,
-    #     "id": 15,
-    #     "show": False,
-    # },
-    # {
-    #     "key": "gender_unreported",
-    #     "name": "Unreported gender",
-    #     "type": "static",
-    #     "options": None,
-    #     "id": 16,
-    #     "show": False,
-    # },
+    {
+        "key": "gender_other",
+        "name": "N other gender",
+        "type": "static",
+        "options": None,
+        "id": 15,
+        "show": False,
+    },
+    {
+        "key": "gender_unreported",
+        "name": "N unreported gender",
+        "type": "static",
+        "options": None,
+        "id": 16,
+        "show": False,
+    },
     {
         "key": "technology",
         "name": "Technology",
@@ -157,7 +157,7 @@ DATA_COLUMNS = [
     },
     {
         "key": "startDate",
-        "name": "Start_date",
+        "name": "Start date",
         "type": "static",
         "options": None,
         "id": 19,
@@ -165,7 +165,7 @@ DATA_COLUMNS = [
     },
     {
         "key": "endDate",
-        "name": "End_date",
+        "name": "End date",
         "type": "static",
         "options": None,
         "id": 20,
@@ -230,7 +230,7 @@ DATA_COLUMNS = [
     },
     {
         "key": "project_experimental_site",
-        "name": "Experimental_site",
+        "name": "Experimental site",
         "type": "static",
         "options": None,
         "id": 29,
@@ -238,7 +238,7 @@ DATA_COLUMNS = [
     },
     {
         "key": "project_unit_of_analysis",
-        "name": "Unit_of_analysis",
+        "name": "Unit of analysis",
         "type": "static",
         "options": None,
         "id": 30,
@@ -278,7 +278,7 @@ DATA_COLUMNS = [
     },
     {
         "key": "climmob_analytics",
-        "name": "Data_WareHouse",
+        "name": "Dashboard",
         "type": "dropdown",
         "options": options_dict,
         "id": 35,
@@ -286,11 +286,27 @@ DATA_COLUMNS = [
     },
     {
         "key": "project_checked",
-        "name": "Checked",
+        "name": "Revised",
         "type": "static",
         "options": options_dict_checked,
         "id": 36,
         "show": True,
+    },
+    {
+        "key": "admin_last_update",
+        "name": "Last update by",
+        "type": "static",
+        "options": None,
+        "id": 37,
+        "show": False,
+    },
+    {
+        "key": "date_modification",
+        "name": "Date modification",
+        "type": "static",
+        "options": None,
+        "id": 38,
+        "show": False,
     },
 ]
 
@@ -301,16 +317,22 @@ class DataColumn:
         keys = DataColumn.get_key_project_summary(self)
 
         existing_keys = set(keys)
+        keys_seen = set()
         validated_columns = []
         errors = []
         for col_dict in DATA_COLUMNS:
+            key = col_dict.get("key")
+            if key in keys_seen:
+                errors.append(f"Duplicate key found: '{key}'")
+                continue
+            keys_seen.add(key)
             try:
                 col = Column(**col_dict, existing_keys=existing_keys)
                 validated_columns.append(col)
             except ValueError as e:
                 errors.append(f"Error on the column '{col_dict['key']}': {e}")
         if errors:
-            return errors
+            raise ValueError("\n".join(errors))
 
         return validated_columns
 
