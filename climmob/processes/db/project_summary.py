@@ -42,10 +42,11 @@ def update_project_summary(data, project_id, request):
 
 
 def update_row_project_summary(data, project_id, request):
+    mappedData = mapToSchema(ProjectSummary, data)
     try:
         request.dbsession.query(ProjectSummary).filter(
             ProjectSummary.project_id == project_id
-        ).update({ProjectSummary.psm_json: data})
+        ).update(mappedData)
         return True, ""
     except Exception as e:
         return False, e
@@ -64,9 +65,11 @@ def get_project_summary(project_id, request):
 
 def get_all_project_summary(request):
 
-    res = mapFromSchema(request.dbsession.query(ProjectSummary.psm_json).all())
+    res = mapFromSchema(request.dbsession.query(ProjectSummary).all())
     all_project = []
     for data in res:
+        data["psm_json"]["admin_user_name"] = data["admin_user_name"]
+        data["psm_json"]["admin_update_date"] = data["admin_update_date"]
         all_project.append(data["psm_json"])
 
     return all_project
@@ -85,6 +88,8 @@ def get_user_project_summary(request, user):
 
     user_projects = []
     for project in projects:
+        project["psm_json"]["admin_user_name"] = project["admin_user_name"]
+        project["psm_json"]["admin_update_date"] = project["admin_update_date"]
         user_projects.append(project["psm_json"])
     return user_projects
 

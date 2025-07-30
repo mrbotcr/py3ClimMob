@@ -293,7 +293,7 @@ DATA_COLUMNS = [
         "show": True,
     },
     {
-        "key": "admin_last_update",
+        "key": "admin_user_name",
         "name": "Last update by",
         "type": "static",
         "options": None,
@@ -301,7 +301,7 @@ DATA_COLUMNS = [
         "show": False,
     },
     {
-        "key": "date_modification",
+        "key": "admin_update_date",
         "name": "Date modification",
         "type": "static",
         "options": None,

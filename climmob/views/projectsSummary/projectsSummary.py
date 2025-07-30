@@ -200,8 +200,6 @@ class SaveProjectRow(privateView):
                 "climmob_analytics": int(data.get("analytics")),
                 "cropname": data.get("crop"),
                 "project_checked": 1,
-                "admin_last_update": admin_name,
-                "date_modification": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
             }
         )
 
@@ -211,9 +209,14 @@ class SaveProjectRow(privateView):
             error = True
             messages.append(message)
 
+        data_row =  {}
+        data_row['psm_json'] = psm_json
+        data_row['admin_user_name'] = self.user.login
+        data_row['admin_update_date'] = datetime.datetime.now()
+
         ##modify on the row of the table data
         modify_table, message = update_row_project_summary(
-            psm_json, project_id, request
+            data_row, project_id, request
         )
 
         if not modify_table:
