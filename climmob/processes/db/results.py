@@ -5,9 +5,12 @@ import re
 
 from lxml import etree
 
-from climmob.models import Assessment, Question, Project, mapFromSchema, Registry
+from climmob.models import Assessment, Question, Project, mapFromSchema
 from climmob.models.repository import sql_fetch_all, sql_fetch_one
-from climmob.processes import getCombinations, get_question_sensitivity_by_project_id
+from climmob.processes import (
+    getCombinations,
+    get_sensitive_questions_anonymity_by_project_id,
+)
 
 __all__ = ["getJSONResult", "getCombinationsData"]
 
@@ -269,10 +272,8 @@ def getPackageData(userOwner, projectId, projectCod, request):
     return packages
 
 
-def is_field_sensitive(field, questions):
+def get_question_anonymity(field, questions) -> int | None:
     for q in questions:
-        if q.question_sensitive == 0:
-            continue
         patterns = [
             rf"^{q.question_code}(_[abc])?(_oth)?$",
             rf"^perf_{q.question_code}_[123]$",
@@ -280,13 +281,54 @@ def is_field_sensitive(field, questions):
         ]
         for pattern in patterns:
             if re.fullmatch(pattern, field["name"]):
-                return True
-    return False
+                return q.question_anonymity
+    return None
+
+
+class QuestionSelectFieldBuilder:
+    def __init__(self, anonymize):
+        self.column = None
+        self.table = None
+        self.form_id = None
+        self.prefix = None
+        self.sensitive = False
+        self.anonymize = anonymize
+
+    def set_column(self, column):
+        self.column = column
+
+    def set_table(self, table):
+        self.table = table
+
+    def set_form_id(self, form_id):
+        self.form_id = form_id
+
+    def set_prefix(self, prefix):
+        self.prefix = prefix
+
+    def set_sensitive(self, sensitive):
+        self.sensitive = sensitive
+
+    def build(self):
+        if not self.anonymize or not self.sensitive:
+            return f"{self.table}.{self.column} AS {self.prefix}_{self.column}"
+
+        query = (
+            f"COALESCE(MAX("
+            f"CASE WHEN da.col_name = '{self.column}' "
+            f"AND da.form_id='{self.form_id}'"
+            f"THEN da.value END),"
+            f"{self.table}.{self.column}) "
+            f"AS {self.prefix}_{self.column}"
+        )
+        return query
 
 
 def getData(
     userOwner, project_id, projectCod, registry, assessments, request, anonymize=False
 ):
+    from climmob.utility import QuestionAnonymity
+
     data = (
         request.dbsession.query(Question).filter(Question.question_regkey == 1).first()
     )
@@ -296,48 +338,39 @@ def getData(
     )
     assessmentKey = data.question_code
 
-    questions = get_question_sensitivity_by_project_id(project_id, request)
+    questions = get_sensitive_questions_anonymity_by_project_id(project_id, request)
 
     fields = []
 
     reg_alias = "reg"
 
+    select_field_builder = QuestionSelectFieldBuilder(anonymize)
+    select_field_builder.set_table(reg_alias)
+    select_field_builder.set_prefix("REG")
+    select_field_builder.set_form_id("-")
+
     for field in registry["fields"]:
-        if anonymize and is_field_sensitive(field, questions):
-            fields.append(
-                f"COALESCE(MAX("
-                f"CASE WHEN da.col_name = '{field['name']}' AND da.form_id='-'"
-                f"THEN da.value END),"
-                f"{reg_alias}.{field['name']}) "
-                f"AS REG_{field['name']}"
-            )
-        else:
-            fields.append(
-                reg_alias + "." + field["name"] + " AS " + "REG_" + field["name"]
-            )
+        select_field_builder.set_column(field["name"])
+        if anonymize:
+            anonymity = get_question_anonymity(field, questions)
+            if anonymity == QuestionAnonymity.REMOVE.value:
+                continue
+            select_field_builder.set_sensitive(anonymity is not None)
+        fields.append(select_field_builder.build())
+
     for assessment in assessments:
         assessment_alias = "assess_" + assessment["code"]
+        select_field_builder.set_table(assessment_alias)
+        select_field_builder.set_prefix(f'ASS{assessment["code"]}')
+        select_field_builder.set_form_id(f"{assessment['code']}")
         for field in assessment["fields"]:
-            if anonymize and is_field_sensitive(field, questions):
-                fields.append(
-                    f"COALESCE(MAX("
-                    f"CASE WHEN da.col_name = '{field['name']}' AND da.form_id='{assessment['code']}'"
-                    f"THEN da.value END),"
-                    f"{assessment_alias}.{field['name']}) "
-                    f"AS " + "ASS" + assessment["code"] + "_"
-                    f"{field['name']}"
-                )
-            else:
-                fields.append(
-                    assessment_alias
-                    + "."
-                    + field["name"]
-                    + " AS "
-                    + "ASS"
-                    + assessment["code"]
-                    + "_"
-                    + field["name"]
-                )
+            select_field_builder.set_column(field["name"])
+            if anonymize:
+                anonymity = get_question_anonymity(field, questions)
+                if anonymity == QuestionAnonymity.REMOVE.value:
+                    continue
+                select_field_builder.set_sensitive(anonymity is not None)
+            fields.append(select_field_builder.build())
 
     sql = (
         "SELECT "
@@ -374,17 +407,14 @@ def getData(
             + "."
             + assessmentKey
         )
-
-    sql = (
-        sql
-        + " LEFT JOIN "
-        + userOwner
-        + "_"
-        + projectCod
-        + ".anonymized da"
-        + f" ON da.reg_id = {reg_alias}.qst162 "
-        + f" GROUP BY {reg_alias}.qst162"
-    )
+    if anonymize:
+        sql = (
+            sql
+            + " LEFT JOIN "
+            + f"{userOwner}_{projectCod}.anonymized da "
+            + f"ON da.reg_id = {reg_alias}.qst162 "
+            + f"GROUP BY {reg_alias}.qst162"
+        )
     sql = sql + f" ORDER BY cast({reg_alias}.{registryKey} AS unsigned)"
 
     data = sql_fetch_all(sql)

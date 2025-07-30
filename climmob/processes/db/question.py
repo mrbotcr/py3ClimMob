@@ -40,8 +40,10 @@ __all__ = [
     "getDefaultQuestionLanguage",
     "getQuestionOwner",
     "knowIfUserHasCreatedTranslations",
-    "get_question_sensitivity_by_project_id",
+    "get_sensitive_questions_anonymity_by_project_id",
 ]
+
+from climmob.models.climmobv4 import QuestionType
 
 log = logging.getLogger(__name__)
 
@@ -517,15 +519,32 @@ def knowIfUserHasCreatedTranslations(request, userId):
     return False
 
 
-def get_question_sensitivity_by_project_id(project_id, request):
+def get_sensitive_questions_anonymity_by_project_id(project_id, request):
+    """
+    Retrieve all questions of a project by its id. Includes the registry and all the assessments.
+    """
     query = (
-        request.dbsession.query(Question.question_code, Question.question_sensitive)
+        request.dbsession.query(
+            Question.question_code,
+            func.coalesce(Question.question_anonymity, QuestionType.anonymity_id).label(
+                "question_anonymity"
+            ),
+        )
         .join(Registry, Registry.question_id == Question.question_id)
+        .join(QuestionType, QuestionType.id == Question.question_dtype)
         .filter(Registry.project_id == project_id)
+        .filter(Question.question_sensitive == 1)
         .union(
-            request.dbsession.query(Question.question_code, Question.question_sensitive)
+            request.dbsession.query(
+                Question.question_code,
+                func.coalesce(
+                    Question.question_anonymity, QuestionType.anonymity_id
+                ).label("question_anonymity"),
+            )
             .join(AssDetail, AssDetail.question_id == Question.question_id)
+            .join(QuestionType, QuestionType.id == Question.question_dtype)
             .filter(AssDetail.project_id == project_id)
+            .filter(Question.question_sensitive == 1)
         )
     )
     return query.all()
