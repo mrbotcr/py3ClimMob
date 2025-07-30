@@ -452,6 +452,8 @@
 
             });
 
+            $("#jstree1").jstree("close_all");
+
             $("#filterjstree1").keyup(function (){
                 var searchString = $(this).val();
                 $("#jstree1").jstree('search', searchString);
