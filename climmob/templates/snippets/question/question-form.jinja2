@@ -29,27 +29,9 @@
         <label class="col-sm-4 control-label">{{ _("Type") }}</label>
         <div class="col-sm-8">
             <select id="question_dtype" name="question_dtype" class="form-control inputForQuestionSelect">
-                <option value="1" >{{ _('Text') }}</option>
-                <option value="9" >{{ _('Ranking of options') }}</option>
-                <option value="10" >{{ _('Comparison with check') }}</option>
-                <option value="27" >{{ _('Location') }}</option>
-                <option value="2" >{{ _('Decimal') }}</option>
-                <option value="3" >{{ _('Integer') }}</option>
-                <option value="4" >{{ _('GeoPoint') }}</option>
-                <option value="5" >{{ _('Select one') }}</option>
-                <option value="6" >{{ _('Select multiple') }}</option>
-                <option value="11" >{{ _('Geotrace') }}</option>
-                <option value="12" >{{ _('Geoshape') }}</option>
-                <option value="13" >{{ _('Date') }}</option>
-                <option value="14" >{{ _('Time ') }}</option>
-                <option value="15" >{{ _('DateTime ') }}</option>
-                <option value="16" >{{ _('Image ') }}</option>
-                <option value="17" >{{ _('Audio ') }}</option>
-                <option value="18" >{{ _('Video ') }}</option>
-                <option value="19" >{{ _('Barcode/QR') }}</option>
-                {# <option value="7" {% if formdata.question_dtype == 7 %}selected {% endif %}>{{ _('Package') }}</option>
-                   <option value="8" {% if formdata.question_dtype == 8 %}selected {% endif %}>{{ _('Observer') }}</option>
-                #}
+                {% for q_type in question_types %}
+                    <option value="{{ q_type.id }}">{{ q_type.name }}</option>
+                {% endfor %}
                 {% block qstformqtypes_extra %}
                 {% endblock qstformqtypes_extra %}
             </select>
@@ -553,13 +535,13 @@
 {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
 
     <div class="form-group">
-        <label class="col-sm-4 control-label">{{ _("Set as sensitive") }}</label>
+        <label class="col-sm-4 control-label" for="ckb_question_as_sensitive">{{ _("Set as sensitive") }} </label>
         <div class="col-sm-8">
             <div class="switch">
                 <input type="checkbox" id="ckb_question_as_sensitive" class="inputForQuestionCheck"
                        name="question_sensitive" data-on-color="success"
                        data-off-color="danger" data-on-text="{{ _('Yes') }}"
-                       data-off-text="{{ _('No') }}" >
+                       data-off-text="{{ _('No') }}">
             </div>
         </div>
     </div>

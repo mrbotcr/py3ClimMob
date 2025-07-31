@@ -41,9 +41,11 @@ __all__ = [
     "getQuestionOwner",
     "knowIfUserHasCreatedTranslations",
     "get_sensitive_questions_anonymity_by_project_id",
+    "get_question_types_with_anonymity_options",
 ]
 
-from climmob.models.climmobv4 import QuestionType
+from climmob.models.climmobv4 import QuestionType, QuestionAnonymity
+import climmob.utility as utils
 
 log = logging.getLogger(__name__)
 
@@ -548,3 +550,43 @@ def get_sensitive_questions_anonymity_by_project_id(project_id, request):
         )
     )
     return query.all()
+
+
+def get_question_types_with_anonymity_options(request):
+    query = (
+        request.dbsession.query(
+            QuestionType.id.label("q_type_id"),
+            QuestionType.name.label("q_type_name"),
+            QuestionAnonymity.id.label("q_anonymity_id"),
+            QuestionAnonymity.name.label("q_anonymity_name"),
+        )
+        .join(QuestionAnonymity, QuestionAnonymity.id == QuestionType.anonymity_id)
+        .filter(QuestionType.order != -1)
+        .order_by(QuestionType.order)
+    )
+    result = mapFromSchema(query.all())
+
+    def map_type_options(q_type):
+        mapped_type = {
+            "id": q_type["q_type_id"],
+            "name": utils.QuestionTypeLabel[q_type["q_type_name"]].value,
+            "anonymity_opts": [
+                {
+                    "id": q_type["q_anonymity_id"],
+                    "name": utils.QuestionAnonymityLabel[
+                        q_type["q_anonymity_name"]
+                    ].value,
+                }
+            ],
+        }
+        if q_type["q_anonymity_id"] != utils.QuestionAnonymity.REMOVE.value:
+            mapped_type["anonymity_opts"].append(
+                {
+                    "id": utils.QuestionAnonymity.REMOVE.value,
+                    "name": utils.QuestionAnonymityLabel.REMOVE.value,
+                }
+            )
+        return mapped_type
+
+    mapped = list(map(map_type_options, result))
+    return mapped

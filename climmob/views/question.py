@@ -38,6 +38,7 @@ from climmob.processes import (
     getQuestionOwner,
     getPhraseTranslationInLanguage,
     knowIfUserHasCreatedTranslations,
+    get_question_types_with_anonymity_options,
 )
 from climmob.views.classes import privateView
 from climmob.views.validators.question.QuestionMinMaxValidator import (
@@ -785,6 +786,8 @@ class qlibrary_view(privateView):
 
         nextPage = self.request.params.get("next")
 
+        question_types = get_question_types_with_anonymity_options(self.request)
+
         regularDict = {
             "UserQuestion": UserQuestionMoreBioversity(user_name, self.request),
             "knowIfUserHasCreatedTranslations": knowIfUserHasCreatedTranslations(
@@ -799,6 +802,7 @@ class qlibrary_view(privateView):
             "seeQuestion": seeQuestion,
             "nextPage": nextPage,
             "sectionActive": "questions",
+            "question_types": question_types,
         }
 
         return regularDict
