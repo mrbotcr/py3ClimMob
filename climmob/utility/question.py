@@ -74,10 +74,19 @@ def is_type_numerical(q_type) -> bool:
     return int(q_type) == QuestionType.DECIMAL or int(q_type) == QuestionType.INTEGER
 
 
-class QuestionAnonymity(Enum):
+class QuestionAnonymity(IntEnum):
     REMOVE = 1
     PSEUDONYM = 2
     RANGE = 3
     NOISE = 4
     MASK = 5
     MONTH_YEAR = 6
+
+
+class QuestionAnonymityLabel(Enum):
+    REMOVE = "Remove"
+    PSEUDONYM = "Pseudonym"
+    RANGE = "Range"
+    NOISE = "Noise"
+    MASK = "Mask"
+    MONTH_YEAR = "Month-Year"
