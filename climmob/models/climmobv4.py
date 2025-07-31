@@ -792,6 +792,7 @@ class QuestionType(Base):
 
     id = Column(Integer, primary_key=True, nullable=False)
     name = Column(Unicode(64), nullable=False)
+    order = Column(Integer, nullable=False)
     anonymity_id = Column(
         Integer, ForeignKey("question_anonymity.id"), primary_key=True, nullable=False
     )
