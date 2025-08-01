@@ -211,8 +211,11 @@
 
         {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
 
-            var elem_ckb_question_sensitive = document.querySelector('#ckb_question_as_sensitive');
-            var ckb_question_sensitive = new Switchery(elem_ckb_question_sensitive, { color: '#1AB394' });
+            let elem_ckb_question_sensitive = document.querySelector('#ckb_question_as_sensitive');
+            let ckb_question_sensitive = new Switchery(elem_ckb_question_sensitive, { color: '#1AB394' });
+
+            let anonymity_select = document.getElementById("question_anonymity");
+
 
         {% endif %}
 
@@ -238,6 +241,28 @@
             $("#question_unit").val("-");
             $("#question_min").val("");
             $("#question_max").val("");
+        }
+
+        const q_types = {{ question_types | tojson }};
+
+        function update_anonymity_types(value, current_anonymity_id=-1) {
+            let option;
+            anonymity_select.innerHTML = "";
+            let anonymity_index = 0;
+            for (const q_type of q_types) {
+                if (value === q_type.id) {
+                    q_type.anonymity_opts.forEach((anonymity, j) => {
+                        option = new Option(anonymity.name, anonymity.id);
+                        anonymity_select.appendChild(option);
+                        if (anonymity.id === current_anonymity_id) {
+                            anonymity_index = j;
+                        }
+                    });
+                    break;
+                }
+            }
+            anonymity_select.selectedIndex = anonymity_index;
+            $('#question_anonymity').trigger('change.select2');
         }
 
         $(document).ready(function() {
@@ -345,6 +370,10 @@
             $("#question_dtype").select2();
             var type = $('#question_dtype').val();
 
+            {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
+                update_anonymity_types(parseInt(type));
+            {% endif %}
+
             var question_requiredvalue = 0;
             var objQRequired = $("#ckb_required_value");
             if (objQRequired.is(':checked'))
@@ -370,7 +399,12 @@
             {
                 clean_extra_fields();
 
-                var value = $('#question_dtype').val();
+                const value = $('#question_dtype').val();
+
+                {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
+                    const current_anonymity_id = $('#question_anonymity').val();
+                    update_anonymity_types(parseInt(value), parseInt(current_anonymity_id));
+                {% endif %}
 
                 $("#question"+value).css("display",'initial');
 
@@ -688,6 +722,7 @@
                     {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
 
                         "question_sensitive": question_sensitive,
+                        "question_anonymity": $('#question_anonymity').val()
 
                     {% endif %}
 
@@ -904,13 +939,17 @@
 
             hideNumericalInputs()
 
+            {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
+                update_anonymity_types(q_types[0].id)
+            {% endif %}
+
             loadLanguages();
 
             $(".inputForQuestion").val("")
             $("#question_group").val(category);
             $("#question_forms").val("3");
             $('#question_group').trigger("change.select2");
-            $("#question_dtype").val("1")
+            $("#question_dtype").val(q_types[0].id)
             $('#question_dtype').trigger('change.select2');
             $("#question1").css("display",'initial');
 
@@ -1053,6 +1092,8 @@
                         setSwitchery(ckb_question_sensitive, true)
                     else
                         setSwitchery(ckb_question_sensitive, false)
+
+                    update_anonymity_types(dataJson["question_dtype"], dataJson["question_anonymity"])
 
                 {% endif %}
 
