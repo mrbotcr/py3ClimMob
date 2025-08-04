@@ -9,7 +9,6 @@ from climmob.processes import (
     addProject,
     getProjectData,
     modifyProject,
-    projectExists,
     deleteProject,
     changeTheStateOfCreateComb,
     getCountryList,
@@ -52,6 +51,7 @@ from climmob.processes import (
     get_location_unit_of_analysis_objectives_by_combination,
     delete_all_project_location_unit_objective,
     get_all_affiliations,
+    update_project_finish
 )
 from climmob.views.classes import privateView
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
@@ -941,3 +941,45 @@ class GetObjectivesByLocationAndUnitOfAnalysisView(privateView):
             return objectives
 
         return {}
+
+
+class FinishProjectView(privateView):
+    validator = (ProjectExistsValidator,)
+
+    def get(self):
+        user = self.request.GET.get('user')
+        project = self.request.GET.get('project')
+        project_info= getActiveProject(user, self.request)
+
+        return {
+            'user': user,
+            'project': project,
+            'project_info': project_info,
+        }
+
+    def post(self):
+
+        user = self.request.POST.get('user')
+        project = self.request.POST.get('project')
+
+        success, error_update = update_project_finish(self.request, project)
+        project_info = getActiveProject(user, self.request)
+        if success:
+            #todo check the persson to send the email
+
+
+            self._redirect = HTTPFound(location=self.request.route_url('finishproject'))
+            return {
+                'success': True,
+                'user': user,
+                'project': project,
+                'project_info': project_info,
+            }
+        else:
+            self._redirect = HTTPFound(location=self.request.route_url('finishproject'))
+            return{
+                'error': error_update,
+                'user': user,
+                'project': project,
+                'project_info': project_info,
+            }

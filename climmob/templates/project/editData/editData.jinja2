@@ -26,6 +26,10 @@
 {% endblock pageheading %}
 
 {% block pagecontent %}
+    {% set finished=False %}
+    {% if activeProject["project_status"] == 3 %}
+        {% set finished=True %}
+    {% endif %}
 
     <!--edit by column-->
     <div class="row animated fadeInRightBig">
@@ -34,14 +38,23 @@
         <div class="ibox float-e-margins">
 
             <div class="ibox-title">
-                <h5>{{ _("Edit registration survey data") }}</h5>
+                        {% if finished==False %}
+                             <h5>{{ _("Edit registration survey data") }}</h5>
+                            {% else %}
+                             <h5>{{ _("Registration, survey data") }}</h5>
+                        {% endif %}
+
             </div>
 
             <div class="ibox-content">
                 <!---->
                 {% if not dataworking.data %}
                     {% if newStructure|length!=0 %}
-                        <small>{{ _("Available fields for edit") }}</small>
+                        {% if finished==False %}
+                            <small>{{ _("Available fields for edit") }}</small>
+                            {% else %}
+                            <small>{{ _("Fields for check") }}</small>
+                        {% endif %}
                         <form name="editData" role="form" method="post" action="{{ request.path }}">
                             <input type="hidden" name="csrf_token"
                                    value="{{ request.session.get_csrf_token() }}">
@@ -63,8 +76,10 @@
                                     {% endfor %}
                                 </ul>
                             </div>
+                        {% if finished == False %}
                             <button class="btn btn-primary" type="submit" style="float: top;" name='btn_EditData' id='btn_EditData'>{{ _('Edit') }}</button>
                             <button class="btn btn-default" type="submit" style="float: top;" name='btn_cancel' id='btn_cancel' onclick="{{ request.route_url('dashboard') }}">{{ _('Cancel') }}</button>
+                        {% endif %}
                         </form>
                     {% else %}
                         <small>{{ _("Error. No field available for editing.") }}</small>

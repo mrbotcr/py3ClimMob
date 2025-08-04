@@ -157,6 +157,7 @@ from climmob.views.basic_views import (
     HomeView,
     HealthView,
     NotFoundView,
+    Forbidden,
     LoginView,
     RegisterView,
     LogoutView,
@@ -212,6 +213,7 @@ from climmob.views.project import (
     CurationOfProjectsView,
     GetUnitOfAnalysisByLocationView,
     GetObjectivesByLocationAndUnitOfAnalysisView,
+    FinishProjectView
 )
 from climmob.views.projectHelp.projectHelp import projectHelp_view
 from climmob.views.project_analysis import analysisDataView
@@ -917,6 +919,14 @@ def loadRoutes(config):
             "/user/{user}/project/{project}/registry/close",
             CloseRegistryView,
             "project/closepregistry.jinja2",
+        )
+    )
+    routes.append(
+        addRoute(
+            "finishproject",
+            "/finishproject",
+            FinishProjectView,
+            "project/finishproject.jinja2",
         )
     )
 
@@ -2184,6 +2194,8 @@ def loadRoutes(config):
     appendToRoutes(routes)
 
     config.add_notfound_view(NotFoundView, renderer="404.jinja2")
+
+    config.add_forbidden_view(Forbidden, renderer="403.jinja2")
 
     # Custom mapping can happen here AFTER the host maps
     for plugin in p.PluginImplementations(p.IRoutes):

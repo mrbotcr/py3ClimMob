@@ -25,8 +25,14 @@
 {% endblock %}
 
 {% block pagecontent %}
+
+    {% set finished = False %}
+    {% if activeProject["project_status"] == 3 %}
+        {% set finished = True %}
+    {% endif %}
     <div class="row" style="height: 100%">
         {%  if activeProject["access_type"] in [1,2] %}
+
             <div class="col-lg-6 " style="height: 100%">
                 <div class="ibox float-e-margins" style="height: 100%; margin-bottom: 0px">
                     <div class="ibox-title">
@@ -97,8 +103,7 @@
                                         <div class="i-checks"><label> <input type="radio" value="4" name="access_type" checked> <i></i> {{ _("Member") }} </label></div>
                                     </div>
                                 </div>
-
-                                <div class="col-md-12">
+                                <div class="col-md-12" {% if finished %}hidden{% endif %}>
                                     <button id="btnShareProject" name="btnShareProject" onclick="" type="submit" class="btn btn-primary pull-right ">{{ _("Share project") }}</button>
                                 </div>
                             </div>
@@ -130,29 +135,29 @@
                                 <tr>
                                     <th class="text-center" >{{ _('Name') }}</th>
                                     <th class="text-center" >{{ _('Rol') }}</th>
-                                    <th class="text-center" >{{ _('Action') }}</th>
+                                    <th class="text-center" {% if finished %}hidden{% endif %} >{{ _('Action') }}</th>
                                 </tr>
                                 {% for collaborator in usersCollaborators %}
                                     <tr>
                                         <td style="vertical-align: middle">{{ collaborator.user_fullname }}</td>
                                         <td>
                                             {% if collaborator.access_type == 1 %}
-                                                 <div class="bg-primary p-xs b-r-lg"> {{ _("Owner") }}</div>
+                                                 <div class="bg-primary p-xs b-r-lg" style="text-align: center"> {{ _("Owner") }}</div>
                                             {% else %}
                                                 {% if collaborator.access_type == 2 %}
-                                                     <div class="bg-success p-xs b-r-lg"> {{ _("Admin") }}</div>
+                                                     <div class="bg-success p-xs b-r-lg" style="text-align: center"> {{ _("Admin") }}</div>
                                                 {% else %}
                                                     {% if collaborator.access_type == 3 %}
-                                                         <div class="bg-info p-xs b-r-lg"> {{ _("Editor") }}</div>
+                                                         <div class="bg-info p-xs b-r-lg" style="text-align: center"> {{ _("Editor") }}</div>
                                                     {% else %}
                                                         {% if collaborator.access_type == 4 %}
-                                                             <div class="bg-muted p-xs b-r-lg"> {{ _("Member") }}</div>
+                                                             <div class="bg-muted p-xs b-r-lg" style="text-align: center"> {{ _("Member") }}</div>
                                                         {% endif %}
                                                     {% endif %}
                                                 {% endif %}
                                             {% endif %}
                                         </td>
-                                        <td style="text-align: center; vertical-align: middle; max-width: 74px">
+                                        <td style="text-align: center; vertical-align: middle; max-width: 74px" {% if finished %}hidden{% endif %}>
                                             {% if collaborator.access_type != 1 %}
 
                                                 {% if activeProject["access_type"] in [1,2] or collaborator.user_name == activeUser.login %}

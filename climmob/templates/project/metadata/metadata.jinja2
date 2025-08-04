@@ -44,6 +44,13 @@
         {% set onlySee = True %}
     {% endif %}
 
+
+    {% set finished = False %}
+    {% if activeProject["project_status"] == 3 %}
+        {% set finished = True %}
+    {% endif %}
+
+
     <div class="row">
 
         <div class="col-lg-4">
@@ -100,7 +107,9 @@
             </div>
 
         </div>
-
+    {% if finished %}
+        <fieldset disabled>
+    {% endif %}
         <div class="col-lg-8" id="div_for_show_form" style="display: none">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
@@ -111,9 +120,6 @@
                 </div>
                 <div class="ibox-content">
 
-{#                    <h2>#}
-{#                        {{ _("Please note that all fields are mandatory unless they include the label “(Optional)” ") }}.#}
-{#                    </h2>#}
                     <br>
 
                     <form class="form-horizontal" id="form_metadata" role="form" method="post" action="{{ request.url }}" >
@@ -151,6 +157,10 @@
             </div>
         </div>
 
+        {% if finished %}
+        </fieldset >
+    {% endif %}
+
         <script>
 
             function openMetadataForm(formId)
@@ -164,6 +174,7 @@
                     $("#spaceForPutTheForm").html(dataString[1])
                     $("#metadata_id").val(formId)
                     $("#div_for_show_form").css("display","block")
+                    blockSelect2();
                 });
             }
 
@@ -173,6 +184,7 @@
                 processGroup(rootGroup, jsonResult);  // Procesamos el grupo raíz y vamos llenando jsonResult
                 $("#_jsonResult").val(JSON.stringify(jsonResult))
                 $("#output").text(JSON.stringify(jsonResult, null, 2));  // Mostramos el resultado
+
                 //event.preventDefault();
             });
 
@@ -185,6 +197,14 @@
             $('.tableHover').on('click', 'tbody tr', function(event) {
                 $(this).addClass('tableHover2').siblings().removeClass('tableHover2');
             });
+
+            function blockSelect2() {
+                {% if finished %}
+                    $('select').prop('disabled', true);
+                    $('select').select2();
+                    $('#form_metadata').find('button').hide();
+                {% endif %}
+            }
 
         </script>
 

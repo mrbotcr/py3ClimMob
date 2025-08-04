@@ -24,16 +24,15 @@ import json
 
 
 class getEnumeratorDetails_view(privateView):
-    def processView(self):
-        if self.request.method == "GET":
-            userOwner = self.request.matchdict["user"]
-            enumId = self.request.matchdict["enumid"]
-            enumerator = getEnumeratorData(userOwner, enumId, self.request)
-            self.returnRawViewResult = True
-            for plugin in p.PluginImplementations(p.IEnumerator):
-                enumerator = plugin.before_returning_context(self.request, enumerator)
-            return enumerator
-        raise HTTPNotFound
+    def get(self):
+        userOwner = self.request.matchdict["user"]
+        enumId = self.request.matchdict["enumid"]
+        enumerator = getEnumeratorData(userOwner, enumId, self.request)
+        self.returnRawViewResult = True
+        for plugin in p.PluginImplementations(p.IEnumerator):
+            enumerator = plugin.before_returning_context(self.request, enumerator)
+        return enumerator
+
 
 
 class enumerators_view(privateView):

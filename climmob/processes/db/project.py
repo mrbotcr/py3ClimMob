@@ -62,6 +62,7 @@ __all__ = [
     "getProjectFullDetailsById",
     "getProjectsByUserThatRequireSetup",
     "update_project_status",
+    "update_project_finish",
 ]
 
 
@@ -946,5 +947,15 @@ def update_project_status(project_id, status, request):
             Project.project_id == project_id
         ).update({"project_status": status})
         return True
+    except Exception as e:
+        return False, str(e)
+
+def update_project_finish(request, project_id):
+    try:
+        request.dbsession.query(Project).filter(
+            Project.project_id == project_id
+        ).update({"project_status": 3})
+
+        return True, ""
     except Exception as e:
         return False, str(e)

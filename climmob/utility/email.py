@@ -13,4 +13,5 @@ def build_email_message(body, subject, target_name, target_email, mail_from):
     recipient = "{} <{}>".format(target_name.encode("utf-8"), target_email)
     msg["To"] = Header(recipient, "utf-8")
     msg["Date"] = utils.formatdate(time())
+
     return msg

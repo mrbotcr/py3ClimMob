@@ -32,6 +32,7 @@ class projectEnumerators_view(privateView):
                 activeProjectUser, activeProjectCod, self.request
             )
             activeProject = getActiveProject(self.user.login, self.request)
+            print(self.classResult)
 
             if activeProject["project_template"] == 1:
 
@@ -42,6 +43,7 @@ class projectEnumerators_view(privateView):
                         _query={
                             "user": activeProjectUser,
                             "project": activeProjectCod,
+                            "project_status": self.classResult["project_status"],
                         },
                     )
                 )

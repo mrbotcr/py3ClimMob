@@ -1,3 +1,11 @@
+{% set finished = False %}
+{% if activeProject["project_status"] == 3 %}
+    {% set finished = True %}
+{% endif %}
+{% if finished %}
+    <fieldset disabled>
+{% endif %}
+
 <div class="form-group" style="display: none">
     <label class="col-sm-4 control-label">{{ _('Trial data collection moment code:') }}</label>
     <div class="col-sm-8">
@@ -44,3 +52,15 @@
 {#    </div>#}
 {#    {% endif %}#}
 {#</div>#}
+
+{% if finished %}
+    </fieldset >
+{% endif %}
+
+<script>
+    {% if finished %}
+        $(document).ready(function() {
+            $('button').prop('disabled', true);
+        });
+    {% endif %}
+</script>

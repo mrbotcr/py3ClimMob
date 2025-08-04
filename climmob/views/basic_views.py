@@ -113,6 +113,10 @@ class NotFoundView(publicView):
         self.request.response.status = 404
         return {}
 
+class Forbidden(publicView):
+    def get(self):
+        self.request.response.status = 403
+        return {}
 
 class StoreCookieView(publicView):
     def post(self):

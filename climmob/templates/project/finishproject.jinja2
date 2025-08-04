@@ -1,0 +1,108 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob | Confirm the project as finished") }}</title>
+{% endblock title %}
+
+{% block pageheading %}
+    {% set _title= _("Confirm the project as finished") %}
+    {% set _linkWiki="https://climmob.net/blog/wiki/cancel-form/" %}
+    {% include 'snippets/menuheading.jinja2'%}
+{% endblock %}
+
+{% block pagecontent %}
+    {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+
+    {% if success %}
+        <div class="alert alert-success">{{ _('This project was mark like finish, thanks for your help.') }}</div>
+    {% endif %}
+
+
+    {% if project_info["project_status"] != 3 %}
+        <div class="row">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5> Confirm the finish of the project </h5> <span class="label label-danger">{{ _('Warning') }}</span>
+                </div>
+                <div class="ibox-content">
+                    <p>
+                        {{ _('The next button confirm the finish of the project, this going to block all the edits and delete over the project.') }}
+                    </p>
+                    <p>
+                        {{ _('Also this action help us to study your case and include it into ours informs.') }}
+                    </p>
+                    <p>
+                        {{ _('The summary of the project is the next:') }}
+                    </p>
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>{{ _('Field Name') }}</th><th>{{ _('Value') }}</th>
+                                <th>{{ _('Field Name') }}</th><th>{{ _('Value') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>{{ _('Project ID') }}</td><td>{{ project_info["project_id"] }}</td>
+                                <td>{{ _('Project Name') }}</td><td>{{ project_info["project_name"] }}</td></tr>
+                            <tr><td>{{ _('Project Code') }}</td><td>{{ project_info["project_cod"] }}</td>
+                                <td>{{ _('Project Abstract') }}</td><td>{{ project_info["project_abstract"] }}</td></tr>
+                            <tr><td>{{ _('Tags') }}</td><td>{{ project_info["project_tags"] }}</td>
+                                <td>{{ _('Person in Charge') }}</td><td>{{ project_info["project_pi"] }}</td></tr>
+                            <tr><td>{{ _('Email Person in Charge') }}</td><td>{{ project_info["project_piemail"] }}</td>
+                                <td>{{ _('Owner of the project') }}</td><td>{{ project_info["owner"]["user_name"] }}</td></tr>
+                            <tr><td>{{ _('Country') }}</td><td>{{ project_info["project_cnty"] }}</td>
+                                <td>{{ _('Crop Name') }}</td><td>{{ project_info["project_curated_cropname"] }}</td></tr>
+                            <tr><td>{{ _('Affiliation') }}</td><td>{{ project_info["project_affiliation"] }}</td>
+                                <td>{{ _('Creation date') }}</td><td>{{ project_info["project_creationdate"] }}</td></tr>
+                            <tr><td>{{ _('Project Status') }}</td><td>{% if project_info["project_status"] == 0 %}{{ _("Undefined") }}{% elif project_info["project_status"] == 1 %}
+                                {{ _("Definition") }}{% elif project_info["project_status"] == 2 %}{{ _("In progress") }}{% elif project_info["project_status"] == 3 %}{{ _("Finalized") }}{% endif %}</td>
+                                <td>{{ _('Project Public') }}</td><td>{% if project_info["project_public"] == 0 %}{{ _("No") }}{% elif project_info["project_public"] == 1 %}{{ _("Yes") }}{% endif %}</td></tr>
+
+                        </tbody>
+                    </table>
+
+                    <p>
+                        {{ _('If you are sure about it please, press the button.') }}
+                    </p>
+                    <a class="btn btn-danger btn-rounded btn-outline btn-block"
+                       onclick="if(confirm('Are you sure you want to finish the project?')) { document.getElementById('finishForm').submit(); } return false;">
+                        <i class="fa fa-handshake-o"></i>
+                        Confirm and finish the project
+                        <i class="fa fa-handshake-o"></i>
+                    </a>
+
+                    <form id="finishForm" method="POST" action="{{ request.route_url('finishproject') }}">
+                        <input type="hidden" name="user" value="{{ user }}">
+                        <input type="hidden" name="project" value="{{ project }}">
+                        <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if project_info["project_status"] == 3 %}
+        <div class="row">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5> {{ _('Thanks for confirm the finish of your project') }} </h5> <span class="label label-success">{{ _('Success') }}</span>
+                </div>
+                <div class="ibox-content">
+                    <p>
+                        {{ _('Thanks for confirm the finish of your project. We really appreciate your effort.') }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+
+{% endblock pagecontent%}
+
+
+
+{% block script %}
+{% endblock script %}
