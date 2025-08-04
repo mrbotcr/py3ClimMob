@@ -216,6 +216,15 @@
 
             let anonymity_select = document.getElementById("question_anonymity");
 
+            elem_ckb_question_sensitive.addEventListener('change', function() {
+                anonymity_select.value = saved_anonymity_id
+                $(anonymity_select).trigger('change.select2');
+                if (elem_ckb_question_sensitive.checked) {
+                    $("#div-question-anonymity").css('display', 'block');
+                } else {
+                    $("#div-question-anonymity").css('display', 'none');
+                }
+            });
 
         {% endif %}
 
@@ -245,6 +254,10 @@
 
         const q_types = {{ question_types | tojson }};
 
+        {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
+
+        let saved_anonymity_id = null;
+
         function update_anonymity_types(value, current_anonymity_id=-1) {
             let option;
             anonymity_select.innerHTML = "";
@@ -264,6 +277,7 @@
             anonymity_select.selectedIndex = anonymity_index;
             $('#question_anonymity').trigger('change.select2');
         }
+        {% endif %}
 
         $(document).ready(function() {
 
@@ -665,9 +679,12 @@
 
             {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
 
-                var question_sensitive = 0;
-                if ($("#ckb_question_as_sensitive").is(':checked'))
+                let question_sensitive = 0;
+                let anonymity_input = {};
+                if ($("#ckb_question_as_sensitive").is(':checked')) {
                     question_sensitive = 1;
+                    anonymity_input["question_anonymity"] = anonymity_select.value;
+                }
 
             {% endif %}
 
@@ -722,7 +739,7 @@
                     {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
 
                         "question_sensitive": question_sensitive,
-                        "question_anonymity": $('#question_anonymity').val()
+                        ...anonymity_input
 
                     {% endif %}
 
@@ -977,6 +994,7 @@
             {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
 
                 setSwitchery(ckb_question_sensitive, false);
+                $("#div-question-anonymity").css('display', 'none');
 
             {% endif %}
 
@@ -1088,12 +1106,18 @@
 
                 {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
 
-                    if (dataJson["question_sensitive"] == 1)
+                    if (dataJson["question_sensitive"] === 1) {
                         setSwitchery(ckb_question_sensitive, true)
-                    else
+                        $("#div-question-anonymity").css('display', 'block');
+                    }
+                    else {
                         setSwitchery(ckb_question_sensitive, false)
+                        $("#div-question-anonymity").css('display', 'none');
+                    }
 
                     update_anonymity_types(dataJson["question_dtype"], dataJson["question_anonymity"])
+
+                    saved_anonymity_id = dataJson["question_anonymity"];
 
                 {% endif %}
 
