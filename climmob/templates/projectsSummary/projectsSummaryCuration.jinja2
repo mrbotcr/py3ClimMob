@@ -411,17 +411,21 @@
             const adminMessage = row.querySelector('[data-column="admin_msj"] textarea');
 
             let error = [];
-            if (!fieldAffiliation || fieldAffiliation.value.trim() === '') {
-                error.push('Affiliation');
-            }
 
-            if (!fieldCrop || fieldCrop.value.trim() === '') {
-                error.push('{{ _("Cropname") }}');
-            }
 
             if (!fieldAnalytics || fieldAnalytics.value.trim() === '') {
-                error.push('{{ _("Data_WareHouse") }}');
+                error.push('{{ _("Dashboard") }}');
             }
+
+            if (fieldAnalytics.value.trim() !== '0') {
+                if (!fieldAffiliation || fieldAffiliation.value.trim() === '') {
+                    error.push('Affiliation');
+                }
+                if (!fieldCrop || fieldCrop.value.trim() === '') {
+                    error.push('{{ _("Cropname") }}');
+                }
+            }
+
             if (error.length > 0) {
                 swal(
                     "{{ _('Check the project ') }}" + project_title,
