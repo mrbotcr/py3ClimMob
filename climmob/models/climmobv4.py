@@ -868,6 +868,14 @@ class QuestionTypeAnonymity(Base):
     )
 
 
+class AnonymizationParameter(Base):
+    __tablename__ = "anonymization_parameter"
+
+    question_id = Column(Integer, primary_key=True, nullable=False)
+    name = Column(Unicode(64), primary_key=True, nullable=False)
+    value = Column(Unicode(64), nullable=False)
+
+
 class Registry(Base):
     __tablename__ = "registry"
     __table_args__ = (
