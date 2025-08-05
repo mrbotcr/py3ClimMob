@@ -15,50 +15,65 @@ from climmob.products.fieldagents.fieldagents import create_fieldagents_report
 from climmob.views.classes import privateView
 import climmob.plugins as p
 
+from climmob.views.validators import TextField, IntegerField, BinaryField
+from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
+
 
 class projectEnumerators_view(privateView):
-    def processView(self):
+    validators = (ProjectExistsValidator,)
+
+    def get(self):
 
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
         error_summary = {}
 
-        if not projectExists(
-            self.user.login, activeProjectUser, activeProjectCod, self.request
-        ):
-            raise HTTPNotFound()
-        else:
-            activeProjectId = getTheProjectIdForOwner(
-                activeProjectUser, activeProjectCod, self.request
-            )
-            activeProject = getActiveProject(self.user.login, self.request)
-            print(self.classResult)
+        activeProjectId = getTheProjectIdForOwner(
+            activeProjectUser, activeProjectCod, self.request
+        )
+        activeProject = getActiveProject(self.user.login, self.request)
+        if activeProject["project_template"] == 1:
+            self.returnRawViewResult = True
 
-            if activeProject["project_template"] == 1:
-
-                self.returnRawViewResult = True
-                return HTTPFound(
-                    location=self.request.route_url(
-                        "dashboard",
-                        _query={
-                            "user": activeProjectUser,
-                            "project": activeProjectCod,
-                            "project_status": self.classResult["project_status"],
-                        },
-                    )
+            return HTTPFound(
+                location=self.request.route_url(
+                    "dashboard",
+                    _query={
+                        "user": activeProjectUser,
+                        "project": activeProjectCod,
+                        "project_status": self.classResult["project_status"],
+                    },
                 )
+            )
 
-            if self.request.method == "POST":
-                error_summary = addProjectEnumerators_view.processView(self)
-            return {
-                "activeUser": self.user,
-                "activeProject": activeProject,
-                "enumeratorsInProject": getProjectEnumerators(
-                    activeProjectId, self.request
-                ),
-                "enumerators": getUsableEnumerators(activeProjectId, self.request),
-                "error_summary": error_summary,
-            }
+        return {
+            "activeUser": self.user,
+            "activeProject": activeProject,
+            "enumeratorsInProject": getProjectEnumerators(
+                activeProjectId, self.request
+            ),
+            "enumerators": getUsableEnumerators(activeProjectId, self.request),
+            "error_summary": error_summary,
+        }
+    def post(self):
+        activeProjectUser = self.request.matchdict["user"]
+        activeProjectCod = self.request.matchdict["project"]
+        error_summary = {}
+        activeProjectId = getTheProjectIdForOwner(
+            activeProjectUser, activeProjectCod, self.request
+        )
+        activeProject = getActiveProject(self.user.login, self.request)
+        error_summary = addProjectEnumerators_view.processView(self)
+
+        return {
+            "activeUser": self.user,
+            "activeProject": activeProject,
+            "enumeratorsInProject": getProjectEnumerators(
+                activeProjectId, self.request
+            ),
+            "enumerators": getUsableEnumerators(activeProjectId, self.request),
+            "error_summary": error_summary,
+        }
 
 
 class addProjectEnumerators_view(privateView):
@@ -143,46 +158,37 @@ class addProjectEnumerators_view(privateView):
 
 
 class removeProjectEnumerators_view(privateView):
-    def processView(self):
+    validators = (ProjectExistsValidator,)
 
+    def post(self):
         enumeratorid = self.request.matchdict["enumeratorid"]
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
 
-        if not projectExists(
-            self.user.login, activeProjectUser, activeProjectCod, self.request
-        ):
-            raise HTTPNotFound()
+        activeProjectId = getTheProjectIdForOwner(
+            activeProjectUser, activeProjectCod, self.request
+        )
+        deleted, message = removeEnumeratorFromProject(
+            activeProjectId, enumeratorid, self.request
+        )
+        if not deleted:
+            self.returnRawViewResult = True
+            return {"status": 400, "error": message}
         else:
-
-            activeProjectId = getTheProjectIdForOwner(
-                activeProjectUser, activeProjectCod, self.request
+            stopTasksByProcess(
+                self.request,
+                activeProjectId,
+                processName="create_fieldagents",
             )
-
-            if self.request.method == "POST":
-                deleted, message = removeEnumeratorFromProject(
-                    activeProjectId, enumeratorid, self.request
-                )
-                if not deleted:
-                    self.returnRawViewResult = True
-                    return {"status": 400, "error": message}
-                else:
-                    stopTasksByProcess(
-                        self.request,
-                        activeProjectId,
-                        processName="create_fieldagents",
-                    )
-                    locale = self.request.locale_name
-                    create_fieldagents_report(
-                        locale,
-                        self.request,
-                        activeProjectUser,
-                        activeProjectCod,
-                        activeProjectId,
-                        getProjectEnumerators(activeProjectId, self.request),
-                        getActiveProject(self.user.login, self.request),
-                    )
-                    self.returnRawViewResult = True
-                    return {"status": 200}
-            else:
-                return {}
+            locale = self.request.locale_name
+            create_fieldagents_report(
+                locale,
+                self.request,
+                activeProjectUser,
+                activeProjectCod,
+                activeProjectId,
+                getProjectEnumerators(activeProjectId, self.request),
+                getActiveProject(self.user.login, self.request),
+            )
+            self.returnRawViewResult = True
+            return {"status": 200}

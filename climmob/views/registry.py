@@ -303,6 +303,8 @@ class RegistryView(privateView):
 
 
 class RegistryFormCreationView(privateView):
+    validators = (ProjectExistsValidator,)
+
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
@@ -379,6 +381,7 @@ class RegistryFormCreationView(privateView):
         return ""
 
 
+
 def getDataFormPreview(
     self,
     userOwner,
@@ -452,6 +455,7 @@ def getDataFormPreview(
 
 
 class GetRegistrySectionView(privateView):
+    validators = (ProjectExistsValidator,)
     def processView(self):
 
         activeProjectUser = self.request.matchdict["user"]
@@ -512,6 +516,8 @@ def createDocumentForm(
 
 
 class ChangeProjectMainLanguage_view(privateView):
+    validators = (ProjectExistsValidator,)
+
     def processView(self):
 
         self.returnRawViewResult = True

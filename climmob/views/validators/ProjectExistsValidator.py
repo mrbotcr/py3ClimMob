@@ -1,7 +1,7 @@
 # TODO Move file to validators/project
 import json
 
-from pyramid.httpexceptions import HTTPNotFound
+from pyramid.httpexceptions import HTTPNotFound, HTTPForbidden
 
 from climmob.processes import projectExists
 from climmob.views.classes import privateView, apiView
@@ -16,14 +16,17 @@ class ProjectExistsValidator(BaseValidator):
         self.extract()
 
     def extract(self):
+
         if issubclass(self.view.__class__, privateView):
             self.project_owner_username = self.view.request.user
             self.project_cod = self.view.request.project
+            self.is_project_close()
 
         elif issubclass(self.view.__class__, apiView):
             body = json.loads(self.view.body)
             self.project_owner_username = body["user_owner"]
             self.project_cod = body["project_cod"]
+            self.is_project_close()
 
         else:
             raise TypeError
@@ -37,3 +40,10 @@ class ProjectExistsValidator(BaseValidator):
             self.view.request,
         ):
             raise HTTPNotFound(self._("There is no a project with that code."))
+
+    def is_project_close(self):
+        if (self.view.request.method == "POST" or self.view.request.method == "PUT" or
+                self.view.request.method == "DELETE"):
+            if self.view.classResult["project_status"] == 3:
+                self.view.request.method = "GET"
+                raise HTTPForbidden()

@@ -20,7 +20,6 @@ from pyramid.session import check_csrf_token
 
 import climmob.plugins as p
 from climmob.config.auth import getUserData, getUserByApiKey
-from climmob.views.allowed_on_finish_project import is_allowed_exception
 from climmob.views.context.ApiContext import ApiContext
 from climmob.views.context.PrivateContext import PrivateContext
 from climmob.views.validators import Field, FieldValidator
@@ -439,10 +438,6 @@ class privateView(BaseView):
                 self.request.session.pop_flash()
                 log.error("SECURITY-CSRF error at {} ".format(self.request.url))
                 raise HTTPNotFound()
-            if activeProjectData["project_status"] == 3:
-                if not is_allowed_exception(self.request):
-                    self.request.method = "GET"
-                    raise HTTPForbidden()
             else:
                 if self.checkCrossPost:
                     if self.request.referer != self.request.url:

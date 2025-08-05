@@ -230,6 +230,7 @@ class API_all_users_view(privateView):
 
 
 class removeprojectShare_view(privateView):
+    validators = (ProjectExistsValidator,)
     def processView(self):
 
         collaborator = self.request.matchdict["collaborator"]

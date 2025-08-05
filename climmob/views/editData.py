@@ -15,6 +15,7 @@ from climmob.processes import (
 from climmob.products.analysisdata.analysisdata import create_datacsv
 from climmob.products.dataxlsx.dataxlsx import create_XLSXToDownload
 from climmob.products.errorLogDocument.errorLogDocument import create_error_log_document
+from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 from climmob.views.classes import privateView
 from climmob.views.editDataDB import (
     getNamesEditByColums,
@@ -188,6 +189,7 @@ class downloadErroLogDocument_view(privateView):
 
 
 class editDataView(privateView):
+    validators = (ProjectExistsValidator,)
     def processView(self):
 
         activeProjectUser = self.request.matchdict["user"]

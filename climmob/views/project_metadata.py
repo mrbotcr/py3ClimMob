@@ -15,6 +15,7 @@ from climmob.processes import (
     get_all_affiliations,
     languageByLanguageCode,
 )
+from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 from climmob.views.classes import privateView
 from jinja2 import Environment, FileSystemLoader
 import json
@@ -22,6 +23,8 @@ import os
 
 
 class ProjectMetadataFormView(privateView):
+    validators = (ProjectExistsValidator,)
+
     def processView(self):
 
         activeProjectUser = self.request.matchdict["user"]
