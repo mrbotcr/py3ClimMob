@@ -1489,6 +1489,6 @@ class ProjectSummary(Base):
     psm_json = Column(JSON, nullable=False)
 
     admin_user_name = Column(ForeignKey("user.user_name"), nullable=True)
-    admin_update_date = Column(DateTime , nullable=True)
+    admin_update_date = Column(DateTime, nullable=True)
 
     Project = relationship("Project")

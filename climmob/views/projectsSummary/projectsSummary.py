@@ -27,74 +27,20 @@ from climmob.utility.email import (
 from climmob.utility.project import ProjectAdmin
 from climmob.views.classes import privateView
 from climmob.views.projectsSummary.column.DataColumn import DataColumn
+from climmob.views.basic_views import EmailSender
+from climmob.views.validators import (
+    SectionOnlyForAdminValidator,
+    SectionOnlyForAdminJsonValidator,
+)
 
 log = logging.getLogger("climmob")
 
 
-class ProjectsSummaryView(privateView):
-    def myconverter(o):
-        if isinstance(o, datetime.datetime):
-            return o.__str__()
-
-    def get_data_product(self, request):
-        sql = (
-            "select edited.celery_taskid,edited.project_id,edited.product_id, edited.datetime_added, edited.output_id,edited.state, edited.output_mimetype, edited.output_mimetype, edited.process_name "
-            "from "
-            "("
-            "SELECT *,'Success' as state  FROM products p where p.celery_taskid in (select taskid from finishedtasks where taskerror = 0) "
-            "UNION "
-            "SELECT *,'Fail.' as state  FROM products p where p.celery_taskid in (select taskid from finishedtasks where taskerror = 1) "
-            "UNION "
-            "SELECT *,'Pending...' as state  FROM products p where p.celery_taskid not in (select taskid from finishedtasks) and datediff(sysdate(),datetime_added)<2 "
-            "UNION "
-            "SELECT *,'Fail.' as state  FROM products p where p.celery_taskid not in (select taskid from finishedtasks) and datediff(sysdate(),datetime_added)>=2 "
-            ") "
-            "as edited "
-            "where edited.datetime_added = (SELECT max(datetime_added) FROM products where product_id= edited.product_id and process_name= edited.process_name) and product_id='projectssummary' order by edited.datetime_added "
-        )
-
-        products = request.dbsession.execute(sql).fetchall()
-
-        result = []
-        for qst in products:
-            dct = dict(qst)
-            result.append(dct)
-
-        return result
-
-    def post(self):
-        no_admin_redirect(self)
-
-        if "btn_generate_report" in self.request.POST:
-            create_projects_summary(self.request)
-            self.returnRawViewResult = True
-            return HTTPFound(
-                location=self.request.route_url(
-                    "projectsSummary",
-                )
-            )
-
-    def get(self):
-        no_admin_redirect(self)
-
-        lastReport = ProjectsSummaryView.get_data_product(self, self.request)
-        listOfProjects = {}
-
-        if lastReport:
-            listOfProjects = get_all_project_summary(self.request)
-
-        return {
-            "listOfProjects": listOfProjects,
-            "lastReport": lastReport,
-            "sectionActive": "projectssummary",
-        }
-
-
 class DownloadProjectsSummaryView(privateView):
+    validators = (SectionOnlyForAdminValidator,)
+
     def get(self):
-        userInSession = getUserInfo(self.request, self.user.login)
-        if userInSession["user_admin"] != ProjectAdmin.YES.value:
-            raise HTTPNotFound()
+
         self.returnRawViewResult = True
         celery_taskid = self.request.params.get("celery_taskid")
         product_id = self.request.params.get("product_id")
@@ -145,11 +91,53 @@ class DownloadProjectsSummaryView(privateView):
 
 
 class ProjectsSummaryCurationView(privateView):
+    validators = (SectionOnlyForAdminValidator,)
+
+    def get_data_product(self, request):
+        sql = (
+            "select edited.celery_taskid,edited.project_id,edited.product_id, edited.datetime_added, edited.output_id,edited.state, edited.output_mimetype, edited.output_mimetype, edited.process_name "
+            "from "
+            "("
+            "SELECT *,'Success' as state  FROM products p where p.celery_taskid in (select taskid from finishedtasks where taskerror = 0) "
+            "UNION "
+            "SELECT *,'Fail.' as state  FROM products p where p.celery_taskid in (select taskid from finishedtasks where taskerror = 1) "
+            "UNION "
+            "SELECT *,'Pending...' as state  FROM products p where p.celery_taskid not in (select taskid from finishedtasks) and datediff(sysdate(),datetime_added)<2 "
+            "UNION "
+            "SELECT *,'Fail.' as state  FROM products p where p.celery_taskid not in (select taskid from finishedtasks) and datediff(sysdate(),datetime_added)>=2 "
+            ") "
+            "as edited "
+            "where edited.datetime_added = (SELECT max(datetime_added) FROM products where product_id= edited.product_id and process_name= edited.process_name) and product_id='projectssummary' order by edited.datetime_added "
+        )
+
+        products = request.dbsession.execute(sql).fetchall()
+
+        result = []
+        for qst in products:
+            dct = dict(qst)
+            result.append(dct)
+
+        return result
+
+    def post(self):
+
+        if "btn_generate_report" in self.request.POST:
+            create_projects_summary(self.request)
+            self.returnRawViewResult = True
+            return HTTPFound(
+                location=self.request.route_url(
+                    "projectsSummaryCuration",
+                )
+            )
+
     def myconverter(o):
         if isinstance(o, datetime.datetime):
             return o.__str__()
 
     def get(self):
+
+        lastReport = self.get_data_product(self.request)
+
         edit_mode = False
         table_structure = DataColumn.get_project_summary_columns(self)
         if self.user.admin == ProjectAdmin.YES.value:
@@ -164,14 +152,27 @@ class ProjectsSummaryCurationView(privateView):
         return {
             "tableStructure": table_structure,
             "listOfProjects": list_of_projects,
+            "lastReport": lastReport,
             "edit_mode": edit_mode,
+            "sectionActive": "projectsSummaryCuration",
         }
 
 
 class SaveProjectRow(privateView):
+    validators = (SectionOnlyForAdminJsonValidator,)
+
     def post(self):
-        no_admin_redirect(self)
         self.returnRawViewResult = True
+
+        lastReport = ProjectsSummaryCurationView.get_data_product(self, self.request)
+
+        if lastReport:
+            if lastReport[0]["state"] != "Success":
+                return {
+                    "message": self._("No puede."),
+                    "status": 409,
+                }
+
         request = self.request
 
         data = request.POST
@@ -209,10 +210,10 @@ class SaveProjectRow(privateView):
             error = True
             messages.append(message)
 
-        data_row =  {}
-        data_row['psm_json'] = psm_json
-        data_row['admin_user_name'] = self.user.login
-        data_row['admin_update_date'] = datetime.datetime.now()
+        data_row = {}
+        data_row["psm_json"] = psm_json
+        data_row["admin_user_name"] = self.user.login
+        data_row["admin_update_date"] = datetime.datetime.now()
 
         ##modify on the row of the table data
         modify_table, message = update_row_project_summary(
@@ -307,40 +308,25 @@ class SaveProjectRow(privateView):
         msg = build_email_message_multiple_recipients(
             text, subject, recipients, mail_from
         )
-        try:
 
-            smtp_server = self.request.registry.settings.get(
-                "email.server", "localhost"
-            )
-            smtp_user = self.request.registry.settings.get("email.user")
-            smtp_password = self.request.registry.settings.get("email.password")
+        recipient_emails = [email for _, email in recipients]
 
-            server = smtplib.SMTP(smtp_server, 587)
-            server.ehlo()
-            server.starttls()
-            server.ehlo()
-            server.login(smtp_user, smtp_password)
-            recipient_emails = [email for _, email in recipients]
-            server.sendmail(mail_from, recipient_emails, msg.as_string())
-            server.quit()
-
-        except Exception as e:
-            log.error(str(e))
+        email_sender = EmailSender(self.request.registry.settings)
+        email_sender.send_email(recipient_emails, msg)
 
 
 class ProjectSummaryRecentView(privateView):
+    validators = (SectionOnlyForAdminValidator,)
+
     def get(self):
-        no_admin_redirect(self)
+        lastReport = ProjectsSummaryCurationView.get_data_product(self, self.request)
         table_structure = DataColumn.get_project_summary_columns(self)
         list_of_projects = get_recent_project_summary(self.request)
 
         return {
+            "lastReport": lastReport,
             "tableStructure": table_structure,
             "listOfProjects": list_of_projects,
             "edit_mode": True,
+            "sectionActive": "projectsSummaryRecent",
         }
-
-
-def no_admin_redirect(self):
-    if ProjectAdmin.YES.value != self.user.admin:
-        raise HTTPNotFound()

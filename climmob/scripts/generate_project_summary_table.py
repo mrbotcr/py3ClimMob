@@ -2,6 +2,14 @@ import sys
 
 from climmob.products.projectsSummary.projectsSummary import create_projects_summary
 from pyramid.paster import get_appsettings, setup_logging
+from climmob.models import (
+    get_engine,
+    Base,
+    get_tm_session,
+    get_session_factory,
+    initialize_schema,
+)
+import transaction
 import requests
 import argparse
 import pyramid
@@ -17,11 +25,27 @@ def main(raw_args=None):
         print("Ini file does not exists")
         sys.exit(1)
 
-    setup_logging(args.ini_path)
     settings = get_appsettings(args.ini_path, "climmob")
 
-    request = requests.Session()
-    request.registry = pyramid.registry.Registry
-    request.registry.settings = settings
+    engine = get_engine(
+        settings,
+    )
 
-    create_projects_summary(request)
+    Base.metadata.create_all(engine)
+    session_factory = get_session_factory(engine)
+
+    with transaction.manager:
+
+        dbsession = get_tm_session(session_factory, transaction.manager)
+        setup_logging(args.ini_path)
+
+        request = requests.Session()
+        request.dbsession = dbsession
+        request.registry = pyramid.registry.Registry
+        request.registry.settings = settings
+
+        initialize_schema()
+
+        create_projects_summary(request)
+
+    engine.dispose()

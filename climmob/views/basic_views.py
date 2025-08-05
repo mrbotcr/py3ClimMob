@@ -114,6 +114,12 @@ class NotFoundView(publicView):
         return {}
 
 
+class ForbiddenView(publicView):
+    def get(self):
+        self.request.response.status = 403
+        return {}
+
+
 class StoreCookieView(publicView):
     def post(self):
         next_url = self.request.params.get("next") or self.request.route_url("home")
@@ -178,24 +184,8 @@ class RecoverPasswordView(publicView):
         self, body, subject, target_name, target_email, mail_from
     ):
         msg = build_email_message(body, subject, target_name, target_email, mail_from)
-
-        try:
-            smtp_server = self.request.registry.settings.get(
-                "email.server", "localhost"
-            )
-            smtp_user = self.request.registry.settings.get("email.user")
-            smtp_password = self.request.registry.settings.get("email.password")
-
-            server = smtplib.SMTP(smtp_server, 587)
-            server.ehlo()
-            server.starttls()
-            server.ehlo()
-            server.login(smtp_user, smtp_password)
-            server.sendmail(mail_from, [target_email], msg.as_string())
-            server.quit()
-
-        except Exception as e:
-            print(str(e))
+        email_sender = EmailSender(self.request.registry.settings)
+        email_sender.send_email([target_email], msg)
 
     def send_password_email(self, email_to, reset_token, reset_key, user_dict):
         jinjaEnv.add_extension(ext.i18n)
@@ -403,3 +393,24 @@ class RegisterView(publicView):
             location=self.request.route_url("dashboard"),
             headers=headers,
         )
+
+
+class EmailSender:
+    def __init__(self, settings):
+        self.smtp_server = settings.get("email.server", "localhost")
+        self.smtp_port = int(settings.get("email.port", 587))
+        self.smtp_user = settings.get("email.user")
+        self.smtp_password = settings.get("email.password")
+        self.default_sender = settings.get("email.default_sender", self.smtp_user)
+
+    def send_email(self, to_email, msg):
+        try:
+            server = smtplib.SMTP(self.smtp_server, self.smtp_port)
+            server.ehlo()
+            server.starttls()
+            server.ehlo()
+            server.login(self.smtp_user, self.smtp_password)
+            server.sendmail(self.default_sender, to_email, msg.as_string())
+            server.quit()
+        except Exception as e:
+            log.error(str(e))

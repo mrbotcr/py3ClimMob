@@ -5,14 +5,53 @@
 {% endblock title %}
 
 {% block css %}
-    {% cssresource request,'coreresources','footable' %}
     {% cssresource request,'coreresources','tour' %}
+    {% cssresource request,'coreresources','dataTable_2-0-7' %}
+    {% cssresource request,'coreresources','dataTables_buttons' %}
+    {% cssresource request,'coreresources','select2' %}
+
+    <style>
+        th {
+            text-align: left !important;
+            min-width: 180px;
+            max-width: 400px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        td {
+            max-width: 400px;
+            min-width: 180px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .select2-selection__clear {
+            font-size: 19px !important;
+            position: absolute;
+            right: 10px;
+            color: red !important;
+            padding-right: 8px;
+            cursor: pointer;
+        }
+
+        .table.dataTable{
+            margin: 0px;
+        }
+
+    </style>
 {% endblock css %}
 
 {% block topScripts %}
-    {% jsresource request,'coreresources','footable' %}
     {% jsresource request,'coreresources','toastr' %}
     {% jsresource request,'coreresources','tour' %}
+    {% jsresource request,'coreresources','dataTablesjs_2-0-7' %}
+    {% jsresource request,'coreresources','ButtonsDataTables_2-0-7' %}
+    {% jsresource request,'coreresources','ColvisDataTables_2-0-7' %}
+    {% jsresource request,'coreresources','bootstrapDataTables_2-0-7' %}
+    {% jsresource request,'coreresources','select2' %}
 {% endblock topScripts %}
 
 {% block pageheading %}
@@ -27,10 +66,39 @@
     {% if request.registry.settings.get("projects.limit", "false") == "true" and numberOfProjects >= request.registry.settings.get("projects.quantity", 0)|int%}
         {% set createBoton = false %}
     {% endif %}
+
+    {% if userProjects %}
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h5>{{ _("Project filters") }}</h5>
+                    </div>
+                    <div class="ibox-content">
+
+                        <div class="row mb-12">
+                            <div class="col-md-8" id="custom-search">
+                                <p>{{ _("Type in this space to filter the table according to any criteria related to the project.") }}</p>
+                            </div>
+
+                            <div class="col-md-3 text-center " id="custom-buttons">
+                            </div>
+
+                            <div class="col-md-1 text-end" >
+                                <button class="btn btn-outline btn-primary pull-right" onclick="clearAllFilters(this)">
+                                    {{ _("Clear Filters") }}
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
     
     <div class="row">
         <div class="col-lg-12">
-            <div class="wrapper wrapper-content animated fadeInUp">
 
                 <div class="ibox">
                     <div class="ibox-title">
@@ -47,111 +115,131 @@
                     </div>
                     <div class="ibox-content">
                         {% if userProjects %}
-                            <div class="text-center">
-                                <p>{{ _("Click on the row of the table to change the project in the \"Project overview\" section") }}.</p>
-                                <a class="btn btn-success btn-rounded  btn-xs" style="color: white" onclick="showHelp()"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a>
+                            <div class="text-left">
+                                <p>{{ _("Click on the row of the table to change the project in the \"Project overview\" section") }}.  <a class="btn btn-success btn-rounded  btn-xs" style="color: white" onclick="showHelp()"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a></p>
+
                                 <br><br>
                             </div>
 
-                            <input type="text" class="form-control form-control-sm m-b-xs" id="filter" placeholder="{{ _("Search project") }}">
 
-                            <div class="project-list table-responsive">
 
-                                <table class="footable table table-stripped" data-page-size="50000" data-filter=#filter>
-                                    <tbody>
-                                        {% for project in userProjects %}
-                                            <tr onclick="window.location = '{{ request.route_url('dashboard', _query={'user':project["owner"].user_name, "project": project.project_cod}) }}';">
-                                                <td class="project-status" style="max-width: 110px; vertical-align: middle">
-                                                    {% if project.project_dashboard == 1%}
-                                                        <p class="label label-primary" style="width: 100%; display: block; word-wrap: break-word; white-space: normal; margin: 0px">{{ _("Active project in 'Project overview' section") }}</p>
-                                                    {% endif %}
-                                                </td>
-                                                <td class="project-title" title="{{ request.h.readble_date(project.project_creationdate) }}">
-                                                    <a >{{ project.project_name }}</a>
-                                                    <br/>
-                                                    <small>{{ _("Created") }}: {{  request.h.humanize_date(project.project_creationdate) }}</small>
-                                                    <br>
-                                                    {% for tag in project.project_tags.split(",") %}
-                                                        <span class="label label-info">{{ tag }}</span>
-                                                    {% endfor %}
-                                                </td>
-                                                <td class="project-completion">
-                                                    <p>{{ _("Trial coordinator") }}: {{ project.project_pi }}</p>
-                                                    <p>{{ _("Email address") }}: {{ project.project_piemail }}</p>
-                                                </td>
-                                                <td class="project-completion">
-                                                    <p>{{ _("User owner") }}: {{ project.owner["user_name"] }}</p>
-                                                    <p>{{ _("Project ID") }}: {{ project.project_cod }}</p>
-                                                </td>
-                                                <td class="project-people" style="text-align: center">
-                                                    <i class="fa fa-user-circle-o" style="font-size: 30px"></i><br>
-                                                    <p>
-                                                        {% if project.access_type== 1 %}
-                                                            {{ _("Owner") }}
+                            <table class="display nowrap table table-stripped display " data-filter=#filter id="all-projects">
+                                <thead>
+                                    <tr>
+                                        <th>{{ _("Project overview") }}</th>
+                                        <th>{{ _("User owner") }}</th>
+                                        <th>{{ _("Project ID") }}</th>
+                                        <th>{{ _("Name") }}</th>
+                                        <th>{{ _("Access type") }}</th>
+                                        <th>{{ _("Principal investigator") }}</th>
+                                        <th>{{ _("Email") }}</th>
+                                        <th>{{ _("Progress") }}</th>
+                                        <th>{{ _("Creation date") }}</th>
+                                        <th>{{ _("Tags") }}</th>
+                                        {% if createBoton == true %}
+                                            <th>{{ _("Clone project") }}</th>
+                                        {% endif %}
+                                    </tr>
+                                    <tr class="filters">
+                                        <th>{{ _("Project overview") }}</th>
+                                        <th>{{ _("User owner") }}</th>
+                                        <th>{{ _("Project ID") }}</th>
+                                        <th>{{ _("Name") }}</th>
+                                        <th>{{ _("Access type") }}</th>
+                                        <th>{{ _("Principal investigator") }}</th>
+                                        <th>{{ _("Email") }}</th>
+                                        <th>{{ _("Progress") }}</th>
+                                        <th>{{ _("Creation date") }}</th>
+                                        <th>{{ _("Tags") }}</th>
+                                        {% if createBoton == true %}
+                                            <th>{{ _("Clone project") }}</th>
+                                        {% endif %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for project in userProjects %}
+                                        <tr onclick="window.location = '{{ request.route_url('dashboard', _query={'user':project["owner"].user_name, "project": project.project_cod}) }}';">
+                                            <td style="width: 165px">
+                                                {% if project.project_dashboard == 1%}
+                                                    <p class="label label-primary" style="width: 100%; display: block; word-wrap: break-word; white-space: normal; margin: 0px">{{ _("Active project in 'Project overview' section") }}</p>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <p>{{ project.owner["user_name"] }}</p>
+                                            </td>
+                                            <td>
+                                                <p>{{ project.project_cod }}</p>
+                                            </td>
+                                            <td >
+                                                <p>{{ project.project_name }}</p>
+                                            </td>
+                                            <td  style="text-align: center">
+                                                <i class="fa fa-user-circle-o" style="font-size: 30px"></i><br>
+                                                <p>
+                                                    {% if project.access_type== 1 %}
+                                                        {{ _("Owner") }}
+                                                    {% else %}
+                                                        {% if project.access_type== 2 %}
+                                                            {{ _("Administrator") }}
                                                         {% else %}
-                                                            {% if project.access_type== 2 %}
-                                                                {{ _("Administrator") }}
+                                                            {% if project.access_type== 3 %}
+                                                                {{ _("Editor") }}
                                                             {% else %}
-                                                                {% if project.access_type== 3 %}
-                                                                    {{ _("Editor") }}
+                                                                {{ _("Member") }}
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    {% endif %}
+                                                </p>
+                                            </td>
+                                            <td >
+                                                <p>{{ project.project_pi }}</p>
+                                            </td>
+                                            <td>
+                                                <p>{{ project.project_piemail }}</p>
+                                            </td>
+                                            <td>
+
+                                                <p>
+                                                    {% if project.project_regstatus == 0 %}
+                                                        {{ _("Registration not yet started") }}
+                                                    {% else %}
+                                                        {% if project.project_regstatus == 1 %}
+                                                            {{ _("Registration ongoing") }}
+                                                        {% else %}
+                                                            {% if project.project_regstatus == 2 %}
+
+                                                                {% if project.project_assstatus == 0 %}
+                                                                    {{ _("Registration closed") }}
                                                                 {% else %}
-                                                                    {{ _("Member") }}
-                                                                {% endif %}
-                                                            {% endif %}
-                                                        {% endif %}
-                                                    </p>
-                                                </td>
-                                                <td class="project-actions">
-
-                                                    <p>
-                                                        {% if project.project_regstatus == 0 %}
-                                                            {{ _("Registration not yet started") }}
-                                                        {% else %}
-                                                            {% if project.project_regstatus == 1 %}
-                                                                {{ _("Registration ongoing") }}
-                                                            {% else %}
-                                                                {% if project.project_regstatus == 2 %}
-
-                                                                    {% if project.project_assstatus == 0 %}
-                                                                        {{ _("Registration closed") }}
-                                                                    {% else %}
-                                                                        {{ _("Trial data collection / Analysis ongoing") }}
-                                                                    {% endif %}
-
+                                                                    {{ _("Trial data collection / Analysis ongoing") }}
                                                                 {% endif %}
 
                                                             {% endif %}
 
                                                         {% endif %}
-{#                                                        {% if project.progress.regsubmissions == 0 %}#}
-{#                                                            {{ _("Registration not yet started") }}#}
-{#                                                        {% else %}#}
-{#                                                            {% if project.progress.regsubmissions == 1 %}#}
-{#                                                                {{ _("Registration ongoing") }}#}
-{#                                                            {% else %}#}
-{#                                                                {% if project.progress.regsubmissions == 2 %}#}
-{#                                                                    {% if project.progress.assessments|length == 0 %}#}
-{#                                                                        {{ _("Registration closed") }}#}
-{#                                                                    {% else %}#}
-{#                                                                        {{ _("Trial data collection / Analysis ongoing") }}#}
-{#                                                                    {% endif %}#}
-{#                                                                {% endif %}#}
-{#                                                            {% endif %}#}
-{#                                                        {% endif %}#}
-                                                    </p>
 
-                                                </td>
-                                                <td class="project-actions">
-                                                    {% if createBoton == true %}
-                                                        <a class="btn btn-primary btn-xs" href="{{ request.route_url('cloneProject', _query={"stage":2, "user": project.owner["user_name"],"project": project.project_cod}) }}">{{ _("Clone this project") }}</a>
                                                     {% endif %}
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
+                                                </p>
 
-                                    </tbody>
-                                </table>
-                            </div>
+                                            </td>
+                                            <td>
+                                                <p>{{ project.project_creationdate }}</p>
+                                            </td>
+                                            <td>
+                                                {% for tag in project.project_tags.split(",") %}
+                                                    <span class="label label-info">{{ tag }}</span>
+                                                {% endfor %}
+                                            </td>
+                                            <td >
+                                                {% if createBoton == true %}
+                                                    <a class="btn btn-primary btn-xs" href="{{ request.route_url('cloneProject', _query={"stage":2, "user": project.owner["user_name"],"project": project.project_cod}) }}">{{ _("Clone this project") }}</a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+
+                                </tbody>
+                            </table>
                         {% else %}
 
                             <div style="text-align: center">
@@ -162,15 +250,161 @@
                         {% endif %}
                     </div>
                 </div>
-            </div>
         </div>
     </div>
 
     <script>
-        $(document).ready(function () {
 
-            $('.footable').footable();
-        })
+        const hiddenIndexes = [];
+
+        const ToggleableColumns = [4,5,6,7,8,9];
+
+        const table = new DataTable('#all-projects', {
+
+            scrollX: true,
+            ordering: false,
+            deferRender: true,
+            columnDefs: [
+                {
+                    targets: hiddenIndexes,
+                    visible: false,
+                },
+
+                {
+                    targets: '_all',
+                    render: function (data, type, row, meta) {
+                        if (type === 'filter' || type === 'sort') {
+                            const cell = meta.settings.aoData[meta.row].anCells[meta.col];
+                            if (!cell) return data;
+
+                            const input = cell.querySelector('input');
+                            const select = cell.querySelector('select');
+
+                            if (input) {
+                                return input.value.trim();
+                            } else if (select) {
+                                return select.options[select.selectedIndex].text.trim();
+                            } else {
+                                return cell.textContent.trim();
+                            }
+                        }
+                        return data;
+                    }
+                }
+
+            ],
+            layout: {
+                topStart: {
+                    buttons: [
+                        {
+                            extend: 'colvis',
+                            text: '{{ _("Show / Hide columns") }}',
+                            className: 'btn btn-default',
+                            columns: ToggleableColumns
+                        },
+                        {
+                            extend: 'pageLength',
+                            text: '{{ _("Rows per Page") }}',
+                            className: 'btn btn-default '
+                        }
+                    ]
+                },
+                topEnd: {
+                    search: {
+                        return: true,
+                        text: '',
+                        className: 'form-control'
+                    },
+                },
+
+                bottomStart: {
+                    info: {
+                        return: true,
+                        text: "{{ _('Showing _START_ to _END_ of _TOTAL_ entries') }}",
+                    },
+                },
+
+            },
+
+            initComplete: function () {
+                //change the position of the elements
+                const buttonsContainer = document.querySelector('#all-projects_wrapper .dt-buttons');
+                document.getElementById('custom-buttons').appendChild(buttonsContainer);
+
+                const searchInputContainer = document.querySelector('#all-projects_wrapper div.dt-search');
+                if (searchInputContainer) {
+                    document.getElementById('custom-search').appendChild(searchInputContainer);
+                    const searchInput = searchInputContainer.querySelector('input[type="search"]');
+                    if (searchInput) {
+                        searchInput.classList.add('form-control');
+                        searchInput.placeholder = '{{ _("General search...") }}';
+                    }
+                }
+
+                const api = this.api();
+                api.columns().every(function () {
+                    const column = this;
+                    const currentIndex = column.index();
+
+                    const select = document.createElement('select');
+                    select.className = 'form-select column-filter-select';
+                    select.setAttribute('data-column-index', currentIndex);
+                    select.style.width = '100%';
+
+                    select.add(new Option('', '')); // empty option for fill
+
+                    const uniqueValues = new Set();
+                    column.nodes().each(function (cell) {
+                        let value;
+                        const selectEl = cell.querySelector('select');
+                        const inputEl = cell.querySelector('input');
+
+                        if (selectEl) {
+                            value = selectEl.options[selectEl.selectedIndex].text.trim();
+                        } else if (inputEl) {
+                            value = inputEl.value.trim();
+                        } else {
+                            value = cell.textContent.trim();
+                        }
+
+                        if (value && !uniqueValues.has(value)) {
+                            uniqueValues.add(value);
+                            select.add(new Option(value, value));
+                        }
+                    });
+
+                    column.header().innerHTML = ''; // cleans
+                    column.header().appendChild(select);
+
+                    // starts select2
+                    $(select).select2({
+                        width: '100%',
+                        placeholder: '{{ _("Search or select...") }}',
+                        allowClear: true
+                    });
+
+                    $(select).on('change', function () {
+                        const val = this.value.trim();
+                        column.search(val ? '^' + val + '$' : '', true, false).draw();
+                    });
+                });
+
+            }
+        });
+
+        function clearAllFilters() {
+            table.search('').draw();
+
+            table.columns().every(function () {
+                const column = this;
+                const select = column.header().querySelector('select');
+                if (select) {
+                    select.value = '';
+                    $(select).val('').trigger('change');
+                }
+            });
+            table.draw();
+        }
 
         function showHelp()
         {
