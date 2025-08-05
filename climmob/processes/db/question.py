@@ -1,4 +1,5 @@
 import json
+from collections import defaultdict
 
 from sqlalchemy import func, or_, and_
 
@@ -44,7 +45,11 @@ __all__ = [
     "get_question_types_with_anonymity_options",
 ]
 
-from climmob.models.climmobv4 import QuestionType, QuestionAnonymity
+from climmob.models.climmobv4 import (
+    QuestionType,
+    QuestionAnonymity,
+    QuestionTypeAnonymity,
+)
 import climmob.utility as utils
 
 log = logging.getLogger(__name__)
@@ -523,28 +528,22 @@ def knowIfUserHasCreatedTranslations(request, userId):
 
 def get_sensitive_questions_anonymity_by_project_id(project_id, request):
     """
-    Retrieve all questions of a project by its id. Includes the registry and all the assessments.
+    Retrieve all sensitive questions of a project by its id. Includes the registry and all the assessments.
     """
     query = (
         request.dbsession.query(
             Question.question_code,
-            func.coalesce(Question.question_anonymity, QuestionType.anonymity_id).label(
-                "question_anonymity"
-            ),
+            Question.question_anonymity,
         )
         .join(Registry, Registry.question_id == Question.question_id)
-        .join(QuestionType, QuestionType.id == Question.question_dtype)
         .filter(Registry.project_id == project_id)
         .filter(Question.question_sensitive == 1)
         .union(
             request.dbsession.query(
                 Question.question_code,
-                func.coalesce(
-                    Question.question_anonymity, QuestionType.anonymity_id
-                ).label("question_anonymity"),
+                Question.question_anonymity,
             )
             .join(AssDetail, AssDetail.question_id == Question.question_id)
-            .join(QuestionType, QuestionType.id == Question.question_dtype)
             .filter(AssDetail.project_id == project_id)
             .filter(Question.question_sensitive == 1)
         )
@@ -560,33 +559,26 @@ def get_question_types_with_anonymity_options(request):
             QuestionAnonymity.id.label("q_anonymity_id"),
             QuestionAnonymity.name.label("q_anonymity_name"),
         )
-        .join(QuestionAnonymity, QuestionAnonymity.id == QuestionType.anonymity_id)
+        .join(QuestionTypeAnonymity, QuestionTypeAnonymity.type_id == QuestionType.id)
+        .join(
+            QuestionAnonymity,
+            QuestionAnonymity.id == QuestionTypeAnonymity.anonymity_id,
+        )
         .filter(QuestionType.order != -1)
         .order_by(QuestionType.order)
     )
     result = mapFromSchema(query.all())
 
-    def map_type_options(q_type):
-        mapped_type = {
-            "id": q_type["q_type_id"],
-            "name": utils.QuestionTypeLabel[q_type["q_type_name"]].value,
-            "anonymity_opts": [
-                {
-                    "id": q_type["q_anonymity_id"],
-                    "name": utils.QuestionAnonymityLabel[
-                        q_type["q_anonymity_name"]
-                    ].value,
-                }
-            ],
-        }
-        if q_type["q_anonymity_id"] != utils.QuestionAnonymity.REMOVE.value:
-            mapped_type["anonymity_opts"].append(
-                {
-                    "id": utils.QuestionAnonymity.REMOVE.value,
-                    "name": utils.QuestionAnonymityLabel.REMOVE.value,
-                }
-            )
-        return mapped_type
+    grouped = defaultdict(list)
+    for item in result:
+        key = (item["q_type_id"], item["q_type_name"])
+        grouped[key].append(
+            {"id": item["q_anonymity_id"], "name": item["q_anonymity_name"]}
+        )
 
-    mapped = list(map(map_type_options, result))
-    return mapped
+    result = [
+        {"id": id_, "name": name, "anonymity_opts": opts}
+        for (id_, name), opts in grouped.items()
+    ]
+
+    return result

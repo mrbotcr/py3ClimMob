@@ -793,9 +793,6 @@ class QuestionType(Base):
     id = Column(Integer, primary_key=True, nullable=False)
     name = Column(Unicode(64), nullable=False)
     order = Column(Integer, nullable=False)
-    anonymity_id = Column(
-        Integer, ForeignKey("question_anonymity.id"), primary_key=True, nullable=False
-    )
 
 
 class Question(Base):
@@ -858,6 +855,17 @@ class QuestionAnonymity(Base):
 
     id = Column(Integer, primary_key=True, nullable=False)
     name = Column(Unicode(64), nullable=False)
+
+
+class QuestionTypeAnonymity(Base):
+    __tablename__ = "question_type_anonymity"
+
+    type_id = Column(
+        Integer, ForeignKey("question_type.id"), primary_key=True, nullable=False
+    )
+    anonymity_id = Column(
+        Integer, ForeignKey("question_anonymity.id"), primary_key=True, nullable=False
+    )
 
 
 class Registry(Base):
