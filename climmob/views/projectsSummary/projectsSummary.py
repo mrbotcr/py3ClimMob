@@ -169,7 +169,9 @@ class SaveProjectRow(privateView):
         if lastReport:
             if lastReport[0]["state"] != "Success":
                 return {
-                    "message": self._("No puede."),
+                    "message": self._(
+                        "The process is running, please wait a a minute."
+                    ),
                     "status": 409,
                 }
 
