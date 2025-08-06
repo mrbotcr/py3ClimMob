@@ -39,6 +39,7 @@ from climmob.processes import (
     getPhraseTranslationInLanguage,
     knowIfUserHasCreatedTranslations,
     get_question_types_with_anonymity_options,
+    get_question_anonymity_types_as_dict,
 )
 from climmob.views.classes import privateView
 from climmob.views.validators.question.QuestionMinMaxValidator import (
@@ -803,6 +804,7 @@ class qlibrary_view(privateView):
             "nextPage": nextPage,
             "sectionActive": "questions",
             "question_types": question_types,
+            "anonymity_types": get_question_anonymity_types_as_dict(self.request),
         }
 
         return regularDict

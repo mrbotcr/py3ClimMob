@@ -216,14 +216,19 @@
 
             let anonymity_select = document.getElementById("question_anonymity");
 
+            let anonymity_container = $("#question-anonymity-div")
+
             elem_ckb_question_sensitive.addEventListener('change', function() {
                 anonymity_select.value = saved_anonymity_id
-                $(anonymity_select).trigger('change.select2');
-                if (elem_ckb_question_sensitive.checked) {
-                    $("#div-question-anonymity").css('display', 'block');
-                } else {
-                    $("#div-question-anonymity").css('display', 'none');
+                if (anonymity_select.value === "") {
+                    anonymity_select.selectedIndex = 0;
                 }
+                $(anonymity_select).trigger('change.select2');
+                setAnonymityInputsDisplay(elem_ckb_question_sensitive.checked, parseInt(anonymity_select.value))
+            });
+
+            $(anonymity_select).on('change', function() {
+                setAnonymityInputsDisplay(elem_ckb_question_sensitive.checked, parseInt(anonymity_select.value))
             });
 
         {% endif %}
@@ -275,8 +280,29 @@
                 }
             }
             anonymity_select.selectedIndex = anonymity_index;
-            $('#question_anonymity').trigger('change.select2');
+            $(anonymity_select).trigger('change.select2');
+            setAnonymityInputsDisplay(elem_ckb_question_sensitive.checked, parseInt(anonymity_select.value))
         }
+
+        /**
+         * @param {boolean} show
+         * @param {int} anonymity
+         */
+        function setAnonymityInputsDisplay(show, anonymity=-1) {
+            const display = show ? 'block' : 'none'
+            anonymity_container.css('display', display);
+            $('#question-anonymity-div input').prop('disabled', true);
+            $('#question-anonymization-params > *').css('display', 'none');
+            if (anonymity === {{ anonymity_types.PSEUDONYM }}) {
+                $('#pseudonym-params').css('display', 'block');
+                $('#pseudonym-params input').prop('disabled', false);
+            }
+            else if (anonymity === {{ anonymity_types.RANGE }}) {
+                $('#range-params').css('display', 'block');
+                $('#range-params input').prop('disabled', false);
+            }
+        }
+
         {% endif %}
 
         $(document).ready(function() {
@@ -416,8 +442,8 @@
                 const value = $('#question_dtype').val();
 
                 {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
-                    const current_anonymity_id = $('#question_anonymity').val();
-                    update_anonymity_types(parseInt(value), parseInt(current_anonymity_id));
+                    const current_anonymity_id = $(anonymity_select).val();
+                    update_anonymity_types(parseInt(value), parseInt(saved_anonymity_id));
                 {% endif %}
 
                 $("#question"+value).css("display",'initial');
@@ -994,7 +1020,7 @@
             {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
 
                 setSwitchery(ckb_question_sensitive, false);
-                $("#div-question-anonymity").css('display', 'none');
+                setAnonymityInputsDisplay(false)
 
             {% endif %}
 
@@ -1105,19 +1131,11 @@
                 {% endif %}
 
                 {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
+                    const isSensitive = dataJson["question_sensitive"] === 1;
 
-                    if (dataJson["question_sensitive"] === 1) {
-                        setSwitchery(ckb_question_sensitive, true)
-                        $("#div-question-anonymity").css('display', 'block');
-                    }
-                    else {
-                        setSwitchery(ckb_question_sensitive, false)
-                        $("#div-question-anonymity").css('display', 'none');
-                    }
-
-                    update_anonymity_types(dataJson["question_dtype"], dataJson["question_anonymity"])
-
+                    setSwitchery(ckb_question_sensitive, isSensitive)
                     saved_anonymity_id = dataJson["question_anonymity"];
+                    update_anonymity_types(dataJson["question_dtype"], saved_anonymity_id)
 
                 {% endif %}
 

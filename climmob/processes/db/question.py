@@ -43,6 +43,7 @@ __all__ = [
     "knowIfUserHasCreatedTranslations",
     "get_sensitive_questions_anonymity_by_project_id",
     "get_question_types_with_anonymity_options",
+    "get_question_anonymity_types_as_dict",
 ]
 
 from climmob.models.climmobv4 import (
@@ -565,7 +566,7 @@ def get_question_types_with_anonymity_options(request):
             QuestionAnonymity.id == QuestionTypeAnonymity.anonymity_id,
         )
         .filter(QuestionType.order != -1)
-        .order_by(QuestionType.order)
+        .order_by(QuestionType.order, QuestionAnonymity.id)
     )
     result = mapFromSchema(query.all())
 
@@ -581,4 +582,13 @@ def get_question_types_with_anonymity_options(request):
         for (id_, name), opts in grouped.items()
     ]
 
+    return result
+
+
+def get_question_anonymity_types_as_dict(request):
+    query = request.dbsession.query(QuestionAnonymity)
+    anonymity_types = mapFromSchema(query.all())
+    result = {}
+    for anonymity in anonymity_types:
+        result[anonymity["name"]] = anonymity["id"]
     return result
