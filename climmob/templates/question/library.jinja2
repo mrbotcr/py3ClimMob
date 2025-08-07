@@ -195,6 +195,7 @@
 
     </style>
 
+    {% include 'snippets/question/question_enums.jinja2' %}
     <script>
 
         var elem_ckb_required_value = document.querySelector('#ckb_required_value');
@@ -229,6 +230,12 @@
 
             $(anonymity_select).on('change', function() {
                 setAnonymityInputsDisplay(elem_ckb_question_sensitive.checked, parseInt(anonymity_select.value))
+            });
+
+            const anonymity_inputs_selector = $('#question-anonymity-div input')
+
+            anonymity_inputs_selector.on('change', function() {
+                this.setCustomValidity("");
             });
 
         {% endif %}
@@ -291,7 +298,7 @@
         function setAnonymityInputsDisplay(show, anonymity=-1) {
             const display = show ? 'block' : 'none'
             anonymity_container.css('display', display);
-            $('#question-anonymity-div input').prop('disabled', true);
+            anonymity_inputs_selector.prop('disabled', true);
             $('#question-anonymization-params > *').css('display', 'none');
             if (anonymity === {{ anonymity_types.PSEUDONYM }}) {
                 $('#pseudonym-params').css('display', 'block');
@@ -677,6 +684,51 @@
             setTimeout(() => checkIsVisibleAndHide(selector), 100);
         }
 
+        /**
+         * @param {Object} anonymity_body
+         * @param {int} q_type_id
+         * @returns {boolean} True if the string is valid, false otherwise.
+         */
+        function validate_anonymization_params(anonymity_body, q_type_id) {
+            let invalid_input = null;
+            if (anonymity_body["question_anonymity"] === {{ anonymity_types.PSEUDONYM }}){
+                const regex = /^[^{}]*{}[^{}]*$/;
+                if (!regex.test(anonymity_body["anonym_param_pseudonym"])) {
+                    invalid_input = {name: "anonym_param_pseudonym",
+                                     msg: "Must contain '{}' once."}
+                }
+            }
+            else if (anonymity_body["question_anonymity"] === {{ anonymity_types.RANGE }}) {
+                const lower_bound =  Number(anonymity_body["anonym_param_lower_bound"])
+                const upper_bound =  Number(anonymity_body["anonym_param_upper_bound"])
+                const interval =  Number(anonymity_body["anonym_param_interval"])
+
+                if (q_type_id === QuestionType.INTEGER) {
+                    if (!Number.isInteger(lower_bound))
+                        invalid_input = {name: "anonym_param_lower_bound"}
+                    else if (!Number.isInteger(upper_bound))
+                        invalid_input = {name: "anonym_param_upper_bound"}
+                    else if (!Number.isInteger(interval))
+                        invalid_input = {name: "anonym_param_interval"}
+                    if (invalid_input)
+                        invalid_input.msg = "Must be integer"
+                }
+                if (lower_bound >= upper_bound) {
+                    invalid_input = {name: "anonym_param_upper_bound",
+                                     msg: "Must be higher than the lower bound."}
+                } else if (interval >= upper_bound - lower_bound) {
+                    invalid_input = {name: "anonym_param_interval",
+                                     msg: "Must fit within the bounds."}
+                }
+            }
+            if (invalid_input) {
+                const input = document.querySelector(`input[name="${invalid_input.name}"]`);
+                input.setCustomValidity(invalid_input.msg);
+                input.reportValidity();
+            }
+            return invalid_input === null;
+        }
+
         function actionQuestion(action) {
             $("#btn_add_question").prop('disabled', true);
             $("#btn_update_question").prop('disabled', true);
@@ -706,10 +758,30 @@
             {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
 
                 let question_sensitive = 0;
-                let anonymity_input = {};
+                let anonymity_body = {};
                 if ($("#ckb_question_as_sensitive").is(':checked')) {
                     question_sensitive = 1;
-                    anonymity_input["question_anonymity"] = anonymity_select.value;
+                    let anonymity_id = parseInt(anonymity_select.value);
+                    anonymity_body["question_anonymity"] = anonymity_id
+                    let params_container_id = null
+                    if (anonymity_id === {{ anonymity_types.PSEUDONYM }})
+                        params_container_id = "pseudonym-params";
+                    else if (anonymity_id === {{ anonymity_types.RANGE }})
+                        params_container_id = "range-params";
+
+                    $(`#${params_container_id} input`).each(function() {
+                        const name = $(this).attr('name');
+                        const value = $(this).val();
+                        if (name)
+                            anonymity_body[name] = value;
+                    });
+
+                    if (!validate_anonymization_params(anonymity_body, parseInt($('#question_dtype').val()))) {
+                        $("#btn_add_question").prop('disabled', false);
+                        $("#btn_update_question").prop('disabled', false);
+                        checkIsVisibleAndHide("#carga")
+                        return
+                    }
                 }
 
             {% endif %}
@@ -765,7 +837,7 @@
                     {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
 
                         "question_sensitive": question_sensitive,
-                        ...anonymity_input
+                        ...anonymity_body
 
                     {% endif %}
 

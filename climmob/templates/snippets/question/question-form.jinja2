@@ -558,19 +558,19 @@
                 <div class="form-group" id="anonymization-lower-bound-div">
                     <label class="col-sm-4 control-label" for="anonymization-lower-bound-input">{{ _("Lower bound") }}</label>
                     <div class="col-sm-8">
-                        <input required id="anonymization-lower-bound-input" name="lower_bound" class="form-control inputForQuestion"/>
+                        <input required type="number" step="any" id="anonymization-lower-bound-input" name="anonym_param_lower_bound" class="form-control inputForQuestion"/>
                     </div>
                 </div>
                 <div class="form-group" id="anonymization-upper-bound-div">
                     <label class="col-sm-4 control-label" for="anonymization-upper-bound-input">{{ _("Upper bound") }}</label>
                     <div class="col-sm-8">
-                        <input required id="anonymization-upper-bound-input" name="upper_bound" class="form-control inputForQuestion"/>
+                        <input required type="number" step="any" id="anonymization-upper-bound-input" name="anonym_param_upper_bound" class="form-control inputForQuestion"/>
                     </div>
                 </div>
                 <div class="form-group" id="anonymization-interval-div">
                     <label class="col-sm-4 control-label" for="anonymization-interval-input">{{ _("Interval") }}</label>
                     <div class="col-sm-8">
-                        <input required id="anonymization-interval-input" name="interval" class="form-control inputForQuestion"/>
+                        <input required type="number" step="any" id="anonymization-interval-input" name="anonym_param_interval" class="form-control inputForQuestion"/>
                     </div>
                 </div>
             </div>
@@ -578,7 +578,7 @@
                 <div class="form-group" id="anonymization-pseudonym-div">
                     <label class="col-sm-4 control-label" for="anonymization-pseudonym-input">{{ _("Pseudonym") }}</label>
                     <div class="col-sm-8">
-                        <input required id="anonymization-pseudonym-input" name="pseudonym" class="form-control inputForQuestion"/>
+                        <input required id="anonymization-pseudonym-input" name="anonym_param_pseudonym" class="form-control inputForQuestion"/>
                         <span class="help-block m-b-none text-left">{{ _("Short template for the pseudonym, e.g., 'Farmer-{}'. The curly braces will be replaced with the package code.") }}</span>
                     </div>
                 </div>
