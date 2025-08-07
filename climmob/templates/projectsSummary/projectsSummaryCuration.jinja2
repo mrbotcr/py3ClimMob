@@ -7,10 +7,15 @@
 {% block css %}
 
     {% cssresource request,'coreresources','chosen' %}
-    {% cssresource request,'coreresources','dataTable_2-0-7' %}
-    {% cssresource request,'coreresources','dataTables_buttons' %}
     {% cssresource request,'coreresources','sweetAlert' %}
-    {% cssresource request,'coreresources','select2' %}
+    {#    {% cssresource request,'coreresources','dataTable_2-0-7' %}#}
+    {#    {% cssresource request,'coreresources','dataTables_buttons' %}#}
+    {#    {% cssresource request,'coreresources','select2' %}#}
+    <link href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/columncontrol/1.0.7/css/columnControl.dataTables.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/buttons/3.0.0/css/buttons.dataTables.css" rel="stylesheet">
+
+
     <style>
         th {
             text-align: left !important;
@@ -29,17 +34,22 @@
             text-overflow: ellipsis;
         }
 
-        .select2-selection__clear {
-            font-size: 19px !important;
-            position: absolute;
-            right: 10px;
-            color: red !important;
-            padding-right: 8px;
-            cursor: pointer;
+        .table.dataTable {
+            margin: 0px;
         }
 
-        .table.dataTable{
-            margin: 0px;
+        div.dt-buttons > .dt-button {
+            font-size: 14px;
+            font-weight: normal;
+            line-height: 1.42857143;
+            text-align: center;
+            white-space: nowrap;
+            cursor: pointer;
+            color: inherit;
+            background: white;
+            border: 1px solid #e7eaec;
+            border-radius: 3px;
+
         }
 
     </style>
@@ -51,12 +61,17 @@
     {% jsresource request,'coreresources','toastr' %}
     {% jsresource request,'coreresources','datapicker' %}
     {% jsresource request,'coreresources','chosen' %}
-    {% jsresource request,'coreresources','dataTablesjs_2-0-7' %}
-    {% jsresource request,'coreresources','ButtonsDataTables_2-0-7' %}
-    {% jsresource request,'coreresources','ColvisDataTables_2-0-7' %}
-    {% jsresource request,'coreresources','bootstrapDataTables_2-0-7' %}
     {% jsresource request,'coreresources','sweetAlert' %}
-    {% jsresource request,'coreresources','select2' %}
+    {#    {% jsresource request,'coreresources','dataTablesjs_2-0-7' %}#}
+    {#    {% jsresource request,'coreresources','ButtonsDataTables_2-0-7' %}#}
+    {#    {% jsresource request,'coreresources','ColvisDataTables_2-0-7' %}#}
+    {#    {% jsresource request,'coreresources','bootstrapDataTables_2-0-7' %}#}
+    {#    {% jsresource request,'coreresources','select2' %}#}
+
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/columncontrol/1.0.7/js/dataTables.columnControl.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.0/js/dataTables.buttons.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.colVis.js"></script>
 
 {% endblock topScripts %}
 
@@ -67,7 +82,7 @@
 
 {% block pagecontent %}
     {% if sectionActive == "projectsSummaryCuration" %}
-        {% if not lastReport or lastReport[0]["state"] =="Success" or lastReport[0]["state"] =="Fail."%}
+        {% if not lastReport or lastReport[0]["state"] =="Success" or lastReport[0]["state"] =="Fail." %}
             <div class="row">
 
                 <div class="col-lg-6 ">
@@ -75,30 +90,34 @@
                         <div class="ibox-title">
                             <h5>{{ _("Generate report") }}</h5>
                         </div>
-                        <div class="ibox-content text-center" >
-                            {% if lastReport and lastReport[0]["state"] =="Fail."%}
+                        <div class="ibox-content text-center">
+                            {% if lastReport and lastReport[0]["state"] =="Fail." %}
                                 <div class="alert alert-danger alert-dismissable">
-                                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button> {{ _("There was an error generating the report, try again.") }}</div>
+                                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×
+                                    </button>
+                                    {{ _("There was an error generating the report, try again.") }}</div>
                             {% endif %}
 
                             <form method="post" class="form-horizontal" action="{{ action }}">
                                 <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                                 <p>{{ _("This process will take several minutes, so it will run in the background and when ready the results will be displayed.") }}</p>
-                                <button class="btn btn-warning  dim btn-large-dim btn-outline" name="btn_generate_report" type="submit"><i class="fa fa-play"></i></button>
+                                <button class="btn btn-warning  dim btn-large-dim btn-outline"
+                                        name="btn_generate_report" type="submit"><i class="fa fa-play"></i></button>
                             </form>
                         </div>
                     </div>
                 </div>
 
-                {% if lastReport and lastReport[0]["state"] =="Success"%}
+                {% if lastReport and lastReport[0]["state"] =="Success" %}
                     <div class="col-lg-6 ">
                         <div class="ibox float-e-margins">
                             <div class="ibox-title">
                                 <h5>{{ _("Download report") }}</h5>
                             </div>
-                            <div class="ibox-content text-center" >
+                            <div class="ibox-content text-center">
                                 <p>{{ _("This report was generated on {}.").format(lastReport[0].datetime_added) }}</p>
-                                <button class="btn btn-success  dim btn-large-dim btn-outline" id="btn_download_report"><i class="fa fa-download"></i></button>
+                                <button class="btn btn-success  dim btn-large-dim btn-outline" id="btn_download_report">
+                                    <i class="fa fa-download"></i></button>
 
                             </div>
                         </div>
@@ -115,54 +134,18 @@
                     <div class="ibox-title">
                         <h5>{{ _("Generating report") }}</h5>
                     </div>
-                    <div class="ibox-content text-center" >
+                    <div class="ibox-content text-center">
                         <p>{{ _("The report generation process is running, wait a moment until the process is finished, or try refreshing the screen with the following button to verify if the process has finished.") }}</p>
-                        <button class="btn btn-info  dim btn-large-dim btn-outline" id="btn_refresh_report"  ><i class="fa fa-refresh"></i></button>
+                        <button class="btn btn-info  dim btn-large-dim btn-outline" id="btn_refresh_report"><i
+                                class="fa fa-refresh"></i></button>
                     </div>
                 </div>
             </div>
         </div>
     {% endif %}
 
-    {% if lastReport and lastReport[0]["state"] =="Success"%}
-        {% if listOfProjects  %}
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="ibox">
-                        <div class="ibox-title">
-                            <h5>{{ _('Project filters') }}</h5>
-                        </div>
-                        <div class="ibox-content">
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label for="min-farm-registered">{{ _("Minimum Farmers Registered: ") }}</label>
-                                    <input type="text" id="min-farm-registered" name="min-farm-registered" class="form-control">
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="max-farm-registered">{{ _("Maximum Farmers Registered: ") }}</label>
-                                    <input type="text" id="max-farm-registered" name="max-farm-registered" class="form-control">
-                                </div>
-                            </div>
-                            <br>
-                            <div class="row mb-12">
-                                <div class="col-md-8" id="custom-search">
-                                    <p>{{ _("Type in this space to filter the table according to any criteria related to the project.") }}</p>
-                                </div>
-                                <div class="col-md-3 text-center " id="custom-buttons">
-                                </div>
-
-                                <div class="col-md-1 text-end" >
-                                    <button class="btn btn-outline btn-primary pull-right" onclick="clearAllFilters(this)">
-                                        {{ _("Clear Filters") }}
-                                    </button>
-                                </div>
-                            </div>
-                            <br>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+    {% if lastReport and lastReport[0]["state"] =="Success" %}
+        {% if listOfProjects %}
             <div class="row">
                 <div class="col-lg-12">
                     <div class="ibox ">
@@ -180,26 +163,26 @@
                                     <table class="display nowrap table table-stripped display " data-filter=#filter
                                            id="curation-table">
                                         <thead>
-                                            <tr>
+                                        <tr>
 
-                                                {% for col in tableStructure %}
-                                                    <th>{{ _(col["name"]) }}</th>
-                                                {% endfor %}
-                                                {% if edit_mode == True %}
-                                                    <th>{{ _('Notification') }}</th>
-                                                    <th></th>
-                                                {% endif %}
-                                            </tr>
-                                            <tr class="filters">
+                                            {% for col in tableStructure %}
+                                                <th>{{ _(col["name"]) }}</th>
+                                            {% endfor %}
+                                            {% if edit_mode == True %}
+                                                <th>{{ _('Notification') }}</th>
+                                                <th></th>
+                                            {% endif %}
+                                        </tr>
+                                        <tr class="filters">
 
-                                                {% for col in tableStructure %}
-                                                    <th>{{ _(col["name"]) }}</th>
-                                                {% endfor %}
-                                                {% if edit_mode == True %}
-                                                    <th></th>
-                                                    <th></th>
-                                                {% endif %}
-                                            </tr>
+                                            {% for col in tableStructure %}
+                                                <th>{{ _(col["name"]) }}</th>
+                                            {% endfor %}
+                                            {% if edit_mode == True %}
+                                                <th></th>
+                                                <th></th>
+                                            {% endif %}
+                                        </tr>
                                         </thead>
                                         <tbody>
                                         {% for project in listOfProjects %}
@@ -224,7 +207,8 @@
 
                                                         {% elif col['type'] == "dropdown" %}
                                                             <select class="form-control">
-                                                                <option value="" selected>{{ _("Choice an option") }}</option>
+                                                                <option value=""
+                                                                        selected>{{ _("Choice an option") }}</option>
                                                                 {% for key, id in col["options"].items() %}
                                                                     <option value="{{ id }}"
                                                                             {% if id == project[col["key"]] %}
@@ -241,7 +225,7 @@
                                                         <textarea placeholder="{{ _('Modify this field to send a message for the
                                                         project user') }}" maxlength="500"></textarea>
                                                     </td>
-                                                    <td data-column="save" >
+                                                    <td data-column="save">
                                                         <button class="btn btn-primary pull-right"
                                                                 onclick="checkInputs('{{ project["project_id"] }}',this)">
                                                             {{ _("Save") }}
@@ -271,274 +255,277 @@
 
     <script>
 
-        const hiddenIndexes = [
-            {% for col in tableStructure %}
-                {% if not col.show %}
-                    {{ loop.index - 1 }},
-                {% endif %}
-            {% endfor %}
-        ];
+        $(document).ready(function () {
 
-        const ToggleableColumns = [
-            {% for col in tableStructure %}
-                {% if col.type == 'static' and not ( col.key == "projectTitle") %}
-                    {{ loop.index - 1 }}{{ "," if not loop.last }}
-                {% endif %}
-            {% endfor %}
-        ];
+            {% if userProjects %}
 
-        {% if lastReport and lastReport[0]["state"] =="Success"%}
-        const minEl = document.querySelector('#min-farm-registered');
-        const maxEl = document.querySelector('#max-farm-registered');
+                const hiddenIndexes = [
+                    {% for col in tableStructure %}
+                        {% if not col.show %}
+                            {{ loop.index - 1 }},
+                        {% endif %}
+                    {% endfor %}
+                ];
 
-        const table = new DataTable('#curation-table', {
-            scrollX: true,
-            ordering: false,
-            deferRender: true,
-            columnDefs: [
-                {
-                    targets: hiddenIndexes,
-                    visible: false,
-                },
+                const ToggleableColumns = [
+                    {% for col in tableStructure %}
+                        {% if col.type == 'static' and not ( col.key == "projectTitle") %}
+                            {{ loop.index - 1 }}{{ "," if not loop.last }}
+                        {% endif %}
+                    {% endfor %}
+                ];
 
-                {
-                    targets: '_all',
-                    render: function (data, type, row, meta) {
-                        if (type === 'filter' || type === 'sort') {
-                            const cell = meta.settings.aoData[meta.row].anCells[meta.col];
-                            if (!cell) return data;
+                {% if lastReport and lastReport[0]["state"] =="Success"%}
+                    const minEl = document.querySelector('#min-farm-registered');
+                    const maxEl = document.querySelector('#max-farm-registered');
 
-                            const input = cell.querySelector('input');
-                            const select = cell.querySelector('select');
+                    const table = new DataTable('#curation-table', {
+                        scrollX: true,
+                        ordering: false,
+                        deferRender: true,
+                        columnDefs: [
+                            {
+                                targets: hiddenIndexes,
+                                visible: false,
+                            },
 
-                            if (input) {
-                                return input.value.trim();
-                            } else if (select) {
-                                return select.options[select.selectedIndex].text.trim();
-                            } else {
-                                return cell.textContent.trim();
+                            {
+                                targets: '_all',
+                                render: function (data, type, row, meta) {
+                                    if (type === 'filter' || type === 'sort') {
+                                        const cell = meta.settings.aoData[meta.row].anCells[meta.col];
+                                        if (!cell) return data;
+
+                                        const input = cell.querySelector('input');
+                                        const select = cell.querySelector('select');
+
+                                        if (input) {
+                                            return input.value.trim();
+                                        } else if (select) {
+                                            return select.options[select.selectedIndex].text.trim();
+                                        } else {
+                                            return cell.textContent.trim();
+                                        }
+                                    }
+                                    return data;
+                                }
                             }
-                        }
-                        return data;
-                    }
-                }
 
-            ],
-            layout: {
-                topStart: {
-                    buttons: [
-                        {
-                            extend: 'colvis',
-                            text: '{{ _("Show / Hide columns") }}',
-                            className: 'btn btn-default',
-                            columns: ToggleableColumns
+                        ],
+                        layout: {
+                            topStart: {
+                                buttons: [
+                                    {
+                                        extend: 'colvis',
+                                        text: '{{ _("Show / Hide columns") }}',
+                                        className: 'btn btn-default',
+                                        columns: ToggleableColumns
+                                    },
+                                    {
+                                        extend: 'pageLength',
+                                        text: '{{ _("Rows per Page") }}',
+                                        className: 'btn btn-default '
+                                    }
+                                ]
+                            },
+                            topEnd: {
+                                search: {
+                                    return: true,
+                                    text: '',
+                                    className: 'form-control'
+                                },
+                            },
+
+                            bottomStart: {
+                                info: {
+                                    return: true,
+                                    text: "{{ _('Showing _START_ to _END_ of _TOTAL_ entries') }}",
+                                },
+                            },
+
                         },
-                        {
-                            extend: 'pageLength',
-                            text: '{{ _("Rows per Page") }}',
-                            className: 'btn btn-default '
+
+                        initComplete: function () {
+                            //change the position of the elements
+                            const buttonsContainer = document.querySelector('#curation-table_wrapper .dt-buttons');
+                            document.getElementById('custom-buttons').appendChild(buttonsContainer);
+
+                            const searchInputContainer = document.querySelector('#curation-table_wrapper div.dt-search');
+                            if (searchInputContainer) {
+                                document.getElementById('custom-search').appendChild(searchInputContainer);
+                                const searchInput = searchInputContainer.querySelector('input[type="search"]');
+                                if (searchInput) {
+                                    searchInput.classList.add('form-control');
+                                    searchInput.placeholder = '{{ _("General search...") }}';
+                                }
+                            }
+
+                            const api = this.api();
+                            api.columns().every(function () {
+                                const column = this;
+                                const currentIndex = column.index();
+
+                                {% if edit_mode %}
+                                    // Omit columns "Notify" & "Save"
+                                    const columnCount = api.columns().nodes().length;
+                                    if (currentIndex >= columnCount - 2) return;
+                                {% endif %}
+
+                                const select = document.createElement('select');
+                                select.className = 'form-select column-filter-select';
+                                select.setAttribute('data-column-index', currentIndex);
+                                select.style.width = '100%';
+
+                                select.add(new Option('', '')); // empty option for fill
+
+                                const uniqueValues = new Set();
+                                column.nodes().each(function (cell) {
+                                    let value;
+                                    const selectEl = cell.querySelector('select');
+                                    const inputEl = cell.querySelector('input');
+
+                                    if (selectEl) {
+                                        value = selectEl.options[selectEl.selectedIndex].text.trim();
+                                    } else if (inputEl) {
+                                        value = inputEl.value.trim();
+                                    } else {
+                                        value = cell.textContent.trim();
+                                    }
+
+                                    if (value && !uniqueValues.has(value)) {
+                                        uniqueValues.add(value);
+                                        select.add(new Option(value, value));
+                                    }
+                                });
+
+                                column.header().innerHTML = ''; // cleans
+                                column.header().appendChild(select);
+
+                                // starts select2
+                                $(select).select2({
+                                    width: '100%',
+                                    placeholder: '{{ _("Search or select...") }}',
+                                    allowClear: true
+                                });
+
+                                $(select).on('change', function () {
+                                    const val = this.value.trim();
+                                    column.search(val ? '^' + val + '$' : '', true, false).draw();
+                                });
+                            });
+
                         }
-                    ]
-                },
-                topEnd: {
-                    search: {
-                        return: true,
-                        text: '',
-                        className: 'form-control'
-                    },
-                },
-
-                bottomStart: {
-                    info: {
-                        return: true,
-                        text: "{{ _('Showing _START_ to _END_ of _TOTAL_ entries') }}",
-                    },
-                },
-
-            },
-
-            initComplete: function () {
-                //change the position of the elements
-                const buttonsContainer = document.querySelector('#curation-table_wrapper .dt-buttons');
-                document.getElementById('custom-buttons').appendChild(buttonsContainer);
-
-                const searchInputContainer = document.querySelector('#curation-table_wrapper div.dt-search');
-                if (searchInputContainer) {
-                    document.getElementById('custom-search').appendChild(searchInputContainer);
-                    const searchInput = searchInputContainer.querySelector('input[type="search"]');
-                    if (searchInput) {
-                        searchInput.classList.add('form-control');
-                        searchInput.placeholder = '{{ _("General search...") }}';
-                    }
-                }
-
-                const api = this.api();
-                api.columns().every(function () {
-                const column = this;
-                const currentIndex = column.index();
-
-                {% if edit_mode %}
-                // Omit columns "Notify" & "Save"
-                const columnCount = api.columns().nodes().length;
-                if (currentIndex >= columnCount - 2) return;
-                {% endif %}
-
-                const select = document.createElement('select');
-                select.className = 'form-select column-filter-select';
-                select.setAttribute('data-column-index', currentIndex);
-                select.style.width = '100%';
-
-                select.add(new Option('', '')); // empty option for fill
-
-                const uniqueValues = new Set();
-                column.nodes().each(function (cell) {
-                    let value;
-                    const selectEl = cell.querySelector('select');
-                    const inputEl = cell.querySelector('input');
-
-                    if (selectEl) {
-                        value = selectEl.options[selectEl.selectedIndex].text.trim();
-                    } else if (inputEl) {
-                        value = inputEl.value.trim();
-                    } else {
-                        value = cell.textContent.trim();
-                    }
-
-                    if (value && !uniqueValues.has(value)) {
-                        uniqueValues.add(value);
-                        select.add(new Option(value, value));
-                    }
-                });
-
-                column.header().innerHTML = ''; // cleans
-                column.header().appendChild(select);
-
-                // starts select2
-                $(select).select2({
-                    width: '100%',
-                    placeholder: '{{ _("Search or select...") }}',
-                    allowClear: true
-                });
-
-                $(select).on('change', function () {
-                    const val = this.value.trim();
-                    column.search(val ? '^' + val + '$' : '', true, false).draw();
-                });
-            });
-
-            }
-        });
-
-        table.search.fixed('range', function (searchStr, data) {
-            const min1 = parseInt(minEl.value, 10);
-            const max1 = parseInt(maxEl.value, 10);
-            const colIndex = Array.from(document.querySelectorAll('#curation-table tbody tr:first-child td'))
-                .findIndex(td => td.getAttribute('data-column') === 'farmers_registered');
-            const val1 = parseFloat(data[colIndex]) || 0;
-
-            const minCheck = isNaN(min1) || val1 >= min1;
-            const maxCheck = isNaN(max1) || val1 <= max1;
-
-            return minCheck && maxCheck;
-        });
-
-        [minEl, maxEl].forEach(el => {
-            el.addEventListener('input', () => table.draw());
-        });
-
-        function clearAllFilters() {
-            table.search('').draw();
-
-            table.columns().every(function () {
-                const column = this;
-                const select = column.header().querySelector('select');
-                if (select) {
-                    select.value = '';
-                    $(select).val('').trigger('change');
-                }
-            });
-
-            document.getElementById('min-farm-registered').value = '';
-            document.getElementById('max-farm-registered').value = '';
-            table.draw();
-        }
-
-        function checkInputs(project_id, button) {
-            const row = button.closest('tr');
-            const project_title = row.querySelector('[data-column="projectTitle"]').textContent.trim();
-            const fieldAffiliation = row.querySelector('[data-column="affiliation"] input');
-            const fieldCrop = row.querySelector('[data-column="cropname"] input');
-            const fieldAnalytics = row.querySelector('[data-column="climmob_analytics"] select');
-            const adminMessage = row.querySelector('[data-column="admin_msj"] textarea');
-
-            let error = [];
-
-
-            if (!fieldAnalytics || fieldAnalytics.value.trim() === '') {
-                error.push('{{ _("Dashboard") }}');
-            }
-
-            if (fieldAnalytics.value.trim() !== '0') {
-                if (!fieldAffiliation || fieldAffiliation.value.trim() === '') {
-                    error.push('Affiliation');
-                }
-                if (!fieldCrop || fieldCrop.value.trim() === '') {
-                    error.push('{{ _("Cropname") }}');
-                }
-            }
-
-            if (error.length > 0) {
-                swal(
-                    "{{ _('Check the project ') }}" + project_title,
-                    "{{ _('Please, complete these empty fields: ') }}" + error.join(', ') + "{{ _(' to continue') }}",
-                    "error"
-                );
-
-            } else {
-                const data = {
-                    project_id: project_id,
-                    affiliation: fieldAffiliation.value.trim(),
-                    crop: fieldCrop.value.trim(),
-                    analytics: fieldAnalytics.value.trim(),
-                    admin_message:adminMessage.value,
-                    csrf_token: "{{ request.session.get_csrf_token() }}"
-                }
-
-                fetch( '{{ request.route_url('projectsSummaryCurationUpdateRow') }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: new URLSearchParams(data)
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status !== 200) {
-                            throw new Error(data.message || "Unknown error");
-                        }
-                        swal("{{ _('Data Update, project ') }}" + project_title, data.message, "success");
-                    })
-                    .catch(error => {
-                        swal("{{ _('Error') }}", error.message, "error");
                     });
 
+                    table.search.fixed('range', function (searchStr, data) {
+                        const min1 = parseInt(minEl.value, 10);
+                        const max1 = parseInt(maxEl.value, 10);
+                        const colIndex = Array.from(document.querySelectorAll('#curation-table tbody tr:first-child td'))
+                            .findIndex(td => td.getAttribute('data-column') === 'farmers_registered');
+                        const val1 = parseFloat(data[colIndex]) || 0;
 
-            }
-        }
-        {% endif %}
+                        const minCheck = isNaN(min1) || val1 >= min1;
+                        const maxCheck = isNaN(max1) || val1 <= max1;
 
-        $("#btn_download_report").click(function (){
-            {% if lastReport %}
-                const url = "{{ request.route_url('downloadProjectsSummary') }}?celery_taskid={{ lastReport[0].celery_taskid }}&product_id={{ lastReport[0].product_id }}"
-                location.href = url;
+                        return minCheck && maxCheck;
+                    });
+
+                    [minEl, maxEl].forEach(el => {
+                        el.addEventListener('input', () => table.draw());
+                    });
+
+                    function clearAllFilters() {
+                        table.search('').draw();
+
+                        table.columns().every(function () {
+                            const column = this;
+                            const select = column.header().querySelector('select');
+                            if (select) {
+                                select.value = '';
+                                $(select).val('').trigger('change');
+                            }
+                        });
+
+                        document.getElementById('min-farm-registered').value = '';
+                        document.getElementById('max-farm-registered').value = '';
+                        table.draw();
+                    }
+
+                    function checkInputs(project_id, button) {
+                        const row = button.closest('tr');
+                        const project_title = row.querySelector('[data-column="projectTitle"]').textContent.trim();
+                        const fieldAffiliation = row.querySelector('[data-column="affiliation"] input');
+                        const fieldCrop = row.querySelector('[data-column="cropname"] input');
+                        const fieldAnalytics = row.querySelector('[data-column="climmob_analytics"] select');
+                        const adminMessage = row.querySelector('[data-column="admin_msj"] textarea');
+
+                        let error = [];
+
+                        if (!fieldAnalytics || fieldAnalytics.value.trim() === '') {
+                            error.push('{{ _("Dashboard") }}');
+                        }
+
+                        if (fieldAnalytics.value.trim() !== '0') {
+                            if (!fieldAffiliation || fieldAffiliation.value.trim() === '') {
+                                error.push('Affiliation');
+                            }
+                            if (!fieldCrop || fieldCrop.value.trim() === '') {
+                                error.push('{{ _("Cropname") }}');
+                            }
+                        }
+
+                        if (error.length > 0) {
+                            swal(
+                                "{{ _('Check the project ') }}" + project_title,
+                                "{{ _('Please, complete these empty fields: ') }}" + error.join(', ') + "{{ _(' to continue') }}",
+                                "error"
+                            );
+
+                        } else {
+                            const data = {
+                                project_id: project_id,
+                                affiliation: fieldAffiliation.value.trim(),
+                                crop: fieldCrop.value.trim(),
+                                analytics: fieldAnalytics.value.trim(),
+                                admin_message: adminMessage.value,
+                                csrf_token: "{{ request.session.get_csrf_token() }}"
+                            }
+
+                            fetch('{{ request.route_url('projectsSummaryCurationUpdateRow') }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                },
+                                body: new URLSearchParams(data)
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.status !== 200) {
+                                        throw new Error(data.message || "Unknown error");
+                                    }
+                                    swal("{{ _('Data Update, project ') }}" + project_title, data.message, "success");
+                                })
+                                .catch(error => {
+                                    swal("{{ _('Error') }}", error.message, "error");
+                                });
+
+
+                        }
+                    }
+                {% endif %}
             {% endif %}
-        })
+            $("#btn_download_report").click(function () {
+                {% if lastReport %}
+                    const url = "{{ request.route_url('downloadProjectsSummary') }}?celery_taskid={{ lastReport[0].celery_taskid }}&product_id={{ lastReport[0].product_id }}"
+                    location.href = url;
+                {% endif %}
+            })
 
-        $("#btn_refresh_report").click(function (){
-            {% if lastReport %}
-            location.href = "{{ request.route_url('projectsSummaryCuration') }}"
-            {% endif %}
-        })
+            $("#btn_refresh_report").click(function () {
+                {% if lastReport %}
+                    location.href = "{{ request.route_url('projectsSummaryCuration') }}"
+                {% endif %}
+            })
     </script>
 
 {% endblock pagecontent %}

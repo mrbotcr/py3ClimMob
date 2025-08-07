@@ -5,10 +5,14 @@
 {% endblock title %}
 
 {% block css %}
+
     {% cssresource request,'coreresources','tour' %}
-    {% cssresource request,'coreresources','dataTable_2-0-7' %}
-    {% cssresource request,'coreresources','dataTables_buttons' %}
-    {% cssresource request,'coreresources','select2' %}
+{#    {% cssresource request,'coreresources','dataTable_2-0-7' %}#}
+{#    {% cssresource request,'coreresources','dataTables_buttons' %}#}
+{#    {% cssresource request,'coreresources','select2' %}#}
+    <link href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/columncontrol/1.0.7/css/columnControl.dataTables.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/buttons/3.0.0/css/buttons.dataTables.css" rel="stylesheet">
 
     <style>
         th {
@@ -28,18 +32,25 @@
             text-overflow: ellipsis;
         }
 
-        .select2-selection__clear {
-            font-size: 19px !important;
-            position: absolute;
-            right: 10px;
-            color: red !important;
-            padding-right: 8px;
-            cursor: pointer;
-        }
-
         .table.dataTable{
             margin: 0px;
         }
+
+        div.dt-buttons > .dt-button {
+            font-size: 14px;
+            font-weight: normal;
+            line-height: 1.42857143;
+            text-align: center;
+            white-space: nowrap;
+            cursor: pointer;
+            color: inherit;
+            background: white;
+            border: 1px solid #e7eaec;
+            border-radius: 3px;
+
+        }
+
+
 
     </style>
 {% endblock css %}
@@ -47,16 +58,20 @@
 {% block topScripts %}
     {% jsresource request,'coreresources','toastr' %}
     {% jsresource request,'coreresources','tour' %}
-    {% jsresource request,'coreresources','dataTablesjs_2-0-7' %}
-    {% jsresource request,'coreresources','ButtonsDataTables_2-0-7' %}
-    {% jsresource request,'coreresources','ColvisDataTables_2-0-7' %}
-    {% jsresource request,'coreresources','bootstrapDataTables_2-0-7' %}
-    {% jsresource request,'coreresources','select2' %}
+{#    {% jsresource request,'coreresources','dataTablesjs_2-0-7' %}#}
+{#    {% jsresource request,'coreresources','ButtonsDataTables_2-0-7' %}#}
+{#    {% jsresource request,'coreresources','ColvisDataTables_2-0-7' %}#}
+{#    {% jsresource request,'coreresources','bootstrapDataTables_2-0-7' %}#}
+
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/columncontrol/1.0.7/js/dataTables.columnControl.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.0/js/dataTables.buttons.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.colVis.js"></script>
+
 {% endblock topScripts %}
 
 {% block pageheading %}
     {% set _title= _("Project list") %}
-{#    {% set _linkWiki= "https://climmob.net/blog/wiki/create-project-2/"%}#}
     {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
 
@@ -67,36 +82,6 @@
         {% set createBoton = false %}
     {% endif %}
 
-    {% if userProjects %}
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="ibox">
-                    <div class="ibox-title">
-                        <h5>{{ _("Project filters") }}</h5>
-                    </div>
-                    <div class="ibox-content">
-
-                        <div class="row mb-12">
-                            <div class="col-md-8" id="custom-search">
-                                <p>{{ _("Type in this space to filter the table according to any criteria related to the project.") }}</p>
-                            </div>
-
-                            <div class="col-md-3 text-center " id="custom-buttons">
-                            </div>
-
-                            <div class="col-md-1 text-end" >
-                                <button class="btn btn-outline btn-primary pull-right" onclick="clearAllFilters(this)">
-                                    {{ _("Clear Filters") }}
-                                </button>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endif %}
-    
     <div class="row">
         <div class="col-lg-12">
 
@@ -140,21 +125,7 @@
                                             <th>{{ _("Clone project") }}</th>
                                         {% endif %}
                                     </tr>
-                                    <tr class="filters">
-                                        <th>{{ _("Project overview") }}</th>
-                                        <th>{{ _("User owner") }}</th>
-                                        <th>{{ _("Project ID") }}</th>
-                                        <th>{{ _("Name") }}</th>
-                                        <th>{{ _("Access type") }}</th>
-                                        <th>{{ _("Principal investigator") }}</th>
-                                        <th>{{ _("Email") }}</th>
-                                        <th>{{ _("Progress") }}</th>
-                                        <th>{{ _("Creation date") }}</th>
-                                        <th>{{ _("Tags") }}</th>
-                                        {% if createBoton == true %}
-                                            <th>{{ _("Clone project") }}</th>
-                                        {% endif %}
-                                    </tr>
+
                                 </thead>
                                 <tbody>
                                     {% for project in userProjects %}
@@ -255,156 +226,63 @@
 
     <script>
 
-        const hiddenIndexes = [];
+        $(document).ready(function (){
 
-        const ToggleableColumns = [4,5,6,7,8,9];
+            {% if userProjects %}
+                const hiddenIndexes = [];
 
-        const table = new DataTable('#all-projects', {
+                const ToggleableColumns = [4,5,6,7,8,9];
 
-            scrollX: true,
-            ordering: false,
-            deferRender: true,
-            columnDefs: [
-                {
-                    targets: hiddenIndexes,
-                    visible: false,
-                },
+                const table = new DataTable('#all-projects', {
 
-                {
-                    targets: '_all',
-                    render: function (data, type, row, meta) {
-                        if (type === 'filter' || type === 'sort') {
-                            const cell = meta.settings.aoData[meta.row].anCells[meta.col];
-                            if (!cell) return data;
+                    scrollX: true,
+                    ordering: false,
+                    deferRender: true,
+                    columnControl: {
+                        target: 0,
+                        content: [['searchList', 'searchDropdown']],
+                        columnDefs: [
+                            {
+                                targets: hiddenIndexes,
+                                visible: false,
+                            },
+                        ]
 
-                            const input = cell.querySelector('input');
-                            const select = cell.querySelector('select');
-
-                            if (input) {
-                                return input.value.trim();
-                            } else if (select) {
-                                return select.options[select.selectedIndex].text.trim();
-                            } else {
-                                return cell.textContent.trim();
-                            }
-                        }
-                        return data;
-                    }
-                }
-
-            ],
-            layout: {
-                topStart: {
-                    buttons: [
-                        {
-                            extend: 'colvis',
-                            text: '{{ _("Show / Hide columns") }}',
-                            className: 'btn btn-default',
-                            columns: ToggleableColumns
+                    },
+                    layout: {
+                        topStart: {
+                            buttons: [
+                                {
+                                    extend: 'colvis',
+                                    text: '{{ _("Show / Hide columns") }}',
+                                    className: 'btn btn-default',
+                                    columns: ToggleableColumns
+                                },
+                                {
+                                    extend: 'pageLength',
+                                    text: '{{ _("Rows per Page") }}',
+                                    className: 'dt_button_custom',
+                                }
+                            ]
                         },
-                        {
-                            extend: 'pageLength',
-                            text: '{{ _("Rows per Page") }}',
-                            className: 'btn btn-default '
-                        }
-                    ]
-                },
-                topEnd: {
-                    search: {
-                        return: true,
-                        text: '',
-                        className: 'form-control'
+                        topEnd: {
+                            search: {
+                                return: true,
+                                text: '{{ _("General search:") }} ',
+                                className: 'form-control',
+                            },
+                        },
+                        bottomStart: {
+                            info: {
+                                return: true,
+                                text: "{{ _('Showing _START_ to _END_ of _TOTAL_ entries') }}",
+                            },
+                        },
                     },
-                },
+                })
+            {% endif %}
 
-                bottomStart: {
-                    info: {
-                        return: true,
-                        text: "{{ _('Showing _START_ to _END_ of _TOTAL_ entries') }}",
-                    },
-                },
-
-            },
-
-            initComplete: function () {
-                //change the position of the elements
-                const buttonsContainer = document.querySelector('#all-projects_wrapper .dt-buttons');
-                document.getElementById('custom-buttons').appendChild(buttonsContainer);
-
-                const searchInputContainer = document.querySelector('#all-projects_wrapper div.dt-search');
-                if (searchInputContainer) {
-                    document.getElementById('custom-search').appendChild(searchInputContainer);
-                    const searchInput = searchInputContainer.querySelector('input[type="search"]');
-                    if (searchInput) {
-                        searchInput.classList.add('form-control');
-                        searchInput.placeholder = '{{ _("General search...") }}';
-                    }
-                }
-
-                const api = this.api();
-                api.columns().every(function () {
-                    const column = this;
-                    const currentIndex = column.index();
-
-                    const select = document.createElement('select');
-                    select.className = 'form-select column-filter-select';
-                    select.setAttribute('data-column-index', currentIndex);
-                    select.style.width = '100%';
-
-                    select.add(new Option('', '')); // empty option for fill
-
-                    const uniqueValues = new Set();
-                    column.nodes().each(function (cell) {
-                        let value;
-                        const selectEl = cell.querySelector('select');
-                        const inputEl = cell.querySelector('input');
-
-                        if (selectEl) {
-                            value = selectEl.options[selectEl.selectedIndex].text.trim();
-                        } else if (inputEl) {
-                            value = inputEl.value.trim();
-                        } else {
-                            value = cell.textContent.trim();
-                        }
-
-                        if (value && !uniqueValues.has(value)) {
-                            uniqueValues.add(value);
-                            select.add(new Option(value, value));
-                        }
-                    });
-
-                    column.header().innerHTML = ''; // cleans
-                    column.header().appendChild(select);
-
-                    // starts select2
-                    $(select).select2({
-                        width: '100%',
-                        placeholder: '{{ _("Search or select...") }}',
-                        allowClear: true
-                    });
-
-                    $(select).on('change', function () {
-                        const val = this.value.trim();
-                        column.search(val ? '^' + val + '$' : '', true, false).draw();
-                    });
-                });
-
-            }
         });
-
-        function clearAllFilters() {
-            table.search('').draw();
-
-            table.columns().every(function () {
-                const column = this;
-                const select = column.header().querySelector('select');
-                if (select) {
-                    select.value = '';
-                    $(select).val('').trigger('change');
-                }
-            });
-            table.draw();
-        }
 
         function showHelp()
         {
@@ -427,4 +305,7 @@
             tour.restart();
         }
     </script>
+
+
+
 {% endblock pagecontent %}
