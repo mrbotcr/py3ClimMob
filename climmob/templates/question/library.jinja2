@@ -195,7 +195,6 @@
 
     </style>
 
-    {% include 'snippets/question/question_enums.jinja2' %}
     <script>
 
         var elem_ckb_required_value = document.querySelector('#ckb_required_value');
@@ -300,11 +299,11 @@
             anonymity_container.css('display', display);
             anonymity_inputs_selector.prop('disabled', true);
             $('#question-anonymization-params > *').css('display', 'none');
-            if (anonymity === {{ anonymity_types.PSEUDONYM }}) {
+            if (anonymity === {{ QuestionAnonymity.PSEUDONYM }}) {
                 $('#pseudonym-params').css('display', 'block');
                 $('#pseudonym-params input').prop('disabled', false);
             }
-            else if (anonymity === {{ anonymity_types.RANGE }}) {
+            else if (anonymity === {{ QuestionAnonymity.RANGE }}) {
                 $('#range-params').css('display', 'block');
                 $('#range-params input').prop('disabled', false);
             }
@@ -691,19 +690,19 @@
          */
         function validate_anonymization_params(anonymity_body, q_type_id) {
             let invalid_input = null;
-            if (anonymity_body["question_anonymity"] === {{ anonymity_types.PSEUDONYM }}){
+            if (anonymity_body["question_anonymity"] === {{ QuestionAnonymity.PSEUDONYM }}){
                 const regex = /^[^{}]*{}[^{}]*$/;
                 if (!regex.test(anonymity_body["anonym_param_pseudonym"])) {
                     invalid_input = {name: "anonym_param_pseudonym",
-                                     msg: "Must contain '{}' once."}
+                                     msg: "{{ _("Must contain '{}' once.") }}" }
                 }
             }
-            else if (anonymity_body["question_anonymity"] === {{ anonymity_types.RANGE }}) {
+            else if (anonymity_body["question_anonymity"] === {{ QuestionAnonymity.RANGE }}) {
                 const lower_bound =  Number(anonymity_body["anonym_param_lower_bound"])
                 const upper_bound =  Number(anonymity_body["anonym_param_upper_bound"])
                 const interval =  Number(anonymity_body["anonym_param_interval"])
 
-                if (q_type_id === QuestionType.INTEGER) {
+                if (q_type_id === {{ QuestionType.INTEGER }}) {
                     if (!Number.isInteger(lower_bound))
                         invalid_input = {name: "anonym_param_lower_bound"}
                     else if (!Number.isInteger(upper_bound))
@@ -711,14 +710,14 @@
                     else if (!Number.isInteger(interval))
                         invalid_input = {name: "anonym_param_interval"}
                     if (invalid_input)
-                        invalid_input.msg = "Must be integer"
+                        invalid_input.msg = "{{ _("Must be integer") }}"
                 }
                 if (lower_bound >= upper_bound) {
                     invalid_input = {name: "anonym_param_upper_bound",
-                                     msg: "Must be higher than the lower bound."}
+                                     msg: "{{ _("Must be higher than the lower bound.") }}" }
                 } else if (interval >= upper_bound - lower_bound) {
                     invalid_input = {name: "anonym_param_interval",
-                                     msg: "Must fit within the bounds."}
+                                     msg: "{{ _("Must fit within the bounds.") }}" }
                 }
             }
             if (invalid_input) {
@@ -764,9 +763,9 @@
                     let anonymity_id = parseInt(anonymity_select.value);
                     anonymity_body["question_anonymity"] = anonymity_id
                     let params_container_id = null
-                    if (anonymity_id === {{ anonymity_types.PSEUDONYM }})
+                    if (anonymity_id === {{ QuestionAnonymity.PSEUDONYM }})
                         params_container_id = "pseudonym-params";
-                    else if (anonymity_id === {{ anonymity_types.RANGE }})
+                    else if (anonymity_id === {{ QuestionAnonymity.RANGE }})
                         params_container_id = "range-params";
 
                     $(`#${params_container_id} input`).each(function() {

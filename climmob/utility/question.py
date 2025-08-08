@@ -1,6 +1,10 @@
 from enum import Enum, IntEnum, auto
 
 
+def _(x):
+    return x
+
+
 class QuestionType(IntEnum):
     TEXT = 1
     DECIMAL = 2
@@ -25,26 +29,26 @@ class QuestionType(IntEnum):
 
 
 class QuestionTypeLabel(Enum):
-    TEXT = "Text"
-    DECIMAL = "Decimal"
-    INTEGER = "Integer"
-    GEO_POINT = "GeoPoint"
-    SELECT_ONE = "Select one"
-    SELECT_MULTIPLE = "Select multiple"
-    PACKAGE_CODE = "Package code"
-    FARMER = "Farmer"
-    RANKING_OF_OPTIONS = "Ranking of options"
-    COMPARISON_WITH_CHECK = "Comparison with check"
-    GEO_TRACE = "GeoTrace"
-    GEO_SHAPE = "GeoShape"
-    DATE = "Date"
-    TIME = "Time"
-    DATETIME = "DateTime"
-    IMAGE = "Image"
-    AUDIO = "Audio"
-    VIDEO = "Video"
-    BARCODE_QR = "Barcode/QR"
-    LOCATION = "Location"
+    TEXT = _("Text")
+    DECIMAL = _("Decimal")
+    INTEGER = _("Integer")
+    GEO_POINT = _("GeoPoint")
+    SELECT_ONE = _("Select one")
+    SELECT_MULTIPLE = _("Select multiple")
+    PACKAGE_CODE = _("Package code")
+    FARMER = _("Farmer")
+    RANKING_OF_OPTIONS = _("Ranking of options")
+    COMPARISON_WITH_CHECK = _("Comparison with check")
+    GEO_TRACE = _("GeoTrace")
+    GEO_SHAPE = _("GeoShape")
+    DATE = _("Date")
+    TIME = _("Time")
+    DATETIME = _("DateTime")
+    IMAGE = _("Image")
+    AUDIO = _("Audio")
+    VIDEO = _("Video")
+    BARCODE_QR = _("Barcode/QR")
+    LOCATION = _("Location")
 
 
 class QuestionTypeOrder(IntEnum):
@@ -84,9 +88,61 @@ class QuestionAnonymity(IntEnum):
 
 
 class QuestionAnonymityLabel(Enum):
-    REMOVE = "Remove"
-    PSEUDONYM = "Pseudonym"
-    RANGE = "Range"
-    NOISE = "Noise"
-    MASK = "Mask"
-    MONTH_YEAR = "Month-Year"
+    REMOVE = _("Remove")
+    PSEUDONYM = _("Pseudonym")
+    RANGE = _("Range")
+    NOISE = _("Noise")
+    MASK = _("Mask")
+    MONTH_YEAR = _("Month-Year")
+
+
+QA = QuestionAnonymity
+
+
+class QuestionTypeAnonymity(Enum):
+    TEXT = [QA.REMOVE, QA.PSEUDONYM]
+    DECIMAL = [QA.REMOVE, QA.RANGE]
+    INTEGER = [QA.REMOVE, QA.RANGE]
+    GEO_POINT = [QA.REMOVE, QA.NOISE]
+    SELECT_ONE = [QA.REMOVE]
+    SELECT_MULTIPLE = [QA.REMOVE]
+    PACKAGE_CODE = [QA.REMOVE]
+    FARMER = [QA.REMOVE]
+    RANKING_OF_OPTIONS = [QA.REMOVE]
+    COMPARISON_WITH_CHECK = [QA.REMOVE]
+    GEO_TRACE = [QA.REMOVE]
+    GEO_SHAPE = [QA.REMOVE]
+    DATE = [QA.REMOVE, QA.MONTH_YEAR]
+    TIME = [QA.REMOVE]
+    DATETIME = [QA.REMOVE, QA.MONTH_YEAR]
+    IMAGE = [QA.REMOVE]
+    AUDIO = [QA.REMOVE]
+    VIDEO = [QA.REMOVE]
+    BARCODE_QR = [QA.REMOVE]
+    LOCATION = [QA.REMOVE]
+
+
+def get_question_types_with_anonymity_labeled(request):
+    result = []
+    for q_type in QuestionType:
+        order = QuestionTypeOrder[q_type.name].value
+        if order == -1:
+            continue
+        anonymity_opts = []
+        for anonymity in QuestionTypeAnonymity[q_type.name].value:
+            anonymity_name = QuestionAnonymityLabel[anonymity.name].value
+            anonymity_name = request.translate(anonymity_name)
+            anonymity_opts.append({"id": anonymity.value, "name": anonymity_name})
+        anonymity_opts = sorted(anonymity_opts, key=lambda x: x["id"])
+        q_type_name = QuestionTypeLabel[q_type.name].value
+        q_type_name = request.translate(q_type_name)
+        result.append(
+            {
+                "id": q_type.value,
+                "name": q_type_name,
+                "anonymity_opts": anonymity_opts,
+                "order": order,
+            }
+        )
+    result = sorted(result, key=lambda x: x["order"])
+    return result

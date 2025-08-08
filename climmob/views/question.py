@@ -38,8 +38,12 @@ from climmob.processes import (
     getQuestionOwner,
     getPhraseTranslationInLanguage,
     knowIfUserHasCreatedTranslations,
-    get_question_types_with_anonymity_options,
-    get_question_anonymity_types_as_dict,
+)
+from climmob.utility import (
+    get_enum_as_dict,
+    QuestionAnonymity,
+    get_question_types_with_anonymity_labeled,
+    QuestionType,
 )
 from climmob.views.classes import privateView
 from climmob.views.validators.question.QuestionMinMaxValidator import (
@@ -787,7 +791,7 @@ class qlibrary_view(privateView):
 
         nextPage = self.request.params.get("next")
 
-        question_types = get_question_types_with_anonymity_options(self.request)
+        question_types = get_question_types_with_anonymity_labeled(self.request)
 
         regularDict = {
             "UserQuestion": UserQuestionMoreBioversity(user_name, self.request),
@@ -804,7 +808,8 @@ class qlibrary_view(privateView):
             "nextPage": nextPage,
             "sectionActive": "questions",
             "question_types": question_types,
-            "anonymity_types": get_question_anonymity_types_as_dict(self.request),
+            "QuestionAnonymity": get_enum_as_dict(QuestionAnonymity),
+            "QuestionType": get_enum_as_dict(QuestionType),
         }
 
         return regularDict

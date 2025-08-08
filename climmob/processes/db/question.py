@@ -1,5 +1,5 @@
 import json
-from collections import defaultdict
+import re
 
 from sqlalchemy import func, or_, and_
 
@@ -42,18 +42,38 @@ __all__ = [
     "getQuestionOwner",
     "knowIfUserHasCreatedTranslations",
     "get_sensitive_questions_anonymity_by_project_id",
-    "get_question_types_with_anonymity_options",
-    "get_question_anonymity_types_as_dict",
 ]
 
-from climmob.models.climmobv4 import (
-    QuestionType,
-    QuestionAnonymity,
-    QuestionTypeAnonymity,
-)
-import climmob.utility as utils
+from climmob.models.climmobv4 import AnonymizationParameter
 
 log = logging.getLogger(__name__)
+
+
+def save_anonymization_params(question_id, data, request):
+    delete_existing_anonymization_params(question_id, request)
+
+    params = []
+    for key in data.keys():
+        pattern = r"anonym_param_([a-z_]+)"
+        match = re.match(pattern, key)
+        if match:
+            params.append({"name": match.group(1), "value": data[key]})
+
+    for param in params:
+        new_param = AnonymizationParameter(**param)
+        new_param.question_id = question_id
+        request.dbsession.add(new_param)
+        request.dbsession.flush()
+
+
+def delete_existing_anonymization_params(question_id, request):
+    try:
+        request.dbsession.query(AnonymizationParameter).filter(
+            AnonymizationParameter.question_id == question_id
+        ).delete()
+        return True, ""
+    except Exception as e:
+        return False, str(e)
 
 
 def addQuestion(data, request):
@@ -64,6 +84,7 @@ def addQuestion(data, request):
     try:
         request.dbsession.add(newQuestion)
         request.dbsession.flush()
+        save_anonymization_params(newQuestion.question_id, data, request)
         return True, newQuestion.question_id
     except DatabaseError as e:
         save_point.rollback()
@@ -140,6 +161,7 @@ def updateQuestion(data, request):
         request.dbsession.query(Question).filter(
             Question.user_name == data["user_name"]
         ).filter(Question.question_id == data["question_id"]).update(mappeData)
+        save_anonymization_params(data["question_id"], data, request)
         return True, data["question_id"]
     except DatabaseError as e:
         log.error("Error creating the question. The question is very long")
@@ -550,45 +572,3 @@ def get_sensitive_questions_anonymity_by_project_id(project_id, request):
         )
     )
     return query.all()
-
-
-def get_question_types_with_anonymity_options(request):
-    query = (
-        request.dbsession.query(
-            QuestionType.id.label("q_type_id"),
-            QuestionType.name.label("q_type_name"),
-            QuestionAnonymity.id.label("q_anonymity_id"),
-            QuestionAnonymity.name.label("q_anonymity_name"),
-        )
-        .join(QuestionTypeAnonymity, QuestionTypeAnonymity.type_id == QuestionType.id)
-        .join(
-            QuestionAnonymity,
-            QuestionAnonymity.id == QuestionTypeAnonymity.anonymity_id,
-        )
-        .filter(QuestionType.order != -1)
-        .order_by(QuestionType.order, QuestionAnonymity.id)
-    )
-    result = mapFromSchema(query.all())
-
-    grouped = defaultdict(list)
-    for item in result:
-        key = (item["q_type_id"], item["q_type_name"])
-        grouped[key].append(
-            {"id": item["q_anonymity_id"], "name": item["q_anonymity_name"]}
-        )
-
-    result = [
-        {"id": id_, "name": name, "anonymity_opts": opts}
-        for (id_, name), opts in grouped.items()
-    ]
-
-    return result
-
-
-def get_question_anonymity_types_as_dict(request):
-    query = request.dbsession.query(QuestionAnonymity)
-    anonymity_types = mapFromSchema(query.all())
-    result = {}
-    for anonymity in anonymity_types:
-        result[anonymity["name"]] = anonymity["id"]
-    return result
