@@ -52,6 +52,18 @@
 
         }
 
+        .dtcc-button select,
+        .dtcc-button input {
+            pointer-events: none;
+            appearance: none;
+            -webkit-appearance: none;
+            border: none;
+            background: none;
+            padding: 0;
+            font: inherit;
+            color: inherit;
+        }
+
     </style>
 
 {% endblock css %}
@@ -173,16 +185,7 @@
                                                 <th></th>
                                             {% endif %}
                                         </tr>
-                                        <tr class="filters">
 
-                                            {% for col in tableStructure %}
-                                                <th>{{ _(col["name"]) }}</th>
-                                            {% endfor %}
-                                            {% if edit_mode == True %}
-                                                <th></th>
-                                                <th></th>
-                                            {% endif %}
-                                        </tr>
                                         </thead>
                                         <tbody>
                                         {% for project in listOfProjects %}
@@ -202,9 +205,10 @@
 
                                                         {% elif col['type'] == "input" %}
                                                             <input class="form-control"
-                                                                   value="{{ project[col["key"]] if project[col["key"]] }}"
+                                                                   value="{{ project[col["key"]] }}"
                                                                    style="width: 250px" maxlength="50">
-
+                                                            <span class="d-none filter-value"
+                                                                  hidden>{{ project[col["key"]] }}</span>
                                                         {% elif col['type'] == "dropdown" %}
                                                             <select class="form-control">
                                                                 <option value=""
@@ -217,6 +221,13 @@
                                                                     </option>
                                                                 {% endfor %}
                                                             </select>
+                                                            <span class="d-none filter-value" hidden>
+                                                                    {% for key, id in col["options"].items() %}
+                                                                        {% if id == project[col["key"]] %}
+                                                                            {{ key }}
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                            </span>
                                                         {% endif %}
                                                     </td>
                                                 {% endfor %}
@@ -235,6 +246,15 @@
                                             </tr>
                                         {% endfor %}
                                         </tbody>
+                                        <tfoot>
+                                        {% for col in tableStructure %}
+                                            <th>{{ _(col["name"]) }}</th>
+                                        {% endfor %}
+                                        {% if edit_mode == True %}
+                                            <th>{{ _('Notification') }}</th>
+                                            <th></th>
+                                        {% endif %}
+                                        </tfoot>
                                     </table>
                                 </div>
                             </div>
@@ -257,7 +277,7 @@
 
         $(document).ready(function () {
 
-            {% if userProjects %}
+            {% if listOfProjects %}
 
                 const hiddenIndexes = [
                     {% for col in tableStructure %}
@@ -276,41 +296,23 @@
                 ];
 
                 {% if lastReport and lastReport[0]["state"] =="Success"%}
-                    const minEl = document.querySelector('#min-farm-registered');
-                    const maxEl = document.querySelector('#max-farm-registered');
 
                     const table = new DataTable('#curation-table', {
                         scrollX: true,
                         ordering: false,
                         deferRender: true,
+                        columnControl: {
+                            target: 0,
+                            content: [['searchList', 'searchDropdown']],
+
+                        },
                         columnDefs: [
+                            {target: -1, columnControl: []},
+                            {target: -2, columnControl: []},
                             {
                                 targets: hiddenIndexes,
                                 visible: false,
                             },
-
-                            {
-                                targets: '_all',
-                                render: function (data, type, row, meta) {
-                                    if (type === 'filter' || type === 'sort') {
-                                        const cell = meta.settings.aoData[meta.row].anCells[meta.col];
-                                        if (!cell) return data;
-
-                                        const input = cell.querySelector('input');
-                                        const select = cell.querySelector('select');
-
-                                        if (input) {
-                                            return input.value.trim();
-                                        } else if (select) {
-                                            return select.options[select.selectedIndex].text.trim();
-                                        } else {
-                                            return cell.textContent.trim();
-                                        }
-                                    }
-                                    return data;
-                                }
-                            }
-
                         ],
                         layout: {
                             topStart: {
@@ -324,208 +326,104 @@
                                     {
                                         extend: 'pageLength',
                                         text: '{{ _("Rows per Page") }}',
-                                        className: 'btn btn-default '
+                                        className: 'dt_button_custom',
                                     }
                                 ]
                             },
                             topEnd: {
                                 search: {
                                     return: true,
-                                    text: '',
-                                    className: 'form-control'
+                                    text: '{{ _("General search:") }} ',
+                                    className: 'form-control',
                                 },
                             },
-
                             bottomStart: {
                                 info: {
                                     return: true,
-                                    text: "{{ _('Showing _START_ to _END_ of _TOTAL_ entries') }}",
+                                    text: "{{ _('Showing _START_ to _END_ from _TOTAL_ total entries') }}",
                                 },
                             },
-
                         },
-
-                        initComplete: function () {
-                            //change the position of the elements
-                            const buttonsContainer = document.querySelector('#curation-table_wrapper .dt-buttons');
-                            document.getElementById('custom-buttons').appendChild(buttonsContainer);
-
-                            const searchInputContainer = document.querySelector('#curation-table_wrapper div.dt-search');
-                            if (searchInputContainer) {
-                                document.getElementById('custom-search').appendChild(searchInputContainer);
-                                const searchInput = searchInputContainer.querySelector('input[type="search"]');
-                                if (searchInput) {
-                                    searchInput.classList.add('form-control');
-                                    searchInput.placeholder = '{{ _("General search...") }}';
-                                }
-                            }
-
-                            const api = this.api();
-                            api.columns().every(function () {
-                                const column = this;
-                                const currentIndex = column.index();
-
-                                {% if edit_mode %}
-                                    // Omit columns "Notify" & "Save"
-                                    const columnCount = api.columns().nodes().length;
-                                    if (currentIndex >= columnCount - 2) return;
-                                {% endif %}
-
-                                const select = document.createElement('select');
-                                select.className = 'form-select column-filter-select';
-                                select.setAttribute('data-column-index', currentIndex);
-                                select.style.width = '100%';
-
-                                select.add(new Option('', '')); // empty option for fill
-
-                                const uniqueValues = new Set();
-                                column.nodes().each(function (cell) {
-                                    let value;
-                                    const selectEl = cell.querySelector('select');
-                                    const inputEl = cell.querySelector('input');
-
-                                    if (selectEl) {
-                                        value = selectEl.options[selectEl.selectedIndex].text.trim();
-                                    } else if (inputEl) {
-                                        value = inputEl.value.trim();
-                                    } else {
-                                        value = cell.textContent.trim();
-                                    }
-
-                                    if (value && !uniqueValues.has(value)) {
-                                        uniqueValues.add(value);
-                                        select.add(new Option(value, value));
-                                    }
-                                });
-
-                                column.header().innerHTML = ''; // cleans
-                                column.header().appendChild(select);
-
-                                // starts select2
-                                $(select).select2({
-                                    width: '100%',
-                                    placeholder: '{{ _("Search or select...") }}',
-                                    allowClear: true
-                                });
-
-                                $(select).on('change', function () {
-                                    const val = this.value.trim();
-                                    column.search(val ? '^' + val + '$' : '', true, false).draw();
-                                });
-                            });
-
-                        }
                     });
 
-                    table.search.fixed('range', function (searchStr, data) {
-                        const min1 = parseInt(minEl.value, 10);
-                        const max1 = parseInt(maxEl.value, 10);
-                        const colIndex = Array.from(document.querySelectorAll('#curation-table tbody tr:first-child td'))
-                            .findIndex(td => td.getAttribute('data-column') === 'farmers_registered');
-                        const val1 = parseFloat(data[colIndex]) || 0;
-
-                        const minCheck = isNaN(min1) || val1 >= min1;
-                        const maxCheck = isNaN(max1) || val1 <= max1;
-
-                        return minCheck && maxCheck;
-                    });
-
-                    [minEl, maxEl].forEach(el => {
-                        el.addEventListener('input', () => table.draw());
-                    });
-
-                    function clearAllFilters() {
-                        table.search('').draw();
-
-                        table.columns().every(function () {
-                            const column = this;
-                            const select = column.header().querySelector('select');
-                            if (select) {
-                                select.value = '';
-                                $(select).val('').trigger('change');
-                            }
-                        });
-
-                        document.getElementById('min-farm-registered').value = '';
-                        document.getElementById('max-farm-registered').value = '';
-                        table.draw();
-                    }
-
-                    function checkInputs(project_id, button) {
-                        const row = button.closest('tr');
-                        const project_title = row.querySelector('[data-column="projectTitle"]').textContent.trim();
-                        const fieldAffiliation = row.querySelector('[data-column="affiliation"] input');
-                        const fieldCrop = row.querySelector('[data-column="cropname"] input');
-                        const fieldAnalytics = row.querySelector('[data-column="climmob_analytics"] select');
-                        const adminMessage = row.querySelector('[data-column="admin_msj"] textarea');
-
-                        let error = [];
-
-                        if (!fieldAnalytics || fieldAnalytics.value.trim() === '') {
-                            error.push('{{ _("Dashboard") }}');
-                        }
-
-                        if (fieldAnalytics.value.trim() !== '0') {
-                            if (!fieldAffiliation || fieldAffiliation.value.trim() === '') {
-                                error.push('Affiliation');
-                            }
-                            if (!fieldCrop || fieldCrop.value.trim() === '') {
-                                error.push('{{ _("Cropname") }}');
-                            }
-                        }
-
-                        if (error.length > 0) {
-                            swal(
-                                "{{ _('Check the project ') }}" + project_title,
-                                "{{ _('Please, complete these empty fields: ') }}" + error.join(', ') + "{{ _(' to continue') }}",
-                                "error"
-                            );
-
-                        } else {
-                            const data = {
-                                project_id: project_id,
-                                affiliation: fieldAffiliation.value.trim(),
-                                crop: fieldCrop.value.trim(),
-                                analytics: fieldAnalytics.value.trim(),
-                                admin_message: adminMessage.value,
-                                csrf_token: "{{ request.session.get_csrf_token() }}"
-                            }
-
-                            fetch('{{ request.route_url('projectsSummaryCurationUpdateRow') }}', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded'
-                                },
-                                body: new URLSearchParams(data)
-                            })
-                                .then(response => response.json())
-                                .then(data => {
-                                    if (data.status !== 200) {
-                                        throw new Error(data.message || "Unknown error");
-                                    }
-                                    swal("{{ _('Data Update, project ') }}" + project_title, data.message, "success");
-                                })
-                                .catch(error => {
-                                    swal("{{ _('Error') }}", error.message, "error");
-                                });
-
-
-                        }
-                    }
                 {% endif %}
             {% endif %}
-            $("#btn_download_report").click(function () {
-                {% if lastReport %}
-                    const url = "{{ request.route_url('downloadProjectsSummary') }}?celery_taskid={{ lastReport[0].celery_taskid }}&product_id={{ lastReport[0].product_id }}"
-                    location.href = url;
-                {% endif %}
-            })
+        })
 
-            $("#btn_refresh_report").click(function () {
-                {% if lastReport %}
-                    location.href = "{{ request.route_url('projectsSummaryCuration') }}"
-                {% endif %}
-            })
+
+        function checkInputs(project_id, button) {
+            const row = button.closest('tr');
+            const project_title = row.querySelector('[data-column="projectTitle"]').textContent.trim();
+            const fieldAffiliation = row.querySelector('[data-column="affiliation"] input');
+            const fieldCrop = row.querySelector('[data-column="cropname"] input');
+            const fieldAnalytics = row.querySelector('[data-column="climmob_analytics"] select');
+            const adminMessage = row.querySelector('[data-column="admin_msj"] textarea');
+
+            let error = [];
+
+            if (!fieldAnalytics || fieldAnalytics.value.trim() === '') {
+                error.push('{{ _("Dashboard") }}');
+            }
+
+            if (fieldAnalytics.value.trim() !== '0') {
+                if (!fieldAffiliation || fieldAffiliation.value.trim() === '') {
+                    error.push('Affiliation');
+                }
+                if (!fieldCrop || fieldCrop.value.trim() === '') {
+                    error.push('{{ _("Cropname") }}');
+                }
+            }
+
+            if (error.length > 0) {
+                swal(
+                    "{{ _('Check the project ') }}" + project_title,
+                    "{{ _('Please, complete these empty fields: ') }}" + error.join(', ') + "{{ _(' to continue') }}",
+                    "error"
+                );
+
+            } else {
+                const data = {
+                    project_id: project_id,
+                    affiliation: fieldAffiliation.value.trim(),
+                    crop: fieldCrop.value.trim(),
+                    analytics: fieldAnalytics.value.trim(),
+                    admin_message: adminMessage.value,
+                    csrf_token: "{{ request.session.get_csrf_token() }}"
+                }
+
+                fetch('{{ request.route_url('projectsSummaryCurationUpdateRow') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams(data)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status !== 200) {
+                            throw new Error(data.message || "Unknown error");
+                        }
+                        swal("{{ _('Data Update, project ') }}" + project_title, data.message, "success");
+                    })
+                    .catch(error => {
+                        swal("{{ _('Error') }}", error.message, "error");
+                    });
+            }
+        }
+
+
+        $("#btn_download_report").click(function () {
+            {% if lastReport %}
+                const url = "{{ request.route_url('downloadProjectsSummary') }}?celery_taskid={{ lastReport[0].celery_taskid }}&product_id={{ lastReport[0].product_id }}"
+                location.href = url;
+            {% endif %}
+        })
+
+        $("#btn_refresh_report").click(function () {
+            {% if lastReport %}
+                location.href = "{{ request.route_url('projectsSummaryCuration') }}"
+            {% endif %}
+        })
     </script>
 
 {% endblock pagecontent %}
