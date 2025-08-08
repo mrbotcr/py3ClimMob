@@ -309,6 +309,10 @@
             }
         }
 
+        function clean_anonymization_section() {
+            anonymity_inputs_selector.prop('value', "");
+        }
+
         {% endif %}
 
         $(document).ready(function() {
@@ -1125,6 +1129,9 @@
             clean_extra_fields();
             clean_extra_section();
             clean_buttoms_question();
+            {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
+                clean_anonymization_section();
+            {% endif %}
 
             loadLanguages(user_name);
 
@@ -1207,6 +1214,14 @@
                     setSwitchery(ckb_question_sensitive, isSensitive)
                     saved_anonymity_id = dataJson["question_anonymity"];
                     update_anonymity_types(dataJson["question_dtype"], saved_anonymity_id)
+
+                    const regex = /anonym_param_([a-z_]+)/;
+                    anonymity_inputs_selector.each(function(index, element) {
+                        const match = regex.exec($(element).attr('name'));
+                        if (match) {
+                            $(element).prop("value", dataJson[match[1]])
+                        }
+                    });
 
                 {% endif %}
 

@@ -361,6 +361,16 @@ def userQuestionDetailsById(userOwner, questionId, request, language="default"):
         data["num_options"] = len(options)
         data["question_options"] = options
 
+    if data["question_sensitive"]:
+        params = (
+            request.dbsession.query(
+                AnonymizationParameter.name, AnonymizationParameter.value
+            )
+            .filter(AnonymizationParameter.question_id == data["question_id"])
+            .all()
+        )
+        data.update(params)
+
     return data
 
 
