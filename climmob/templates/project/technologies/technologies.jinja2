@@ -37,7 +37,7 @@
 
     {% set onlySee = False %}
 
-    {% if activeProject["access_type"] in [4] or activeProject["project_regstatus"] > 0 %}
+    {% if activeProject["access_type"] in [4] or activeProject["project_regstatus"] > 0  %}
         {% set onlySee = True %}
     {% endif %}
 

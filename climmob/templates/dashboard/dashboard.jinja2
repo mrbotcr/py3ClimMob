@@ -563,7 +563,7 @@
                                                             <tr>
                                                                 <td colspan="2">
                                                                     {% if progress.regtotal > 0 %}
-                                                                        <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('EditDataRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry') }}"><i class="fa fa-table"></i> {% if activeProject["project_status"] != 3 %} {{ _("View and edit data") }} {% else %} {{ _('view data') }} {% endif %}</a>
+                                                                        <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('EditDataRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry') }}"><i class="fa fa-table"></i> {% if activeProject.project_status != 3 %} {{ _("View and edit data") }} {% else %} {{ _('view data') }} {% endif %}</a>
 
                                                                         <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry', formatid='csv') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data in .CSV format") }}</a>
                                                                         <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry', formatid='xlsx') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data in .XLSX format") }}</a>
@@ -701,7 +701,7 @@
                                                                             {% block rhomis_btns_for_datacollection scoped%}
 
                                                                                 {% if assessment.asstotal > 0 %}
-                                                                                    <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('EditDataAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}" href="#"><i class="fa fa-table"></i> {% if activeProject["project_status"] != 3 %} {{ _("View and edit data") }} {% else %} {{ _('view data') }} {% endif %}</a>
+                                                                                    <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('EditDataAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}" href="#"><i class="fa fa-table"></i> {% if activeProject.project_status != 3 %} {{ _("View and edit data") }} {% else %} {{ _('view data') }} {% endif %}</a>
                                                                                     <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod, formatid='csv') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data in .CSV format") }}</a>
                                                                                     <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod, formatid='xlsx') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data in .XLSX format") }}</a>
 
@@ -773,7 +773,7 @@
                                         {% endif %}
                                     {% endif %}
                                 {% endif %}
-                                {% if hasActiveProject and activeProject["project_status"] != 3 %}
+                                {% if hasActiveProject and activeProject.project_status != 3 and activeProject["access_type"] in [1] %}
                                     <div class="ibox float-e-margins" >
                                         <div class="ibox-title">
                                             <h5>{{ _("Finish the project") }}</h5>
@@ -783,19 +783,13 @@
                                             <p>{{ _('This action will be block all the functions to add or modify the project.') }}</p>
                                             <div>
 
-                                                <button onclick="location.href='{{ request.route_url('finishproject') }}?user={{ activeProject.owner.user_name }}&project={{ activeProject.project_id }}'" class="btn btn-danger btn-rounded btn-block">
+                                                <button onclick="location.href='{{ request.route_url('finishproject', user = activeProject.owner.user_name, project= activeProject.project_cod) }}'" class="btn btn-danger btn-rounded btn-block">
                                                     <i class="fa fa-arrow-circle-o-right"></i> {{ _('Go to mark the project as finish') }}
                                                 </button>
                                             </div>
                                         </div>
                                     </div>
                                 {% endif %}
-
-
-
-
-
-
 
                                 {% block communityLink %}
 

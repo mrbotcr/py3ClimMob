@@ -40,14 +40,8 @@
     }
     </style>
 
-    {% if activeProject["access_type"] in [4] %}
+    {% if activeProject["access_type"] in [4] or activeProject["project_status"] == 3 %}
         {% set onlySee = True %}
-    {% endif %}
-
-
-    {% set finished = False %}
-    {% if activeProject["project_status"] == 3 %}
-        {% set finished = True %}
     {% endif %}
 
 
@@ -90,7 +84,7 @@
                                                 {% endif %}
                                             </td>
                                             <td class="text-center" style="vertical-align: middle">
-                                                <button type="submit" class="btn btn-primary" onclick="openMetadataForm('{{ metadata.metadata_id }}')" style="margin-bottom: 0px"><i class="fa fa-eye"></i> {{ _('View and edit') }}</button>
+                                                <button type="submit" class="btn btn-primary" onclick="openMetadataForm('{{ metadata.metadata_id }}')" style="margin-bottom: 0px"><i class="fa fa-eye"></i> {% if activeProject.project_status != 3 %} {{ _("View and edit") }} {% else %} {{ _('View') }} {% endif %}</button>
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -107,9 +101,6 @@
             </div>
 
         </div>
-    {% if finished %}
-        <fieldset disabled>
-    {% endif %}
         <div class="col-lg-8" id="div_for_show_form" style="display: none">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
@@ -157,10 +148,6 @@
             </div>
         </div>
 
-        {% if finished %}
-        </fieldset >
-    {% endif %}
-
         <script>
 
             function openMetadataForm(formId)
@@ -174,7 +161,6 @@
                     $("#spaceForPutTheForm").html(dataString[1])
                     $("#metadata_id").val(formId)
                     $("#div_for_show_form").css("display","block")
-                    blockSelect2();
                 });
             }
 
@@ -197,14 +183,6 @@
             $('.tableHover').on('click', 'tbody tr', function(event) {
                 $(this).addClass('tableHover2').siblings().removeClass('tableHover2');
             });
-
-            function blockSelect2() {
-                {% if finished %}
-                    $('select').prop('disabled', true);
-                    $('select').select2();
-                    $('#form_metadata').find('button').hide();
-                {% endif %}
-            }
 
         </script>
 

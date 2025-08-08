@@ -51,9 +51,10 @@ from climmob.processes import (
     get_location_unit_of_analysis_objectives_by_combination,
     delete_all_project_location_unit_objective,
     get_all_affiliations,
-    update_project_finish
+    update_project_status
 )
 from climmob.views.classes import privateView
+from climmob.views.validators.ActionOnlyForProjectOwnerValidator import ActionOnlyForProjectOwnerValidator
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 
 
@@ -944,42 +945,27 @@ class GetObjectivesByLocationAndUnitOfAnalysisView(privateView):
 
 
 class FinishProjectView(privateView):
-    validator = (ProjectExistsValidator,)
+    validators = (ProjectExistsValidator,
+                  ActionOnlyForProjectOwnerValidator)
 
     def get(self):
-        user = self.request.GET.get('user')
-        project = self.request.GET.get('project')
-        project_info= getActiveProject(user, self.request)
+        project_info= getActiveProject(self.user.login, self.request)
 
         return {
-            'user': user,
-            'project': project,
             'project_info': project_info,
         }
 
     def post(self):
 
-        user = self.request.POST.get('user')
-        project = self.request.POST.get('project')
+        success, error_update = update_project_status(self.context.active_project_id, 3, self.request)
+        project_info = getActiveProject(self.user.login, self.request)
 
-        success, error_update = update_project_finish(self.request, project)
-        project_info = getActiveProject(user, self.request)
         if success:
             #todo check the persson to send the email
-
-
-            self._redirect = HTTPFound(location=self.request.route_url('finishproject'))
-            return {
-                'success': True,
-                'user': user,
-                'project': project,
-                'project_info': project_info,
-            }
+            self.returnRawViewResult = True
+            return HTTPFound(location=self.request.route_url('dashboard'))
         else:
-            self._redirect = HTTPFound(location=self.request.route_url('finishproject'))
             return{
                 'error': error_update,
-                'user': user,
-                'project': project,
                 'project_info': project_info,
             }

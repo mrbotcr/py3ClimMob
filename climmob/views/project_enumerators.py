@@ -41,7 +41,6 @@ class projectEnumerators_view(privateView):
                     _query={
                         "user": activeProjectUser,
                         "project": activeProjectCod,
-                        "project_status": self.classResult["project_status"],
                     },
                 )
             )

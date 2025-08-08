@@ -73,9 +73,8 @@
                         <i class="fa fa-handshake-o"></i>
                     </a>
 
-                    <form id="finishForm" method="POST" action="{{ request.route_url('finishproject') }}">
-                        <input type="hidden" name="user" value="{{ user }}">
-                        <input type="hidden" name="project" value="{{ project }}">
+                    <form id="finishForm" method="POST" action="{{ request.url }}">
+
                         <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
 
                     </form>

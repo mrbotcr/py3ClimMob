@@ -54,16 +54,11 @@
 
             {% block newprjform %}
 
-                {% set finished=False %}
-                {% if activeProject["project_status"] == 3 %}
-                    {% set finished=True %}
-                {% endif %}
-
                 {% set edit=True%}
-                {% if activeProject.access_type != 4%}
-                    {% set permissionForChanges=True%}
-                {% else %}
+                {% set permissionForChanges=True %}
+                {% if activeProject.access_type == 4 or activeProject.project_status == 3%}
                     {% set permissionForChanges=False%}
+
                 {% endif %}
                 {% set dataworking=data %}
                 {% set allowTemplate=True %}

@@ -62,7 +62,8 @@ __all__ = [
     "getProjectFullDetailsById",
     "getProjectsByUserThatRequireSetup",
     "update_project_status",
-    "update_project_finish",
+    "get_user_access_type_in_project"
+
 ]
 
 
@@ -946,16 +947,18 @@ def update_project_status(project_id, status, request):
         request.dbsession.query(Project).filter(
             Project.project_id == project_id
         ).update({"project_status": status})
-        return True
+        return True,""
     except Exception as e:
         return False, str(e)
 
-def update_project_finish(request, project_id):
-    try:
-        request.dbsession.query(Project).filter(
-            Project.project_id == project_id
-        ).update({"project_status": 3})
+def get_user_access_type_in_project(project_id, user, request):
+    res = mapFromSchema(
+        request.dbsession.query(userProject.access_type)
+        .filter(userProject.user_name == user)
+        .filter(userProject.project_id == project_id)
+        .first()
+    )
+    if res:
+        return True, res["access_type"]
+    return False, ""
 
-        return True, ""
-    except Exception as e:
-        return False, str(e)

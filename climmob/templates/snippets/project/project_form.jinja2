@@ -1,7 +1,3 @@
-{% if finished %}
-<fieldset disabled>
-{% endif %}
-
 <div class="row">
     <div class="col-md-6">
         <div class="col-md-12" style="padding: 0px">
@@ -373,9 +369,7 @@
     </div>
 
 </div>
-{% if finished %}
-    </fieldset >
-{% endif %}
+
 <script>
     $('input#newproject_code').maxlength(
         {
@@ -507,14 +501,5 @@
             });
         }
     });
-    {% if finished %}
-        $(document).ready(function() {
-            $('select').prop('disabled', true);  // desactiva select2 también
-            $('select').select2();               // vuelve a aplicar select2 con el nuevo estado
-            $('#newproject_tag').prop('disabled', true);
-            $('.bootstrap-tagsinput input').prop('disabled', true);  // Desactiva el campo interno editable
-            $('.bootstrap-tagsinput').addClass('disabled');
-        });
-    {% endif %}
 
 </script>

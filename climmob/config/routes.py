@@ -924,7 +924,7 @@ def loadRoutes(config):
     routes.append(
         addRoute(
             "finishproject",
-            "/finishproject",
+            "/user/{user}/project/{project}/finishproject",
             FinishProjectView,
             "project/finishproject.jinja2",
         )
