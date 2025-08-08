@@ -7,12 +7,9 @@
 {% block css %}
 
     {% cssresource request,'coreresources','tour' %}
-{#    {% cssresource request,'coreresources','dataTable_2-0-7' %}#}
-{#    {% cssresource request,'coreresources','dataTables_buttons' %}#}
-{#    {% cssresource request,'coreresources','select2' %}#}
-    <link href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/columncontrol/1.0.7/css/columnControl.dataTables.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/buttons/3.0.0/css/buttons.dataTables.css" rel="stylesheet">
+    {% cssresource request,'coreresources','dataTables2_3_2' %}
+    {% cssresource request,'coreresources','dataTables2_3_2_columnControl' %}
+    {% cssresource request,'coreresources','dataTables2_3_2_buttons' %}
 
     <style>
         th {
@@ -50,23 +47,16 @@
 
         }
 
-
-
     </style>
 {% endblock css %}
 
 {% block topScripts %}
     {% jsresource request,'coreresources','toastr' %}
     {% jsresource request,'coreresources','tour' %}
-{#    {% jsresource request,'coreresources','dataTablesjs_2-0-7' %}#}
-{#    {% jsresource request,'coreresources','ButtonsDataTables_2-0-7' %}#}
-{#    {% jsresource request,'coreresources','ColvisDataTables_2-0-7' %}#}
-{#    {% jsresource request,'coreresources','bootstrapDataTables_2-0-7' %}#}
-
-    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
-    <script src="https://cdn.datatables.net/columncontrol/1.0.7/js/dataTables.columnControl.js"></script>
-    <script src="https://cdn.datatables.net/buttons/3.0.0/js/dataTables.buttons.js"></script>
-    <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.colVis.js"></script>
+    {% jsresource request,'coreresources','datatable2_3_2js' %}
+    {% jsresource request,'coreresources','datatable2_3_2js_columControl' %}
+    {% jsresource request,'coreresources','datatable2_3_2js_buttons3_0_0' %}
+    {% jsresource request,'coreresources','datatable2_3_2js_colVis' %}
 
 {% endblock topScripts %}
 
@@ -105,8 +95,6 @@
 
                                 <br><br>
                             </div>
-
-
 
                             <table class="display nowrap table table-stripped display " data-filter=#filter id="all-projects">
                                 <thead>
