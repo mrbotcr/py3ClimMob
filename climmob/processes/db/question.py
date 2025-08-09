@@ -42,11 +42,31 @@ __all__ = [
     "getQuestionOwner",
     "knowIfUserHasCreatedTranslations",
     "get_sensitive_questions_anonymity_by_project_id",
+    "anonymize_questions",
 ]
 
 from climmob.models.climmobv4 import AnonymizationParameter
+from climmob.models.repository import sql_execute
+from climmob.utility import get_question_by_field_name, QuestionAnonymity, QuestionType
 
 log = logging.getLogger(__name__)
+
+
+def get_anonymization_params(question_id, request):
+    result = mapFromSchema(
+        request.dbsession.query(AnonymizationParameter)
+        .filter(AnonymizationParameter.question_id == question_id)
+        .all()
+    )
+    return result
+
+
+def get_anonymization_params_as_dict(question_id, request):
+    params = get_anonymization_params(question_id, request)
+    result = {}
+    for param in params:
+        result[param["name"]] = param["value"]
+    return result
 
 
 def save_anonymization_params(question_id, data, request):
@@ -565,6 +585,8 @@ def get_sensitive_questions_anonymity_by_project_id(project_id, request):
     """
     query = (
         request.dbsession.query(
+            Question.question_id,
+            Question.question_dtype,
             Question.question_code,
             Question.question_anonymity,
         )
@@ -573,6 +595,8 @@ def get_sensitive_questions_anonymity_by_project_id(project_id, request):
         .filter(Question.question_sensitive == 1)
         .union(
             request.dbsession.query(
+                Question.question_id,
+                Question.question_dtype,
                 Question.question_code,
                 Question.question_anonymity,
             )
@@ -582,3 +606,70 @@ def get_sensitive_questions_anonymity_by_project_id(project_id, request):
         )
     )
     return query.all()
+
+
+def anonymize_questions(request, form, form_id, project_id, schema):
+    questions = get_sensitive_questions_anonymity_by_project_id(project_id, request)
+
+    registry_id = (
+        form["grp_validation/clc_after"] if form_id == "-" else form["grp_1/QST163"]
+    )
+
+    pattern = r"grp_\d+/(.+)"
+    to_anonymize = []
+
+    for key in form.keys():
+        match = re.fullmatch(pattern, key)
+        if not match:
+            continue
+        question = get_question_by_field_name(match.group(1), questions)
+        if question and question.question_anonymity != QuestionAnonymity.REMOVE.value:
+            to_anonymize.append(
+                {"field_name": match.group(1), "value": form[key], "question": question}
+            )
+
+    if not to_anonymize:
+        return True
+
+    anonymized_values = []
+
+    for field in to_anonymize:
+        params = get_anonymization_params_as_dict(
+            field["question"].question_id, request
+        )
+        if field["question"].question_anonymity == QuestionAnonymity.PSEUDONYM.value:
+            field["value"] = params["pseudonym"].replace("{}", registry_id)
+        elif field["question"].question_anonymity == QuestionAnonymity.RANGE.value:
+            parser = (
+                int
+                if field["question"].question_dtype == QuestionType.INTEGER.value
+                else float
+            )
+            field["value"] = parser(field["value"])
+            params["lower_bound"] = parser(params["lower_bound"])
+            params["upper_bound"] = parser(params["upper_bound"])
+            params["interval"] = parser(params["interval"])
+
+            if field["value"] < params["lower_bound"]:
+                field["value"] = f'<{params["lower_bound"]}'
+            elif field["value"] > params["upper_bound"]:
+                field["value"] = f'>{params["upper_bound"]}'
+            else:
+                i = params["lower_bound"]
+                while i < params["upper_bound"]:
+                    if i <= field["value"] < (i + params["interval"]):
+                        field["value"] = f'{i}-{i + params["interval"]}'
+                    i += params["interval"]
+
+        value = (
+            f"("
+            f"'{form_id}', "
+            f"'{registry_id}', "
+            f"'{field['field_name']}', "
+            f"'{field['value']}'"
+            f")"
+        )
+        anonymized_values.append(value)
+
+    sql = f"INSERT INTO {schema}.anonymized VALUES {', '.join(anonymized_values)}"
+    sql_execute(sql)

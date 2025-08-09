@@ -25,6 +25,7 @@ from climmob.processes import (
     getTheProjectIdForOwner,
 )
 from climmob.processes.db.json import addJsonLog
+from climmob.processes.db.question import anonymize_questions
 
 log = logging.getLogger(__name__)
 
@@ -388,6 +389,14 @@ def storeJSONInMySQL(
     projectId,
 ):
     schema = userOwner + "_" + projectCod
+
+    with open(JSONFile, "r", encoding="utf-8") as f:
+        data = json.load(f)
+        form_id = "-"
+        if type == "ASS":
+            form_id = assessmentid
+        anonymize_questions(request, data, form_id, projectId, schema)
+
     if type == "REG":
         manifestFile = os.path.join(
             request.registry.settings["user.repository"],

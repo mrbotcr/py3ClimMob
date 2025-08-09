@@ -14,6 +14,8 @@ from climmob.processes import (
 
 __all__ = ["getJSONResult", "getCombinationsData"]
 
+from climmob.utility import get_question_by_field_name
+
 
 def getMiltiSelectLookUpTable(XMLFile, multiSelectTable):
     tree = etree.parse(XMLFile)
@@ -272,19 +274,6 @@ def getPackageData(userOwner, projectId, projectCod, request):
     return packages
 
 
-def get_question_anonymity(field, questions) -> int | None:
-    for q in questions:
-        patterns = [
-            rf"^{q.question_code}(_[abc])?(_oth)?$",
-            rf"^perf_{q.question_code}_[123]$",
-            rf"^char_{q.question_code}_(pos|neg)$",
-        ]
-        for pattern in patterns:
-            if re.fullmatch(pattern, field["name"]):
-                return q.question_anonymity
-    return None
-
-
 class QuestionSelectFieldBuilder:
     def __init__(self, anonymize):
         self.column = None
@@ -352,10 +341,13 @@ def getData(
     for field in registry["fields"]:
         select_field_builder.set_column(field["name"])
         if anonymize:
-            anonymity = get_question_anonymity(field, questions)
-            if anonymity == QuestionAnonymity.REMOVE.value:
+            question = get_question_by_field_name(field["name"], questions)
+            if (
+                question
+                and question.question_anonymity == QuestionAnonymity.REMOVE.value
+            ):
                 continue
-            select_field_builder.set_sensitive(anonymity is not None)
+            select_field_builder.set_sensitive(question is not None)
         fields.append(select_field_builder.build())
 
     for assessment in assessments:
@@ -366,10 +358,13 @@ def getData(
         for field in assessment["fields"]:
             select_field_builder.set_column(field["name"])
             if anonymize:
-                anonymity = get_question_anonymity(field, questions)
-                if anonymity == QuestionAnonymity.REMOVE.value:
+                question = get_question_by_field_name(field["name"], questions)
+                if (
+                    question
+                    and question.question_anonymity == QuestionAnonymity.REMOVE.value
+                ):
                     continue
-                select_field_builder.set_sensitive(anonymity is not None)
+                select_field_builder.set_sensitive(question is not None)
             fields.append(select_field_builder.build())
 
     sql = (
