@@ -1,5 +1,6 @@
 import json
 import re
+from datetime import datetime
 
 from sqlalchemy import func, or_, and_
 
@@ -660,7 +661,11 @@ def anonymize_questions(request, form, form_id, project_id, schema):
                     if i <= field["value"] < (i + params["interval"]):
                         field["value"] = f'{i}-{i + params["interval"]}'
                     i += params["interval"]
-
+        elif field["question"].question_anonymity == QuestionAnonymity.MONTH_YEAR.value:
+            dt = datetime.fromisoformat(field["value"])
+            field["value"] = dt.strftime("%Y-%m")
+        elif field["question"].question_anonymity == QuestionAnonymity.NOISE.value:
+            pass
         value = (
             f"("
             f"'{form_id}', "
