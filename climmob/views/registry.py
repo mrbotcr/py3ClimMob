@@ -27,6 +27,7 @@ from climmob.processes import (
     modifyProjectMainLanguage,
     projectRegStatus,
     update_project_status,
+    remove_anonymized_values_by_form_id,
 )
 from climmob.products import stopTasksByProcess
 from climmob.views.classes import privateView
@@ -164,6 +165,9 @@ class CancelRegistryView(privateView):
                         "registry",
                         "",
                     )
+
+                schema = activeProjectUser + "_" + activeProjectCod
+                remove_anonymized_values_by_form_id(schema, "-")
 
                 self.returnRawViewResult = True
                 return HTTPFound(location=self.request.route_url("dashboard"))

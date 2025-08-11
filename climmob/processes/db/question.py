@@ -44,6 +44,7 @@ __all__ = [
     "knowIfUserHasCreatedTranslations",
     "get_sensitive_questions_anonymity_by_project_id",
     "anonymize_questions",
+    "remove_anonymized_values_by_form_id",
 ]
 
 from climmob.models.climmobv4 import AnonymizationParameter
@@ -677,4 +678,9 @@ def anonymize_questions(request, form, form_id, project_id, schema):
         anonymized_values.append(value)
 
     sql = f"INSERT INTO {schema}.anonymized VALUES {', '.join(anonymized_values)}"
+    sql_execute(sql)
+
+
+def remove_anonymized_values_by_form_id(schema, form_id):
+    sql = f"DELETE FROM {schema}.anonymized where form_id='{form_id}'"
     sql_execute(sql)
