@@ -26,9 +26,9 @@ from climmob.processes import (
     addRegistryGroup,
     getQuestionsByGroupInRegistry,
     addRegistryQuestionToGroup,
-    getAllAssessmentGroups,
-    addProjectAssessmentClone,
-    addAssessmentGroup,
+    get_all_assessment_groups,
+    add_project_assessment_clone,
+    add_assessment_group,
     getQuestionsByGroupInAssessment,
     addAssessmentQuestionToGroup,
     getProjectEnumerators,
@@ -51,11 +51,13 @@ from climmob.processes import (
     get_location_unit_of_analysis_by_combination,
     get_location_unit_of_analysis_objectives_by_combination,
     delete_all_project_location_unit_objective,
+    get_all_affiliations,
 )
 from climmob.views.classes import privateView
+from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 
 
-class getTemplatesByTypeOfProject_view(privateView):
+class GetTemplatesByTypeOfProjectView(privateView):
     def processView(self):
         if self.request.method == "GET":
             typeId = self.request.matchdict["typeid"]
@@ -67,7 +69,7 @@ class getTemplatesByTypeOfProject_view(privateView):
         raise HTTPNotFound
 
 
-class projectList_view(privateView):
+class ProjectListView(privateView):
     def processView(self):
 
         return {
@@ -78,7 +80,7 @@ class projectList_view(privateView):
         }
 
 
-class newProject_view(privateView):
+class NewProjectView(privateView):
     def processView(self):
 
         if self.request.registry.settings.get("projects.limit", "false") == "true":
@@ -114,7 +116,7 @@ class newProject_view(privateView):
             if "btn_addNewProject" in self.request.POST:
                 dataworking = self.getPostDict()
 
-                dataworking, error_summary, added = createProjectFunction(
+                dataworking, error_summary, added = create_project_function(
                     dataworking, error_summary, self
                 )
                 if added:
@@ -156,10 +158,11 @@ class newProject_view(privateView):
                 dataworking["project_location"],
                 dataworking["project_unit_of_analysis"],
             ),
+            "list_of_affiliation": get_all_affiliations(self.request),
         }
 
 
-def createProjectFunction(dataworking, error_summary, self):
+def create_project_function(dataworking, error_summary, self):
     added = False
     dataworking["user_name"] = self.user.login
     dataworking["project_regstatus"] = 0
@@ -228,6 +231,12 @@ def createProjectFunction(dataworking, error_summary, self):
                     dataworking[
                         "project_registration_and_analysis"
                     ] = location_unit_of_analysis["registration_and_analysis"]
+
+                    if "usingTemplate" in dataworking.keys():
+                        if dataworking["usingTemplate"] != "":
+                            dataworking["project_template_used"] = dataworking[
+                                "usingTemplate"
+                            ]
 
                     if not exitsproject:
                         added, idormessage = addProject(dataworking, self.request)
@@ -304,7 +313,7 @@ def createProjectFunction(dataworking, error_summary, self):
                                         self.request,
                                     )
 
-                                    functionCreateClone(
+                                    function_create_clone(
                                         self,
                                         dataworking["usingTemplate"],
                                         newProjectId,
@@ -343,7 +352,7 @@ def createProjectFunction(dataworking, error_summary, self):
     return dataworking, error_summary, added
 
 
-def functionCreateClone(self, projectId, newProjectId, structureToBeCloned):
+def function_create_clone(self, projectId, newProjectId, structureToBeCloned):
 
     if "fieldagents" in structureToBeCloned:
         enumerators = getProjectEnumerators(
@@ -448,18 +457,18 @@ def functionCreateClone(self, projectId, newProjectId, structureToBeCloned):
             newAssessment["ass_final"] = assessment["ass_final"]
             newAssessment["project_id"] = newProjectId
             newAssessment["ass_status"] = 0
-            added, msg = addProjectAssessmentClone(newAssessment, self.request)
+            added, msg = add_project_assessment_clone(newAssessment, self.request)
 
             if added:
                 newAssessment["ass_cod"] = msg
                 data = {}
                 data["project_id"] = projectId
                 data["ass_cod"] = assessment["ass_cod"]
-                groupsInAssessment = getAllAssessmentGroups(data, self.request)
+                groupsInAssessment = get_all_assessment_groups(data, self.request)
                 for group in groupsInAssessment:
                     group["project_id"] = newProjectId
                     group["ass_cod"] = newAssessment["ass_cod"]
-                    addgroup, message = addAssessmentGroup(group, self)
+                    addgroup, message = add_assessment_group(group, self)
 
                     if addgroup:
                         questionInAssessment = getQuestionsByGroupInAssessment(
@@ -481,16 +490,13 @@ def functionCreateClone(self, projectId, newProjectId, structureToBeCloned):
     return ""
 
 
-class modifyProject_view(privateView):
+class ModifyProjectView(privateView):
+    validators = (ProjectExistsValidator,)
+
     def processView(self):
 
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
-
-        if not projectExists(
-            self.user.login, activeProjectUser, activeProjectCod, self.request
-        ):
-            raise HTTPNotFound()
 
         activeProjectId = getTheProjectIdForOwner(
             activeProjectUser, activeProjectCod, self.request
@@ -595,6 +601,12 @@ class modifyProject_view(privateView):
                                     "registration_and_analysis"
                                 ]
 
+                            if "usingTemplate" in data.keys():
+                                if data["usingTemplate"] != "":
+                                    data["project_template_used"] = data[
+                                        "usingTemplate"
+                                    ]
+
                             modified, message = modifyProject(
                                 activeProjectId, data, self.request
                             )
@@ -677,7 +689,10 @@ class modifyProject_view(privateView):
                                     )
 
                                 if "usingTemplate" in data.keys():
-                                    if data["usingTemplate"] != "":
+                                    if (
+                                        data["usingTemplate"]
+                                        != cdata["project_template_used"]
+                                    ):
                                         deleteRegistryByProjectId(
                                             activeProjectId, self.request
                                         )
@@ -701,7 +716,7 @@ class modifyProject_view(privateView):
                                             self.request,
                                         )
 
-                                        functionCreateClone(
+                                        function_create_clone(
                                             self,
                                             data["usingTemplate"],
                                             newProjectId,
@@ -746,21 +761,19 @@ class modifyProject_view(privateView):
             "listOfObjectives": get_all_objectives_by_location_and_unit_of_analysis(
                 self.request, data["project_location"], data["project_unit_of_analysis"]
             ),
+            "list_of_affiliation": get_all_affiliations(self.request),
         }
         for plugin in p.PluginImplementations(p.IProject):
             context = plugin.before_returning_project_context(self.request, context)
         return context
 
 
-class deleteProject_view(privateView):
+class DeleteProjectView(privateView):
+    validators = (ProjectExistsValidator,)
+
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
-
-        if not projectExists(
-            self.user.login, activeProjectUser, activeProjectCod, self.request
-        ):
-            raise HTTPNotFound()
 
         activeProjectId = getTheProjectIdForOwner(
             activeProjectUser, activeProjectCod, self.request
@@ -803,7 +816,7 @@ class deleteProject_view(privateView):
         }
 
 
-class CurationOfProjects_view(privateView):
+class CurationOfProjectsView(privateView):
     def processView(self):
         error_summary = {}
 
@@ -893,6 +906,7 @@ class CurationOfProjects_view(privateView):
             return HTTPFound(location=self.request.route_url("dashboard"))
 
         return {
+            "sectionActive": "curationofprojects",
             "listOfProjects": projects,
             "listOfProjectTypes": getListOfProjectTypes(self.request),
             "listOfLocations": get_all_project_location(self.request),

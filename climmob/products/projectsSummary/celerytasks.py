@@ -16,6 +16,11 @@ from climmob.models import (
     CropTaxonomy,
     ProjectStatus,
     ProjectType,
+    ProjectLocation,
+    ProjectUnitOfAnalysis,
+    ProjectObjectives,
+    LocationUnitOfAnalysisObjectives,
+    ProjectLocaUnitObjective,
 )
 import shutil as sh
 import pandas as pd
@@ -31,6 +36,55 @@ from climmob.config.celery_class import celeryTask
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 from sqlalchemy.pool import NullPool
+
+
+def get_list_of_locations(dbsession):
+    return mapFromSchema(dbsession.query(ProjectLocation).all())
+
+
+def get_list_of_unit_of_analysis(dbsession):
+    return mapFromSchema(dbsession.query(ProjectUnitOfAnalysis).all())
+
+
+def get_project_objective(dbsession, project_id):
+
+    result = mapFromSchema(
+        dbsession.query(ProjectObjectives.pobjective_name)
+        .filter(
+            ProjectLocaUnitObjective.pluoaobj_id
+            == LocationUnitOfAnalysisObjectives.pluoaobj_id
+        )
+        .filter(
+            LocationUnitOfAnalysisObjectives.pobjective_id
+            == ProjectObjectives.pobjective_id
+        )
+        .filter(ProjectLocaUnitObjective.project_id == project_id)
+        .first()
+    )
+
+    if result:
+        return result["pobjective_name"]
+    return None
+
+
+def search_location(list_of_locations, location_id):
+
+    for item in list_of_locations:
+        if item["plocation_id"] == location_id:
+
+            return item["plocation_name"]
+
+    return None
+
+
+def search_unit_of_analysis(list_of_unit_of_analysis, unit_of_analysis_id):
+
+    for item in list_of_unit_of_analysis:
+        if item["puoa_id"] == unit_of_analysis_id:
+
+            return item["puoa_name"]
+
+    return None
 
 
 def getTheTechOfTheProject(dbsession, projectId):
@@ -407,10 +461,12 @@ def getListOfProjects(dbsession):
             Project.project_active,
             Project.project_affiliation,
             Project.project_curated_cropname,
-            Project.project_continent,
+            Country.cnty_continent,
             Project.climmob_analytics,
             ProjectStatus.prjstatus_name,
             ProjectType.prjtype_name,
+            Project.project_location,
+            Project.project_unit_of_analysis,
         )
         .filter(Project.project_id == userProject.project_id)
         .filter(Project.project_cnty == Country.cnty_cod)
@@ -439,10 +495,12 @@ def getListOfProjects(dbsession):
             Project.project_active,
             Project.project_affiliation,
             Project.project_curated_cropname,
-            Project.project_continent,
+            Project.project_cnty.label("cnty_continent"),
             Project.climmob_analytics,
             ProjectStatus.prjstatus_name,
             ProjectType.prjtype_name,
+            Project.project_location,
+            Project.project_unit_of_analysis,
         )
         .filter(Project.project_id == userProject.project_id)
         .filter(Project.project_cnty.is_(None))
@@ -506,6 +564,10 @@ def createProjectsSummary(self, settings, otro):
         listOfProjects = []
         listOfGenotypes = []
         listOfDataCollectionMoments = []
+
+        list_of_locations = get_list_of_locations(dbsession)
+        list_of_unit_of_analysis = get_list_of_unit_of_analysis(dbsession)
+
         for project in getListOfProjects(dbsession):
             cantidad += 1
             print(cantidad)
@@ -615,10 +677,19 @@ def createProjectsSummary(self, settings, otro):
             result["affiliation"] = project["project_affiliation"]
             result["cropname"] = project["project_curated_cropname"]
             result["project_active"] = project["project_active"]
-            result["project_continent"] = project["project_continent"]
+            result["project_continent"] = project["cnty_continent"]
             result["climmob_analytics"] = project["climmob_analytics"]
             result["project_status"] = project["prjstatus_name"]
             result["project_type"] = project["prjtype_name"]
+            result["project_experimental_site"] = search_location(
+                list_of_locations, project["project_location"]
+            )
+            result["project_unit_of_analysis"] = search_unit_of_analysis(
+                list_of_unit_of_analysis, project["project_unit_of_analysis"]
+            )
+            result["project_objective"] = get_project_objective(
+                dbsession, project["project_id"]
+            )
 
             listOfProjects.append(result)
 

@@ -27,7 +27,6 @@ from climmob.config.routes import loadRoutes
 from climmob.models import addColumnToSchema, add_modules_to_schema
 from climmob.products.climmob_products import register_products
 
-my_session_factory = SignedCookieSessionFactory("b@HdX5Y6nL")
 
 # This function return the address of a static URL.
 # It substitutes request.static_url because
@@ -94,6 +93,13 @@ def load_environment(settings, config, apppath, policy_array):
         main_policy_array.append(policy)
 
     # Add the session factory to the confing
+    my_session_factory = SignedCookieSessionFactory(
+        settings.get("session.secret"),
+        timeout=settings.get("session.timeout", 3600),
+        reissue_time=settings.get("session.reissue_time", 0),
+        max_age=settings.get("session.timeout", 3600),
+    )
+
     config.set_session_factory(my_session_factory)
 
     # Add render subscribers for internationalization

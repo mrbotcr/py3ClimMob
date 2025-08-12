@@ -14,6 +14,7 @@ from sqlalchemy import (
     BLOB,
     JSON,
     UniqueConstraint,
+    Float,
 )
 from sqlalchemy.dialects.mysql import MEDIUMTEXT
 from sqlalchemy.orm import relationship
@@ -137,6 +138,7 @@ class Country(Base):
     cnty_cod = Column(Unicode(3), primary_key=True)
     cnty_iso = Column(Unicode(3), nullable=True)
     cnty_name = Column(Unicode(120))
+    cnty_continent = Column(ForeignKey("continent.continent_id"), nullable=True)
     cnty_lang = Column(ForeignKey("i18n.lang_code"), server_default=text("'en'"))
 
     i18n = relationship("I18n")
@@ -719,7 +721,8 @@ class Project(Base):
     project_affiliation = Column(Unicode(120), nullable=True)
     climmob_analytics = Column(Integer, nullable=True)
     project_curated_cropname = Column(Unicode(120), nullable=True)
-    project_continent = Column(ForeignKey("continent.continent_id"), nullable=True)
+    project_template_used = Column(ForeignKey("project.project_id"), nullable=True)
+    project_checked = Column(Integer, server_default=text("'0'"))
 
     country = relationship("Country")
 
@@ -800,6 +803,8 @@ class Question(Base):
     question_desc = Column(Unicode(120))
     question_notes = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
     question_unit = Column(Unicode(120))
+    question_min = Column(Float, nullable=True)
+    question_max = Column(Float, nullable=True)
     question_dtype = Column(Integer)
     question_cmp = Column(Unicode(120))
     question_reqinreg = Column(Integer, server_default=text("'0'"))
@@ -1365,11 +1370,9 @@ class MetadataForm(Base):
     metadata_odk = Column(BLOB, nullable=False)
     metadata_json = Column(JSON, nullable=False)
     metadata_active = Column(Integer, nullable=False, server_default=text("'1'"))
-
-    @property
-    def test(self):
-
-        return self.metadata_id + "_test"
+    metadata_for_technology_options = Column(
+        Integer, nullable=False, server_default=text("'0'")
+    )
 
 
 class MetadaFormLocationUnitOfAnalysis(Base):
@@ -1407,6 +1410,8 @@ class ProjectMetadataForm(Base):
         nullable=False,
     )
     pmf_json = Column(JSON, nullable=False)
+    pmf_lang = Column(ForeignKey("i18n.lang_code"), nullable=True)
+    pmf_last_update = Column(DateTime, nullable=True)
 
     Project = relationship("Project")
     MetadataForm = relationship("MetadataForm", backref="project_metadata_form")

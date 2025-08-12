@@ -199,6 +199,21 @@ class TestUpdateEnumeratorView(unittest.TestCase):
             "The field agent was modified successfully.", response.body.decode()
         )
 
+    @patch("climmob.views.Api.enumerators.enumeratorExists", return_value=True)
+    @patch(
+        "climmob.views.Api.enumerators.modifyEnumerator",
+        return_value=(False, "Error at modify."),
+    )
+    def test_process_view_error_at_modify(
+        self, mock_modifyEnumerator, mock_enumeratorExists
+    ):
+        self.view._ = self.mock_translation  # Mock translation function
+
+        response = self.view.processView()
+
+        self.assertEqual(response.status_code, 401)
+        self.assertIn("Error at modify.", response.body.decode())
+
     @patch("climmob.views.Api.enumerators.enumeratorExists", return_value=False)
     def test_process_view_enumerator_not_exists(self, mock_enumeratorExists):
         self.view._ = self.mock_translation  # Mock translation function
@@ -288,6 +303,25 @@ class TestUpdatePasswordEnumeratorView(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("The password was modified successfully.", response.body.decode())
+
+    @patch("climmob.views.Api.enumerators.enumeratorExists", return_value=True)
+    @patch("climmob.views.Api.enumerators.isEnumeratorPassword", return_value=True)
+    @patch(
+        "climmob.views.Api.enumerators.modifyEnumeratorPassword",
+        return_value=(False, "Error message."),
+    )
+    def test_process_view_error_at_modify(
+        self,
+        mock_modifyEnumeratorPassword,
+        mock_isEnumeratorPassword,
+        mock_enumeratorExists,
+    ):
+        self.view._ = self.mock_translation  # Mock translation function
+
+        response = self.view.processView()
+
+        self.assertEqual(response.status_code, 401)
+        self.assertIn("Error message.", response.body.decode())
 
     @patch("climmob.views.Api.enumerators.enumeratorExists", return_value=False)
     def test_process_view_enumerator_not_exists(self, mock_enumeratorExists):
@@ -392,6 +426,21 @@ class TestApiDeleteEnumeratorView(unittest.TestCase):
         self.assertIn(
             "The field agent was deleted successfully.", response.body.decode()
         )
+
+    @patch("climmob.views.Api.enumerators.enumeratorExists", return_value=True)
+    @patch(
+        "climmob.views.Api.enumerators.deleteEnumerator",
+        return_value=(False, "Error at delete."),
+    )
+    def test_process_view_error_at_delete(
+        self, mock_deleteEnumerator, mock_enumeratorExists
+    ):
+        self.view._ = self.mock_translation  # Mock translation function
+
+        response = self.view.processView()
+
+        self.assertEqual(response.status_code, 401)
+        self.assertIn("Error at delete.", response.body.decode())
 
     @patch("climmob.views.Api.enumerators.enumeratorExists", return_value=False)
     def test_process_view_enumerator_not_exists(self, mock_enumeratorExists):

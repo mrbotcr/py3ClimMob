@@ -1,7 +1,7 @@
 import json
 import unittest
 from unittest.mock import patch, MagicMock, ANY
-from climmob.tests.test_utils.common import BaseViewTestCase
+from climmob.tests.test_utils.common import ViewBaseTest
 from climmob.views.Api.questions import (
     CreateQuestionView,
     ReadQuestionsView,
@@ -16,11 +16,16 @@ from climmob.views.Api.questions import (
     MultiLanguageQuestionView,
     ReadMultiLanguagesFromQuestionView,
 )
+from climmob.views.validators.question.QuestionMinMaxValidator import (
+    QuestionMinMaxValidator,
+)
+from climmob.views.validators.question.QuestionUpdateMinMaxValidator import (
+    QuestionUpdateMinMaxValidator,
+)
 
 
-class TestCreateQuestionView(BaseViewTestCase):
+class TestCreateQuestionView(ViewBaseTest):
     view_class = CreateQuestionView
-    request_method = "POST"
 
     def setUp(self):
         super().setUp()
@@ -37,52 +42,49 @@ class TestCreateQuestionView(BaseViewTestCase):
         self.view.user = MagicMock()
         self.view.user.login = "test_user"
 
-    def test_process_view_invalid_method(self):
-        self.view.request.method = "GET"
-        response = self.view.processView()
+    def test_has_validator(self):
+        validators = (QuestionMinMaxValidator,)
+        self.assertEqual(self.view.validators, validators)
 
-        self.assertEqual(response.status_code, 401)
-        self.assertIn("Only accepts POST method.", response.body.decode())
-
-    def test_process_view_missing_obligatory_keys(self):
+    def test_post_missing_obligatory_keys(self):
         invalid_data = self.valid_data.copy()
         del invalid_data["question_name"]
         self.view.body = json.dumps(invalid_data)
 
-        response = self.view.processView()
+        response = self.view.post()
 
         self.assertEqual(response.status_code, 401)
         self.assertIn(
             "It is not complying with the obligatory keys.", response.body.decode()
         )
 
-    def test_process_view_unpermitted_keys(self):
+    def test_post_unpermitted_keys(self):
         invalid_data = self.valid_data.copy()
         invalid_data["unpermitted_key"] = "value"
         self.view.body = json.dumps(invalid_data)
 
-        response = self.view.processView()
+        response = self.view.post()
 
         self.assertEqual(response.status_code, 401)
         self.assertIn(
             "Error in the parameters that you want to add.", response.body.decode()
         )
 
-    def test_process_view_empty_parameters(self):
+    def test_post_empty_parameters(self):
         invalid_data = self.valid_data.copy()
         invalid_data["question_name"] = ""
         self.view.body = json.dumps(invalid_data)
 
-        response = self.view.processView()
+        response = self.view.post()
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("Not all parameters have data.", response.body.decode())
 
     @patch("climmob.views.Api.questions.languageExistInI18nUser", return_value=False)
-    def test_process_view_language_not_in_user_languages(
+    def test_post_language_not_in_user_languages(
         self, mock_language_exist_in_i18n_user
     ):
-        response = self.view.processView()
+        response = self.view.post()
 
         self.assertEqual(response.status_code, 401)
         self.assertIn(
@@ -94,7 +96,7 @@ class TestCreateQuestionView(BaseViewTestCase):
             "en", "test_user", self.view.request
         )
 
-    def test_process_view_invalid_zero_or_two_parameters(self):
+    def test_post_invalid_zero_or_two_parameters(self):
         invalid_data = self.valid_data.copy()
         invalid_data["question_alwaysinreg"] = "3"
         self.view.body = json.dumps(invalid_data)
@@ -103,7 +105,7 @@ class TestCreateQuestionView(BaseViewTestCase):
             "climmob.views.Api.questions.languageExistInI18nUser",
             return_value=True,
         ) as mock_language_exist_in_i18n_user:
-            response = self.view.processView()
+            response = self.view.post()
 
             self.assertEqual(response.status_code, 401)
             self.assertIn(
@@ -115,7 +117,7 @@ class TestCreateQuestionView(BaseViewTestCase):
                 "en", "test_user", self.view.request
             )
 
-    def test_process_view_invalid_question_dtype(self):
+    def test_post_invalid_question_dtype(self):
         invalid_data = self.valid_data.copy()
         invalid_data["question_dtype"] = "99"
         self.view.body = json.dumps(invalid_data)
@@ -124,7 +126,7 @@ class TestCreateQuestionView(BaseViewTestCase):
             "climmob.views.Api.questions.languageExistInI18nUser",
             return_value=True,
         ) as mock_language_exist_in_i18n_user:
-            response = self.view.processView()
+            response = self.view.post()
 
             self.assertEqual(response.status_code, 401)
             self.assertIn("Check the ID of the question type.", response.body.decode())
@@ -135,10 +137,10 @@ class TestCreateQuestionView(BaseViewTestCase):
 
     @patch("climmob.views.Api.questions.questionExists", return_value=True)
     @patch("climmob.views.Api.questions.languageExistInI18nUser", return_value=True)
-    def test_process_view_question_already_exists(
+    def test_post_question_already_exists(
         self, mock_language_exist_in_i18n_user, mock_question_exists
     ):
-        response = self.view.processView()
+        response = self.view.post()
 
         self.assertEqual(response.status_code, 401)
         self.assertIn(
@@ -155,13 +157,13 @@ class TestCreateQuestionView(BaseViewTestCase):
     @patch("climmob.views.Api.questions.categoryExistsById", return_value=None)
     @patch("climmob.views.Api.questions.questionExists", return_value=False)
     @patch("climmob.views.Api.questions.languageExistInI18nUser", return_value=True)
-    def test_process_view_category_does_not_exist(
+    def test_post_category_does_not_exist(
         self,
         mock_language_exist_in_i18n_user,
         mock_question_exists,
         mock_category_exists_by_id,
     ):
-        response = self.view.processView()
+        response = self.view.post()
 
         self.assertEqual(response.status_code, 401)
         self.assertIn(
@@ -188,14 +190,14 @@ class TestCreateQuestionView(BaseViewTestCase):
     )
     @patch("climmob.views.Api.questions.questionExists", return_value=False)
     @patch("climmob.views.Api.questions.languageExistInI18nUser", return_value=True)
-    def test_process_view_add_question_failure(
+    def test_post_add_question_failure(
         self,
         mock_language_exist_in_i18n_user,
         mock_question_exists,
         mock_category_exists_by_id,
         mock_add_question,
     ):
-        response = self.view.processView()
+        response = self.view.post()
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("Error adding question", response.body.decode())
@@ -225,7 +227,7 @@ class TestCreateQuestionView(BaseViewTestCase):
     )
     @patch("climmob.views.Api.questions.questionExists", return_value=False)
     @patch("climmob.views.Api.questions.languageExistInI18nUser", return_value=True)
-    def test_process_view_success(
+    def test_post_success(
         self,
         mock_language_exist_in_i18n_user,
         mock_question_exists,
@@ -233,7 +235,7 @@ class TestCreateQuestionView(BaseViewTestCase):
         mock_get_question_data,
         mock_add_question,
     ):
-        response = self.view.processView()
+        response = self.view.post()
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json.loads(response.body.decode()), {"question_data": "data"})
@@ -266,7 +268,7 @@ class TestCreateQuestionView(BaseViewTestCase):
     )
     @patch("climmob.views.Api.questions.questionExists", return_value=False)
     @patch("climmob.views.Api.questions.languageExistInI18nUser", return_value=True)
-    def test_process_view_success_with_dtype_5(
+    def test_post_success_with_dtype_5(
         self,
         mock_language_exist_in_i18n_user,
         mock_question_exists,
@@ -277,7 +279,7 @@ class TestCreateQuestionView(BaseViewTestCase):
         self.valid_data["question_dtype"] = "5"
         self.view.body = json.dumps(self.valid_data)
 
-        response = self.view.processView()
+        response = self.view.post()
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json.loads(response.body.decode()), {"question_data": "data"})
@@ -306,7 +308,7 @@ class TestCreateQuestionView(BaseViewTestCase):
     )
     @patch("climmob.views.Api.questions.questionExists", return_value=False)
     @patch("climmob.views.Api.questions.languageExistInI18nUser", return_value=True)
-    def test_process_view_success_with_dtype_9(
+    def test_post_success_with_dtype_9(
         self,
         mock_language_exist_in_i18n_user,
         mock_question_exists,
@@ -316,7 +318,7 @@ class TestCreateQuestionView(BaseViewTestCase):
         self.valid_data["question_dtype"] = "9"
         self.view.body = json.dumps(self.valid_data)
 
-        response = self.view.processView()
+        response = self.view.post()
 
         self.assertEqual(response.status_code, 200)
         self.assertIn(
@@ -349,7 +351,7 @@ class TestCreateQuestionView(BaseViewTestCase):
     )
     @patch("climmob.views.Api.questions.questionExists", return_value=False)
     @patch("climmob.views.Api.questions.languageExistInI18nUser", return_value=True)
-    def test_process_view_success_with_dtype_10(
+    def test_post_success_with_dtype_10(
         self,
         mock_language_exist_in_i18n_user,
         mock_question_exists,
@@ -360,7 +362,7 @@ class TestCreateQuestionView(BaseViewTestCase):
         self.valid_data["question_dtype"] = "10"
         self.view.body = json.dumps(self.valid_data)
 
-        response = self.view.processView()
+        response = self.view.post()
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json.loads(response.body.decode()), {"question_data": "data"})
@@ -380,7 +382,7 @@ class TestCreateQuestionView(BaseViewTestCase):
         )
 
 
-class TestReadQuestionsView(BaseViewTestCase):
+class TestReadQuestionsView(ViewBaseTest):
     view_class = ReadQuestionsView
     request_method = "GET"
 
@@ -429,7 +431,7 @@ class TestReadQuestionsView(BaseViewTestCase):
         self.assertEqual(mock_user_question.call_count, 2)
 
 
-class TestUpdateQuestionView(BaseViewTestCase):
+class TestUpdateQuestionView(ViewBaseTest):
     view_class = UpdateQuestionView
     request_method = "POST"
 
@@ -442,8 +444,13 @@ class TestUpdateQuestionView(BaseViewTestCase):
             "question_name": "New Question Name",
             "question_dtype": "1",
             "question_lang": "en",
+            "qstgroups_id": "random_num",
         }
         self.view.body = json.dumps(self.valid_data)
+
+    def test_has_validator(self):
+        validators = (QuestionUpdateMinMaxValidator,)
+        self.assertEqual(self.view.validators, validators)
 
     def test_process_view_invalid_method(self):
         self.view.request.method = "GET"
@@ -522,7 +529,6 @@ class TestUpdateQuestionView(BaseViewTestCase):
     def test_process_view_invalid_language(
         self, mock_language_exists, mock_get_question_data
     ):
-
         mock_get_question_data.return_value = (
             {
                 "question_alwaysinreg": "1",
@@ -536,7 +542,6 @@ class TestUpdateQuestionView(BaseViewTestCase):
             },
             True,
         )
-
         response = self.view.processView()
         self.assertEqual(response.status_code, 401)
         self.assertIn(
@@ -550,7 +555,171 @@ class TestUpdateQuestionView(BaseViewTestCase):
             "test_user", "QST123", self.view.request
         )
 
-    def test_process_view_missing_question_id(self):
+    @patch(
+        "climmob.views.Api.questions.updateQuestion",
+        return_value=(False, "update Error."),
+    )
+    @patch(
+        "climmob.views.Api.questions.categoryExistsById",
+        return_value={"user_name": "test_user"},
+    )
+    @patch("climmob.views.Api.questions.languageExistInI18nUser", return_value=True)
+    @patch("climmob.views.Api.questions.getQuestionData")
+    def test_process_view_no_update_update_error(
+        self,
+        mock_get_question_data,
+        mock_languageExistInI18nUser,
+        mock_categoryExistsById,
+        mock_updateQuestion,
+    ):
+        mock_get_question_data.return_value = (
+            {
+                "question_alwaysinreg": "1",
+                "question_alwaysinasse": "0",
+                "question_requiredvalue": "1",
+                "question_tied": "0",
+                "question_notobserved": "0",
+                "question_quantitative": "1",
+                "question_unit": "kg",
+                "question_dtype": "9",
+            },
+            True,
+        )
+
+        self.valid_data["question_dtype"] = "9"
+        self.view.body = json.dumps(self.valid_data)
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn("update Error.", response.body.decode())
+        assert mock_updateQuestion.called_once()
+
+    @patch(
+        "climmob.views.Api.questions.categoryExistsById",
+        return_value={"user_name": "test_user"},
+    )
+    @patch("climmob.views.Api.questions.languageExistInI18nUser", return_value=True)
+    @patch("climmob.views.Api.questions.getQuestionData")
+    def test_process_view_no_update_question_type(
+        self,
+        mock_get_question_data,
+        mock_languageExistInI18nUser,
+        mock_categoryExistsById,
+    ):
+        mock_get_question_data.return_value = (
+            {
+                "question_alwaysinreg": "1",
+                "question_alwaysinasse": "0",
+                "question_requiredvalue": "1",
+                "question_tied": "0",
+                "question_notobserved": "0",
+                "question_quantitative": "1",
+                "question_unit": "kg",
+                "question_dtype": "999",
+            },
+            True,
+        )
+        self.valid_data["question_dtype"] = "999"
+        self.view.body = json.dumps(self.valid_data)
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn("Check the ID of the question type.", response.body.decode())
+
+    @patch("climmob.views.Api.questions.categoryExistsById", return_value=False)
+    @patch("climmob.views.Api.questions.languageExistInI18nUser", return_value=True)
+    @patch("climmob.views.Api.questions.getQuestionData")
+    def test_process_view_no_update_question_category(
+        self,
+        mock_get_question_data,
+        mock_languageExistInI18nUser,
+        mock_categoryExistsById,
+    ):
+        mock_get_question_data.return_value = (
+            {
+                "question_alwaysinreg": "1",
+                "question_alwaysinasse": "0",
+                "question_requiredvalue": "1",
+                "question_tied": "0",
+                "question_notobserved": "0",
+                "question_quantitative": "1",
+                "question_unit": "kg",
+                "question_dtype": "1",
+            },
+            True,
+        )
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "There is a problem with the question category you want to assign.",
+            response.body.decode(),
+        )
+
+    @patch("climmob.views.Api.questions.languageExistInI18nUser", return_value=True)
+    @patch("climmob.views.Api.questions.getQuestionData")
+    def test_process_view_no_update_missing_out_of_params(
+        self, mock_get_question_data, mock_languageExistInI18nUser
+    ):
+        mock_get_question_data.return_value = (
+            {
+                "question_lang": "en",  # this is required for the language validation
+                "question_alwaysinreg": "True",  # this trigger the error
+                "question_alwaysinasse": "0",
+                "question_requiredvalue": "1",
+                "question_tied": "0",
+                "question_notobserved": "0",
+                "question_quantitative": "1",
+                "question_unit": "kg",
+                "question_dtype": "1",
+            },
+            True,
+        )
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "The possible values in the parameters: 'question_alwaysinreg','question_alwaysinasse','question_requiredvalue', 'question_quantitative' is 1 or 0.",
+            response.body.decode(),
+        )
+
+    def test_process_view_no_update_missing_no_params_data(self):
+        mock_question_data = {
+            "question_id": "QST123",
+            "question_name": "",
+            "question_dtype": "",
+            "question_lang": "en",
+        }
+        self.view.body = json.dumps(mock_question_data)
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn("Not all parameters have data.", response.body.decode())
+
+    def test_process_view_no_update_missing_params_error(self):
+        self.view.body = json.dumps(
+            {
+                "question_id": "QST123",
+                "other_question": "QST123",
+            }
+        )
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "Error in the parameters that you want to add.", response.body.decode()
+        )
+
+    @patch(
+        "climmob.views.Api.questions.getQuestionData",
+        return_value=({"user_name": "bioversity", "question_dtype": 5}, False),
+    )
+    def test_process_view_no_update_question_not_editable_climmob_library(
+        self, mock_get_question_data
+    ):
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "The question is from the ClimMob library. You cannot edit it.",
+            response.body.decode(),
+        )
+        mock_get_question_data.assert_called_once()
+
+    def test_process_view_no_update_missing_question_id(self):
         self.view.body = json.dumps({"question_name": "New Name"})
         response = self.view.processView()
         self.assertEqual(response.status_code, 401)
@@ -559,7 +728,7 @@ class TestUpdateQuestionView(BaseViewTestCase):
         )
 
 
-class TestDeleteQuestionViewApi(BaseViewTestCase):
+class TestDeleteQuestionViewApi(ViewBaseTest):
     view_class = DeleteQuestionViewApi
     request_method = "POST"
 
@@ -653,7 +822,7 @@ class TestDeleteQuestionViewApi(BaseViewTestCase):
         )
 
 
-class TestReadQuestionValuesView(BaseViewTestCase):
+class TestReadQuestionValuesView(ViewBaseTest):
     view_class = ReadQuestionValuesView
     request_method = "GET"
 
@@ -765,7 +934,7 @@ class TestReadQuestionValuesView(BaseViewTestCase):
         mock_get_question_options.assert_called_once_with("QST123", self.view.request)
 
 
-class TestAddQuestionValueViewApi(BaseViewTestCase):
+class TestAddQuestionValueViewApi(ViewBaseTest):
     view_class = AddQuestionValueViewApi
     request_method = "POST"
 
@@ -1019,7 +1188,7 @@ class TestAddQuestionValueViewApi(BaseViewTestCase):
         )
 
 
-class TestUpdateQuestionValueView(BaseViewTestCase):
+class TestUpdateQuestionValueView(ViewBaseTest):
     view_class = UpdateQuestionValueView
     request_method = "POST"
 
@@ -1224,7 +1393,7 @@ class TestUpdateQuestionValueView(BaseViewTestCase):
         self.assertIn("Not all parameters have data.", response.body.decode())
 
 
-class TestDeleteQuestionValueViewApi(BaseViewTestCase):
+class TestDeleteQuestionValueViewApi(ViewBaseTest):
     view_class = DeleteQuestionValueViewApi
     request_method = "POST"
 
@@ -1367,7 +1536,7 @@ class TestDeleteQuestionValueViewApi(BaseViewTestCase):
         mock_delete_option.assert_called_once_with("QST123", "OPT1", self.view.request)
 
 
-class TestUpdateQuestionCharacteristicsView(BaseViewTestCase):
+class TestUpdateQuestionCharacteristicsView(ViewBaseTest):
     view_class = UpdateQuestionCharacteristicsView
     request_method = "POST"
 
@@ -1522,7 +1691,7 @@ class TestUpdateQuestionCharacteristicsView(BaseViewTestCase):
         self.assertIn("Not all parameters have data.", response.body.decode())
 
 
-class TestUpdateQuestionPerformanceView(BaseViewTestCase):
+class TestUpdateQuestionPerformanceView(ViewBaseTest):
     view_class = UpdateQuestionPerformanceView
     request_method = "POST"
 
@@ -1696,7 +1865,7 @@ class TestUpdateQuestionPerformanceView(BaseViewTestCase):
         self.assertIn("Not all parameters have data.", response.body.decode())
 
 
-class TestMultiLanguageQuestionView(BaseViewTestCase):
+class TestMultiLanguageQuestionView(ViewBaseTest):
     view_class = MultiLanguageQuestionView
     request_method = "POST"
 
@@ -2018,7 +2187,67 @@ class TestMultiLanguageQuestionView(BaseViewTestCase):
     ):
 
         mock_get_question_data.return_value = (
-            {"question_lang": "en", "user_name": "test_user", "question_dtype": 5},
+            {"question_lang": "en", "user_name": "test_user", "question_dtype": 9},
+            True,
+        )
+
+        mock_get_question_options.return_value = [
+            {"value_code": "OPT1"},
+            {"value_code": "OPT2"},
+        ]
+
+        self.valid_data["option_OPT1"] = "Opción 1"
+        self.valid_data["question_desc"] = "Some description"
+        self.view.body = json.dumps(self.valid_data)
+
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "It is not complying with the obligatory keys", response.body.decode()
+        )
+
+        mock_get_question_data.assert_called_once_with(
+            "test_user", "QST123", self.view.request
+        )
+
+    @patch("climmob.views.Api.questions.getQuestionOptions")
+    @patch("climmob.views.Api.questions.languageExistInI18nUser", return_value=True)
+    @patch("climmob.views.Api.questions.getQuestionData")
+    def test_process_view_missing_option_translation_2(
+        self, mock_get_question_data, mock_language_exist, mock_get_question_options
+    ):
+        mock_get_question_data.return_value = (
+            {"question_lang": "en", "user_name": "test_user", "question_dtype": 2},
+            True,
+        )
+
+        mock_get_question_options.return_value = [
+            {"value_code": "OPT1"},
+            {"value_code": "OPT2"},
+        ]
+
+        self.valid_data["option_OPT1"] = "Opción 1"
+        self.valid_data["question_desc"] = "Some description"
+        self.view.body = json.dumps(self.valid_data)
+
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "It is not complying with the obligatory keys", response.body.decode()
+        )
+
+        mock_get_question_data.assert_called_once_with(
+            "test_user", "QST123", self.view.request
+        )
+
+    @patch("climmob.views.Api.questions.getQuestionOptions")
+    @patch("climmob.views.Api.questions.languageExistInI18nUser", return_value=True)
+    @patch("climmob.views.Api.questions.getQuestionData")
+    def test_process_view_missing_option_translation_10(
+        self, mock_get_question_data, mock_language_exist, mock_get_question_options
+    ):
+        mock_get_question_data.return_value = (
+            {"question_lang": "en", "user_name": "test_user", "question_dtype": 10},
             True,
         )
 
@@ -2119,7 +2348,7 @@ class TestMultiLanguageQuestionView(BaseViewTestCase):
         )
 
 
-class TestReadMultiLanguagesFromQuestionView(BaseViewTestCase):
+class TestReadMultiLanguagesFromQuestionView(ViewBaseTest):
     view_class = ReadMultiLanguagesFromQuestionView
     request_method = "GET"
 

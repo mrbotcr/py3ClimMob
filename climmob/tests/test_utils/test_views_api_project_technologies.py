@@ -2,7 +2,7 @@ import json
 import unittest
 from unittest.mock import patch, MagicMock
 
-from climmob.tests.test_utils.common import BaseViewTestCase
+from climmob.tests.test_utils.common import ViewBaseTest
 from climmob.views.Api.projectTechnologies import (
     AddProjectTechnologyView,
     ReadProjectTechnologiesView,
@@ -13,10 +13,11 @@ from climmob.views.Api.projectTechnologies import (
     ReadProjectTechnologiesAliasView,
     ReadProjectTechnologiesAliasExtraView,
     ReadPossibleProjectTechnologiesAliasView,
+    DeleteProjectTechnologyAliasView,
 )
 
 
-class TestAddProjectTechnologyView(BaseViewTestCase):
+class TestAddProjectTechnologyView(ViewBaseTest):
     view_class = AddProjectTechnologyView
     request_method = "POST"
 
@@ -384,7 +385,7 @@ class TestAddProjectTechnologyView(BaseViewTestCase):
         )
 
 
-class TestReadProjectTechnologiesView(BaseViewTestCase):
+class TestReadProjectTechnologiesView(ViewBaseTest):
     view_class = ReadProjectTechnologiesView
     request_method = "GET"
 
@@ -468,7 +469,7 @@ class TestReadProjectTechnologiesView(BaseViewTestCase):
         mock_json_loads.assert_called_once_with(self.view.body)
 
 
-class TestReadPossibleProjectTechnologiesView(BaseViewTestCase):
+class TestReadPossibleProjectTechnologiesView(ViewBaseTest):
     view_class = ReadPossibleProjectTechnologiesView
     request_method = "GET"
 
@@ -585,7 +586,7 @@ class TestReadPossibleProjectTechnologiesView(BaseViewTestCase):
         mock_json_loads.assert_called_once_with(self.view.body)
 
 
-class TestDeleteProjectTechnologyView(BaseViewTestCase):
+class TestDeleteProjectTechnologyView(ViewBaseTest):
     view_class = DeleteProjectTechnologyView
     request_method = "POST"
 
@@ -902,7 +903,7 @@ class TestDeleteProjectTechnologyView(BaseViewTestCase):
         mock_json_loads.assert_called_once_with(self.view.body)
 
 
-class TestAddProjectTechnologyAliasView(BaseViewTestCase):
+class TestAddProjectTechnologyAliasView(ViewBaseTest):
     view_class = AddProjectTechnologyAliasView
     request_method = "POST"
 
@@ -1126,6 +1127,94 @@ class TestAddProjectTechnologyAliasView(BaseViewTestCase):
         mock_get_access_type.assert_called_once_with("test_user", 1, self.view.request)
         mock_user_belongs.assert_called_once_with("tech_user", 1, self.view.request)
         mock_project_reg_status.assert_called_once_with(1, self.view.request)
+
+    @patch("climmob.views.Api.projectTechnologies.technologyExist", return_value=False)
+    @patch("climmob.views.Api.projectTechnologies.projectRegStatus", return_value=True)
+    @patch(
+        "climmob.views.Api.projectTechnologies.theUserBelongsToTheProject",
+        return_value=True,
+    )
+    @patch(
+        "climmob.views.Api.projectTechnologies.getAccessTypeForProject", return_value=1
+    )
+    @patch(
+        "climmob.views.Api.projectTechnologies.getTheProjectIdForOwner", return_value=1
+    )
+    @patch("climmob.views.Api.projectTechnologies.projectExists", return_value=True)
+    def test_process_view_no_add_technology_no_identifier_technology(
+        self,
+        mock_project_exists,
+        mock_get_project_id,
+        mock_get_access_type,
+        mock_user_belongs,
+        mock_project_reg_status,
+        mock_technologyExist,
+    ):
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "There is no technology with that identifier.",
+            response.body.decode(),
+        )
+
+        mock_project_exists.assert_called_once_with(
+            "test_user", "owner_user", "PRJ123", self.view.request
+        )
+        mock_get_project_id.assert_called_once_with(
+            "owner_user", "PRJ123", self.view.request
+        )
+        mock_get_access_type.assert_called_once_with("test_user", 1, self.view.request)
+        mock_user_belongs.assert_called_once_with("tech_user", 1, self.view.request)
+        mock_project_reg_status.assert_called_once_with(1, self.view.request)
+        mock_technologyExist.assert_called_once_with(
+            "TECH456", "tech_user", self.view.request
+        )
+
+    @patch(
+        "climmob.views.Api.projectTechnologies.isTechnologyAssigned", return_value=False
+    )
+    @patch("climmob.views.Api.projectTechnologies.technologyExist", return_value=True)
+    @patch("climmob.views.Api.projectTechnologies.projectRegStatus", return_value=True)
+    @patch(
+        "climmob.views.Api.projectTechnologies.theUserBelongsToTheProject",
+        return_value=True,
+    )
+    @patch(
+        "climmob.views.Api.projectTechnologies.getAccessTypeForProject", return_value=1
+    )
+    @patch(
+        "climmob.views.Api.projectTechnologies.getTheProjectIdForOwner", return_value=1
+    )
+    @patch("climmob.views.Api.projectTechnologies.projectExists", return_value=True)
+    def test_process_view_no_add_technology_no_technology_assigned(
+        self,
+        mock_project_exists,
+        mock_get_project_id,
+        mock_get_access_type,
+        mock_user_belongs,
+        mock_project_reg_status,
+        mock_technologyExist,
+        mock_isTechnologyAssigned,
+    ):
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "The technology is not assigned to the project.",
+            response.body.decode(),
+        )
+
+        mock_project_exists.assert_called_once_with(
+            "test_user", "owner_user", "PRJ123", self.view.request
+        )
+        mock_get_project_id.assert_called_once_with(
+            "owner_user", "PRJ123", self.view.request
+        )
+        mock_get_access_type.assert_called_once_with("test_user", 1, self.view.request)
+        mock_user_belongs.assert_called_once_with("tech_user", 1, self.view.request)
+        mock_project_reg_status.assert_called_once_with(1, self.view.request)
+        mock_technologyExist.assert_called_once_with(
+            "TECH456", "tech_user", self.view.request
+        )
 
     @patch(
         "climmob.views.Api.projectTechnologies.AddAliasTechnology",
@@ -1833,6 +1922,47 @@ class TestAddProjectTechnologyAliasExtraView(unittest.TestCase):
             self.view.request,
         )
         mock_find_tech_alias.assert_not_called()
+
+    @patch("climmob.views.Api.projectTechnologies.technologyExist", return_value=False)
+    @patch("climmob.views.Api.projectTechnologies.projectRegStatus", return_value=True)
+    @patch(
+        "climmob.views.Api.projectTechnologies.theUserBelongsToTheProject",
+        return_value=True,
+    )
+    @patch(
+        "climmob.views.Api.projectTechnologies.getAccessTypeForProject", return_value=1
+    )
+    @patch(
+        "climmob.views.Api.projectTechnologies.getTheProjectIdForOwner", return_value=1
+    )
+    @patch("climmob.views.Api.projectTechnologies.projectExists", return_value=True)
+    def test_process_view_no_add_no_technology_identifier(
+        self,
+        mock_project_exists,
+        mock_get_project_id,
+        mock_get_access_type,
+        mock_user_belongs,
+        mock_project_reg_status,
+        mock_technology_exist,
+    ):
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "There is no technology with that identifier.", response.body.decode()
+        )
+
+        mock_project_exists.assert_called_once_with(
+            "test_user", "owner_user", "PRJ123", self.view.request
+        )
+        mock_get_project_id.assert_called_once_with(
+            "owner_user", "PRJ123", self.view.request
+        )
+        mock_get_access_type.assert_called_once_with("test_user", 1, self.view.request)
+        mock_user_belongs.assert_called_once_with("tech_user", 1, self.view.request)
+        mock_project_reg_status.assert_called_once_with(1, self.view.request)
+        mock_technology_exist.assert_called_once_with(
+            "TECH456", "tech_user", self.view.request
+        )
 
     def test_process_view_missing_parameters(self):
         self.view.body = json.dumps(
@@ -2586,6 +2716,392 @@ class TestReadPossibleProjectTechnologiesAliasView(unittest.TestCase):
         response = self.view.processView()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.body.decode(), json.dumps({}))
+
+
+class TestDeleteProyectTechnologyAliasView(unittest.TestCase):
+    def setUp(self):
+        self.view = DeleteProjectTechnologyAliasView(MagicMock())
+        self.view.request.method = "POST"
+        self.view.body = json.dumps(
+            {
+                "project_cod": "PRJ123",
+                "user_owner": "owner_user",
+                "tech_id": "TECH456",
+                "tech_user_name": "tech_user",
+                "alias_id": "ALIAS_EXTRA",
+            }
+        )
+        self.view.user = MagicMock(login="test_user")
+        self.view._ = lambda x: x
+
+    def test_process_view_no_delete_no_post(self):
+        self.view.request.method = ""
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual("Only accepts POST method.", response.body.decode())
+
+    def test_process_view_no_delete_json_error(self):
+        self.view.body = json.dumps(
+            {
+                "user_owner": "owner_user",
+                "tech_id": "TECH456",
+                "tech_user_name": "tech_user",
+                "alias_id": "ALIAS_EXTRA",
+            }
+        )
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual("Error in the JSON.", response.body.decode())
+
+    def test_process_view_no_delete_json_error_other_data(self):
+        self.view.body = json.dumps(
+            {
+                "project_cod": "PRJ123",
+                "user_owner": "owner_user",
+                "tech_id": "TECH456",
+                "tech_user_name": "tech_user",
+                "alias_id": "ALIAS_EXTRA",
+                "other_data": "other_data",
+            }
+        )
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual("Error in the JSON.", response.body.decode())
+
+    @patch("climmob.views.Api.projectTechnologies.projectExists", return_value=False)
+    def test_process_view_no_delete_no_project_code(self, mock_projectExists):
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual("There is no project with that code.", response.body.decode())
+        mock_projectExists.assert_called_once_with(
+            "test_user", "owner_user", "PRJ123", self.view.request
+        )
+
+    @patch(
+        "climmob.views.Api.projectTechnologies.getAccessTypeForProject", return_value=4
+    )
+    @patch(
+        "climmob.views.Api.projectTechnologies.getTheProjectIdForOwner", return_value=1
+    )
+    @patch("climmob.views.Api.projectTechnologies.projectExists", return_value=True)
+    def test_process_view_no_delete_no_allow_to_delete(
+        self,
+        mock_projectExists,
+        mock_getTheProjectIdForOwner,
+        mock_getAccessTypeForProject,
+    ):
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(
+            "The access assigned for this project does not allow you to delete technology options.",
+            response.body.decode(),
+        )
+        mock_projectExists.assert_called_once_with(
+            "test_user", "owner_user", "PRJ123", self.view.request
+        )
+        mock_getTheProjectIdForOwner.assert_called_once_with(
+            "owner_user", "PRJ123", self.view.request
+        )
+        mock_getAccessTypeForProject.assert_called_once_with(
+            "test_user", 1, self.view.request
+        )
+
+    @patch("climmob.views.Api.projectTechnologies.projectRegStatus", return_value=False)
+    @patch(
+        "climmob.views.Api.projectTechnologies.getAccessTypeForProject", return_value=1
+    )
+    @patch(
+        "climmob.views.Api.projectTechnologies.getTheProjectIdForOwner", return_value=1
+    )
+    @patch("climmob.views.Api.projectTechnologies.projectExists", return_value=True)
+    def test_process_view_no_delete_started_registration(
+        self,
+        mock_projectExists,
+        mock_getTheProjectIdForOwner,
+        mock_getAccessTypeForProject,
+        mock_projectRegStatus,
+    ):
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(
+            "You can not delete the technology option for technologies. You started registration.",
+            response.body.decode(),
+        )
+        mock_projectExists.assert_called_once_with(
+            "test_user", "owner_user", "PRJ123", self.view.request
+        )
+        mock_getTheProjectIdForOwner.assert_called_once_with(
+            "owner_user", "PRJ123", self.view.request
+        )
+        mock_getAccessTypeForProject.assert_called_once_with(
+            "test_user", 1, self.view.request
+        )
+        mock_projectRegStatus.assert_called_once_with(1, self.view.request)
+
+    @patch("climmob.views.Api.projectTechnologies.technologyExist", return_value=False)
+    @patch("climmob.views.Api.projectTechnologies.projectRegStatus", return_value=True)
+    @patch(
+        "climmob.views.Api.projectTechnologies.getAccessTypeForProject", return_value=1
+    )
+    @patch(
+        "climmob.views.Api.projectTechnologies.getTheProjectIdForOwner", return_value=1
+    )
+    @patch("climmob.views.Api.projectTechnologies.projectExists", return_value=True)
+    def test_process_view_no_delete_no_technology(
+        self,
+        mock_projectExists,
+        mock_getTheProjectIdForOwner,
+        mock_getAccessTypeForProject,
+        mock_projectRegStatus,
+        mock_technologyExist,
+    ):
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(
+            "There is no technology with that identifier.", response.body.decode()
+        )
+        mock_projectExists.assert_called_once_with(
+            "test_user", "owner_user", "PRJ123", self.view.request
+        )
+        mock_getTheProjectIdForOwner.assert_called_once_with(
+            "owner_user", "PRJ123", self.view.request
+        )
+        mock_getAccessTypeForProject.assert_called_once_with(
+            "test_user", 1, self.view.request
+        )
+        mock_projectRegStatus.assert_called_once_with(1, self.view.request)
+        mock_technologyExist.assert_called_once_with(
+            "TECH456", "tech_user", self.view.request
+        )
+
+    @patch(
+        "climmob.views.Api.projectTechnologies.isTechnologyAssigned", return_value=False
+    )
+    @patch("climmob.views.Api.projectTechnologies.technologyExist", return_value=True)
+    @patch("climmob.views.Api.projectTechnologies.projectRegStatus", return_value=True)
+    @patch(
+        "climmob.views.Api.projectTechnologies.getAccessTypeForProject", return_value=1
+    )
+    @patch(
+        "climmob.views.Api.projectTechnologies.getTheProjectIdForOwner", return_value=1
+    )
+    @patch("climmob.views.Api.projectTechnologies.projectExists", return_value=True)
+    def test_process_view_no_delete_no_assigned_technology(
+        self,
+        mock_projectExists,
+        mock_getTheProjectIdForOwner,
+        mock_getAccessTypeForProject,
+        mock_projectRegStatus,
+        mock_technologyExist,
+        mock_isTechnologyAssigned,
+    ):
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(
+            "The technology is not assigned to the project.", response.body.decode()
+        )
+        mock_projectExists.assert_called_once_with(
+            "test_user", "owner_user", "PRJ123", self.view.request
+        )
+        mock_getTheProjectIdForOwner.assert_called_once_with(
+            "owner_user", "PRJ123", self.view.request
+        )
+        mock_getAccessTypeForProject.assert_called_once_with(
+            "test_user", 1, self.view.request
+        )
+        mock_projectRegStatus.assert_called_once_with(1, self.view.request)
+        mock_technologyExist.assert_called_once_with(
+            "TECH456", "tech_user", self.view.request
+        )
+        mock_isTechnologyAssigned.assert_called_once_with(
+            {
+                "project_cod": "PRJ123",
+                "user_owner": "owner_user",
+                "tech_id": "TECH456",
+                "tech_user_name": "tech_user",
+                "alias_id": "ALIAS_EXTRA",
+                "user_name": "test_user",
+                "project_id": 1,
+            },
+            self.view.request,
+        )
+
+    @patch(
+        "climmob.views.Api.projectTechnologies.findAssignedAlias", return_value=False
+    )
+    @patch(
+        "climmob.views.Api.projectTechnologies.isTechnologyAssigned", return_value=True
+    )
+    @patch("climmob.views.Api.projectTechnologies.technologyExist", return_value=True)
+    @patch("climmob.views.Api.projectTechnologies.projectRegStatus", return_value=True)
+    @patch(
+        "climmob.views.Api.projectTechnologies.getAccessTypeForProject", return_value=1
+    )
+    @patch(
+        "climmob.views.Api.projectTechnologies.getTheProjectIdForOwner", return_value=1
+    )
+    @patch("climmob.views.Api.projectTechnologies.projectExists", return_value=True)
+    def test_process_view_no_delete_no_option_technology(
+        self,
+        mock_projectExists,
+        mock_getTheProjectIdForOwner,
+        mock_getAccessTypeForProject,
+        mock_projectRegStatus,
+        mock_technologyExist,
+        mock_isTechnologyAssigned,
+        mock_findAssignedAlias,
+    ):
+        data = {
+            "project_cod": "PRJ123",
+            "user_owner": "owner_user",
+            "tech_id": "TECH456",
+            "tech_user_name": "tech_user",
+            "alias_id": "ALIAS_EXTRA",
+            "user_name": "test_user",
+            "project_id": 1,
+        }
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(
+            "There is no technology option with that identifier for this technology.",
+            response.body.decode(),
+        )
+        mock_projectExists.assert_called_once_with(
+            "test_user", "owner_user", "PRJ123", self.view.request
+        )
+        mock_getTheProjectIdForOwner.assert_called_once_with(
+            "owner_user", "PRJ123", self.view.request
+        )
+        mock_getAccessTypeForProject.assert_called_once_with(
+            "test_user", 1, self.view.request
+        )
+        mock_projectRegStatus.assert_called_once_with(1, self.view.request)
+        mock_technologyExist.assert_called_once_with(
+            "TECH456", "tech_user", self.view.request
+        )
+        mock_isTechnologyAssigned.assert_called_once_with(data, self.view.request)
+        mock_findAssignedAlias.assert_called_once_with(data, self.view.request)
+
+    @patch(
+        "climmob.views.Api.projectTechnologies.deleteAliasTechnology",
+        return_value=(False, "Error to delete."),
+    )
+    @patch("climmob.views.Api.projectTechnologies.findAssignedAlias", return_value=True)
+    @patch(
+        "climmob.views.Api.projectTechnologies.isTechnologyAssigned", return_value=True
+    )
+    @patch("climmob.views.Api.projectTechnologies.technologyExist", return_value=True)
+    @patch("climmob.views.Api.projectTechnologies.projectRegStatus", return_value=True)
+    @patch(
+        "climmob.views.Api.projectTechnologies.getAccessTypeForProject", return_value=1
+    )
+    @patch(
+        "climmob.views.Api.projectTechnologies.getTheProjectIdForOwner", return_value=1
+    )
+    @patch("climmob.views.Api.projectTechnologies.projectExists", return_value=True)
+    def test_process_view_no_delete_error_delete(
+        self,
+        mock_projectExists,
+        mock_getTheProjectIdForOwner,
+        mock_getAccessTypeForProject,
+        mock_projectRegStatus,
+        mock_technologyExist,
+        mock_isTechnologyAssigned,
+        mock_findAssignedAlias,
+        mock_deleteAliasTechnology,
+    ):
+        data = {
+            "project_cod": "PRJ123",
+            "user_owner": "owner_user",
+            "tech_id": "TECH456",
+            "tech_user_name": "tech_user",
+            "alias_id": "ALIAS_EXTRA",
+            "user_name": "test_user",
+            "project_id": 1,
+        }
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual("Error to delete.", response.body.decode())
+        mock_projectExists.assert_called_once_with(
+            "test_user", "owner_user", "PRJ123", self.view.request
+        )
+        mock_getTheProjectIdForOwner.assert_called_once_with(
+            "owner_user", "PRJ123", self.view.request
+        )
+        mock_getAccessTypeForProject.assert_called_once_with(
+            "test_user", 1, self.view.request
+        )
+        mock_projectRegStatus.assert_called_once_with(1, self.view.request)
+        mock_technologyExist.assert_called_once_with(
+            "TECH456", "tech_user", self.view.request
+        )
+        mock_isTechnologyAssigned.assert_called_once_with(data, self.view.request)
+        mock_findAssignedAlias.assert_called_once_with(data, self.view.request)
+        mock_deleteAliasTechnology.assert_called_once_with(
+            1, "TECH456", "ALIAS_EXTRA", self.view.request
+        )
+
+    @patch(
+        "climmob.views.Api.projectTechnologies.deleteAliasTechnology",
+        return_value=(True, ""),
+    )
+    @patch("climmob.views.Api.projectTechnologies.findAssignedAlias", return_value=True)
+    @patch(
+        "climmob.views.Api.projectTechnologies.isTechnologyAssigned", return_value=True
+    )
+    @patch("climmob.views.Api.projectTechnologies.technologyExist", return_value=True)
+    @patch("climmob.views.Api.projectTechnologies.projectRegStatus", return_value=True)
+    @patch(
+        "climmob.views.Api.projectTechnologies.getAccessTypeForProject", return_value=1
+    )
+    @patch(
+        "climmob.views.Api.projectTechnologies.getTheProjectIdForOwner", return_value=1
+    )
+    @patch("climmob.views.Api.projectTechnologies.projectExists", return_value=True)
+    def test_process_view_delete_success(
+        self,
+        mock_projectExists,
+        mock_getTheProjectIdForOwner,
+        mock_getAccessTypeForProject,
+        mock_projectRegStatus,
+        mock_technologyExist,
+        mock_isTechnologyAssigned,
+        mock_findAssignedAlias,
+        mock_deleteAliasTechnology,
+    ):
+        data = {
+            "project_cod": "PRJ123",
+            "user_owner": "owner_user",
+            "tech_id": "TECH456",
+            "tech_user_name": "tech_user",
+            "alias_id": "ALIAS_EXTRA",
+            "user_name": "test_user",
+            "project_id": 1,
+        }
+        response = self.view.processView()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            "The technology option has been deleted in the project.",
+            response.body.decode(),
+        )
+        mock_projectExists.assert_called_once_with(
+            "test_user", "owner_user", "PRJ123", self.view.request
+        )
+        mock_getTheProjectIdForOwner.assert_called_once_with(
+            "owner_user", "PRJ123", self.view.request
+        )
+        mock_getAccessTypeForProject.assert_called_once_with(
+            "test_user", 1, self.view.request
+        )
+        mock_projectRegStatus.assert_called_once_with(1, self.view.request)
+        mock_technologyExist.assert_called_once_with(
+            "TECH456", "tech_user", self.view.request
+        )
+        mock_isTechnologyAssigned.assert_called_once_with(data, self.view.request)
+        mock_findAssignedAlias.assert_called_once_with(data, self.view.request)
+        mock_deleteAliasTechnology.assert_called_once_with(
+            1, "TECH456", "ALIAS_EXTRA", self.view.request
+        )
 
 
 if __name__ == "__main__":

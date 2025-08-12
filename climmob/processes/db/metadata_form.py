@@ -1,5 +1,6 @@
 from climmob.models import MetadataForm, mapToSchema, mapFromSchema
 from climmob.processes.db.project_metadata_form import getProjectMetadataForm
+from climmob.processes.db.registry import isRegistryClose
 from climmob.processes.db.metadata_form_location_unit_of_analysis import (
     getAllMetadaFormLocationUnitOfAnalysisByMetadataForm,
 )
@@ -66,10 +67,14 @@ def getMetadataForm(request, metadataFormId):
 
 
 def getMetadataForProject(request, projectId):
+    form_allow = [0]
+    if isRegistryClose(projectId, request):
+        form_allow.append(1)
 
     result = mapFromSchema(
         request.dbsession.query(MetadataForm.metadata_id, MetadataForm.metadata_name)
         .filter(MetadataForm.metadata_active == 1)
+        .filter(MetadataForm.metadata_for_technology_options.in_(form_allow))
         .order_by(MetadataForm.metadata_name)
         .all()
     )

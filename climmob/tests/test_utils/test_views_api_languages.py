@@ -121,6 +121,19 @@ class TestAddLanguageForUseView(unittest.TestCase):
             "It is not complying with the obligatory keys.", response.body.decode()
         )
 
+    def test_process_view_invalid_param(self):
+        self.view._ = self.mock_translation
+        self.view.request.body = json.dumps({"lang_code": "es", "other": "value"})
+        self.view.body = self.view.request.body
+
+        response = self.view.processView()
+
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "You are trying to use a parameter that is not allowed..",
+            response.body.decode(),
+        )
+
     def test_process_view_missing_data(self):
         self.view._ = self.mock_translation  # Mock translation function
         self.view.request.body = '{"lang_code": ""}'
@@ -235,6 +248,19 @@ class TestDeleteLanguageView(unittest.TestCase):
         self.assertEqual(response.status_code, 401)
         self.assertIn(
             "It is not complying with the obligatory keys.", response.body.decode()
+        )
+
+    def test_process_view_invalid_param(self):
+        self.view._ = self.mock_translation
+        self.view.request.body = json.dumps({"lang_code": "es", "other": "value"})
+        self.view.body = self.view.request.body
+
+        response = self.view.processView()
+
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "You are trying to use a parameter that is not allowed..",
+            response.body.decode(),
         )
 
     def test_process_view_post_method(self):
@@ -453,6 +479,26 @@ class TestChangeGeneralPhrasesView(unittest.TestCase):
 
         self.assertEqual(response.status_code, 401)
         self.assertIn("Not all parameters have data.", response.body.decode())
+
+    def test_process_view_invalid_param(self):
+        self.view._ = self.mock_translation
+        self.view.request.body = json.dumps(
+            {
+                "lang_code": "es",
+                "phrase_id": 1,
+                "phrase_desc": "Hello",
+                "other": "value",
+            }
+        )
+        self.view.body = self.view.request.body
+
+        response = self.view.processView()
+
+        self.assertEqual(response.status_code, 401)
+        self.assertIn(
+            "You are trying to use a parameter that is not allowed..",
+            response.body.decode(),
+        )
 
     def test_process_view_post_method(self):
         self.view._ = self.mock_translation  # Mock translation function

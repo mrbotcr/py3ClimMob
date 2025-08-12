@@ -168,6 +168,10 @@
                                                     <div class="ibox">
                                                         <div class="ibox-content">
 
+                                                            <div class="alert alert-danger alert-dismissable alertSendRequestLanguage" style="display: none">
+                                                                {{ _("Please complete the 2 questions in the form below") }}:
+                                                            </div>
+
                                                             <div class="form-horizontal">
                                                                 <div class="form-group">
                                                                     <label class="col-sm-4 control-label">{{ _('Which language would you like to request ?') }}</label>
@@ -421,31 +425,38 @@
 
         $("#btn_send_request").click(function (){
 
-            $.ajax({
-                url: "{{ request.route_url("requestLanguageTranslation") }}",
-                datatype: "json",
-                type: "POST",
-                data: {
-                    "csrf_token": '{{ request.session.get_csrf_token() }}',
-                    "contribute": $("#select_form_contribution").val(),
-                    "language": $("#select_lang_add").val()
-                },
-                success: function (respuesta) {
+            if($("#select_form_contribution").val() ==="" || $("#select_lang_add").val() ==="")
+            {
+                $(".alertSendRequestLanguage").css("display","block")
+            }else {
+                $(".alertSendRequestLanguage").css("display","none")
 
-                    if (respuesta.status === 200) {
-                        toastr.success("{{ _("The request has been successfully completed") }}")
-                        $("#select_form_contribution").val("");
-                        $("#select_lang_add").val("")
-                        $('#select_lang_add').trigger("change.select2");
+                $.ajax({
+                    url: "{{ request.route_url("requestLanguageTranslation") }}",
+                    datatype: "json",
+                    type: "POST",
+                    data: {
+                        "csrf_token": '{{ request.session.get_csrf_token() }}',
+                        "contribute": $("#select_form_contribution").val(),
+                        "language": $("#select_lang_add").val()
+                    },
+                    success: function (respuesta) {
+
+                        if (respuesta.status === 200) {
+                            toastr.success("{{ _("The request has been successfully completed") }}")
+                            $("#select_form_contribution").val("");
+                            $("#select_lang_add").val("")
+                            $('#select_lang_add').trigger("change.select2");
                             {#$("#select_lang_add").append("<option value=''>{{ _("Select a template") }}</option>");#}
-                    }else{
-                        toastr.error(respuesta.error);
+                        } else {
+                            toastr.error(respuesta.error);
+                        }
+                    },
+                    error: function (respuesta) {
+                        toastr.error("{{ _("There was a problem with requesting the incorporation of the new language") }}");
                     }
-                },
-                error: function (respuesta) {
-                    toastr.error("{{ _("There was a problem with requesting the incorporation of the new language") }}");
-                }
-            });
+                });
+            }
 
         });
 

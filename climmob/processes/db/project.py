@@ -61,6 +61,7 @@ __all__ = [
     "getProjectUserAndOwner",
     "getProjectFullDetailsById",
     "getProjectsByUserThatRequireSetup",
+    "update_project_status",
 ]
 
 
@@ -308,6 +309,7 @@ def addRegistryQuestionsToProject(userOwner, projectId, request):
 def addProject(data, request):
     data["project_active"] = 1
     data["project_public"] = 0
+    data["project_status"] = 1
     data["project_creationdate"] = datetime.datetime.now()
 
     project_id = str(uuid.uuid4())[-12:]
@@ -935,3 +937,14 @@ def getProjectsByUserThatRequireSetup(userOwner, request):
         return False, res
 
     return True, res
+
+
+def update_project_status(project_id, status, request):
+
+    try:
+        request.dbsession.query(Project).filter(
+            Project.project_id == project_id
+        ).update({"project_status": status})
+        return True
+    except Exception as e:
+        return False, str(e)

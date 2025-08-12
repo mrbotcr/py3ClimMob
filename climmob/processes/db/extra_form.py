@@ -19,6 +19,7 @@ def getActiveForm(request, userName):
 
     haveReport = mapFromSchema(
         request.dbsession.query(Products)
+        .filter(Products.product_id == "reports")
         .filter(Products.project_id.in_(subqueryProject))
         .all()
     )

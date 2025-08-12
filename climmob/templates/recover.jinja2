@@ -10,12 +10,14 @@
 
 {% block logincontent %}
 
-    {% for key, error in error_summary.items() %}
-        <div class="alert alert-danger alert-dismissable">
-            <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
-            {{ error }}
-        </div>
-    {% endfor %}
+    {% if error_summary %}
+        {% for key, error in error_summary.items() %}
+            <div class="alert alert-danger alert-dismissable">
+                <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                {{ error }}
+            </div>
+        {% endfor %}
+    {% endif %}
 
     <div class="text-left">
         <form class="m-t" role="form" method="post" action="{{ request.path }}">

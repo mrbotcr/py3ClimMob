@@ -143,7 +143,7 @@ def functionForCreateTheTriggers(schema, settings, form_repository_path, my_cnf_
 
         create_audit_triggers = os.path.join(
             settings["odktools.path"],
-            *["utilities", "createAuditTriggers", "createaudittriggers"]
+            *["utilities", "createAuditTriggers", "createaudittriggers"],
         )
 
         args = [
@@ -632,6 +632,29 @@ class ODKExcelFile(object):
                         dictOfColumns["constraint"],
                         element.get("constraint"),
                     )
+
+                    if self.languages:
+                        for language in self.languages:
+                            self.sheet1.write(
+                                self.surveyRow,
+                                dictOfColumns[
+                                    "constraint_message_{}".format(
+                                        language["lang_code"]
+                                    )
+                                ],
+                                element.get(
+                                    "constraint_message_{}".format(
+                                        language["lang_code"]
+                                    )
+                                ),
+                            )
+                    else:
+                        self.sheet1.write(
+                            self.surveyRow,
+                            dictOfColumns["constraint_message"],
+                            element.get("constraint_message"),
+                        )
+
                     self.sheet1.write(
                         self.surveyRow,
                         dictOfColumns["calculation"],
@@ -739,6 +762,7 @@ class ODKExcelFile(object):
         constraint="",
         calculation="",
         relevant="",
+        constraint_message="",
     ):
         options = {
             1: "text",
@@ -781,6 +805,7 @@ class ODKExcelFile(object):
             if not self.languages:
                 question.set("label", label)
                 question.set("hint", hint)
+                question.set("constraint_message", constraint_message)
             else:
                 if isinstance(label, str):
                     for language in self.languages:
@@ -788,6 +813,16 @@ class ODKExcelFile(object):
                 else:
                     for language in label:
                         question.set(language["label"], language["value"])
+
+                if isinstance(constraint_message, str):
+                    for language in self.languages:
+                        question.set(
+                            "constraint_message_{}".format(language["lang_code"]),
+                            constraint_message,
+                        )
+                else:
+                    for language in constraint_message:
+                        question.set(language["constraint_message"], language["value"])
 
                 if isinstance(hint, str):
                     for language in self.languages:
@@ -1238,6 +1273,59 @@ def translateQuestionOption(prjLanguages, questionId, option, request):
     return optionDesc
 
 
+def get_constraint(question, prjLanguages, userOwner, request):
+    from climmob.utility import is_type_numerical, QuestionType
+
+    constraint = ""
+    constraint_type = None
+    constraint_message = ""
+    if is_type_numerical(question.question_dtype):
+
+        if question.question_min is None and question.question_max is None:
+            return constraint, constraint_message
+
+        minimum = question.question_min
+        maximum = question.question_max
+
+        if question.question_min is not None:
+            if question.question_dtype == QuestionType.INTEGER.value:
+                minimum = int(minimum)
+            constraint += f".>= {question.question_min}"
+            constraint_type = 38  # Just minimum
+        if question.question_max is not None:
+            if question.question_dtype == QuestionType.INTEGER.value:
+                maximum = int(maximum)
+            if question.question_min is not None:
+                constraint += " and "
+                constraint_type = 40  # Both minimum and maximum
+            else:
+                constraint_type = 39  # Just maximum
+            constraint += f".<= {question.question_max}"
+
+        constraint_message = getTranslationOrText(
+            prjLanguages,
+            constraint_type,
+            "Value out of allowed range",
+            userOwner,
+            request,
+            column="constraint_message",
+        )
+
+        if isinstance(constraint_message, str):
+            constraint_message = constraint_message.replace(
+                "{minimum}", str(minimum)
+            ).replace("{maximum}", str(maximum))
+        elif isinstance(constraint_message, list):
+            for i, item in enumerate(constraint_message):
+                constraint_message[i]["value"] = (
+                    item["value"]
+                    .replace("{minimum}", str(minimum))
+                    .replace("{maximum}", str(maximum))
+                )
+
+    return constraint, constraint_message
+
+
 def generateODKFile(
     userOwner,
     projectId,
@@ -1442,6 +1530,10 @@ def generateODKFile(
                         descExtra=descExtra,
                     )
 
+                    constraint, constraint_message = get_constraint(
+                        question, prjLanguages, userOwner, request
+                    )
+
                     excelFile.addQuestion(
                         question.question_code + nameExtra,
                         qstDesc,
@@ -1450,6 +1542,8 @@ def generateODKFile(
                         question.question_requiredvalue,
                         "grp_" + str(question.section_id),
                         relevant=relevant,
+                        constraint=constraint,
+                        constraint_message=constraint_message,
                     )
                 else:
                     # print "EL PACKAGE CODE"
@@ -1995,7 +2089,7 @@ def generateRegistry(
         default_language = None
 
     sql = (
-        "SELECT q.question_code,COALESCE(i.question_desc,q.question_desc) as question_desc,COALESCE(i.question_unit,q.question_unit) as question_unit, q.question_dtype, q.question_twoitems, "
+        "SELECT q.question_code,q.question_min,q.question_max,COALESCE(i.question_desc,q.question_desc) as question_desc,COALESCE(i.question_unit,q.question_unit) as question_unit, q.question_dtype, q.question_twoitems, "
         "r.section_id, COALESCE(i.question_posstm, q.question_posstm) as question_posstm, COALESCE(i.question_negstm ,q.question_negstm) as question_negstm, q.question_moreitems, COALESCE(i.question_perfstmt, q.question_perfstmt) as question_perfstmt, "
         "q.question_requiredvalue, r.question_order, q.question_id, q.question_tied, q.question_notobserved, q.question_quantitative "
         "FROM registry r,question q "
@@ -2181,7 +2275,7 @@ def generateAssessmentFiles(
             default_language = None
 
         sql = (
-            " SELECT q.question_code, COALESCE(i.question_desc,q.question_desc) as question_desc,COALESCE(i.question_unit,q.question_unit) as question_unit, q.question_dtype, q.question_twoitems, "
+            " SELECT q.question_code, q.question_min,q.question_max, COALESCE(i.question_desc,q.question_desc) as question_desc,COALESCE(i.question_unit,q.question_unit) as question_unit, q.question_dtype, q.question_twoitems, "
             " a.section_id, COALESCE(i.question_posstm, q.question_posstm) as question_posstm, COALESCE(i.question_negstm ,q.question_negstm) as question_negstm, q.question_moreitems, COALESCE(i.question_perfstmt, q.question_perfstmt) as question_perfstmt, "
             " q.question_requiredvalue, a.question_order, q.question_id, q.question_tied, q.question_notobserved, q.question_quantitative "
             " FROM assdetail a, question q "

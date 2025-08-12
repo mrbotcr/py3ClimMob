@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 
 from climmob.processes import (
@@ -9,6 +11,9 @@ from climmob.processes import (
     addProjectMetadataForm,
     getProjectMetadataForm,
     modifyProjectMetadataForm,
+    getCombinations,
+    get_all_affiliations,
+    languageByLanguageCode,
 )
 from climmob.views.classes import privateView
 from jinja2 import Environment, FileSystemLoader
@@ -16,7 +21,7 @@ import json
 import os
 
 
-class ProjectMetadataForm_view(privateView):
+class ProjectMetadataFormView(privateView):
     def processView(self):
 
         activeProjectUser = self.request.matchdict["user"]
@@ -50,15 +55,17 @@ class ProjectMetadataForm_view(privateView):
                     postData = self.getPostDict()
                     postData["project_id"] = activeProjectId
                     postData["pmf_json"] = json.loads(postData["_jsonResult"])
+                    postData["pmf_last_update"] = datetime.now()
 
                     projectMetadataForm = getProjectMetadataForm(
                         self.request, activeProjectId, postData["metadata_id"]
                     )
 
                     if not projectMetadataForm:
+                        postData["pmf_lang"] = self.request.locale_name
                         added, message = addProjectMetadataForm(postData, self.request)
-                        if not added:
-                            error_summary = {"error": message}
+                        # if not added:
+                        #     error_summary = {"error": message}
                     else:
                         edited, message = modifyProjectMetadataForm(
                             self.request,
@@ -67,10 +74,10 @@ class ProjectMetadataForm_view(privateView):
                             postData,
                         )
 
-                        if not edited:
-                            error_summary = {"error": message}
+                        # if not edited:
+                        #     error_summary = {"error": message}
 
-                    if not error_summary:
+                    if not message:
 
                         self.request.session.flash(
                             self._("The project metadata was save successfully.")
@@ -85,6 +92,8 @@ class ProjectMetadataForm_view(privateView):
                                 _query={"metadataForm": postData["metadata_id"]},
                             )
                         )
+                    else:
+                        self.request.session.flash(message)
         return {
             "activeProject": activeProject,
             "dataworking": dataworking,
@@ -93,7 +102,7 @@ class ProjectMetadataForm_view(privateView):
         }
 
 
-class ShowMetadataForm_view(privateView):
+class ShowMetadataFormView(privateView):
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
@@ -117,12 +126,21 @@ class ShowMetadataForm_view(privateView):
                     return ""
                 else:
                     informationFilled = {}
+                    lang_answer = self.request.locale_name
+                    lang_answer_name = None
+
                     projectMetadataForm = getProjectMetadataForm(
                         self.request, activeProjectId, metadataId
                     )
 
                     if projectMetadataForm:
                         informationFilled = projectMetadataForm["pmf_json"]
+
+                        if projectMetadataForm["pmf_lang"]:
+                            lang_answer = projectMetadataForm["pmf_lang"]
+                            lang_answer_name = languageByLanguageCode(
+                                lang_answer, self.request
+                            )["lang_name"]
 
                     PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
                     env = Environment(
@@ -135,17 +153,63 @@ class ShowMetadataForm_view(privateView):
                         trim_blocks=False,
                     )
                     template = env.get_template("metadataForm.jinja2")
+                    template_form = env.get_template("template_form.jinja2")
+                    template_table = env.get_template("template_table.jinja2")
+                    inputs = env.get_template("metadata_inputs.jinja2")
 
-                    dictionary = self.extract_names_and_types(
-                        json.loads(metadataForm["metadata_json"])
-                    )
+                    # dictionary = self.extract_names_and_types(
+                    #     json.loads(metadataForm["metadata_json"])
+                    # )
+
+                    dict_of_technologies_with_synonyms = {}
+                    if metadataForm["metadata_for_technology_options"] == 1:
+
+                        techs, ncombs, combs = getCombinations(
+                            activeProjectId, self.request
+                        )
+
+                        for comb in combs:
+                            dict_of_technologies_with_synonyms[
+                                "{}_{}".format(comb["tech_id"], comb["alias_id"])
+                            ] = []
+                            dict_of_technologies_with_synonyms[
+                                "{}_{}".format(comb["tech_id"], comb["alias_id"])
+                            ].append({"option": comb["alias_name"]})
+
+                        if not informationFilled:
+
+                            informationFilled["data"] = {}
+                            informationFilled["data"]["br_trial_varieties"] = []
+
+                            for comb in combs:
+                                informationFilled["data"]["br_trial_varieties"].append(
+                                    {
+                                        "climmob_technology_id": comb["tech_id"],
+                                        "climmob_technology_option_id": comb[
+                                            "alias_id"
+                                        ],
+                                        "climmob_genotype_name": comb["alias_name"],
+                                    }
+                                )
+
+                    activeProjectData = getActiveProject(self.user.login, self.request)
 
                     dict = {
+                        "activeProject": activeProjectData,
                         "Form": json.loads(metadataForm["metadata_json"]),
                         "postData": json.dumps(informationFilled),
-                        "dictionary": json.dumps(dictionary),
                         "_": self._,
                         "request": self.request,
+                        "technologies_with_synonyms": json.dumps(
+                            dict_of_technologies_with_synonyms
+                        ),
+                        "template_form": template_form,
+                        "template_table": template_table,
+                        "inputs": inputs,
+                        "form_to_use": metadataForm["metadata_for_technology_options"],
+                        "list_of_affiliations": get_all_affiliations(self.request),
+                        "lang_answer": lang_answer,
+                        "lang_answer_name": lang_answer_name,
                     }
                     render_temp = template.render(dict)
 
@@ -153,30 +217,30 @@ class ShowMetadataForm_view(privateView):
 
         return ""
 
-    def extract_names_and_types(self, data, result=None):
-        if result is None:
-            result = []
-
-        if isinstance(data, dict):
-
-            if "name" in data and "type" in data:
-                if "climmob_users" in data:
-                    if data["climmob_users"] == "yes":
-                        result.append(
-                            {
-                                "name": data["name"],
-                                "type": data["type"] + " climmob_users",
-                            }
-                        )
-                else:
-                    result.append({"name": data["name"], "type": data["type"]})
-
-            for key, value in data.items():
-                if isinstance(value, (dict, list)):
-                    self.extract_names_and_types(value, result)
-
-        elif isinstance(data, list):
-            for item in data:
-                self.extract_names_and_types(item, result)
-
-        return result
+    # def extract_names_and_types(self, data, result=None):
+    #     if result is None:
+    #         result = []
+    #
+    #     if isinstance(data, dict):
+    #
+    #         if "name" in data and "type" in data:
+    #             if "climmob_users" in data:
+    #                 if data["climmob_users"] == "yes":
+    #                     result.append(
+    #                         {
+    #                             "name": data["name"],
+    #                             "type": data["type"] + " climmob_users",
+    #                         }
+    #                     )
+    #             else:
+    #                 result.append({"name": data["name"], "type": data["type"]})
+    #
+    #         for key, value in data.items():
+    #             if isinstance(value, (dict, list)):
+    #                 self.extract_names_and_types(value, result)
+    #
+    #     elif isinstance(data, list):
+    #         for item in data:
+    #             self.extract_names_and_types(item, result)
+    #
+    #     return result

@@ -39,6 +39,12 @@
 
 </head>
 
+{% include "snippets/maze_loader.jinja2" %}
+
+{% if request.registry.settings.get('session.show_expired_modal', "false") == 'true' %}
+    {% include 'snippets/expired_session.jinja2'  %}
+{% endif %}
+
 {% set withsidebar = [] %}
 
 <body class="{% block bodyclass %}{% endblock bodyclass %}" {% block bodyattributes %}{% endblock bodyattributes %}>
@@ -91,7 +97,7 @@
                                 <a href="{{ request.route_url('dashboard') }}"><i class="fa fa-th-large"></i> <span class="nav-label">{{ _("Project overview") }}</span></a>
                             </li>
                             <li {% if sectionActive == "projectlist" %}class="active" {% endif %}>
-                                <a href="{{ request.route_url('projectList')  }}"><i class="fa fa-tasks"></i> {{ _("All projects") }}</a>
+                                <a href="{{ request.route_url('projectList')  }}"><i class="fa fa-tasks"></i> <span class="nav-label">{{ _("All projects") }}</span></a>
                             </li>
                             <li class="active" style="border-left: initial;background: initial" id="nav_libraries">
                                 <a href="#" style="color: #a7b1c2;"><i class="fa fa-book"></i> <span class="nav-label">{{ _("Library") }}</span><span class="fa arrow"></span></a>
@@ -114,6 +120,24 @@
                             <li id="nav_downloads" {% if sectionActive == "productlist" %}class="active" {% endif %}>
                                 <a href="{{ request.route_url('productList') }}"><i class="fa fa-cloud-download"></i> <span class="nav-label">{{ _("Downloads") }}</span></a>
                             </li>
+
+                            {% if not activeUser.technologies or not activeUser.projectsByUserThatRequireSetup%}
+                                <li class="active" style="border-left: initial;background: initial" id="nav_curations">
+                                    <a href="#" style="color: #a7b1c2;"><i class="fa fa-gears"></i> <span class="nav-label">{{ _("Curation") }}</span><span class="fa arrow"></span></a>
+                                    <ul class="nav nav-second-level collapse " style="border-left: initial;background: initial">
+
+                                        {% if not activeUser.technologies %}
+                                            <li id="nav_curationoftechnologies" {% if sectionActive == "curationoftechnologies" %}class="active" style="border-left: 4px solid #19aa8d;background: #293846;" {% endif %}><a href="{{ request.route_url('curationoftechnologies') }}"><i class="fa fa-flask"></i> <span class="nav-label">{{ _("Technologies") }}</span></a></li>
+                                        {% endif %}
+
+                                        {% if not activeUser.projectsByUserThatRequireSetup%}
+                                            <li id="nav_curationofprojects" {% if sectionActive == "curationofprojects" %}class="active" style="border-left: 4px solid #19aa8d;background: #293846;"{% endif %}><a href="{{ request.route_url('curationofprojects') }}"><i class="fa fa-tasks"></i> <span class="nav-label">{{ _("Projects") }}</span></a></li>
+                                        {% endif %}
+
+                                    </ul>
+                                </li>
+                            {% endif %}
+
                             {% if activeUser.login == "bioversity" %}
                                 <li {% if sectionActive == "projecthelp" %}class="active" {% endif %}>
                                     <a href="{{ request.route_url('projectHelp') }}"><i class="fa fa-cog"></i> <span class="nav-label">{{ _("Project help") }}</span></a>
@@ -1085,7 +1109,11 @@
                 showMethod: 'slideDown',
                 timeOut: 4000
             };
-            toastr.success("{{ toastrmessage[0] }}");
+            {% if toastrmessage[0].startswith("Error. ") %}
+                toastr.error("{{ toastrmessage[0].replace("Error. ", "") }}");
+            {% else %}
+                toastr.success("{{ toastrmessage[0] }}");
+            {% endif %}
         </script>
     {% endif %}
 {% endblock toastr %}
@@ -1093,6 +1121,7 @@
 {% block script %}
 
     <script>
+
         $(document).ready(function() {
 
             var selectedLanguage = readCookie('_LOCALE_');

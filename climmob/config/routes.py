@@ -6,6 +6,7 @@ These functions setup the routes for the host application and any plugins connec
 
 import climmob.plugins as p
 from climmob.plugins.utilities import addRoute
+from climmob.utility import factory
 from climmob.views.Api.enumerators import (
     CreateEnumeratorView,
     ReadEnumeratorsView,
@@ -14,13 +15,13 @@ from climmob.views.Api.enumerators import (
     ApiDeleteEnumeratorView,
 )
 from climmob.views.Api.projectAssessmentStart import (
-    createProjectAssessment_view,
-    cancelAssessmentApi_view,
-    closeAssessmentApi_view,
-    readAssessmentStructure_view,
-    pushJsonToAssessment_view,
-    assessmentDataCleaning_view,
-    readAssessmentData_view,
+    CreateProjectAssessmentView,
+    CancelAssessmentApiView,
+    CloseAssessmentApiView,
+    ReadAssessmentStructureView,
+    PushJsonToAssessmentView,
+    ReadAssessmentDataView,
+    AssessmentDataCleaningView,
 )
 from climmob.views.Api.projectAssessments import (
     ReadProjectAssessmentsView,
@@ -35,11 +36,12 @@ from climmob.views.Api.projectAssessments import (
     AddQuestionToGroupAssessmentView,
     DeleteQuestionFromGroupAssessmentView,
     OrderAssessmentQuestionsView,
+    CloneAssessmentApiView,
 )
 from climmob.views.Api.projectCreation import (
     CreateProjectView,
     ReadProjectsView,
-    updateProject_view,
+    UpdateProjectView,
     DeleteProjectViewApi,
     ReadListOfCountriesView,
     ReadListOfTemplatesView,
@@ -51,10 +53,10 @@ from climmob.views.Api.projectCreation import (
     ReadListOfObjectivesView,
 )
 from climmob.views.Api.projectEnumerators import (
-    addProjectEnumerator_view,
-    readProjectEnumerators_view,
-    readPossibleProjectEnumerators_view,
-    deleteProjectEnumerator_view,
+    AddProjectEnumeratorView,
+    ReadProjectEnumeratorsView,
+    ReadPossibleProjectEnumeratorsView,
+    DeleteProjectEnumeratorView,
 )
 from climmob.views.Api.projectProducts import readProducts_view, downloadApi_view
 from climmob.views.Api.projectRegistry import (
@@ -68,17 +70,17 @@ from climmob.views.Api.projectRegistry import (
     OrderRegistryQuestionsView,
 )
 from climmob.views.Api.projectRegistryStart import (
-    readProjectCombinations_view,
-    setUsableCombinations_view,
-    setAvailabilityCombination_view,
-    createPackages_view,
-    createProjectRegistry_view,
-    cancelRegistryApi_view,
-    closeRegistryApi_view,
-    readRegistryStructure_view,
-    pushJsonToRegistry_view,
-    registryDataCleaning_view,
-    readRegistryData_view,
+    ReadProjectCombinationsView,
+    SetUsableCombinationsView,
+    SetAvailabilityCombinationView,
+    CreatePackagesView,
+    CreateProjectRegistryView,
+    CancelRegistryApiView,
+    CloseRegistryApiView,
+    ReadRegistryStructureView,
+    PushJsonToRegistryView,
+    RegistryDataCleaningView,
+    ReadRegistryDataView,
 )
 from climmob.views.Api.projectTechnologies import (
     AddProjectTechnologyView,
@@ -89,7 +91,7 @@ from climmob.views.Api.projectTechnologies import (
     ReadProjectTechnologiesAliasView,
     ReadProjectTechnologiesAliasExtraView,
     ReadPossibleProjectTechnologiesAliasView,
-    deleteProjectTechnologyAlias_view,
+    DeleteProjectTechnologyAliasView,
     AddProjectTechnologyAliasExtraView,
 )
 from climmob.views.Api.project_analysis import (
@@ -112,22 +114,22 @@ from climmob.views.Api.questions import (
     ReadMultiLanguagesFromQuestionView,
 )
 from climmob.views.Api.questionsGroups import (
-    readGroupsOfQuestions_view,
-    createGroupOfQuestion_view,
-    updateGroupOfQuestion_view,
-    deleteGroupOfQuestion_view,
+    ReadGroupsOfQuestionsView,
+    CreateGroupOfQuestionView,
+    UpdateGroupOfQuestionView,
+    DeleteGroupOfQuestionView,
 )
 from climmob.views.Api.techaliases import (
-    createAlias_view,
-    readAlias_view,
-    updateAlias_view,
-    deleteAliasView_api,
+    CreateAliasView,
+    ReadAliasView,
+    UpdateAliasView,
+    DeleteAliasViewAPI,
 )
 from climmob.views.Api.technologies import (
-    createTechnology_view,
-    readTechnologies_view,
-    updateTechnology_view,
-    deletetechnologyView_api,
+    CreateTechnologyView,
+    ReadTechnologiesView,
+    UpdateTechnologyView,
+    DeleteTechnologyViewAPI,
 )
 from climmob.views.Bot.bot import sendFeedbackToBot_view, readFeedback_view
 from climmob.views.Share.projectShare import (
@@ -149,22 +151,24 @@ from climmob.views.assessment import (
     assessmentFormCreation_view,
     assessmentSectionActions_view,
     getAssessmentSection_view,
+    CloneAssessmentView,
 )
 from climmob.views.basic_views import (
-    home_view,
+    HomeView,
     HealthView,
-    notfound_view,
-    login_view,
-    register_view,
-    logout_view,
+    NotFoundView,
+    LoginView,
+    RegisterView,
+    LogoutView,
     RecoverPasswordView,
     ResetPasswordView,
     StoreCookieView,
     TermsView,
     PrivacyView,
+    RefreshSessionTokensView,
 )
 from climmob.views.cleanErrorLogs import CleanErrorLogsView
-from climmob.views.cloneProjects.cloneProjects import cloneProjects_view
+from climmob.views.cloneProjects.cloneProjects import CloneProjectsView
 from climmob.views.dashboard import dashboard_view, projectInformation_view
 from climmob.views.editData import (
     editDataView,
@@ -200,12 +204,12 @@ from climmob.views.productsList import (
 )
 from climmob.views.profile import profile_view, editProfile_view
 from climmob.views.project import (
-    newProject_view,
-    getTemplatesByTypeOfProject_view,
-    modifyProject_view,
-    deleteProject_view,
-    projectList_view,
-    CurationOfProjects_view,
+    NewProjectView,
+    GetTemplatesByTypeOfProjectView,
+    ModifyProjectView,
+    DeleteProjectView,
+    ProjectListView,
+    CurationOfProjectsView,
     GetUnitOfAnalysisByLocationView,
     GetObjectivesByLocationAndUnitOfAnalysisView,
 )
@@ -224,7 +228,7 @@ from climmob.views.question import (
     getUserCategoryDetails_view,
     categories_view,
     deleteQuestion_view,
-    questionsActions_view,
+    QuestionsActionsView,
     getUserLanguages_view,
     addUserLanguage_view,
     changeDefaultLanguage_view,
@@ -287,8 +291,8 @@ from climmob.views.projectsSummary.projectsSummary import (
 from climmob.views.extra_form import ExtraFormPostView
 
 from climmob.views.project_metadata import (
-    ProjectMetadataForm_view,
-    ShowMetadataForm_view,
+    ProjectMetadataFormView,
+    ShowMetadataFormView,
 )
 
 # -------Api-------#
@@ -322,7 +326,7 @@ def loadRoutes(config):
     # These are the routes of the host application
     routes = []
     routes.append(
-        {"name": "home", "path": "/", "view": home_view, "renderer": "landing.jinja2"}
+        {"name": "home", "path": "/", "view": HomeView, "renderer": "landing.jinja2"}
     )
     routes.append(
         {
@@ -376,12 +380,21 @@ def loadRoutes(config):
         {
             "name": "login",
             "path": "/login",
-            "view": login_view,
+            "view": LoginView,
             "renderer": "login.jinja2",
         }
     )
     routes.append(
-        {"name": "logout", "path": "/logout", "view": logout_view, "renderer": None}
+        {"name": "logout", "path": "/logout", "view": LogoutView, "renderer": None}
+    )
+
+    routes.append(
+        {
+            "name": "refresh_tokens",
+            "path": "/refresh_tokens",
+            "view": RefreshSessionTokensView,
+            "renderer": None,
+        }
     )
 
     # User routes
@@ -389,7 +402,7 @@ def loadRoutes(config):
         {
             "name": "register",
             "path": "/register",
-            "view": register_view,
+            "view": RegisterView,
             "renderer": "register.jinja2",
         }
     )
@@ -422,7 +435,7 @@ def loadRoutes(config):
         {
             "name": "projectList",
             "path": "/projectList",
-            "view": projectList_view,
+            "view": ProjectListView,
             "renderer": "project/projectList.jinja2",
         }
     )
@@ -482,7 +495,7 @@ def loadRoutes(config):
         addRoute(
             "getTemplatesByTypeOfProject",
             "/projectType/{typeid}",
-            getTemplatesByTypeOfProject_view,
+            GetTemplatesByTypeOfProjectView,
             "json",
         )
     )
@@ -491,7 +504,7 @@ def loadRoutes(config):
         {
             "name": "newproject",
             "path": "/project/new",
-            "view": newProject_view,
+            "view": NewProjectView,
             "renderer": "project/newproject.jinja2",
         }
     )
@@ -499,7 +512,7 @@ def loadRoutes(config):
         {
             "name": "modifyproject",
             "path": "/user/{user}/project/{project}/edit",
-            "view": modifyProject_view,
+            "view": ModifyProjectView,
             "renderer": "project/modifyproject.jinja2",
         }
     )
@@ -507,7 +520,7 @@ def loadRoutes(config):
         {
             "name": "deleteproject",
             "path": "/user/{user}/project/{project}/delete",
-            "view": deleteProject_view,
+            "view": DeleteProjectView,
             "renderer": "json",
         }
     )
@@ -578,7 +591,7 @@ def loadRoutes(config):
         {
             "name": "questionActions",
             "path": "/questionActions",
-            "view": questionsActions_view,
+            "view": QuestionsActionsView,
             "renderer": "json",
         }
     )
@@ -817,7 +830,7 @@ def loadRoutes(config):
         addRoute(
             "curationofprojects",
             "/CurationOfProjects",
-            CurationOfProjects_view,
+            CurationOfProjectsView,
             "project/curationofprojects.jinja2",
         )
     )
@@ -963,6 +976,14 @@ def loadRoutes(config):
             "/user/{user}/project/{project}/assessment/{assessmentid}",
             assessment_view,
             "project/assessment/assessmentdetail.jinja2",
+        )
+    )
+    routes.append(
+        addRoute(
+            "clone_assessment",
+            "/user/{user}/project/{project}/assessment/{assessmentid}/clone",
+            CloneAssessmentView,
+            None,
         )
     )
     routes.append(
@@ -1282,7 +1303,7 @@ def loadRoutes(config):
         addRoute(
             "Metadata",
             "/user/{user}/project/{project}/metadata",
-            ProjectMetadataForm_view,
+            ProjectMetadataFormView,
             "project/metadata/metadata.jinja2",
         )
     )
@@ -1291,7 +1312,7 @@ def loadRoutes(config):
         addRoute(
             "ShowMetadataForm",
             "/user/{user}/project/{project}/metadataform/{metadataform}/ShowMetadata",
-            ShowMetadataForm_view,
+            ShowMetadataFormView,
             "string",
         )
     )
@@ -1331,7 +1352,7 @@ def loadRoutes(config):
         {
             "name": "cloneProject",
             "path": "/cloneProject",
-            "view": cloneProjects_view,
+            "view": CloneProjectsView,
             "renderer": "cloneProjects/cloneProjects.jinja2",
         }
     )
@@ -1433,7 +1454,7 @@ def loadRoutes(config):
         addRoute("readProjects_api", "/api/readProjects", ReadProjectsView, "json")
     )
     routes.append(
-        addRoute("updateproject_api", "/api/updateProject", updateProject_view, None)
+        addRoute("updateproject_api", "/api/updateProject", UpdateProjectView, None)
     )
     routes.append(
         addRoute("deleteproject_api", "/api/deleteProject", DeleteProjectViewApi, None)
@@ -1500,46 +1521,46 @@ def loadRoutes(config):
         addRoute(
             "addusertechnology_api",
             "/api/createTechnology",
-            createTechnology_view,
+            CreateTechnologyView,
             None,
         )
     )
     routes.append(
         addRoute(
-            "readtechnologies_api", "/api/readTecnologies", readTechnologies_view, None
+            "readtechnologies_api", "/api/readTecnologies", ReadTechnologiesView, None
         )
     )
     routes.append(
         addRoute(
-            "updatetechnology_api", "/api/updateTechnology", updateTechnology_view, None
+            "updatetechnology_api", "/api/updateTechnology", UpdateTechnologyView, None
         )
     )
     routes.append(
         addRoute(
             "deletetechnology_api",
             "/api/deleteTechnology",
-            deletetechnologyView_api,
+            DeleteTechnologyViewAPI,
             None,
         )
     )
 
     # Alias library
     routes.append(
-        addRoute("adduseralias_api", "/api/createAlias", createAlias_view, None)
+        addRoute("adduseralias_api", "/api/createAlias", CreateAliasView, None)
     )
-    routes.append(addRoute("readalias_api", "/api/readAlias", readAlias_view, None))
+    routes.append(addRoute("readalias_api", "/api/readAlias", ReadAliasView, None))
     routes.append(
-        addRoute("updatealias_api", "/api/updateAlias", updateAlias_view, None)
+        addRoute("updatealias_api", "/api/updateAlias", UpdateAliasView, None)
     )
     routes.append(
-        addRoute("deletealias_api", "/api/deleteAlias", deleteAliasView_api, None)
+        addRoute("deletealias_api", "/api/deleteAlias", DeleteAliasViewAPI, None)
     )
     # Groups
     routes.append(
         addRoute(
             "readcategoriesofquestions_api",
             "/api/readCategoriesOfQuestions",
-            readGroupsOfQuestions_view,
+            ReadGroupsOfQuestionsView,
             None,
         )
     )
@@ -1547,7 +1568,7 @@ def loadRoutes(config):
         addRoute(
             "createcategoryofquestions_api",
             "/api/createCategoryOfQuestions",
-            createGroupOfQuestion_view,
+            CreateGroupOfQuestionView,
             None,
         )
     )
@@ -1555,7 +1576,7 @@ def loadRoutes(config):
         addRoute(
             "updatecategoryofquestions_api",
             "/api/updateCategoryOfQuestions",
-            updateGroupOfQuestion_view,
+            UpdateGroupOfQuestionView,
             None,
         )
     )
@@ -1563,7 +1584,7 @@ def loadRoutes(config):
         addRoute(
             "deletecategoryofquestions_api",
             "/api/deleteCategoryOfQuestions",
-            deleteGroupOfQuestion_view,
+            DeleteGroupOfQuestionView,
             None,
         )
     )
@@ -1676,7 +1697,7 @@ def loadRoutes(config):
         addRoute(
             "addprjenumerators_api",
             "/api/addProjectEnumerator",
-            addProjectEnumerator_view,
+            AddProjectEnumeratorView,
             None,
         )
     )
@@ -1684,7 +1705,7 @@ def loadRoutes(config):
         addRoute(
             "readprjenumerators_api",
             "/api/readProjectEnumerators",
-            readProjectEnumerators_view,
+            ReadProjectEnumeratorsView,
             None,
         )
     )
@@ -1692,7 +1713,7 @@ def loadRoutes(config):
         addRoute(
             "readprjpossibleenumerators_api",
             "/api/readPossibleProjectEnumerators",
-            readPossibleProjectEnumerators_view,
+            ReadPossibleProjectEnumeratorsView,
             None,
         )
     )
@@ -1700,7 +1721,7 @@ def loadRoutes(config):
         addRoute(
             "deleteprjenumerator_api",
             "/api/deleteProjectEnumerator",
-            deleteProjectEnumerator_view,
+            DeleteProjectEnumeratorView,
             None,
         )
     )
@@ -1783,7 +1804,7 @@ def loadRoutes(config):
         addRoute(
             "deleteprjtechnologyalias",
             "/api/deleteProjectTechnologyAlias",
-            deleteProjectTechnologyAlias_view,
+            DeleteProjectTechnologyAliasView,
             None,
         )
     )
@@ -1856,7 +1877,7 @@ def loadRoutes(config):
         addRoute(
             "readprojectcombinations",
             "/api/readProjectCombinations",
-            readProjectCombinations_view,
+            ReadProjectCombinationsView,
             None,
         )
     )
@@ -1864,7 +1885,7 @@ def loadRoutes(config):
         addRoute(
             "updateUsableCombinations",
             "/api/setUsableCombinations",
-            setUsableCombinations_view,
+            SetUsableCombinationsView,
             None,
         )
     )
@@ -1873,21 +1894,21 @@ def loadRoutes(config):
         addRoute(
             "updateAvailabilityCombinations",
             "/api/setAvailabilityCombination",
-            setAvailabilityCombination_view,
+            SetAvailabilityCombinationView,
             None,
         )
     )
 
     routes.append(
         addRoute(
-            "readprojectpackages", "/api/readProjectPackages", createPackages_view, None
+            "readprojectpackages", "/api/readProjectPackages", CreatePackagesView, None
         )
     )
     routes.append(
         addRoute(
             "createprojectregistry",
             "/api/createProjectRegistry",
-            createProjectRegistry_view,
+            CreateProjectRegistryView,
             None,
         )
     )
@@ -1895,7 +1916,7 @@ def loadRoutes(config):
         addRoute(
             "cancelprojectregistry",
             "/api/cancelProjectREgistry",
-            cancelRegistryApi_view,
+            CancelRegistryApiView,
             None,
         )
     )
@@ -1903,7 +1924,7 @@ def loadRoutes(config):
         addRoute(
             "closeprojectregistry",
             "/api/closeProjectRegistry",
-            closeRegistryApi_view,
+            CloseRegistryApiView,
             None,
         )
     )
@@ -1913,7 +1934,7 @@ def loadRoutes(config):
         addRoute(
             "readregistrystructure",
             "/api/readRegistryStructure",
-            readRegistryStructure_view,
+            ReadRegistryStructureView,
             None,
         )
     )
@@ -1921,7 +1942,7 @@ def loadRoutes(config):
         addRoute(
             "pushjsontoregistry",
             "/api/pushJsonToRegistry",
-            pushJsonToRegistry_view,
+            PushJsonToRegistryView,
             None,
         )
     )
@@ -1930,7 +1951,7 @@ def loadRoutes(config):
         addRoute(
             "registrydatacleaning",
             "/api/registryDataCleaning",
-            registryDataCleaning_view,
+            RegistryDataCleaningView,
             None,
         )
     )
@@ -1939,7 +1960,7 @@ def loadRoutes(config):
         addRoute(
             "readregistrydata",
             "/api/readRegistryData",
-            readRegistryData_view,
+            ReadRegistryDataView,
             None,
         )
     )
@@ -1984,7 +2005,7 @@ def loadRoutes(config):
         addRoute(
             "createprjassessment",
             "/api/createProjectAssessment",
-            createProjectAssessment_view,
+            CreateProjectAssessmentView,
             None,
         )
     )
@@ -1992,7 +2013,7 @@ def loadRoutes(config):
         addRoute(
             "cancelprojectassessment",
             "/api/cancelProjectAssessment",
-            cancelAssessmentApi_view,
+            CancelAssessmentApiView,
             None,
         )
     )
@@ -2000,7 +2021,15 @@ def loadRoutes(config):
         addRoute(
             "closeprojectassessment",
             "/api/closeProjectAssessment",
-            closeAssessmentApi_view,
+            CloseAssessmentApiView,
+            None,
+        )
+    )
+    routes.append(
+        addRoute(
+            "api_clone_assessment",
+            "/api/assessment/clone",
+            CloneAssessmentApiView,
             None,
         )
     )
@@ -2076,7 +2105,7 @@ def loadRoutes(config):
         addRoute(
             "readassessmentstructure",
             "/api/readAssessmentStructure",
-            readAssessmentStructure_view,
+            ReadAssessmentStructureView,
             None,
         )
     )
@@ -2084,7 +2113,7 @@ def loadRoutes(config):
         addRoute(
             "pushjsontoassessment",
             "/api/pushJsonToAssessment",
-            pushJsonToAssessment_view,
+            PushJsonToAssessmentView,
             None,
         )
     )
@@ -2093,7 +2122,7 @@ def loadRoutes(config):
         addRoute(
             "assessmentdatacleaning",
             "/api/assessmentDataCleaning",
-            assessmentDataCleaning_view,
+            AssessmentDataCleaningView,
             None,
         )
     )
@@ -2102,7 +2131,7 @@ def loadRoutes(config):
         addRoute(
             "readassessmentdata",
             "/api/readAssessmentData",
-            readAssessmentData_view,
+            ReadAssessmentDataView,
             None,
         )
     )
@@ -2154,7 +2183,7 @@ def loadRoutes(config):
 
     appendToRoutes(routes)
 
-    config.add_notfound_view(notfound_view, renderer="404.jinja2")
+    config.add_notfound_view(NotFoundView, renderer="404.jinja2")
 
     # Custom mapping can happen here AFTER the host maps
     for plugin in p.PluginImplementations(p.IRoutes):
@@ -2163,7 +2192,11 @@ def loadRoutes(config):
 
     # Now add the routes and views to the config
     for curr_route in route_list:
-        config.add_route(curr_route["name"], curr_route["path"])
+        config.add_route(
+            curr_route["name"],
+            curr_route["path"],
+            factory=factory,
+        )
         config.add_view(
             curr_route["view"],
             route_name=curr_route["name"],

@@ -28,6 +28,7 @@ from climmob.processes import (
     setCombinationQuantityAvailable,
     updateCreatePackages,
     deleteProjectPackages,
+    update_project_status,
 )
 from climmob.processes.odk.api import storeJSONInMySQL
 from climmob.products import stopTasksByProcess
@@ -37,7 +38,7 @@ from climmob.views.project_combinations import createSettings
 from climmob.views.project_combinations import startTheRegistry
 
 
-class readProjectCombinations_view(apiView):
+class ReadProjectCombinationsView(apiView):
     def processView(self):
 
         if self.request.method == "GET":
@@ -180,7 +181,7 @@ class readProjectCombinations_view(apiView):
             return response
 
 
-class setUsableCombinations_view(apiView):
+class SetUsableCombinationsView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -331,7 +332,7 @@ class setUsableCombinations_view(apiView):
             return response
 
 
-class setAvailabilityCombination_view(apiView):
+class SetAvailabilityCombinationView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -469,7 +470,7 @@ class setAvailabilityCombination_view(apiView):
             return response
 
 
-class createPackages_view(apiView):
+class CreatePackagesView(apiView):
     def processView(self):
         def myconverter(o):
             if isinstance(o, datetime.datetime):
@@ -640,7 +641,7 @@ class createPackages_view(apiView):
             return response
 
 
-class createProjectRegistry_view(apiView):
+class CreateProjectRegistryView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -720,6 +721,11 @@ class createProjectRegistry_view(apiView):
                                             projectDetails["languages"],
                                         )
                                         if startIsOk:
+
+                                            update_project_status(
+                                                activeProjectId, 2, self.request
+                                            )
+
                                             response = Response(
                                                 status=200,
                                                 body=self._("Registration started."),
@@ -785,7 +791,7 @@ class createProjectRegistry_view(apiView):
             return response
 
 
-class cancelRegistryApi_view(apiView):
+class CancelRegistryApiView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -835,6 +841,9 @@ class cancelRegistryApi_view(apiView):
                                 0,
                                 self.request,
                             )
+
+                            update_project_status(activeProjectId, 1, self.request)
+
                             stopTasksByProcess(
                                 self.request,
                                 activeProjectId,
@@ -871,7 +880,7 @@ class cancelRegistryApi_view(apiView):
             return response
 
 
-class closeRegistryApi_view(apiView):
+class CloseRegistryApiView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -968,7 +977,7 @@ class closeRegistryApi_view(apiView):
             return response
 
 
-class readRegistryStructure_view(apiView):
+class ReadRegistryStructureView(apiView):
     def processView(self):
 
         if self.request.method == "GET":
@@ -1045,7 +1054,7 @@ class readRegistryStructure_view(apiView):
             return response
 
 
-class pushJsonToRegistry_view(apiView):
+class PushJsonToRegistryView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -1307,7 +1316,7 @@ def ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId):
         return response
 
 
-class readRegistryData_view(apiView):
+class ReadRegistryDataView(apiView):
     def processView(self):
 
         if self.request.method == "GET":
@@ -1391,7 +1400,7 @@ class readRegistryData_view(apiView):
             return response
 
 
-class registryDataCleaning_view(apiView):
+class RegistryDataCleaningView(apiView):
     def processView(self):
 
         if self.request.method == "POST":
@@ -1633,10 +1642,10 @@ def functionForProcessAndValidateUpdate(
 
                                 if atLeastOneHasBeenSent:
                                     for column in getColumnValue:
-                                        print(
-                                            "Debo de obtener el valor en la base de datos de la columna: "
-                                            + column
-                                        )
+                                        # print(
+                                        #     "Debo de obtener el valor en la base de datos de la columna: "
+                                        #     + column
+                                        # )
 
                                         if (
                                             str(rowInTheDatabase[column])
@@ -1656,7 +1665,7 @@ def functionForProcessAndValidateUpdate(
                                             )
                                             return response
 
-                        print("***********Esta permitido intentar el update***********")
+                        # print("***********Esta permitido intentar el update***********")
                         _json["id"] = 0
                         _json["flag_update"] = "true"
                         result, message = update_edited_data(

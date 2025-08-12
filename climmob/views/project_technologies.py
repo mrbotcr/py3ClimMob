@@ -24,6 +24,7 @@ from climmob.processes import (
     getCombinationsData,
 )
 from climmob.views.classes import privateView
+from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 
 
 class projectTecnologies_view(privateView):
@@ -274,6 +275,8 @@ class prjTechAliases_view(privateView):
 
 
 class prjTechAliasAdd_view(privateView):
+    validators = (ProjectExistsValidator,)
+
     def processView(self):
         error_summary = {}
         dataworking = {}
@@ -281,11 +284,6 @@ class prjTechAliasAdd_view(privateView):
         activeProjectCod = self.request.matchdict["project"]
         technologyid = self.request.matchdict["tech_id"]
         redirect = False
-
-        if not projectExists(
-            self.user.login, activeProjectUser, activeProjectCod, self.request
-        ):
-            raise HTTPNotFound()
 
         activeProjectId = getTheProjectIdForOwner(
             activeProjectUser, activeProjectCod, self.request

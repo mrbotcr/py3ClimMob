@@ -7,7 +7,7 @@ from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 import climmob.plugins as p
 from climmob.processes import (
     projectExists,
-    addAssessmentGroup,
+    add_assessment_group,
     deleteAssessmentGroup,
     modifyAssessmentGroup,
     saveAssessmentOrder,
@@ -15,7 +15,7 @@ from climmob.processes import (
     availableAssessmentQuestions,
     getProjectAssessments,
     addProjectAssessment,
-    getProjectAssessmentInfo,
+    get_project_assessment_info,
     modifyProjectAssessment,
     deleteProjectAssessment,
     checkAssessments,
@@ -32,11 +32,14 @@ from climmob.processes import (
     getPrjLangDefaultInProject,
     languageExistInTheProject,
     getPhraseTranslationInLanguage,
+    update_project_status,
+    clone_assessment,
 )
 from climmob.products.forms.form import create_document_form
 from climmob.views.classes import privateView
 from climmob.views.registry import getDataFormPreview
 from climmob.views.question import getDictForPreview
+from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 
 
 class deleteAssessmentSection_view(privateView):
@@ -85,7 +88,7 @@ class deleteAssessmentSection_view(privateView):
 def actionsInSections(self, postdata):
 
     if postdata["action"] == "insert":
-        addgroup, message = addAssessmentGroup(postdata, self)
+        addgroup, message = add_assessment_group(postdata, self)
         if not addgroup:
             if message == "repeated":
                 return {
@@ -167,7 +170,7 @@ class getAssessmentDetails_view(privateView):
                     activeProjectUser, activeProjectCod, self.request
                 )
 
-                assessment = getProjectAssessmentInfo(
+                assessment = get_project_assessment_info(
                     activeProjectId, assessmentid, self.request
                 )
                 self.returnRawViewResult = True
@@ -288,7 +291,9 @@ class deleteassessmenthead_view(privateView):
                 activeProjectUser, activeProjectCod, self.request
             )
 
-            data = getProjectAssessmentInfo(activeProjectId, assessmentid, self.request)
+            data = get_project_assessment_info(
+                activeProjectId, assessmentid, self.request
+            )
 
             error_summary = {}
             if self.request.method == "POST":
@@ -382,7 +387,7 @@ class assessment_view(privateView):
                 "error_summary": error_summary,
                 "activeProject": getActiveProject(self.user.login, self.request),
                 "assessmentid": assessmentid,
-                "assinfo": getProjectAssessmentInfo(
+                "assinfo": get_project_assessment_info(
                     activeProjectId, assessmentid, self.request
                 ),
                 "UserQuestion": availableAssessmentQuestions(
@@ -399,6 +404,31 @@ class assessment_view(privateView):
             )
 
             return dictreturn
+
+
+class CloneAssessmentView(privateView):
+    validators = (ProjectExistsValidator,)
+
+    def post(self):
+        active_project_user = self.request.user
+        active_project_cod = self.request.project
+        assessment_id = self.request.assessmentid
+
+        success = clone_assessment(self, self.context.active_project_id, assessment_id)
+
+        if not success:
+            self.request.session.flash(
+                self._("Error. The assessment could not be cloned")
+            )
+        else:
+            self.request.session.flash(self._("The assessment was successfully cloned"))
+
+        self.returnRawViewResult = True
+        return HTTPFound(
+            location=self.request.route_url(
+                "assessment", user=active_project_user, project=active_project_cod
+            )
+        )
 
 
 class assessmentFormCreation_view(privateView):
@@ -514,7 +544,7 @@ class startAssessments_view(privateView):
                 print("checkAssessments")
 
                 isExternal = False
-                assessInfo = getProjectAssessmentInfo(
+                assessInfo = get_project_assessment_info(
                     activeProjectId, assessment_id, self.request
                 )
                 # for plugin in p.PluginImplementations(p.IRhomis):
@@ -610,6 +640,8 @@ class startAssessments_view(privateView):
                                     assessment_id,
                                 )
 
+                            update_project_status(activeProjectId, 2, self.request)
+
                             self.returnRawViewResult = True
                             return HTTPFound(
                                 location=self.request.route_url("dashboard")
@@ -696,15 +728,12 @@ def createDocumentForm(
 
 
 class closeAssessment_view(privateView):
+    validators = (ProjectExistsValidator,)
+
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
         assessmentid = self.request.matchdict["assessmentid"]
-
-        if not projectExists(
-            self.user.login, activeProjectUser, activeProjectCod, self.request
-        ):
-            raise HTTPNotFound()
 
         activeProjectId = getTheProjectIdForOwner(
             activeProjectUser, activeProjectCod, self.request
@@ -718,7 +747,7 @@ class closeAssessment_view(privateView):
             assessmentid,
             self.request,
         )
-        assessmentData = getProjectAssessmentInfo(
+        assessmentData = get_project_assessment_info(
             activeProjectId, assessmentid, self.request
         )
         if self.request.method == "POST":
@@ -750,15 +779,12 @@ class closeAssessment_view(privateView):
 
 
 class CancelAssessmentView(privateView):
+    validators = (ProjectExistsValidator,)
+
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
         assessmentid = self.request.matchdict["assessmentid"]
-
-        if not projectExists(
-            self.user.login, activeProjectUser, activeProjectCod, self.request
-        ):
-            raise HTTPNotFound()
 
         activeProjectId = getTheProjectIdForOwner(
             activeProjectUser, activeProjectCod, self.request
@@ -772,7 +798,7 @@ class CancelAssessmentView(privateView):
             assessmentid,
             self.request,
         )
-        assessmentData = getProjectAssessmentInfo(
+        assessmentData = get_project_assessment_info(
             activeProjectId, assessmentid, self.request
         )
         if self.request.method == "POST":
