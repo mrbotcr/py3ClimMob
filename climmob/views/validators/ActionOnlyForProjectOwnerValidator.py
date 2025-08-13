@@ -9,7 +9,6 @@ from climmob.utility.project import ProjectAccessType
 class ActionOnlyForProjectOwnerValidator(BaseValidator):
     def __init__(self, view):
         super().__init__(view)
-
         self.project_id = None
         self.extract()
 
@@ -25,3 +24,4 @@ class ActionOnlyForProjectOwnerValidator(BaseValidator):
 
         if not valid or access_type not in [ProjectAccessType.OWNER.value]:
             raise HTTPForbidden("This action is forbidden")
+

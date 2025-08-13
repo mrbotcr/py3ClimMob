@@ -35,7 +35,7 @@
     </div>
 
     <div class="row" style="height: 100%">
-        {% set onlySee = False %}}
+        {% set onlySee = False %}
         {% if activeProject["access_type"] in [4] or activeProject.project_status == 3 %}
             {% set onlySee = True %}
         {% endif %}
@@ -163,7 +163,7 @@
                                         {% if not (onlySee) %}
                                             {% block prj_enum_actions scoped %}
                                                 <td class="text-center" style="vertical-align: middle;">
-                                                    <button onclick="showDelete('{{ request.route_url('removeprjenumerator', user=activeProject["owner"]["user_name"] , project= activeProject["project_cod"],enumeratorid=enumerator.enum_id) }}','{{ _("Do you really want to delete this field agent?") }}','{{ request.session.get_csrf_token() }}')"
+                                                    <button onclick="showDelete('{{ request.route_url("removeprjenumerator", user=activeProject["owner"]["user_name"] , project= activeProject["project_cod"],enumeratorid=enumerator.enum_id) }}','{{ _("Do you really want to delete this field agent?") }}','{{ request.session.get_csrf_token() }}')"
                                                             type="button" class="btn btn-danger"
                                                             title="{{ _("Delete field agent") }}"><i
                                                             class="fa fa-trash"></i> {{ _("Delete") }}</button>

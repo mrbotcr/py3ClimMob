@@ -19,7 +19,7 @@ from climmob.views.validators import TextField, IntegerField, BinaryField
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 
 
-class projectEnumerators_view(privateView):
+class ProjectEnumeratorsView(privateView):
     validators = (ProjectExistsValidator,)
 
     def get(self):

@@ -1379,17 +1379,6 @@ class AddCollaboratorView(apiView):
 
         if sorted(obligatory) == sorted(dataworking.keys()):
 
-            if not projectExists(
-                self.user.login,
-                dataworking["user_owner"],
-                dataworking["project_cod"],
-                self.request,
-            ):
-                response = Response(
-                    status=401, body=self._("This project does not exist.")
-                )
-                return response
-
             activeProjectId = getTheProjectIdForOwner(
                 dataworking["user_owner"], dataworking["project_cod"], self.request
             )

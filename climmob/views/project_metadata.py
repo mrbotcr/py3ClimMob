@@ -77,9 +77,6 @@ class ProjectMetadataFormView(privateView):
                             postData,
                         )
 
-                        # if not edited:
-                        #     error_summary = {"error": message}
-
                     if not message:
 
                         self.request.session.flash(
@@ -160,10 +157,6 @@ class ShowMetadataFormView(privateView):
                     template_table = env.get_template("template_table.jinja2")
                     inputs = env.get_template("metadata_inputs.jinja2")
 
-                    # dictionary = self.extract_names_and_types(
-                    #     json.loads(metadataForm["metadata_json"])
-                    # )
-
                     dict_of_technologies_with_synonyms = {}
                     if metadataForm["metadata_for_technology_options"] == 1:
 
@@ -219,31 +212,3 @@ class ShowMetadataFormView(privateView):
                     return metadataForm["metadata_name"] + "@@@@@@@@@@" + render_temp
 
         return ""
-
-    # def extract_names_and_types(self, data, result=None):
-    #     if result is None:
-    #         result = []
-    #
-    #     if isinstance(data, dict):
-    #
-    #         if "name" in data and "type" in data:
-    #             if "climmob_users" in data:
-    #                 if data["climmob_users"] == "yes":
-    #                     result.append(
-    #                         {
-    #                             "name": data["name"],
-    #                             "type": data["type"] + " climmob_users",
-    #                         }
-    #                     )
-    #             else:
-    #                 result.append({"name": data["name"], "type": data["type"]})
-    #
-    #         for key, value in data.items():
-    #             if isinstance(value, (dict, list)):
-    #                 self.extract_names_and_types(value, result)
-    #
-    #     elif isinstance(data, list):
-    #         for item in data:
-    #             self.extract_names_and_types(item, result)
-    #
-    #     return result

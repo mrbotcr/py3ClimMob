@@ -19,7 +19,7 @@
                 <div class="{{ JsonInfo["type"] }} {{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}" name="{{ JsonInfo["name"] }}" {% if JsonInfo["type"] %}id="{{ JsonInfo["name"] }}"{% endif %}  style="border: 2px solid {% if JsonInfo["type"] == "repeat" %}#1ab394{% else %}#e7eaec{% endif %}; padding: 20px; margin-bottom: 20px">
 
 
-                    {% if JsonInfo["type"] == "repeat" %}
+                    {% if JsonInfo["type"] == "repeat" and activeProject.project_status != 3 %}
                         <div class="ibox-tools">
                             <button type="button" style="display: none" class="btn btn-xs btn-danger pull-right remove-repeat" allowRemove="{% if onlySee or ("allow_remove" in JsonInfo.keys() and JsonInfo["allow_remove"] == "no") %}no{% else %}yes{% endif %}" onclick="removeRepeatBlock($(this),'{{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}')">
                                 <i class="fa fa-trash"></i> {{ _('Remove') }}
@@ -36,7 +36,7 @@
 
                 </div>
 
-                {% if JsonInfo["type"] == "repeat"  %}
+                {% if JsonInfo["type"] == "repeat" and activeProject.project_status != 3  %}
                     <button type="button" class="btn btn-primary duplicate-repeat" onclick="duplicateRepeatBlock($(this),'{{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}')" {% if onlySee or ("allow_more" in JsonInfo.keys() and JsonInfo["allow_more"] == "no") %}style="display: none" {% endif %}><i class="fa fa-plus"></i> {{ _('Add other') }}</button><br>
                     <hr>
 

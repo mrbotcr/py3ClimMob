@@ -177,7 +177,7 @@ from climmob.views.editData import (
     downloadErroLogDocument_view,
 )
 from climmob.views.enumerator import (
-    getEnumeratorDetails_view,
+    GetEnumeratorDetailsView,
     enumerators_view,
     deleteEnumerator_view,
 )
@@ -219,10 +219,10 @@ from climmob.views.projectHelp.projectHelp import projectHelp_view
 from climmob.views.project_analysis import analysisDataView
 from climmob.views.project_combinations import projectCombinations_view
 from climmob.views.project_enumerators import (
-    projectEnumerators_view,
+    ProjectEnumeratorsView,
     removeProjectEnumerators_view,
 )
-from climmob.views.project_technologies import projectTecnologies_view
+from climmob.views.project_technologies import ProjectTechnologiesView
 from climmob.views.question import (
     qlibrary_view,
     getUserQuestionDetails_view,
@@ -710,7 +710,7 @@ def loadRoutes(config):
         addRoute(
             "getEnumeratorDetails",
             "/user/{user}/enumerator/{enumid}",
-            getEnumeratorDetails_view,
+            GetEnumeratorDetailsView,
             "json",
         )
     )
@@ -842,7 +842,7 @@ def loadRoutes(config):
         addRoute(
             "prjenumerators",
             "/user/{user}/project/{project}/enumerators",
-            projectEnumerators_view,
+            ProjectEnumeratorsView,
             "project/enumerators/enumerators.jinja2",
         )
     )
@@ -1034,7 +1034,7 @@ def loadRoutes(config):
         addRoute(
             "prjtechnologies",
             "/user/{user}/project/{project}/technologies",
-            projectTecnologies_view,
+            ProjectTechnologiesView,
             "project/technologies/technologies.jinja2",
         )
     )

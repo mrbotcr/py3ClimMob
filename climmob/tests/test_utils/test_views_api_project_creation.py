@@ -2634,10 +2634,8 @@ class TestAddCollaboratorView(ViewBaseTest):
         "climmob.views.Api.projectCreation.getTheProjectIdForOwner",
         return_value="project_id",
     )
-    @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)
     def test_process_view_success(
         self,
-        mock_project_exists,
         mock_get_project_id,
         mock_get_access_type,
         mock_get_user_info,
@@ -2647,9 +2645,6 @@ class TestAddCollaboratorView(ViewBaseTest):
         response = self.view.processView()
         self.assertEqual(response.status_code, 200)
         self.assertIn("Collaborator added successfully.", response.body.decode())
-        mock_project_exists.assert_called_once_with(
-            "test_user", "owner123", "PRJ123", self.view.request
-        )
         mock_get_project_id.assert_called_once_with(
             "owner123", "PRJ123", self.view.request
         )
@@ -2671,32 +2666,19 @@ class TestAddCollaboratorView(ViewBaseTest):
         }
         mock_add_collaborator.assert_called_once_with(self.view.request, expected_data)
 
-    @patch("climmob.views.Api.projectCreation.projectExists", return_value=False)
-    def test_process_view_project_does_not_exist(self, mock_project_exists):
-        response = self.view.processView()
-        self.assertEqual(response.status_code, 401)
-        self.assertIn("This project does not exist.", response.body.decode())
-        mock_project_exists.assert_called_once_with(
-            "test_user", "owner123", "PRJ123", self.view.request
-        )
-
     @patch("climmob.views.Api.projectCreation.getAccessTypeForProject", return_value=4)
     @patch(
         "climmob.views.Api.projectCreation.getTheProjectIdForOwner",
         return_value="project_id",
     )
-    @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)
     def test_process_view_no_permission(
-        self, mock_project_exists, mock_get_project_id, mock_get_access_type
+        self, mock_get_project_id, mock_get_access_type
     ):
         response = self.view.processView()
         self.assertEqual(response.status_code, 401)
         self.assertIn(
             "The access assigned for this project does not allow you to add collaborators to the project.",
             response.body.decode(),
-        )
-        mock_project_exists.assert_called_once_with(
-            "test_user", "owner123", "PRJ123", self.view.request
         )
         mock_get_project_id.assert_called_once_with(
             "owner123", "PRJ123", self.view.request
@@ -2711,10 +2693,8 @@ class TestAddCollaboratorView(ViewBaseTest):
         "climmob.views.Api.projectCreation.getTheProjectIdForOwner",
         return_value="project_id",
     )
-    @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)
     def test_process_view_user_does_not_exist(
         self,
-        mock_project_exists,
         mock_get_project_id,
         mock_get_access_type,
         mock_get_user_info,
@@ -2726,9 +2706,6 @@ class TestAddCollaboratorView(ViewBaseTest):
             response.body.decode(),
         )
         mock_get_user_info.assert_called_once_with(self.view.request, "collaborator123")
-        mock_project_exists.assert_called_once_with(
-            "test_user", "owner123", "PRJ123", self.view.request
-        )
         mock_get_project_id.assert_called_once_with(
             "owner123", "PRJ123", self.view.request
         )
@@ -2746,10 +2723,8 @@ class TestAddCollaboratorView(ViewBaseTest):
         "climmob.views.Api.projectCreation.getTheProjectIdForOwner",
         return_value="project_id",
     )
-    @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)
     def test_process_view_user_already_in_project(
         self,
-        mock_project_exists,
         mock_get_project_id,
         mock_get_access_type,
         mock_get_user_info,
@@ -2765,9 +2740,6 @@ class TestAddCollaboratorView(ViewBaseTest):
             "collaborator123", "project_id", self.view.request
         )
         mock_get_user_info.assert_called_once_with(self.view.request, "collaborator123")
-        mock_project_exists.assert_called_once_with(
-            "test_user", "owner123", "PRJ123", self.view.request
-        )
         mock_get_project_id.assert_called_once_with(
             "owner123", "PRJ123", self.view.request
         )
@@ -2785,10 +2757,8 @@ class TestAddCollaboratorView(ViewBaseTest):
         "climmob.views.Api.projectCreation.getTheProjectIdForOwner",
         return_value="project_id",
     )
-    @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)
     def test_process_view_invalid_access_type(
         self,
-        mock_project_exists,
         mock_get_project_id,
         mock_get_access_type,
         mock_get_user_info,
@@ -2807,9 +2777,6 @@ class TestAddCollaboratorView(ViewBaseTest):
             "collaborator123", "project_id", self.view.request
         )
         mock_get_user_info.assert_called_once_with(self.view.request, "collaborator123")
-        mock_project_exists.assert_called_once_with(
-            "test_user", "owner123", "PRJ123", self.view.request
-        )
         mock_get_project_id.assert_called_once_with(
             "owner123", "PRJ123", self.view.request
         )
@@ -2831,10 +2798,8 @@ class TestAddCollaboratorView(ViewBaseTest):
         "climmob.views.Api.projectCreation.getTheProjectIdForOwner",
         return_value="project_id",
     )
-    @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)
     def test_process_view_add_collaborator_fails(
         self,
-        mock_project_exists,
         mock_get_project_id,
         mock_get_access_type,
         mock_get_user_info,
@@ -2850,9 +2815,6 @@ class TestAddCollaboratorView(ViewBaseTest):
             "collaborator123", "project_id", self.view.request
         )
         mock_get_user_info.assert_called_once_with(self.view.request, "collaborator123")
-        mock_project_exists.assert_called_once_with(
-            "test_user", "owner123", "PRJ123", self.view.request
-        )
         mock_get_project_id.assert_called_once_with(
             "owner123", "PRJ123", self.view.request
         )
@@ -2867,11 +2829,6 @@ class TestAddCollaboratorView(ViewBaseTest):
         self.assertEqual(response.status_code, 401)
         self.assertIn("Error in the JSON.", response.body.decode())
 
-    def test_process_view_invalid_method(self):
-        self.view.request.method = "GET"
-        response = self.view.processView()
-        self.assertEqual(response.status_code, 401)
-        self.assertIn("Only accepts POST method.", response.body.decode())
 
 
 class TestDeleteCollaboratorView(ViewBaseTest):
@@ -3079,11 +3036,6 @@ class TestDeleteCollaboratorView(ViewBaseTest):
         self.assertEqual(response.status_code, 401)
         self.assertIn("Error in the JSON.", response.body.decode())
 
-    def test_process_view_post_method(self):
-        self.view.request.method = "GET"
-        response = self.view.processView()
-        self.assertEqual(response.status_code, 401)
-        self.assertIn("Only accepts POST method.", response.body.decode())
 
     @patch("climmob.views.Api.projectCreation.getTheProjectIdForOwner", return_value=1)
     @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)

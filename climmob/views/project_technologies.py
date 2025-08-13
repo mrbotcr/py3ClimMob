@@ -27,7 +27,7 @@ from climmob.views.classes import privateView
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 
 
-class projectTecnologies_view(privateView):
+class ProjectTechnologiesView(privateView):
     validators = (ProjectExistsValidator,)
 
     def get(self):
@@ -40,6 +40,7 @@ class projectTecnologies_view(privateView):
 
         prjData = getProjectData(activeProjectId, self.request)
 
+        ##todo check if its necesary split because the previus method for 1 dont sent _query
         if prjData["project_template"] == 1 or prjData["project_createpkgs"] == 2:
             self.returnRawViewResult = True
             return HTTPFound(location=self.request.route_url(
@@ -91,7 +92,6 @@ class projectTecnologies_view(privateView):
         tech_id = ""
         dataworking = {"alias_name": ""}
         error_summary = {}
-        error_summary2 = {}
         techSee = {}
 
         if "btn_save_technologies" in postdata:

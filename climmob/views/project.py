@@ -961,8 +961,9 @@ class FinishProjectView(privateView):
         project_info = getActiveProject(self.user.login, self.request)
 
         if success:
-            #todo check the persson to send the email
+            #todo check the person to send the email
             self.returnRawViewResult = True
+            self.request.session.flash(self._('The project was finished successfully.'))
             return HTTPFound(location=self.request.route_url('dashboard'))
         else:
             return{

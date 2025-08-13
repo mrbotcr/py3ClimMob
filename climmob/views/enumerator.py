@@ -23,7 +23,7 @@ import glob
 import json
 
 
-class getEnumeratorDetails_view(privateView):
+class GetEnumeratorDetailsView(privateView):
     def get(self):
         userOwner = self.request.matchdict["user"]
         enumId = self.request.matchdict["enumid"]

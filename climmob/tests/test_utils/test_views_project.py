@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import MagicMock, patch, ANY, call
 
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
+from pyramid.url import route_url
 
 from climmob.tests.test_utils.common import ViewBaseTest
 from climmob.views.project import (
@@ -12,6 +13,7 @@ from climmob.views.project import (
     GetTemplatesByTypeOfProjectView,
     ProjectListView,
     DeleteProjectView,
+    FinishProjectView
 )
 
 
@@ -1602,6 +1604,51 @@ class TestDeleteProjectView(ViewBaseTest):
         )
         mock_get_project_data.assert_called_once_with(1, self.view.request)
         mock_delete_project.assert_called_once_with(1, self.view.request)
+
+
+class TestFinishProjectView(ViewBaseTest):
+    view_class = FinishProjectView
+    @patch(
+        "climmob.views.project.getActiveProject", return_value={"data": "data"})
+    def test_finish_project_view_get(self, mock_get_active_project):
+        response = self.view.get()
+        self.assertEqual(response, {"project_info":{"data": "data"} })
+        mock_get_active_project.assert_called_once_with("test_user", self.view.request)
+
+    @patch("climmob.views.project.getActiveProject", return_value={"data": "data"})
+    @patch("climmob.views.project.update_project_status", return_value=(True,""))
+    def test_finish_project_view_post_success(self, mock_update_project_status, mock_get_active_project):
+        fake_project_id=self.view.context.active_project_id = 1
+        self.view.request = MagicMock()
+        mock_route = self.view.request.route_url("dashboard")
+        response = self.view.post()
+
+        self.assertIsInstance(response, HTTPFound)
+        self.assertEqual(response.location, mock_route)
+        mock_update_project_status.assert_called_once_with(fake_project_id, 3, self.view.request)
+        mock_get_active_project.assert_called_once_with("test_user", self.view.request)
+
+    @patch("climmob.views.project.getActiveProject", return_value={"data": "data"})
+    @patch("climmob.views.project.update_project_status", return_value=(False,"Fake Error"))
+    def test_finish_project_view_post_fail(self, mock_update_project_status, mock_get_active_project):
+        fake_project_id = self.view.context.active_project_id = 1
+        response = self.view.post()
+
+        self.assertEqual(response,
+                         {
+                             'error': mock_update_project_status.return_value[1],
+                             'project_info': {"data": "data"},
+                         })
+        mock_update_project_status.assert_called_once_with(fake_project_id, 3, self.view.request)
+        mock_get_active_project.assert_called_once_with("test_user", self.view.request)
+
+
+
+
+
+
+
+
 
 
 if __name__ == "__main__":

@@ -1,94 +1,103 @@
+{% if activeProject["access_type"] in [4] or activeProject.project_status == 3 %}
+    {% set onlySee = True %}
+{% endif %}
 
-    {% if activeProject["access_type"] in [4] %}
-        {% set onlySee = True %}
-    {% endif %}
+{% macro recursiveFunction(JsonInfo ,repeat_index=0, requireLabel=True) %}
+    {% if JsonInfo["type"] in ["group", "survey"] %}
 
-    {% macro recursiveFunction(JsonInfo ,repeat_index=0, requireLabel=True) %}
-        {% if JsonInfo["type"] in ["group", "survey"] %}
+        {% if JsonInfo["name"] not in ["meta"] %}
 
-            {% if JsonInfo["name"] not in ["meta"] %}
+            {% if "label" in JsonInfo.keys() %}
+                <div>
+                    <br>
+                    <h3><b>{{ JsonInfo["label"][request.locale_name] }}</b></h3>
+                    <br>
+                </div>
+            {% endif %}
 
-                {% if "label" in JsonInfo.keys() %}
-                    <div>
-                        <br>
-                        <h3><b>{{ JsonInfo["label"][request.locale_name] }}</b></h3>
-                        <br>
-                    </div>
+            <div class="{{ JsonInfo["type"] }} {{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}"
+                 name="{{ JsonInfo["name"] }}" {% if JsonInfo["type"] %}id="{{ JsonInfo["name"] }}"{% endif %}
+                 style="border: 2px solid {% if JsonInfo["type"] == "repeat" %}#1ab394{% else %}#e7eaec{% endif %}; padding: 20px; margin-bottom: 20px">
+
+                {% if "children" in JsonInfo.keys() %}
+                    {% for child in JsonInfo["children"] recursive %}
+                        {{ recursiveFunction(child, repeat_index, JsonInfo["type"]) }}
+                    {% endfor %}
                 {% endif %}
 
-                <div class="{{ JsonInfo["type"] }} {{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}" name="{{ JsonInfo["name"] }}" {% if JsonInfo["type"] %}id="{{ JsonInfo["name"] }}"{% endif %}  style="border: 2px solid {% if JsonInfo["type"] == "repeat" %}#1ab394{% else %}#e7eaec{% endif %}; padding: 20px; margin-bottom: 20px">
+            </div>
 
+        {% endif %}
+
+    {% elif JsonInfo["type"] in ["repeat"] %}
+
+        {% if JsonInfo["name"] not in ["meta"] %}
+
+            {% if "label" in JsonInfo.keys() %}
+                <div>
+                    <br>
+                    <h3><b>{{ JsonInfo["label"][request.locale_name] }}</b></h3>
+                    <br>
+                </div>
+            {% endif %}
+
+            <table class="table table-striped table-bordered {{ JsonInfo["type"] }} {{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}"
+                   name="{{ JsonInfo["name"] }}" style="table-layout: fixed;">
+                <tr>
                     {% if "children" in JsonInfo.keys() %}
                         {% for child in JsonInfo["children"] recursive %}
-                            {{ recursiveFunction(child, repeat_index, JsonInfo["type"]) }}
+                            <th style="width:{{ 100/JsonInfo["children"]|length }}%; {% if child["show_interface"] =="no" %}display: none;{% endif %}">
+                                {{ child["label"][request.locale_name] }}
+                            </th>
                         {% endfor %}
                     {% endif %}
+                </tr>
+                <tr>
+                    {% if "children" in JsonInfo.keys() %}
+                        {% for child in JsonInfo["children"] recursive %}
+                            <td {% if child["show_interface"] =="no" %}style="display: none"{% endif %}>
+                                {{ recursiveFunction(child, repeat_index, False) }}
+                            </td>
+                        {% endfor %}
+                    {% endif %}
+                </tr>
+            </table>
 
+            {% if activeProject.project_status != 3 %}
+                <button type="button" class="btn btn-primary duplicate-repeat"
+                        onclick="duplicateRepeatBlock($(this),'{{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}')"
+                        {% if onlySee or ("allow_more" in JsonInfo.keys() and JsonInfo["allow_more"] == "no") %}style="display: none" {% endif %}>
+                    <i class="fa fa-plus"></i> {{ _('Add other row') }}</button><br>
+            {% endif %}
+            <hr>
+
+        {% endif %}
+
+    {% else %}
+
+        {% if JsonInfo["type"] in ["text","select one","integer", "select all that apply", "date"] %}
+
+            {% if requireLabel %}
+                <div class="form-group">
+
+                    <div class="col-sm-12">
+                        <h3>{{ JsonInfo["label"][request.locale_name] }}
+                            {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"].keys() and JsonInfo["bind"]["required"] == "yes" %}{% else %}
+                                ({{ _("Optional") }}){% endif %}</h3>
+                        {% if "hint" in JsonInfo.keys() %} <p>{{ JsonInfo["hint"][request.locale_name] }}</p>{% endif %}
+
+                        {% include inputs %}
+
+                    </div>
                 </div>
-
-            {% endif %}
-
-        {% elif JsonInfo["type"] in ["repeat"] %}
-
-            {% if JsonInfo["name"] not in ["meta"] %}
-
-                {% if "label" in JsonInfo.keys() %}
-                    <div>
-                        <br>
-                        <h3><b>{{ JsonInfo["label"][request.locale_name] }}</b></h3>
-                        <br>
-                    </div>
-                {% endif %}
-
-                <table class="table table-striped table-bordered {{ JsonInfo["type"] }} {{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}" name="{{ JsonInfo["name"] }}" style="table-layout: fixed;" >
-                    <tr>
-                        {% if "children" in JsonInfo.keys() %}
-                            {% for child in JsonInfo["children"] recursive %}
-                                <th style="width:{{ 100/JsonInfo["children"]|length }}%; {% if child["show_interface"] =="no" %}display: none;{% endif %}">
-                                    {{ child["label"][request.locale_name] }}
-                                </th>
-                            {% endfor %}
-                        {% endif %}
-                    </tr>
-                    <tr>
-                        {% if "children" in JsonInfo.keys() %}
-                            {% for child in JsonInfo["children"] recursive %}
-                                <td {% if child["show_interface"] =="no" %}style="display: none"{% endif %}>
-                                    {{ recursiveFunction(child, repeat_index, False) }}
-                                </td>
-                            {% endfor %}
-                        {% endif %}
-                    </tr>
-                </table>
-
-                <button type="button" class="btn btn-primary duplicate-repeat" onclick="duplicateRepeatBlock($(this),'{{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}')" {% if onlySee or ("allow_more" in JsonInfo.keys() and JsonInfo["allow_more"] == "no") %}style="display: none" {% endif %}><i class="fa fa-plus"></i> {{ _('Add other row') }}</button><br>
-                <hr>
-
-            {% endif %}
-
-        {% else %}
-
-            {% if JsonInfo["type"] in ["text","select one","integer", "select all that apply", "date"] %}
-
-                {% if requireLabel %}
-                    <div class="form-group">
-
-                        <div class="col-sm-12">
-                            <h3>{{ JsonInfo["label"][request.locale_name] }} {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"].keys() and JsonInfo["bind"]["required"] == "yes" %}{% else %}({{ _("Optional") }}){% endif %}</h3>
-                            {% if "hint" in JsonInfo.keys() %} <p>{{ JsonInfo["hint"][request.locale_name] }}</p>{% endif %}
-
-                            {% include inputs %}
-
-                        </div>
-                    </div>
-                {% else %}
-                    {% include inputs %}
-                {% endif %}
-
+            {% else %}
+                {% include inputs %}
             {% endif %}
 
         {% endif %}
-    {% endmacro %}
+
+    {% endif %}
+{% endmacro %}
 
 
 
@@ -129,9 +138,8 @@
                 processResults: function (data, params) {
                     params.page = params.page || 1;
 
-                    data.results.forEach(function(element)
-                    {
-                        element.id = element.text+ ' - '+ element.user_email
+                    data.results.forEach(function (element) {
+                        element.id = element.text + ' - ' + element.user_email
                     })
 
                     if (data.results.length === 0 && params.term) {
@@ -154,13 +162,13 @@
 
         $(".js-example-data-ajax-affi").select2({
             tags: true,
-            createTag: function (params){
+            createTag: function (params) {
                 const term = $.trim(params.term);
                 if (term === '') return null;
 
                 return {
                     id: params.term,
-                    text: "{{ _("New affiliation") }}: "+ params.term,
+                    text: "{{ _("New affiliation") }}: " + params.term,
                 }
             }
         });
@@ -171,7 +179,7 @@
 
     });
 
-    function showData(postData){
+    function showData(postData) {
         methodRecursiveToShowInformation(postData, $("#spaceForPutTheForm"))
     }
 
@@ -208,40 +216,38 @@
                         if (child.hasClass("dropdown_for_varieties")) {
                             child.empty();
                             var list_of_synonyms = {{ technologies_with_synonyms }};
-                            if (list_of_synonyms[postData["climmob_technology_id"]+"_"+postData["climmob_technology_option_id"]] !== undefined)
-                            {
+                            if (list_of_synonyms[postData["climmob_technology_id"] + "_" + postData["climmob_technology_option_id"]] !== undefined) {
                                 list_of_synonyms[postData["climmob_technology_id"] + "_" + postData["climmob_technology_option_id"]].forEach(element => {
                                     child.append($('<option>').val(element.option).text(element.option));
                                 });
-                            }else{
+                            } else {
                                 child.append($('<option>').val(value).text(value));
                             }
 
                             child.val(value);
                             child.trigger('change');
-                        }else{
+                        } else {
                             child.val(value);
                             child.trigger("change");
                         }
-                    }else if (child.hasClass("js-example-data-ajax")){
+                    } else if (child.hasClass("js-example-data-ajax")) {
                         child.append($('<option>').val(value).text(value));
                         child.val(value);
                         child.trigger('change');
-                    }else if (child.hasClass("js-example-data-ajax-affi")){
-                        var existe = child.find('option[value="'+value+'"]').length > 0;
-                        if(!existe)
-                        {
+                    } else if (child.hasClass("js-example-data-ajax-affi")) {
+                        var existe = child.find('option[value="' + value + '"]').length > 0;
+                        if (!existe) {
                             child.append($('<option>').val(value).text(value));
                         }
                         child.val(value);
                         child.trigger('change');
-                    }else if(child.hasClass("datepicker")){
+                    } else if (child.hasClass("datepicker")) {
                         child.datepicker({
                             language: '{{ request.locale_name }}',
-                            format:'dd-mm-yyyy',
+                            format: 'dd-mm-yyyy',
                         });
                         child.datepicker("update", value);
-                    }else{
+                    } else {
                         child.val(value);
                     }
                 } else if (child.hasClass("repeat")) {
@@ -252,7 +258,7 @@
                             if (i > 0) {
                                 var button = child.siblings(".duplicate-repeat").last()
 
-                                duplicateRepeatBlock(button, "repeat_"+repeatId); // Clonar si es necesario
+                                duplicateRepeatBlock(button, "repeat_" + repeatId); // Clonar si es necesario
                             }
 
                             const repeatBlocks = parentElement.find(`.repeat_${repeatId}`).last();
@@ -262,7 +268,7 @@
                     }
                 } else if (child.hasClass("group") || child.hasClass("survey")) {
                     methodRecursiveToShowInformation(value, child);
-                }else{
+                } else {
                     alert("Nada")
                 }
             }
@@ -270,18 +276,16 @@
     }
 
 
-
-
-    function formatUser (user) {
+    function formatUser(user) {
         if (!user.id) {
             return user.text;
         }
         var add = ""
         if (user.user_email) {
-            add= ' - '+ user.user_email
+            add = ' - ' + user.user_email
         }
         let $state = $(
-            '<span>' + user.text+ add + '</span>'
+            '<span>' + user.text + add + '</span>'
         );
         return $state;
     }
@@ -330,8 +334,7 @@
 
                     });
 
-                    if(Object.keys(repeatResult).length > 0)
-                    {
+                    if (Object.keys(repeatResult).length > 0) {
                         result[groupName][repeatName].push(repeatResult)
                     }
 
@@ -339,38 +342,33 @@
 
             } else if (child.is("input")) {
 
-                if (groupName !== undefined)
-                {
+                if (groupName !== undefined) {
                     result[groupName] = result[groupName] || {};
                     result[groupName][child.attr("name")] = child.val();
-                }else{
-                    if (child.attr("name"))
-                    {
+                } else {
+                    if (child.attr("name")) {
                         result[child.attr("name")] = child.val();
                     }
                 }
-            }else if (child.is("textarea")) {
-                if (groupName !== undefined)
-                {
+            } else if (child.is("textarea")) {
+                if (groupName !== undefined) {
                     result[groupName] = result[groupName] || {};
                     result[groupName][child.attr("name")] = child.val();
-                }else{
+                } else {
                     result[child.attr("name")] = child.val();
                 }
-            }else if (child.is("select")) {
-                if (groupName !== undefined)
-                {
+            } else if (child.is("select")) {
+                if (groupName !== undefined) {
                     result[groupName] = result[groupName] || {};
                     result[groupName][child.attr("name")] = child.val();
-                }else{
+                } else {
                     result[child.attr("name")] = child.val();
                 }
-            }else{
+            } else {
 
-                if (groupName === undefined)
-                {
+                if (groupName === undefined) {
                     processGroup(child, result);
-                }else{
+                } else {
                     if (!result[groupName]) {
                         result[groupName] = {};  // Inicializamos el grupo si no existe
                     }
@@ -383,7 +381,7 @@
 
     function duplicateRepeatBlock(button, repeatId) {
         // Encuentra el contenedor `.repeat` más cercano al botón
-        const repeatContainer = button.siblings("."+repeatId).last();
+        const repeatContainer = button.siblings("." + repeatId).last();
 
         if (repeatContainer.length > 0) {
             // Clona el `repeat` completo
@@ -398,11 +396,10 @@
             newRepeat.find('.select2-container').remove();
             var allowRemove = newRepeat.find('.remove-repeat').attr("allowRemove");
 
-            if(allowRemove ==="no")
-            {
-                newRepeat.find('.remove-repeat').css("display","none");
-            }else{
-                newRepeat.find('.remove-repeat').css("display","inline-block");
+            if (allowRemove === "no") {
+                newRepeat.find('.remove-repeat').css("display", "none");
+            } else {
+                newRepeat.find('.remove-repeat').css("display", "inline-block");
             }
 
             newRepeat.find('input, select, textarea').each(function () {
@@ -418,7 +415,7 @@
                     const currentNameText = $(this).attr('name-text-check');
                     if (currentNameText && currentNameText.includes('_other')) {
                         let nameQuestion = currentNameText.split('_other')[0];
-                        if (nameQuestion.includes('*')){
+                        if (nameQuestion.includes('*')) {
                             nameQuestion = nameQuestion.split('*')[0];
                         }
                         const newNameText = `${nameQuestion}*${counter}_other`;
@@ -430,14 +427,14 @@
 
             lastRow.after(newRepeat);
 
-            newRepeat.find('.chosen-select').each(function() {
+            newRepeat.find('.chosen-select').each(function () {
                 $(this).select2({width: "100%"});
                 $(this).on('select2:select select2:unselect', function () {
                     toggleOtherField(this);
                 })
             });
 
-            newRepeat.find('.input-group.date').each(function() {
+            newRepeat.find('.input-group.date').each(function () {
                 $(this).datepicker({
                     language: '{{ request.locale_name }}',
                     startView: 0,
@@ -448,7 +445,7 @@
                 });
             })
 
-            newRepeat.find('.js-example-data-ajax').each(function (){
+            newRepeat.find('.js-example-data-ajax').each(function () {
                 $(this).select2({
                     templateResult: formatUser,
                     ajax: {
@@ -464,9 +461,8 @@
                         processResults: function (data, params) {
                             params.page = params.page || 1;
 
-                            data.results.forEach(function(element)
-                            {
-                                element.id = element.text+ ' - '+ element.user_email
+                            data.results.forEach(function (element) {
+                                element.id = element.text + ' - ' + element.user_email
                             })
 
                             if (data.results.length === 0 && params.term) {
@@ -488,28 +484,28 @@
                 });
             })
 
-            newRepeat.find('.js-example-data-ajax-affi').each(function (){
+            newRepeat.find('.js-example-data-ajax-affi').each(function () {
                 $(this).select2({
                     tags: true,
-                    createTag: function (params){
+                    createTag: function (params) {
                         const term = $.trim(params.term);
                         if (term === '') return null;
 
                         return {
                             id: params.term,
-                            text: "{{ _("New affiliation") }}: "+ params.term,
+                            text: "{{ _("New affiliation") }}: " + params.term,
                         }
                     }
                 });
             })
-                window.counter++;
+            window.counter++;
         } else {
             console.warn('No se encontró un contenedor `.repeat` asociado al botón.');
         }
     }
 
     function removeRepeatBlock(button, classes) {
-        const repeatBlock = button.closest('.'+classes);
+        const repeatBlock = button.closest('.' + classes);
 
         if (repeatBlock) {
             repeatBlock.remove();
@@ -517,7 +513,7 @@
 
     }
 
-        function toggleOtherField(selectElement) {
+    function toggleOtherField(selectElement) {
 
         const dropdownId = selectElement.dataset.dropdownId;
         const selectedOptions = selectElement.selectedOptions;
@@ -529,14 +525,14 @@
 
         let has_Other_selected = false;
         for (let option of selectedOptions) {
-            if (option.dataset.isOther === "yes"  ) {
+            if (option.dataset.isOther === "yes") {
                 has_Other_selected = true;
                 break;
             }
         }
         if (has_Other_selected) {
             if (divElement) divElement.style.display = "block";
-            if (textareaElement){
+            if (textareaElement) {
                 textareaElement.required = true;
                 textareaElement.style.display = "block";
             }
@@ -561,7 +557,6 @@
             toggleOtherField(this);
         });
     }, 200);
-
 
 
 </script>

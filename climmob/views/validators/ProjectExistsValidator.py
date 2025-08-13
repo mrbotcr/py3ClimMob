@@ -14,19 +14,18 @@ class ProjectExistsValidator(BaseValidator):
         self.project_owner_username = None
         self.project_cod = None
         self.extract()
+        self.is_project_close()
 
     def extract(self):
 
         if issubclass(self.view.__class__, privateView):
             self.project_owner_username = self.view.request.user
             self.project_cod = self.view.request.project
-            self.is_project_close()
 
         elif issubclass(self.view.__class__, apiView):
             body = json.loads(self.view.body)
             self.project_owner_username = body["user_owner"]
             self.project_cod = body["project_cod"]
-            self.is_project_close()
 
         else:
             raise TypeError
@@ -46,4 +45,4 @@ class ProjectExistsValidator(BaseValidator):
                 self.view.request.method == "DELETE"):
             if self.view.classResult["project_status"] == 3:
                 self.view.request.method = "GET"
-                raise HTTPForbidden()
+                raise HTTPForbidden("The project is closed. It is not allowed to make changes.")
