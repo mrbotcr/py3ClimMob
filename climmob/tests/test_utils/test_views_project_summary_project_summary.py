@@ -125,10 +125,11 @@ class TestDownloadProjectsSummaryView(ViewBaseTest):
             mock_get_product_data.return_value["product_id"]
         )
 
+    @patch("climmob.views.projectsSummary.projectsSummary.DataColumn")
     @patch("climmob.views.projectsSummary.projectsSummary.create_json_exel_file")
     @patch("climmob.views.projectsSummary.projectsSummary.get_all_project_summary")
     def test_create_projects_summary_json_xlsx(
-        self, mock_get_all_projects, mock_create_json_excel
+        self, mock_get_all_projects, mock_create_json_excel, mock_data_column
     ):
         mock_request = MagicMock()
         mock_request.registry.settings = {
@@ -136,7 +137,8 @@ class TestDownloadProjectsSummaryView(ViewBaseTest):
             "setting2": "value2",
         }
         mock_get_all_projects.return_value = ["proj1", "proj2"]
-
+        mock_data_column.get_key_project_summary = MagicMock(list, name="order_column")
+        mock_order_column = mock_data_column.get_key_project_summary()
         result = self.view.create_projects_summary_json_xlsx(
             mock_request, jsonLocation="/fake/path", process_name="projectsSummaryTest"
         )
@@ -150,7 +152,11 @@ class TestDownloadProjectsSummaryView(ViewBaseTest):
 
         mock_get_all_projects.assert_called_once_with(mock_request)
         mock_create_json_excel.assert_called_once_with(
-            "/fake/path", "projectsSummaryTest", expected_settings, ["proj1", "proj2"]
+            "/fake/path",
+            "projectsSummaryTest",
+            expected_settings,
+            ["proj1", "proj2"],
+            column_order=mock_order_column,
         )
 
 
@@ -359,7 +365,7 @@ class TestSaveProjectRow(ViewBaseTest):
         self.assertEqual(
             response,
             {
-                "message": "The process is running, please wait a a minute.",
+                "message": "The process that updates the list of projects is currently running. Please wait a moment for it to finish.",
                 "status": 409,
             },
         )
@@ -550,29 +556,7 @@ class TestSendEmailNotification(ViewBaseTest):
             ],
             self.view.request.registry.settings["email.from"],
         )
-
-        # self.mock_smtp.assert_called_once_with(
-        #     self.view.request.registry.settings["email.server"], 587
-        # )
-        # self.mock_server.login.assert_called_once_with(
-        #     self.view.request.registry.settings["email.user"],
-        #     self.view.request.registry.settings["email.password"],
-        # )
-        # self.mock_server.sendmail.assert_called_once_with(
-        #     self.view.request.registry.settings["email.from"],
-        #     [self.mocks["admin_email"], self.mocks["user_project_email"]],
-        #     self.mock_build_email.return_value.as_string(),
-        # )
-        # self.mock_server.quit.assert_called_once_with()
-
         self.mock_log.error.assert_not_called()
-
-    # def test_send_email_smtp_failure(self):
-    #     self.mock_server.login.side_effect = Exception("SMTP error")
-    #     response = self.view.send_email_notification(**self.mocks)
-    #     self.assertFalse(response)
-    #     self.mock_log.error.assert_called_once_with("SMTP error")
-
 
 class TestProjectSummaryRecentView(ViewBaseTest):
     view_class = ProjectSummaryRecentView

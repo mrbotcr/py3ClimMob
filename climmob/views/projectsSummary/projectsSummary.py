@@ -93,7 +93,7 @@ class DownloadProjectsSummaryView(privateView):
             process_name,
             settings,
             list_of_projects,
-            colum_order=column_order,
+            column_order=column_order,
         )
         return
 
