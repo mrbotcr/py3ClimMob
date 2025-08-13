@@ -838,7 +838,9 @@ def createProjectsSummary(self, settings, otro):
     return ""
 
 
-def create_json_exel_file(json_location, process_name, settings, dataCollection):
+def create_json_exel_file(
+    json_location, process_name, settings, dataCollection, column_order=None
+):
     with open(
         os.path.join(
             json_location,
@@ -858,6 +860,10 @@ def create_json_exel_file(json_location, process_name, settings, dataCollection)
             ),
         )
     )
+
+    if column_order:
+        df = df[column_order]
+
     df.to_excel(
         os.path.join(
             json_location,

@@ -86,7 +86,15 @@ class DownloadProjectsSummaryView(privateView):
                 settings[key] = value
         list_of_projects = get_all_project_summary(request)
 
-        create_json_exel_file(jsonLocation, process_name, settings, list_of_projects)
+        column_order = DataColumn.get_key_project_summary(self)
+
+        create_json_exel_file(
+            jsonLocation,
+            process_name,
+            settings,
+            list_of_projects,
+            colum_order=column_order,
+        )
         return
 
 
@@ -170,7 +178,7 @@ class SaveProjectRow(privateView):
             if lastReport[0]["state"] != "Success":
                 return {
                     "message": self._(
-                        "The process is running, please wait a a minute."
+                        "The process that updates the list of projects is currently running. Please wait a moment for it to finish."
                     ),
                     "status": 409,
                 }
@@ -257,7 +265,7 @@ class SaveProjectRow(privateView):
 
         return {
             "status": 200,
-            "message": "Row updated right",
+            "message": self._("Row updated right"),
         }
 
     def send_email_notification(
