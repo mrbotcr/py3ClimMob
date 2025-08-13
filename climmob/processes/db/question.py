@@ -614,7 +614,7 @@ def anonymize_questions(request, form, form_id, project_id, schema):
     questions = get_sensitive_questions_anonymity_by_project_id(project_id, request)
 
     registry_id = (
-        form["grp_validation/clc_after"] if form_id == "-" else form["grp_1/QST163"]
+        form.get("grp_validation/clc_after", form["grp_1/QST162"]) if form_id == "-" else form["grp_1/QST163"]
     )
 
     pattern = r"grp_\d+/(.+)"
@@ -678,7 +678,16 @@ def anonymize_questions(request, form, form_id, project_id, schema):
         anonymized_values.append(value)
 
     sql = f"INSERT INTO {schema}.anonymized VALUES {', '.join(anonymized_values)}"
-    sql_execute(sql)
+    try:
+        sql_execute(sql)
+        return True, ""
+    except Exception as e:
+        match = re.search(rf"Duplicate entry '({form_id})-(\d+)-(.+?)'", str(e))
+        if match:
+            form_name = "registry" if form_id == "-" else f"assessment '{form_id}'"
+            msg = f"Duplicate entry for package '{match.group(2)}' in {form_name}"
+            return False, msg
+        return False, ""
 
 
 def remove_anonymized_values_by_form_id(schema, form_id):
