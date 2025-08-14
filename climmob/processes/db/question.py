@@ -49,7 +49,12 @@ __all__ = [
 
 from climmob.models.climmobv4 import AnonymizationParameter
 from climmob.models.repository import sql_execute
-from climmob.utility import get_question_by_field_name, QuestionAnonymity, QuestionType
+from climmob.utility import (
+    get_question_by_field_name,
+    QuestionAnonymity,
+    QuestionType,
+    add_noise_to_gps_coordinates,
+)
 
 log = logging.getLogger(__name__)
 
@@ -614,7 +619,9 @@ def anonymize_questions(request, form, form_id, project_id, schema):
     questions = get_sensitive_questions_anonymity_by_project_id(project_id, request)
 
     registry_id = (
-        form.get("grp_validation/clc_after", form["grp_1/QST162"]) if form_id == "-" else form["grp_1/QST163"]
+        form.get("grp_validation/clc_after", form["grp_1/QST162"])
+        if form_id == "-"
+        else form["grp_1/QST163"]
     )
 
     pattern = r"grp_\d+/(.+)"
@@ -666,7 +673,13 @@ def anonymize_questions(request, form, form_id, project_id, schema):
             dt = datetime.fromisoformat(field["value"])
             field["value"] = dt.strftime("%Y-%m")
         elif field["question"].question_anonymity == QuestionAnonymity.NOISE.value:
-            pass
+            geo_point = field["value"].split()
+            geo_point[0], geo_point[1] = add_noise_to_gps_coordinates(
+                float(geo_point[0]), float(geo_point[1]), 3000
+            )
+            if geo_point[0] == "Error" or geo_point[1] == "Error":
+                return False, "Could not anonymize GeoPoint"
+            field["value"] = " ".join(geo_point)
         value = (
             f"("
             f"'{form_id}', "

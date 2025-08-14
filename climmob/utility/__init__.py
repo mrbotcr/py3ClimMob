@@ -1,6 +1,7 @@
 from climmob.utility.helpers import *
 from climmob.utility.factory import *
 from climmob.utility.question import *
+from climmob.utility.anonymization import *
 
 
 def get_enum_as_dict(enum):
