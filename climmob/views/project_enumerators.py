@@ -17,10 +17,12 @@ import climmob.plugins as p
 
 from climmob.views.validators import TextField, IntegerField, BinaryField
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
+from climmob.views.validators.project import ProjectOpenValidator
 
 
 class ProjectEnumeratorsView(privateView):
-    validators = (ProjectExistsValidator,)
+    validators = (ProjectExistsValidator,
+                  ProjectOpenValidator,)
 
     def get(self):
 
@@ -157,7 +159,8 @@ class addProjectEnumerators_view(privateView):
 
 
 class removeProjectEnumerators_view(privateView):
-    validators = (ProjectExistsValidator,)
+    validators = (ProjectExistsValidator,
+                  ProjectOpenValidator,)
 
     def post(self):
         enumeratorid = self.request.matchdict["enumeratorid"]

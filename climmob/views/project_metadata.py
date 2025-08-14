@@ -21,9 +21,12 @@ from jinja2 import Environment, FileSystemLoader
 import json
 import os
 
+from climmob.views.validators.project import ProjectOpenValidator
+
 
 class ProjectMetadataFormView(privateView):
-    validators = (ProjectExistsValidator,)
+    validators = (ProjectExistsValidator,
+                  ProjectOpenValidator)
 
     def processView(self):
 

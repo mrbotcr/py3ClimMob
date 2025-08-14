@@ -56,6 +56,7 @@ from climmob.processes import (
 from climmob.views.classes import privateView
 from climmob.views.validators.ActionOnlyForProjectOwnerValidator import ActionOnlyForProjectOwnerValidator
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
+from climmob.views.validators.project import ProjectOpenValidator
 
 
 class GetTemplatesByTypeOfProjectView(privateView):
@@ -492,7 +493,8 @@ def function_create_clone(self, projectId, newProjectId, structureToBeCloned):
 
 
 class ModifyProjectView(privateView):
-    validators = (ProjectExistsValidator,)
+    validators = (ProjectExistsValidator,
+                  ProjectOpenValidator,)
 
     def processView(self):
 
@@ -770,7 +772,8 @@ class ModifyProjectView(privateView):
 
 
 class DeleteProjectView(privateView):
-    validators = (ProjectExistsValidator,)
+    validators = (ProjectExistsValidator,
+                  ProjectOpenValidator,)
 
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
@@ -946,7 +949,8 @@ class GetObjectivesByLocationAndUnitOfAnalysisView(privateView):
 
 class FinishProjectView(privateView):
     validators = (ProjectExistsValidator,
-                  ActionOnlyForProjectOwnerValidator)
+                  ActionOnlyForProjectOwnerValidator,
+                  ProjectOpenValidator, )
 
     def get(self):
         project_info= getActiveProject(self.user.login, self.request)

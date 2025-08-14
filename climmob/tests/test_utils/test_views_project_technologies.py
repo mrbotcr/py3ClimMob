@@ -306,7 +306,6 @@ class TestProjectTechnologiesView(ViewBaseTest):
 
     @patch("climmob.views.project_technologies.prjTechAliasAdd_view.processView")
     def test_project_technologies_view_post_btn_add_alias(self, mock_prj_tech_alias_add):
-        self.maxDiff = None
         self.mock_post_data.return_value.update({"btn_add_alias": True})
         mock_data = MagicMock(name="dataworking_mock")
         mock_prj_tech_alias_add.return_value = {

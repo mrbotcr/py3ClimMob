@@ -17,9 +17,11 @@ from climmob.processes import (
     getTheProjectIdForOwner,
 )
 from climmob.views.classes import privateView, publicView
+from climmob.views.validators.project.ProjectOpenValidator import ProjectOpenValidator
 
 
 class dashboard_view(privateView):
+    validators = (ProjectOpenValidator,)
     def processView(self):
 
         if "project" in self.request.params.keys():

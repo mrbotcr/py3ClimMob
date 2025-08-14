@@ -39,7 +39,7 @@
         border-right: 1px solid #1ab394;
     }
     </style>
-
+{% set onlySee = False %}
     {% if activeProject["access_type"] in [4] or activeProject["project_status"] == 3 %}
         {% set onlySee = True %}
     {% endif %}

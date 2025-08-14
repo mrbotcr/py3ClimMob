@@ -24,7 +24,12 @@
         <div class="alert alert-danger">{{ error }}</div>
     {% endif %}
 
-    {% if project_info["project_status"] != 3 %}
+    {% set can_edit = True %}
+    {% if activeProject.project_status == 3 %}
+        {% set can_edit = False %}
+    {% endif %}
+
+    {% if can_edit %}
         <div class="row">
             <div class="ibox">
                 <div class="ibox-title">
@@ -123,7 +128,7 @@
         </div>
     {% endif %}
 
-    {% if project_info["project_status"] == 3 %}
+    {% if not can_edit %}
         <div class="row">
             <div class="ibox">
                 <div class="ibox-title">

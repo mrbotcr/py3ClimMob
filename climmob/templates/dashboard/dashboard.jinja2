@@ -45,6 +45,11 @@
     {% include 'snippets/expired_session.jinja2' %}
 {% endif %}
 
+{% set can_edit = True %}
+{% if activeProject.project_status == 3 %}
+    {% set can_edit = False %}
+{% endif %}
+
 {% set withsidebar = [] %}
 
 <body class="{% block bodyclass %}{% endblock bodyclass %}" {% block bodyattributes %}{% endblock bodyattributes %}>
@@ -533,7 +538,7 @@
                                 </div>
 
                                 {% if activeProject["project_template"] != 1 %}
-                                    {% if activeProject.project_registration_and_analysis != 1 and activeProject.project_status != 3 %}
+                                    {% if activeProject.project_registration_and_analysis != 1 and can_edit %}
                                         <div class="ibox float-e-margins">
                                             <div class="ibox-title">
 
@@ -651,7 +656,7 @@
                                         <div class="ibox-content"
                                              {% if progress.regsubmissions == 2 %}style="display: none"{% endif %}>
 
-                                            {% if progress.regsubmissions == 0 and activeProject.project_status != 3 %}
+                                            {% if progress.regsubmissions == 0 and can_edit %}
                                                 <div class="row">
                                                     {% if progress.enumerators == true and progress.technology == true and progress.techalias == true and progress.registry == true %}
                                                         <div class="col-md-12">
@@ -715,10 +720,10 @@
                                                                            style="width: 100%; overflow: hidden;text-overflow: ellipsis;"
                                                                            href="{{ request.route_url('EditDataRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry') }}"><i
                                                                                 class="fa fa-table"></i>
-                                                                           {% if activeProject.project_status != 3 %}
+                                                                           {% if can_edit %}
                                                                                 {{ _("View and edit data") }}
                                                                            {% else %}
-                                                                                {{ _('view data') }}
+                                                                                {{ _('View data') }}
                                                                            {% endif %}</a>
 
                                                                         <a class="btn btn-success btn-rounded btn-block"
@@ -758,7 +763,7 @@
                                             {% endif %}
                                             {% if progress.regsubmissions == 1  or progress.regsubmissions == 2 %}
                                                 <div class="row">
-                                                    {% if progress.regsubmissions == 1 and activeProject.project_status != 3 %}
+                                                    {% if progress.regsubmissions == 1 and can_edit %}
                                                         {% if progress.regtotal > 0 %}
                                                             <div class="col-md-6">
                                                                 <button onclick="location.href ='{{ request.route_url('closeregistry',user=activeProject["owner"].user_name, project=activeProject.project_cod) }}'"
@@ -784,7 +789,7 @@
                                                             </div>
                                                         {% endif %}
                                                     {% endif %}
-                                                    {% if progress.regsubmissions == 2 and activeProject.project_status != 3 %}
+                                                    {% if progress.regsubmissions == 2 and can_edit %}
 
                                                         <div class="col-md-12">
                                                             {% if progress.assessments|length == 0 %}
@@ -901,9 +906,9 @@
                                                                                    style="width: 100%; overflow: hidden;text-overflow: ellipsis;"
                                                                                    href="{{ request.route_url('EditDataAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"
                                                                                    href="#"><i class="fa fa-table"></i>
-                                                                                    {% if activeProject.project_status != 3 %}
+                                                                                    {% if can_edit %}
                                                                                         {{ _("View and edit data") }} {% else %}
-                                                                                        {{ _('view data') }} {% endif %}
+                                                                                        {{ _('View data') }} {% endif %}
                                                                                 </a>
                                                                                 <a class="btn btn-success btn-rounded btn-block"
                                                                                    style="width: 100%; overflow: hidden;text-overflow: ellipsis;"
@@ -943,7 +948,7 @@
                                                             </table>
                                                         </div>
                                                     </div>
-                                                {% if activeProject.project_status != 3 %}
+                                                {% if can_edit %}
                                                     <div class="row">
                                                         {% if assessment.asstotal > 0 %}
                                                             <div class="col-md-6">
@@ -1012,7 +1017,7 @@
                                         {% endif %}
                                     {% endif %}
                                 {% endif %}
-                                {% if hasActiveProject and activeProject.project_status != 3 and activeProject["access_type"] in [1] %}
+                                {% if hasActiveProject and can_edit and activeProject["access_type"] in [1] %}
                                     <div class="ibox float-e-margins">
                                         <div class="ibox-title">
                                             <h5>{{ _("Finish the project") }}</h5>
