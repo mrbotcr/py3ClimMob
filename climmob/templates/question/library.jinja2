@@ -649,7 +649,12 @@
 
         function showDeleteQuestion() {
             var urlAction = '{{ request.application_url }}/question/'+$('#question_id').val()+'/delete'
-            showDelete(urlAction,'{{ _("Do you really want to remove this question ?") }}','{{ request.session.get_csrf_token() }}', {% if nextPage %}"{{ request.route_url("qlibrary", user_name=activeUser.login, _query={'next': nextPage} ) }}" {% else %} "{{ request.route_url("qlibrary", user_name=activeUser.login ) }}" {% endif %})
+            showDelete(
+                urlAction,
+                '{{ _("Do you really want to remove this question ?") }}',
+                '{{ request.session.get_csrf_token() }}',
+                "{% if nextPage %}{{ request.route_url("qlibrary", user_name=activeUser.login, _query={'next': nextPage} ) }}{% else %}{{ request.route_url("qlibrary", user_name=activeUser.login ) }}{% endif %}"
+            )
             $(this).parent().parent().remove();
         }
 
