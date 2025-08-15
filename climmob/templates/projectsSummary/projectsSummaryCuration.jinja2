@@ -79,7 +79,9 @@
 
 {% block pageheading %}
     {% set _title= _("Projects Curation Table") %}
-    {% include 'snippets/menuheadingprojects.jinja2' %}
+    {% set removeBasicBreadcrumb = True %}
+    {% set extra =[[_("Projects"), request.route_url('projectList')]] %}
+    {% include 'snippets/menuheading.jinja2' %}
 {% endblock pageheading %}
 
 {% block pagecontent %}
