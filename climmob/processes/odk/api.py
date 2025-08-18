@@ -390,15 +390,6 @@ def storeJSONInMySQL(
 ):
     schema = userOwner + "_" + projectCod
 
-    with open(JSONFile, "r", encoding="utf-8") as f:
-        data = json.load(f)
-        form_id = "-"
-        if type == "ASS":
-            form_id = assessmentid
-        success, msg = anonymize_questions(request, data, form_id, projectId, schema)
-        if not success:
-            return False, msg
-
     if type == "REG":
         manifestFile = os.path.join(
             request.registry.settings["user.repository"],
@@ -472,6 +463,15 @@ def storeJSONInMySQL(
                 logFile,
                 projectId,
             )
+
+    with open(JSONFile, "r", encoding="utf-8") as f:
+        data = json.load(f)
+        form_id = "-"
+        if type == "ASS":
+            form_id = assessmentid
+        success, msg = anonymize_questions(request, data, form_id, projectId, userOwner, projectCod)
+        if not success:
+            return False, msg
 
     return True, ""
 
