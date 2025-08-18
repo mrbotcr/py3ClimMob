@@ -615,14 +615,10 @@ def get_sensitive_questions_anonymity_by_project_id(project_id, request):
     return query.all()
 
 
-def anonymize_questions(request, form, form_id, project_id, schema):
+def anonymize_questions(request, form, form_id, project_id, user_owner, project_cod):
     questions = get_sensitive_questions_anonymity_by_project_id(project_id, request)
 
-    registry_id = (
-        form.get("grp_validation/clc_after", form["grp_1/QST162"])
-        if form_id == "-"
-        else form["grp_1/QST163"]
-    )
+    registry_id = None
 
     pattern = r"grp_\d+/(.+)"
     to_anonymize = []
@@ -631,10 +627,19 @@ def anonymize_questions(request, form, form_id, project_id, schema):
         match = re.fullmatch(pattern, key)
         if not match:
             continue
-        question = get_question_by_field_name(match.group(1), questions)
+        field_name = match.group(1)
+
+        if field_name == "QST162" or field_name == "QST163":
+            match = re.fullmatch(rf"({user_owner}-)?(\d+)(-{project_cod}~)?", form[key])
+            if not match:
+                return False, "Could not anonymize"
+            registry_id = match.group(2)
+            continue
+
+        question = get_question_by_field_name(field_name, questions)
         if question and question.question_anonymity != QuestionAnonymity.REMOVE.value:
             to_anonymize.append(
-                {"field_name": match.group(1), "value": form[key], "question": question}
+                {"field_name": field_name, "value": form[key], "question": question}
             )
 
     if not to_anonymize:
@@ -649,11 +654,11 @@ def anonymize_questions(request, form, form_id, project_id, schema):
         if field["question"].question_anonymity == QuestionAnonymity.PSEUDONYM.value:
             field["value"] = params["pseudonym"].replace("{}", registry_id)
         elif field["question"].question_anonymity == QuestionAnonymity.RANGE.value:
-            parser = (
-                int
-                if field["question"].question_dtype == QuestionType.INTEGER.value
-                else float
-            )
+            if field["question"].question_dtype == QuestionType.INTEGER.value:
+                parser = int
+            else:
+                parser = float
+
             field["value"] = parser(field["value"])
             params["lower_bound"] = parser(params["lower_bound"])
             params["upper_bound"] = parser(params["upper_bound"])
@@ -668,6 +673,7 @@ def anonymize_questions(request, form, form_id, project_id, schema):
                 while i < params["upper_bound"]:
                     if i <= field["value"] < (i + params["interval"]):
                         field["value"] = f'{i}-{i + params["interval"]}'
+                        break
                     i += params["interval"]
         elif field["question"].question_anonymity == QuestionAnonymity.MONTH_YEAR.value:
             dt = datetime.fromisoformat(field["value"])
@@ -690,6 +696,7 @@ def anonymize_questions(request, form, form_id, project_id, schema):
         )
         anonymized_values.append(value)
 
+    schema = user_owner + "_" + project_cod
     sql = f"INSERT INTO {schema}.anonymized VALUES {', '.join(anonymized_values)}"
     try:
         sql_execute(sql)
