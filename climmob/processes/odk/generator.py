@@ -71,19 +71,22 @@ def create_schema(schema, cnf_file):
         " DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci",
     ]
     error = execute_command(args, "Error creating schema")
-    if error:
-        return error
+    return error
 
+def create_anonymized_table(schema, cnf_file):
     args = [
         "mysql",
         f"--defaults-file={cnf_file}",
         f"--execute=CREATE TABLE IF NOT EXISTS {schema}.anonymized "
         "(`form_id` varchar(255) NOT NULL,"
-        "`reg_id` int NOT NULL,"
+        "`reg_id` varchar(255) NOT NULL,"
         "`col_name` varchar(255) NOT NULL,"
         "`value` varchar(255) DEFAULT NULL,"
-        "PRIMARY KEY (`form_id`,`reg_id`,`col_name`)"
-        ") ENGINE=InnoDB DEFAULT CHARSET=utf8;",
+        "PRIMARY KEY (`form_id`,`reg_id`,`col_name`), "
+        "CONSTRAINT fk_anonymized_reg_id_REG_geninfo FOREIGN KEY (reg_id) "
+        f"REFERENCES {schema}.REG_geninfo(qst162) "
+        "ON DELETE CASCADE ON UPDATE CASCADE"
+        ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
     ]
 
     error = execute_command(args, "Error creating anonymized table")
@@ -116,6 +119,11 @@ def buildDatabase(
             msg = msg + str(output) + "\n"
             log.error(msg)
             error = True
+    if error:
+        return error
+
+    if dropSchema:
+        error = create_anonymized_table(schema, cnfFile)
     if error:
         return error
 
