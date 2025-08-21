@@ -82,10 +82,7 @@ def create_anonymized_table(schema, cnf_file):
         "`reg_id` varchar(255) NOT NULL,"
         "`col_name` varchar(255) NOT NULL,"
         "`value` varchar(255) DEFAULT NULL,"
-        "PRIMARY KEY (`form_id`,`reg_id`,`col_name`), "
-        "CONSTRAINT fk_anonymized_reg_id_REG_geninfo FOREIGN KEY (reg_id) "
-        f"REFERENCES {schema}.REG_geninfo(qst162) "
-        "ON DELETE CASCADE ON UPDATE CASCADE"
+        "PRIMARY KEY (`form_id`,`reg_id`,`col_name`)"
         ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
     ]
 
