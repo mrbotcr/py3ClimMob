@@ -59,9 +59,6 @@
             fill: white;
         }
     </style>
-    {% for msg in request.session.pop_flash('success') %}
-        <div class="alert alert-success">{{ msg }}</div>
-    {% endfor %}
     <div id="wrapper">
         {% block mainavbar %}
             <nav class="navbar-default navbar-static-side" role="navigation" style="z-index: initial">
@@ -554,14 +551,6 @@
                                                 <div class="row">
 
                                                     {% if progress["enumerators"] and progress["technology"] and progress["techalias"] and progress["registry"] and progress["assessment"] and progress.regsubmissions == 2 %}
-                                                        {#                                                    <div class="text-left" style="padding: 15px;">#}
-                                                        {#                                                        <p>{{ _("Please check the following types of questions are in the started assessments or include them in the next assessments:") }}</p>#}
-                                                        {#                                                        <span style="font-size: 16px;font-weight: 600;" title="{{ _("You have included ")}}{{ progress.analysisControl.Characteristics }}{{ _(" Ranking of options") }}"><i  class="fa {% if progress.analysisControl.Characteristics > 0 %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.Characteristics > 0 %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Ranking of options") }}</span><br>#}
-                                                        {#                                                        <span style="font-size: 16px;font-weight: 600;" title="{{ _("You have included ")}}{{ progress.analysisControl.Performance }}{{ _(" Comparison with check") }}"><i  class="fa {% if progress.analysisControl.Performance > 0 %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.Performance > 0 %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Comparison with check") }}</span><br>#}
-                                                        {#                                                        <span style="font-size: 16px;font-weight: 600;" title="{{ _("You have included ")}}{{ progress.analysisControl.Explanatory }}{{ _(" Explanatory variables") }}"><i  class="fa {% if progress.analysisControl.Explanatory > 0 %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.Explanatory > 0 %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Explanatory variables") }}</span><br>#}
-                                                        {#                                                        <span style="font-size: 16px;font-weight: 600;" {% if progress.analysisControl.overralCharacteristic !="" %}title="{{ _("You have included this question in the assessment") }}: '{{ progress.analysisControl.overralCharacteristic }}'" {% endif %}><i  class="fa {% if progress.analysisControl.overralCharacteristic !="" %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.overralCharacteristic != "" %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Overall ranking of options") }}</span><br>#}
-                                                        {#                                                        <span style="font-size: 16px;font-weight: 600;" {% if progress.analysisControl.overralPerformance !="" %}title="{{ _("You have included this question in the assessment") }}: '{{ progress.analysisControl.overralPerformance }}'" {% endif %}><i  class="fa {% if progress.analysisControl.overralPerformance !="" %}fa-check{% else %}fa-times{% endif %}" style="font-size: 16px;font-weight: 600;color: {% if progress.analysisControl.overralPerformance != "" %}#1ab394{% else %}#ed5565{% endif %}" ></i> {{ _("Overall comparison with check") }}</span>#}
-                                                        {#                                                    </div>#}
                                                         <div class="col-md-12">
                                                             <br>
                                                             {% if progress.usableAssessments|length > 0 %}
@@ -742,7 +731,7 @@
                                                                         {% endblock dataprivacy_download_data_registry %}
 
                                                                     {% endif %}
-                                                                    {% if progress.regerrors > 0 and progress.regsubmissions == 1 %}
+                                                                    {% if progress.regerrors > 0 and progress.regsubmissions == 1 and can_edit %}
                                                                         <a class="btn btn-success btn-rounded btn-block"
                                                                            style="width: 100%; overflow: hidden;text-overflow: ellipsis;white-space: normal !important;word-wrap: break-word !important;"
                                                                            href="{{ request.route_url('CleanErrorLogs',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry') }}"><i
@@ -928,7 +917,7 @@
                                                                                 {% if assessment.ass_status == 1 %}
                                                                                 {% endif %}
                                                                             {% endif %}
-                                                                            {% if assessment.errors > 0 and assessment.ass_status == 1 %}
+                                                                            {% if assessment.errors > 0 and assessment.ass_status == 1 and can_edit %}
                                                                                 <a class="btn btn-success btn-rounded btn-block"
                                                                                    style="width: 100%; overflow: hidden;text-overflow: ellipsis;white-space: normal !important;word-wrap: break-word !important;"
                                                                                    href="{{ request.route_url('CleanErrorLogsAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"><i

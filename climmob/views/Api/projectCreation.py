@@ -1451,8 +1451,6 @@ class AddCollaboratorView(apiView):
             return response
 
 
-
-
 class DeleteCollaboratorView(apiView):
     validators = (ProjectExistsValidator,)
 
@@ -1496,10 +1494,7 @@ class DeleteCollaboratorView(apiView):
                     activeProjectId,
                     self.request,
                 ):
-                    if (
-                        dataworking["user_owner"]
-                        != dataworking["user_collaborator"]
-                    ):
+                    if dataworking["user_owner"] != dataworking["user_collaborator"]:
 
                         remove, message = remove_collaborator(
                             self.request,
@@ -1547,4 +1542,3 @@ class DeleteCollaboratorView(apiView):
         else:
             response = Response(status=401, body=self._("Error in the JSON."))
             return response
-

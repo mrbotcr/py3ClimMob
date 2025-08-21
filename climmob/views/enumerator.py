@@ -34,7 +34,6 @@ class GetEnumeratorDetailsView(privateView):
         return enumerator
 
 
-
 class enumerators_view(privateView):
     def processView(self):
         dataworking = {}

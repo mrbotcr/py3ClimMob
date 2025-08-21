@@ -22,6 +22,7 @@ from climmob.views.validators.project.ProjectOpenValidator import ProjectOpenVal
 
 class dashboard_view(privateView):
     validators = (ProjectOpenValidator,)
+
     def processView(self):
 
         if "project" in self.request.params.keys():

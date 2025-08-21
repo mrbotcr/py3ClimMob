@@ -12,7 +12,7 @@ from pyramid.httpexceptions import (
     HTTPFound,
     HTTPMethodNotAllowed,
     HTTPBadRequest,
-    HTTPClientError, HTTPForbidden,
+    HTTPClientError,
 )
 from pyramid.httpexceptions import HTTPNotFound
 from pyramid.response import Response
@@ -364,7 +364,7 @@ class privateView(BaseView):
             "showHelp": False,
             "showRememberAfterCreateProject": False,
             "surveyMustBeDisplayed": None,
-            "projectStatus": None,
+            "project_status": None,
         }
 
         self.viewResult = {}

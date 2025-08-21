@@ -1,6 +1,6 @@
 import time
 
-from pyramid.httpexceptions import HTTPNotFound, HTTPFound
+from pyramid.httpexceptions import HTTPNotFound, HTTPFound, HTTPForbidden
 
 import climmob.plugins as p
 from climmob.processes import (
@@ -32,11 +32,19 @@ from climmob.products.fieldagents.fieldagents import create_fieldagents_report
 from climmob.products.packages.packages import create_packages_excell
 from climmob.products.qrpackages.qrpackages import create_qr_packages
 from climmob.products.randomization.randomization import create_randomization
+from climmob.utility.project import ProjectStatus
 from climmob.views.classes import privateView
 from climmob.views.registry import getDataFormPreview, createDocumentForm
+from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
+from climmob.views.validators.project import ProjectOpenValidator
 
 
 class projectCombinations_view(privateView):
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
+
     def processView(self):
 
         activeProjectUser = self.request.matchdict["user"]
@@ -46,6 +54,13 @@ class projectCombinations_view(privateView):
             self.user.login, activeProjectUser, activeProjectCod, self.request
         ):
             raise HTTPNotFound()
+
+        if (
+            getActiveProject(self.user.login, self.request)["project_status"]
+            == ProjectStatus.FINALIZED.value
+        ):
+            raise HTTPForbidden()
+
         else:
 
             activeProjectId = getTheProjectIdForOwner(

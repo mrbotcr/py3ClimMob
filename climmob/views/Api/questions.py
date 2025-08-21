@@ -39,7 +39,6 @@ from climmob.views.validators.question.QuestionUpdateMinMaxValidator import (
 class CreateQuestionView(apiView):
     validators = (QuestionMinMaxValidator,)
 
-
     def post(self):
 
         possibles = [

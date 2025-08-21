@@ -21,8 +21,7 @@ from climmob.views.validators.project import ProjectOpenValidator
 
 
 class projectShare_view(privateView):
-    validators = (ProjectExistsValidator,
-                  ProjectOpenValidator)
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
 
     def processView(self):
 
@@ -232,8 +231,11 @@ class API_all_users_view(privateView):
 
 
 class removeprojectShare_view(privateView):
-    validators = (ProjectExistsValidator,
-                  ProjectOpenValidator,)
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
+
     def processView(self):
 
         collaborator = self.request.matchdict["collaborator"]

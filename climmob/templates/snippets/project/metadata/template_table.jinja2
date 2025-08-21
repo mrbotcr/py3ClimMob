@@ -1,3 +1,4 @@
+{% set onlySee = False %}
 {% if activeProject["access_type"] in [4] or activeProject.project_status == 3 %}
     {% set onlySee = True %}
 {% endif %}
@@ -63,7 +64,7 @@
                 </tr>
             </table>
 
-            {% if activeProject.project_status != 3 %}
+            {% if not onlySee %}
                 <button type="button" class="btn btn-primary duplicate-repeat"
                         onclick="duplicateRepeatBlock($(this),'{{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}')"
                         {% if onlySee or ("allow_more" in JsonInfo.keys() and JsonInfo["allow_more"] == "no") %}style="display: none" {% endif %}>

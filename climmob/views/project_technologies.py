@@ -29,8 +29,9 @@ from climmob.views.validators.project import ProjectOpenValidator
 
 
 class ProjectTechnologiesView(privateView):
-    validators = (ProjectExistsValidator,
-                  ProjectOpenValidator,
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
     )
 
     def get(self):
@@ -45,16 +46,20 @@ class ProjectTechnologiesView(privateView):
 
         if prjData["project_template"] == 1 or prjData["project_createpkgs"] == 2:
             self.returnRawViewResult = True
-            return HTTPFound(location=self.request.route_url(
-                "dashboard",
-                _query={"user": activeProjectUser, "project": activeProjectCod}
-            ))
+            return HTTPFound(
+                location=self.request.route_url(
+                    "dashboard",
+                    _query={"user": activeProjectUser, "project": activeProjectCod},
+                )
+            )
 
         listOfCombinations = []
         if prjData["project_regstatus"] > 0:
             listOfCombinations = getCombinationsData(activeProjectId, self.request)
 
-        technologiesInProject = searchTechnologiesInProject(activeProjectId, self.request)
+        technologiesInProject = searchTechnologiesInProject(
+            activeProjectId, self.request
+        )
 
         totalOfCombinations = 1
         for tech in technologiesInProject:
@@ -72,7 +77,9 @@ class ProjectTechnologiesView(privateView):
             "tech_id": "",
             "TechnologiesUser": searchTechnologies(activeProjectId, self.request),
             "TechnologiesInProject": technologiesInProject,
-            "project_numcom": numberOfCombinationsForTheProject(activeProjectId, self.request),
+            "project_numcom": numberOfCombinationsForTheProject(
+                activeProjectId, self.request
+            ),
             "alias": {},
             "dataworking": {"alias_name": ""},
             "error_summary": {},
@@ -126,11 +133,13 @@ class ProjectTechnologiesView(privateView):
 
         elif "btn_save_technologies_alias" in postdata:
             tech_id = postdata["tech_id"]
-            dataworking.update({
-                "project_id": activeProjectId,
-                "tech_id": tech_id,
-                "user_name": self.user.login,
-            })
+            dataworking.update(
+                {
+                    "project_id": activeProjectId,
+                    "tech_id": tech_id,
+                    "user_name": self.user.login,
+                }
+            )
             if not isTechnologyAssigned(dataworking, self.request):
                 addTechnologyProject(activeProjectId, tech_id, self.request)
 
@@ -140,11 +149,13 @@ class ProjectTechnologiesView(privateView):
 
         elif "btn_add_alias" in postdata:
             tech_id = postdata["tech_id"]
-            dataworking.update({
-                "project_id": activeProjectId,
-                "tech_id": tech_id,
-                "user_name": self.user.login,
-            })
+            dataworking.update(
+                {
+                    "project_id": activeProjectId,
+                    "tech_id": tech_id,
+                    "user_name": self.user.login,
+                }
+            )
             if not isTechnologyAssigned(dataworking, self.request):
                 addTechnologyProject(activeProjectId, tech_id, self.request)
 
@@ -157,15 +168,16 @@ class ProjectTechnologiesView(privateView):
             alias = prjTechAliases_view.processView(self)
             techSee = getTechnology(postdata, self.request)
 
-
         response_data = self.get()
-        response_data.update({
-            "tech_id": tech_id,
-            "alias": alias,
-            "dataworking": dataworking,
-            "error_summary": error_summary,
-            "techSee": techSee,
-        })
+        response_data.update(
+            {
+                "tech_id": tech_id,
+                "alias": alias,
+                "dataworking": dataworking,
+                "error_summary": error_summary,
+                "techSee": techSee,
+            }
+        )
         return response_data
 
 

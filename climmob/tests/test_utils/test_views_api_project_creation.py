@@ -2830,7 +2830,6 @@ class TestAddCollaboratorView(ViewBaseTest):
         self.assertIn("Error in the JSON.", response.body.decode())
 
 
-
 class TestDeleteCollaboratorView(ViewBaseTest):
     view_class = DeleteCollaboratorView
     request_method = "POST"
@@ -3035,7 +3034,6 @@ class TestDeleteCollaboratorView(ViewBaseTest):
         response = self.view.processView()
         self.assertEqual(response.status_code, 401)
         self.assertIn("Error in the JSON.", response.body.decode())
-
 
     @patch("climmob.views.Api.projectCreation.getTheProjectIdForOwner", return_value=1)
     @patch("climmob.views.Api.projectCreation.projectExists", return_value=True)

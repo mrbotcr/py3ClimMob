@@ -27,6 +27,11 @@
 
 {% block pagecontent %}
 
+    {% set can_edit = True %}
+    {% if activeProject["access_type"] in [4] or activeProject.project_status == 3 %}
+        {% set can_edit = False %}
+    {% endif %}
+
     <!--edit by column-->
     <div class="row animated fadeInRightBig">
 
@@ -34,7 +39,7 @@
         <div class="ibox float-e-margins">
 
             <div class="ibox-title">
-                        {% if activeProject.project_status != 3 %}
+                        {% if can_edit %}
                              <h5>{{ _("Edit registration survey data") }}</h5>
                             {% else %}
                              <h5>{{ _("Registration, survey data") }}</h5>
@@ -46,7 +51,7 @@
                 <!---->
                 {% if not dataworking.data %}
                     {% if newStructure|length!=0 %}
-                        {% if activeProject.project_status != 3 %}
+                        {% if can_edit %}
                             <small>{{ _("Available fields for edit") }}</small>
                             {% else %}
                             <small>{{ _("Fields for check") }}</small>
@@ -72,10 +77,8 @@
                                     {% endfor %}
                                 </ul>
                             </div>
-                        {% if  activeProject.project_status != 3 %}
-                            <button class="btn btn-primary" type="submit" style="float: top;" name='btn_EditData' id='btn_EditData'>{{ _('Edit') }}</button>
+                            <button class="btn btn-primary" type="submit" style="float: top;" name='btn_EditData' id='btn_EditData'>{% if can_edit %}{{ _('Edit') }}{% else %}{{ _("View") }}{% endif %}</button>
                             <button class="btn btn-default" type="submit" style="float: top;" name='btn_cancel' id='btn_cancel' onclick="{{ request.route_url('dashboard') }}">{{ _('Cancel') }}</button>
-                        {% endif %}
                         </form>
                     {% else %}
                         <small>{{ _("Error. No field available for editing.") }}</small>
@@ -85,25 +88,26 @@
                 {% else %}
                     <form id="jqEditTable" name="jqEditTable" role="form" method="post"
                           action="{{ request.path }}">
+                        {% if not can_edit %}<fieldset disabled>{% endif %}
                         <input type="hidden" name="csrf_token"
                                value="{{ request.session.get_csrf_token() }}">
-
-                        <div class="ibox-tools">
-                            <button class="btn btn-primary" type="submit" name="save_jq"
-                                    id="save_jq" disabled value="save"> {{ _("Save changes") }}
-                            </button>
-                            <button class="btn btn-white " type="submit" name="cancel_jq"
-                                    id="cancel_jq" value="cancel"> {{ _("Cancel editing") }}
-                            </button>
-                        </div>
-
+                        {% if can_edit %}
+                            <div class="ibox-tools">
+                                <button class="btn btn-primary" type="submit" name="save_jq"
+                                        id="save_jq" disabled value="save"> {{ _("Save changes") }}
+                                </button>
+                                <button class="btn btn-white " type="submit" name="cancel_jq"
+                                        id="cancel_jq" value="cancel"> {{ _("Cancel editing") }}
+                                </button>
+                            </div>
+                        {% endif %}
                         <div class="jqGrid_wrapper">
-                            <table id="jqGrid"></table>
+                            <table id="jqGrid" ></table>
                             <div id="pager_list_2"></div>
                         </div>
 
                         <input type="hidden" id="json_data" name="json_data" value="">
-
+                        {% if not can_edit %}</fieldset>{% endif %}
                     </form>
 
                 {% endif %}

@@ -84,7 +84,7 @@
                                                 {% endif %}
                                             </td>
                                             <td class="text-center" style="vertical-align: middle">
-                                                <button type="submit" class="btn btn-primary" onclick="openMetadataForm('{{ metadata.metadata_id }}')" style="margin-bottom: 0px"><i class="fa fa-eye"></i> {% if activeProject.project_status != 3 %} {{ _("View and edit") }} {% else %} {{ _('View') }} {% endif %}</button>
+                                                <button type="submit" class="btn btn-primary" onclick="openMetadataForm('{{ metadata.metadata_id }}')" style="margin-bottom: 0px"><i class="fa fa-eye"></i> {% if not onlySee %} {{ _("View and edit") }} {% else %} {{ _('View') }} {% endif %}</button>
                                             </td>
                                         </tr>
                                     {% endfor %}

@@ -654,7 +654,8 @@ class TestPrivateView(unittest.TestCase):
         }
 
         with patch("climmob.views.classes.counterChat", return_value=5), patch(
-            "climmob.views.classes.getActiveProject", return_value={"project_id": 1, "project_status": 1}
+            "climmob.views.classes.getActiveProject",
+            return_value={"project_id": 1, "project_status": 1},
         ), patch(
             "climmob.views.classes.getActiveForm",
             return_value=(True, {"form_name": "Survey"}),

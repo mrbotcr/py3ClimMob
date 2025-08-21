@@ -141,7 +141,7 @@ from climmob.views.Share.projectShare import (
 from climmob.views.Affiliation import SearchAffiliationView
 from climmob.views.assessment import (
     assessment_view,
-    deleteAssessmentSection_view,
+    DeleteAssessmentSectionView,
     getAssessmentDetails_view,
     assessmenthead_view,
     deleteassessmenthead_view,
@@ -172,7 +172,7 @@ from climmob.views.cleanErrorLogs import CleanErrorLogsView
 from climmob.views.cloneProjects.cloneProjects import CloneProjectsView
 from climmob.views.dashboard import dashboard_view, projectInformation_view
 from climmob.views.editData import (
-    editDataView,
+    EditDataView,
     downloadDataView,
     downloadErroLogDocument_view,
 )
@@ -213,7 +213,7 @@ from climmob.views.project import (
     CurationOfProjectsView,
     GetUnitOfAnalysisByLocationView,
     GetObjectivesByLocationAndUnitOfAnalysisView,
-    FinishProjectView
+    FinishProjectView,
 )
 from climmob.views.projectHelp.projectHelp import projectHelp_view
 from climmob.views.project_analysis import analysisDataView
@@ -1009,7 +1009,7 @@ def loadRoutes(config):
         addRoute(
             "deleteassessmentgroup",
             "/user/{user}/project/{project}/assessment/{assessmentid}/{groupid}/delete",
-            deleteAssessmentSection_view,
+            DeleteAssessmentSectionView,
             "json",
         )
     )
@@ -1133,7 +1133,7 @@ def loadRoutes(config):
         addRoute(
             "EditDataRegistry",
             "/user/{user}/project/{project}/form/{formid}/EditData",
-            editDataView,
+            EditDataView,
             "project/editData/editData.jinja2",
         )
     )
@@ -1141,7 +1141,7 @@ def loadRoutes(config):
         addRoute(
             "EditDataAssessment",
             "/user/{user}/project/{project}/form/{formid}/{codeid}/EditData",
-            editDataView,
+            EditDataView,
             "project/editData/editData.jinja2",
         )
     )

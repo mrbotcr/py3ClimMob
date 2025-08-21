@@ -25,8 +25,7 @@ from climmob.views.validators.project import ProjectOpenValidator
 
 
 class ProjectMetadataFormView(privateView):
-    validators = (ProjectExistsValidator,
-                  ProjectOpenValidator)
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
 
     def processView(self):
 

@@ -22,6 +22,7 @@ from climmob.views.editDataDB import (
     fillDataTable,
     update_edited_data,
 )
+from climmob.views.validators.project import ProjectOpenValidator
 
 
 class downloadDataView(privateView):
@@ -188,8 +189,9 @@ class downloadErroLogDocument_view(privateView):
         return HTTPFound(location=url)
 
 
-class editDataView(privateView):
-    validators = (ProjectExistsValidator,)
+class EditDataView(privateView):
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
+
     def processView(self):
 
         activeProjectUser = self.request.matchdict["user"]
@@ -197,7 +199,7 @@ class editDataView(privateView):
         formId = self.request.matchdict["formid"]
         code = ""
 
-        #todo refactor the function on get and post
+        # todo refactor the function on get and post
 
         activeProjectId = getTheProjectIdForOwner(
             activeProjectUser, activeProjectCod, self.request
@@ -229,9 +231,7 @@ class editDataView(privateView):
 
         if "btn_EditData" in self.request.POST:
             selected_contacts = self.request.POST.getall("q_reg")
-            if (
-                len(selected_contacts) == 0
-            ):  # if non selected columns in check options
+            if len(selected_contacts) == 0:  # if non selected columns in check options
 
                 dataworking["error"] = "byC"
                 dataworking["msg"] = True

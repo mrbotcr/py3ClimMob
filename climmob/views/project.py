@@ -51,10 +51,12 @@ from climmob.processes import (
     get_location_unit_of_analysis_objectives_by_combination,
     delete_all_project_location_unit_objective,
     get_all_affiliations,
-    update_project_status
+    update_project_status,
 )
 from climmob.views.classes import privateView
-from climmob.views.validators.ActionOnlyForProjectOwnerValidator import ActionOnlyForProjectOwnerValidator
+from climmob.views.validators.ActionOnlyForProjectOwnerValidator import (
+    ActionOnlyForProjectOwnerValidator,
+)
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 from climmob.views.validators.project import ProjectOpenValidator
 
@@ -493,8 +495,10 @@ def function_create_clone(self, projectId, newProjectId, structureToBeCloned):
 
 
 class ModifyProjectView(privateView):
-    validators = (ProjectExistsValidator,
-                  ProjectOpenValidator,)
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
 
     def processView(self):
 
@@ -772,8 +776,10 @@ class ModifyProjectView(privateView):
 
 
 class DeleteProjectView(privateView):
-    validators = (ProjectExistsValidator,
-                  ProjectOpenValidator,)
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
 
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
@@ -948,29 +954,33 @@ class GetObjectivesByLocationAndUnitOfAnalysisView(privateView):
 
 
 class FinishProjectView(privateView):
-    validators = (ProjectExistsValidator,
-                  ActionOnlyForProjectOwnerValidator,
-                  ProjectOpenValidator, )
+    validators = (
+        ProjectExistsValidator,
+        ActionOnlyForProjectOwnerValidator,
+        ProjectOpenValidator,
+    )
 
     def get(self):
-        project_info= getActiveProject(self.user.login, self.request)
+        project_info = getActiveProject(self.user.login, self.request)
 
         return {
-            'project_info': project_info,
+            "project_info": project_info,
         }
 
     def post(self):
 
-        success, error_update = update_project_status(self.context.active_project_id, 3, self.request)
+        success, error_update = update_project_status(
+            self.context.active_project_id, 3, self.request
+        )
         project_info = getActiveProject(self.user.login, self.request)
 
         if success:
-            #todo check the person to send the email
+            # todo check the person to send the email
             self.returnRawViewResult = True
-            self.request.session.flash(self._('The project was finished successfully.'))
-            return HTTPFound(location=self.request.route_url('dashboard'))
+            self.request.session.flash(self._("The project was finished successfully."))
+            return HTTPFound(location=self.request.route_url("dashboard"))
         else:
-            return{
-                'error': error_update,
-                'project_info': project_info,
+            return {
+                "error": error_update,
+                "project_info": project_info,
             }

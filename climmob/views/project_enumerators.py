@@ -21,8 +21,10 @@ from climmob.views.validators.project import ProjectOpenValidator
 
 
 class ProjectEnumeratorsView(privateView):
-    validators = (ProjectExistsValidator,
-                  ProjectOpenValidator,)
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
 
     def get(self):
 
@@ -56,6 +58,7 @@ class ProjectEnumeratorsView(privateView):
             "enumerators": getUsableEnumerators(activeProjectId, self.request),
             "error_summary": error_summary,
         }
+
     def post(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
@@ -159,8 +162,10 @@ class addProjectEnumerators_view(privateView):
 
 
 class removeProjectEnumerators_view(privateView):
-    validators = (ProjectExistsValidator,
-                  ProjectOpenValidator,)
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
 
     def post(self):
         enumeratorid = self.request.matchdict["enumeratorid"]
