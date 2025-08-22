@@ -4,6 +4,7 @@ import shutil
 from sqlalchemy import func
 
 from climmob.models import Regsection, Registry, Project, Question, userProject
+from climmob.models.repository import execute_two_sqls
 from climmob.models.schema import mapFromSchema, mapToSchema
 from climmob.processes import addRegistryQuestionsToProject
 from climmob.processes.db.anonymized import (
@@ -41,6 +42,7 @@ __all__ = [
     "getTheGroupOfThePackageCode",
     "registryHaveQuestionOfMultimediaType",
     "deleteRegistryByProjectId",
+    "delete_registry_data_by_qst162",
 ]
 
 
@@ -587,3 +589,13 @@ def registryHaveQuestionOfMultimediaType(request, projectId):
         return True
     else:
         return False
+
+
+def delete_registry_data_by_qst162(schema, qst162, odk_user):
+    query = "DELETE FROM " + schema + ".REG_geninfo WHERE qst162='" + qst162 + "'"
+    execute_two_sqls(
+        "SET @odktools_current_user = '" + odk_user + "'; ",
+        query,
+    )
+
+    delete_anonymized_values_by_form_id_and_reg_id(schema, "-", qst162)

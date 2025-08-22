@@ -21,8 +21,11 @@ from climmob.models import (
     I18nQstoption,
 )
 
-from climmob.models.repository import sql_fetch_one, sql_execute
+from climmob.models.repository import sql_fetch_one, sql_execute, execute_two_sqls
 from climmob.models.schema import mapFromSchema, mapToSchema
+from climmob.processes.db.anonymized import (
+    delete_anonymized_values_by_form_id_and_reg_id,
+)
 from climmob.processes.db.project import (
     addQuestionsToAssessment,
     numberOfCombinationsForTheProject,
@@ -82,6 +85,7 @@ __all__ = [
     "clone_assessment",
     "copy_assessment_questions",
     "copy_assessment_sections",
+    "delete_assessment_data_by_qst163",
 ]
 
 log = logging.getLogger(__name__)
@@ -1746,3 +1750,21 @@ def getFinalizedAssessments(request, userOwner, projectCod, projectId):
         )
 
     return result
+
+
+def delete_assessment_data_by_qst163(schema, ass_id, qst163, odk_user):
+    query = (
+        "DELETE FROM "
+        + schema
+        + ".ASS"
+        + ass_id
+        + "_geninfo WHERE qst163='"
+        + qst163
+        + "'"
+    )
+    execute_two_sqls(
+        "SET @odktools_current_user = '" + odk_user + "'; ",
+        query,
+    )
+
+    delete_anonymized_values_by_form_id_and_reg_id(schema, ass_id, qst163)
