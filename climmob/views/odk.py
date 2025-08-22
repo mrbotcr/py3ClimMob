@@ -1,5 +1,6 @@
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.response import Response
+from sqlalchemy import false
 
 from climmob.processes import (
     isEnumeratorActive,
@@ -42,7 +43,11 @@ class FormListByProjectView(odkView):
         userOwner = self.request.matchdict["user"]
         projectCod = self.request.matchdict["project"]
         userCollaborator = self.request.matchdict["collaborator"]
-        check_if_project_close_to_avoid_post(userOwner, projectCod, self.request)
+
+
+        if not check_if_project_close_to_avoid_continue(userOwner, projectCod, self.request):
+            return Response(status=403)
+
         if isEnumeratorActive(userCollaborator, self.user, self.request):
             if self.authorize(
                 getEnumeratorPassword(userCollaborator, self.user, self.request)
@@ -136,7 +141,10 @@ class SubmissionByProjectView(odkView):
         userOwner = self.request.matchdict["user"]
         projectCod = self.request.matchdict["project"]
         userCollaborator = self.request.matchdict["collaborator"]
-        check_if_project_close_to_avoid_post(userOwner, projectCod, self.request)
+
+        if not check_if_project_close_to_avoid_continue(userOwner, projectCod, self.request):
+            return Response(status=403)
+
         if self.request.method == "HEAD":
             if isEnumeratorActive(userCollaborator, self.user, self.request):
 
@@ -205,8 +213,9 @@ class XMLFormView(odkView):
         projectUserOwner = self.request.matchdict["userowner"]
         projectCod = self.request.matchdict["project"]
         projectId = getTheProjectIdForOwner(projectUserOwner, projectCod, self.request)
+        if not check_if_project_close_to_avoid_continue(projectUserOwner, projectCod, self.request, projectId ):
+            return Response(status=403)
 
-        check_if_project_close_to_avoid_post(projectUserOwner, projectCod, self.request)
         if isEnumeratorinProject(projectId, self.user, self.request):
             if self.authorize(getEnumeratorPassword(user, self.user, self.request)):
                 return getXMLForm(projectUserOwner, projectId, projectCod, self.request)
@@ -224,9 +233,8 @@ class AssessmentXMLFormView(odkView):
         projectId = getTheProjectIdForOwner(projectUserOwner, projectCod, self.request)
         assessmentid = self.request.matchdict["assessmentid"]
 
-        check_if_project_close_to_avoid_post(
-            projectUserOwner, projectCod, self.request, projectId
-        )
+        if not check_if_project_close_to_avoid_continue(projectUserOwner, projectCod, self.request, projectId ):
+            return Response(status=403)
         if isEnumeratorinProject(projectId, self.user, self.request):
             if self.authorize(getEnumeratorPassword(user, self.user, self.request)):
                 return getAssessmentXMLForm(
@@ -328,15 +336,12 @@ class AssessmentMediaFileView(odkView):
             return self.askForCredentials()
 
 
-def check_if_project_close_to_avoid_post(
+def check_if_project_close_to_avoid_continue(
     user_owner, project_cod, request, project_id=None
 ):
     if not project_id:
         project_id = getTheProjectIdForOwner(user_owner, project_cod, request)
     project_status = get_project_status(project_id, request)
     if project_status == ProjectStatus.FINALIZED.value:
-        request.method = "GET"
-        raise HTTPForbidden(
-            "Actual project was mark like finish, is not allow to edit it."
-        )
-    return
+        return False
+    return True
