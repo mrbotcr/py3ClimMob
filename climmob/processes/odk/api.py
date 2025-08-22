@@ -25,7 +25,7 @@ from climmob.processes import (
     getTheProjectIdForOwner,
 )
 from climmob.processes.db.json import addJsonLog
-from climmob.processes.db.question import anonymize_questions
+from climmob.processes.db.anonymized import anonymize_questions
 
 log = logging.getLogger(__name__)
 
@@ -469,7 +469,9 @@ def storeJSONInMySQL(
         form_id = "-"
         if type == "ASS":
             form_id = assessmentid
-        success, msg = anonymize_questions(request, data, form_id, projectId, userOwner, projectCod)
+        success, msg = anonymize_questions(
+            request, data, form_id, projectId, userOwner, projectCod
+        )
         if not success:
             return False, msg
 

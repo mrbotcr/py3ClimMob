@@ -34,7 +34,7 @@ from climmob.processes import (
     getPhraseTranslationInLanguage,
     update_project_status,
     clone_assessment,
-    remove_anonymized_values_by_form_id,
+    delete_anonymized_values_by_form_id,
 )
 from climmob.products.forms.form import create_document_form
 from climmob.views.classes import privateView
@@ -822,7 +822,7 @@ class CancelAssessmentView(privateView):
                     )
 
                 schema = activeProjectUser + "_" + activeProjectCod
-                remove_anonymized_values_by_form_id(schema, assessmentid)
+                delete_anonymized_values_by_form_id(schema, assessmentid)
 
                 self.returnRawViewResult = True
                 return HTTPFound(location=self.request.route_url("dashboard"))

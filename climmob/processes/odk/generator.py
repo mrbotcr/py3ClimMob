@@ -73,6 +73,7 @@ def create_schema(schema, cnf_file):
     error = execute_command(args, "Error creating schema")
     return error
 
+
 def create_anonymized_table(schema, cnf_file):
     args = [
         "mysql",
