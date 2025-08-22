@@ -690,7 +690,7 @@
                                                                 <td>{{ _("Last submission") }}</td>
                                                                 <td>{{ progress.lastreg }}</td>
                                                             </tr>
-                                                            {% if progress.regsubmissions == 1 %}
+                                                            {% if progress.regsubmissions == 1 and can_edit %}
 
                                                                 {% block upload_data_registry %}
 
@@ -874,7 +874,7 @@
                                                                     <td>{{ assessment.lastass }}</td>
                                                                 </tr>
 
-                                                                {% if assessment.ass_status == 1 %}
+                                                                {% if assessment.ass_status == 1 and can_edit %}
 
                                                                     {% block upload_data_assessment scoped %}
 

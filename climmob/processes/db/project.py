@@ -63,6 +63,7 @@ __all__ = [
     "getProjectsByUserThatRequireSetup",
     "update_project_status",
     "get_user_access_type_in_project",
+    "get_project_status",
 ]
 
 
