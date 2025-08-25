@@ -4,7 +4,7 @@ import shutil
 from sqlalchemy import func
 
 from climmob.models import Regsection, Registry, Project, Question, userProject
-from climmob.models.repository import execute_two_sqls
+from climmob.models.repository import execute_two_sqls, sql_execute
 from climmob.models.schema import mapFromSchema, mapToSchema
 from climmob.processes import addRegistryQuestionsToProject
 from climmob.processes.db.anonymized import (
@@ -43,6 +43,7 @@ __all__ = [
     "registryHaveQuestionOfMultimediaType",
     "deleteRegistryByProjectId",
     "delete_registry_data_by_qst162",
+    "get_registry_data_by_qst162",
 ]
 
 
@@ -76,7 +77,7 @@ def setRegistryStatus(userOwner, projectCod, projectId, status, request):
         try:
             path = os.path.join(
                 request.registry.settings["user.repository"],
-                *[userOwner, projectCod, "data", "reg"]
+                *[userOwner, projectCod, "data", "reg"],
             )
             shutil.rmtree(path)
         except:
@@ -589,6 +590,17 @@ def registryHaveQuestionOfMultimediaType(request, projectId):
         return True
     else:
         return False
+
+
+def get_registry_data_by_qst162(schema, qst162, columns):
+    query = (
+        f"SELECT {','.join(columns)} FROM "
+        + schema
+        + ".REG_geninfo WHERE qst162='"
+        + qst162
+        + "'"
+    )
+    return sql_execute(query).fetchone()
 
 
 def delete_registry_data_by_qst162(schema, qst162, odk_user):

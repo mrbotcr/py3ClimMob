@@ -86,6 +86,7 @@ __all__ = [
     "copy_assessment_questions",
     "copy_assessment_sections",
     "delete_assessment_data_by_qst163",
+    "get_assessment_data_by_qst163",
 ]
 
 log = logging.getLogger(__name__)
@@ -1750,6 +1751,19 @@ def getFinalizedAssessments(request, userOwner, projectCod, projectId):
         )
 
     return result
+
+
+def get_assessment_data_by_qst163(schema, ass_id, qst163, columns):
+    query = (
+        f"SELECT {','.join(columns)} FROM "
+        + schema
+        + ".ASS"
+        + ass_id
+        + "_geninfo WHERE qst163='"
+        + qst163
+        + "'"
+    )
+    return sql_execute(query).fetchone()
 
 
 def delete_assessment_data_by_qst163(schema, ass_id, qst163, odk_user):
