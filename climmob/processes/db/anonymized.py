@@ -1,5 +1,5 @@
 import re
-from datetime import datetime
+from datetime import datetime, date
 
 from climmob.models.repository import sql_execute
 from climmob.processes.db.anonymization_params import get_anonymization_params_as_dict
@@ -17,6 +17,7 @@ __all__ = [
     "anonymize_questions",
     "delete_anonymized_values_by_form_id",
     "delete_anonymized_values_by_form_id_and_reg_id",
+    "update_anonymized",
 ]
 
 
@@ -53,61 +54,65 @@ def anonymize_questions(request, form, form_id, project_id, user_owner, project_
         return True
 
     for field in to_anonymize:
-        params = get_anonymization_params_as_dict(
-            field["question"].question_id, request
-        )
-        if field["question"].question_anonymity == QuestionAnonymity.PSEUDONYM.value:
-            field["value"] = params["pseudonym"].replace("{}", registry_id)
-        elif field["question"].question_anonymity == QuestionAnonymity.RANGE.value:
-            if field["question"].question_dtype == QuestionType.INTEGER.value:
-                parser = int
-            else:
-                parser = float
-
-            field["value"] = parser(field["value"])
-            params["lower_bound"] = parser(params["lower_bound"])
-            params["upper_bound"] = parser(params["upper_bound"])
-            params["interval"] = parser(params["interval"])
-
-            if field["value"] < params["lower_bound"]:
-                field["value"] = f'<{params["lower_bound"]}'
-            elif field["value"] > params["upper_bound"]:
-                field["value"] = f'>{params["upper_bound"]}'
-            else:
-                i = params["lower_bound"]
-                while i < params["upper_bound"]:
-                    if i <= field["value"] < (i + params["interval"]):
-                        field["value"] = f'{i}-{i + params["interval"]}'
-                        break
-                    i += params["interval"]
-        elif field["question"].question_anonymity == QuestionAnonymity.MONTH_YEAR.value:
-            dt = datetime.fromisoformat(field["value"])
-            field["value"] = dt.strftime("%Y-%m")
-        elif field["question"].question_anonymity == QuestionAnonymity.NOISE.value:
-            geo_point = field["value"].split()
-            geo_point[0], geo_point[1] = add_noise_to_gps_coordinates(
-                float(geo_point[0]), float(geo_point[1]), 3000
-            )
-            if geo_point[0] == "Error" or geo_point[1] == "Error":
-                return False, "Could not anonymize GeoPoint"
-            field["value"] = " ".join(geo_point)
-        field["sql_insert_value"] = (
-            f"("
-            f"'{form_id}', "
-            f"'{registry_id}', "
-            f"'{field['field_name']}', "
-            f"'{field['value']}'"
-            f")"
-        )
-        success, msg = execute_anonymization(field, form_id, schema)
+        anonymize_field_value(field, registry_id, request)
+        success, msg = insert_anonymized_field(field, form_id, registry_id, schema)
         if not success:
             return False, msg
 
     return True, ""
 
 
-def execute_anonymization(field, form_id, schema):
-    sql = f"INSERT INTO {schema}.anonymized VALUES {field['sql_insert_value']}"
+def anonymize_field_value(field, registry_id, request):
+    params = get_anonymization_params_as_dict(field["question"].question_id, request)
+    if field["question"].question_anonymity == QuestionAnonymity.PSEUDONYM.value:
+        field["value"] = params["pseudonym"].replace("{}", registry_id)
+    elif field["question"].question_anonymity == QuestionAnonymity.RANGE.value:
+        if field["question"].question_dtype == QuestionType.INTEGER.value:
+            parser = int
+        else:
+            parser = float
+
+        field["value"] = parser(field["value"])
+        params["lower_bound"] = parser(params["lower_bound"])
+        params["upper_bound"] = parser(params["upper_bound"])
+        params["interval"] = parser(params["interval"])
+
+        if field["value"] < params["lower_bound"]:
+            field["value"] = f'<{params["lower_bound"]}'
+        elif field["value"] > params["upper_bound"]:
+            field["value"] = f'>{params["upper_bound"]}'
+        else:
+            i = params["lower_bound"]
+            while i < params["upper_bound"]:
+                if i <= field["value"] < (i + params["interval"]):
+                    field["value"] = f'{i}-{i + params["interval"]}'
+                    break
+                i += params["interval"]
+    elif field["question"].question_anonymity == QuestionAnonymity.MONTH_YEAR.value:
+        dt = datetime.fromisoformat(field["value"])
+        field["value"] = dt.strftime("%Y-%m")
+    elif field["question"].question_anonymity == QuestionAnonymity.NOISE.value:
+        geo_point = field["value"].split()
+        geo_point[0], geo_point[1] = add_noise_to_gps_coordinates(
+            float(geo_point[0]), float(geo_point[1]), 3000
+        )
+        if geo_point[0] == "Error" or geo_point[1] == "Error":
+            return False, "Could not anonymize GeoPoint"
+        field["value"] = " ".join(geo_point)
+
+    return True, ""
+
+
+def insert_anonymized_field(field, form_id, registry_id, schema):
+    sql_insert_value = (
+        f"("
+        f"'{form_id}', "
+        f"'{registry_id}', "
+        f"'{field['field_name']}', "
+        f"'{field['value']}'"
+        f")"
+    )
+    sql = f"INSERT INTO {schema}.anonymized VALUES {sql_insert_value}"
     try:
         sql_execute(sql)
         return True, ""
@@ -118,6 +123,39 @@ def execute_anonymization(field, form_id, schema):
             msg = f"Duplicate entry for package '{match.group(2)}' in {form_name}"
             return False, msg
         return False, ""
+
+
+def update_anonymized(to_anonymize, schema, form_id, registry_id, request, current):
+    for field in to_anonymize:
+        db_type = type(current[field["field_name"]])
+        if db_type == date:
+            new_value = date.fromisoformat(field["value"])
+        elif db_type == datetime:
+            new_value = datetime.fromisoformat(field["value"])
+        else:
+            new_value = db_type(field["value"])
+        if current[field["field_name"]] == new_value:
+            # Only changed values will be updated to avoid recalculating anonymizations
+            continue
+        anonymize_field_value(field, registry_id, request)
+        success, msg = update_anonymized_field(field, form_id, registry_id, schema)
+        if not success:
+            return False, msg
+    return True, ""
+
+
+def update_anonymized_field(field, form_id, registry_id, schema):
+    sql = (
+        f"UPDATE {schema}.anonymized SET value='{field['value']}' "
+        f"WHERE form_id='{form_id}' "
+        f"AND reg_id='{registry_id}' "
+        f"AND col_name='{field['field_name']}'"
+    )
+    try:
+        sql_execute(sql)
+        return True, ""
+    except Exception as e:
+        return False, str(e)
 
 
 def delete_anonymized_values_by_form_id(schema, form_id):

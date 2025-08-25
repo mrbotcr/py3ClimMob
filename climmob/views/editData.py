@@ -263,6 +263,8 @@ class editDataView(privateView):
                             path,
                             code,
                             self.user.login,
+                            activeProjectId,
+                            self.request,
                         )
 
             dataXML = getNamesEditByColums(path)
