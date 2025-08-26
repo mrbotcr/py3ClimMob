@@ -690,41 +690,42 @@ class ModifyProjectView(privateView):
                                         activeProjectId, self.request
                                     )
 
-                                if cdata["project_regstatus"] == 0:
-                                    if "usingTemplate" in data.keys():
-                                        if (
-                                            data["project_template_used"]
-                                            != cdata["project_template_used"]
-                                        ):
-                                            deleteRegistryByProjectId(
-                                                activeProjectId, self.request
-                                            )
-                                            deleteProjectAssessments(
-                                                activeProjectId, self.request
-                                            )
+                                if (
+                                    cdata["project_regstatus"] == 0
+                                    and "usingTemplate" in data.keys()
+                                    and (
+                                        data["project_template_used"]
+                                        != cdata["project_template_used"]
+                                    )
+                                ):
+                                    print("pasa")
+                                    deleteRegistryByProjectId(
+                                        activeProjectId, self.request
+                                    )
+                                    deleteProjectAssessments(
+                                        activeProjectId, self.request
+                                    )
 
-                                            listOfElementToInclude = ["registry"]
+                                    listOfElementToInclude = ["registry"]
 
-                                            assessments = getProjectAssessments(
-                                                data["usingTemplate"], self.request
-                                            )
-                                            for assess in assessments:
-                                                listOfElementToInclude.append(
-                                                    assess["ass_cod"]
-                                                )
+                                    assessments = getProjectAssessments(
+                                        data["usingTemplate"], self.request
+                                    )
+                                    for assess in assessments:
+                                        listOfElementToInclude.append(assess["ass_cod"])
 
-                                            newProjectId = getTheProjectIdForOwner(
-                                                self.user.login,
-                                                data["project_cod"],
-                                                self.request,
-                                            )
+                                    newProjectId = getTheProjectIdForOwner(
+                                        self.user.login,
+                                        data["project_cod"],
+                                        self.request,
+                                    )
 
-                                            function_create_clone(
-                                                self,
-                                                data["usingTemplate"],
-                                                newProjectId,
-                                                listOfElementToInclude,
-                                            )
+                                    function_create_clone(
+                                        self,
+                                        data["usingTemplate"],
+                                        newProjectId,
+                                        listOfElementToInclude,
+                                    )
 
                                 self.request.session.flash(
                                     self._("The project was modified successfully")
