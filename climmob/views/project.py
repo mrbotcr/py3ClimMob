@@ -698,7 +698,6 @@ class ModifyProjectView(privateView):
                                         != cdata["project_template_used"]
                                     )
                                 ):
-                                    print("pasa")
                                     deleteRegistryByProjectId(
                                         activeProjectId, self.request
                                     )
