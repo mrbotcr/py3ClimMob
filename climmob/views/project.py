@@ -606,6 +606,8 @@ class ModifyProjectView(privateView):
                                     data["project_template_used"] = data[
                                         "usingTemplate"
                                     ]
+                                else:
+                                    data["project_template_used"] = None
 
                             modified, message = modifyProject(
                                 activeProjectId, data, self.request
@@ -688,40 +690,41 @@ class ModifyProjectView(privateView):
                                         activeProjectId, self.request
                                     )
 
-                                if "usingTemplate" in data.keys():
-                                    if (
-                                        data["usingTemplate"]
-                                        != cdata["project_template_used"]
-                                    ):
-                                        deleteRegistryByProjectId(
-                                            activeProjectId, self.request
-                                        )
-                                        deleteProjectAssessments(
-                                            activeProjectId, self.request
-                                        )
-
-                                        listOfElementToInclude = ["registry"]
-
-                                        assessments = getProjectAssessments(
-                                            data["usingTemplate"], self.request
-                                        )
-                                        for assess in assessments:
-                                            listOfElementToInclude.append(
-                                                assess["ass_cod"]
+                                if cdata["project_regstatus"] == 0:
+                                    if "usingTemplate" in data.keys():
+                                        if (
+                                            data["project_template_used"]
+                                            != cdata["project_template_used"]
+                                        ):
+                                            deleteRegistryByProjectId(
+                                                activeProjectId, self.request
+                                            )
+                                            deleteProjectAssessments(
+                                                activeProjectId, self.request
                                             )
 
-                                        newProjectId = getTheProjectIdForOwner(
-                                            self.user.login,
-                                            data["project_cod"],
-                                            self.request,
-                                        )
+                                            listOfElementToInclude = ["registry"]
 
-                                        function_create_clone(
-                                            self,
-                                            data["usingTemplate"],
-                                            newProjectId,
-                                            listOfElementToInclude,
-                                        )
+                                            assessments = getProjectAssessments(
+                                                data["usingTemplate"], self.request
+                                            )
+                                            for assess in assessments:
+                                                listOfElementToInclude.append(
+                                                    assess["ass_cod"]
+                                                )
+
+                                            newProjectId = getTheProjectIdForOwner(
+                                                self.user.login,
+                                                data["project_cod"],
+                                                self.request,
+                                            )
+
+                                            function_create_clone(
+                                                self,
+                                                data["usingTemplate"],
+                                                newProjectId,
+                                                listOfElementToInclude,
+                                            )
 
                                 self.request.session.flash(
                                     self._("The project was modified successfully")
