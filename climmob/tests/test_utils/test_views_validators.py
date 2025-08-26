@@ -779,9 +779,9 @@ class TestActionOnlyForProjectOwnerValidator(unittest.TestCase):
         )
 
 
-class TestProjectOpenValidator(unittest.TestCase):
+class TestProjectOpenValidatorPrivateView(unittest.TestCase):
     def setUp(self):
-        self.view = MagicMock(spec=apiView)
+        self.view = MagicMock(spec=privateView)
         self.view.request = MagicMock()
         self.view.request.method = "POST"
         self.view.classResult = {"project_status": ProjectStatus.FINALIZED.value}
@@ -822,3 +822,55 @@ class TestProjectOpenValidator(unittest.TestCase):
         )
         self.validator.run()
         self.assertEqual(self.view.request.method, "POST")
+
+class TestProjectOpenValidatorAPIView(unittest.TestCase):
+    def setUp(self):
+        self.view = MagicMock(spec=apiView)
+        self.view.request = MagicMock()
+        self.view.request.method = "POST"
+        self.view.classResult = {"project_status": ProjectStatus.FINALIZED.value}
+        self.view.user = MagicMock()
+        self.view.user.login = "test_user"
+        self.fake_json = {"project_cod": "TST123", "user_owner": "test_user"}
+        self.fake_body = json.dumps(self.fake_json)
+        self.validator = ProjectOpenValidator(self.view)
+        self.validator._ = lambda x: x
+
+        self.project_id_owner_patcher = patch(
+            "climmob.views.validators.ProjectExistsValidator.py"
+        )
+        self.project_status_patcher = patch(
+            "climmob.views.validators.project.ProjectOpenValidator.get_project_status"
+        )
+        self.mock_get_project_id_for_owner = self.project_id_owner_patcher.start()
+        self.mock_project_status = self.project_status_patcher.start()
+
+        self.mock_get_project_id_for_owner.return_value = 1
+        self.mock_project_status.return_value = 3
+
+        self.addCleanup(self.project_id_owner_patcher.stop)
+        self.addCleanup(self.project_status_patcher.stop)
+
+    def tearDown(self):
+        if self.mock_get_project_id_for_owner.called:
+            self.mock_get_project_id_for_owner.assert_called_with(
+                self.view.user.login,
+                self.fake_body["project_cod"],
+                self.view.request,
+            )
+
+        if self.mock_project_status.called:
+            self.mock_project_status.assert_called_with(
+                self.view.user.login,
+                self.mock_get_project_id_for_owner.return_value,
+                self.view.request,
+            )
+    def test_is_project_close_invalid(self):
+        with self.assertRaises(HTTPForbidden) as cm:
+            self.validator.run()
+        self.assertEqual(
+            str(cm.exception),
+            "The project is closed. It is not allowed to make changes.",
+        )
+        self.assertEqual(self.view.request.method, "GET")
+

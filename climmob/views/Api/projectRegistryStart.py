@@ -36,6 +36,8 @@ from climmob.products.randomization.randomization import create_randomization
 from climmob.views.classes import apiView
 from climmob.views.project_combinations import createSettings
 from climmob.views.project_combinations import startTheRegistry
+from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
+from climmob.views.validators.project import ProjectOpenValidator
 
 
 class ReadProjectCombinationsView(apiView):
@@ -182,6 +184,8 @@ class ReadProjectCombinationsView(apiView):
 
 
 class SetUsableCombinationsView(apiView):
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
+
     def processView(self):
 
         if self.request.method == "POST":
@@ -471,6 +475,8 @@ class SetAvailabilityCombinationView(apiView):
 
 
 class CreatePackagesView(apiView):
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
+
     def processView(self):
         def myconverter(o):
             if isinstance(o, datetime.datetime):
@@ -642,6 +648,8 @@ class CreatePackagesView(apiView):
 
 
 class CreateProjectRegistryView(apiView):
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
+
     def processView(self):
 
         if self.request.method == "POST":
@@ -792,6 +800,8 @@ class CreateProjectRegistryView(apiView):
 
 
 class CancelRegistryApiView(apiView):
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
+
     def processView(self):
 
         if self.request.method == "POST":
@@ -881,6 +891,8 @@ class CancelRegistryApiView(apiView):
 
 
 class CloseRegistryApiView(apiView):
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
+
     def processView(self):
 
         if self.request.method == "POST":
@@ -1055,6 +1067,8 @@ class ReadRegistryStructureView(apiView):
 
 
 class PushJsonToRegistryView(apiView):
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
+
     def processView(self):
 
         if self.request.method == "POST":

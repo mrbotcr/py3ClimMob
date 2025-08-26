@@ -42,6 +42,7 @@ from climmob.processes import (
 from climmob.views.classes import apiView
 from climmob.views.project import function_create_clone
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
+from climmob.views.validators.project import ProjectOpenValidator
 
 
 class ReadListOfTemplatesView(apiView):
@@ -793,6 +794,11 @@ class ReadProjectsView(apiView):
 
 
 class UpdateProjectView(apiView):
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
+
     def processView(self):
 
         if self.request.method == "POST":
@@ -1267,6 +1273,11 @@ class UpdateProjectView(apiView):
 
 
 class DeleteProjectViewApi(apiView):
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
+
     def processView(self):
 
         if self.request.method == "POST":
@@ -1365,7 +1376,7 @@ class ReadCollaboratorsView(apiView):
 
 
 class AddCollaboratorView(apiView):
-    validators = (ProjectExistsValidator,)
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
 
     def post(self):
 
@@ -1452,7 +1463,7 @@ class AddCollaboratorView(apiView):
 
 
 class DeleteCollaboratorView(apiView):
-    validators = (ProjectExistsValidator,)
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
 
     def post(self):
         obligatory = ["project_cod", "user_owner", "user_collaborator"]
