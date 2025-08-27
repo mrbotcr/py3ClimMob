@@ -713,16 +713,10 @@ class ModifyProjectView(privateView):
                                     for assess in assessments:
                                         listOfElementToInclude.append(assess["ass_cod"])
 
-                                    newProjectId = getTheProjectIdForOwner(
-                                        self.user.login,
-                                        data["project_cod"],
-                                        self.request,
-                                    )
-
                                     function_create_clone(
                                         self,
                                         data["usingTemplate"],
-                                        newProjectId,
+                                        activeProjectId,
                                         listOfElementToInclude,
                                     )
 
