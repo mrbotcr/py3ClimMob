@@ -41,6 +41,8 @@
 
 {% include "snippets/maze_loader.jinja2" %}
 
+{% from 'snippets/dashboard/downloads.jinja2' import downloads with context %}
+
 {% if request.registry.settings.get('session.show_expired_modal', "false") == 'true' %}
     {% include 'snippets/expired_session.jinja2'  %}
 {% endif %}
@@ -565,10 +567,6 @@
                                                                     {% if progress.regtotal > 0 %}
                                                                         <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('EditDataRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry') }}"><i class="fa fa-table"></i> {{ _("View and edit data") }}</a>
 
-                                                                        <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry', formatid='csv') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data in .CSV format") }}</a>
-                                                                        <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry', formatid='csv', _query={"anonymize": True}) }}"><i class="fa fa-cloud-download"></i> {{ _("Download anonymized data in .CSV format") }}</a>
-                                                                        <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry', formatid='xlsx') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data in .XLSX format") }}</a>
-                                                                        <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry', formatid='xlsx', _query={"anonymize": True}) }}"><i class="fa fa-cloud-download"></i> {{ _("Download anonymized data in .XLSX format") }}</a>
 
                                                                         {% block dataprivacy_download_data_registry %}
 
@@ -583,6 +581,8 @@
                                                             </tr>
                                                             </tbody>
                                                         </table>
+
+                                                        {{ downloads("downloadDataRegistry", "registry") }}
                                                     </div>
                                                 </div>
                                             {% endif %}
@@ -704,10 +704,6 @@
 
                                                                                 {% if assessment.asstotal > 0 %}
                                                                                     <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('EditDataAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}" href="#"><i class="fa fa-table"></i> {{ _("View and edit data") }}</a>
-                                                                                    <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod, formatid='csv') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data in .CSV format") }}</a>
-                                                                                    <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod, formatid='csv', _query={"anonymize": True}) }}"><i class="fa fa-cloud-download"></i> {{ _("Download anonymized data in .CSV format") }}</a>
-                                                                                    <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod, formatid='xlsx') }}"><i class="fa fa-cloud-download"></i> {{ _("Download data in .XLSX format") }}</a>
-                                                                                    <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" href="{{ request.route_url('downloadDataAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod, formatid='xlsx', _query={"anonymize": True}) }}"><i class="fa fa-cloud-download"></i> {{ _("Download anonymized data in .XLSX format") }}</a>
 
                                                                                     {% block dataprivacy_download_data_assessment scoped%}
 
@@ -726,6 +722,7 @@
                                                                     </tr>
                                                                 </tbody>
                                                             </table>
+                                                            {{ downloads("downloadDataAssessment", "assessment", assessment.ass_cod) }}
                                                         </div>
                                                     </div>
                                                     <div class="row">
