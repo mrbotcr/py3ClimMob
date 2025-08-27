@@ -1,85 +1,116 @@
 {% macro downloads(route, form_type, ass_id='') %}
     <style>
-        #dashboard-downloads th,
-        #dashboard-downloads td {
+        .downloads-table th,
+        .downloads-table td {
             width: 33.33%;
             text-align: center;
-            vertical-align: middle;
+            vertical-align: middle !important;
+        }
+
+        .downloads-title {
+            display: flex;
+            gap: 0.5em;
+            padding: 0.5em 0;
+        }
+
+        .downloads-title i {
+            vertical-align: bottom;
+        }
+
+        .downloads-container .ibox-content {
+            display: none;
+            padding: 0 !important;
+            border: 0 !important;
+        }
+
+        .downloads-container {
+            border: 0 !important;
+            padding: 0 !important;
+            margin: 0;
         }
     </style>
 
-    <h3>{{ _("Downloads") }}</h3>
-    <table id="dashboard-downloads" class="table table-bordered">
-        <thead>
-        <tr>
-            <th>{{ _('File Type') }}</th>
-            <th>{{ _('Raw') }}</th>
-            <th>{{ _('Anonymized') }}</th>
-        </tr>
-        </thead>
+    <div class="ibox downloads-container">
+        <div class="downloads-title">
+            <h4>{{ _("Downloads") }}</h4>
+            <a class="collapse-link">
+                <i class="fa fa-chevron-down"></i>
+            </a>
+        </div>
+        <div class="ibox-content">
+            <table class="downloads-table table table-bordered">
+                <thead>
+                <tr>
+                    <th>{{ _('File Type') }}</th>
+                    <th>{{ _('Raw') }}</th>
+                    <th>{{ _('Anonymized') }}</th>
+                </tr>
+                </thead>
 
-        <tbody>
-        <tr>
-            <td>
-                CSV
-            </td>
-            <td>
-                <a class="btn btn-success btn-rounded btn-block"
-                   href="{{ request.route_url(
-                        route,
-                        user=activeProject["owner"].user_name,
-                        project=activeProject.project_cod,
-                        formid=form_type,
-                        formatid='csv',
-                        codeid=ass_id) }}">
-                    <i class="fa fa-download"></i>
-                </a>
-            </td>
-            <td>
-                <a class="btn btn-success btn-rounded btn-block"
-                   href="{{ request.route_url(
-                        route,
-                        user=activeProject["owner"].user_name,
-                        project=activeProject.project_cod,
-                        formid=form_type,
-                        formatid='csv',
-                        codeid=ass_id,
-                        _query={"anonymize": True}) }}">
-                    <i class="fa fa-download"></i>
-                </a>
-            </td>
-        </tr>
+                <tbody>
+                <tr>
+                    <td>
+                        CSV
+                    </td>
+                    <td>
+                        <a class="btn btn-success btn-rounded btn-block"
+                           href="{{ request.route_url(
+                                route,
+                                user=activeProject["owner"].user_name,
+                                project=activeProject.project_cod,
+                                formid=form_type,
+                                formatid='csv',
+                                codeid=ass_id) }}">
+                            <i class="fa fa-download"></i>
+                        </a>
+                    </td>
+                    <td>
+                        <a class="btn btn-success btn-rounded btn-block"
+                           href="{{ request.route_url(
+                                route,
+                                user=activeProject["owner"].user_name,
+                                project=activeProject.project_cod,
+                                formid=form_type,
+                                formatid='csv',
+                                codeid=ass_id,
+                                _query={"anonymize": True}) }}">
+                            <i class="fa fa-download"></i>
+                        </a>
+                    </td>
+                </tr>
 
-        <tr>
-            <td>
-                XLSX
-            </td>
-            <td>
-                <a class="btn btn-success btn-rounded btn-block"
-                   href="{{ request.route_url(
-                        route,
-                        user=activeProject["owner"].user_name,
-                        project=activeProject.project_cod,
-                        formid=form_type,
-                        codeid=ass_id,
-                        formatid='xlsx') }}">
-                    <i class="fa fa-download"></i>
-                </a>
-            </td>
-            <td>
-                <a class="btn btn-success btn-rounded btn-block"
-                   href="{{ request.route_url(
-                        route,
-                        user=activeProject["owner"].user_name,
-                        project=activeProject.project_cod,
-                        formid=form_type,
-                        codeid=ass_id,
-                        formatid='xlsx',
-                        _query={"anonymize": True}) }}">
-                    <i class="fa fa-download"></i>
-                </a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+                <tr>
+                    <td>
+                        XLSX
+                    </td>
+                    <td>
+                        <a class="btn btn-success btn-rounded btn-block"
+                           href="{{ request.route_url(
+                                route,
+                                user=activeProject["owner"].user_name,
+                                project=activeProject.project_cod,
+                                formid=form_type,
+                                codeid=ass_id,
+                                formatid='xlsx') }}">
+                            <i class="fa fa-download"></i>
+                        </a>
+                    </td>
+                    <td>
+                        <a class="btn btn-success btn-rounded btn-block"
+                           href="{{ request.route_url(
+                                route,
+                                user=activeProject["owner"].user_name,
+                                project=activeProject.project_cod,
+                                formid=form_type,
+                                codeid=ass_id,
+                                formatid='xlsx',
+                                _query={"anonymize": True}) }}">
+                            <i class="fa fa-download"></i>
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 {% endmacro %}
