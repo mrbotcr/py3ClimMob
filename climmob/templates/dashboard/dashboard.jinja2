@@ -1006,7 +1006,7 @@
                                         {% endif %}
                                     {% endif %}
                                 {% endif %}
-                                {% if hasActiveProject and can_edit and activeProject["access_type"] in [1] %}
+                                {% if hasActiveProject and can_edit and activeProject["access_type"] in [1] and activeUser.login == activeProject.owner.user_name %}
                                     <div class="ibox float-e-margins">
                                         <div class="ibox-title">
                                             <h5>{{ _("Finish the project") }}</h5>

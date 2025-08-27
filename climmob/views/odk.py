@@ -1,6 +1,4 @@
-from pyramid.httpexceptions import HTTPForbidden
 from pyramid.response import Response
-from sqlalchemy import false
 
 from climmob.processes import (
     isEnumeratorActive,

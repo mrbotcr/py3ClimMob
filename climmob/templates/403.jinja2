@@ -18,9 +18,9 @@
             <h3 class="font-bold">{{ _("Forbidden") }}</h3>
 
             <div class="error-desc">
-                {{ _("Sorry, but the acction is not allowed.") }}<br/>
-                {{ _('Actual project was mark like finished, is not allow to edit it.') }}
-                    {{ _("You can go back to main page") }}: <br/><a href="{{ request.route_url('dashboard') }}" class="btn btn-primary m-t">{{ _("Home") }}</a>
+                {{ _("We are sorry, but you do not have access to this page or resource.") }}<br/>
+                <p>{{ message }}</p>
+                {{ _("You can go back to main page") }}: <br/><a href="{{ request.route_url('dashboard') }}" class="btn btn-primary m-t">{{ _("Home") }}</a>
             </div>
         </div>
     </body>

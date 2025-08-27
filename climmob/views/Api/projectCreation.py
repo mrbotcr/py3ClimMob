@@ -1376,7 +1376,10 @@ class ReadCollaboratorsView(apiView):
 
 
 class AddCollaboratorView(apiView):
-    validators = (ProjectExistsValidator, ProjectOpenValidator)
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
 
     def post(self):
 

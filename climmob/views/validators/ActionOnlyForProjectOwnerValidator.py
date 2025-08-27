@@ -24,4 +24,6 @@ class ActionOnlyForProjectOwnerValidator(BaseValidator):
         )
 
         if not valid or access_type not in [ProjectAccessType.OWNER.value]:
-            raise HTTPForbidden("This action is forbidden")
+            raise HTTPForbidden(
+                "This action is forbidden, only the owner can do the action"
+            )

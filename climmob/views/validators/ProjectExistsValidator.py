@@ -1,7 +1,7 @@
 # TODO Move file to validators/project
 import json
 
-from pyramid.httpexceptions import HTTPNotFound, HTTPForbidden
+from pyramid.httpexceptions import HTTPNotFound, HTTPBadRequest
 
 from climmob.processes import projectExists
 from climmob.views.classes import privateView, apiView
@@ -22,10 +22,12 @@ class ProjectExistsValidator(BaseValidator):
             self.project_cod = self.view.request.project
 
         elif issubclass(self.view.__class__, apiView):
-            body = json.loads(self.view.body)
-            self.project_owner_username = body["user_owner"]
-            self.project_cod = body["project_cod"]
-
+            try:
+                body = json.loads(self.view.body)
+                self.project_owner_username = body["user_owner"]
+                self.project_cod = body["project_cod"]
+            except:
+                raise HTTPBadRequest(self._("Invalid JSON"))
         else:
             raise TypeError
 

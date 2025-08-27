@@ -59,7 +59,9 @@ class projectCombinations_view(privateView):
             getActiveProject(self.user.login, self.request)["project_status"]
             == ProjectStatus.FINALIZED.value
         ):
-            raise HTTPForbidden()
+            raise HTTPForbidden(
+                self._("The project is closed. It is not allowed to make changes.")
+            )
 
         else:
 
