@@ -12,11 +12,13 @@ from climmob.processes import (
 )
 from climmob.processes.db.question import (
     get_sensitive_questions_anonymity_by_project_id,
+    get_registry_key_question,
+    get_assessment_key_question,
 )
 
 __all__ = ["getJSONResult", "getCombinationsData"]
 
-from climmob.utility import get_question_by_field_name
+from climmob.utility import get_question_by_field_name, QuestionAnonymity
 
 
 def getMiltiSelectLookUpTable(XMLFile, multiSelectTable):
@@ -318,16 +320,9 @@ class QuestionSelectFieldBuilder:
 def getData(
     userOwner, project_id, projectCod, registry, assessments, request, anonymize=False
 ):
-    from climmob.utility import QuestionAnonymity
+    registryKey = get_registry_key_question(request).question_code
 
-    data = (
-        request.dbsession.query(Question).filter(Question.question_regkey == 1).first()
-    )
-    registryKey = data.question_code
-    data = (
-        request.dbsession.query(Question).filter(Question.question_asskey == 1).first()
-    )
-    assessmentKey = data.question_code
+    assessmentKey = get_assessment_key_question(request).question_code
 
     questions = get_sensitive_questions_anonymity_by_project_id(project_id, request)
 

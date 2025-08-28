@@ -43,6 +43,8 @@ __all__ = [
     "getQuestionOwner",
     "knowIfUserHasCreatedTranslations",
     "get_sensitive_questions_anonymity_by_project_id",
+    "get_registry_key_question",
+    "get_assessment_key_question",
 ]
 
 from climmob.models.climmobv4 import AnonymizationParameter
@@ -562,3 +564,15 @@ def get_sensitive_questions_anonymity_by_project_id(project_id, request):
         )
     )
     return query.all()
+
+
+def get_registry_key_question(request):
+    return (
+        request.dbsession.query(Question).filter(Question.question_regkey == 1).first()
+    )
+
+
+def get_assessment_key_question(request):
+    return (
+        request.dbsession.query(Question).filter(Question.question_asskey == 1).first()
+    )
