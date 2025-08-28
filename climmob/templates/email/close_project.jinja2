@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            padding: 20px;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            text-align: center;
+        !important;
+        }
+
+        .email-container {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            padding: 30px;
+            border-radius: 6px;
+            margin: 0 auto;
+            width: 600px;
+            display: inline-block;
+        !important;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+<div class="email-container">
+    {% block email_body %}
+        {% block email_hello %}
+            <p style="margin-bottom: 15px;"><strong>{{ _('Dear 1000FARMS Administrator') }},</strong></p>
+        {% endblock email_hello %}
+
+        {% block email_message %}
+            <p style="margin-bottom: 15px;">
+                {{ _('Please be advised that Project ') }}
+                <strong>{{ project_info["project_cod"] }}</strong> {{ _('was officially finalized today, ') }} {{ date }}.
+            </p>
+            <p style="margin-bottom: 15px;">
+                {{ _('All project-related tasks and activities have been blocked. From this point forward, all project-related tasks, data entries, and activities are permanently locked. Thank you for your support in bringing this project to successful completion.') }}
+            </p>
+            <p>{{ _('The project details are as follows::') }}</p>
+            <table width="100%" cellpadding="8" cellspacing="0" border="1"
+                   style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; color: #333;">
+                <thead>
+                <tr style="background-color: #1ab394; color: white; text-align: center;">
+                    <th>{{ _('Field Name') }}</th>
+                    <th>{{ _('Value') }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>{{ _('Project ID') }}</td>
+                    <td>{{ project_info["project_id"] }}</td>
+                </tr>
+                <tr>
+                    <td>{{ _('Project Name') }}</td>
+                    <td>{{ project_info["project_name"] }}</td>
+                </tr>
+                <tr>
+                    <td>{{ _('Project Code') }}</td>
+                    <td>{{ project_info["project_cod"] }}</td>
+                </tr>
+                <tr>
+                    <td>{{ _('Project Abstract') }}</td>
+                    <td>{{ project_info["project_abstract"] }}</td>
+                </tr>
+                <tr>
+                    <td>{{ _('Tags') }}</td>
+                    <td>{{ project_info["project_tags"] }}</td>
+                </tr>
+                <tr>
+                    <td>{{ _('Person in Charge') }}</td>
+                    <td>{{ project_info["project_pi"] }}</td>
+                </tr>
+                <tr>
+                    <td>{{ _('Email Person in Charge') }}</td>
+                    <td>{{ project_info["project_piemail"] }}</td>
+                </tr>
+                <tr>
+                    <td>{{ _('Owner of the project') }}</td>
+                    <td>{{ project_info["owner"]["user_name"] }}</td>
+                </tr>
+                <tr>
+                    <td>{{ _('Country') }}</td>
+                    <td>{{ project_info["project_cnty"] }}</td>
+                </tr>
+                <tr>
+                    <td>{{ _('Crop Name') }}</td>
+                    <td>{{ project_info["project_curated_cropname"] }}</td>
+                </tr>
+                <tr>
+                    <td>{{ _('Affiliation') }}</td>
+                    <td>{{ project_info["project_affiliation"] }}</td>
+                </tr>
+                <tr>
+                    <td>{{ _('Creation date') }}</td>
+                    <td>{{ project_info["project_creationdate"] }}</td>
+                </tr>
+                <tr>
+                    <td>{{ _('Project Status') }}</td>
+                    <td>
+                        {% if project_info["project_status"] == 0 %}
+                            {{ _("Undefined") }}
+                        {% elif project_info["project_status"] == 1 %}
+                            {{ _("Definition") }}
+                        {% elif project_info["project_status"] == 2 %}
+                            {{ _("In progress") }}
+                        {% elif project_info["project_status"] == 3 %}
+                            {{ _("Finalized") }}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>{{ _('Project Public') }}</td>
+                    <td>
+                        {% if project_info["project_public"] == 0 %}
+                            {{ _("No") }}
+                        {% elif project_info["project_public"] == 1 %}
+                            {{ _("Yes") }}
+                        {% endif %}
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <p style="margin-bottom: 15px;">{{ _('Thank you for your continued collaboration.') }}</p>
+        {% endblock email_message %}
+
+        {% block email_goodbye %}
+            <p style="margin-bottom: 0;">{{ _('Best regards,') }}<br>{{ _('The ClimMob team') }}</p>
+        {% endblock email_goodbye %}
+    {% endblock email_body %}
+</div>
+</body>
+</html>

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import datetime
+import logging
 
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 import climmob.plugins as p
@@ -52,6 +53,12 @@ from climmob.processes import (
     delete_all_project_location_unit_objective,
     get_all_affiliations,
     update_project_status,
+    getAllUserAdmin,
+)
+from climmob.utility.email import (
+    render_template,
+    build_email_message_multiple_recipients,
+    EmailSender,
 )
 from climmob.views.classes import privateView
 from climmob.views.validators.ActionOnlyForProjectOwnerValidator import (
@@ -59,6 +66,8 @@ from climmob.views.validators.ActionOnlyForProjectOwnerValidator import (
 )
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 from climmob.views.validators.project import ProjectOpenValidator
+
+log = logging.getLogger("climmob")
 
 
 class GetTemplatesByTypeOfProjectView(privateView):
@@ -962,7 +971,6 @@ class FinishProjectView(privateView):
 
     def get(self):
         project_info = getActiveProject(self.user.login, self.request)
-
         return {
             "project_info": project_info,
         }
@@ -975,12 +983,60 @@ class FinishProjectView(privateView):
         project_info = getActiveProject(self.user.login, self.request)
 
         if success:
-            # todo check the person to send the email
+            self.send_email_notification(project_info)
             self.returnRawViewResult = True
-            self.request.session.flash(self._("The project was finished successfully."))
+            self.request.session.flash(
+                self._("The project was finalized successfully.")
+            )
             return HTTPFound(location=self.request.route_url("dashboard"))
         else:
             return {
                 "error": error_update,
                 "project_info": project_info,
             }
+
+    def send_email_notification(self, project_info):
+        _ = self.request.translate
+        mail_from = self.request.registry.settings.get("email.from", None)
+        if mail_from is None:
+            log.error(
+                "ClimMob has no email settings in place. Email service is disabled."
+            )
+            return False
+
+        admin_users = getAllUserAdmin(self.request)
+        recipients = []
+        for admin_user in admin_users:
+            recipients.append((admin_user["user_fullname"], admin_user["user_email"]))
+        if not recipients:
+            log.warning("Email didn't send. No recipients found.")
+            return False
+
+        subject = (
+            "✅  Project " + str(project_info["project_cod"]) + " has been finalized"
+        )
+        try:
+            text = render_template(
+                "email/close_project.jinja2",
+                {"date": datetime.datetime.now(), "project_info": project_info, "_": _},
+            )
+        except Exception as e:
+            log.error(f"Error rendering email template: {e}")
+            return False
+
+        try:
+            msg = build_email_message_multiple_recipients(
+                text, subject, recipients, mail_from
+            )
+        except Exception as e:
+            log.error(f"Error building email message: {e}")
+            return False
+
+        try:
+            recipient_emails = [email for _, email in recipients]
+            email_sender = EmailSender(self.request.registry.settings)
+            email_sender.send_email(recipient_emails, msg)
+            return True
+        except Exception as e:
+            log.error(f"Error sending email: {e}")
+            return False

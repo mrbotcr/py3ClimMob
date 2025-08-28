@@ -60,7 +60,9 @@ class projectCombinations_view(privateView):
             == ProjectStatus.FINALIZED.value
         ):
             raise HTTPForbidden(
-                self._("The project is closed. It is not allowed to make changes.")
+                self._(
+                    "This project has been finalized and can no longer be modified. You do not have access to make changes."
+                )
             )
 
         else:

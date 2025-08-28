@@ -1,11 +1,11 @@
 {% extends 'dashboard/dashboard.jinja2' %}
 
 {% block title %}
-    <title>{{ _("ClimMob | Confirm the project as finished") }}</title>
+    <title>{{ _("ClimMob | Confirm Project Finalization") }}</title>
 {% endblock title %}
 
 {% block pageheading %}
-    {% set _title= _("Confirm the project as finished") %}
+    {% set _title= _("Confirm Project Finalization") %}
     {% set _linkWiki="https://climmob.net/blog/wiki/cancel-form/" %}
     {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
@@ -33,24 +33,26 @@
         <div class="row">
             <div class="ibox">
                 <div class="ibox-title">
-                    <h5> Confirm the finish of the project </h5> <span
+                    <h5> {{ _('Confirmation details') }} </h5> <span
                         class="label label-danger">{{ _('Warning') }}</span>
                 </div>
                 <div class="ibox-content">
                     <p>
-                        {{ _('The next button confirm the finish of the project, this going to block all the edits and delete over the project.') }}
+                        {{ _('By finalizing this project, you confirm that it has reached completion and is ready for inclusion in the 1000FARMS Data Warehouse. This action will:') }}
                     </p>
-                    <p>
-                        {{ _('Also this action help us to study your case and include it into ours informs.') }}
-                    </p>
-                    <p>
-                        {{ _('The summary of the project is the next:') }}
-                    </p>
+                    <ul>
+                        <li>
+                            <strong>{{ _('Permanently lock ') }}</strong> {{ _('all data entries, profile settings, and metadata (no further edits will be possible).') }}
+                        </li>
+                    </ul>
+                    <ul>
+                        <li>
+                            <strong>{{ _('Flag the project as finalized ') }}</strong> {{ _('so it can be included in aggregated reports and the 1000FARMS Data Warehouse.).') }}
+                        </li>
+                    </ul>
                     <table class="table table-bordered table-striped">
                         <thead>
                         <tr>
-                            <th>{{ _('Field Name') }}</th>
-                            <th>{{ _('Value') }}</th>
                             <th>{{ _('Field Name') }}</th>
                             <th>{{ _('Value') }}</th>
                         </tr>
@@ -59,50 +61,74 @@
                         <tr>
                             <td>{{ _('Project ID') }}</td>
                             <td>{{ project_info["project_id"] }}</td>
+                        </tr>
+                        <tr>
                             <td>{{ _('Project Name') }}</td>
                             <td>{{ project_info["project_name"] }}</td>
                         </tr>
                         <tr>
                             <td>{{ _('Project Code') }}</td>
                             <td>{{ project_info["project_cod"] }}</td>
+                        </tr>
+                        <tr>
                             <td>{{ _('Project Abstract') }}</td>
                             <td>{{ project_info["project_abstract"] }}</td>
                         </tr>
                         <tr>
                             <td>{{ _('Tags') }}</td>
                             <td>{{ project_info["project_tags"] }}</td>
+                        </tr>
+                        <tr>
                             <td>{{ _('Person in Charge') }}</td>
                             <td>{{ project_info["project_pi"] }}</td>
                         </tr>
                         <tr>
                             <td>{{ _('Email Person in Charge') }}</td>
                             <td>{{ project_info["project_piemail"] }}</td>
+                        </tr>
+                        <tr>
                             <td>{{ _('Owner of the project') }}</td>
                             <td>{{ project_info["owner"]["user_name"] }}</td>
                         </tr>
                         <tr>
                             <td>{{ _('Country') }}</td>
                             <td>{{ project_info["project_cnty"] }}</td>
+                        </tr>
+                        <tr>
                             <td>{{ _('Crop Name') }}</td>
                             <td>{{ project_info["project_curated_cropname"] }}</td>
                         </tr>
                         <tr>
                             <td>{{ _('Affiliation') }}</td>
                             <td>{{ project_info["project_affiliation"] }}</td>
+                        </tr>
+                        <tr>
                             <td>{{ _('Creation date') }}</td>
                             <td>{{ project_info["project_creationdate"] }}</td>
                         </tr>
                         <tr>
                             <td>{{ _('Project Status') }}</td>
-                            <td>{% if project_info["project_status"] == 0 %}
-                                {{ _("Undefined") }}{% elif project_info["project_status"] == 1 %}
-                                {{ _("Definition") }}{% elif project_info["project_status"] == 2 %}
-                                {{ _("In progress") }}{% elif project_info["project_status"] == 3 %}
-                                {{ _("Finalized") }}{% endif %}</td>
+                            <td>
+                                {% if project_info["project_status"] == 0 %}
+                                    {{ _("Undefined") }}
+                                {% elif project_info["project_status"] == 1 %}
+                                    {{ _("Definition") }}
+                                {% elif project_info["project_status"] == 2 %}
+                                    {{ _("In progress") }}
+                                {% elif project_info["project_status"] == 3 %}
+                                    {{ _("Finalized") }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
                             <td>{{ _('Project Public') }}</td>
-                            <td>{% if project_info["project_public"] == 0 %}
-                                {{ _("No") }}{% elif project_info["project_public"] == 1 %}
-                                {{ _("Yes") }}{% endif %}</td>
+                            <td>
+                                {% if project_info["project_public"] == 0 %}
+                                    {{ _("No") }}
+                                {% elif project_info["project_public"] == 1 %}
+                                    {{ _("Yes") }}
+                                {% endif %}
+                            </td>
                         </tr>
 
                         </tbody>
@@ -112,10 +138,10 @@
                         {{ _('If you are sure about it please, press the button.') }}
                     </p>
                     <a class="btn btn-danger btn-rounded btn-outline btn-block"
-                       onclick="swal({title: 'Are you sure you want to finish the project?',type: 'warning',showCancelButton: true, cancelButtonText: 'Cancel'
+                       onclick="swal({title: 'Are you sure you want to finalize the project?',type: 'warning',showCancelButton: true, cancelButtonText: 'Cancel'
                        }, function(isConfirm) {if (isConfirm) {document.getElementById('finishForm').submit();}});return false;">
-                    <i class="fa fa-handshake-o"></i>
-                    Confirm and finish the project
+                        <i class="fa fa-handshake-o"></i>
+                        {{ _('Confirm finalization of this project') }}
                     </a>
 
                     <form id="finishForm" method="POST" action="{{ request.url }}">

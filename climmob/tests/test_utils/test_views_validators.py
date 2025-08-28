@@ -806,7 +806,7 @@ class TestProjectOpenValidatorPrivateView(unittest.TestCase):
             self.validator.run()
         self.assertEqual(
             str(cm.exception),
-            "The project is closed. It is not allowed to make changes.",
+            "This project has been finalized and can no longer be modified. You do not have access to make changes.",
         )
         self.assertEqual(self.view.request.method, "GET")
 
@@ -883,7 +883,7 @@ class TestProjectOpenValidatorAPI(unittest.TestCase):
         with self.assertRaises(HTTPForbidden) as context:
             self.validator.run()
         self.assertEqual(
-            "The project is closed. It is not allowed to make changes.",
+            "This project has been finalized and can no longer be modified. You do not have access to make changes.",
             str(context.exception),
         )
 

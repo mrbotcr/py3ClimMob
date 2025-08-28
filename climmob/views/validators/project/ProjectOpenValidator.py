@@ -9,6 +9,7 @@ from climmob.views.validators.BaseValidator import BaseValidator
 
 """this validator needs check the project exist, use the ProjectExistValidator before it"""
 
+
 class ProjectOpenValidator(BaseValidator):
     def __init__(self, view):
         super().__init__(view)
@@ -30,7 +31,9 @@ class ProjectOpenValidator(BaseValidator):
                                 return
                 self.view.request.method = "GET"
                 raise HTTPForbidden(
-                    self._("The project is closed. It is not allowed to make changes.")
+                    self._(
+                        "This project has been finalized and can no longer be modified. You do not have access to make changes."
+                    )
                 )
         elif issubclass(self.view.__class__, apiView):
             if self.view.request.method in {"POST", "PUT", "DELETE"}:
@@ -42,7 +45,7 @@ class ProjectOpenValidator(BaseValidator):
                 if project_status == ProjectStatus.FINALIZED.value:
                     raise HTTPForbidden(
                         self._(
-                            "The project is closed. It is not allowed to make changes."
+                            "This project has been finalized and can no longer be modified. You do not have access to make changes."
                         )
                     )
 

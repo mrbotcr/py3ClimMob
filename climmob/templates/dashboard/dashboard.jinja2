@@ -1009,18 +1009,21 @@
                                 {% if hasActiveProject and can_edit and activeProject["access_type"] in [1] and activeUser.login == activeProject.owner.user_name %}
                                     <div class="ibox float-e-margins">
                                         <div class="ibox-title">
-                                            <h5>{{ _("Finish the project") }}</h5>
+                                            <h5>{{ _("Project finalization.") }}</h5>
+                                            <i class="fa fa-info-circle"
+                                               title="{{ _("A project is considered finalized once it has achieved its objectives, all planned phases have been completed, and no further data entries, profile updates, or metadata changes are expected. At this stage, the project becomes ready for inclusion in the 1000FARMS DataBase.") }}">
+                                            </i>
                                         </div>
                                         <div class="ibox-content">
                                             <p>
-                                                <strong>{{ _('If you are complete sure that you project is finish press the button.') }}</strong>
+                                                <strong>{{ _('If you are certain that your project is complete, press the button below to finalize it.') }}</strong>
                                             </p>
-                                            <p>{{ _('This action will be block all the functions to add or modify the project.') }}</p>
+                                            <p>{{ _('This action will permanently block any further modifications to the project’s data, profile, or metadata.') }}</p>
                                             <div>
 
                                                 <button onclick="location.href='{{ request.route_url('finishproject', user = activeProject.owner.user_name, project= activeProject.project_cod) }}'"
                                                         class="btn btn-danger btn-rounded btn-block">
-                                                    <i class="fa fa-arrow-circle-o-right"></i> {{ _('Go to mark the project as finish') }}
+                                                    <i class="fa fa-arrow-circle-o-right"></i> {{ _('Set as finalized') }}
                                                 </button>
                                             </div>
                                         </div>

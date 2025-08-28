@@ -44,7 +44,9 @@ class CleanErrorLogsView(privateView):
         # this stops also the get
         if proData["project_status"] == ProjectStatus.FINALIZED.value:
             raise HTTPForbidden(
-                self._("The project is closed. It is not allowed to make changes.")
+                self._(
+                    "This project has been finalized and can no longer be modified. You do not have access to make changes."
+                )
             )
         try:
             codeId = self.request.matchdict["codeid"]
