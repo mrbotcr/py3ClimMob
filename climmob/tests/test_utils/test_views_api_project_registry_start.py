@@ -3134,7 +3134,10 @@ class TestApiRegistrationPushProcess(unittest.TestCase):
         )
 
     @patch("climmob.views.Api.projectRegistryStart.open")
-    @patch("climmob.views.Api.projectRegistryStart.storeJSONInMySQL")
+    @patch(
+        "climmob.views.Api.projectRegistryStart.storeJSONInMySQL",
+        return_value=(True, ""),
+    )
     @patch("climmob.views.Api.projectRegistryStart.getProjectNumobs", return_value=10)
     @patch("uuid.uuid1", return_value="12345678")
     def test_api_registration_reads_log_error(
@@ -3195,7 +3198,10 @@ class TestApiRegistrationPushProcess(unittest.TestCase):
         mock_storeJSONInMySQL.assert_called()
 
     @patch("climmob.views.Api.projectRegistryStart.open")
-    @patch("climmob.views.Api.projectRegistryStart.storeJSONInMySQL")
+    @patch(
+        "climmob.views.Api.projectRegistryStart.storeJSONInMySQL",
+        return_value=(True, ""),
+    )
     @patch("climmob.views.Api.projectRegistryStart.getProjectNumobs", return_value=10)
     def test_api_registration_successful(
         self, mock_getProjectNumobs, mock_storeJSONInMySQL, mock_open

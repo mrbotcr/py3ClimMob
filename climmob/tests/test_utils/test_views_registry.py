@@ -275,6 +275,7 @@ class TestCancelRegistryView(unittest.TestCase):
         )
         mock_getActiveProject.assert_called_once_with("test_user", self.mock_request)
 
+    @patch("climmob.views.registry.delete_anonymized_values_by_form_id")
     @patch(
         "climmob.views.registry.getActiveProject",
         return_value={"project": "active_project"},
@@ -294,6 +295,7 @@ class TestCancelRegistryView(unittest.TestCase):
         mock_projectExists,
         mock_getTheProjectIdForOwner,
         mock_getActiveProject,
+        mock_delete_anonymized_values_by_form_id,
     ):
         self.mock_request.method = "POST"
         self.mock_request.params = {"cancelRegistry": "1"}

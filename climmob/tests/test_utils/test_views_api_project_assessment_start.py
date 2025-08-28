@@ -1516,7 +1516,10 @@ class TestApiAssessmentPushProcess(unittest.TestCase):
     @patch("climmob.views.Api.projectAssessmentStart.open")
     @patch("climmob.views.Api.projectAssessmentStart.uuid.uuid1")
     @patch("climmob.views.Api.projectAssessmentStart.os.path.join")
-    @patch("climmob.views.Api.projectAssessmentStart.storeJSONInMySQL")
+    @patch(
+        "climmob.views.Api.projectAssessmentStart.storeJSONInMySQL",
+        return_value=(True, ""),
+    )
     @patch(
         "climmob.views.Api.projectAssessmentStart.os.path.exists", return_value=False
     )
@@ -1579,7 +1582,10 @@ class TestApiAssessmentPushProcess(unittest.TestCase):
         "climmob.views.Api.projectAssessmentStart.os.path.join",
         side_effect=os.path.join,
     )
-    @patch("climmob.views.Api.projectAssessmentStart.storeJSONInMySQL")
+    @patch(
+        "climmob.views.Api.projectAssessmentStart.storeJSONInMySQL",
+        return_value=(True, ""),
+    )
     def test_api_registration_data_could_not_be_saved(
         self, mock_storeJSONInMySQL, mock_os_path_join, mock_uuid1, mock_open
     ):
