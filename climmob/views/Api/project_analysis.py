@@ -56,6 +56,7 @@ class ReadDataOfProjectViewApi(apiView):
                                 activeProjectId,
                                 dataworking["project_cod"],
                                 self.request,
+                                anonymize=True,
                             )
                         ),
                     )
