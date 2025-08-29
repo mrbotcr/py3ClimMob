@@ -18,7 +18,61 @@ __all__ = [
     "delete_anonymized_values_by_form_id",
     "delete_anonymized_values_by_form_id_and_reg_id",
     "update_anonymized",
+    "anonymize_project",
 ]
+
+
+def anonymize_project(user_owner, project_id, project_code, request):
+    from climmob.processes import getJSONResult
+
+    questions = get_sensitive_questions_anonymity_by_project_id(project_id, request)
+
+    project_collected_data = getJSONResult(
+        user_owner, project_id, project_code, request
+    )["data"]
+
+    schema = user_owner + "_" + project_code
+
+    pattern = r"(REG|(ASS(.+?)))_(.*)"
+    for entry in project_collected_data:
+        reg_id = entry["REG_qst162"]
+        to_anonymize = []
+        for key in entry.keys():
+            if entry[key] is None:
+                continue
+            match = re.match(pattern, key)
+            if match is None:
+                continue
+            question = get_question_by_field_name(match.group(4), questions)
+            if (
+                question
+                and question.question_anonymity != QuestionAnonymity.REMOVE.value
+            ):
+                if match.group(1) == "REG":
+                    form_id = "-"
+                else:
+                    form_id = match.group(3)
+                to_anonymize.append(
+                    {
+                        "field_name": match.group(4),
+                        "value": entry[key],
+                        "question": question,
+                        "form_id": form_id,
+                    }
+                )
+
+        for field in to_anonymize:
+            anonymize_field_value(field, reg_id, request)
+            success, msg = insert_anonymized_field(
+                field, field["form_id"], reg_id, schema
+            )
+            if not success:
+                if msg.startswith("Duplicate entry for package"):
+                    # To ignore entries that are already anonymized
+                    continue
+                return False, msg
+
+    return project_collected_data
 
 
 def anonymize_questions(request, form, form_id, project_id, user_owner, project_cod):
