@@ -15,8 +15,8 @@
     <style>
         th {
             text-align: left !important;
-            min-width: 180px;
-            max-width: 400px;
+            /*min-width: 180px;*/
+            max-width: 200px;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
@@ -24,7 +24,7 @@
 
         td {
             max-width: 400px;
-            min-width: 180px;
+            /*min-width: 180px;*/
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -60,6 +60,11 @@
             color: inherit;
         }
 
+        #curation-table tbody tr:hover {
+           background-color: #FAFAFA;
+           cursor: pointer;
+       }
+
     </style>
 
 {% endblock css %}
@@ -78,65 +83,14 @@
 {% endblock topScripts %}
 
 {% block pageheading %}
-    {% set _title= _("Projects Curation Table") %}
+    {% set _title= _("Admin projects curation") %}
     {% set removeBasicBreadcrumb = True %}
-    {% set extra =[[_("Projects"), request.route_url('projectList')]] %}
+    {% set extra =[[_("Projects"), ]] %}
     {% include 'snippets/menuheading.jinja2' %}
 {% endblock pageheading %}
 
 {% block pagecontent %}
-    {% if sectionActive == "projectsSummaryCuration" %}
-        {% if not lastReport or lastReport[0]["state"] =="Success" or lastReport[0]["state"] =="Fail." %}
-            <div class="row">
 
-                <div class="col-lg-12 ">
-                    <div class="ibox float-e-margins">
-                        <div class="ibox-title">
-                            <h5>{{ _("Table Update") }}</h5>
-                        </div>
-                        <div class="ibox-content">
-                            {% if lastReport and lastReport[0]["state"] =="Fail." %}
-                                <div class="alert alert-danger alert-dismissable">
-                                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×
-                                    </button>
-                                    {{ _("There was an error generating the report, try again.") }}
-                                </div>
-                            {% endif %}
-
-                            <form method="post" class="form-horizontal" action="{{ action }}">
-                                <p>{{ _("Last updated: {}.").format(lastReport[0].datetime_added) }}</p><br>
-                                <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
-                                <table>
-                                    <tr>
-                                        <td>
-                                            <button class="btn btn-outline btn-primary"
-                                                    name="btn_generate_report" type="submit"> {{ _(" Update now ") }}
-                                            </button> <i class="fa fa-info-circle"
-                                               title="{{ _(" Runs in the background and may take several minutes.") }}">
-                                            </i>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </form>
-                            {#                        </div>#}
-                            {% if lastReport and lastReport[0]["state"] =="Success" %}
-                                <table>
-                                    <tr>
-                                        <td>
-                                            <button class="btn btn-outline btn-primary" id="btn_download_report">
-                                                {{ _(" Download table ") }}
-                                            </button> <i class="fa fa-info-circle"
-                                               title="{{ _("Exports the table as a .xlsx file.") }}"> </i>
-                                        </td>
-                                    </tr>
-                                </table>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
-    {% endif %}
 
     {% if lastReport and lastReport[0]["state"] =="Pending..." %}
         <div class="row">
@@ -162,11 +116,7 @@
                     <div class="ibox ">
                         <div class="ibox-title">
                             <h5>{{ _("Projects Curation") }}</h5>
-                            <div class="ibox-tools">
-                                <a class="collapse-link">
-                                    <i class="fa fa-chevron-up"></i>
-                                </a>
-                            </div>
+                            <p>&nbsp;- {{ _("Last updated: {}.").format(lastReport[0].datetime_added) }}</p>
                         </div>
                         <div class="ibox-content">
                             <div style="overflow-x: auto;">
@@ -263,6 +213,47 @@
         {% endif %}
     {% endif %}
 
+    {% if sectionActive == "projectsSummaryCuration" %}
+
+        {% if lastReport[0]["state"] =="Success" or lastReport[0]["state"] =="Fail." %}
+            <div class="row">
+
+                <div class="col-lg-12 ">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>{{ _("Download table") }}</h5>
+                        </div>
+                        <div class="ibox-content">
+                            {% if lastReport[0]["state"] =="Fail." %}
+                                <div class="alert alert-danger alert-dismissable">
+                                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×
+                                    </button>
+                                    {{ _("There was an error generating the report, try again.") }}
+                                </div>
+                            {% endif %}
+
+                            {% if lastReport[0]["state"] =="Success" %}
+
+                                <p>{{ _("Last updated: {}.").format(lastReport[0].datetime_added) }}</p><br>
+
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <button class="btn btn-outline btn-primary" id="btn_download_report">
+                                                {{ _(" Download table ") }}
+                                            </button> <i class="fa fa-info-circle"
+                                               title="{{ _("Exports the table as a .xlsx file.") }}"> </i>
+                                        </td>
+                                    </tr>
+                                </table>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+
     <script>
 
         $(document).ready(function () {
@@ -293,8 +284,13 @@
                         deferRender: true,
                         columnControl: {
                             target: 0,
-                            content: [['searchList', 'searchDropdown']],
-
+                            content: [
+                                {
+                                    extend: 'dropdown',
+                                    icon: 'filter',
+                                    content: ['searchList']
+                                }
+                            ],
                         },
                         columnDefs: [
                             {target: -1, columnControl: []},

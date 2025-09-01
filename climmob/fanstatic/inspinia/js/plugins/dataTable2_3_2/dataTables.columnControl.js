@@ -137,7 +137,9 @@ var icons = {
     // tick
     tick: wrap('<path d="M20 6 9 17l-5-5"/>'),
     // x
-    x: wrap('<path d="M18 6 6 18"/><path d="m6 6 12 12"/>')
+    x: wrap('<path d="M18 6 6 18"/><path d="m6 6 12 12"/>'),
+    // filter
+    filter: wrap('<path d="M3 5h18"/><path d="M6 11h12"/><path d="M10 17h4"/>'),
 };
 
 /**

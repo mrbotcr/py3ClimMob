@@ -1,12 +1,13 @@
 {% extends 'dashboard/dashboard.jinja2' %}
 
 {% block title %}
-    <title>{{ _("ClimMob | Project list") }}</title>
+    <title>{{ _("ClimMob | All") }}</title>
 {% endblock title %}
 
 {% block css %}
 
     {% cssresource request,'coreresources','tour' %}
+    {% cssresource request,'coreresources','icheck' %}
     {% cssresource request,'coreresources','dataTables2_3_2' %}
     {% cssresource request,'coreresources','dataTables2_3_2_columnControl' %}
     {% cssresource request,'coreresources','dataTables2_3_2_buttons' %}
@@ -14,7 +15,7 @@
     <style>
         th {
             text-align: left !important;
-            min-width: 180px;
+
             max-width: 400px;
             overflow: hidden;
             white-space: nowrap;
@@ -23,7 +24,6 @@
 
         td {
             max-width: 400px;
-            min-width: 180px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -47,12 +47,18 @@
 
         }
 
+        #all-projects tbody tr:hover {
+           background-color: #FAFAFA;
+           cursor: pointer;
+       }
+
     </style>
 {% endblock css %}
 
 {% block topScripts %}
     {% jsresource request,'coreresources','toastr' %}
     {% jsresource request,'coreresources','tour' %}
+    {% jsresource request,'coreresources','icheck' %}
     {% jsresource request,'coreresources','datatable2_3_2js' %}
     {% jsresource request,'coreresources','datatable2_3_2js_columControl' %}
     {% jsresource request,'coreresources','datatable2_3_2js_buttons3_0_0' %}
@@ -61,7 +67,9 @@
 {% endblock topScripts %}
 
 {% block pageheading %}
-    {% set _title= _("Project list") %}
+    {% set _title= _("All") %}
+    {% set removeBasicBreadcrumb = True %}
+    {% set extra =[[_("Projects"), ]] %}
     {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
 
@@ -90,16 +98,16 @@
                     </div>
                     <div class="ibox-content">
                         {% if userProjects %}
-                            <div class="text-left">
-                                <p>{{ _("Click on the row of the table to change the project in the \"Project overview\" section") }}.  <a class="btn btn-success btn-rounded  btn-xs" style="color: white" onclick="showHelp()"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a></p>
-
-                                <br><br>
-                            </div>
+{#                            <div class="text-left">#}
+{#                                <p>{{ _("Click on the row of the table to change the project in the \"Project overview\" section") }}.  <a class="btn btn-success btn-rounded  btn-xs" style="color: white" onclick="showHelp()"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a></p>#}
+{##}
+{#                                <br><br>#}
+{#                            </div>#}
 
                             <table class="display nowrap table table-stripped display " data-filter=#filter id="all-projects">
                                 <thead>
                                     <tr>
-                                        <th>{{ _("Project overview") }}</th>
+                                        <th>{{ _("Project overview") }} <i class="fa fa-info-circle" title="{{ _("Click on the row of the table to change the project in the \"Project overview\" section") }}."> </i></th>
                                         <th>{{ _("User owner") }}</th>
                                         <th>{{ _("Project ID") }}</th>
                                         <th>{{ _("Name") }}</th>
@@ -118,10 +126,15 @@
                                 <tbody>
                                     {% for project in userProjects %}
                                         <tr onclick="window.location = '{{ request.route_url('dashboard', _query={'user':project["owner"].user_name, "project": project.project_cod}) }}';">
-                                            <td style="width: 165px">
-                                                {% if project.project_dashboard == 1%}
-                                                    <p class="label label-primary" style="width: 100%; display: block; word-wrap: break-word; white-space: normal; margin: 0px">{{ _("Active project in 'Project overview' section") }}</p>
-                                                {% endif %}
+                                            <td style="width: 165px" class="text-center">
+                                                <div class="i-checks" style="text-align: center" >
+                                                    <label>
+                                                        <input name="check_project" type="radio" {% if project.project_dashboard == 1%}checked{% endif %} urlRedirect="{{ request.route_url('dashboard', _query={'user':project["owner"].user_name, "project": project.project_cod}) }}"> <i></i>
+                                                    </label>
+                                                </div>
+{#                                                {% if project.project_dashboard == 1%}#}
+{#                                                    <i class="fa fa-dot-circle-o " style="font-size: 30px; color: #1ab394"></i>#}
+{#                                                {% endif %}#}
                                             </td>
                                             <td>
                                                 <p>{{ project.owner["user_name"] }}</p>
@@ -132,8 +145,8 @@
                                             <td >
                                                 <p>{{ project.project_name }}</p>
                                             </td>
-                                            <td  style="text-align: center">
-                                                <i class="fa fa-user-circle-o" style="font-size: 30px"></i><br>
+                                            <td>
+{#                                                <i class="fa fa-user-circle-o" style="font-size: 30px"></i><br>#}
                                                 <p>
                                                     {% if project.access_type== 1 %}
                                                         {{ _("Owner") }}
@@ -216,8 +229,20 @@
 
         $(document).ready(function (){
 
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+
+            $('.i-checks input[type="radio"]').on('ifChecked', function (event) {
+                const url = $(this).attr('urlRedirect');
+                if (url) {
+                    window.location.href = url;
+                }
+            });
+
             {% if userProjects %}
-                const hiddenIndexes = [];
+                const hiddenIndexes = [5,6,9];
 
                 const ToggleableColumns = [4,5,6,7,8,9];
 
@@ -228,7 +253,13 @@
                     deferRender: true,
                     columnControl: {
                         target: 0,
-                        content: [['searchList', 'searchDropdown']],
+                        content: [
+                            {
+                                extend: 'dropdown',
+                                icon: 'filter',
+                                content: ['searchList']
+                            }
+                        ],
                     },
                     columnDefs: [
                         {

@@ -1,7 +1,7 @@
 {% extends 'dashboard/dashboard.jinja2' %}
 
 {% block title %}
-    <title>{{ _("Project setup") }}</title>
+    <title>{{ _("User projects curation") }}</title>
 {% endblock title %}
 
 {% block css %}
@@ -24,7 +24,9 @@
 {% endblock topScripts %}
 
 {% block pageheading %}
-    {% set _title= _("Project setup") %}
+    {% set _title= _("User projects curation") %}
+    {% set removeBasicBreadcrumb = True %}
+    {% set extra =[[_("Projects"), ]] %}
     {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
 
