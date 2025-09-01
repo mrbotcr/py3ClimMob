@@ -360,30 +360,31 @@
             </tr>
         {% endif %}
 
-        {% if changes["projectDataCollectedXLSX-anonymized"] %}
-            <tr>
-                <td>{{ _("Information collected in all the project in .XLSX format (anonymized)") }}</td>
-                <td></td>
-                <td></td>
-                <td class="text-center">
-                    <a href="{{ request.route_url('generateProduct', productid="dataxlsx-anonymized", user=activeProject["owner"].user_name,project=activeProject.project_cod, processname="create_data-anonymized_xlsx_Report_") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
-                </td>
-                <td></td>
-            </tr>
-        {% endif %}
+        {% if project_has_anonymized %}
+            {% if changes["projectDataCollectedXLSX-anonymized"] %}
+                <tr>
+                    <td>{{ _("Information collected in all the project in .XLSX format (anonymized)") }}</td>
+                    <td></td>
+                    <td></td>
+                    <td class="text-center">
+                        <a href="{{ request.route_url('generateProduct', productid="dataxlsx-anonymized", user=activeProject["owner"].user_name,project=activeProject.project_cod, processname="create_data-anonymized_xlsx_Report_") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
+                    </td>
+                    <td></td>
+                </tr>
+            {% endif %}
 
-        {% if changes["projectDataCollectedCSV-anonymized"] %}
-            <tr>
-                <td>{{ _("Information collected in all the project in .CSV format (anonymized)") }}</td>
-                <td></td>
-                <td></td>
-                <td class="text-center">
-                    <a href="{{ request.route_url('generateProduct', productid="datacsv-anonymized", user=activeProject["owner"].user_name,project=activeProject.project_cod, processname="create_data-anonymized_Report_") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
-                </td>
-                <td></td>
-            </tr>
+            {% if changes["projectDataCollectedCSV-anonymized"] %}
+                <tr>
+                    <td>{{ _("Information collected in all the project in .CSV format (anonymized)") }}</td>
+                    <td></td>
+                    <td></td>
+                    <td class="text-center">
+                        <a href="{{ request.route_url('generateProduct', productid="datacsv-anonymized", user=activeProject["owner"].user_name,project=activeProject.project_cod, processname="create_data-anonymized_Report_") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
+                    </td>
+                    <td></td>
+                </tr>
+            {% endif %}
         {% endif %}
-
         {% if changes.projectSummary %}
             <tr>
                 <td>{{ _("Project summary") }}</td>

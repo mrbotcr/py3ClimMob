@@ -19,6 +19,7 @@ __all__ = [
     "delete_anonymized_values_by_form_id_and_reg_id",
     "update_anonymized",
     "anonymize_project",
+    "does_project_has_anonymized_values",
 ]
 
 
@@ -224,3 +225,9 @@ def delete_anonymized_values_by_form_id_and_reg_id(schema, form_id, reg_id):
         f"AND reg_id='{reg_id}'"
     )
     sql_execute(query)
+
+
+def does_project_has_anonymized_values(schema):
+    query = f"SELECT COUNT(*) as count FROM {schema}.anonymized"
+    result = sql_execute(query).first()
+    return result["count"] > 0
