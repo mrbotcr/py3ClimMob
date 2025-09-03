@@ -43,7 +43,9 @@
                 <tr>
                     <th>{{ _('File Type') }}</th>
                     <th>{{ _('Raw') }}</th>
-                    <th>{{ _('Anonymized') }}</th>
+                    {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
+                        <th>{{ _('Anonymized') }}</th>
+                    {% endif %}
                 </tr>
                 </thead>
 
@@ -64,9 +66,14 @@
                             <i class="fa fa-download"></i>
                         </a>
                     </td>
-                    <td>
-                        <a class="btn btn-success btn-rounded btn-block"
-                           href="{{ request.route_url(
+                    {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
+                        <td>
+                            <a class="btn btn-success btn-rounded btn-block"
+                                    {% if not project_has_anonymized %}
+                               title="{{ _("Project is not anonymized") }}"
+                               disabled
+                                    {% endif %}
+                               href="{{ request.route_url(
                                 route,
                                 user=activeProject["owner"].user_name,
                                 project=activeProject.project_cod,
@@ -74,9 +81,10 @@
                                 formatid='csv',
                                 codeid=ass_id,
                                 _query={"anonymize": True}) }}">
-                            <i class="fa fa-download"></i>
-                        </a>
-                    </td>
+                                <i class="fa fa-download"></i>
+                            </a>
+                        </td>
+                    {% endif %}
                 </tr>
 
                 <tr>
@@ -95,9 +103,14 @@
                             <i class="fa fa-download"></i>
                         </a>
                     </td>
-                    <td>
-                        <a class="btn btn-success btn-rounded btn-block"
-                           href="{{ request.route_url(
+                    {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
+                        <td>
+                            <a class="btn btn-success btn-rounded btn-block"
+                                    {% if not project_has_anonymized %}
+                               title="{{ _("Project is not anonymized") }}"
+                               disabled
+                                    {% endif %}
+                               href="{{ request.route_url(
                                 route,
                                 user=activeProject["owner"].user_name,
                                 project=activeProject.project_cod,
@@ -105,9 +118,10 @@
                                 codeid=ass_id,
                                 formatid='xlsx',
                                 _query={"anonymize": True}) }}">
-                            <i class="fa fa-download"></i>
-                        </a>
-                    </td>
+                                <i class="fa fa-download"></i>
+                            </a>
+                        </td>
+                    {% endif %}
                 </tr>
                 </tbody>
             </table>

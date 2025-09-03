@@ -95,10 +95,13 @@ class productsView(climmobPrivateView):
 
             for product in products:
 
-                if (
-                    product["product_id"]
-                    in ["datacsv-anonymized", "dataxlsx-anonymized"]
-                    and not project_has_anonymized_values
+                if product["product_id"] in [
+                    "datacsv-anonymized",
+                    "dataxlsx-anonymized",
+                ] and (
+                    not project_has_anonymized_values
+                    or self.request.registry.settings.get("module.dataprivacy", "false")
+                    == "false"
                 ):
                     continue
 
