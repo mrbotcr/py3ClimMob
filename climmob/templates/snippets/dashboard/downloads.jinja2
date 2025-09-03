@@ -69,7 +69,7 @@
                     {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
                         <td>
                             <a class="btn btn-success btn-rounded btn-block"
-                                    {% if not project_has_anonymized %}
+                                    {% if not project_is_anonymized %}
                                title="{{ _("Project is not anonymized") }}"
                                disabled
                                     {% endif %}
@@ -106,7 +106,7 @@
                     {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
                         <td>
                             <a class="btn btn-success btn-rounded btn-block"
-                                    {% if not project_has_anonymized %}
+                                    {% if not project_is_anonymized %}
                                title="{{ _("Project is not anonymized") }}"
                                disabled
                                     {% endif %}

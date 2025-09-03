@@ -15,7 +15,7 @@ from climmob.processes import (
     AssessmentsInformation,
     seeProgress,
     getTheProjectIdForOwner,
-    does_project_has_anonymized_values,
+    is_project_anonymized,
 )
 from climmob.views.classes import privateView, publicView
 
@@ -48,9 +48,7 @@ class dashboard_view(privateView):
                     + activeProjectData["project_cod"]
                 )
 
-                project_has_anonymized_values = does_project_has_anonymized_values(
-                    schema
-                )
+                project_is_anonymized = is_project_anonymized(schema)
 
                 session = self.request.session
                 session["activeProject"] = activeProjectId
@@ -110,7 +108,7 @@ class dashboard_view(privateView):
                         activeProjectCod,
                         self.request,
                     ),
-                    "project_has_anonymized": project_has_anonymized_values,
+                    "project_is_anonymized": project_is_anonymized,
                 }
                 for plugin in p.PluginImplementations(p.IDashBoard):
                     context = plugin.before_returning_dashboard_context(
@@ -124,7 +122,7 @@ class dashboard_view(privateView):
                 activeProjectData["user_name"] + "_" + activeProjectData["project_cod"]
             )
 
-            project_has_anonymized_values = does_project_has_anonymized_values(schema)
+            project_is_anonymized = is_project_anonymized(schema)
 
             if activeProjectData:
                 self.returnRawViewResult = True
@@ -145,7 +143,7 @@ class dashboard_view(privateView):
                     "progress": {},
                     "pcompleted": 0,
                     "allassclosed": False,
-                    "project_has_anonymized": project_has_anonymized_values,
+                    "project_is_anonymized": project_is_anonymized,
                 }
                 for plugin in p.PluginImplementations(p.IDashBoard):
                     context = plugin.before_returning_dashboard_context(

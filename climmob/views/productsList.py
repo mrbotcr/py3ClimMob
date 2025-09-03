@@ -29,7 +29,7 @@ from climmob.processes import (
     get_registry_logs,
     get_assessment_logs,
     getPrjLangDefaultInProject,
-    does_project_has_anonymized_values,
+    is_project_anonymized,
 )
 from climmob.products import product_found
 from climmob.products.analysisdata.analysisdata import create_raw_data
@@ -87,7 +87,7 @@ class productsView(climmobPrivateView):
 
         schema = activeProjectData["user_name"] + "_" + activeProjectData["project_cod"]
 
-        project_has_anonymized_values = does_project_has_anonymized_values(schema)
+        project_is_anonymized = is_project_anonymized(schema)
 
         if activeProjectData:
 
@@ -99,7 +99,7 @@ class productsView(climmobPrivateView):
                     "datacsv-anonymized",
                     "dataxlsx-anonymized",
                 ] and (
-                    not project_has_anonymized_values
+                    not project_is_anonymized
                     or self.request.registry.settings.get("module.dataprivacy", "false")
                     == "false"
                 ):
@@ -162,7 +162,7 @@ class productsView(climmobPrivateView):
             "Products": productsAvailable,
             "assessments": assessments,
             "sectionActive": "productlist",
-            "project_has_anonymized": project_has_anonymized_values,
+            "project_is_anonymized": project_is_anonymized,
         }
 
 
