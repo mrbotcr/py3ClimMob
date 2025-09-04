@@ -7,9 +7,8 @@ from lxml import etree
 
 from climmob.models import Assessment, Question, Project, mapFromSchema
 from climmob.models.repository import sql_fetch_all, sql_fetch_one
-from climmob.processes import (
-    getCombinations,
-)
+from climmob.processes import getCombinations
+from climmob.processes.db.anonymization_params import get_anonymization_params_as_dict
 from climmob.processes.db.question import (
     get_sensitive_questions_anonymity_by_project_id,
     get_registry_key_question,
@@ -113,7 +112,7 @@ def getLookups(XMLFile, userOwner, projectCod, anonymize):
     return lktables
 
 
-def getPackageData(userOwner, projectId, projectCod, request):
+def getPackageData(userOwner, projectId, projectCod, request, anonymize=False):
     data = (
         request.dbsession.query(Question).filter(Question.question_regkey == 1).first()
     )
@@ -121,6 +120,7 @@ def getPackageData(userOwner, projectId, projectCod, request):
     data = (
         request.dbsession.query(Question).filter(Question.question_fname == 1).first()
     )
+    farmer_name_qst_id = data.question_id
     qstFarmer = data.question_code
 
     sql = (
@@ -223,6 +223,12 @@ def getPackageData(userOwner, projectId, projectCod, request):
     )
 
     pkgdetails = sql_fetch_all(sql)
+
+    farmer_name_pseudonym = ""
+    if anonymize:
+        params = get_anonymization_params_as_dict(farmer_name_qst_id, request)
+        farmer_name_pseudonym = params["pseudonym"]
+
     packages = []
     pkgcode = -999
     for pkg in pkgdetails:
@@ -230,7 +236,12 @@ def getPackageData(userOwner, projectId, projectCod, request):
             aPackage = {}
             pkgcode = pkg.package_id
             aPackage["package_id"] = pkg.package_id
-            aPackage["farmername"] = pkg["farmername"]
+            if anonymize:
+                aPackage["farmername"] = farmer_name_pseudonym.replace(
+                    "{}", str(pkg.package_id)
+                )
+            else:
+                aPackage["farmername"] = pkg["farmername"]
             aPackage["comps"] = []
             for x in range(0, ncombs):
                 aPackage["comps"].append({})
@@ -363,6 +374,19 @@ def getData(
                     continue
                 select_field_builder.set_sensitive(question is not None)
             fields.append(select_field_builder.build())
+
+    if anonymize:
+        to_remove_keys = ["instancename", "deviceimei"]
+        tmp_fields = fields.copy()
+        fields = []
+        for field in tmp_fields:
+            append = True
+            for key in to_remove_keys:
+                if key in field:
+                    append = False
+                    break
+            if append:
+                fields.append(field)
 
     sql = (
         "SELECT "
@@ -689,7 +713,9 @@ def getJSONResult(
             if res.project_registration_and_analysis == 1:
                 haveAssessments = True
             # Get the package information but only for registered farmers
-            data["packages"] = getPackageData(userOwner, projectId, projectCod, request)
+            data["packages"] = getPackageData(
+                userOwner, projectId, projectCod, request, anonymize
+            )
             data["combination"] = getCombinationsData(projectId, request)
 
             if haveAssessments:
