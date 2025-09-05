@@ -156,9 +156,6 @@ class ProjectsSummaryCurationView(privateView):
             list_of_projects = get_user_project_summary(
                 self.request, self.user.userData["user_name"]
             )
-        list_of_afiliations=[]
-        for afiliation in get_all_affiliations(self.request):
-            list_of_afiliations.append(afiliation["affiliation_name"])
 
         return {
             "tableStructure": table_structure,
@@ -166,7 +163,7 @@ class ProjectsSummaryCurationView(privateView):
             "lastReport": lastReport,
             "edit_mode": edit_mode,
             "sectionActive": "projectsSummaryCuration",
-            "list_of_affiliation": list_of_afiliations,
+            "list_of_affiliation": get_all_affiliations(self.request),
         }
 
 
@@ -343,4 +340,5 @@ class ProjectSummaryRecentView(privateView):
             "listOfProjects": list_of_projects,
             "edit_mode": True,
             "sectionActive": "projectsSummaryRecent",
+            "list_of_affiliation": get_all_affiliations(self.request),
         }

@@ -231,10 +231,10 @@
                                                                         </option>
                                                                     {% endif %}
                                                                     {% for affiliation in list_of_affiliation %}
-                                                                        <option value="{{ affiliation }}" {% if affiliation == project[col["key"]] %}selected{% endif %}>{{ affiliation }}</option>
+                                                                        <option value="{{ affiliation.affiliation_name }}" {% if affiliation.affiliation_name == project[col["key"]] %}selected{% endif %}>{{ affiliation.affiliation_name }}</option>
                                                                     {% endfor %}
-                                                                    {% if project[col["key"]] not in list_of_affiliation and project[col["key"]] %}
-                                                                        {% if list_of_affiliation | selectattr("affiliation_name", "equalto", col["key"]) | list | length <= 0%}
+                                                                    {% if project[col["key"]] %}
+                                                                        {% if list_of_affiliation | selectattr("affiliation_name", "equalto", project[col["key"]]) | list | length <= 0%}
                                                                             <option value="{{ project[col["key"]] }}" selected>New:{{ project[col["key"]] }}</option>
                                                                         {% endif %}
                                                                     {% endif %}
