@@ -52,6 +52,13 @@
            cursor: pointer;
        }
 
+        .dtcc-button.dtcc-button_active > .dtcc-button-icon svg * {
+            stroke: #1ab394;        }
+
+        .dtcc-button.dtcc-button_active {
+            background: rgba(152, 152, 152, 0.44) !important;
+        }
+
     </style>
 {% endblock css %}
 
@@ -107,14 +114,14 @@
                             <table class="display nowrap table table-stripped display " data-filter=#filter id="all-projects">
                                 <thead>
                                     <tr>
-                                        <th>{{ _("Project overview") }} <i class="fa fa-info-circle" title="{{ _("Click on the row of the table to change the project in the \"Project overview\" section") }}."> </i></th>
+                                        <th title="{{ _("Click on the row of the table to change the project in the \"Project overview\" section") }}.">{{ _("Project overview") }} <i class="fa fa-info-circle"> </i></th>
                                         <th>{{ _("User owner") }}</th>
                                         <th>{{ _("Project ID") }}</th>
                                         <th>{{ _("Name") }}</th>
-                                        <th>{{ _("Access type") }}</th>
+                                        <th>{{ _("Access level") }}</th>
                                         <th>{{ _("Principal investigator") }}</th>
                                         <th>{{ _("Email") }}</th>
-                                        <th>{{ _("Progress") }}</th>
+                                        <th>{{ _("Current phase") }}</th>
                                         <th>{{ _("Creation date") }}</th>
                                         <th>{{ _("Tags") }}</th>
                                         {% if createBoton == true %}

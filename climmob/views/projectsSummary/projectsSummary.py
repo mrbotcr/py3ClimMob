@@ -15,7 +15,7 @@ from climmob.processes import (
     get_user_project_summary,
     get_recent_project_summary,
     get_project_id_row,
-    getProjectUserAndOwner,
+    getProjectUserAndOwner, get_all_affiliations,
 )
 from climmob.products import product_found
 from climmob.products.projectsSummary import create_json_exel_file
@@ -156,6 +156,9 @@ class ProjectsSummaryCurationView(privateView):
             list_of_projects = get_user_project_summary(
                 self.request, self.user.userData["user_name"]
             )
+        list_of_afiliations=[]
+        for afiliation in get_all_affiliations(self.request):
+            list_of_afiliations.append(afiliation["affiliation_name"])
 
         return {
             "tableStructure": table_structure,
@@ -163,6 +166,7 @@ class ProjectsSummaryCurationView(privateView):
             "lastReport": lastReport,
             "edit_mode": edit_mode,
             "sectionActive": "projectsSummaryCuration",
+            "list_of_affiliation": list_of_afiliations,
         }
 
 
@@ -293,7 +297,7 @@ class SaveProjectRow(privateView):
 
         recipients = [
             (admin_name, admin_email),
-            (user_project_full_name, user_project_email),
+            # (user_project_full_name, user_project_email),
         ]
 
         subject = "Update on Your ClimMob Project(" + project_name + ")"

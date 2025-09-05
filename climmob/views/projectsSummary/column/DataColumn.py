@@ -45,7 +45,7 @@ DATA_COLUMNS = [
     # {"key": "projectDesc", "name": "Description", "type": "static", "options": None, "id": 4, "show": True},
     {
         "key": "project_pi",
-        "name": "Coordinator",
+        "name": "Principal investigator",
         "type": "static",
         "options": None,
         "id": 5,
@@ -53,7 +53,7 @@ DATA_COLUMNS = [
     },
     {
         "key": "project_piorganization",
-        "name": "Organization",
+        "name": "PI Organization",
         "type": "static",
         "options": None,
         "id": 6,
@@ -85,7 +85,7 @@ DATA_COLUMNS = [
     },
     {
         "key": "project_location",
-        "name": "Location",
+        "name": "Test type",
         "type": "static",
         "options": None,
         "id": 10,
@@ -101,7 +101,7 @@ DATA_COLUMNS = [
     # },
     {
         "key": "farmers_registered",
-        "name": "N Participants",
+        "name": "Participants",
         "type": "static",
         "options": None,
         "id": 12,
@@ -109,7 +109,7 @@ DATA_COLUMNS = [
     },
     {
         "key": "gender_man",
-        "name": "N man",
+        "name": "Man",
         "type": "static",
         "options": None,
         "id": 13,
@@ -117,7 +117,7 @@ DATA_COLUMNS = [
     },
     {
         "key": "gender_woman",
-        "name": "N woman",
+        "name": "Woman",
         "type": "static",
         "options": None,
         "id": 14,
@@ -125,7 +125,7 @@ DATA_COLUMNS = [
     },
     {
         "key": "gender_other",
-        "name": "N other gender",
+        "name": "Other gender",
         "type": "static",
         "options": None,
         "id": 15,
@@ -133,7 +133,7 @@ DATA_COLUMNS = [
     },
     {
         "key": "gender_unreported",
-        "name": "N unreported gender",
+        "name": "Unreported gender",
         "type": "static",
         "options": None,
         "id": 16,
@@ -174,7 +174,7 @@ DATA_COLUMNS = [
     # {"key": "instance_name", "name": "Instance", "type": "static", "options": None, "id": 21, "show": False},
     {
         "key": "varieties_quantity",
-        "name": "N varieties",
+        "name": "Varieties",
         "type": "static",
         "options": None,
         "id": 22,
@@ -263,7 +263,7 @@ DATA_COLUMNS = [
     {
         "key": "affiliation",
         "name": "Affiliation",
-        "type": "input",
+        "type": "dropdown_set_on_field",
         "options": None,
         "id": 33,
         "show": True,
@@ -271,7 +271,7 @@ DATA_COLUMNS = [
     {
         "key": "cropname",
         "name": "Cropname",
-        "type": "input",
+        "type": "dropdown_set_on_field",
         "options": None,
         "id": 34,
         "show": True,

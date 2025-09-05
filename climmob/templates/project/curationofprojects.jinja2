@@ -11,6 +11,15 @@
     {% cssresource request,'coreresources','tour' %}
     {% cssresource request,'coreresources','icheck' %}
     {% cssresource request,'coreresources','chosen' %}
+    <style>
+        .ibox.panel-warning {
+            border: 1px solid #f0ad4e !important;
+        }
+        .fa {
+            color: #ffffff ;
+        }
+    </style>
+
 {% endblock css %}
 
 {% block topScripts %}
@@ -54,36 +63,37 @@
                             {% endfor %}
                         {% endif %}
 
-                        <div class="panel panel-warning">
-                            <div class="panel-heading">
-                                <h4><i class="fa fa-info-circle"></i> {{ _("Why do you have access to this screen?") }}</h4>
+                        <div class="panel panel-warning ibox">
+                            <div class="panel-heading ibox-title">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="col-lg-11" title="This information can be hidde with the arrow at right">
+                                             <h4> {{ _("Why this matters?") }} <i class="fa fa-info-circle"></i></h4>
+                                        </div>
+                                        <div class="ibox-tools">
+                                            <a class="collapse-link">
+                                                <i class="fa fa-chevron-up"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="panel-body">
+                            <div class="panel-body ibox-content" >
                                 <p>{{ _("To improve the quality of data collected through ClimMob and reduce maintenance costs, we need your help in correctly identifying the type of trials in your projects. By flagging test trials (e.g., training or demonstration projects), we can focus resources on managing active, real-world projects more effectively.") }}</p>
                                 <p>{{ _("Additionally, we want to better understand the status of each trial. Indicating whether a trial is completed or still ongoing helps us streamline project tracking and ensures we provide relevant support tailored to your project's current stage.") }}</p>
                                 <p>{{ _("Thank you for your cooperation in helping us enhance ClimMob’s efficiency and reliability!") }}</p>
+                                <p>{{ _("Please select the correct project type for each of your projects") }}:</p>
+                                <ul>
+                                    {% for type in listOfProjectTypes %}
+                                        {% if type.prjtype_id != 0 %}
+                                                <li><strong>{{ type.prjtype_name }}:</strong> {{ type.prjtype_description }}.</li>
+                                        {% endif %}
+                                    {% endfor %}
+</ul>
+
                             </div>
                         </div>
-
-                        <p>{{ _("Read about the following types of projects that have been defined for ClimMob") }}:</p>
-                        <table class="footable table table-bordered">
-                            <thead>
-                                <th>{{ _("Type") }}</th>
-                                <th>{{ _("Description") }}</th>
-                            </thead>
-                            <tbody>
-                                {% for type in listOfProjectTypes %}
-                                    {% if type.prjtype_id != 0 %}
-                                        <tr>
-                                            <td>{{ type.prjtype_name }}</td>
-                                            <td>{{ type.prjtype_description }}.</td>
-                                        </tr>
-                                    {% endif %}
-                                {% endfor %}
-                            </tbody>
-                        </table>
-
-                        <p><b>{{ _("Note") }}:</b> {{ _("Only real projects require full curation of all fields. For training projects, only the field “Type“ needs to be curated. Training projects will be automatically archived after 6 months to optimize the resource usage of the platform.") }}</p>
+                    {% if listOfProjects %}
 
                         <p>{{ _("Please use the following table to curate your projects") }}:</p>
                         <div class="table-responsive">
@@ -150,14 +160,15 @@
                                 </tbody>
                             </table>
                         </div>
-
                         <input class="btn btn-primary pull-right" type="submit" id="btn_save_projects" name="btn_save_projects" value="{{ _('Save') }}">
                         <br>
                         <br>
-
+                    {% else %}
+                        <div style="text-align: center">
+                            <h3><i class="fa fa-tim"></i> {{ _("All projects have been curated. There are no pending projects to display.") }}</h3>
+                        </div>
+                    {% endif %}
                     </form>
-
-
                 </div>
             </div>
         </div>

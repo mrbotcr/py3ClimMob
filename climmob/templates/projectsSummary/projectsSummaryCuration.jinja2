@@ -11,8 +11,21 @@
     {% cssresource request,'coreresources','dataTables2_3_2' %}
     {% cssresource request,'coreresources','dataTables2_3_2_columnControl' %}
     {% cssresource request,'coreresources','dataTables2_3_2_buttons' %}
+    {% cssresource request,'coreresources','select2' %}
 
     <style>
+{#order the name and the icon to be consistent#}
+        .dt-column-header {
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: flex-start;
+            align-items: center;
+        }
+{#order the name and the icon to be consistent#}
+        .dt-column-header .dtcc-button {
+            margin-left: auto;
+        }
+
         th {
             text-align: left !important;
             /*min-width: 180px;*/
@@ -24,7 +37,6 @@
 
         td {
             max-width: 400px;
-            /*min-width: 180px;*/
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -60,10 +72,34 @@
             color: inherit;
         }
 
+        {#allows see the difference on the row what is pointed#}
         #curation-table tbody tr:hover {
            background-color: #FAFAFA;
            cursor: pointer;
        }
+
+        {#marks the filter button on a different color when is activate#}
+        .dtcc-button.dtcc-button_active > .dtcc-button-icon svg * {
+            stroke: #1ab394;        }
+
+        .dtcc-button.dtcc-button_active {
+            background: rgba(152, 152, 152, 0.44) !important;
+        }
+
+        #curation-table_wrapper {
+            min-height: 400px;
+        }
+
+        {#changes the style in the dtcc button to make it look like a plain text #}
+        .dtcc-button-text .select2-selection {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .dtcc-button-text .select2-selection__arrow {
+            display: none !important;
+        }
 
     </style>
 
@@ -79,6 +115,7 @@
     {% jsresource request,'coreresources','datatable2_3_2js_columControl' %}
     {% jsresource request,'coreresources','datatable2_3_2js_buttons3_0_0' %}
     {% jsresource request,'coreresources','datatable2_3_2js_colVis' %}
+    {% jsresource request,'coreresources','select2' %}
 
 {% endblock topScripts %}
 
@@ -91,6 +128,13 @@
 
 {% block pagecontent %}
 
+    {% set options = [
+    "African eggplant","Amaranth","Banana","Barley","Beans","Bread wheat",
+    "Cassava","Chickpea","Cocoa","Cowpea","Durum wheat","Faba bean",
+    "Finger millet","Forages","Groundnut","Jute mallow","Maize","Millets",
+    "Mustard","Okra","Pearl millet","Pepper","Pigeon pea","Potato","Rice",
+    "Sorghum","Soybean","Sweetpotato","Teff","Tomato"
+] %}
 
     {% if lastReport and lastReport[0]["state"] =="Pending..." %}
         <div class="row">
@@ -130,7 +174,7 @@
                                                 <th>{{ _(col["name"]) }}</th>
                                             {% endfor %}
                                             {% if edit_mode == True %}
-                                                <th>{{ _('Notification') }}</th>
+                                                <th title='{{ _("You can drag the bottom-right corner to resize.") }}'>{{ _('Notification') }} <i class="fa fa-info-circle"> </i></th>
                                                 <th></th>
                                             {% endif %}
                                         </tr>
@@ -159,7 +203,7 @@
                                                             <span class="d-none filter-value"
                                                                   hidden>{{ project[col["key"]] }}</span>
                                                         {% elif col['type'] == "dropdown" %}
-                                                            <select class="form-control">
+                                                            <select class="Select2_simple form-control select2-hidden-accessible" style="width: 150px">
                                                                 <option value=""
                                                                         selected>{{ _("Choice an option") }}</option>
                                                                 {% for key, id in col["options"].items() %}
@@ -171,19 +215,49 @@
                                                                 {% endfor %}
                                                             </select>
                                                             <span class="d-none filter-value" hidden>
-                                                                    {% for key, id in col["options"].items() %}
-                                                                        {% if id == project[col["key"]] %}
-                                                                            {{ key }}
-                                                                        {% endif %}
-                                                                    {% endfor %}
+                                                                {% for key, id in col["options"].items() %}
+                                                                    {% if id == project[col["key"]] %}
+                                                                        {{ key }}
+                                                                    {% endif %}
+                                                                {% endfor %}
                                                             </span>
+
+                                                        {% elif col['type'] == "dropdown_set_on_field" %}
+                                                            {% if col["key"] == "affiliation"  %}
+                                                                <select class="form-control Select2 js-affiliation-tags" style="width: 200px;">
+                                                                    {% if not project[col["key"]] %}
+                                                                        <option value="" selected>
+                                                                            {{ _("Please select or add one") }}
+                                                                        </option>
+                                                                    {% endif %}
+                                                                    {% for affiliation in list_of_affiliation %}
+                                                                        <option value="{{ affiliation }}" {% if affiliation == project[col["key"]] %}selected{% endif %}>{{ affiliation }}</option>
+                                                                    {% endfor %}
+                                                                    {% if project[col["key"]] not in list_of_affiliation and project[col["key"]] %}
+                                                                        {% if list_of_affiliation | selectattr("affiliation_name", "equalto", col["key"]) | list | length <= 0%}
+                                                                            <option value="{{ project[col["key"]] }}" selected>New:{{ project[col["key"]] }}</option>
+                                                                        {% endif %}
+                                                                    {% endif %}
+                                                                </select>
+                                                            {% endif %}
+
+                                                            {% if col["key"] == "cropname"  %}
+                                                                <select class="Select2 form-control js-affiliation-tags" style="width: 200px;">
+                                                                    <option value="" {% if not project[col["key"]] %} selected {% endif %}>Without selection</option>
+                                                                    {% for opt in options %}
+                                                                        <option value="{{ opt }}" {% if project[col["key"]] == opt %} selected {% endif %}>{{ opt }}</option>
+                                                                    {% endfor %}
+                                                                    {% if project[col["key"]] not in options and project[col["key"]] %}
+                                                                        <option value="{{ project[col["key"]] }}" selected>New: {{ project[col["key"]] }}</option>
+                                                                    {% endif %}
+                                                                </select>
+                                                            {% endif %}
                                                         {% endif %}
                                                     </td>
                                                 {% endfor %}
                                                 {% if edit_mode == True %}
                                                     <td data-column="admin_msj">
-                                                        <textarea placeholder="{{ _('Modify this field to send a message for the
-                                                        project user') }}" maxlength="500"></textarea>
+                                                        <textarea placeholder="{{ _('Use this field to send a message to the project user.') }}" maxlength="500" style="width: 200px; height: 50px;"></textarea>
                                                     </td>
                                                     <td data-column="save">
                                                         <button class="btn btn-primary pull-right"
@@ -237,12 +311,11 @@
                                 <p>{{ _("Last updated: {}.").format(lastReport[0].datetime_added) }}</p><br>
 
                                 <table>
-                                    <tr>
+                                    <tr title="{{ _("Exports the table as a .xlsx file.") }}">
                                         <td>
                                             <button class="btn btn-outline btn-primary" id="btn_download_report">
                                                 {{ _(" Download table ") }}
-                                            </button> <i class="fa fa-info-circle"
-                                               title="{{ _("Exports the table as a .xlsx file.") }}"> </i>
+                                            </button> <i class="fa fa-info-circle"> </i>
                                         </td>
                                     </tr>
                                 </table>
@@ -338,10 +411,12 @@
 
 
         async function checkInputs(project_id, button) {
+            if (button.disabled) return;
+            button.disabled = true;
             const row = button.closest('tr');
             const project_title = row.querySelector('[data-column="projectTitle"]').textContent.trim();
-            const fieldAffiliation = row.querySelector('[data-column="affiliation"] input');
-            const fieldCrop = row.querySelector('[data-column="cropname"] input');
+            const fieldAffiliation = row.querySelector('[data-column="affiliation"] select');
+            const fieldCrop = row.querySelector('[data-column="cropname"] select');
             const fieldAnalytics = row.querySelector('[data-column="climmob_analytics"] select');
             const adminMessage = row.querySelector('[data-column="admin_msj"] textarea');
 
@@ -361,11 +436,13 @@
             }
 
             if (error.length > 0) {
-                swal(
+                await swal(
                     "{{ _('Check the project ') }}" + project_title,
                     "{{ _('Please, complete these empty fields: ') }}" + error.join(', ') + "{{ _(' to continue') }}",
                     "error"
                 );
+                button.disabled = false;
+                return;
 
             } else {
                 const data = {
@@ -377,7 +454,7 @@
                     csrf_token: "{{ request.session.get_csrf_token() }}"
                 }
 
-                fetch('{{ request.route_url('projectsSummaryCurationUpdateRow') }}', {
+                await fetch('{{ request.route_url('projectsSummaryCurationUpdateRow') }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
@@ -393,8 +470,13 @@
                     })
                     .catch(error => {
                         swal("{{ _('Error') }}", error.message, "error");
-                    });
+                    })
+                    .finally(()=>{
+                        button.disabled = false;
+                    })
+                ;
             }
+
         }
 
 
@@ -410,6 +492,29 @@
                 location.href = "{{ request.route_url('projectsSummaryCuration') }}"
             {% endif %}
         })
+
+        $(".Select2_simple").select2({
+            minimumResultsForSearch: Infinity
+        });
+
+        $('.Select2').select2({
+        });
+
+        $(".js-affiliation-tags").select2({
+            tags: true,
+            createTag: function (params) {
+                const term = $.trim(params.term);
+                if (term === '') return null;
+
+                return {
+                    id: params.term,
+                    text: "{{ _("New") }}: " + params.term,
+                }
+            }
+        });
+
+
+
     </script>
 
 {% endblock pagecontent %}
