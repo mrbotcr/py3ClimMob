@@ -983,7 +983,7 @@ class FinishProjectView(privateView):
         project_info = getActiveProject(self.user.login, self.request)
 
         if success:
-            self.send_email_notification(project_info)
+            # self.send_email_notification(project_info)
             self.returnRawViewResult = True
             self.request.session.flash(
                 self._("The project was finalized successfully.")

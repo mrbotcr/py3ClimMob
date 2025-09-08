@@ -1018,7 +1018,7 @@
                                             <p>
                                                 <strong>{{ _('If you are certain that your project is complete, press the button below to finalize it.') }}</strong>
                                             </p>
-                                            <p>{{ _('This action will permanently block any further modifications to the project’s data, profile, or metadata.') }}</p>
+{#                                            <p>{{ _('This action will permanently block any further modifications to the project’s data, profile, or metadata.') }}</p>#}
                                             <div>
 
                                                 <button onclick="location.href='{{ request.route_url('finishproject', user = activeProject.owner.user_name, project= activeProject.project_cod) }}'"

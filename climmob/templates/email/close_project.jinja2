@@ -45,16 +45,12 @@
             <table width="100%" cellpadding="8" cellspacing="0" border="1"
                    style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; color: #333;">
                 <thead>
-                <tr style="background-color: #1ab394; color: white; text-align: center;">
+                <tr>
                     <th>{{ _('Field Name') }}</th>
                     <th>{{ _('Value') }}</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td>{{ _('Project ID') }}</td>
-                    <td>{{ project_info["project_id"] }}</td>
-                </tr>
                 <tr>
                     <td>{{ _('Project Name') }}</td>
                     <td>{{ project_info["project_name"] }}</td>
@@ -64,23 +60,11 @@
                     <td>{{ project_info["project_cod"] }}</td>
                 </tr>
                 <tr>
-                    <td>{{ _('Project Abstract') }}</td>
-                    <td>{{ project_info["project_abstract"] }}</td>
-                </tr>
-                <tr>
-                    <td>{{ _('Tags') }}</td>
-                    <td>{{ project_info["project_tags"] }}</td>
-                </tr>
-                <tr>
-                    <td>{{ _('Person in Charge') }}</td>
+                    <td>{{ _('Project Principal investigation') }}</td>
                     <td>{{ project_info["project_pi"] }}</td>
                 </tr>
                 <tr>
-                    <td>{{ _('Email Person in Charge') }}</td>
-                    <td>{{ project_info["project_piemail"] }}</td>
-                </tr>
-                <tr>
-                    <td>{{ _('Owner of the project') }}</td>
+                    <td>{{ _('Project owner') }}</td>
                     <td>{{ project_info["owner"]["user_name"] }}</td>
                 </tr>
                 <tr>
@@ -88,7 +72,7 @@
                     <td>{{ project_info["project_cnty"] }}</td>
                 </tr>
                 <tr>
-                    <td>{{ _('Crop Name') }}</td>
+                    <td>{{ _('Crop name') }}</td>
                     <td>{{ project_info["project_curated_cropname"] }}</td>
                 </tr>
                 <tr>
@@ -113,17 +97,8 @@
                         {% endif %}
                     </td>
                 </tr>
-                <tr>
-                    <td>{{ _('Project Public') }}</td>
-                    <td>
-                        {% if project_info["project_public"] == 0 %}
-                            {{ _("No") }}
-                        {% elif project_info["project_public"] == 1 %}
-                            {{ _("Yes") }}
-                        {% endif %}
-                    </td>
-                </tr>
                 </tbody>
+
             </table>
             <p style="margin-bottom: 15px;">{{ _('Thank you for your continued collaboration.') }}</p>
         {% endblock email_message %}

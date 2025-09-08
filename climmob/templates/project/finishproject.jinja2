@@ -5,13 +5,18 @@
 {% endblock title %}
 
 {% block pageheading %}
-    {% set _title= _("Confirm Project Finalization") %}
+    {% set _title= _("Confirm project finalization") %}
     {% set _linkWiki="https://climmob.net/blog/wiki/cancel-form/" %}
     {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
 
 {% block css %}
     {% cssresource request,'coreresources','sweet' %}
+    <style>
+        th, td {
+            width: 100px
+        }
+    </style>
 {% endblock css %}
 
 
@@ -47,93 +52,70 @@
                     </ul>
                     <ul>
                         <li>
-                            <strong>{{ _('Flag the project as finalized ') }}</strong> {{ _('so it can be included in aggregated reports and the 1000FARMS Data Warehouse.).') }}
+                            <strong>{{ _('Flag the project as finalized ') }}</strong> {{ _('so it can be included in aggregated reports and the 1000FARMS Data Warehouse).') }}
                         </li>
                     </ul>
-                    <table class="table table-bordered table-striped">
-                        <thead>
-                        <tr>
-                            <th>{{ _('Field Name') }}</th>
-                            <th>{{ _('Value') }}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td>{{ _('Project ID') }}</td>
-                            <td>{{ project_info["project_id"] }}</td>
-                        </tr>
-                        <tr>
-                            <td>{{ _('Project Name') }}</td>
-                            <td>{{ project_info["project_name"] }}</td>
-                        </tr>
-                        <tr>
-                            <td>{{ _('Project Code') }}</td>
-                            <td>{{ project_info["project_cod"] }}</td>
-                        </tr>
-                        <tr>
-                            <td>{{ _('Project Abstract') }}</td>
-                            <td>{{ project_info["project_abstract"] }}</td>
-                        </tr>
-                        <tr>
-                            <td>{{ _('Tags') }}</td>
-                            <td>{{ project_info["project_tags"] }}</td>
-                        </tr>
-                        <tr>
-                            <td>{{ _('Person in Charge') }}</td>
-                            <td>{{ project_info["project_pi"] }}</td>
-                        </tr>
-                        <tr>
-                            <td>{{ _('Email Person in Charge') }}</td>
-                            <td>{{ project_info["project_piemail"] }}</td>
-                        </tr>
-                        <tr>
-                            <td>{{ _('Owner of the project') }}</td>
-                            <td>{{ project_info["owner"]["user_name"] }}</td>
-                        </tr>
-                        <tr>
-                            <td>{{ _('Country') }}</td>
-                            <td>{{ project_info["project_cnty"] }}</td>
-                        </tr>
-                        <tr>
-                            <td>{{ _('Crop Name') }}</td>
-                            <td>{{ project_info["project_curated_cropname"] }}</td>
-                        </tr>
-                        <tr>
-                            <td>{{ _('Affiliation') }}</td>
-                            <td>{{ project_info["project_affiliation"] }}</td>
-                        </tr>
-                        <tr>
-                            <td>{{ _('Creation date') }}</td>
-                            <td>{{ project_info["project_creationdate"] }}</td>
-                        </tr>
-                        <tr>
-                            <td>{{ _('Project Status') }}</td>
-                            <td>
-                                {% if project_info["project_status"] == 0 %}
-                                    {{ _("Undefined") }}
-                                {% elif project_info["project_status"] == 1 %}
-                                    {{ _("Definition") }}
-                                {% elif project_info["project_status"] == 2 %}
-                                    {{ _("In progress") }}
-                                {% elif project_info["project_status"] == 3 %}
-                                    {{ _("Finalized") }}
-                                {% endif %}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>{{ _('Project Public') }}</td>
-                            <td>
-                                {% if project_info["project_public"] == 0 %}
-                                    {{ _("No") }}
-                                {% elif project_info["project_public"] == 1 %}
-                                    {{ _("Yes") }}
-                                {% endif %}
-                            </td>
-                        </tr>
+                    <div class="row d-flex justify-content-center align-items-center">
 
-                        </tbody>
-                    </table>
-
+                        <div class="col-lg-4">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                <tr>
+                                    <th>{{ _('Field Name') }}</th>
+                                    <th>{{ _('Value') }}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>{{ _('Project Name') }}</td>
+                                    <td>{{ project_info["project_name"] }}</td>
+                                </tr>
+                                <tr>
+                                    <td>{{ _('Project Code') }}</td>
+                                    <td>{{ project_info["project_cod"] }}</td>
+                                </tr>
+                                <tr>
+                                    <td>{{ _('Project Principal investigation') }}</td>
+                                    <td>{{ project_info["project_pi"] }}</td>
+                                </tr>
+                                <tr>
+                                    <td>{{ _('Project owner') }}</td>
+                                    <td>{{ project_info["owner"]["user_name"] }}</td>
+                                </tr>
+                                <tr>
+                                    <td>{{ _('Country') }}</td>
+                                    <td>{{ project_info["project_cnty"] }}</td>
+                                </tr>
+                                <tr>
+                                    <td>{{ _('Crop name') }}</td>
+                                    <td>{{ project_info["project_curated_cropname"] }}</td>
+                                </tr>
+                                <tr>
+                                    <td>{{ _('Affiliation') }}</td>
+                                    <td>{{ project_info["project_affiliation"] }}</td>
+                                </tr>
+                                <tr>
+                                    <td>{{ _('Creation date') }}</td>
+                                    <td>{{ project_info["project_creationdate"] }}</td>
+                                </tr>
+                                <tr>
+                                    <td>{{ _('Project Status') }}</td>
+                                    <td>
+                                        {% if project_info["project_status"] == 0 %}
+                                            {{ _("Undefined") }}
+                                        {% elif project_info["project_status"] == 1 %}
+                                            {{ _("Definition") }}
+                                        {% elif project_info["project_status"] == 2 %}
+                                            {{ _("In progress") }}
+                                        {% elif project_info["project_status"] == 3 %}
+                                            {{ _("Finalized") }}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                     <p>
                         {{ _('If you are sure about it please, press the button.') }}
                     </p>
