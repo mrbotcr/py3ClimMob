@@ -263,7 +263,7 @@ DATA_COLUMNS = [
     {
         "key": "affiliation",
         "name": "Affiliation",
-        "type": "dropdown_set_on_field",
+        "type": "dropdown_affiliation",
         "options": None,
         "id": 33,
         "show": True,
@@ -271,7 +271,7 @@ DATA_COLUMNS = [
     {
         "key": "cropname",
         "name": "Cropname",
-        "type": "dropdown_set_on_field",
+        "type": "dropdown_crop",
         "options": None,
         "id": 34,
         "show": True,

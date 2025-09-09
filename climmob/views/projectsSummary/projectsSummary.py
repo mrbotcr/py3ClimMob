@@ -15,7 +15,8 @@ from climmob.processes import (
     get_user_project_summary,
     get_recent_project_summary,
     get_project_id_row,
-    getProjectUserAndOwner, get_all_affiliations,
+    getProjectUserAndOwner,
+    get_all_affiliations,
 )
 from climmob.products import product_found
 from climmob.products.projectsSummary import create_json_exel_file

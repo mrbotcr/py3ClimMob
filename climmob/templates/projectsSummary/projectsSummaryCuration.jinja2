@@ -129,11 +129,11 @@
 {% block pagecontent %}
 
     {% set options = [
-    "African eggplant","Amaranth","Banana","Barley","Beans","Bread wheat",
-    "Cassava","Chickpea","Cocoa","Cowpea","Durum wheat","Faba bean",
-    "Finger millet","Forages","Groundnut","Jute mallow","Maize","Millets",
-    "Mustard","Okra","Pearl millet","Pepper","Pigeon pea","Potato","Rice",
-    "Sorghum","Soybean","Sweetpotato","Teff","Tomato"
+    "african eggplant","amaranth","banana","barley","beans","bread wheat",
+    "cassava","chickpea","cocoa","cowpea","durum wheat","faba bean",
+    "finger millet","forages","groundnut","jute mallow","maize","millets",
+    "mustard","okra","pearl millet","pepper","pigeon pea","potato","rice",
+    "sorghum","soybean","sweetpotato","teff","tomato"
 ] %}
 
     {% if lastReport and lastReport[0]["state"] =="Pending..." %}
@@ -222,36 +222,33 @@
                                                                 {% endfor %}
                                                             </span>
 
-                                                        {% elif col['type'] == "dropdown_set_on_field" %}
-                                                            {% if col["key"] == "affiliation"  %}
-                                                                <select class="form-control Select2 js-affiliation-tags" style="width: 200px;">
-                                                                    {% if not project[col["key"]] %}
-                                                                        <option value="" selected>
-                                                                            {{ _("Please select or add one") }}
-                                                                        </option>
+                                                        {% elif col['type'] == "dropdown_affiliation" %}
+                                                            <select class="form-control Select2 js-affiliation-tags" style="width: 200px;">
+                                                                {% if not project[col["key"]] %}
+                                                                    <option value="" selected>
+                                                                        {{ _("Please select or add one") }}
+                                                                    </option>
+                                                                {% endif %}
+                                                                {% for affiliation in list_of_affiliation %}
+                                                                    <option value="{{ affiliation.affiliation_name }}" {% if affiliation.affiliation_name == project[col["key"]] %}selected{% endif %}>{{ affiliation.affiliation_name }}</option>
+                                                                {% endfor %}
+                                                                {% if project[col["key"]] %}
+                                                                    {% if list_of_affiliation | selectattr("affiliation_name", "equalto", project[col["key"]]) | list | length <= 0%}
+                                                                        <option value="{{ project[col["key"]] }}" selected>New:{{ project[col["key"]] }}</option>
                                                                     {% endif %}
-                                                                    {% for affiliation in list_of_affiliation %}
-                                                                        <option value="{{ affiliation.affiliation_name }}" {% if affiliation.affiliation_name == project[col["key"]] %}selected{% endif %}>{{ affiliation.affiliation_name }}</option>
-                                                                    {% endfor %}
-                                                                    {% if project[col["key"]] %}
-                                                                        {% if list_of_affiliation | selectattr("affiliation_name", "equalto", project[col["key"]]) | list | length <= 0%}
-                                                                            <option value="{{ project[col["key"]] }}" selected>New:{{ project[col["key"]] }}</option>
-                                                                        {% endif %}
-                                                                    {% endif %}
-                                                                </select>
-                                                            {% endif %}
+                                                                {% endif %}
+                                                            </select>
+                                                        {% elif col['type'] == "dropdown_crop" %}
+                                                            <select class="Select2 form-control js-affiliation-tags" style="width: 200px;">
+                                                                <option value="" {% if not project[col["key"]] %} selected {% endif %}>Without selection</option>
+                                                                {% for opt in options %}
+                                                                    <option value="{{ opt }}" {% if project[col["key"]] == opt %} selected {% endif %}>{{ opt }}</option>
+                                                                {% endfor %}
+                                                                {% if project[col["key"]] not in options and project[col["key"]] %}
+                                                                    <option value="{{ project[col["key"]] }}" selected>New: {{ project[col["key"]] }}</option>
+                                                                {% endif %}
+                                                            </select>
 
-                                                            {% if col["key"] == "cropname"  %}
-                                                                <select class="Select2 form-control js-affiliation-tags" style="width: 200px;">
-                                                                    <option value="" {% if not project[col["key"]] %} selected {% endif %}>Without selection</option>
-                                                                    {% for opt in options %}
-                                                                        <option value="{{ opt }}" {% if project[col["key"]] == opt %} selected {% endif %}>{{ opt }}</option>
-                                                                    {% endfor %}
-                                                                    {% if project[col["key"]] not in options and project[col["key"]] %}
-                                                                        <option value="{{ project[col["key"]] }}" selected>New: {{ project[col["key"]] }}</option>
-                                                                    {% endif %}
-                                                                </select>
-                                                            {% endif %}
                                                         {% endif %}
                                                     </td>
                                                 {% endfor %}

@@ -181,23 +181,29 @@ class TestProjectsSummaryCurationView(ViewBaseTest):
         self.create_patcher = patch(
             "climmob.views.projectsSummary.projectsSummary.create_projects_summary"
         )
+        self.affiliations_patcher = patch(
+            "climmob.views.projectsSummary.projectsSummary.get_all_affiliations"
+        )
 
         self.mock_get_data_product = self.report_patcher.start()
         self.mock_get_columns = self.column_patcher.start()
         self.mock_get_user = self.user_patcher.start()
         self.mock_get_all = self.all_patcher.start()
         self.mock_create = self.create_patcher.start()
+        self.mock_affiliations = self.affiliations_patcher.start()
 
         self.mock_get_data_product.return_value = "last_report"
         self.mock_get_columns.return_value = {"column1": "column1"}
         self.mock_get_user.return_value = {"data1": "data1"}
         self.mock_get_all.return_value = {"data1": "data1"}
+        self.mock_affiliations.return_value = {"Affiliation": "affiliation1"}
 
         self.addCleanup(self.report_patcher.stop)
         self.addCleanup(self.column_patcher.stop)
         self.addCleanup(self.user_patcher.stop)
         self.addCleanup(self.all_patcher.stop)
         self.addCleanup(self.create_patcher.stop)
+        self.addCleanup(self.affiliations_patcher.stop)
 
     def tearDown(self):
 
@@ -209,6 +215,8 @@ class TestProjectsSummaryCurationView(ViewBaseTest):
             )
         if self.mock_get_all.called:
             self.mock_get_all.assert_called_once_with(self.view.request)
+        if self.mock_affiliations.called:
+            self.mock_affiliations.assert_called_once_with(self.view.request)
         super().tearDown()
 
     def test_projects_summary_curation_view_my_converter_success(self):
@@ -226,6 +234,7 @@ class TestProjectsSummaryCurationView(ViewBaseTest):
                 "lastReport": "last_report",
                 "edit_mode": False,
                 "sectionActive": "projectsSummaryCuration",
+                "list_of_affiliation": {"Affiliation": "affiliation1"},
             },
         )
 
@@ -240,6 +249,7 @@ class TestProjectsSummaryCurationView(ViewBaseTest):
                 "listOfProjects": {"data1": "data1"},
                 "lastReport": "last_report",
                 "sectionActive": "projectsSummaryCuration",
+                "list_of_affiliation": {"Affiliation": "affiliation1"},
             },
         )
 
@@ -558,6 +568,7 @@ class TestSendEmailNotification(ViewBaseTest):
         )
         self.mock_log.error.assert_not_called()
 
+
 class TestProjectSummaryRecentView(ViewBaseTest):
     view_class = ProjectSummaryRecentView
 
@@ -575,20 +586,28 @@ class TestProjectSummaryRecentView(ViewBaseTest):
         self.project_summary_patcher = patch(
             "climmob.views.projectsSummary.projectsSummary.get_recent_project_summary"
         )
+        self.affiliations_patcher = patch(
+            "climmob.views.projectsSummary.projectsSummary.get_all_affiliations"
+        )
 
         self.mock_last_report = self.last_rep.start()
         self.mock_columns = self.columns_patcher.start()
         self.mock_project_summary = self.project_summary_patcher.start()
+        self.mock_affiliations = self.affiliations_patcher.start()
 
         self.mock_last_report.return_value = []
         self.mock_columns.return_value = {"column1": "column1"}
         self.mock_project_summary.return_value = {"data1": "data1"}
+        self.mock_affiliations.return_value = {"Affiliation": "affiliation1"}
 
         self.addCleanup(self.last_rep.stop)
         self.addCleanup(self.columns_patcher.stop)
         self.addCleanup(self.project_summary_patcher.stop)
+        self.addCleanup(self.affiliations_patcher.stop)
 
     def tearDown(self):
+        if self.mock_affiliations.called:
+            self.mock_affiliations.assert_called_once_with(self.view.request)
         super().tearDown()
 
     def test_get(self):
@@ -601,6 +620,7 @@ class TestProjectSummaryRecentView(ViewBaseTest):
                 "tableStructure": self.mock_columns.return_value,
                 "listOfProjects": self.mock_project_summary.return_value,
                 "edit_mode": True,
+                "list_of_affiliation": {"Affiliation": "affiliation1"},
             },
         )
         self.mock_last_report.assert_called_once_with(self.view, self.view.request)

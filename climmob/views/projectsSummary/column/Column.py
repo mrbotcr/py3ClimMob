@@ -5,7 +5,7 @@ from climmob.views.projectsSummary.column.ColumnValidation import ColumnValidati
 
 MAX_KEY_LENGTH = 50
 MAX_NAME_LENGTH = 50
-VALID_TYPES = ["static", "input", "dropdown", "dropdown_set_on_field"]
+VALID_TYPES = ["static", "input", "dropdown", "dropdown_affiliation", "dropdown_crop"]
 
 
 @dataclass
