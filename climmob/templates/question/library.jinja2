@@ -724,6 +724,9 @@
                 if (lower_bound >= upper_bound) {
                     invalid_input = {name: "anonym_param_upper_bound",
                                      msg: "{{ _("Must be higher than the lower bound.") }}" }
+                } else if (interval <= 0) {
+                    invalid_input = {name: "anonym_param_interval",
+                                     msg: "{{ _("Must be greater than zero.") }}" }
                 } else if (interval >= upper_bound - lower_bound) {
                     invalid_input = {name: "anonym_param_interval",
                                      msg: "{{ _("Must fit within the bounds.") }}" }
