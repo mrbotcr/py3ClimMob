@@ -164,8 +164,11 @@
                         </div>
                         <div class="ibox-content">
                             <div style="overflow-x: auto;">
-                                <div id="footable-wrapper">
-                                    <table class="display nowrap table table-stripped display " data-filter=#filter
+                                <div id="loader">
+                                    {{ _("Loading please wait...")}}
+                                </div>
+                                <div id="footable-wrapper" style="display: none">
+                                    <table class="display nowrap table table-stripped" data-filter=#filter
                                            id="curation-table">
                                         <thead>
                                         <tr>
@@ -245,7 +248,8 @@
         $(document).ready(function () {
 
             {% if listOfProjects %}
-
+            $('#loader').show();
+            $('#footable-wrapper').hide();
                 const editMode = "{{ edit_mode | lower }}";
                 const affiliations = {{ list_of_affiliation | tojson }}
                 const crops = {{ options | tojson }}
@@ -432,6 +436,8 @@
 
                 {% endif %}
             {% endif %}
+        $('#loader').hide();
+        $('#footable-wrapper').show();
         })
 
 
