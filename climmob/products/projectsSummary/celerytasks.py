@@ -45,6 +45,7 @@ from climmob.processes import (
     update_project_summary,
     get_project_summary,
 )
+from climmob.utility.project import ProjectActive, ProjectClimMobAnalytics
 
 
 def get_list_of_locations(dbsession):
@@ -787,53 +788,10 @@ def createProjectsSummary(self, settings, otro):
         if settings.get("analytics.sqlalchemy.url", "") != settings.get(
             "sqlalchemy.url"
         ):
-            engine = create_engine(
-                settings.get("analytics.sqlalchemy.url", ""),
-                poolclass=NullPool,
-            )
-            Session = sessionmaker(bind=engine)
-            dbsession = Session()
 
-            try:
-                dbsession.execute(
-                    "DELETE FROM {} WHERE instance_name='{}'".format(
-                        "climmob_details", settings.get("analytics.instancename", "")
-                    )
-                )
+            for project in listOfProjects:
 
-                for project in listOfProjects:
-
-                    columns = project.keys()
-                    cols_comma_separated = ", ".join(columns)
-
-                    binds_comma_separated = ""
-                    for item in columns:
-                        before = ", "
-                        if binds_comma_separated == "":
-                            before = ""
-
-                        if project[item]:
-                            binds_comma_separated += (
-                                before + "'" + str(project[item]).replace("'", "") + "'"
-                            )
-                        else:
-                            binds_comma_separated += before + "null"
-
-                    sql = "INSERT INTO {} ({}) VALUES ({})".format(
-                        "climmob_details",
-                        cols_comma_separated,
-                        binds_comma_separated,
-                    )
-                    try:
-                        dbsession.execute(sql)
-                    except Exception as e:
-                        print(str(e))
-
-            except Exception as e:
-                print(str(e))
-
-            dbsession.commit()
-            dbsession.close()
+                process_with_project_for_analytics(settings, project)
 
     return ""
 
@@ -874,3 +832,86 @@ def create_json_exel_file(
         index=False,
     )
     return None
+
+
+def process_with_project_for_analytics(settings, project):
+    execute_sql_for_analytics(
+        settings,
+        "DELETE FROM climmob_curated_projects WHERE (project_id = '{}' and instance_name='{}');".format(
+            project["project_id"], project["instance_name"]
+        ),
+    )
+
+    if project["climmob_analytics"] == ProjectClimMobAnalytics.YES.value:
+        execute_sql_for_analytics(settings, create_insert_for_analytics(project))
+
+
+def create_insert_for_analytics(project):
+
+    status = "Active"
+    if project["project_active"] == ProjectActive.NO.value:
+        status = "Inactive"
+
+    sql = (
+        "INSERT INTO climmob_curated_projects "
+        " (user_owner,project_id,project_cod,projectTitle,projectDesc,project_pi,project_piorganization,project_piemail,"
+        " project_date,project_country,project_type,farmers_target,farmers_registered,gender_man,gender_woman,gender_other,"
+        " gender_unreported,crop,technology,startDate,endDate,instance_name,varieties_quantity,LatitudeRegistry,LongitudeRegistry,"
+        " LatitudeAssessment,LongitudeAssessment,affiliation,cropname,project_status,project_continent) "
+        'VALUES ("{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}",'
+        '"{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}");'.format(
+            project["user_owner"],
+            project["project_id"],
+            project["project_cod"],
+            project["projectTitle"],
+            project["projectDesc"],
+            project["project_pi"],
+            project["project_piorganization"],
+            project["project_piemail"],
+            project["project_date"],
+            project["project_country"],
+            project["project_location"],
+            project["farmers_target"],
+            project["farmers_registered"],
+            project["gender_man"],
+            project["gender_woman"],
+            project["gender_other"],
+            project["gender_unreported"],
+            project["scientific_name"],
+            project["technology"],
+            project["startDate"],
+            project["endDate"],
+            project["instance_name"],
+            project["varieties_quantity"],
+            project["LatitudeRegistry"],
+            project["LongitudeRegistry"],
+            project["LatitudeAssessment"],
+            project["LongitudeAssessment"],
+            project["affiliation"],
+            project["cropname"],
+            status,
+            project["project_continent"],
+        )
+    )
+
+    sql = sql.replace('"None"', "NULL").replace('""', "NULL")
+
+    return sql
+
+
+def execute_sql_for_analytics(settings, sql):
+    engine = create_engine(
+        settings.get("analytics.sqlalchemy.url", ""),
+        poolclass=NullPool,
+    )
+    Session = sessionmaker(bind=engine)
+    dbsession = Session()
+
+    try:
+        dbsession.execute(sql)
+
+    except Exception as e:
+        print(str(e))
+
+    dbsession.commit()
+    dbsession.close()

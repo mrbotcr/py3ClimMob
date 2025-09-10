@@ -29,6 +29,9 @@ def upgrade():
             ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint("project_id", name=op.f("pk_project_summary")),
+        mysql_charset="utf8mb4",
+        mysql_engine="InnoDB",
+        mysql_collate="utf8mb4_unicode_ci",
     )
     # ### end Alembic commands ###
 

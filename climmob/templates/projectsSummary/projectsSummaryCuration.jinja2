@@ -180,91 +180,7 @@
                                         </tr>
 
                                         </thead>
-                                        <tbody>
-                                        {% for project in listOfProjects %}
-                                            <tr>
-                                                {% for col in tableStructure %}
-                                                    <td data-column="{{ col["key"] }}">
-                                                        {% if col['type'] == "static" or edit_mode == false %}
-                                                            {% if not col['options'] %}
-                                                                {{ project[col["key"]] if project[col["key"]] }}
-                                                            {% else %}
-                                                                {% for key, id in col["options"].items() %}
-                                                                    {% if id == project[col["key"]] %}
-                                                                        {{ key }}
-                                                                    {% endif %}
-                                                                {% endfor %}
-                                                            {% endif %}
-
-                                                        {% elif col['type'] == "input" %}
-                                                            <input class="form-control"
-                                                                   value="{{ project[col["key"]] }}"
-                                                                   style="width: 250px" maxlength="50">
-                                                            <span class="d-none filter-value"
-                                                                  hidden>{{ project[col["key"]] }}</span>
-                                                        {% elif col['type'] == "dropdown" %}
-                                                            <select class="Select2_simple form-control select2-hidden-accessible" style="width: 150px">
-                                                                <option value=""
-                                                                        selected>{{ _("Choice an option") }}</option>
-                                                                {% for key, id in col["options"].items() %}
-                                                                    <option value="{{ id }}"
-                                                                            {% if id == project[col["key"]] %}
-                                                                            selected="selected" {% endif %}>
-                                                                        {{ key }}
-                                                                    </option>
-                                                                {% endfor %}
-                                                            </select>
-                                                            <span class="d-none filter-value" hidden>
-                                                                {% for key, id in col["options"].items() %}
-                                                                    {% if id == project[col["key"]] %}
-                                                                        {{ key }}
-                                                                    {% endif %}
-                                                                {% endfor %}
-                                                            </span>
-
-                                                        {% elif col['type'] == "dropdown_affiliation" %}
-                                                            <select class="form-control Select2 js-affiliation-tags" style="width: 200px;">
-                                                                {% if not project[col["key"]] %}
-                                                                    <option value="" selected>
-                                                                        {{ _("Please select or add one") }}
-                                                                    </option>
-                                                                {% endif %}
-                                                                {% for affiliation in list_of_affiliation %}
-                                                                    <option value="{{ affiliation.affiliation_name }}" {% if affiliation.affiliation_name == project[col["key"]] %}selected{% endif %}>{{ affiliation.affiliation_name }}</option>
-                                                                {% endfor %}
-                                                                {% if project[col["key"]] %}
-                                                                    {% if list_of_affiliation | selectattr("affiliation_name", "equalto", project[col["key"]]) | list | length <= 0%}
-                                                                        <option value="{{ project[col["key"]] }}" selected>New:{{ project[col["key"]] }}</option>
-                                                                    {% endif %}
-                                                                {% endif %}
-                                                            </select>
-                                                        {% elif col['type'] == "dropdown_crop" %}
-                                                            <select class="Select2 form-control js-affiliation-tags" style="width: 200px;">
-                                                                <option value="" {% if not project[col["key"]] %} selected {% endif %}>Without selection</option>
-                                                                {% for opt in options %}
-                                                                    <option value="{{ opt }}" {% if project[col["key"]] == opt %} selected {% endif %}>{{ opt }}</option>
-                                                                {% endfor %}
-                                                                {% if project[col["key"]] not in options and project[col["key"]] %}
-                                                                    <option value="{{ project[col["key"]] }}" selected>New: {{ project[col["key"]] }}</option>
-                                                                {% endif %}
-                                                            </select>
-
-                                                        {% endif %}
-                                                    </td>
-                                                {% endfor %}
-                                                {% if edit_mode == True %}
-                                                    <td data-column="admin_msj">
-                                                        <textarea placeholder="{{ _('Use this field to send a message to the project user.') }}" maxlength="500" style="width: 200px; height: 50px;"></textarea>
-                                                    </td>
-                                                    <td data-column="save">
-                                                        <button class="btn btn-primary pull-right"
-                                                                onclick="checkInputs('{{ project["project_id"] }}',this)">
-                                                            {{ _("Save") }}
-                                                        </button>
-                                                    </td>
-                                                {% endif %}
-                                            </tr>
-                                        {% endfor %}
+                                        <tbody id="curation-table-body">
                                         </tbody>
                                     </table>
                                 </div>
@@ -329,6 +245,118 @@
         $(document).ready(function () {
 
             {% if listOfProjects %}
+
+                const editMode = "{{ edit_mode | lower }}";
+                const affiliations = {{ list_of_affiliation | tojson }}
+                const crops = {{ options | tojson }}
+                const projects = jQuery.parseJSON({{ listOfProjects| tojson }});
+                const tableStructure = {{ table_structure | tojson }};
+                const tableBody = $('#curation-table-body');
+
+                $.each(projects, function(index, project) {
+                    let row = '<tr>';
+                    $.each(tableStructure, function(colIndex, col) {
+                        let cellContent = '';
+                        let value = project[col.key];
+
+                        // Determina el contenido de la celda según el 'type' de la columna
+                        if (col.type === "static" || editMode ==="false") {
+                            if (col.options) {
+                                $.each(col.options, function (key, id) {
+                                    if (id === value) {
+                                        cellContent = key;
+                                        return false;
+                                    }
+                                });
+                            } else {
+                                cellContent = value ? value : '';
+                            }
+                            row += `<td data-column="${col.key}">${cellContent}</td>`;
+
+                        }else if (col.type === "input") {
+                            cellContent = `<input class="form-control" value="${value || ''}" style="width: 250px" maxlength="50">`;
+                            row += `<td data-column="${col.key}">${cellContent}<span class="d-none filter-value" hidden>${value || ''}</span></td>`;
+
+                        }else if (col.type === "dropdown") {
+                            let optionsHtml = `<option value="" selected>{{ _("Choice an option") }}</option>`;
+                            $.each(col.options, function(key, id) {
+                                optionsHtml += `<option value="${id}" ${id === value ? 'selected="selected"' : ''}>${key}</option>`;
+                            });
+                            cellContent = `<select class="Select2_simple form-control select2-hidden-accessible" style="width: 150px">${optionsHtml}</select>`;
+                            let filterValue = '';
+                            $.each(col.options, function(key, id) {
+                                if (id === value) {
+                                    filterValue = key;
+                                    return false;
+                                }
+                            });
+                            row += `<td data-column="${col.key}">${cellContent}<span class="d-none filter-value" hidden>${filterValue}</span></td>`;
+
+                        }else if (col.type === "dropdown_affiliation") {
+                            let optionsHtml = `<option value="" selected>{{ _("Please select or add one") }}</option>`;
+                            let isSelectedExisting = false;
+                            $.each(affiliations, function(i, affiliation) {
+                                if (affiliation.affiliation_name === value) {
+                                    optionsHtml += `<option value="${affiliation.affiliation_name}" selected>${affiliation.affiliation_name}</option>`;
+                                    isSelectedExisting = true;
+                                } else {
+                                    optionsHtml += `<option value="${affiliation.affiliation_name}">${affiliation.affiliation_name}</option>`;
+                                }
+                            });
+                            if (!isSelectedExisting && value) {
+                                optionsHtml += `<option value="${value}" selected>{{ _("New") }}: ${value}</option>`;
+                            }
+                            cellContent = `<select class="form-control Select2 js-affiliation-tags" style="width: 200px;">${optionsHtml}</select>`;
+                            row += `<td data-column="${col.key}">${cellContent}</td>`;
+
+                        } else if (col.type === "dropdown_crop") {
+                            let optionsHtml = `<option value="" ${!value ? 'selected' : ''}>{{ _("Without selection") }}</option>`;
+                            let isSelectedExisting = false;
+                            $.each(crops, function(i, crop) {
+                                if (crop === value) {
+                                    optionsHtml += `<option value="${crop}" selected>${crop}</option>`;
+                                    isSelectedExisting = true;
+                                } else {
+                                    optionsHtml += `<option value="${crop}">${crop}</option>`;
+                                }
+                            });
+                            if (!isSelectedExisting && value) {
+                                optionsHtml += `<option value="${value}" selected>{{ _("New") }}:${value}</option>`;
+                            }
+                            cellContent = `<select class="Select2 form-control js-affiliation-tags" style="width: 200px;">${optionsHtml}</select>`;
+                            row += `<td data-column="${col.key}">${cellContent}</td>`;
+                        }
+                    })
+
+                    if(editMode==="true")
+                    {
+                        row += `<td data-column="admin_msj"><textarea placeholder="Use this field to send a message to the project user." maxlength="500" style="width: 200px; height: 50px;"></textarea></td>`;
+                        row += `<td data-column="save"><button class="btn btn-primary pull-right" onclick="checkInputs('${project.project_id}', this)">Save</button></td>`;
+                    }
+
+                    row += '</tr>';
+                    tableBody.append(row);
+                })
+
+                $(".Select2_simple").select2({
+                    minimumResultsForSearch: Infinity
+                });
+
+                $('.Select2').select2({
+                });
+
+                $(".js-affiliation-tags").select2({
+                    tags: true,
+                    createTag: function (params) {
+                        const term = $.trim(params.term);
+                        if (term === '') return null;
+
+                        return {
+                            id: params.term,
+                            text: "{{ _("New") }}: " + params.term,
+                        }
+                    }
+                });
 
                 const hiddenIndexes = [
                     {% for col in tableStructure %}
@@ -490,25 +518,7 @@
             {% endif %}
         })
 
-        $(".Select2_simple").select2({
-            minimumResultsForSearch: Infinity
-        });
 
-        $('.Select2').select2({
-        });
-
-        $(".js-affiliation-tags").select2({
-            tags: true,
-            createTag: function (params) {
-                const term = $.trim(params.term);
-                if (term === '') return null;
-
-                return {
-                    id: params.term,
-                    text: "{{ _("New") }}: " + params.term,
-                }
-            }
-        });
 
 
 

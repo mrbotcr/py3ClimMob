@@ -341,3 +341,7 @@ class DataColumn:
         for key in DATA_COLUMNS:
             keys.append(key["key"])
         return keys
+
+    def get_dict(self):
+
+        return DATA_COLUMNS

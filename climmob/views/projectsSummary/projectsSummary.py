@@ -2,6 +2,7 @@ import datetime
 import logging
 import os
 import smtplib
+import json
 
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 from pyramid.response import FileResponse
@@ -19,7 +20,10 @@ from climmob.processes import (
     get_all_affiliations,
 )
 from climmob.products import product_found
-from climmob.products.projectsSummary import create_json_exel_file
+from climmob.products.projectsSummary import (
+    create_json_exel_file,
+    process_with_project_for_analytics,
+)
 from climmob.products.projectsSummary.projectsSummary import create_projects_summary
 from climmob.utility.email import (
     build_email_message_multiple_recipients,
@@ -99,6 +103,12 @@ class DownloadProjectsSummaryView(privateView):
         return
 
 
+class DateTimeEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime.datetime):
+            return obj.__str__()
+
+
 class ProjectsSummaryCurationView(privateView):
     validators = (SectionOnlyForAdminValidator,)
 
@@ -159,8 +169,11 @@ class ProjectsSummaryCurationView(privateView):
             )
 
         return {
+            "table_structure": DataColumn.get_dict(self),
             "tableStructure": table_structure,
-            "listOfProjects": list_of_projects,
+            "listOfProjects": json.dumps(
+                list_of_projects, cls=DateTimeEncoder, indent=4
+            ),
             "lastReport": lastReport,
             "edit_mode": edit_mode,
             "sectionActive": "projectsSummaryCuration",
@@ -241,6 +254,14 @@ class SaveProjectRow(privateView):
                 "message": f"Error: {str(messages)}",
                 "status": 400,
             }
+
+        if self.request.registry.settings.get("analytics.active", "false") == "true":
+            if self.request.registry.settings.get(
+                "analytics.sqlalchemy.url", ""
+            ) != self.request.registry.settings.get("sqlalchemy.url"):
+                process_with_project_for_analytics(
+                    self.request.registry.settings, psm_json
+                )
 
         user_project_name = getProjectUserAndOwner(project_id, self.request)[
             "user_name"
@@ -336,9 +357,12 @@ class ProjectSummaryRecentView(privateView):
         list_of_projects = get_recent_project_summary(self.request)
 
         return {
+            "table_structure": DataColumn.get_dict(self),
             "lastReport": lastReport,
             "tableStructure": table_structure,
-            "listOfProjects": list_of_projects,
+            "listOfProjects": json.dumps(
+                list_of_projects, cls=DateTimeEncoder, indent=4
+            ),
             "edit_mode": True,
             "sectionActive": "projectsSummaryRecent",
             "list_of_affiliation": get_all_affiliations(self.request),
