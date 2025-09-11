@@ -322,11 +322,20 @@
                                                             <h5>{{ _("Project definition") }}</h5>
                                                         </td>
                                                         <td style="vertical-align: middle; text-align: center">
-                                                            <div class="small" style="text-align: left">{{ pcompleted }}% {{ _("Completed") }}</div>
+                                                                <div class="small" style="text-align:
+                                                                        {% if can_edit %}left
+                                                                        {% else %}right; margin-right: 50px
+                                                                        {% endif %}">
+                                                                    {% if can_edit %} {{ pcompleted }}% {{ _("Completed") }}
+                                                                    {% else %}{{ _("Finalized") }}
+                                                                    <i class="fa fa-check"></i>
+                                                                    {% endif %}</div>
+                                                            {% if can_edit %}
                                                             <div class="progress progress-mini" style="width: 85%">
-                                                                <div style="width: {{ pcompleted }}%;"
-                                                                     class="progress-bar progress-bar-success"></div>
-                                                            </div>
+                                                                    <div style="width: {{ pcompleted }}%;"
+                                                                         class="progress-bar progress-bar-success"></div>
+                                                                </div>
+                                                                {% endif %}
                                                         </td>
                                                     </tr>
                                                     </tbody>
@@ -1018,7 +1027,6 @@
                                             <p>
                                                 <strong>{{ _('If you are certain that your project is complete, press the button below to finalize it.') }}</strong>
                                             </p>
-{#                                            <p>{{ _('This action will permanently block any further modifications to the project’s data, profile, or metadata.') }}</p>#}
                                             <div>
 
                                                 <button onclick="location.href='{{ request.route_url('finishproject', user = activeProject.owner.user_name, project= activeProject.project_cod) }}'"
