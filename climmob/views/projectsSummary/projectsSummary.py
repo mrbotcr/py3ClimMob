@@ -162,7 +162,6 @@ class ProjectsSummaryCurationView(privateView):
         if self.user.admin == ProjectAdmin.YES.value:
             edit_mode = True
             list_of_projects = get_all_project_summary(self.request)
-
         else:
             list_of_projects = get_user_project_summary(
                 self.request, self.user.userData["user_name"]

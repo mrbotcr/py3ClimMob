@@ -149,7 +149,7 @@ DATA_COLUMNS = [
     },
     {
         "key": "scientific_name",
-        "name": "Scientific name",
+        "name": "Species",
         "type": "static",
         "options": None,
         "id": 18,
@@ -262,7 +262,7 @@ DATA_COLUMNS = [
     },
     {
         "key": "affiliation",
-        "name": "Affiliation",
+        "name": "Organization",
         "type": "dropdown_affiliation",
         "options": None,
         "id": 33,

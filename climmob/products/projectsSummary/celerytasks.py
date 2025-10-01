@@ -624,7 +624,7 @@ def createProjectsSummary(self, settings, otro):
                 crop = crop["taxonomy_name"]
 
             else:
-                crop = "No assigned"
+                crop = "Not assigned"
 
             if project["project_registration_and_analysis"] == 0:
                 project_type = "On-farm testing"

@@ -115,18 +115,22 @@
                                 <thead>
                                     <tr>
                                         <th title="{{ _("Click on the row of the table to change the project in the \"Project overview\" section") }}.">{{ _("Project overview") }} <i class="fa fa-info-circle"> </i></th>
-                                        <th>{{ _("User owner") }}</th>
                                         <th>{{ _("Project ID") }}</th>
-                                        <th>{{ _("Name") }}</th>
-                                        <th>{{ _("Access level") }}</th>
+                                        <th>{{ _("Project name") }}</th>
+                                        <th>{{ _("Owner") }}</th>
+                                        <th>{{ _("Your role") }}</th>
                                         <th>{{ _("Principal investigator") }}</th>
                                         <th>{{ _("Email") }}</th>
-                                        <th>{{ _("Current phase") }}</th>
+                                        <th>{{ _("Progress status") }}</th>
                                         <th>{{ _("Creation date") }}</th>
                                         <th>{{ _("Tags") }}</th>
                                         {% if createBoton == true %}
-                                            <th>{{ _("Clone project") }}</th>
+                                            <th> {#  {{ _("Clone project") }} #}</th>
                                         {% endif %}
+                                        {% if createBoton == true %}
+                                            <th> {#  {{ _("Share") }} #}</th>
+                                        {% endif %}
+
                                     </tr>
 
                                 </thead>
@@ -143,15 +147,17 @@
 {#                                                    <i class="fa fa-dot-circle-o " style="font-size: 30px; color: #1ab394"></i>#}
 {#                                                {% endif %}#}
                                             </td>
-                                            <td>
-                                                <p>{{ project.owner["user_name"] }}</p>
-                                            </td>
+
                                             <td>
                                                 <p>{{ project.project_cod }}</p>
                                             </td>
                                             <td >
                                                 <p>{{ project.project_name }}</p>
                                             </td>
+                                            <td>
+                                                <p>{{ project.owner["user_name"] }}</p>
+                                            </td>
+
                                             <td>
 {#                                                <i class="fa fa-user-circle-o" style="font-size: 30px"></i><br>#}
                                                 <p>
@@ -202,7 +208,7 @@
 
                                             </td>
                                             <td>
-                                                <p>{{ project.project_creationdate }}</p>
+                                                <p>{{ project.project_creationdate.strftime('%d %b %Y') }}</p>
                                             </td>
                                             <td>
                                                 {% for tag in project.project_tags.split(",") %}
@@ -211,7 +217,13 @@
                                             </td>
                                             <td >
                                                 {% if createBoton == true %}
-                                                    <a class="btn btn-primary btn-xs" href="{{ request.route_url('cloneProject', _query={"stage":2, "user": project.owner["user_name"],"project": project.project_cod}) }}">{{ _("Clone this project") }}</a>
+                                                    <a class="btn btn-primary btn-xs" href="{{ request.route_url('cloneProject', _query={"stage":2, "user": project.owner["user_name"],"project": project.project_cod}) }}">{{ _("Clone") }}</a>
+                                                {% endif %}
+                                            </td>
+                                            <td >
+                                                {% if createBoton == true %}
+                                                    <a class="btn btn-primary btn-xs"
+                                                       href="{{ request.route_url('shareProject',user=project.owner["user_name"],project=project.project_cod) }}"> {{ _("Share") }}</a>
                                                 {% endif %}
                                             </td>
                                         </tr>
@@ -269,6 +281,8 @@
                         ],
                     },
                     columnDefs: [
+                        {target: -1, columnControl: []},
+                        {target: -2, columnControl: []},
                         {
                             targets: hiddenIndexes,
                             visible: false,

@@ -265,7 +265,22 @@
 
                         // Determina el contenido de la celda según el 'type' de la columna
                         if (col.type === "static" || editMode ==="false") {
-                            if (col.options) {
+
+                            if (col.key === "project_date" || col.key === "startDate" || col.key === "endDate") {
+                                if (value) {
+                                    const [day, month, year] = value.split("-").map(Number);
+                                    const date_date_form = new Date(year, month - 1, day);
+                                    cellContent = date_date_form.toLocaleDateString("en-GB", { //this method is for js
+                                        day: "2-digit",
+                                        month: "short",
+                                        year: "numeric"
+                                        });
+                                }
+                                else {
+                                    cellContent = ""
+                                }
+                            }
+                            else if (col.options) {
                                 $.each(col.options, function (key, id) {
                                     if (id === value) {
                                         cellContent = key;
@@ -440,7 +455,6 @@
         $('#footable-wrapper').show();
         })
 
-
         async function checkInputs(project_id, button) {
             if (button.disabled) return;
             button.disabled = true;
@@ -510,7 +524,6 @@
 
         }
 
-
         $("#btn_download_report").click(function () {
             {% if lastReport %}
                 const url = "{{ request.route_url('downloadProjectsSummary') }}?celery_taskid={{ lastReport[0].celery_taskid }}&product_id={{ lastReport[0].product_id }}"
@@ -523,10 +536,6 @@
                 location.href = "{{ request.route_url('projectsSummaryCuration') }}"
             {% endif %}
         })
-
-
-
-
 
     </script>
 
