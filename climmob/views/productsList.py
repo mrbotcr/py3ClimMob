@@ -135,7 +135,7 @@ class productsView(climmobPrivateView):
                         product["extraInformation"] = None
                         pattern = re.compile(
                             r".+?(?:(?:Assessment))_"  # not captured
-                            r"([a-f0-9]{12})"  # captured (group 1)
+                            r"([a-f0-9]+)"  # captured (group 1)
                         )
                         match = pattern.fullmatch(product["process_name"])
                         if match:

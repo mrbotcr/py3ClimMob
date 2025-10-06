@@ -1,7 +1,6 @@
 import datetime
 import decimal
 import os
-import re
 
 from lxml import etree
 
@@ -64,11 +63,12 @@ def getFields(XMLFile, table):
     return fields
 
 
-def getLookups(XMLFile, userOwner, projectCod, anonymize):
+def getLookups(XMLFile, userOwner, projectCod, anonymize, request):
     lktables = []
     tree = etree.parse(XMLFile)
     root = tree.getroot()
     elkptables = root.find(".//lkptables")
+    qst_163_pseudonym = get_anonymization_params_as_dict(163, request)["pseudonym"]
     if elkptables is not None:
         etables = elkptables.findall(".//table")
         for table in etables:
@@ -104,9 +104,9 @@ def getLookups(XMLFile, userOwner, projectCod, anonymize):
                     for field in atable["fields"]:
                         avalue[field["name"]] = value[field["name"]]
                     if anonymize and atable["name"].endswith("lkpqst163_opts"):
-                        avalue[
-                            "qst163_opts_des"
-                        ] = f'Farmer #{avalue["qst163_opts_cod"]}'
+                        avalue["qst163_opts_des"] = qst_163_pseudonym.replace(
+                            "{}", str(avalue["qst163_opts_cod"])
+                        )
                     atable["values"].append(avalue)
             lktables.append(atable)
     return lktables
@@ -376,7 +376,7 @@ def getData(
             fields.append(select_field_builder.build())
 
     if anonymize:
-        to_remove_keys = ["instancename", "deviceimei"]
+        to_remove_keys = ["instancename", "deviceimei", "cal_qst163", "clc_after"]
         tmp_fields = fields.copy()
         fields = []
         for field in tmp_fields:
@@ -658,7 +658,7 @@ def getJSONResult(
                 if os.path.exists(registryXML):
                     data["registry"] = {
                         "lkptables": getLookups(
-                            registryXML, userOwner, projectCod, anonymize
+                            registryXML, userOwner, projectCod, anonymize, request
                         ),
                         "fields": getFields(registryXML, "REG_geninfo"),
                     }
@@ -702,6 +702,7 @@ def getJSONResult(
                                             userOwner,
                                             projectCod,
                                             anonymize,
+                                            request,
                                         ),
                                         "fields": getFields(
                                             assessmentXML,
