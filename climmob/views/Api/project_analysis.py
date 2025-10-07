@@ -15,14 +15,14 @@ from climmob.views.classes import apiView
 from climmob.views.project_analysis import processToGenerateTheReport
 from climmob.views.validators import TextField
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
+from climmob.views.validators.project import HasAccessToProjectValidator
 
 
 class ReadDataOfProjectViewApi(apiView):
-    validators = (ProjectExistsValidator,)
+    validators = (ProjectExistsValidator, HasAccessToProjectValidator)
     valid_fields = (
         TextField("project_cod"),
         TextField("user_owner"),
-        TextField("anonymize"),
     )
 
     def get(self):

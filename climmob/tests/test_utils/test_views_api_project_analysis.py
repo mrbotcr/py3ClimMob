@@ -8,12 +8,19 @@ from climmob.views.Api.project_analysis import (
     ReadVariablesForAnalysisViewApi,
     GenerateAnalysisByApiViewApi,
 )
+from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
+from climmob.views.validators.project import HasAccessToProjectValidator
 
 
 class TestReadDataOfProjectViewAPI(ViewBaseTest):
     view_class = ReadDataOfProjectViewApi
     body = {"project_cod": "123", "user_owner": "owner"}
     request_body = json.dumps(body)
+
+    def test_has_validators(self):
+        self.assertEqual(
+            self.view.validators, (ProjectExistsValidator, HasAccessToProjectValidator)
+        )
 
     @patch(
         "climmob.views.Api.project_analysis.getJSONResult",
