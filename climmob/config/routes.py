@@ -58,7 +58,11 @@ from climmob.views.Api.projectEnumerators import (
     ReadPossibleProjectEnumeratorsView,
     DeleteProjectEnumeratorView,
 )
-from climmob.views.Api.projectProducts import readProducts_view, downloadApi_view
+from climmob.views.Api.projectProducts import (
+    readProducts_view,
+    downloadApi_view,
+    GetListOfQuestionsByProject,
+)
 from climmob.views.Api.projectRegistry import (
     ReadProjectRegistryView,
     ReadPossibleQuestionsForRegistryGroupView,
@@ -276,6 +280,7 @@ from climmob.views.otherLanguages import (
 )
 
 from climmob.views.Api.languages import (
+    GetCompleteListOfLanguages,
     ReadListOfLanguagesView,
     AddLanguageForUseView,
     DeleteLanguageView,
@@ -1378,6 +1383,14 @@ def loadRoutes(config):
     # --------------------------------------------------------ClimMob API--------------------------------------------------------#
 
     # Languages
+
+    routes.append(addRoute(
+        "GetCompleteListOfLanguages",
+        "/api/GetCompleteListOfLanguages",
+        GetCompleteListOfLanguages,
+        None
+    ))
+
     routes.append(
         addRoute(
             "readListOfLanguages",
@@ -1970,6 +1983,15 @@ def loadRoutes(config):
         addRoute("readproducts", "/api/readProducts", readProducts_view, None)
     )
     routes.append(addRoute("downloadApi", "/api/downloadApi", downloadApi_view, None))
+
+    routes.append(
+        addRoute(
+            "getlistofquestionsbyproject",
+            "api/getListOfQuestionsByProject",
+            GetListOfQuestionsByProject,
+            None,
+        )
+    )
 
     # Project Assessments
     routes.append(

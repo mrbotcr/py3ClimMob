@@ -1,5 +1,6 @@
 from climmob.views.classes import apiView
 from climmob.processes import (
+    getListOfLanguagesInClimMob,
     getListOfLanguagesByUser,
     getListOfUnusedLanguagesByUser,
     languageExistInI18nUser,
@@ -15,6 +16,14 @@ import json
 import re
 
 from pyramid.response import Response
+
+class GetCompleteListOfLanguages(apiView):
+    def get(self):
+        list_of_lang =getListOfLanguagesInClimMob(self.request)
+        response = Response(status=200,
+                            body=json.dumps(list_of_lang),
+                            content_type="application/json")
+        return response
 
 
 class ReadListOfLanguagesView(apiView):

@@ -1,12 +1,16 @@
 import json
 import unittest
 from datetime import datetime
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 from pyramid.response import Response
 
 from climmob.tests.test_utils.common import ViewBaseTest
-from climmob.views.Api.projectProducts import readProducts_view, downloadApi_view
+from climmob.views.Api.projectProducts import (
+    readProducts_view,
+    downloadApi_view,
+    GetListOfQuestionsByProject,
+)
 
 
 class TestReadProductsView(ViewBaseTest):
@@ -258,6 +262,101 @@ class TestDownloadApiView(ViewBaseTest):
             response.body.decode(),
         )
         mock_json_loads.assert_called_once()
+
+
+class TestGetListOfQuestionsByProject(ViewBaseTest):
+    view_class = GetListOfQuestionsByProject
+    request_body = json.dumps(
+        {"user_owner": "testuser", "project_cod": "testproject", "lang_code": "en"}
+    )
+
+    def setUp(self):
+        super().setUp()
+        self.active_project_id_patcher = patch(
+            "climmob.views.Api.projectProducts.getTheProjectIdForOwner"
+        )
+        self.registry_questions_patcher = patch(
+            "climmob.views.Api.projectProducts.get_registry_questions_by_project"
+        )
+        self.assessment_questions_patcher = patch(
+            "climmob.views.Api.projectProducts.get_assessment_questions_by_project"
+        )
+
+        self.mock_project_id = self.active_project_id_patcher.start()
+        self.mock_registry_questions = self.registry_questions_patcher.start()
+        self.mock_assessment_questions = self.assessment_questions_patcher.start()
+
+        self.mock_project_id.return_value = MagicMock(str, name="project_id")
+        self.mock_registry_questions.return_value = [
+            {
+                "question_id": 1,
+                "question_text": "Registry question 1",
+                "type": "registry",
+            }
+        ]
+        self.mock_assessment_questions.return_value = [
+            {
+                "question_id": 2,
+                "question_text": "Assessment question 1",
+                "type": "assessment",
+            }
+        ]
+
+        self.addCleanup(self.mock_project_id.stop)
+        self.addCleanup(self.mock_registry_questions.stop)
+        self.addCleanup(self.mock_assessment_questions.stop)
+
+    def tearDown(self):
+        request_body_dict = json.loads(self.request_body)
+
+        if self.mock_project_id.called:
+            self.mock_project_id.assert_called_once_with(
+                request_body_dict["user_owner"],
+                request_body_dict["project_cod"],
+                self.view.request,
+            )
+        if self.mock_registry_questions.called:
+            self.mock_registry_questions.assert_called_once_with(
+                self.view.request, self.mock_project_id.return_value, "en"
+            )
+        if self.mock_assessment_questions.called:
+            self.mock_assessment_questions.assert_called_once_with(
+                self.view.request, self.mock_project_id.return_value, "en"
+            )
+        super().tearDown()
+
+    def test_get_not_lang(self):
+        self.request_body = json.dumps(
+            {"user_owner": "testuser", "project_cod": "testproject", "lang_code": ""}
+        )
+        response = self.view.get()
+        self.view.body = self.request_body
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.body,
+            b'[{"question_id": 1, "question_text": "Registry question 1", "type": "registry"}, {"question_id": 2, "question_text": "Assessment question 1", "type": "assessment"}]',
+        )
+
+    def test_get_no_lang_code(self):
+        self.request_body = json.dumps(
+            {"user_owner": "testuser", "project_cod": "testproject"}
+        )
+        self.view.body = self.request_body
+
+        response = self.view.get()
+        self.assertEqual(response.status_code, 200)
+
+        self.mock_registry_questions.assert_called_with(
+            self.view.request, self.mock_project_id.return_value, "en"
+        )
+
+    def test_get_success(self):
+        response = self.view.get()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.body,
+            b'[{"question_id": 1, "question_text": "Registry question 1", "type": "registry"}, {"question_id": 2, "question_text": "Assessment question 1", "type": "assessment"}]',
+        )
 
 
 if __name__ == "__main__":

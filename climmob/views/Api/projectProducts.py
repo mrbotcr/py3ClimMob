@@ -5,10 +5,18 @@ from pyramid.response import FileResponse
 from pyramid.response import Response
 
 from climmob.plugins.utilities import getProductDirectory
-from climmob.processes import projectExists, getProductData, getTheProjectIdForOwner
+from climmob.processes import (
+    projectExists,
+    getProductData,
+    getTheProjectIdForOwner,
+    get_registry_questions_by_project,
+    get_assessment_questions_by_project,
+)
 from climmob.products import product_found
 from climmob.views.classes import apiView
 from climmob.views.productsList import getDataProduct
+from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
+from climmob.views.validators import TextField
 
 
 class readProducts_view(apiView):
@@ -185,3 +193,39 @@ class downloadApi_view(apiView):
         else:
             response = Response(status=401, body=self._("Only accepts GET method."))
             return response
+
+
+class GetListOfQuestionsByProject(apiView):
+    validators = (ProjectExistsValidator,)
+    valid_fields = (
+        TextField("user_owner"),
+        TextField("project_cod"),
+        TextField(
+            "lang_code", False, False
+        ),  ##if not set it uses "en" ass default // if language does not exist uses en
+    )
+
+    def get(self):
+        dataworking = json.loads(self.body)
+        if not dataworking.get("lang_code") or dataworking["lang_code"] == "":
+            dataworking["lang_code"] = "en"
+
+        activeProjectId = getTheProjectIdForOwner(
+            dataworking["user_owner"],
+            dataworking["project_cod"],
+            self.request,
+        )
+
+        registry_questions = get_registry_questions_by_project(
+            self.request, activeProjectId, dataworking["lang_code"]
+        )
+        assessment_questions = get_assessment_questions_by_project(
+            self.request, activeProjectId, dataworking["lang_code"]
+        )
+        json_questions = registry_questions + assessment_questions
+
+        return Response(
+            status=200,
+            body=json.dumps(json_questions),
+            content_type="application/json; charset=UTF-8",
+        )
