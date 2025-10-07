@@ -2,6 +2,7 @@ import json
 import unittest
 from unittest.mock import patch, MagicMock
 
+from climmob.tests.test_utils.common import ViewBaseTest
 from climmob.views.Api.project_analysis import (
     ReadDataOfProjectViewApi,
     ReadVariablesForAnalysisViewApi,
@@ -9,71 +10,30 @@ from climmob.views.Api.project_analysis import (
 )
 
 
-class TestReadDataOfProjectViewAPI(unittest.TestCase):
-    def setUp(self):
-        self.view = ReadDataOfProjectViewApi(MagicMock())
-        self.view.request.method = "GET"
-        self.view.user = MagicMock(login="test_user")
-        self.view.body = json.dumps({"project_cod": "123", "user_owner": "owner"})
-
-    def mock_translation(self, message):
-        return message
+class TestReadDataOfProjectViewAPI(ViewBaseTest):
+    view_class = ReadDataOfProjectViewApi
+    body = {"project_cod": "123", "user_owner": "owner"}
+    request_body = json.dumps(body)
 
     @patch(
         "climmob.views.Api.project_analysis.getJSONResult",
         return_value={"data": "some_data"},
     )
-    @patch("climmob.views.Api.project_analysis.getTheProjectIdForOwner", return_value=1)
-    @patch("climmob.views.Api.project_analysis.projectExists", return_value=True)
-    def test_process_view_success(
-        self, mock_projectExists, mock_getTheProjectIdForOwner, mock_getJSONResult
-    ):
+    def test_get_success(self, mock_get_json_result):
         self.view._ = self.mock_translation  # Mock translation function
 
-        response = self.view.processView()
+        response = self.view.get()
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("some_data", response.body.decode())
 
-    @patch("climmob.views.Api.project_analysis.projectExists", return_value=False)
-    def test_process_view_project_not_exist(self, mock_projectExists):
-        self.view._ = self.mock_translation  # Mock translation function
-
-        response = self.view.processView()
-
-        self.assertEqual(response.status_code, 401)
-        self.assertIn("This project does not exist.", response.body.decode())
-
-    def test_process_view_invalid_json(self):
-        self.view._ = self.mock_translation  # Mock translation function
-        self.view.body = '{"wrong_key": "value"}'
-
-        response = self.view.processView()
-
-        self.assertEqual(response.status_code, 401)
-        self.assertIn("Error in the JSON.", response.body.decode())
-
-    @patch("json.loads", side_effect=json.JSONDecodeError("Expecting value", "", 0))
-    def test_process_view_invalid_body(self, mock_json_loads):
-        self.view._ = self.mock_translation  # Mock translation function
-        self.view.body = ""
-
-        response = self.view.processView()
-
-        self.assertEqual(response.status_code, 401)
-        self.assertIn(
-            "Error in the JSON, It does not have the 'body' parameter.",
-            response.body.decode(),
+        mock_get_json_result.assert_called_once_with(
+            self.body["user_owner"],
+            self.view.context.active_project_id,
+            self.body["project_cod"],
+            self.view.request,
+            anonymize=True,
         )
-
-    def test_process_view_post_method(self):
-        self.view._ = self.mock_translation  # Mock translation function
-        self.view.request.method = "POST"
-
-        response = self.view.processView()
-
-        self.assertEqual(response.status_code, 401)
-        self.assertIn("Only accepts GET method.", response.body.decode())
 
 
 class TestReadVariablesForAnalysisViewAPI(unittest.TestCase):

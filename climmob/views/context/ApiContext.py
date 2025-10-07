@@ -12,15 +12,15 @@ class ApiContext(BaseContext):
         super().__init__(request)
 
     @cached_property
-    def __body(self):
+    def body(self):
         body = get_body_from_api_request(self.request)
         return json.loads(body)
 
     @cached_property
     def active_project_id(self):
         active_project_id = getTheProjectIdForOwner(
-            self.__body["user_owner"],
-            self.__body["project_cod"],
+            self.body["user_owner"],
+            self.body["project_cod"],
             self.request,
         )
         return active_project_id

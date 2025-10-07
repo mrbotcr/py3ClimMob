@@ -13,65 +13,32 @@ from climmob.processes import (
 )
 from climmob.views.classes import apiView
 from climmob.views.project_analysis import processToGenerateTheReport
+from climmob.views.validators import TextField
+from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 
 
 class ReadDataOfProjectViewApi(apiView):
-    def processView(self):
+    validators = (ProjectExistsValidator,)
+    valid_fields = (
+        TextField("project_cod"),
+        TextField("user_owner"),
+        TextField("anonymize"),
+    )
 
-        if self.request.method == "GET":
-
-            obligatory = ["project_cod", "user_owner"]
-            try:
-                dataworking = json.loads(self.body)
-            except:
-                response = Response(
-                    status=401,
-                    body=self._(
-                        "Error in the JSON, It does not have the 'body' parameter."
-                    ),
-                )
-                return response
-
-            if sorted(obligatory) == sorted(dataworking.keys()):
-
-                exitsproject = projectExists(
-                    self.user.login,
-                    dataworking["user_owner"],
-                    dataworking["project_cod"],
+    def get(self):
+        response = Response(
+            status="200",
+            body=json.dumps(
+                getJSONResult(
+                    self.context.body["user_owner"],
+                    self.context.active_project_id,
+                    self.context.body["project_cod"],
                     self.request,
+                    anonymize=True,
                 )
-                if exitsproject:
-
-                    activeProjectId = getTheProjectIdForOwner(
-                        dataworking["user_owner"],
-                        dataworking["project_cod"],
-                        self.request,
-                    )
-
-                    response = Response(
-                        status=200,
-                        body=json.dumps(
-                            getJSONResult(
-                                dataworking["user_owner"],
-                                activeProjectId,
-                                dataworking["project_cod"],
-                                self.request,
-                                anonymize=True,
-                            )
-                        ),
-                    )
-                    return response
-                else:
-                    response = Response(
-                        status=401, body=self._("This project does not exist.")
-                    )
-                    return response
-            else:
-                response = Response(status=401, body=self._("Error in the JSON."))
-                return response
-        else:
-            response = Response(status=401, body=self._("Only accepts GET method."))
-            return response
+            ),
+        )
+        return response
 
 
 class ReadVariablesForAnalysisViewApi(apiView):
