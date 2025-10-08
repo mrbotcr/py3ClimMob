@@ -1,6 +1,5 @@
 from climmob.views.classes import apiView
 from climmob.processes import (
-    getListOfLanguagesInClimMob,
     getListOfLanguagesByUser,
     getListOfUnusedLanguagesByUser,
     languageExistInI18nUser,
@@ -9,7 +8,7 @@ from climmob.processes import (
     deleteI18nUser,
     getAllTranslationsOfPhrasesByLanguage,
     generalPhraseExistsWithID,
-    savePhraseTranslation,
+    savePhraseTranslation, getListOfLanguages,
 )
 import datetime
 import json
@@ -19,10 +18,10 @@ from pyramid.response import Response
 
 class GetCompleteListOfLanguages(apiView):
     def get(self):
-        list_of_lang =getListOfLanguagesInClimMob(self.request)
+        list_of_lang =getListOfLanguages(self.request)
         response = Response(status=200,
-                            body=json.dumps(list_of_lang),
-                            content_type="application/json")
+                            body=json.dumps(list_of_lang, ensure_ascii=False),
+                            content_type="application/json; charset=utf-8")
         return response
 
 

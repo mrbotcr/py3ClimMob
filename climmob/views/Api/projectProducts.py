@@ -11,6 +11,7 @@ from climmob.processes import (
     getTheProjectIdForOwner,
     get_registry_questions_by_project,
     get_assessment_questions_by_project,
+    languageExistInI18n
 )
 from climmob.products import product_found
 from climmob.views.classes import apiView
@@ -202,7 +203,7 @@ class GetListOfQuestionsByProject(apiView):
         TextField("project_cod"),
         TextField(
             "lang_code", False, False
-        ),  ##if not set it uses "en" ass default // if language does not exist uses en
+        ),  ##if not set it uses "en" ass default
     )
 
     def get(self):
@@ -210,6 +211,14 @@ class GetListOfQuestionsByProject(apiView):
         if not dataworking.get("lang_code") or dataworking["lang_code"] == "":
             dataworking["lang_code"] = "en"
 
+        if not languageExistInI18n(dataworking["lang_code"], self.request):
+            return Response(
+                status=400,
+                body=json.dumps({
+                    "error": "Wrong format language",
+                    "message":  "Check the API {} for languages options".format(self.request.route_url("GetCompleteListOfLanguages"))
+                }),
+            )
         activeProjectId = getTheProjectIdForOwner(
             dataworking["user_owner"],
             dataworking["project_cod"],
@@ -227,5 +236,4 @@ class GetListOfQuestionsByProject(apiView):
         return Response(
             status=200,
             body=json.dumps(json_questions),
-            content_type="application/json; charset=UTF-8",
         )

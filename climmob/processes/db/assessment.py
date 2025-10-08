@@ -1792,7 +1792,7 @@ def get_assessment_questions_by_project(request, project_id, lang_code):
         .filter(Assessment.project_id == AssDetail.project_id)
         .filter(Assessment.ass_cod == AssDetail.ass_cod)
         .filter(AssDetail.question_id == Question.question_id)
-        .order_by(Assessment.ass_days, AssDetail.question_order)
+        .order_by(Assessment.ass_days, Assessment.ass_desc, AssDetail.question_order)
         .all()
     )
 
