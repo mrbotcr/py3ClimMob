@@ -177,12 +177,14 @@ class TestProjectsSummaryCurationView(ViewBaseTest):
         self.all_patcher = patch(
             "climmob.views.projectsSummary.projectsSummary.get_all_project_summary"
         )
-
         self.create_patcher = patch(
             "climmob.views.projectsSummary.projectsSummary.create_projects_summary"
         )
         self.affiliations_patcher = patch(
             "climmob.views.projectsSummary.projectsSummary.get_all_affiliations"
+        )
+        self.get_dict_patcher = patch(
+            "climmob.views.projectsSummary.projectsSummary.DataColumn.get_dict"
         )
 
         self.mock_get_data_product = self.report_patcher.start()
@@ -191,12 +193,14 @@ class TestProjectsSummaryCurationView(ViewBaseTest):
         self.mock_get_all = self.all_patcher.start()
         self.mock_create = self.create_patcher.start()
         self.mock_affiliations = self.affiliations_patcher.start()
+        self.mock_get_dict = self.get_dict_patcher.start()
 
         self.mock_get_data_product.return_value = "last_report"
         self.mock_get_columns.return_value = {"column1": "column1"}
         self.mock_get_user.return_value = {"data1": "data1"}
         self.mock_get_all.return_value = {"data1": "data1"}
         self.mock_affiliations.return_value = {"Affiliation": "affiliation1"}
+        self.mock_get_dict.return_value = {"dictColumn": "dictValue"}
 
         self.addCleanup(self.report_patcher.stop)
         self.addCleanup(self.column_patcher.stop)
@@ -204,6 +208,7 @@ class TestProjectsSummaryCurationView(ViewBaseTest):
         self.addCleanup(self.all_patcher.stop)
         self.addCleanup(self.create_patcher.stop)
         self.addCleanup(self.affiliations_patcher.stop)
+        self.addCleanup(self.get_dict_patcher.stop)
 
     def tearDown(self):
 
@@ -217,6 +222,9 @@ class TestProjectsSummaryCurationView(ViewBaseTest):
             self.mock_get_all.assert_called_once_with(self.view.request)
         if self.mock_affiliations.called:
             self.mock_affiliations.assert_called_once_with(self.view.request)
+        if self.mock_get_dict.called:
+            self.mock_get_dict.assert_called_once_with(self.view)
+
         super().tearDown()
 
     def test_projects_summary_curation_view_my_converter_success(self):
@@ -229,8 +237,9 @@ class TestProjectsSummaryCurationView(ViewBaseTest):
         self.assertEqual(
             response,
             {
-                "tableStructure": {"column1": "column1"},
-                "listOfProjects": {"data1": "data1"},
+                "table_structure": {"dictColumn": "dictValue"},
+                "tableStructure": self.mock_get_columns.return_value,
+                "listOfProjects": json.dumps(self.mock_get_all.return_value, indent=4),
                 "lastReport": "last_report",
                 "edit_mode": False,
                 "sectionActive": "projectsSummaryCuration",
@@ -244,11 +253,12 @@ class TestProjectsSummaryCurationView(ViewBaseTest):
         self.assertEqual(
             response,
             {
-                "edit_mode": True,
-                "tableStructure": {"column1": "column1"},
-                "listOfProjects": {"data1": "data1"},
                 "lastReport": "last_report",
                 "sectionActive": "projectsSummaryCuration",
+                "table_structure": {"dictColumn": "dictValue"},
+                "tableStructure": self.mock_get_columns.return_value,
+                "listOfProjects": json.dumps(self.mock_get_all.return_value, indent=4),
+                "edit_mode": True,
                 "list_of_affiliation": {"Affiliation": "affiliation1"},
             },
         )
@@ -589,21 +599,27 @@ class TestProjectSummaryRecentView(ViewBaseTest):
         self.affiliations_patcher = patch(
             "climmob.views.projectsSummary.projectsSummary.get_all_affiliations"
         )
+        self.get_dict_patcher = patch(
+            "climmob.views.projectsSummary.projectsSummary.DataColumn.get_dict"
+        )
 
         self.mock_last_report = self.last_rep.start()
         self.mock_columns = self.columns_patcher.start()
         self.mock_project_summary = self.project_summary_patcher.start()
         self.mock_affiliations = self.affiliations_patcher.start()
+        self.mock_get_dict = self.get_dict_patcher.start()
 
         self.mock_last_report.return_value = []
         self.mock_columns.return_value = {"column1": "column1"}
         self.mock_project_summary.return_value = {"data1": "data1"}
         self.mock_affiliations.return_value = {"Affiliation": "affiliation1"}
+        self.mock_get_dict.return_value = {"dictColumn": "dictValue"}
 
         self.addCleanup(self.last_rep.stop)
         self.addCleanup(self.columns_patcher.stop)
         self.addCleanup(self.project_summary_patcher.stop)
         self.addCleanup(self.affiliations_patcher.stop)
+        self.addCleanup(self.get_dict_patcher.stop)
 
     def tearDown(self):
         if self.mock_affiliations.called:
@@ -617,8 +633,9 @@ class TestProjectSummaryRecentView(ViewBaseTest):
             {
                 "lastReport": [],
                 "sectionActive": "projectsSummaryRecent",
+                "table_structure":{"dictColumn": "dictValue"},
                 "tableStructure": self.mock_columns.return_value,
-                "listOfProjects": self.mock_project_summary.return_value,
+                "listOfProjects": json.dumps(self.mock_project_summary.return_value, indent=4),
                 "edit_mode": True,
                 "list_of_affiliation": {"Affiliation": "affiliation1"},
             },
