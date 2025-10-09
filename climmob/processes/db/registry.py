@@ -40,6 +40,7 @@ __all__ = [
     "deleteRegistryByProjectId",
 ]
 
+
 def deleteRegistryByProjectId(projectId, request):
     try:
         request.dbsession.query(Regsection).filter(
@@ -551,7 +552,7 @@ def deleteRegistryGroup(projectId, sectionId, request):
         .filter(Registry.question_id.in_([199, 162]))
         .first()
     )
-    if exists_restricted :
+    if exists_restricted:
         return False, _("You can not delete the base questions")
 
     try:

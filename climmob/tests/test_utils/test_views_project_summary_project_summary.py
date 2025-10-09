@@ -633,9 +633,11 @@ class TestProjectSummaryRecentView(ViewBaseTest):
             {
                 "lastReport": [],
                 "sectionActive": "projectsSummaryRecent",
-                "table_structure":{"dictColumn": "dictValue"},
+                "table_structure": {"dictColumn": "dictValue"},
                 "tableStructure": self.mock_columns.return_value,
-                "listOfProjects": json.dumps(self.mock_project_summary.return_value, indent=4),
+                "listOfProjects": json.dumps(
+                    self.mock_project_summary.return_value, indent=4
+                ),
                 "edit_mode": True,
                 "list_of_affiliation": {"Affiliation": "affiliation1"},
             },

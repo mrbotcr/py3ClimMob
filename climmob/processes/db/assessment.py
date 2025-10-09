@@ -1071,7 +1071,7 @@ def deleteAssessmentGroup(projectId, assId, sectionId, request):
         .first()
     )
 
-    if exists_restricted :
+    if exists_restricted:
         print(exists_restricted)
         return False, _("You can not delete the base questions")
 
