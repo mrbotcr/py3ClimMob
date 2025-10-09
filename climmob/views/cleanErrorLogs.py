@@ -19,6 +19,7 @@ from climmob.processes import (
     getQuestionsStructure,
     delete_assessment_data_by_qst163,
     delete_registry_data_by_qst162,
+    delete_anonymized_values_by_form_id_and_reg_id,
 )
 from climmob.processes.odk.api import storeJSONInMySQL
 from climmob.views.classes import privateView
@@ -103,6 +104,11 @@ class CleanErrorLogsView(privateView):
                                             dataworking["newqst"].split("-")[1],
                                             self.user.login,
                                         )
+                                        delete_anonymized_values_by_form_id_and_reg_id(
+                                            schema,
+                                            "-",
+                                            dataworking["newqst"].split("-")[1],
+                                        )
 
                                     storeJSONInMySQL(
                                         self.user.login,
@@ -157,6 +163,10 @@ class CleanErrorLogsView(privateView):
                                             codeId,
                                             dataworking["newqst2"],
                                             self.user.login,
+                                        )
+
+                                        delete_anonymized_values_by_form_id_and_reg_id(
+                                            schema, codeId, dataworking["newqst2"]
                                         )
 
                                     storeJSONInMySQL(
@@ -240,6 +250,11 @@ class CleanErrorLogsView(privateView):
                                             dataworking["newqst"].split("-")[1],
                                             self.user.login,
                                         )
+                                        delete_anonymized_values_by_form_id_and_reg_id(
+                                            schema,
+                                            "-",
+                                            dataworking["newqst"].split("-")[1],
+                                        )
 
                                     update_registry_status_log(
                                         self.request,
@@ -267,6 +282,9 @@ class CleanErrorLogsView(privateView):
                                             codeId,
                                             dataworking["newqst2"],
                                             self.user.login,
+                                        )
+                                        delete_anonymized_values_by_form_id_and_reg_id(
+                                            schema, codeId, dataworking["newqst2"]
                                         )
 
                                     update_assessment_status_log(

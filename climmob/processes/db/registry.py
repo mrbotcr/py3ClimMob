@@ -6,10 +6,7 @@ from sqlalchemy import func
 from climmob.models import Regsection, Registry, Project, Question, userProject
 from climmob.models.repository import execute_two_sqls, sql_execute
 from climmob.models.schema import mapFromSchema, mapToSchema
-from climmob.processes import addRegistryQuestionsToProject
-from climmob.processes.db.anonymized import (
-    delete_anonymized_values_by_form_id_and_reg_id,
-)
+from climmob.processes.db.project import addRegistryQuestionsToProject
 from climmob.processes.db.assessment import setAssessmentStatus, formattingQuestions
 import climmob.plugins as p
 
@@ -609,5 +606,3 @@ def delete_registry_data_by_qst162(schema, qst162, odk_user):
         "SET @odktools_current_user = '" + odk_user + "'; ",
         query,
     )
-
-    delete_anonymized_values_by_form_id_and_reg_id(schema, "-", qst162)

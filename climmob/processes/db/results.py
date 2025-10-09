@@ -6,7 +6,7 @@ from lxml import etree
 
 from climmob.models import Assessment, Question, Project, mapFromSchema
 from climmob.models.repository import sql_fetch_all, sql_fetch_one
-from climmob.processes import getCombinations
+from climmob.processes.db.project_combinations import getCombinations
 from climmob.processes.db.anonymization_params import get_anonymization_params_as_dict
 from climmob.processes.db.question import (
     get_sensitive_questions_anonymity_by_project_id,

@@ -16,14 +16,11 @@ from pyramid.httpexceptions import HTTPNotFound
 from pyramid.response import FileResponse
 
 from climmob.models import Project, storageErrors, Assessment
-from climmob.processes import (
-    isRegistryOpen,
-    isAssessmentOpen,
-    assessmentExists,
-    projectExists,
-    packageExist,
-    getTheProjectIdForOwner,
-)
+
+from climmob.processes.db.registry import isRegistryOpen, packageExist
+from climmob.processes.db.assessment import isAssessmentOpen, assessmentExists
+from climmob.processes.db.validators import projectExists, getTheProjectIdForOwner
+
 from climmob.processes.db.json import addJsonLog
 from climmob.processes.db.anonymized import anonymize_questions
 

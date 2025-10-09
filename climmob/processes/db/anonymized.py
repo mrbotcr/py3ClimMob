@@ -1,6 +1,7 @@
 import re
 from datetime import datetime, date
 
+from climmob.processes.db.results import getJSONResult
 from climmob.models.repository import sql_execute
 from climmob.processes.db.anonymization_params import get_anonymization_params_as_dict
 from climmob.processes.db.question import (
@@ -24,8 +25,6 @@ __all__ = [
 
 
 def anonymize_project(user_owner, project_id, project_code, request):
-    from climmob.processes import getJSONResult
-
     questions = get_sensitive_questions_anonymity_by_project_id(project_id, request)
 
     project_collected_data = getJSONResult(

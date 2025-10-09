@@ -23,9 +23,6 @@ from climmob.models import (
 
 from climmob.models.repository import sql_fetch_one, sql_execute, execute_two_sqls
 from climmob.models.schema import mapFromSchema, mapToSchema
-from climmob.processes.db.anonymized import (
-    delete_anonymized_values_by_form_id_and_reg_id,
-)
 from climmob.processes.db.project import (
     addQuestionsToAssessment,
     numberOfCombinationsForTheProject,
@@ -1780,5 +1777,3 @@ def delete_assessment_data_by_qst163(schema, ass_id, qst163, odk_user):
         "SET @odktools_current_user = '" + odk_user + "'; ",
         query,
     )
-
-    delete_anonymized_values_by_form_id_and_reg_id(schema, ass_id, qst163)
