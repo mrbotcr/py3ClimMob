@@ -1384,12 +1384,14 @@ def loadRoutes(config):
 
     # Languages
 
-    routes.append(addRoute(
-        "GetCompleteListOfLanguages",
-        "/api/GetCompleteListOfLanguages",
-        GetCompleteListOfLanguages,
-        None
-    ))
+    routes.append(
+        addRoute(
+            "GetCompleteListOfLanguages",
+            "/api/GetCompleteListOfLanguages",
+            GetCompleteListOfLanguages,
+            None,
+        )
+    )
 
     routes.append(
         addRoute(
