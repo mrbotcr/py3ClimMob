@@ -151,12 +151,13 @@ def get_question_types_with_anonymity_labeled(request):
 
 def get_question_by_field_name(field_name, questions):
     for q in questions:
-        patterns = [
-            rf"^{q.question_code}(_[abc])?(_oth)?$",
-            rf"^perf_{q.question_code}_[123]$",
-            rf"^char_{q.question_code}_(pos|neg)$",
-        ]
-        for pattern in patterns:
-            if re.fullmatch(pattern, field_name):
-                return q
+        pattern = (
+            rf"^"
+            rf"({q.question_code}(_[abc])?(_oth)?)|"
+            rf"(perf_{q.question_code}_[123])|"
+            rf"(char_{q.question_code}_(pos|neg))"
+            rf"$"
+        )
+        if re.fullmatch(pattern, field_name):
+            return q
     return None
