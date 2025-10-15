@@ -154,8 +154,6 @@
                                 <a href="{{ request.route_url('productList') }}"><i class="fa fa-cloud-download"></i> <span class="nav-label">{{ _("Downloads") }}</span></a>
                             </li>
 
-
-
                             {% if activeUser.login == "bioversity" %}
                                 <li {% if sectionActive == "projecthelp" %}class="active" {% endif %}>
                                     <a href="{{ request.route_url('projectHelp') }}"><i class="fa fa-cog"></i> <span class="nav-label">{{ _("Project help") }}</span></a>
@@ -203,7 +201,7 @@
                                 <li>
                                     {% block headsidebar %}
                                         <a class="right-sidebar-toggle" href="{{ request.route_url('projectList') }}">
-                                            <i class="fa fa-tasks"> </i> {{ _("All projects") }}
+                                            <i class="fa fa-tasks"> </i> {{ _("My network") }}
                                             {% do withsidebar.append(1) %}
                                         </a>
                                     {% endblock headsidebar %}
