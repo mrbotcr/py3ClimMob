@@ -1,7 +1,7 @@
 {% extends 'dashboard/dashboard.jinja2' %}
 
 {% block title %}
-    <title>{{ _("ClimMob | All") }}</title>
+    <title>{{ _("ClimMob | My network") }}</title>
 {% endblock title %}
 
 {% block css %}
@@ -74,7 +74,7 @@
 {% endblock topScripts %}
 
 {% block pageheading %}
-    {% set _title= _("All") %}
+    {% set _title= _("My Network") %}
     {% set removeBasicBreadcrumb = True %}
     {% set extra =[[_("Projects"), ]] %}
     {% include 'snippets/menuheading.jinja2' %}
@@ -114,7 +114,7 @@
                             <table class="display nowrap table table-stripped display " data-filter=#filter id="all-projects">
                                 <thead>
                                     <tr>
-                                        <th title="{{ _("Click on the row of the table to change the project in the \"Project overview\" section") }}.">{{ _("Project overview") }} <i class="fa fa-info-circle"> </i></th>
+{#                                        <th title="{{ _("Click on the row of the table to change the project in the \"Project overview\" section") }}.">{{ _("Project overview") }} <i class="fa fa-info-circle"> </i></th>#}
                                         <th>{{ _("Project ID") }}</th>
                                         <th>{{ _("Project name") }}</th>
                                         <th>{{ _("Owner") }}</th>
@@ -124,6 +124,9 @@
                                         <th>{{ _("Progress status") }}</th>
                                         <th>{{ _("Creation date") }}</th>
                                         <th>{{ _("Tags") }}</th>
+                                        {% if createBoton == true %}
+                                            <th> {#  {{ _("view") }} #}</th>
+                                        {% endif %}
                                         {% if createBoton == true %}
                                             <th> {#  {{ _("Clone project") }} #}</th>
                                         {% endif %}
@@ -137,16 +140,16 @@
                                 <tbody>
                                     {% for project in userProjects %}
                                         <tr onclick="window.location = '{{ request.route_url('dashboard', _query={'user':project["owner"].user_name, "project": project.project_cod}) }}';">
-                                            <td style="width: 165px" class="text-center">
-                                                <div class="i-checks" style="text-align: center" >
-                                                    <label>
-                                                        <input name="check_project" type="radio" {% if project.project_dashboard == 1%}checked{% endif %} urlRedirect="{{ request.route_url('dashboard', _query={'user':project["owner"].user_name, "project": project.project_cod}) }}"> <i></i>
-                                                    </label>
-                                                </div>
+{#                                            <td style="width: 165px" class="text-center">#}
+{#                                                <div class="i-checks" style="text-align: center" >#}
+{#                                                    <label>#}
+{#                                                        <input name="check_project" type="radio" {% if project.project_dashboard == 1%}checked{% endif %} urlRedirect="{{ request.route_url('dashboard', _query={'user':project["owner"].user_name, "project": project.project_cod}) }}"> <i></i>#}
+{#                                                    </label>#}
+{#                                                </div>#}
 {#                                                {% if project.project_dashboard == 1%}#}
 {#                                                    <i class="fa fa-dot-circle-o " style="font-size: 30px; color: #1ab394"></i>#}
 {#                                                {% endif %}#}
-                                            </td>
+{#                                            </td>#}
 
                                             <td>
                                                 <p>{{ project.project_cod }}</p>
@@ -215,6 +218,16 @@
                                                     <span class="label label-info">{{ tag }}</span>
                                                 {% endfor %}
                                             </td>
+
+
+                                            <td >
+                                                {% if createBoton == true %}
+
+                                                    <a class="btn btn-primary btn-xs" href="{{ request.route_url('dashboard', _query={'user':project["owner"].user_name, "project": project.project_cod}) }}">{{ _("View") }}</a>
+                                                {% endif %}
+                                            </td>
+
+
                                             <td >
                                                 {% if createBoton == true %}
                                                     <a class="btn btn-primary btn-xs" href="{{ request.route_url('cloneProject', _query={"stage":2, "user": project.owner["user_name"],"project": project.project_cod}) }}">{{ _("Clone") }}</a>
@@ -261,14 +274,14 @@
             });
 
             {% if userProjects %}
-                const hiddenIndexes = [5,6,9];
+                const hiddenIndexes = [4,5,8];
 
-                const ToggleableColumns = [4,5,6,7,8,9];
+                const ToggleableColumns = [3,4,5,6,7,8];
 
                 const table = new DataTable('#all-projects', {
 
                     scrollX: true,
-                    ordering: false,
+                    ordering: true,
                     deferRender: true,
                     columnControl: {
                         target: 0,
@@ -281,8 +294,9 @@
                         ],
                     },
                     columnDefs: [
-                        {target: -1, columnControl: []},
-                        {target: -2, columnControl: []},
+                        {target: -1, columnControl: [], orderable: false },
+                        {target: -2, columnControl: [], orderable: false },
+                        {target: -3, columnControl: [], orderable: false },
                         {
                             targets: hiddenIndexes,
                             visible: false,

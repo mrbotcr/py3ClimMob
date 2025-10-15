@@ -287,7 +287,7 @@ class SaveProjectRow(privateView):
 
         return {
             "status": 200,
-            "message": self._("Row updated right"),
+            "message": self._(f"Changes saved for project: {project_name}"),
         }
 
     def send_email_notification(

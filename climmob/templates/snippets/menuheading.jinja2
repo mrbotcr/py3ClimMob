@@ -33,7 +33,7 @@
                             <ol class="breadcrumb" style="{% if iconOfLibrary or svgOfTranslations%} background-color: rgba(255,255,255,0.1); color: black{% endif %}" >
                                 {% if not removeBasicBreadcrumb %}
                                     <li>
-                                        <a href="{{ request.route_url('dashboard') }}">{{ _("Project overview") }}</a>
+                                        <a href="{{ request.route_url('dashboard') }}">{{ _("Projects") }}</a>
                                     </li>
                                 {% endif %}
                                 {% for opt in extra %}

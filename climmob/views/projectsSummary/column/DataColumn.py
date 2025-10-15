@@ -99,6 +99,16 @@ DATA_COLUMNS = [
     #     "id": 11,
     #     "show": False,
     # },
+
+    {
+        "key": "project_type",
+        "name": "Type",
+        "type": "static",
+        "options": None,
+        "id": 11,
+        "show": True,
+    },
+
     {
         "key": "farmers_registered",
         "name": "Participants",
@@ -220,14 +230,7 @@ DATA_COLUMNS = [
         "id": 27,
         "show": True,
     },
-    {
-        "key": "project_type",
-        "name": "Type",
-        "type": "static",
-        "options": None,
-        "id": 28,
-        "show": True,
-    },
+
     {
         "key": "project_experimental_site",
         "name": "Experimental site",

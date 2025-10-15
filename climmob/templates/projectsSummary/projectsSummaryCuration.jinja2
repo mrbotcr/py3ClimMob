@@ -1,7 +1,7 @@
 {% extends 'dashboard/dashboard.jinja2' %}
 
 {% block title %}
-    <title>{{ _("ClimMob | Projects Summary Curation") }}</title>
+    <title>{{ _("ClimMob | 1000FARMS Network  All projects") }}</title>
 {% endblock title %}
 
 {% block css %}
@@ -29,14 +29,14 @@
         th {
             text-align: left !important;
             /*min-width: 180px;*/
-            max-width: 200px;
+            max-width: 250px;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
         }
 
         td {
-            max-width: 400px;
+            max-width: 200px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -120,9 +120,13 @@
 {% endblock topScripts %}
 
 {% block pageheading %}
-    {% set _title= _("Admin projects curation") %}
+    {% if sectionActive == "projectsSummaryCuration" %}
+        {% set _title= _("All projects") %}
+    {% elif sectionActive == "projectsSummaryRecent" %}
+        {% set _title= _("Validation") %}
+    {% endif %}
     {% set removeBasicBreadcrumb = True %}
-    {% set extra =[[_("Projects"), ]] %}
+    {% set extra =[[_("Projects"), ], [ _("1000FARMS Network"),],] %}
     {% include 'snippets/menuheading.jinja2' %}
 {% endblock pageheading %}
 
@@ -174,10 +178,17 @@
                                         <tr>
 
                                             {% for col in tableStructure %}
-                                                <th>{{ _(col["name"]) }}</th>
+                                                {% if col["name"] == "Revised" %}
+                                                    <th title='{{ _("Set to “Yes” once a network coordinator reviews and saves the project.") }}'><i class="fa fa-info-circle"> </i> {{  _(col["name"])  }} </th>
+                                                {% elif col["name"] == "Dashboard" %}
+                                                    <th title='{{ _("If set to “Yes”, the anonymized data from this project will be published on the CGIAR Fairgrounds and included in the aggregated results report of the 1000FARMS project.") }}'><i class="fa fa-info-circle"> </i> {{  _(col["name"])  }} </th>
+
+                                                {% else %}
+                                                    <th>{{ _(col["name"]) }}</th>
+                                                {% endif %}
                                             {% endfor %}
                                             {% if edit_mode == True %}
-                                                <th title='{{ _("You can drag the bottom-right corner to resize.") }}'>{{ _('Notification') }} <i class="fa fa-info-circle"> </i></th>
+                                                <th title='{{ _("Sends a custom email to the project owner. A copy of the message is automatically sent to the coordinator for record. You can drag the bottom-right corner to resize.") }}'><i class="fa fa-info-circle"> </i> {{ _('Notification') }} </th>
                                                 <th></th>
                                             {% endif %}
                                         </tr>
@@ -397,7 +408,7 @@
 
                     const table = new DataTable('#curation-table', {
                         scrollX: true,
-                        ordering: false,
+                        ordering: true,
                         deferRender: true,
                         columnControl: {
                             target: 0,
@@ -410,8 +421,8 @@
                             ],
                         },
                         columnDefs: [
-                            {target: -1, columnControl: []},
-                            {target: -2, columnControl: []},
+                            {target: -1, columnControl: [], orderable: false},
+                            {target: -2, columnControl: [], orderable: false},
                             {
                                 targets: hiddenIndexes,
                                 visible: false,
@@ -511,7 +522,7 @@
                         if (data.status !== 200) {
                             throw new Error(data.message || "Unknown error");
                         }
-                        swal("{{ _('Data Update, project ') }}" + project_title, data.message, "success");
+                        swal("{{ _('Successful update') }}", data.message, "success");
                     })
                     .catch(error => {
                         swal("{{ _('Error') }}", error.message, "error");

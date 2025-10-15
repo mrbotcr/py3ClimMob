@@ -1,7 +1,7 @@
 {% extends 'dashboard/dashboard.jinja2' %}
 
 {% block title %}
-    <title>{{ _("User projects curation") }}</title>
+    <title>{{ _("Profile update") }}</title>
 {% endblock title %}
 
 {% block css %}
@@ -33,7 +33,7 @@
 {% endblock topScripts %}
 
 {% block pageheading %}
-    {% set _title= _("User projects curation") %}
+    {% set _title= _("Profile update") %}
     {% set removeBasicBreadcrumb = True %}
     {% set extra =[[_("Projects"), ]] %}
     {% include 'snippets/menuheading.jinja2' %}
@@ -83,20 +83,20 @@
                                 <p>{{ _("It is important to keep project profiles up to date. This will help to:") }}</p>
                                 <ul>
                                     <li>{{ _("Publish the data with the right profile metadata.") }}</li>
-                                    <li>{{ _("Track project progress") }}</li>
-                                    <li>{{ _("Help ClimMob maintainers to provide support") }}</li>
-                                     <li>{{ _("Remove training data after some time to free memory") }}</li>
+                                    <li>{{ _("Track project progress.") }}</li>
+                                    <li>{{ _("Help ClimMob maintainers to provide support.") }}</li>
+                                     <li>{{ _("Remove training data after some time to free memory.") }}</li>
 
                                 </ul>
                                 <p>{{ _("Thank you for your cooperation in helping us enhance ClimMob’s efficiency and reliability!") }}</p>
-                                <p>{{ _("Please select the correct project type for each of your projects") }}:</p>
-                                <ul>
-                                    {% for type in listOfProjectTypes %}
-                                        {% if type.prjtype_id != 0 %}
-                                                <li><strong>{{ type.prjtype_name }}:</strong> {{ type.prjtype_description }}.</li>
-                                        {% endif %}
-                                    {% endfor %}
-</ul>
+{#                                <p>{{ _("Please select the correct project type for each of your projects") }}:</p>#}
+{#                                <ul>#}
+{#                                    {% for type in listOfProjectTypes %}#}
+{#                                        {% if type.prjtype_id != 0 %}#}
+{#                                                <li><strong>{{ type.prjtype_name }}:</strong> {{ type.prjtype_description }}.</li>#}
+{#                                        {% endif %}#}
+{#                                    {% endfor %}#}
+{#                                </ul>#}
 
                             </div>
                         </div>
@@ -109,12 +109,21 @@
                                     <tr>
                                         <th style="vertical-align: middle">{{ _("Project ID")}}</th>
                                         <th style="vertical-align: middle">{{ _("Name") }}</th>
-                                        <th style="vertical-align: middle">{{ _("Type") }}</th>
-                                        <th style="vertical-align: middle">{{ _("Affiliation") }}</th>
+                                        <th title="
+                                            {%- set descriptions = [] -%}
+                                            {%- for type in listOfProjectTypes -%}
+                                                {%- if type.prjtype_id != 0 -%}
+                                                    {%- set prj_description = type.prjtype_name ~ ': ' ~ type.prjtype_description -%}
+                                                    {%- set descriptions = descriptions.append(prj_description) or descriptions -%}
+                                                {%- endif -%}
+                                            {%- endfor -%}
+                                            {{ descriptions | join('\n') }}"
+                                                    style="vertical-align: middle"><i class="fa fa-info-circle" style="color: #727576 "> </i> {{ _("Type") }}</th>
+                                        <th style="vertical-align: middle">{{ _("Organization") }}</th>
                                         <th style="vertical-align: middle">{{ _("Experimental site") }}</th>
                                         <th style="vertical-align: middle">{{ _("Unit of analysis") }}</th>
                                         <th style="vertical-align: middle">{{ _("Objectives") }}</th>
-                                        <th style="vertical-align: middle">{{ _("Check this box if this project has been finished.") }}</th>
+                                        <th style="vertical-align: middle">{{ _("Set projects as finalized ") }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -167,7 +176,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        <input class="btn btn-primary pull-right" type="submit" id="btn_save_projects" name="btn_save_projects" value="{{ _('Save') }}">
+                        <input class="btn btn-primary pull-right" type="button" id="btn_save_projects" name="btn_save_projects" value="{{ _('Save') }}">
                         <br>
                         <br>
                     {% else %}
@@ -314,6 +323,10 @@
                 });
             }
         });
+
+        document.addEventListener('DOMContentLoaded', function(){
+
+        })
 
     </script>
 
