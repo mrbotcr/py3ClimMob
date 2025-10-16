@@ -15,6 +15,7 @@ from climmob.processes import (
     update_row_project_summary,
     get_user_project_summary,
     get_recent_project_summary,
+    get_published_project_summary,
     get_project_id_row,
     getProjectUserAndOwner,
     get_all_affiliations,
@@ -364,5 +365,24 @@ class ProjectSummaryRecentView(privateView):
             ),
             "edit_mode": True,
             "sectionActive": "projectsSummaryRecent",
+            "list_of_affiliation": get_all_affiliations(self.request),
+        }
+
+class ProjectSummaryPublishedView(privateView):
+    validators = (SectionOnlyForAdminValidator,)
+    def get(self):
+        lastReport = ProjectsSummaryCurationView.get_data_product(self, self.request)
+        table_structure = DataColumn.get_project_summary_columns(self)
+        list_of_projects = get_published_project_summary(self.request)
+
+        return {
+            "table_structure": DataColumn.get_dict(self),
+            "lastReport": lastReport,
+            "tableStructure": table_structure,
+            "listOfProjects": json.dumps(
+                list_of_projects, cls=DateTimeEncoder, indent=4
+            ),
+            "edit_mode": True,
+            "sectionActive": "projectsSummaryPublished",
             "list_of_affiliation": get_all_affiliations(self.request),
         }

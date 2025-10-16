@@ -252,6 +252,7 @@ from climmob.views.projectsSummary.projectsSummary import (
     ProjectsSummaryCurationView,
     SaveProjectRow,
     ProjectSummaryRecentView,
+    ProjectSummaryPublishedView,
 )
 from climmob.views.question import (
     qlibrary_view,
@@ -1369,6 +1370,15 @@ def loadRoutes(config):
             "name": "projectsSummaryRecent",
             "path": "/projectsSummaryRecent",
             "view": ProjectSummaryRecentView,
+            "renderer": "projectsSummary/projectsSummaryCuration.jinja2",
+        }
+    )
+
+    routes.append(
+        {
+            "name": "projectSummaryPublishedView",
+            "path": "/projectSummaryPublishedView",
+            "view": ProjectSummaryPublishedView,
             "renderer": "projectsSummary/projectsSummaryCuration.jinja2",
         }
     )

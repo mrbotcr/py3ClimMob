@@ -17,6 +17,7 @@ __all__ = [
     "get_user_project_summary",
     "get_recent_project_summary",
     "get_project_id_row",
+    "get_published_project_summary"
 ]
 
 
@@ -101,6 +102,18 @@ def get_recent_project_summary(request):
         )
         == "0"
     )
+    return [row.psm_json for row in res.all()]
+
+
+def get_published_project_summary(request):
+    res = (request.dbsession.query(ProjectSummary.psm_json)
+            .filter(func.json_unquote(
+                func.json_extract(ProjectSummary.psm_json, "$.project_checked")
+                )== "1")
+           .filter(func.json_unquote(
+                func.json_extract(ProjectSummary.psm_json, "$.climmob_analytics")
+                )== "1")
+           )
     return [row.psm_json for row in res.all()]
 
 
