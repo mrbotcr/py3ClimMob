@@ -36,7 +36,7 @@
         }
 
         td {
-            max-width: 200px;
+            max-width: 250px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -124,6 +124,8 @@
         {% set _title= _("All projects") %}
     {% elif sectionActive == "projectsSummaryRecent" %}
         {% set _title= _("Validation") %}
+    {% elif sectionActive == "projectsSummaryPublished" %}
+        {% set _title= _("Published") %}
     {% endif %}
     {% set removeBasicBreadcrumb = True %}
     {% set extra =[[_("Projects"), ], [ _("1000FARMS Network"),],] %}

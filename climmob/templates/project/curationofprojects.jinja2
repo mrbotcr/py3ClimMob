@@ -11,12 +11,10 @@
     {% cssresource request,'coreresources','tour' %}
     {% cssresource request,'coreresources','icheck' %}
     {% cssresource request,'coreresources','chosen' %}
+    {% cssresource request,'coreresources','sweetAlert' %}
     <style>
         .ibox.panel-warning {
             border: 1px solid #f0ad4e !important;
-        }
-        .fa {
-            color: #ffffff ;
         }
     </style>
 
@@ -30,6 +28,7 @@
     {% jsresource request,'coreresources','select2' %}
     {% jsresource request,'coreresources','icheck' %}
     {% jsresource request,'coreresources','chosen' %}
+    {% jsresource request,'coreresources','sweetAlert' %}
 {% endblock topScripts %}
 
 {% block pageheading %}
@@ -50,7 +49,7 @@
 {#                </div>#}
                 <div class="ibox-content" >
 
-                    <form class="form-horizontal" role="form" method="post" action="{{ request.url }}">
+                    <form class="form-horizontal" id="project_form" role="form" method="post" action="{{ request.url }}">
 
                         <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
 
@@ -72,7 +71,7 @@
                                         </div>
                                         <div class="ibox-tools">
                                             <a class="collapse-link">
-                                                <i class="fa fa-chevron-up"></i>
+                                                <i style="color: white" class="fa fa-chevron-up"></i>
                                             </a>
                                         </div>
                                     </div>
@@ -123,7 +122,11 @@
                                         <th style="vertical-align: middle">{{ _("Experimental site") }}</th>
                                         <th style="vertical-align: middle">{{ _("Unit of analysis") }}</th>
                                         <th style="vertical-align: middle">{{ _("Objectives") }}</th>
-                                        <th style="vertical-align: middle">{{ _("Set projects as finalized ") }}</th>
+                                        <th style="vertical-align: middle"
+                                        title="{{ _("A project is considered finalized once it has
+                                         achieved its objectives, all planned phases have been completed, and no further data entries,
+                                          profile updates, or metadata changes are expected. At this stage, the project becomes ready for
+                                           inclusion in the 1000FARMS DataBase.") }}"><i class="fa fa-info-circle" style="color: #676a6c"> </i> {{ _("Set projects as finalized ") }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -176,7 +179,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        <input class="btn btn-primary pull-right" type="button" id="btn_save_projects" name="btn_save_projects" value="{{ _('Save') }}">
+                        <input class="btn btn-primary pull-right" type="submit" id="btn_save_projects" name="btn_save_projects" value="{{ _('Save') }}">
                         <br>
                         <br>
                     {% else %}
@@ -324,9 +327,52 @@
             }
         });
 
-        document.addEventListener('DOMContentLoaded', function(){
+        $(document).ready(function() {
+            var project_form = $("#project_form");
+            var $btn = $("#btn_save_projects");
+            var $hidden = $("<input>")
+                .attr("type", "hidden")
+                .attr("name", $btn.attr("name"))
+                .val($btn.val());
+            project_form.append($hidden);
+            project_form.on("submit", function (e) {
+                e.preventDefault();
+                let checkboxes = project_form.find('input[type="checkbox"]');
+                var anyChecked = checkboxes.toArray().some(function(box){
+                    return $(box).prop('checked');
+                });
+                var currentForm = this;
+                if (anyChecked) {
+                    console.log("entro if")
+                    swal({
+                        title: '{{ _("Are you trying to finalize a project?") }}',
+                        text: '{{ _("By finalizing the selected projects, you confirm that they have reached completion and are ready for inclusion in the 1000FARMS Agregated Report and in FairGrounds DataWarehouse. This action will: Permanently lock all data entries, profile settings, and metadata (no further edits will be possible)") }}',
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "{{ _("Yes, Submit all data!") }}",
+                        cancelButtonText: "{{ _("No, cancel!") }}",
+                        closeOnConfirm: true,
+                        closeOnCancel: true
+                    },
+                    function(isConfirm){
+                        if (isConfirm) {
+                            console.log("entro 2 if")
+                            HTMLFormElement.prototype.submit.call(currentForm);
 
-        })
+                        }else{
+                            console.log("entro 2 else")
+                            swal("{{ _("Cancelled") }}", "{{ _("We have not submit the data") }}", "error");
+                        }
+                    })
+                }
+                else{
+                    console.log("entro else")
+                    HTMLFormElement.prototype.submit.call(currentForm);
+                }
+            })
+        });
+
 
     </script>
 
