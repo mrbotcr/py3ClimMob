@@ -427,7 +427,7 @@ class TestSaveProjectRow(ViewBaseTest):
         response = self.view.post()
 
         self.assertEqual(response["status"], 200)
-        self.assertIn("Row updated right", response["message"])
+        self.assertIn("Changes saved for project: Test Project", response["message"])
 
         self.mock_get_project.assert_called_once_with(
             self.view.request, self.view.request.POST["project_id"]
@@ -633,6 +633,74 @@ class TestProjectSummaryRecentView(ViewBaseTest):
             {
                 "lastReport": [],
                 "sectionActive": "projectsSummaryRecent",
+                "table_structure": {"dictColumn": "dictValue"},
+                "tableStructure": self.mock_columns.return_value,
+                "listOfProjects": json.dumps(
+                    self.mock_project_summary.return_value, indent=4
+                ),
+                "edit_mode": True,
+                "list_of_affiliation": {"Affiliation": "affiliation1"},
+            },
+        )
+        self.mock_last_report.assert_called_once_with(self.view, self.view.request)
+        self.mock_columns.assert_called_once_with(self.view)
+        self.mock_project_summary.assert_called_once_with(self.view.request)
+
+
+class TestProjectSummaryPublishedView(ViewBaseTest):
+    view_class = ProjectSummaryPublishedView
+
+    def setUp(self):
+        super().setUp()
+        self.view.user.admin = 1
+
+        self.last_rep = patch(
+            "climmob.views.projectsSummary.projectsSummary.ProjectsSummaryCurationView.get_data_product"
+        )
+
+        self.columns_patcher = patch(
+            "climmob.views.projectsSummary.projectsSummary.DataColumn.get_project_summary_columns"
+        )
+        self.project_summary_patcher = patch(
+            "climmob.views.projectsSummary.projectsSummary.get_published_project_summary"
+        )
+        self.affiliations_patcher = patch(
+            "climmob.views.projectsSummary.projectsSummary.get_all_affiliations"
+        )
+        self.get_dict_patcher = patch(
+            "climmob.views.projectsSummary.projectsSummary.DataColumn.get_dict"
+        )
+
+        self.mock_last_report = self.last_rep.start()
+        self.mock_columns = self.columns_patcher.start()
+        self.mock_project_summary = self.project_summary_patcher.start()
+        self.mock_affiliations = self.affiliations_patcher.start()
+        self.mock_get_dict = self.get_dict_patcher.start()
+
+        self.mock_last_report.return_value = []
+        self.mock_columns.return_value = {"column1": "column1"}
+        self.mock_project_summary.return_value = {"data1": "data1"}
+        self.mock_affiliations.return_value = {"Affiliation": "affiliation1"}
+        self.mock_get_dict.return_value = {"dictColumn": "dictValue"}
+
+        self.addCleanup(self.last_rep.stop)
+        self.addCleanup(self.columns_patcher.stop)
+        self.addCleanup(self.project_summary_patcher.stop)
+        self.addCleanup(self.affiliations_patcher.stop)
+        self.addCleanup(self.get_dict_patcher.stop)
+
+    def tearDown(self):
+        if self.mock_affiliations.called:
+            self.mock_affiliations.assert_called_once_with(self.view.request)
+        super().tearDown()
+
+    def test_get(self):
+        response = self.view.get()
+        self.assertEqual(
+            response,
+            {
+                "lastReport": [],
+                "sectionActive": "projectsSummaryPublished",
                 "table_structure": {"dictColumn": "dictValue"},
                 "tableStructure": self.mock_columns.return_value,
                 "listOfProjects": json.dumps(

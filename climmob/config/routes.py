@@ -1376,8 +1376,8 @@ def loadRoutes(config):
 
     routes.append(
         {
-            "name": "projectSummaryPublishedView",
-            "path": "/projectSummaryPublishedView",
+            "name": "projectSummaryPublished",
+            "path": "/projectSummaryPublished",
             "view": ProjectSummaryPublishedView,
             "renderer": "projectsSummary/projectsSummaryCuration.jinja2",
         }

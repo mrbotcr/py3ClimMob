@@ -99,7 +99,6 @@ DATA_COLUMNS = [
     #     "id": 11,
     #     "show": False,
     # },
-
     {
         "key": "project_type",
         "name": "Type",
@@ -108,7 +107,6 @@ DATA_COLUMNS = [
         "id": 11,
         "show": True,
     },
-
     {
         "key": "farmers_registered",
         "name": "Participants",
@@ -230,7 +228,6 @@ DATA_COLUMNS = [
         "id": 27,
         "show": True,
     },
-
     {
         "key": "project_experimental_site",
         "name": "Experimental site",

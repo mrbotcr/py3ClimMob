@@ -368,8 +368,10 @@ class ProjectSummaryRecentView(privateView):
             "list_of_affiliation": get_all_affiliations(self.request),
         }
 
+
 class ProjectSummaryPublishedView(privateView):
     validators = (SectionOnlyForAdminValidator,)
+
     def get(self):
         lastReport = ProjectsSummaryCurationView.get_data_product(self, self.request)
         table_structure = DataColumn.get_project_summary_columns(self)

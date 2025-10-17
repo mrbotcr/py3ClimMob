@@ -16,6 +16,11 @@
         .ibox.panel-warning {
             border: 1px solid #f0ad4e !important;
         }
+
+        .sweet-alert {
+    width: 800px; /* O el ancho que necesites */
+    margin-left: -400px; /* Ajusta la posición para centrarla (la mitad del nuevo ancho) */
+}
     </style>
 
 {% endblock css %}
@@ -79,15 +84,15 @@
                             </div>
 
                             <div class="panel-body ibox-content" >
-                                <p>{{ _("It is important to keep project profiles up to date. This will help to:") }}</p>
+                                <p>{{ _("Keeping your project profiles up to date is important. This will help to:") }}</p>
                                 <ul>
-                                    <li>{{ _("Publish the data with the right profile metadata.") }}</li>
-                                    <li>{{ _("Track project progress.") }}</li>
-                                    <li>{{ _("Help ClimMob maintainers to provide support.") }}</li>
-                                     <li>{{ _("Remove training data after some time to free memory.") }}</li>
+                                    <li>{{ _("Publish data with accurate profile metadata.") }}</li>
+                                    <li>{{ _("Track project progress effectively.") }}</li>
+                                    <li>{{ _("Support ClimMob maintainers in providing assistance.") }}</li>
+                                     <li>{{ _("Remove outdated training data periodically to free memory.") }}</li>
 
                                 </ul>
-                                <p>{{ _("Thank you for your cooperation in helping us enhance ClimMob’s efficiency and reliability!") }}</p>
+                                <p>{{ _("Thank you for your cooperation in helping us enhance ClimMob’s efficiency and reliability") }}</p>
 {#                                <p>{{ _("Please select the correct project type for each of your projects") }}:</p>#}
 {#                                <ul>#}
 {#                                    {% for type in listOfProjectTypes %}#}
@@ -343,31 +348,27 @@
                 });
                 var currentForm = this;
                 if (anyChecked) {
-                    console.log("entro if")
                     swal({
                         title: '{{ _("Are you trying to finalize a project?") }}',
                         text: '{{ _("By finalizing the selected projects, you confirm that they have reached completion and are ready for inclusion in the 1000FARMS Agregated Report and in FairGrounds DataWarehouse. This action will: Permanently lock all data entries, profile settings, and metadata (no further edits will be possible)") }}',
                         type: "warning",
                         showCancelButton: true,
                         confirmButtonColor: "#DD6B55",
-                        confirmButtonText: "{{ _("Yes, Submit all data!") }}",
+                        confirmButtonText: "{{ _("Yes, finalize and submit data") }}",
                         cancelButtonText: "{{ _("No, cancel!") }}",
                         closeOnConfirm: true,
                         closeOnCancel: true
                     },
                     function(isConfirm){
                         if (isConfirm) {
-                            console.log("entro 2 if")
                             HTMLFormElement.prototype.submit.call(currentForm);
 
                         }else{
-                            console.log("entro 2 else")
                             swal("{{ _("Cancelled") }}", "{{ _("We have not submit the data") }}", "error");
                         }
                     })
                 }
                 else{
-                    console.log("entro else")
                     HTMLFormElement.prototype.submit.call(currentForm);
                 }
             })
