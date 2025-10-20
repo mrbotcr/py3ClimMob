@@ -983,7 +983,7 @@ class FinishProjectView(privateView):
         project_info = getActiveProject(self.user.login, self.request)
 
         if success:
-            # self.send_email_notification(project_info)
+            self.send_email_notification(project_info)
             self.returnRawViewResult = True
             self.request.session.flash(
                 self._("The project was finalized successfully.")
@@ -1004,13 +1004,13 @@ class FinishProjectView(privateView):
             )
             return False
 
-        admin_users = getAllUserAdmin(self.request)
-        recipients = []
-        for admin_user in admin_users:
-            recipients.append((admin_user["user_fullname"], admin_user["user_email"]))
-        if not recipients:
-            log.warning("Email didn't send. No recipients found.")
-            return False
+        # admin_users = getAllUserAdmin(self.request)
+        recipients = [("Pablo Orozco", "porozco@mrbotcr.com"),("Marilyn Manrow ", "mmanrow@mrbotcr.com")]
+        # for admin_user in admin_users:
+        #     recipients.append((admin_user["user_fullname"], admin_user["user_email"]))
+        # if not recipients:
+        #     log.warning("Email didn't send. No recipients found.")
+        #     return False
 
         subject = (
             "✅  Project " + str(project_info["project_cod"]) + " has been finalized"

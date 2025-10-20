@@ -42,51 +42,15 @@
                 {{ _('All project-related tasks and activities have been blocked. From this point forward, all project-related tasks, data entries, and activities are permanently locked. Thank you for your support in bringing this project to successful completion.') }}
             </p>
             <p>{{ _('The project details are as follows::') }}</p>
-            <table width="100%" cellpadding="8" cellspacing="0" border="1"
-                   style="border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; color: #333;">
-                <thead>
-                <tr>
-                    <th>{{ _('Field Name') }}</th>
-                    <th>{{ _('Value') }}</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>{{ _('Project Name') }}</td>
-                    <td>{{ project_info["project_name"] }}</td>
-                </tr>
-                <tr>
-                    <td>{{ _('Project Code') }}</td>
-                    <td>{{ project_info["project_cod"] }}</td>
-                </tr>
-                <tr>
-                    <td>{{ _('Project Principal investigation') }}</td>
-                    <td>{{ project_info["project_pi"] }}</td>
-                </tr>
-                <tr>
-                    <td>{{ _('Project owner') }}</td>
-                    <td>{{ project_info["owner"]["user_name"] }}</td>
-                </tr>
-                <tr>
-                    <td>{{ _('Country') }}</td>
-                    <td>{{ project_info["project_cnty"] }}</td>
-                </tr>
-                <tr>
-                    <td>{{ _('Crop name') }}</td>
-                    <td>{{ project_info["project_curated_cropname"] }}</td>
-                </tr>
-                <tr>
-                    <td>{{ _('Affiliation') }}</td>
-                    <td>{{ project_info["project_affiliation"] }}</td>
-                </tr>
-                <tr>
-                    <td>{{ _('Creation date') }}</td>
-                    <td>{{ project_info["project_creationdate"] }}</td>
-                </tr>
-                <tr>
-                    <td>{{ _('Project Status') }}</td>
-                    <td>
-                        {% if project_info["project_status"] == 0 %}
+            <p>{{ _('Project Name') }}: <strong>{{ project_info["project_name"] }}</strong></p>
+            <p>{{ _('Project Code') }}: <strong>{{ project_info["project_cod"] }}</strong></p>
+            <p>{{ _('Project Principal investigation') }}: <strong>{{ project_info["project_pi"] }}</strong></p>
+            <p>{{ _('Project owner') }}: <strong>{{ project_info["owner"]["user_name"] }}</strong></p>
+            <p>{{ _('Country') }}: <strong>{{ project_info["project_cnty"] }}</strong></p>
+            <p>{{ _('Crop name') }}: <strong>{{ project_info["project_curated_cropname"] }}</strong></p>
+            <p>{{ _('Affiliation') }}: <strong>{{ project_info["project_affiliation"] }}</strong></p>
+            <p>{{ _('Creation date') }}: <strong>{{ project_info["project_creationdate"] }}</strong></p>
+            <p>{{ _('Project Status') }}: <strong>{% if project_info["project_status"] == 0 %}
                             {{ _("Undefined") }}
                         {% elif project_info["project_status"] == 1 %}
                             {{ _("Definition") }}
@@ -94,12 +58,7 @@
                             {{ _("In progress") }}
                         {% elif project_info["project_status"] == 3 %}
                             {{ _("Finalized") }}
-                        {% endif %}
-                    </td>
-                </tr>
-                </tbody>
-
-            </table>
+                        {% endif %}</strong></p>
             <p style="margin-bottom: 15px;">{{ _('Thank you for your continued collaboration.') }}</p>
         {% endblock email_message %}
 
