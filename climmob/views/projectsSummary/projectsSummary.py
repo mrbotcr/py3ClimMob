@@ -314,10 +314,13 @@ class SaveProjectRow(privateView):
             )
             return False
 
-        recipients = [
-            (admin_name, admin_email),
-            # (user_project_full_name, user_project_email),
-        ]
+        recipients = [(admin_name, admin_email)]
+
+        if (
+            self.request.registry.settings.get("email.projectsummary", "false")
+            == "true"
+        ):
+            recipients.append((user_project_full_name, user_project_email))
 
         subject = "Update on Your ClimMob Project(" + project_name + ")"
         text = render_template(

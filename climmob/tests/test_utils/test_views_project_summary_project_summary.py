@@ -540,7 +540,43 @@ class TestSendEmailNotification(ViewBaseTest):
             "ClimMob has no email settings in place. Email service is disabled."
         )
 
-    def test_send_email_success(self):
+    def test_send_email_success_email_false(self):
+        self.view.request.registry.settings["email.projectsummary"] = "false"
+        response = self.view.send_email_notification(**self.mocks)
+
+        self.mock_render.assert_called_once_with(
+            "email/curation_notification_email.jinja2",
+            {
+                "name_user": self.mocks["user_project_full_name"],
+                "project_name": self.mocks["project_name"],
+                "project_id": self.mocks["project_id"],
+                "admin_name": self.mocks["admin_name"],
+                "admin_email": self.mocks["admin_email"],
+                "admin_message": self.mocks["admin_message"],
+                "cropname": self.mocks["cropname"],
+                "affiliation": self.mocks["affiliation"],
+                "climmob_analytics": int(self.mocks["climmob_analytics"]),
+                "prev_affiliation": self.mocks["prev_affiliation"],
+                "prev_crop": self.mocks["prev_crop"],
+                "_": self.view.request.translate,
+            },
+        )
+
+        expected_subject = (
+            f"Update on Your ClimMob Project({self.mocks['project_name']})"
+        )
+        self.mock_build_email.assert_called_once_with(
+            self.mock_render.return_value,
+            expected_subject,
+            [
+                (self.mocks["admin_name"], self.mocks["admin_email"]),
+            ],
+            self.view.request.registry.settings["email.from"],
+        )
+        self.mock_log.error.assert_not_called()
+
+    def test_send_email_success_email_true(self):
+        self.view.request.registry.settings["email.projectsummary"] = "true"
         response = self.view.send_email_notification(**self.mocks)
 
         self.mock_render.assert_called_once_with(
