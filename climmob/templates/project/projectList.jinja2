@@ -1,7 +1,7 @@
 {% extends 'dashboard/dashboard.jinja2' %}
 
 {% block title %}
-    <title>{{ _("ClimMob | My network") }}</title>
+    <title>{{ _("ClimMob | All Projects") }}</title>
 {% endblock title %}
 
 {% block css %}
@@ -74,7 +74,7 @@
 {% endblock topScripts %}
 
 {% block pageheading %}
-    {% set _title= _("My Network") %}
+    {% set _title= _("All Projects") %}
     {% set removeBasicBreadcrumb = True %}
     {% set extra =[[_("Projects"), ]] %}
     {% include 'snippets/menuheading.jinja2' %}
