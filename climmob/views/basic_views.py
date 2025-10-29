@@ -1,9 +1,8 @@
-from datetime import datetime
 import json
 import logging
 import secrets
-import smtplib
 import uuid
+from datetime import datetime
 
 from jinja2 import ext
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
@@ -29,7 +28,7 @@ from climmob.processes import (
     getProjectCount,
 )
 from climmob.utility import validate_register_form
-from climmob.utility.email import build_email_message
+from climmob.utility.email import build_email_message, EmailSender
 from climmob.utility.helpers import readble_date
 from climmob.views.classes import publicView
 from climmob.views.validators.session import NotLoggedInValidator
@@ -393,24 +392,3 @@ class RegisterView(publicView):
             location=self.request.route_url("dashboard"),
             headers=headers,
         )
-
-
-class EmailSender:
-    def __init__(self, settings):
-        self.smtp_server = settings.get("email.server", "localhost")
-        self.smtp_port = int(settings.get("email.port", 587))
-        self.smtp_user = settings.get("email.user")
-        self.smtp_password = settings.get("email.password")
-        self.default_sender = settings.get("email.default_sender", self.smtp_user)
-
-    def send_email(self, to_email, msg):
-        try:
-            server = smtplib.SMTP(self.smtp_server, self.smtp_port)
-            server.ehlo()
-            server.starttls()
-            server.ehlo()
-            server.login(self.smtp_user, self.smtp_password)
-            server.sendmail(self.default_sender, to_email, msg.as_string())
-            server.quit()
-        except Exception as e:
-            log.error(str(e))

@@ -1,3 +1,5 @@
+import logging
+import smtplib
 from email import utils
 from email.header import Header
 from email.mime.text import MIMEText
@@ -5,10 +7,13 @@ from time import time
 
 from climmob.config.jinja_extensions import jinjaEnv
 
+log = logging.getLogger("climmob")
+
 __all__ = [
     "render_template",
     "build_email_message",
     "build_email_message_multiple_recipients",
+    "EmailSender",
 ]
 
 
@@ -41,3 +46,24 @@ def build_email_message_multiple_recipients(body, subject, recipients, mail_from
     msg["Date"] = utils.formatdate(time())
 
     return msg
+
+
+class EmailSender:
+    def __init__(self, settings):
+        self.smtp_server = settings.get("email.server", "localhost")
+        self.smtp_port = int(settings.get("email.port", 587))
+        self.smtp_user = settings.get("email.user")
+        self.smtp_password = settings.get("email.password")
+        self.default_sender = settings.get("email.default_sender", self.smtp_user)
+
+    def send_email(self, to_email, msg):
+        try:
+            server = smtplib.SMTP(self.smtp_server, self.smtp_port)
+            server.ehlo()
+            server.starttls()
+            server.ehlo()
+            server.login(self.smtp_user, self.smtp_password)
+            server.sendmail(self.default_sender, to_email, msg.as_string())
+            server.quit()
+        except Exception as e:
+            log.error(str(e))

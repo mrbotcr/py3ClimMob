@@ -2,7 +2,6 @@ import unittest
 from datetime import datetime
 from unittest.mock import patch, MagicMock
 
-from cherrypy import response
 from dateutil.relativedelta import relativedelta
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 
@@ -22,7 +21,6 @@ from climmob.views.basic_views import (
     PrivacyView,
     render_template,
     RefreshSessionTokensView,
-    EmailSender,
 )
 from climmob.views.validators.session import NotLoggedInValidator
 
@@ -1024,67 +1022,3 @@ class TestRefreshSessionTokensView(ViewBaseTest):
         self.authenticated_userid.assert_called_once_with(self.view.request)
         self.get_mock("check_csrf_token").assert_called_once()
         self.assertEqual(response.status, "401 Unauthorized")
-
-
-class TestEmailSender(unittest.TestCase):
-    def setUp(self):
-        super().setUp()
-
-        self.translate = MagicMock()
-        self.registry = MagicMock()
-        self.registry.settings = {
-            "email.server": MagicMock(str, name="email_server"),
-            "email.port": 587,
-            "email.user": MagicMock(str, name="email_user"),
-            "email.password": MagicMock(str, name="email_password"),
-            "email.default_sender": MagicMock(str, name="email_from"),
-        }
-
-        self.email_sender = EmailSender(self.registry.settings)
-
-        self.log_patcher = patch("climmob.views.basic_views.log")
-        self.smtp_patcher = patch("climmob.views.basic_views.smtplib.SMTP")
-
-        self.mock_log = self.log_patcher.start()
-        self.mock_smtp = self.smtp_patcher.start()
-
-        self.addCleanup(self.log_patcher.stop)
-        self.addCleanup(self.smtp_patcher.stop)
-
-    def tearDown(self):
-        super().tearDown()
-
-    def test_send_email_success(self):
-        mock_server = MagicMock()
-        self.mock_smtp.return_value = mock_server
-
-        to_email = ["recipient@example.com"]
-        msg = MagicMock()
-        msg.as_string.return_value = "fake email content"
-
-        self.email_sender.send_email(to_email, msg)
-
-        self.mock_smtp.assert_called_once_with(
-            self.registry.settings["email.server"], 587
-        )
-        mock_server.login.assert_called_once_with(
-            self.registry.settings["email.user"],
-            self.registry.settings["email.password"],
-        )
-
-        mock_server.quit.assert_called_once_with()
-
-        self.mock_log.error.assert_not_called()
-
-    def test_send_email_smtp_failure(self):
-        mock_server = MagicMock()
-        self.mock_smtp.return_value = mock_server
-
-        to_email = ["recipient@example.com"]
-        msg = MagicMock()
-        msg.as_string.return_value = "fake email content"
-
-        mock_server.login.side_effect = Exception("SMTP error")
-        exception = self.email_sender.send_email(to_email, msg)
-        self.assertFalse(exception)
-        self.mock_log.error.assert_called_once_with("SMTP error")
