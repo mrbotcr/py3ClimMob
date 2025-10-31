@@ -544,6 +544,17 @@ def exitsQuestionInGroup(data, request):
 
 
 def deleteRegistryGroup(projectId, sectionId, request):
+    _ = request.translate
+    exists_restricted = (
+        request.dbsession.query(Registry.question_id)
+        .filter(Registry.project_id == projectId)
+        .filter(Registry.section_id == sectionId)
+        .filter(Registry.question_id.in_([199, 162]))
+        .first()
+    )
+    if exists_restricted:
+        return False, _("You can not delete the base questions")
+
     try:
         request.dbsession.query(Regsection).filter(
             Regsection.project_id == projectId

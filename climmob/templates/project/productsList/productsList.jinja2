@@ -15,6 +15,7 @@
     {% else %}
         {% set _title= _("Downloads") %}
     {% endif %}
+    {% set removeBasicBreadcrumb = True %}
     {% set _linkWiki="https://climmob.net/blog/wiki/link-climmob-with-odk-collect/" %}
     {% include 'snippets/menuheading.jinja2' %}
 {% endblock pageheading%}
