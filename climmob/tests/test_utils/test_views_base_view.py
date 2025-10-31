@@ -798,8 +798,9 @@ class TestRegisterView(ViewBaseTest):
     @classmethod
     def setUpClass(cls):
         cls.patchers["validate_register_form"] = {
-            "patch": patch(
-                "climmob.views.basic_views.validate_register_form",
+            "patch": patch.object(
+                RegisterView,
+                "validate_register_form",
             ),
             "return_value": (False, {}),
         }
@@ -833,7 +834,7 @@ class TestRegisterView(ViewBaseTest):
         super().tearDown()
         if self.get_mock("validate_register_form").called:
             self.get_mock("validate_register_form").assert_called_once_with(
-                self.request.POST, self.view.request, self.view._
+                self.request.POST
             )
         if self.get_mock("add_user").called:
             self.get_mock("add_user").assert_called_once_with(

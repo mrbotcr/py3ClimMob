@@ -1,3 +1,5 @@
+import re
+from datetime import datetime
 import json
 import logging
 import secrets
@@ -26,8 +28,9 @@ from climmob.processes import (
     getSectorList,
     getUserCount,
     getProjectCount,
+    userExists,
+    emailExists,
 )
-from climmob.utility import validate_register_form
 from climmob.utility.email import build_email_message, EmailSender
 from climmob.utility.helpers import readble_date
 from climmob.views.classes import publicView
@@ -349,7 +352,7 @@ class RegisterView(publicView):
             "countries": getCountryList(self.request),
             "sectors": getSectorList(self.request),
         }
-        errors, error_summary = validate_register_form(data, self.request, self._)
+        errors, error_summary = self.validate_register_form(data)
 
         if errors:
             response["error_summary"] = error_summary
@@ -392,3 +395,45 @@ class RegisterView(publicView):
             location=self.request.route_url("dashboard"),
             headers=headers,
         )
+
+    # Create validator if needed by another view
+    def validate_register_form(self, data):
+        error_summary = {}
+        errors = False
+
+        if data["user_password"] != data["user_password2"]:
+            error_summary["InvalidPassword"] = self._("Invalid password")
+            errors = True
+        if userExists(data["user_name"], self.request):
+            error_summary["UserExists"] = self._("Username already exits")
+            errors = True
+        if emailExists(data["user_email"], self.request):
+            error_summary["EmailExists"] = self._(
+                "There is already an account using to this email"
+            )
+            errors = True
+        if data["user_policy"] == "False":
+            error_summary["CheckPolicy"] = self._(
+                "You need to accept the terms of service"
+            )
+            errors = True
+        if data["user_name"] == "":
+            error_summary["EmptyUser"] = self._("User cannot be emtpy")
+            errors = True
+        if data["user_password"] == "":
+            error_summary["EmptyPass"] = self._("Password cannot be emtpy")
+            errors = True
+        if data["user_fullname"] == "":
+            error_summary["EmptyName"] = self._("Full name cannot be emtpy")
+            errors = True
+        if data["user_email"] == "":
+            error_summary["EmptyEmail"] = self._("Email cannot be emtpy")
+            errors = True
+        reg = re.compile(r"^[a-z0-9]+$")
+        if not reg.match(data["user_name"]):
+            error_summary["Caracters"] = self._(
+                "The username can only use lowercase letters and numbers."
+            )
+            errors = True
+
+        return errors, error_summary
