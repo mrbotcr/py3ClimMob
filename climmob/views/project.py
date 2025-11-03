@@ -159,6 +159,7 @@ class NewProjectView(privateView):
                 dataworking["project_unit_of_analysis"],
             ),
             "list_of_affiliation": get_all_affiliations(self.request),
+            "sectionActive": "addproject",
         }
 
 

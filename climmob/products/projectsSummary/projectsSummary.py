@@ -1,8 +1,8 @@
 from climmob.products.climmob_products import (
-    createProductDirectory,
     registerProductInstance,
 )
 from climmob.products.projectsSummary.celerytasks import createProjectsSummary
+
 
 # This function has been declated in climmob.plugins.interfaces.IPackage#after_create_packages
 def create_projects_summary(request):

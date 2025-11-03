@@ -170,6 +170,35 @@ def createResources(apppath, config):
     r.add_css_resource("map", "normalize", "normalize.min.css")
     r.add_css_resource("map", "leaflet", "leaflet.css")
 
+    r.add_css_resource(
+        "coreresources",
+        "sweetAlert",
+        "inspinia/css/plugins/sweetalert/sweetalert.css",
+        None,
+    )
+
+    ######################### data tables CSS ################
+
+    r.add_css_resource(
+        "coreresources",
+        "dataTables2_3_2",
+        "inspinia/css/plugins/dataTables_2_3_2/dataTables.dataTables.css",
+        None,
+    )
+    r.add_css_resource(
+        "coreresources",
+        "dataTables2_3_2_columnControl",
+        "inspinia/css/plugins/dataTables_2_3_2/columnControl.dataTables.min.css",
+        "dataTables2_3_2",
+    )
+
+    r.add_css_resource(
+        "coreresources",
+        "dataTables2_3_2_buttons",
+        "inspinia/css/plugins/dataTables_2_3_2/buttons.dataTables.css",
+        "dataTables2_3_2_columnControl",
+    )
+
     # ----------------------------------------------------------------------------------------------------------
 
     # Add core JS
@@ -442,4 +471,38 @@ def createResources(apppath, config):
         "jqueryvalidate",
         "inspinia/js/plugins/jquery-validation/jquery.validate.min.js",
         "jquery",
+    )
+
+    r.add_js_resource(
+        "coreresources",
+        "sweetAlert",
+        "inspinia/js/plugins/sweetalert/sweetalert.min.js",
+        None,
+    )
+    ######################### data tables JS################
+
+    r.add_js_resource(
+        "coreresources",
+        "datatable2_3_2js",
+        "inspinia/js/plugins/dataTable2_3_2/dataTables.js",
+        None,
+    )
+
+    r.add_js_resource(
+        "coreresources",
+        "datatable2_3_2js_columControl",
+        "inspinia/js/plugins/dataTable2_3_2/dataTables.columnControl.js",
+        "datatable2_3_2js",
+    )
+    r.add_js_resource(
+        "coreresources",
+        "datatable2_3_2js_buttons3_0_0",
+        "inspinia/js/plugins/dataTable2_3_2/dataTables.buttons.js",
+        "datatable2_3_2js_columControl",
+    )
+    r.add_js_resource(
+        "coreresources",
+        "datatable2_3_2js_colVis",
+        "inspinia/js/plugins/dataTable2_3_2/buttons.colVis.js",
+        "datatable2_3_2js_buttons3_0_0",
     )

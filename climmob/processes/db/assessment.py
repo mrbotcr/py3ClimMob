@@ -1061,6 +1061,21 @@ def addAssessmentQuestionToGroup(data, request):
 
 
 def deleteAssessmentGroup(projectId, assId, sectionId, request):
+    _ = request.translate
+
+    exists_restricted = (
+        request.dbsession.query(Asssection.question_id)
+        .filter(Asssection.project_id == projectId)
+        .filter(Asssection.assId == assId)
+        .filter(Asssection.section_id == sectionId)
+        .filter(Asssection.question_id.in_([163]))
+        .first()
+    )
+
+    if exists_restricted:
+        print(exists_restricted)
+        return False, _("You can not delete the base questions")
+
     try:
         request.dbsession.query(Asssection).filter(
             Asssection.project_id == projectId

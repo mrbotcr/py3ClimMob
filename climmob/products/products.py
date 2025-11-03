@@ -53,7 +53,7 @@ def registerProductInstance(
     request,
     newTask=True,
 ):
-    if product_found(product):
+    if product_found(product) or product in ["projectssummary"]:
         addProductInstance(
             projectId,
             product,
