@@ -919,6 +919,7 @@ class Techalia(Base):
     )
     alias_id = Column(Integer, primary_key=True, nullable=False)
     alias_name = Column(Unicode(120))
+    alias_is_visible = Column(Integer, server_default=text("'1'"), nullable=False)
 
     tech = relationship("Technology")
 
