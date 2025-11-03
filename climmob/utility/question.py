@@ -91,7 +91,7 @@ class QuestionAnonymity(IntEnum):
 class QuestionAnonymityLabel(Enum):
     REMOVE = _("Remove")
     PSEUDONYM = _("Pseudonym")
-    RANGE = _("Range")
+    RANGE = _("Binning")
     NOISE = _("Noise")
     MASK = _("Mask")
     MONTH_YEAR = _("Month-Year")
