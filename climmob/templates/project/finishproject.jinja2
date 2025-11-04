@@ -43,18 +43,12 @@
                 </div>
                 <div class="ibox-content">
                     <p>
-                        {{ _('By finalizing this project, you confirm that it has reached completion and is ready for inclusion in the 1000FARMS Data Warehouse. This action will:') }}
+                        {{ _('By finalizing this project, you confirm that it has reached completion. This action will permanently lock all data entries, profile settings, and metadata, so no further edits will be allowed. Please review the project details carefully before proceeding.
+
+
+') }}
                     </p>
-                    <ul>
-                        <li>
-                            <strong>{{ _('Permanently lock ') }}</strong> {{ _('all data entries, profile settings, and metadata (no further edits will be possible).') }}
-                        </li>
-                    </ul>
-                    <ul>
-                        <li>
-                            <strong>{{ _('Flag the project as finalized ') }}</strong> {{ _('so it can be included in aggregated reports and the 1000FARMS Data Warehouse).') }}
-                        </li>
-                    </ul>
+
                     <div class="row d-flex justify-content-center align-items-center">
 
                         <div class="col-lg-4">
@@ -70,30 +64,30 @@
                                     <td>{{ _('Project Name') }}</td>
                                     <td>{{ project_info["project_name"] }}</td>
                                 </tr>
-                                <tr>
-                                    <td>{{ _('Project Code') }}</td>
-                                    <td>{{ project_info["project_cod"] }}</td>
-                                </tr>
-                                <tr>
-                                    <td>{{ _('Project Principal investigation') }}</td>
-                                    <td>{{ project_info["project_pi"] }}</td>
-                                </tr>
-                                <tr>
-                                    <td>{{ _('Project owner') }}</td>
-                                    <td>{{ project_info["owner"]["user_name"] }}</td>
-                                </tr>
-                                <tr>
-                                    <td>{{ _('Country') }}</td>
-                                    <td>{{ project_info["project_cnty"] }}</td>
-                                </tr>
-                                <tr>
-                                    <td>{{ _('Crop name') }}</td>
-                                    <td>{{ project_info["project_curated_cropname"] }}</td>
-                                </tr>
-                                <tr>
-                                    <td>{{ _('Affiliation') }}</td>
-                                    <td>{{ project_info["project_affiliation"] }}</td>
-                                </tr>
+{#                                <tr>#}
+{#                                    <td>{{ _('Project Code') }}</td>#}
+{#                                    <td>{{ project_info["project_cod"] }}</td>#}
+{#                                </tr>#}
+{#                                <tr>#}
+{#                                    <td>{{ _('Project Principal investigation') }}</td>#}
+{#                                    <td>{{ project_info["project_pi"] }}</td>#}
+{#                                </tr>#}
+{#                                <tr>#}
+{#                                    <td>{{ _('Project owner') }}</td>#}
+{#                                    <td>{{ project_info["owner"]["user_name"] }}</td>#}
+{#                                </tr>#}
+{#                                <tr>#}
+{#                                    <td>{{ _('Country') }}</td>#}
+{#                                    <td>{{ project_info["project_cnty"] }}</td>#}
+{#                                </tr>#}
+{#                                <tr>#}
+{#                                    <td>{{ _('Crop name') }}</td>#}
+{#                                    <td>{{ project_info["project_curated_cropname"] }}</td>#}
+{#                                </tr>#}
+{#                                <tr>#}
+{#                                    <td>{{ _('Affiliation') }}</td>#}
+{#                                    <td>{{ project_info["project_affiliation"] }}</td>#}
+{#                                </tr>#}
                                 <tr>
                                     <td>{{ _('Creation date') }}</td>
                                     <td>{{ project_info["project_creationdate"] }}</td>
@@ -120,7 +114,7 @@
                         {{ _('If you are sure about it please, press the button.') }}
                     </p>
                     <a class="btn btn-danger btn-rounded btn-outline btn-block"
-                       onclick="swal({title: 'Are you sure you want to finalize the project?',type: 'warning',showCancelButton: true, cancelButtonText: 'Cancel'
+                       onclick="swal({title: 'Please confirm you want to finalize the project.',type: 'warning',showCancelButton: true, cancelButtonText: 'Cancel'
                        }, function(isConfirm) {if (isConfirm) {document.getElementById('finishForm').submit();}});return false;">
                         <i class="fa fa-handshake-o"></i>
                         {{ _('Confirm finalization of this project') }}

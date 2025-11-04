@@ -39,16 +39,16 @@
                 <strong>{{ project_info["project_cod"] }}</strong> {{ _('was officially finalized today, ') }} {{ date }}.
             </p>
             <p style="margin-bottom: 15px;">
-                {{ _('All project-related tasks and activities have been blocked. From this point forward, all project-related tasks, data entries, and activities are permanently locked. Thank you for your support in bringing this project to successful completion.') }}
+                {{ _('From this point forward, all project-related tasks, data entries, and activities are permanently locked. Thank you for your support in bringing this project to successful completion.') }}
             </p>
             <p>{{ _('The project details are as follows::') }}</p>
             <p>{{ _('Project Name') }}: <strong>{{ project_info["project_name"] }}</strong></p>
-            <p>{{ _('Project Code') }}: <strong>{{ project_info["project_cod"] }}</strong></p>
-            <p>{{ _('Project Principal investigation') }}: <strong>{{ project_info["project_pi"] }}</strong></p>
-            <p>{{ _('Project owner') }}: <strong>{{ project_info["owner"]["user_name"] }}</strong></p>
-            <p>{{ _('Country') }}: <strong>{{ project_info["project_cnty"] }}</strong></p>
-            <p>{{ _('Crop name') }}: <strong>{{ project_info["project_curated_cropname"] }}</strong></p>
-            <p>{{ _('Affiliation') }}: <strong>{{ project_info["project_affiliation"] }}</strong></p>
+{#            <p>{{ _('Project Code') }}: <strong>{{ project_info["project_cod"] }}</strong></p>#}
+{#            <p>{{ _('Project Principal investigation') }}: <strong>{{ project_info["project_pi"] }}</strong></p>#}
+{#            <p>{{ _('Project owner') }}: <strong>{{ project_info["owner"]["user_name"] }}</strong></p>#}
+{#            <p>{{ _('Country') }}: <strong>{{ project_info["project_cnty"] }}</strong></p>#}
+{#            <p>{{ _('Crop name') }}: <strong>{{ project_info["project_curated_cropname"] }}</strong></p>#}
+{#            <p>{{ _('Affiliation') }}: <strong>{{ project_info["project_affiliation"] }}</strong></p>#}
             <p>{{ _('Creation date') }}: <strong>{{ project_info["project_creationdate"] }}</strong></p>
             <p>{{ _('Project Status') }}: <strong>{% if project_info["project_status"] == 0 %}
                             {{ _("Undefined") }}
