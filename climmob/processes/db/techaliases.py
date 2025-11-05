@@ -37,7 +37,7 @@ def getTechsAlias(idtech, request):
             ),
             isouter=True,
         )
-        .filter(Techalia.tech_id == idtech)
+        .filter(and_(Techalia.tech_id == idtech, Techalia.alias_is_visible == 1))
         .order_by(Techalia.alias_name)
         .all()
     )

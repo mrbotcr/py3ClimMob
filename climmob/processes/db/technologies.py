@@ -36,7 +36,12 @@ def getUserTechs(user, request):
         request.dbsession.query(
             Technology,
             request.dbsession.query(func.count(Techalia.tech_id))
-            .filter(Technology.tech_id == Techalia.tech_id)
+            .filter(
+                and_(
+                    Techalia.tech_id == Technology.tech_id,
+                    Techalia.alias_is_visible == 1,
+                )
+            )
             .label("quantity"),
             func.coalesce(I18nTechnology.tech_name, Technology.tech_name).label(
                 "tech_name"

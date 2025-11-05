@@ -47,7 +47,12 @@ def searchTechnologies(projectId, request):
         request.dbsession.query(
             Technology,
             request.dbsession.query(func.count(Techalia.tech_id))
-            .filter(Techalia.tech_id == Technology.tech_id)
+            .filter(
+                and_(
+                    Techalia.tech_id == Technology.tech_id,
+                    Techalia.alias_is_visible == 1,
+                )
+            )
             .label("quantityAlias"),
             func.coalesce(I18nTechnology.tech_name, Technology.tech_name).label(
                 "tech_name"
@@ -95,7 +100,13 @@ def searchTechnologies(projectId, request):
 
 
 def searchTechnologiesInProject(projectId, request):
-
+    subquery = (
+        request.dbsession.query(Techalia.alias_id)
+        .join(Prjalia, Prjalia.alias_used == Techalia.alias_id)
+        .filter(Prjalia.project_id == projectId)
+        .filter(Techalia.tech_id == Technology.tech_id)
+        .filter(Techalia.alias_is_visible == 0)
+    )
     result = (
         request.dbsession.query(
             func.coalesce(I18nTechnology.tech_name, Technology.tech_name).label(
@@ -109,6 +120,9 @@ def searchTechnologiesInProject(projectId, request):
             .label("quantity"),
             request.dbsession.query(func.count(Techalia.tech_id))
             .filter(Techalia.tech_id == Prjtech.tech_id)
+            .filter(
+                or_(Techalia.alias_is_visible == 1, Techalia.alias_id.in_(subquery))
+            )
             .label("quantityAlias"),
             User.user_fullname,
             Technology.croptaxonomy_code,
@@ -217,6 +231,7 @@ def AliasSearchTechnology(technologyId, projectId, request):
         .filter(Techalia.tech_id == Technology.tech_id)
         .filter(Technology.tech_id == technologyId)
         .filter(Techalia.alias_id.notin_(subquery))
+        .filter(Techalia.alias_is_visible == 1)
     )
     for plugin in p.PluginImplementations(p.IProjectTechnologyOptions):
         query = plugin.filter_technology_options_by_server(request, projectId, query)
