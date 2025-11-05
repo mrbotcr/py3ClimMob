@@ -111,7 +111,10 @@ class BaseView:
             raise HTTPMethodNotAllowed(f"Method {self.request.method} Not Allowed")
 
         for validator in self.validators:
-            validator(self).run()
+            result = validator(self).run()
+
+            if result:
+                return result
 
     def get(self):
         raise NotImplementedError
@@ -461,7 +464,10 @@ class privateView(BaseView):
                 pass
 
         try:
-            self._validate()
+            result_validate = self._validate()
+            if result_validate:
+                return result_validate
+
         except (HTTPBadRequest, HTTPMethodNotAllowed) as e:
             return {"result": "error", "error": str(e)}
 

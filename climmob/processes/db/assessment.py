@@ -82,6 +82,7 @@ __all__ = [
     "clone_assessment",
     "copy_assessment_questions",
     "copy_assessment_sections",
+    "get_assessment_questions_by_project",
 ]
 
 log = logging.getLogger(__name__)
@@ -1060,6 +1061,21 @@ def addAssessmentQuestionToGroup(data, request):
 
 
 def deleteAssessmentGroup(projectId, assId, sectionId, request):
+    _ = request.translate
+
+    exists_restricted = (
+        request.dbsession.query(Asssection.question_id)
+        .filter(Asssection.project_id == projectId)
+        .filter(Asssection.assId == assId)
+        .filter(Asssection.section_id == sectionId)
+        .filter(Asssection.question_id.in_([163]))
+        .first()
+    )
+
+    if exists_restricted:
+        print(exists_restricted)
+        return False, _("You can not delete the base questions")
+
     try:
         request.dbsession.query(Asssection).filter(
             Asssection.project_id == projectId
@@ -1746,3 +1762,53 @@ def getFinalizedAssessments(request, userOwner, projectCod, projectId):
         )
 
     return result
+
+
+def get_assessment_questions_by_project(request, project_id, lang_code):
+    assessment_questions = mapFromSchema(
+        request.dbsession.query(
+            AssDetail.question_id,
+            Assessment.ass_desc.label("form"),
+            func.coalesce(I18nQuestion.lang_code, Question.question_lang).label(
+                "question_lang"
+            ),
+            func.coalesce(I18nQuestion.question_desc, Question.question_desc).label(
+                "question_desc"
+            ),
+            func.coalesce(I18nQuestion.question_notes, Question.question_notes).label(
+                "question_notes"
+            ),
+            func.coalesce(I18nQuestion.question_unit, Question.question_unit).label(
+                "question_unit"
+            ),
+            func.coalesce(I18nQuestion.question_posstm, Question.question_posstm).label(
+                "question_posstm"
+            ),
+            func.coalesce(I18nQuestion.question_negstm, Question.question_negstm).label(
+                "question_negstm"
+            ),
+            func.coalesce(
+                I18nQuestion.question_perfstmt, Question.question_perfstmt
+            ).label("question_perfstmt"),
+            func.coalesce(I18nQuestion.question_name, Question.question_name).label(
+                "question_name"
+            ),
+        )
+        .select_from(Assessment, AssDetail, Question, I18nQuestion)
+        .join(
+            I18nQuestion,
+            and_(
+                Question.question_id == I18nQuestion.question_id,
+                I18nQuestion.lang_code == lang_code,
+            ),
+            isouter=True,
+        )
+        .filter(Assessment.project_id == project_id)
+        .filter(Assessment.project_id == AssDetail.project_id)
+        .filter(Assessment.ass_cod == AssDetail.ass_cod)
+        .filter(AssDetail.question_id == Question.question_id)
+        .order_by(Assessment.ass_days, Assessment.ass_desc, AssDetail.question_order)
+        .all()
+    )
+
+    return assessment_questions

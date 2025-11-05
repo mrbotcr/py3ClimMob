@@ -20,6 +20,7 @@
             <div class="error-desc">
                 {{ _("We are sorry, but you do not have access to this page or resource.") }}<br/>
                 <p>{{ message }}</p>
+
                 {{ _("You can go back to main page") }}: <br/><a href="{{ request.route_url('dashboard') }}" class="btn btn-primary m-t">{{ _("Home") }}</a>
             </div>
         </div>

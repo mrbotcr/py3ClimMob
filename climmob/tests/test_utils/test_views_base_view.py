@@ -10,6 +10,7 @@ from climmob.views.basic_views import (
     HomeView,
     HealthView,
     NotFoundView,
+    # ForbiddenView,
     LoginView,
     RegisterView,
     LogoutView,
@@ -317,50 +318,35 @@ class TestRecoverPasswordView(ViewBaseTest):
     def test_has_validators(self):
         self.assertEqual(self.view.validators, (NotLoggedInValidator,))
 
+    @patch("climmob.views.basic_views.EmailSender")
     @patch("climmob.views.basic_views.build_email_message")
-    @patch("climmob.views.basic_views.smtplib.SMTP")
     def test_send_password_by_email_success(
-        self, mock_smtp_server, mock_build_email_message
+        self, mock_build_email_message, mock_email_sender
     ):
-        mock_server = MagicMock()
-        mock_smtp_server.return_value = mock_server
-        body = MagicMock(str)
-        subject = MagicMock(str)
-        target_name = MagicMock(str)
-        target_email = MagicMock(str)
-        mail_from = MagicMock(str)
+        body = MagicMock(str, name="body")
+        subject = MagicMock(str, name="subject")
+        target_name = MagicMock(str, name="target_name")
+        target_email = MagicMock(str, name="target_email")
+        mail_from = MagicMock(str, name="mail_from")
 
-        self.view.send_password_by_email(
+        mock_msg = MagicMock()
+        mock_build_email_message.return_value = mock_msg
+
+        mock_email_sender_instance = MagicMock()
+        mock_email_sender.return_value = mock_email_sender_instance
+
+        result = self.view.send_password_by_email(
             body, subject, target_name, target_email, mail_from
         )
+
+        self.assertIsNone(result)
         mock_build_email_message.assert_called_once_with(
             body, subject, target_name, target_email, mail_from
         )
-        mock_smtp_server.assert_called_once()
-        mock_server.sendmail.assert_called_once_with(
-            mail_from, [target_email], mock_build_email_message.return_value.as_string()
+        mock_email_sender.assert_called_once_with(self.view.request.registry.settings)
+        mock_email_sender_instance.send_email.assert_called_once_with(
+            [target_email], mock_msg
         )
-        mock_server.quit.assert_called_once()
-
-    @patch("climmob.views.basic_views.build_email_message")
-    @patch("climmob.views.basic_views.print")
-    @patch("climmob.views.basic_views.smtplib.SMTP")
-    def test_send_password_by_email_fail(
-        self, mock_smtp_server, mock_print, mock_build_email_message
-    ):
-        mock_smtp_server.side_effect = Exception("Connection failed")
-
-        body = MagicMock(str)
-        subject = MagicMock(str)
-        target_name = MagicMock(str)
-        target_email = MagicMock(str)
-        mail_from = MagicMock(str)
-
-        self.view.send_password_by_email(
-            body, subject, target_name, target_email, mail_from
-        )
-        mock_smtp_server.assert_called_once()
-        mock_print.assert_called_with("Connection failed")
 
     @patch("climmob.views.basic_views.log.error")
     @patch("climmob.views.basic_views.jinjaEnv")
@@ -803,8 +789,9 @@ class TestRegisterView(ViewBaseTest):
     @classmethod
     def setUpClass(cls):
         cls.patchers["validate_register_form"] = {
-            "patch": patch(
-                "climmob.views.basic_views.validate_register_form",
+            "patch": patch.object(
+                RegisterView,
+                "validate_register_form",
             ),
             "return_value": (False, {}),
         }
@@ -838,7 +825,7 @@ class TestRegisterView(ViewBaseTest):
         super().tearDown()
         if self.get_mock("validate_register_form").called:
             self.get_mock("validate_register_form").assert_called_once_with(
-                self.request.POST, self.view.request, self.view._
+                self.request.POST
             )
         if self.get_mock("add_user").called:
             self.get_mock("add_user").assert_called_once_with(

@@ -222,6 +222,7 @@ class TestNewProjectView(ViewBaseTest):
                 "listOfUnitOfAnalysis": "UNIT_OF_ANALYSIS",
                 "listOfObjectives": "OBJECTIVES_AND_UNIT_OF_ANALYSIS",
                 "list_of_affiliation": "LIST_AFFILIATIONS",
+                "sectionActive": "addproject",
             },
         )
         mock_get_active_project.assert_called_once_with(

@@ -31,6 +31,8 @@
 {% block pageheading %}
     {% set svgOfTranslations=True %}
     {% set _title= _("Local languages") %}
+    {% set removeBasicBreadcrumb = True %}
+    {% set extra =[[_("Library"), ],] %}
     {% set _linkWiki="https://climmob.net/blog/wiki/languages/" %}
     {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}

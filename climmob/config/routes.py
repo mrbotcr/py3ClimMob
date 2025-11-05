@@ -7,12 +7,22 @@ These functions setup the routes for the host application and any plugins connec
 import climmob.plugins as p
 from climmob.plugins.utilities import addRoute
 from climmob.utility import factory
+from climmob.views.Affiliation import SearchAffiliationView
 from climmob.views.Api.enumerators import (
     CreateEnumeratorView,
     ReadEnumeratorsView,
     UpdateEnumeratorView,
     UpdatePasswordEnumeratorView,
     ApiDeleteEnumeratorView,
+)
+from climmob.views.Api.languages import (
+    GetCompleteListOfLanguages,
+    ReadListOfLanguagesView,
+    AddLanguageForUseView,
+    DeleteLanguageView,
+    ReadListOfUnusedLanguagesView,
+    ReadAllGeneralPhrasesView,
+    ChangeGeneralPhrasesView,
 )
 from climmob.views.Api.projectAssessmentStart import (
     CreateProjectAssessmentView,
@@ -58,7 +68,11 @@ from climmob.views.Api.projectEnumerators import (
     ReadPossibleProjectEnumeratorsView,
     DeleteProjectEnumeratorView,
 )
-from climmob.views.Api.projectProducts import readProducts_view, downloadApi_view
+from climmob.views.Api.projectProducts import (
+    readProducts_view,
+    downloadApi_view,
+    GetListOfQuestionsByProject,
+)
 from climmob.views.Api.projectRegistry import (
     ReadProjectRegistryView,
     ReadPossibleQuestionsForRegistryGroupView,
@@ -138,7 +152,6 @@ from climmob.views.Share.projectShare import (
     API_all_users_view,
     removeprojectShare_view,
 )
-from climmob.views.Affiliation import SearchAffiliationView
 from climmob.views.assessment import (
     assessment_view,
     DeleteAssessmentSectionView,
@@ -157,6 +170,7 @@ from climmob.views.basic_views import (
     HomeView,
     HealthView,
     NotFoundView,
+    # ForbiddenView,
     Forbidden,
     LoginView,
     RegisterView,
@@ -181,8 +195,15 @@ from climmob.views.enumerator import (
     enumerators_view,
     deleteEnumerator_view,
 )
+from climmob.views.extra_form import ExtraFormPostView
 from climmob.views.mapForProjectVisualization.mapForProjectVisualization import (
     showMapForProjectVisualization_view,
+)
+from climmob.views.metadata import (
+    MetadataForms_view,
+    MetadataFormDetails_view,
+    DownloadMetadataForm_view,
+    DeleteMetadataForms_view,
 )
 from climmob.views.odk import (
     FormlistView,
@@ -196,6 +217,12 @@ from climmob.views.odk import (
     AssessmentXMLFormView,
     AssessmentMediaFileView,
     AssessmentManifestView,
+)
+from climmob.views.otherLanguages import (
+    OtherLanguagesView,
+    SaveOtherLanguagesView,
+    GetOtherLanguagesView,
+    requestLanguageTranslation_view,
 )
 from climmob.views.productsList import (
     productsView,
@@ -222,7 +249,18 @@ from climmob.views.project_enumerators import (
     ProjectEnumeratorsView,
     removeProjectEnumerators_view,
 )
+from climmob.views.project_metadata import (
+    ProjectMetadataFormView,
+    ShowMetadataFormView,
+)
 from climmob.views.project_technologies import ProjectTechnologiesView
+from climmob.views.projectsSummary.projectsSummary import (
+    DownloadProjectsSummaryView,
+    ProjectsSummaryCurationView,
+    SaveProjectRow,
+    ProjectSummaryRecentView,
+    ProjectSummaryPublishedView,
+)
 from climmob.views.question import (
     qlibrary_view,
     getUserQuestionDetails_view,
@@ -236,6 +274,11 @@ from climmob.views.question import (
     changeDefaultLanguage_view,
     deleteUserLanguage_view,
     getUserLanguagesPreview_view,
+)
+from climmob.views.questionTranslations import (
+    QuestionTranslationsView,
+    APILanguagesView,
+    ChangeDefaultQuestionLanguageView,
 )
 from climmob.views.registry import (
     RegistryView,
@@ -256,46 +299,7 @@ from climmob.views.technologies import (
     getUserTechnologyAliasDetails_view,
     APICropsView,
 )
-from climmob.views.metadata import (
-    MetadataForms_view,
-    MetadataFormDetails_view,
-    DownloadMetadataForm_view,
-    DeleteMetadataForms_view,
-)
 from climmob.views.test import test_view, sentry_debug_view
-
-from climmob.views.questionTranslations import (
-    QuestionTranslationsView,
-    APILanguagesView,
-    ChangeDefaultQuestionLanguageView,
-)
-
-from climmob.views.otherLanguages import (
-    OtherLanguagesView,
-    SaveOtherLanguagesView,
-    GetOtherLanguagesView,
-    requestLanguageTranslation_view,
-)
-
-from climmob.views.Api.languages import (
-    ReadListOfLanguagesView,
-    AddLanguageForUseView,
-    DeleteLanguageView,
-    ReadListOfUnusedLanguagesView,
-    ReadAllGeneralPhrasesView,
-    ChangeGeneralPhrasesView,
-)
-from climmob.views.projectsSummary.projectsSummary import (
-    projectsSummary_view,
-    downloadProjectsSummary_view,
-)
-
-from climmob.views.extra_form import ExtraFormPostView
-
-from climmob.views.project_metadata import (
-    ProjectMetadataFormView,
-    ShowMetadataFormView,
-)
 
 # -------Api-------#
 
@@ -1369,18 +1373,45 @@ def loadRoutes(config):
 
     routes.append(
         {
-            "name": "projectsSummary",
-            "path": "/projectsSummary",
-            "view": projectsSummary_view,
-            "renderer": "projectsSummary/projectsSummary.jinja2",
+            "name": "projectsSummaryCuration",
+            "path": "/projectsSummaryCuration",
+            "view": ProjectsSummaryCurationView,
+            "renderer": "projectsSummary/projectsSummaryCuration.jinja2",
+        }
+    )
+
+    routes.append(
+        {
+            "name": "projectsSummaryRecent",
+            "path": "/projectsSummaryRecent",
+            "view": ProjectSummaryRecentView,
+            "renderer": "projectsSummary/projectsSummaryCuration.jinja2",
+        }
+    )
+
+    routes.append(
+        {
+            "name": "projectSummaryPublished",
+            "path": "/projectSummaryPublished",
+            "view": ProjectSummaryPublishedView,
+            "renderer": "projectsSummary/projectsSummaryCuration.jinja2",
+        }
+    )
+
+    routes.append(
+        {
+            "name": "projectsSummaryCurationUpdateRow",
+            "path": "/projectsSummaryCurationUpdateRow",
+            "view": SaveProjectRow,
+            "renderer": "json",
         }
     )
 
     routes.append(
         addRoute(
             "downloadProjectsSummary",
-            "/download/{celery_taskid}/{product_id}/downloadProjectsSummary",
-            downloadProjectsSummary_view,
+            "/download/downloadProjectsSummary",
+            DownloadProjectsSummaryView,
             None,
         )
     )
@@ -1388,6 +1419,16 @@ def loadRoutes(config):
     # --------------------------------------------------------ClimMob API--------------------------------------------------------#
 
     # Languages
+
+    routes.append(
+        addRoute(
+            "GetCompleteListOfLanguages",
+            "/api/GetCompleteListOfLanguages",
+            GetCompleteListOfLanguages,
+            None,
+        )
+    )
+
     routes.append(
         addRoute(
             "readListOfLanguages",
@@ -1981,6 +2022,15 @@ def loadRoutes(config):
     )
     routes.append(addRoute("downloadApi", "/api/downloadApi", downloadApi_view, None))
 
+    routes.append(
+        addRoute(
+            "getlistofquestionsbyproject",
+            "api/getListOfQuestionsByProject",
+            GetListOfQuestionsByProject,
+            None,
+        )
+    )
+
     # Project Assessments
     routes.append(
         addRoute(
@@ -2194,6 +2244,7 @@ def loadRoutes(config):
     appendToRoutes(routes)
 
     config.add_notfound_view(NotFoundView, renderer="404.jinja2")
+    # config.add_forbidden_view(ForbiddenView, renderer="403.jinja2")
 
     config.add_forbidden_view(Forbidden, renderer="403.jinja2")
 
