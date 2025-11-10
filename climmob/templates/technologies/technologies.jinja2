@@ -138,6 +138,10 @@
             </div>
         </div>
 
+        <div class="col-md-4" id="div_search_technology_genesys" style="display: none" >
+            {% include 'snippets/technologies/genesys-search.jinja2' %}
+        </div>
+
         <div class="col-md-4" id="div_create_technology_option" style="display: none" >
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
@@ -352,6 +356,7 @@
                 {% if error_summary_aux %}
                     $("#btn_add_technology").css('display','initial')
                     $("#div_create_technology").css('display','initial')
+                    $("#div_search_technology_genesys").css('display','initial')
                 {% endif%}
             {% endif %}
         });
@@ -366,6 +371,7 @@
             $("#btn_add_technology").css('display','initial')
             $("#tech_name").prop('readonly',false)
             $("#tech_name").val("")
+            $(".tech_name").text("")
             $(".tech_id").val("")
 
             /*$("#croptaxonomy_code").val('0');
@@ -377,6 +383,7 @@
             $("#select_crop").trigger('change');*/
 
             $("#div_create_technology").css('display','initial')
+            $("#div_search_technology_genesys").css('display','initial')
             $("#div_create_technology_option").css('display','none')
             $("#div_show_create_alias").css('display','none')
 
@@ -389,6 +396,7 @@
             $('.i-checkTech').iCheck('uncheck');
             $("#btn_cancel_technology_options").click()
             $("#div_create_technology").css('display','none')
+            $("#div_search_technology_genesys").css('display','none')
             $("#div_show_create_alias").css('display','none')
             $('.footable tbody tr').siblings().removeClass('tableHover2');
         });
@@ -428,6 +436,7 @@
                 cleanBtsTechnology()
                 $(".tech_id").val(tech.tech_id)
                 $("#tech_name").val(tech.tech_name)
+                $(".tech_name").text(tech.tech_name)
 
                 /*$("#croptaxonomy_code").val(tech.croptaxonomy_code);
                 $('#crop_label').html('');
@@ -437,7 +446,7 @@
                 $("#select_crop").val(tech.croptaxonomy_code);
                 $("#select_crop").trigger('change');
 
-                allHTML = ""
+                let allHTML = ""
                 for(var i=0; i<tech.tech_alias.length; i++)
                 {
                     var arrayForAlias = JSON.stringify(tech.tech_alias[i]).replace(/(')/g, "\\u0027");
@@ -456,7 +465,10 @@
                     allHTML +="</div>"
                     allHTML +="<div class='stream-panel' style='margin-top:4px'>"
                     allHTML +="<div class='stream-info'>"
-                    allHTML +="<p style='font-size:14px; margin:initial'>"+tech.tech_alias[i].alias_name+"</p>"
+                    allHTML +="<p style='font-size:14px; margin:initial; display: inline-block'>"+tech.tech_alias[i].alias_name+"</p>"
+                    if (tech.tech_alias[i].alias_id > 4254) {
+                        allHTML += "<p class='by' style='margin-left: 10px; color: #1ab394; font-size: 10px; display: inline-block'>{{ _('from') }} genesys{#{{ technology.user_fullname[0:12] }} {% if technology.user_fullname|length > 12 %}...{% endif %} #}</p>"
+                    }
                     allHTML +="</div>"
                     allHTML +="</div>"
                     allHTML +="</div>"
@@ -507,7 +519,9 @@
                 }
 
                 $("#div_create_technology").css('display','initial')
+                $("#div_search_technology_genesys").css('display','initial')
                 $("#div_show_alias").css('display','block')
+                $("#div_show_alias_genesys").css('display','block')
 
             });
         }
