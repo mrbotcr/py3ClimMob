@@ -13,9 +13,9 @@
 {% block css %}
     {% cssresource request,'coreresources','sweet' %}
     <style>
-        th, td {
-            width: 100px
-        }
+    .wide-swal {
+        width: 800px !important;
+}
     </style>
 {% endblock css %}
 
@@ -34,64 +34,72 @@
         {% set can_edit = False %}
     {% endif %}
 
+{% set progress_status %}
+    {% if project_info.project_regstatus == 0 %}
+        {{ _("Registration not yet started") }}
+    {% elif project_info.project_regstatus == 1 %}
+        {{ _("Registration ongoing") }}
+    {% elif project_info.project_regstatus == 2 %}
+        {% if project_info.project_assstatus == 0 %}
+            {{ _("Registration closed") }}
+        {% else %}
+            {{ _("Trial data collection / Analysis ongoing") }}
+        {% endif %}
+    {% endif %}
+{% endset %}
+
     {% if can_edit %}
         <div class="row">
             <div class="ibox">
                 <div class="ibox-title">
                     <h5> {{ _('Confirmation details') }} </h5> <span
-                        class="label label-danger">{{ _('Warning') }}</span>
+                        class="label label-warning">{{ _('Warning') }}</span>
                 </div>
                 <div class="ibox-content">
                     <p>
                         {{ _('By finalizing this project, you confirm that it has reached completion. This action will permanently lock all data entries, profile settings, and metadata, so no further edits will be allowed. Please review the project details carefully before proceeding.
 
-
 ') }}
                     </p>
-
                     <div class="row d-flex justify-content-center align-items-center">
-
                         <div class="col-lg-4">
                             <table class="table table-bordered table-striped">
                                 <thead>
                                 <tr>
-                                    <th>{{ _('Field Name') }}</th>
+                                    <th>{{ _('Field name') }}</th>
                                     <th>{{ _('Value') }}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td>{{ _('Project Name') }}</td>
+                                    <td>{{ _('Project name') }}</td>
                                     <td>{{ project_info["project_name"] }}</td>
                                 </tr>
-{#                                <tr>#}
-{#                                    <td>{{ _('Project Code') }}</td>#}
-{#                                    <td>{{ project_info["project_cod"] }}</td>#}
-{#                                </tr>#}
-{#                                <tr>#}
-{#                                    <td>{{ _('Project Principal investigation') }}</td>#}
-{#                                    <td>{{ project_info["project_pi"] }}</td>#}
-{#                                </tr>#}
-{#                                <tr>#}
-{#                                    <td>{{ _('Project owner') }}</td>#}
-{#                                    <td>{{ project_info["owner"]["user_name"] }}</td>#}
-{#                                </tr>#}
-{#                                <tr>#}
-{#                                    <td>{{ _('Country') }}</td>#}
-{#                                    <td>{{ project_info["project_cnty"] }}</td>#}
-{#                                </tr>#}
-{#                                <tr>#}
-{#                                    <td>{{ _('Crop name') }}</td>#}
-{#                                    <td>{{ project_info["project_curated_cropname"] }}</td>#}
-{#                                </tr>#}
-{#                                <tr>#}
-{#                                    <td>{{ _('Affiliation') }}</td>#}
-{#                                    <td>{{ project_info["project_affiliation"] }}</td>#}
-{#                                </tr>#}
                                 <tr>
                                     <td>{{ _('Creation date') }}</td>
                                     <td>{{ project_info["project_creationdate"] }}</td>
                                 </tr>
+                                <tr>
+                                    <td>{{ _('Progress') }}</td>
+                                    <td>
+                                    {% if project_info.project_regstatus == 0 %}
+                                        {{ _("Registration not yet started") }}
+                                    {% else %}
+                                        {% if project_info.project_regstatus == 1 %}
+                                            {{ _("Registration ongoing") }}
+                                        {% else %}
+                                            {% if project_info.project_regstatus == 2 %}
+                                                {% if project_info.project_assstatus == 0 %}
+                                                    {{ _("Registration closed") }}
+                                                {% else %}
+                                                    {{ _("Trial data collection / Analysis ongoing") }}
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endif %}
+                                    </td>
+                                </tr>
+
                                 <tr>
                                     <td>{{ _('Project Status') }}</td>
                                     <td>
@@ -113,13 +121,18 @@
                     <p>
                         {{ _('If you are sure about it please, press the button.') }}
                     </p>
-                    <a class="btn btn-danger btn-rounded btn-outline btn-block"
-                       onclick="swal({title: 'Please confirm you want to finalize the project.',type: 'warning',showCancelButton: true, cancelButtonText: 'Cancel'
+                    <a class="btn btn-primary btn-rounded btn-outline btn-block"
+                       data-title="{{ _('Please confirm you want to finalize the project:') }}  <i>{{ project_info['project_name'] }}</i> <br> {{ _('On progress:') }} <i> {{ progress_status }} </i>"
+                       onclick="swal({ html: true,
+                       title: this.getAttribute('data-title'),
+                       type: 'warning',
+                       showCancelButton: true,
+                       cancelButtonText: 'Cancel',
+                       customClass: 'wide-swal'
                        }, function(isConfirm) {if (isConfirm) {document.getElementById('finishForm').submit();}});return false;">
-                        <i class="fa fa-handshake-o"></i>
+                        <i class="fa fa-check-square-o"></i>
                         {{ _('Confirm finalization of this project') }}
                     </a>
-
                     <form id="finishForm" method="POST" action="{{ request.url }}">
 
                         <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">

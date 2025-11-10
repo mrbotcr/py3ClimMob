@@ -306,6 +306,30 @@
                     {% endif %}
 
                     {% if hasActiveProject %}
+                        {% if not can_edit %}
+                        <div class="ibox ">
+                            <div class="ibox-title">
+                                <h5>
+                                    Project Finalized
+                                    <span class="badge badge-success"><i class="fa fa-check-square-o"></i></span>
+
+                                </h5>
+                                <div class="ibox-tools">
+                                    <a class="collapse-link">
+                                        <i class="fa fa-chevron-up"></i>
+                                    </a>
+                                    <a class="close-link">
+                                        <i class="fa fa-times"></i>
+                                    </a>
+                                </div>
+                                </div>
+                            <div class="ibox-content">
+                                <p>The project has been successfully completed.</p>
+                            </div>
+                        </div>
+                        {% endif %}
+
+
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="ibox float-e-margins">
@@ -320,22 +344,14 @@
                                                             <h5>{{ _("Project definition") }}</h5>
                                                         </td>
                                                         <td style="vertical-align: middle; text-align: center">
-                                                                <div class="small" style="text-align:
-                                                                        {% if can_edit %}left
-                                                                        {% else %}right; margin-right: 50px
-                                                                        {% endif %}">
-                                                                    {{ pcompleted }}% {% if can_edit %} {{ _("Completed") }}
-                                                                    {% else %}{{ _("Project set as finalized") }}
-                                                                    <i class="fa fa-check"></i>
-                                                                {% endif %}
+                                                                <div class="small" style="text-align:left">
+                                                                    {{ pcompleted }}%  {{ _("Completed") }}
                                                                 </div>
-{#                                                            {% if can_edit %}#}
                                                             <div class="progress progress-mini" style="width: 85%">
                                                                 <div style="width: {{ pcompleted }}%;"
                                                                      class="progress-bar progress-bar-success">
                                                                 </div>
                                                             </div>
-{#                                                                {% endif %}#}
                                                         </td>
                                                     </tr>
                                                     </tbody>
@@ -1032,8 +1048,8 @@
                                             </p>
                                             <div>
                                                 <button onclick="location.href='{{ request.route_url('finishproject', user = activeProject.owner.user_name, project= activeProject.project_cod) }}'"
-                                                        class="btn btn-danger btn-rounded btn-block">
-                                                    <i class="fa fa-arrow-circle-o-right"></i> {{ _('Set as finalized') }}
+                                                        class="btn btn-primary btn-rounded btn-block">
+                                                    <i class="fa fa-check-square"></i> {{ _('Set as finalized') }}
                                                 </button>
                                             </div>
                                         </div>

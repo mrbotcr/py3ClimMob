@@ -984,7 +984,7 @@ class FinishProjectView(privateView):
             self.send_email_notification(project_info)
             self.returnRawViewResult = True
             self.request.session.flash(
-                self._("The project was finalized successfully.")
+                self._("The project has been successfully finalized. Thank you for your dedication!. Congratulations!!!")
             )
             return HTTPFound(location=self.request.route_url("dashboard"))
         else:

@@ -39,27 +39,49 @@
                 <strong>{{ project_info["project_cod"] }}</strong> {{ _('was officially finalized today, ') }} {{ date }}.
             </p>
             <p style="margin-bottom: 15px;">
-                {{ _('From this point forward, all project-related tasks, data entries, and activities are permanently locked. Thank you for your support in bringing this project to successful completion.') }}
+                {{ _('From this point forward, all project-related tasks, data entries, and activities are permanently locked.') }}
             </p>
-            <p>{{ _('The project details are as follows::') }}</p>
-            <p>{{ _('Project Name') }}: <strong>{{ project_info["project_name"] }}</strong></p>
+            <p>{{ _('The project details are as follows:') }}</p>
+            <br>
+            <ul>{{ _('Project name') }}: <strong>{{ project_info["project_name"] }}</strong></ul>
 {#            <p>{{ _('Project Code') }}: <strong>{{ project_info["project_cod"] }}</strong></p>#}
-{#            <p>{{ _('Project Principal investigation') }}: <strong>{{ project_info["project_pi"] }}</strong></p>#}
-{#            <p>{{ _('Project owner') }}: <strong>{{ project_info["owner"]["user_name"] }}</strong></p>#}
-{#            <p>{{ _('Country') }}: <strong>{{ project_info["project_cnty"] }}</strong></p>#}
-{#            <p>{{ _('Crop name') }}: <strong>{{ project_info["project_curated_cropname"] }}</strong></p>#}
-{#            <p>{{ _('Affiliation') }}: <strong>{{ project_info["project_affiliation"] }}</strong></p>#}
-            <p>{{ _('Creation date') }}: <strong>{{ project_info["project_creationdate"] }}</strong></p>
-            <p>{{ _('Project Status') }}: <strong>{% if project_info["project_status"] == 0 %}
-                            {{ _("Undefined") }}
-                        {% elif project_info["project_status"] == 1 %}
-                            {{ _("Definition") }}
-                        {% elif project_info["project_status"] == 2 %}
-                            {{ _("In progress") }}
-                        {% elif project_info["project_status"] == 3 %}
-                            {{ _("Finalized") }}
-                        {% endif %}</strong></p>
-            <p style="margin-bottom: 15px;">{{ _('Thank you for your continued collaboration.') }}</p>
+            <ul>{{ _('Project Principal investigation') }}: <strong>{{ project_info["project_pi"] }}</strong></ul>
+            <ul>{{ _('Owner') }}: <strong>{{ project_info["owner"]["user_name"] }}</strong></ul>
+            <ul>{{ _('Country') }}: <strong>{{ project_info["project_cnty"] }}</strong></ul>
+            <ul>{{ _('Crop name') }}: <strong>{{ project_info["project_curated_cropname"] }}</strong></ul>
+{#            <p>{{ _('Affiliation') }}: <strong>{{ project_info["project_affiliation"] }}</strong></p#}
+            <ul>{{ _('Creation date') }}: <strong>{{ project_info["project_creationdate"] }}</strong></ul>
+            <ul>{{ _('Progress') }}:
+                <strong>
+                    {% if project_info.project_regstatus == 0 %}
+                        {{ _("Registration not yet started") }}
+                    {% else %}
+                        {% if project_info.project_regstatus == 1 %}
+                            {{ _("Registration ongoing") }}
+                        {% else %}
+                            {% if project_info.project_regstatus == 2 %}
+                                {% if project_info.project_assstatus == 0 %}
+                                    {{ _("Registration closed") }}
+                                {% else %}
+                                    {{ _("Trial data collection / Analysis ongoing") }}
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                </strong>
+            </ul>
+            <ul>{{ _('Status') }}: <strong>
+                {% if project_info["project_status"] == 0 %}
+                    {{ _("Undefined") }}
+                {% elif project_info["project_status"] == 1 %}
+                    {{ _("Definition") }}
+                {% elif project_info["project_status"] == 2 %}
+                    {{ _("In progress") }}
+                {% elif project_info["project_status"] == 3 %}
+                    {{ _("Finalized") }}
+                {% endif %}</strong></ul>
+            <br>
+            <p style="margin-bottom: 15px;">{{ _('Thank you for collaborating in the 1000FARMS Network monitoring!') }}</p>
         {% endblock email_message %}
 
         {% block email_goodbye %}

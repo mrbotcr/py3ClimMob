@@ -47,22 +47,6 @@ def build_email_message_multiple_recipients(body, subject, recipients, mail_from
 
     return msg
 
-
-def build_email_message_multiple_recipients(body, subject, recipients, mail_from):
-    """
-    recipients: List of tuples: [(name1, email1), (name2, email2), ...]
-    """
-    msg = MIMEText(body.encode("utf-8"), "html", "utf-8")
-    msg["Subject"] = Header(subject.encode("utf-8"), "utf-8")
-    msg["From"] = "ClimMob <{}>".format(mail_from)
-
-    to_header = ", ".join(["{} <{}>".format(name, email) for name, email in recipients])
-    msg["To"] = to_header
-    msg["Date"] = utils.formatdate(time())
-
-    return msg
-
-
 class EmailSender:
     def __init__(self, settings):
         self.smtp_server = settings.get("email.server", "localhost")
