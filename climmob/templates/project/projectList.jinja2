@@ -124,6 +124,8 @@
                                         <th>{{ _("Progress status") }}</th>
                                         <th>{{ _("Creation date") }}</th>
                                         <th>{{ _("Tags") }}</th>
+                                    <th>{{ _("Crops") }}</th>
+                                        <th>{{ _("Country") }}</th>
                                         {% if createBoton == true %}
                                             <th> {#  {{ _("view") }} #}</th>
                                         {% endif %}
@@ -218,7 +220,14 @@
                                                     <span class="label label-info">{{ tag }}</span>
                                                 {% endfor %}
                                             </td>
-
+                                            <td>
+                                                {% for tag in project.technologies %}
+                                                    <ul style="margin: 0; padding: 0" >{{ tag["tech_name"] }}</ul>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                <p>{{ project["country_name"] }}</p>
+                                            </td>
 
                                             <td >
                                                 {% if createBoton == true %}
@@ -274,9 +283,9 @@
             });
 
             {% if userProjects %}
-                const hiddenIndexes = [4,5,8];
+                const hiddenIndexes = [4,5,8,9,10];
 
-                const ToggleableColumns = [3,4,5,6,7,8];
+                const ToggleableColumns = [3,4,5,6,7,8,9,10];
 
                 const table = new DataTable('#all-projects', {
 
