@@ -411,6 +411,8 @@
 
             $("#div_show_create_alias").css("display","none");
 
+            $("#q").val("").trigger('change.select2').trigger('change');
+
             var URL= "{{ request.route_url('getUserTechnologyDetails',user="__user_name__", technologyid="__techid__") }}"
             URL= URL.replace("__user_name__",user_name).replace("__techid__", tech_id)
             data = {};

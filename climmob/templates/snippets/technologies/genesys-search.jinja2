@@ -1,70 +1,19 @@
 {% block css %}
-
-    {% cssresource request,'coreresources','tour' %}
     {% cssresource request,'coreresources','icheck' %}
-    {% cssresource request,'coreresources','dataTables2_3_2' %}
-    {% cssresource request,'coreresources','dataTables2_3_2_columnControl' %}
-    {% cssresource request,'coreresources','dataTables2_3_2_buttons' %}
-
-    <style>
-        th {
-            text-align: left !important;
-
-            max-width: 400px;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-        }
-
-        td {
-            max-width: 400px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        table.dataTable {
-            margin: 0px !important;
-        }
-
-        div.dt-buttons > .dt-button {
-            font-size: 14px;
-            font-weight: normal;
-            line-height: 1.42857143;
-            text-align: center;
-            white-space: nowrap;
-            cursor: pointer;
-            color: inherit;
-            background: white;
-            border: 1px solid #e7eaec;
-            border-radius: 3px;
-
-        }
-
-        #genesys-options-table tbody tr:hover {
-            background-color: #FAFAFA;
-            cursor: pointer;
-        }
-
-        .dtcc-button.dtcc-button_active > .dtcc-button-icon svg * {
-            stroke: #1ab394;
-        }
-
-        .dtcc-button.dtcc-button_active {
-            background: rgba(152, 152, 152, 0.44) !important;
-        }
-
-    </style>
+    {% cssresource request,'coreresources','datatables' %}
+    {% cssresource request,'coreresources','sweet' %}
+    {% cssresource request,'coreresources','footable' %}
+    {% cssresource request,'coreresources','select2' %}
 {% endblock css %}
 
 {% block topScripts %}
-    {% jsresource request,'coreresources','toastr' %}
-    {% jsresource request,'coreresources','tour' %}
+    {% jsresource request,'coreresources','footable' %}
     {% jsresource request,'coreresources','icheck' %}
-    {% jsresource request,'coreresources','datatable2_3_2js' %}
-    {% jsresource request,'coreresources','datatable2_3_2js_columControl' %}
-    {% jsresource request,'coreresources','datatable2_3_2js_buttons3_0_0' %}
-    {% jsresource request,'coreresources','datatable2_3_2js_colVis' %}
+    {% jsresource request,'coreresources','technologies' %}
+    {% jsresource request,'coreresources','datatables' %}
+    {% jsresource request,'coreresources','sweet' %}
+    {% include 'snippets/delete.jinja2' %}
+    {% jsresource request,'coreresources','select2' %}
 {% endblock topScripts %}
 
 <div class="row">
@@ -72,116 +21,150 @@
         <div class="ibox">
             <div class="ibox-title">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1em;">
-                    <h5>{{ _("Search in genesys") }}</h5>
-                    <div class="ibox-tools">
-                        <button class="btn btn-primary">{{ _("Import") }}</button>
-                        <button class="btn btn-danger white">{{ _("Remove") }}</button>
-                    </div>
+                    <h5>{{ _("External technology options") }}</h5>
                 </div>
-                <div class="ibox-content">
-                    <table class="display nowrap table table-stripped display " data-filter=#filter
-                           id="genesys-options-table">
-                        <thead>
-                        <tr>
-                            <th></th>
-                            <th>{{ _("Name") }}</th>
-                            <th>{{ _("Technology") }}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for gen_op in genesys_options %}
-                            <tr>
-                                <td>
-                                    box
-                                </td>
-                                <td>
-                                    <p>{{ gen_op.name }}</p>
-                                </td>
-                                <td>
-                                    <p>{{ gen_op.name }}</p>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
+            </div>
+            <div class="ibox-content">
+                <div class="form-group"
+                     style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1em;">
+                    <label class="col-sm-3 control-label" for="q">{{ _('Search') }}</label>
+                    <div class="col-sm-9">
+                        <select id="q" name="q" class="form-control inputForQuestionSelect"
+                                style="width: 100%; !important;" required>
+                            <option value=""></option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
+<div class="row">
+    <div class="col-lg-12">
+        <div class="ibox">
+            <div class="ibox-title">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1em;">
+                    <h5>{{ _("Details") }}</h5>
+                </div>
+            </div>
+            <div class="ibox-content">
+                <section id="synonym-section">
 
-    <script>
+                    <h4>{{ _("Synonyms:") }}</h4>
+                    <table id="synonyms" class="table table-stripped" style="width: 100%;">
+                        <thead>
+                        <tr>
+                            <th>{{ _("Name") }}</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </section>
+                <hr>
+                <section id="references-section">
+                    <h4>{{ _("Cross-references:") }}</h4>
+                    <table id="references" class="table table-stripped" style="width: 100%;">
+                        <thead>
+                        <tr>
+                            <th>{{ _("Name") }}</th>
+                            <th>{{ _("Link") }}</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
 
-        $(document).ready(function () {
+<script>
+    function formatOption(item) {
+        if (item.default_display_name === undefined) {
+            return {{ _("Select one option") }}
+        }
+        return item.default_display_name + " (" + item.germplasm_genus + ')';
+    }
 
-            $('.i-checks').iCheck({
-                checkboxClass: 'icheckbox_square-green',
-                radioClass: 'iradio_square-green',
-            });
+    $(document).ready(function () {
+        const synonymsTable = $('#synonyms').DataTable({
+            columns: [
+                {data: "name"}
+            ],
+            dom: 't',
+            paging: true,
+            ordering: false,
+            language: {
+                emptyTable: {{ _("No items to display") }}
+            },
+        });
 
-            $('.i-checks input[type="radio"]').on('ifChecked', function (event) {
-                const url = $(this).attr('urlRedirect');
-                if (url) {
-                    window.location.href = url;
+        const referencesTable = $('#references').DataTable({
+            columns: [
+                {data: "name"},
+                {data: "base_url"}
+            ],
+            dom: 't',
+            paging: true,
+            ordering: false,
+            language: {
+                emptyTable: {{ _("No items to display") }}
+            },
+        });
+
+        $('#q').on('change', function () {
+            if ($(this).val() === "") {
+                synonymsTable.clear().draw()
+                referencesTable.clear().draw();
+                return;
+            }
+            $.ajax({
+                url: 'http://localhost:8000/api/germplasm' + '/' + $(this).val(),
+                method: 'GET',
+                headers: {
+                    "Authorization": "Api-key rMm18pLw.LJSPV0cg5UUEaUtE6oQ6uTzotT0fD6Un"
+                },
+                success: function (response) {
+                    synonymsTable.clear().rows.add(response.synonyms).draw();
+                    referencesTable.clear().rows.add(response.source).draw();
+                },
+                error: function (err) {
+                    console.error('Error:', err);
                 }
             });
-
-            const hiddenIndexes = [2];
-
-            const table = new DataTable('#genesys-options-table', {
-
-                scrollX: true,
-                ordering: true,
-                deferRender: true,
-                columnControl: {
-                    target: 0,
-                    content: [
-                        {
-                            extend: 'dropdown',
-                            icon: 'filter',
-                            content: ['searchList']
-                        }
-                    ],
-                },
-                columnDefs: [
-                    {#{targets: hiddenIndexes, columnControl: [], orderable: false},#}
-                    {
-                        targets: 0, // First column
-                        orderable: false, // Prevent sorting on checkbox column
-                        searchable: false,
-                        width: "1%",
-                        columnControl: [],
-                        className: 'dt-center',
-                        render: function (data, type, row, meta) {
-                            return `<input type="checkbox" class="row-select" value="${row[0]}">`;
-                        }
-                    }
-                ],
-                layout: {
-                    topStart: {
-                        buttons: [
-                            {
-                                extend: 'pageLength',
-                                text: '{{ _("Rows per Page") }}',
-                                className: 'dt_button_custom',
-                            }
-                        ]
-                    },
-                    topEnd: {
-                        search: {
-                            return: true,
-                            text: '{{ _("General search:") }} ',
-                            className: 'form-control',
-                        },
-                    },
-                    bottomStart: {
-                        info: {
-                            return: true,
-                            text: "{{ _('Showing _START_ to _END_ of _TOTAL_ entries') }}",
-                        },
-                    },
-                },
-            })
         });
-    </script>
-</div>
+
+        $("#q").select2({
+            data: [],
+            templateResult: formatOption,
+            templateSelection: formatOption,
+            placeholder: "Select an optionz",
+            allowClear: true,
+            ajax: {
+                url: "http://localhost:8000/api/germplasm",
+                dataType: 'json',
+                delay: 250,
+                headers: {
+                    "Authorization": "Api-key rMm18pLw.LJSPV0cg5UUEaUtE6oQ6uTzotT0fD6Un"
+                },
+                data: function (params) {
+                    return {
+                        q: params.term,
+                        page: params.page,
+                        limit: 100,
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: data,
+                        pagination: {
+                            more: data.length === 10
+                        }
+                    };
+                },
+                cache: true
+            }
+        });
+
+    });
+</script>
