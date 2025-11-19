@@ -20,9 +20,9 @@
     <div class="col-lg-12">
         <div class="ibox">
             <div class="ibox-title">
-                <h5>{{ _("External technology options") }}</h5>
+                <h5>{{ _("Import technology option") }}</h5>
                 <div class="ibox-tools">
-                    <button id="btn_cancel_add_external_tech" class="btn btn-xs btn-default pull-right "><i
+                    <button id="btn_cancel_import_tech" class="btn btn-xs btn-default pull-right "><i
                             class="fa fa-close"></i> {{ _("Clear and close form") }} </button>
                 </div>
             </div>
@@ -65,7 +65,7 @@
                 <form action="#" method="POST" style="min-height: fit-content">
                     <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                     <button class="btn btn-primary pull-right" type="submit"
-                            id="btn_add_external_technology"
+                            id="btn_import_technology"
                             name="btn_add_technology">{{ _('Add and close') }}</button>
                 </form>
                 <br>
@@ -170,7 +170,7 @@
             }
         });
 
-        $("#btn_cancel_add_external_tech").click(function () {
+        $("#btn_cancel_import_tech").click(function () {
             hideAddAlias()
         });
 
