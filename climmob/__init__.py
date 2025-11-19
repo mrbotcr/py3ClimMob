@@ -11,6 +11,8 @@ if (
 
         gevent.monkey.patch_all()
 
+from climmob.services.includeme import includeme as services_includeme
+
 from climmob.config.environment import load_environment
 from pyramid.config import Configurator
 import os
@@ -75,6 +77,9 @@ def main(global_config, **settings):
     )
 
     config.include(".models")
+
+    services_includeme(config)
+
     # Load and configure the host application
     load_environment(settings, config, apppath, policy_array)
 
