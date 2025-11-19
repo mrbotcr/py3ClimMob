@@ -20,8 +20,10 @@
     <div class="col-lg-12">
         <div class="ibox">
             <div class="ibox-title">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1em;">
-                    <h5>{{ _("External technology options") }}</h5>
+                <h5>{{ _("External technology options") }}</h5>
+                <div class="ibox-tools">
+                    <button id="btn_cancel_add_external_tech" class="btn btn-xs btn-default pull-right "><i
+                            class="fa fa-close"></i> {{ _("Clear and close form") }} </button>
                 </div>
             </div>
             <div class="ibox-content">
@@ -35,23 +37,9 @@
                         </select>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-lg-12">
-        <div class="ibox">
-            <div class="ibox-title">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1em;">
-                    <h5>{{ _("Details") }}</h5>
-                </div>
-            </div>
-            <div class="ibox-content">
+                <br>
                 <section id="synonym-section">
-
-                    <h4>{{ _("Synonyms:") }}</h4>
+                    <h4>{{ _("Synonyms") }}:</h4>
                     <table id="synonyms" class="table table-stripped" style="width: 100%;">
                         <thead>
                         <tr>
@@ -62,7 +50,7 @@
                 </section>
                 <hr>
                 <section id="references-section">
-                    <h4>{{ _("Cross-references:") }}</h4>
+                    <h4>{{ _("Cross-references") }}:</h4>
                     <table id="references" class="table table-stripped" style="width: 100%;">
                         <thead>
                         <tr>
@@ -72,6 +60,16 @@
                         </thead>
                     </table>
                 </section>
+
+                <br>
+                <form action="#" method="POST" style="min-height: fit-content">
+                    <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                    <button class="btn btn-primary pull-right" type="submit"
+                            id="btn_add_external_technology"
+                            name="btn_add_technology">{{ _('Add and close') }}</button>
+                </form>
+                <br>
+                <br>
             </div>
         </div>
     </div>
@@ -80,7 +78,7 @@
 <script>
     function formatOption(item) {
         if (item.default_display_name === undefined) {
-            return {{ _("Select one option") }}
+            return "{{ _("Select one option") }}"
         }
         return item.default_display_name + " (" + item.germplasm_genus + ')';
     }
@@ -94,7 +92,7 @@
             paging: true,
             ordering: false,
             language: {
-                emptyTable: {{ _("No items to display") }}
+                emptyTable: "{{ _("No items to display") }}"
             },
         });
 
@@ -107,12 +105,12 @@
             paging: true,
             ordering: false,
             language: {
-                emptyTable: {{ _("No items to display") }}
+                emptyTable: "{{ _("No items to display") }}"
             },
         });
 
         $('#q').on('change', function () {
-            if ($(this).val() === "") {
+            if ($(this).val() === "" || $(this).val() === null) {
                 synonymsTable.clear().draw()
                 referencesTable.clear().draw();
                 return;
@@ -135,6 +133,7 @@
 
         $("#q").select2({
             data: [],
+            minimumInputLength: 3,
             templateResult: formatOption,
             templateSelection: formatOption,
             placeholder: "Select an optionz",
@@ -163,7 +162,16 @@
                     };
                 },
                 cache: true
+            },
+            language: {
+                inputTooShort: function (args) {
+                    return "{{ _("Type at least 3 characters") }}";
+                }
             }
+        });
+
+        $("#btn_cancel_add_external_tech").click(function () {
+            hideAddAlias()
         });
 
     });
