@@ -124,7 +124,17 @@
                     <div class="activity-stream" id="div_show_alias" style="overflow-y: scroll; max-height: calc(100vh - 495px);">
 
                     </div>
-                    <div class='stream' style='padding:4px 0; display: none' onclick='showCreateAlias()' id="div_show_create_alias">
+                    <div class='stream' style='padding:4px 0; display: none' onclick='showAddAlias()' id="div_show_create_alias">
+                        <div class='stream-badge'>
+                            <i class='fa fa-plus' style='color:#000000'></i>
+                        </div>
+                        <div class='stream-panel' style='margin-top:4px'>
+                            <div class='stream-info'>
+                                <button class="btn btn-primary btn-xs" style="font-size: 12px; background-color: #3c763d; border-color: #3c763d; font-weight: 600">{{ _("Add external technology option") }}</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='stream' style='padding:4px 0; display: none' onclick='showCreateAlias()' id="div_show_add_external_alias">
                         <div class='stream-badge'>
                             <i class='fa fa-plus' style='color:#000000'></i>
                         </div>
@@ -386,6 +396,7 @@
             $("#div_search_technology_genesys").css('display','initial')
             $("#div_create_technology_option").css('display','none')
             $("#div_show_create_alias").css('display','none')
+            $("#div_show_add_external_alias").css('display','none')
 
             if ($('.closeError').length) {
                 $(".closeError").click()
@@ -398,6 +409,7 @@
             $("#div_create_technology").css('display','none')
             $("#div_search_technology_genesys").css('display','none')
             $("#div_show_create_alias").css('display','none')
+            $("#div_show_add_external_alias").css('display','none')
             $('.footable tbody tr').siblings().removeClass('tableHover2');
         });
 
@@ -410,6 +422,7 @@
         function showVarietiesInTechnology(tech_id, user_name, closeError='yes') {
 
             $("#div_show_create_alias").css("display","none");
+            $("#div_show_add_external_alias").css("display","none");
 
             $("#q").val("").trigger('change.select2').trigger('change');
 
@@ -487,6 +500,7 @@
                     {#allHTML +="</div>"#}
                     {#allHTML +="</div>"#}
                     $("#div_show_create_alias").css("display","block");
+                    $("#div_show_add_external_alias").css("display","block");
                 }
 
                 $("#div_show_alias").html(allHTML)
@@ -521,14 +535,24 @@
                 }
 
                 $("#div_create_technology").css('display','initial')
-                $("#div_search_technology_genesys").css('display','initial')
                 $("#div_show_alias").css('display','block')
-                $("#div_show_alias_genesys").css('display','block')
-
             });
         }
 
+        function showAddAlias(){
+            hideCreateAlias()
+
+            $("#q").val("").trigger('change.select2').trigger('change');
+            $("#div_search_technology_genesys").css('display','initial')
+        }
+
+        function hideAddAlias(){
+            $("#div_search_technology_genesys").css('display','none')
+        }
+
         function showCreateAlias(){
+            hideAddAlias()
+
             $("#alias_name").prop('required',false);
             $("#alias_name_insert").prop('required',true);
             if ($('.closeError').length) {
@@ -544,6 +568,12 @@
             if ($('.closeError').length) {
                 $(".closeError").click()
             }
+        }
+
+        function hideCreateAlias(){
+            $("#btn_add_alias").css('display','none')
+            $("#div_create_option").css('display','none')
+            $("#div_create_technology_option").css("display","none")
         }
 
         var changeError=0
