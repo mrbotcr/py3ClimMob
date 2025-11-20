@@ -484,8 +484,9 @@
                     allHTML +="<div class='stream-panel' style='margin-top:4px'>"
                     allHTML +="<div class='stream-info'>"
                     allHTML +="<p style='font-size:14px; margin:initial; display: inline-block'>"+tech.tech_alias[i].alias_name+"</p>"
-                    if (tech.tech_alias[i].alias_id > 4254) {
-                        allHTML += "<p class='by' style='margin-left: 10px; color: #1ab394; font-size: 10px; display: inline-block'>{{ _('from') }} genesys{#{{ technology.user_fullname[0:12] }} {% if technology.user_fullname|length > 12 %}...{% endif %} #}</p>"
+                    if (tech.tech_alias[i].source) {
+                        const sources = tech.tech_alias[i].source.map(item => item.name).join(", ");
+                        allHTML += `<p class='by' style='margin-left: 10px; color: #1ab394; font-size: 10px; display: inline-block'>{{ _('from') }} ${sources}{#{{ technology.user_fullname[0:12] }} {% if technology.user_fullname|length > 12 %}...{% endif %} #}</p>`
                     }
                     allHTML +="</div>"
                     allHTML +="</div>"

@@ -1,6 +1,6 @@
 from sqlalchemy import func, and_
 
-from climmob.models.climmobv4 import Techalia, Prjalia, I18nTechalia
+from climmob.models.climmobv4 import Techalia, Prjalia, I18nTechalia, ExternalTechOption
 from climmob.models.schema import mapFromSchema, mapToSchema
 
 __all__ = [
@@ -41,6 +41,17 @@ def getTechsAlias(idtech, request):
         .order_by(Techalia.alias_name)
         .all()
     )
+
+    imported_tech_options = mapFromSchema(
+        request.dbsession.query(ExternalTechOption)
+        .filter(ExternalTechOption.tech_id == idtech)
+        .all()
+    )
+
+    for alias in result:
+        for imported_tech_option in imported_tech_options:
+            if alias["alias_id"] == imported_tech_option["alias_id"]:
+                alias["source"] = imported_tech_option["data"]["source"]
 
     return result
 

@@ -8,6 +8,7 @@ from climmob.processes import (
     updateAlias,
     removeAlias,
     getTechnology,
+    add_external_tech_option,
 )
 from climmob.views.classes import privateView
 
@@ -196,7 +197,13 @@ class ImportAliasView(privateView):
             _from="import",
         )
         if success:
-            pass
+            imported_alias = {
+                "id": tech["id"],
+                "data": tech,
+                "alias_id": added_tech["alias_id"],
+                "tech_id": added_tech["tech_id"],
+            }
+            success, msg = add_external_tech_option(imported_alias, self.request)
 
         self.returnRawViewResult = True
         return HTTPFound(
