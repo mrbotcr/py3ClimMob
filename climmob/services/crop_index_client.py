@@ -1,5 +1,6 @@
 from climmob.services.base_api_client import BaseAPIClient
 
+
 class CropIndexAPIClient(BaseAPIClient):
     def __init__(self, api_key: str, base_url: str):
         super().__init__(api_key, base_url)
