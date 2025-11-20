@@ -1,3 +1,5 @@
+from pyramid.httpexceptions import HTTPFound
+
 from climmob.processes import (
     getTechsAlias,
     findTechalias,
@@ -51,7 +53,7 @@ class newalias_view(privateView):
                             existAlias = findTechalias(formdata, self.request)
                             if alias not in addd:
                                 if existAlias == False:
-
+                                    print(f"form: {formdata}")
                                     added, message = addTechAlias(
                                         formdata, self.request
                                     )
@@ -176,3 +178,29 @@ class modifyalias_view(privateView):
             "tech": data2,
             "redirect": redirect,
         }
+
+
+class ImportAliasView(privateView):
+    def post(self):
+        body = self.getPostDict()
+        print(body)
+
+        tech = self.request.crop_index_api.get_tech_by_id(body["q"])
+
+        success, added_tech = addTechAlias(
+            {
+                "alias_name": tech["default_display_name"],
+                "tech_id": self.request.technologyid,
+            },
+            self.request,
+            _from="import",
+        )
+        if success:
+            pass
+
+        self.returnRawViewResult = True
+        return HTTPFound(
+            location=self.request.route_url(
+                "usertechnologies", _query={"tech_id": self.request.technologyid}
+            )
+        )

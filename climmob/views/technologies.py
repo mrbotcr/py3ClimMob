@@ -59,6 +59,9 @@ class technologies_view(privateView):
         # alias = {}
 
         nextPage = self.request.params.get("next")
+        tech_id = self.request.params.get("tech_id")
+        if tech_id:
+            techSee = getUserTechById(tech_id, self.request)
 
         if self.request.method == "POST":
             if "btn_add_technology" in self.request.POST:
