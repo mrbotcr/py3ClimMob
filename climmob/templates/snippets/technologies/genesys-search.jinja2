@@ -32,7 +32,7 @@
                     <label class="col-sm-3 control-label" for="q">{{ _('Search') }}</label>
                     <div class="col-sm-9">
                         <select id="q" name="q" class="form-control inputForQuestionSelect"
-                                style="width: 100%; !important;" required>
+                                style="width: 100%; !important;" required form="import_alias_form">
                             <option value=""></option>
                         </select>
                     </div>
@@ -62,7 +62,7 @@
                 </section>
 
                 <br>
-                <form action="#" method="POST" style="min-height: fit-content">
+                <form method="POST" style="min-height: fit-content" id="import_alias_form">
                     <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                     <button class="btn btn-primary pull-right" type="submit"
                             id="btn_import_technology"
@@ -76,12 +76,19 @@
 </div>
 
 <script>
+    $(document).on("click", ".copy-btn", function () {
+        const text = $(this).data("href");
+        navigator.clipboard.writeText(text);
+    });
+
     function formatOption(item) {
         if (item.default_display_name === undefined) {
             return "{{ _("Select one option") }}"
         }
-        return item.default_display_name + " (" + item.germplasm_genus + ')';
+        return item.default_display_name + " (" + item.germplasm_genus + " " + item.germplasm_species + ')';
     }
+
+    const import_alias_form_action = "{{ request.route_url("import_alias", technologyid="__tech_id__") }}"
 
     $(document).ready(function () {
         const synonymsTable = $('#synonyms').DataTable({
@@ -99,7 +106,24 @@
         const referencesTable = $('#references').DataTable({
             columns: [
                 {data: "name"},
-                {data: "base_url"}
+                {
+                    data: "base_url",
+                    render: function (data, type, row) {
+                        const href = `${data}/a/${row.cross_reference_id}`;
+                        const text = href.substring(0, 32) || "";
+                        return `
+                            <a target="_blank" title="${href}" href="${href}">${text}...</a>
+                            <button
+                                class="copy-btn"
+                                data-href="${href}"
+                                style="border:none;background:none;cursor:pointer;margin-left:6px;"
+                                title="Copy link"
+                            >
+                                <i class="fa fa-copy"></i>
+                            </button>
+                        `;
+                    }
+                }
             ],
             dom: 't',
             paging: true,
@@ -116,10 +140,10 @@
                 return;
             }
             $.ajax({
-                url: 'http://localhost:8000/api/germplasm' + '/' + $(this).val(),
+                url: '{{ request.registry.settings.get('crop_index.base_url') }}/germplasm/' + $(this).val(),
                 method: 'GET',
                 headers: {
-                    "Authorization": "Api-key rMm18pLw.LJSPV0cg5UUEaUtE6oQ6uTzotT0fD6Un"
+                    "Authorization": "Api-key {{ request.registry.settings.get('crop_index.api_key') }}"
                 },
                 success: function (response) {
                     synonymsTable.clear().rows.add(response.synonyms).draw();
@@ -139,14 +163,15 @@
             placeholder: "Select an optionz",
             allowClear: true,
             ajax: {
-                url: "http://localhost:8000/api/germplasm",
+                url: "{{ request.registry.settings.get('crop_index.base_url') }}/germplasm",
                 dataType: 'json',
                 delay: 250,
                 headers: {
-                    "Authorization": "Api-key rMm18pLw.LJSPV0cg5UUEaUtE6oQ6uTzotT0fD6Un"
+                    "Authorization": "Api-key {{ request.registry.settings.get('crop_index.api_key') }}"
                 },
                 data: function (params) {
                     return {
+                        crop: $("#tech_name").val(),
                         q: params.term,
                         page: params.page,
                         limit: 100,

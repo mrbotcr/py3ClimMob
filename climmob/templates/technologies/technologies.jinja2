@@ -430,6 +430,9 @@
             URL= URL.replace("__user_name__",user_name).replace("__techid__", tech_id)
             data = {};
 
+            const importAliasForm = document.getElementById('import_alias_form');
+            importAliasForm.action = import_alias_form_action.replace("__tech_id__", tech_id);
+
             $.get(URL, function(data, status){
                 var tech = data;
 
