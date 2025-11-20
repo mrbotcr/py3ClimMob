@@ -127,13 +127,10 @@
                                     <th>{{ _("Crops") }}</th>
                                         <th>{{ _("Country") }}</th>
                                         {% if createBoton == true %}
-                                            <th> {#  {{ _("view") }} #}</th>
+                                            <th>   {{ _("Duplicate") }} </th>
                                         {% endif %}
                                         {% if createBoton == true %}
-                                            <th> {#  {{ _("Clone project") }} #}</th>
-                                        {% endif %}
-                                        {% if createBoton == true %}
-                                            <th> {#  {{ _("Share") }} #}</th>
+                                            <th>   {{ _("Share") }} </th>
                                         {% endif %}
 
                                     </tr>
@@ -228,24 +225,15 @@
                                             <td>
                                                 <p>{{ project["country_name"] }}</p>
                                             </td>
-
                                             <td >
                                                 {% if createBoton == true %}
-
-                                                    <a class="btn btn-primary btn-xs" href="{{ request.route_url('dashboard', _query={'user':project["owner"].user_name, "project": project.project_cod}) }}">{{ _("View") }}</a>
-                                                {% endif %}
-                                            </td>
-
-
-                                            <td >
-                                                {% if createBoton == true %}
-                                                    <a class="btn btn-primary btn-xs" href="{{ request.route_url('cloneProject', _query={"stage":2, "user": project.owner["user_name"],"project": project.project_cod}) }}">{{ _("Clone") }}</a>
+                                                    <a class="btn btn-primary btn-xs" title="{{ _("Duplicate") }}" href="{{ request.route_url('cloneProject', _query={"stage":2, "user": project.owner["user_name"],"project": project.project_cod}) }}"><i class="fa fa-copy"></i></a>
                                                 {% endif %}
                                             </td>
                                             <td >
                                                 {% if createBoton == true %}
-                                                    <a class="btn btn-primary btn-xs"
-                                                       href="{{ request.route_url('shareProject',user=project.owner["user_name"],project=project.project_cod) }}"> {{ _("Share") }}</a>
+                                                    <a class="btn btn-primary btn-xs" title="{{ _("Share") }}"
+                                                       href="{{ request.route_url('shareProject',user=project.owner["user_name"],project=project.project_cod) }}"><i class="fa fa-share-square-o"></i></a>
                                                 {% endif %}
                                             </td>
                                         </tr>
