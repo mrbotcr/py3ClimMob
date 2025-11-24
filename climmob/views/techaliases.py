@@ -184,30 +184,41 @@ class modifyalias_view(privateView):
 class ImportAliasView(privateView):
     def post(self):
         body = self.getPostDict()
+        error_summary = {}
         print(body)
 
         tech = self.request.crop_index_api.get_tech_by_id(body["q"])
 
+        new_alias = {
+            "alias_name": tech["default_display_name"],
+            "tech_id": body["tech_id"],
+        }
+
+        if findTechalias(new_alias, self.request):
+            error_summary["exists"] = self._(
+                "This technology option already exists in the technology"
+            )
+            return {"error_summary": error_summary}
+
         success, added_tech = addTechAlias(
-            {
-                "alias_name": tech["default_display_name"],
-                "tech_id": self.request.technologyid,
-            },
+            new_alias,
             self.request,
             _from="import",
         )
-        if success:
-            imported_alias = {
-                "id": tech["id"],
-                "data": tech,
-                "alias_id": added_tech["alias_id"],
-                "tech_id": added_tech["tech_id"],
-            }
-            success, msg = add_external_tech_option(imported_alias, self.request)
+        if not success:
+            error_summary["dberror"] = added_tech
+            return {"error_summary": error_summary}
 
-        self.returnRawViewResult = True
-        return HTTPFound(
-            location=self.request.route_url(
-                "usertechnologies", _query={"tech_id": self.request.technologyid}
-            )
-        )
+        imported_alias = {
+            "id": tech["id"],
+            "data": tech,
+            "alias_id": added_tech["alias_id"],
+            "tech_id": added_tech["tech_id"],
+        }
+        success, msg = add_external_tech_option(imported_alias, self.request)
+
+        if not success:
+            error_summary["dberror"] = added_tech
+            return {"error_summary": error_summary}
+
+        return {"error_summary": error_summary}

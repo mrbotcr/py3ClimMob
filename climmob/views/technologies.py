@@ -14,7 +14,7 @@ from climmob.processes import (
     getTechnologiesByUserWithoutCropTaxonomy,
 )
 from climmob.views.classes import privateView, publicView
-from climmob.views.techaliases import newalias_view, modifyalias_view
+from climmob.views.techaliases import newalias_view, modifyalias_view, ImportAliasView
 
 
 class getUserTechnologyDetails_view(privateView):
@@ -54,14 +54,12 @@ class technologies_view(privateView):
         error_summary = {}
         error_summary_add = {}
         error_summary_options = {}
+        error_summary_import = {}
         action = ""
         techSee = {}
         # alias = {}
 
         nextPage = self.request.params.get("next")
-        tech_id = self.request.params.get("tech_id")
-        if tech_id:
-            techSee = getUserTechById(tech_id, self.request)
 
         if self.request.method == "POST":
             if "btn_add_technology" in self.request.POST:
@@ -102,11 +100,18 @@ class technologies_view(privateView):
                 error_summary_options = dict_return["error_summary"]
                 techSee = getUserTechById(dataworking["tech_id"], self.request)
 
+            if "btn_import_technology" in self.request.POST:
+                result = ImportAliasView(self.request).post()
+                body = self.getPostDict()
+                error_summary_import = result["error_summary"]
+                techSee = getUserTechById(body["tech_id"], self.request)
+
             if (
                 "btn_add_technology" not in self.request.POST
                 and "btn_modify_technology" not in self.request.POST
                 and "btn_add_alias" not in self.request.POST
                 and "btn_modify_alias" not in self.request.POST
+                and "btn_import_technology" not in self.request.POST
             ):
                 dataworking = self.getPostDict()
                 techSee = getUserTechById(dataworking["tech_id"], self.request)
@@ -117,6 +122,7 @@ class technologies_view(privateView):
             "error_summary_add": error_summary_add,
             "error_summary": error_summary,
             "error_summary_options": error_summary_options,
+            "error_summary_import": error_summary_import,
             "UserTechs": getUserTechs(self.user.login, self.request),
             "ClimMobTechs": getUserTechs("bioversity", self.request),
             "action": action,

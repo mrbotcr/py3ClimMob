@@ -288,7 +288,7 @@ from climmob.views.registry import (
     GetRegistrySectionView,
     ChangeProjectMainLanguage_view,
 )
-from climmob.views.techaliases import deletealias_view, ImportAliasView
+from climmob.views.techaliases import deletealias_view
 from climmob.views.technologies import (
     technologies_view,
     CurationOfTechnologies_view,
@@ -787,15 +787,6 @@ def loadRoutes(config):
             "/technology/{technologyid}/alias/{aliasid}/delete",
             deletealias_view,
             "json",
-        )
-    )
-
-    routes.append(
-        addRoute(
-            "import_alias",
-            "/technology/{technologyid}/alias/imported",
-            ImportAliasView,
-            "technologies/technologies.jinja2",
         )
     )
 

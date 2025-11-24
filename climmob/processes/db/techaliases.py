@@ -57,7 +57,7 @@ def getTechsAlias(idtech, request):
 
 
 def findTechalias(data, request):
-    if data["alias_id"] is None:
+    if data.get("alias_id") is None:
         result = (
             request.dbsession.query(Techalia)
             .filter(
