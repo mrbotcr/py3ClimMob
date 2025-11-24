@@ -27,6 +27,8 @@
                 </div>
             </div>
             <div class="ibox-content">
+                {% set error_summary=error_summary_import %}
+                {% include 'snippets/error.jinja2' %}
                 <div class="form-group"
                      style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1em;">
                     <label class="col-sm-3 control-label" for="q">{{ _('Search') }}</label>
@@ -62,11 +64,12 @@
                 </section>
 
                 <br>
-                <form method="POST" style="min-height: fit-content" id="import_alias_form">
+                <form method="POST" style="min-height: fit-content" id="import_alias_form" action="{{ request.url }}">
                     <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                    <input type="hidden" name="tech_id">
                     <button class="btn btn-primary pull-right" type="submit"
                             id="btn_import_technology"
-                            name="btn_add_technology">{{ _('Add and close') }}</button>
+                            name="btn_import_technology">{{ _('Add and close') }}</button>
                 </form>
                 <br>
                 <br>
@@ -87,8 +90,6 @@
         }
         return item.default_display_name + " (" + item.germplasm_genus + " " + item.germplasm_species + ')';
     }
-
-    const import_alias_form_action = "{{ request.route_url("import_alias", technologyid="__tech_id__") }}"
 
     $(document).ready(function () {
         const synonymsTable = $('#synonyms').DataTable({
@@ -196,7 +197,7 @@
         });
 
         $("#btn_cancel_import_tech").click(function () {
-            hideAddAlias()
+            hideImportAlias()
         });
 
     });

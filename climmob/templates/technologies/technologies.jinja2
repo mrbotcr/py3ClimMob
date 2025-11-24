@@ -361,6 +361,8 @@
                     {% endif %}
 
                     $("#div_create_technology_option").css('display','initial')
+                {% elif error_summary_import %}
+                    showImportAlias()
                 {% endif%}
             {% else %}
                 {% if error_summary_aux %}
@@ -374,6 +376,7 @@
 
 
         function showCreateTechnology() {
+            hideImportAlias()
             cleanBtsTechnologyOptions()
             cleanSectionsOptions()
             cleanBtsTechnology()
@@ -393,7 +396,6 @@
             $("#select_crop").trigger('change');*/
 
             $("#div_create_technology").css('display','initial')
-            $("#div_search_technology_genesys").css('display','initial')
             $("#div_create_technology_option").css('display','none')
             $("#div_show_create_alias").css('display','none')
             $("#div_show_import_alias").css('display','none')
@@ -423,6 +425,7 @@
 
             $("#div_show_create_alias").css("display","none");
             $("#div_show_import_alias").css("display","none");
+            hideImportAlias()
 
             $("#q").val("").trigger('change.select2').trigger('change');
 
@@ -430,8 +433,7 @@
             URL= URL.replace("__user_name__",user_name).replace("__techid__", tech_id)
             data = {};
 
-            const importAliasForm = document.getElementById('import_alias_form');
-            importAliasForm.action = import_alias_form_action.replace("__tech_id__", tech_id);
+            $("#import_alias_form input[name=tech_id]").val(tech_id)
 
             $.get(URL, function(data, status){
                 var tech = data;
@@ -583,6 +585,8 @@
         var changeError=0
         function showAlias(user_name, tech_id, alias_id)
         {
+            hideImportAlias()
+
             var URL= "{{ request.route_url('getUserTechnologyAliasDetails',user="__user_name__", technologyid="__techid__", aliasid="__aliasid__") }}"
             URL= URL.replace("__user_name__",user_name).replace("__techid__", tech_id).replace("__aliasid__", alias_id)
 
