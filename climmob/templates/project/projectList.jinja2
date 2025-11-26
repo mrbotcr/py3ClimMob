@@ -186,17 +186,17 @@
 
                                                 <p>
                                                     {% if project.project_regstatus == 0 %}
-                                                        {{ _("Registration not yet started") }}
+                                                        {{ _("Design") }}
                                                     {% else %}
                                                         {% if project.project_regstatus == 1 %}
-                                                            {{ _("Registration ongoing") }}
+                                                            {{ _("Registration") }}
                                                         {% else %}
                                                             {% if project.project_regstatus == 2 %}
 
                                                                 {% if project.project_assstatus == 0 %}
-                                                                    {{ _("Registration closed") }}
+                                                                    {{ _("Data collection") }}
                                                                 {% else %}
-                                                                    {{ _("Trial data collection / Analysis ongoing") }}
+                                                                    {{ _("Data collection") }}
                                                                 {% endif %}
 
                                                             {% endif %}
@@ -225,12 +225,11 @@
                                             </td>
                                             <td >
                                                 {% if createBoton == true %}
-                                                    <a class="btn btn-primary btn-xs" title="{{ _("Duplicate") }}" href="{{ request.route_url('cloneProject', _query={"stage":2, "user": project.owner["user_name"],"project": project.project_cod}) }}"><i class="fa fa-copy"></i></a>
+                                                    <a href="{{ request.route_url('cloneProject', _query={"stage":2, "user": project.owner["user_name"],"project": project.project_cod}) }}"><i class="fa fa-copy"></i></a>
                                                 {% endif %}
                                             </td>
                                             <td >
-                                                <a class="btn btn-primary btn-xs" title="{{ _("Share") }}"
-                                                   href="{{ request.route_url('shareProject',user=project.owner["user_name"],project=project.project_cod) }}"><i class="fa fa-share-square-o"></i></a>
+                                                <a href="{{ request.route_url('shareProject',user=project.owner["user_name"],project=project.project_cod) }}"><i class="fa fa-share-square-o"></i></a>
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -267,7 +266,7 @@
             });
 
             {% if userProjects %}
-                const hiddenIndexes = [4,5,8,9,10];
+                const hiddenIndexes = [4,5,8];
 
                 const ToggleableColumns = [3,4,5,6,7,8,9,10];
 
@@ -289,7 +288,6 @@
                     columnDefs: [
                         {target: -1, columnControl: [], orderable: false },
                         {target: -2, columnControl: [], orderable: false },
-                        {target: -3, columnControl: [], orderable: false },
                         {
                             targets: hiddenIndexes,
                             visible: false,

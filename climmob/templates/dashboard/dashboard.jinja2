@@ -121,7 +121,7 @@
 
                                     {% if activeUser.admin == 1 %}
                                         <li class="active" style="border-left: initial;background: initial" id="nav_curations_admin">
-                                            <a href="#"><i class="fa fa-gears"></i> <span class="nav-label">{{ _("1000FARMS Network") }}</span><span class="fa arrow"></span></a>
+                                            <a href="#"><i class="fa fa-gears"></i> <span class="nav-label">{{ _("1000FARMS Network") }}</span></a>
                                             <ul class="nav nav-third-level collapse" style="border-left: initial;background: initial">
                                                 <li id="nav_curation_all_projects" {% if sectionActive == "projectsSummaryCuration" %}class="active" style="border-left: 4px solid #19aa8d;background: #293846;"{% endif %}><a href="{{ request.route_url('projectsSummaryCuration') }}"><i class="fa fa-list-ul"></i> <span class="nav-label">{{ _("All projects") }}</span></a></li>
                                                 <li id="nav_curation_recent_projects" {% if sectionActive == "projectsSummaryRecent" %}class="active" style="border-left: 4px solid #19aa8d;background: #293846;" {% endif %}><a href="{{ request.route_url('projectsSummaryRecent') }}"><i class="fa fa-history"></i> <span class="nav-label">{{ _("Validation") }}</span></a></li>
