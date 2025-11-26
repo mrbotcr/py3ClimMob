@@ -349,12 +349,12 @@
                 var currentForm = this;
                 if (anyChecked) {
                     swal({
-                        title: '{{ _("Are you trying to finalize a project?") }}',
-                        text: '{{ _("By finalizing the selected projects, you confirm that they have reached completion and are ready for inclusion in the 1000FARMS Agregated Report and in FairGrounds DataWarehouse. This action will: Permanently lock all data entries, profile settings, and metadata (no further edits will be possible)") }}',
+                        title: '{{ _("Please confirm you want to finalized selected projects") }}',
+                        text: '{{ _("By finalizing the selected projects, you confirm that they have reached completion. This action will permanently lock all data entries and no further edits will be possible  for project profile and  metadata)") }}',
                         type: "warning",
                         showCancelButton: true,
-                        confirmButtonColor: "#DD6B55",
-                        confirmButtonText: "{{ _("Yes, finalize and submit data") }}",
+                        confirmButtonColor: "#1ab394",
+                        confirmButtonText: "{{ _("Yes finalize projects") }}",
                         cancelButtonText: "{{ _("No, cancel!") }}",
                         closeOnConfirm: true,
                         closeOnCancel: true

@@ -35,7 +35,10 @@ from climmob.processes.db.project_location_unit_objective import (
 from climmob.processes.db.project_metadata_form import (
     knowIfTheProjectMetadataIsComplete,
 )
-from climmob.processes.db.project_technologies import numberOfCombinationsForTheProject
+from climmob.processes.db.project_technologies import (
+    numberOfCombinationsForTheProject,
+    searchTechnologiesInProject,
+)
 from climmob.processes.db.question import getQuestionOptions
 
 __all__ = [
@@ -521,10 +524,17 @@ def getUserProjects(user, request):
             .filter(Assessment.project_id == project["project_id"])
             .one()
         )[0]
-
-        # project["progress"], project["perc"] = getProjectProgress(
-        #     project["user_name"], project["project_cod"], project["project_id"], request
-        # )
+        ##get the code of country and add the complete name in a string
+        res_country = mapFromSchema(
+            request.dbsession.query(Country.cnty_name)
+            .filter(Country.cnty_cod == project["project_cnty"])
+            .first()
+        )
+        if res_country:
+            project["country_name"] = res_country["cnty_name"]
+        project["technologies"] = searchTechnologiesInProject(
+            project["project_id"], request
+        )
     return mappedData
 
 

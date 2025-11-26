@@ -124,15 +124,12 @@
                                         <th>{{ _("Progress status") }}</th>
                                         <th>{{ _("Creation date") }}</th>
                                         <th>{{ _("Tags") }}</th>
+                                    <th>{{ _("Crops") }}</th>
+                                        <th>{{ _("Country") }}</th>
                                         {% if createBoton == true %}
-                                            <th> {#  {{ _("view") }} #}</th>
+                                            <th style="text-align: center">   {{ _("Duplicate") }} </th>
                                         {% endif %}
-                                        {% if createBoton == true %}
-                                            <th> {#  {{ _("Clone project") }} #}</th>
-                                        {% endif %}
-                                        {% if createBoton == true %}
-                                            <th> {#  {{ _("Share") }} #}</th>
-                                        {% endif %}
+                                            <th style="text-align: center">   {{ _("Share") }} </th>
 
                                     </tr>
 
@@ -189,17 +186,17 @@
 
                                                 <p>
                                                     {% if project.project_regstatus == 0 %}
-                                                        {{ _("Registration not yet started") }}
+                                                        {{ _("Design") }}
                                                     {% else %}
                                                         {% if project.project_regstatus == 1 %}
-                                                            {{ _("Registration ongoing") }}
+                                                            {{ _("Registration") }}
                                                         {% else %}
                                                             {% if project.project_regstatus == 2 %}
 
                                                                 {% if project.project_assstatus == 0 %}
-                                                                    {{ _("Registration closed") }}
+                                                                    {{ _("Data collection") }}
                                                                 {% else %}
-                                                                    {{ _("Trial data collection / Analysis ongoing") }}
+                                                                    {{ _("Data collection") }}
                                                                 {% endif %}
 
                                                             {% endif %}
@@ -218,26 +215,21 @@
                                                     <span class="label label-info">{{ tag }}</span>
                                                 {% endfor %}
                                             </td>
-
-
-                                            <td >
+                                            <td>
+                                                {% for tag in project.technologies %}
+                                                    <ul style="margin: 0; padding: 0" >{{ tag["tech_name"] }}</ul>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                <p>{{ project["country_name"] }}</p>
+                                            </td>
+                                            <td style="text-align: center">
                                                 {% if createBoton == true %}
-
-                                                    <a class="btn btn-primary btn-xs" href="{{ request.route_url('dashboard', _query={'user':project["owner"].user_name, "project": project.project_cod}) }}">{{ _("View") }}</a>
+                                                    <a href="{{ request.route_url('cloneProject', _query={"stage":2, "user": project.owner["user_name"],"project": project.project_cod}) }}"><i class="fa fa-copy"></i></a>
                                                 {% endif %}
                                             </td>
-
-
-                                            <td >
-                                                {% if createBoton == true %}
-                                                    <a class="btn btn-primary btn-xs" href="{{ request.route_url('cloneProject', _query={"stage":2, "user": project.owner["user_name"],"project": project.project_cod}) }}">{{ _("Clone") }}</a>
-                                                {% endif %}
-                                            </td>
-                                            <td >
-                                                {% if createBoton == true %}
-                                                    <a class="btn btn-primary btn-xs"
-                                                       href="{{ request.route_url('shareProject',user=project.owner["user_name"],project=project.project_cod) }}"> {{ _("Share") }}</a>
-                                                {% endif %}
+                                            <td style="text-align: center">
+                                                <a href="{{ request.route_url('shareProject',user=project.owner["user_name"],project=project.project_cod) }}"><i class="fa fa-share-square-o"></i></a>
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -276,7 +268,7 @@
             {% if userProjects %}
                 const hiddenIndexes = [4,5,8];
 
-                const ToggleableColumns = [3,4,5,6,7,8];
+                const ToggleableColumns = [3,4,5,6,7,8,9,10];
 
                 const table = new DataTable('#all-projects', {
 
@@ -296,7 +288,6 @@
                     columnDefs: [
                         {target: -1, columnControl: [], orderable: false },
                         {target: -2, columnControl: [], orderable: false },
-                        {target: -3, columnControl: [], orderable: false },
                         {
                             targets: hiddenIndexes,
                             visible: false,
