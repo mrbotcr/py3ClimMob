@@ -129,9 +129,7 @@
                                         {% if createBoton == true %}
                                             <th>   {{ _("Duplicate") }} </th>
                                         {% endif %}
-                                        {% if createBoton == true %}
                                             <th>   {{ _("Share") }} </th>
-                                        {% endif %}
 
                                     </tr>
 
@@ -231,10 +229,8 @@
                                                 {% endif %}
                                             </td>
                                             <td >
-                                                {% if createBoton == true %}
-                                                    <a class="btn btn-primary btn-xs" title="{{ _("Share") }}"
-                                                       href="{{ request.route_url('shareProject',user=project.owner["user_name"],project=project.project_cod) }}"><i class="fa fa-share-square-o"></i></a>
-                                                {% endif %}
+                                                <a class="btn btn-primary btn-xs" title="{{ _("Share") }}"
+                                                   href="{{ request.route_url('shareProject',user=project.owner["user_name"],project=project.project_cod) }}"><i class="fa fa-share-square-o"></i></a>
                                             </td>
                                         </tr>
                                     {% endfor %}
