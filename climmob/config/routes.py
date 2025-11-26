@@ -290,6 +290,7 @@ from climmob.views.registry import (
     GetRegistrySectionView,
     ChangeProjectMainLanguage_view,
 )
+from climmob.views.superset_view import AdministratorsReport, AdministratorsReportToken
 from climmob.views.techaliases import deletealias_view
 from climmob.views.technologies import (
     technologies_view,
@@ -437,6 +438,25 @@ def loadRoutes(config):
             "renderer": "dashboard/dashboard.jinja2",
         }
     )
+    # -------------- administrator report --------------
+    routes.append(
+        {
+            "name": "administrators_report",
+            "path": "/administrators_report",
+            "view": AdministratorsReport,
+            "renderer": "dashboard/administrators_report.jinja2",
+        }
+    )
+
+    routes.append(
+        {
+            "name": "getTokenSuperSet",
+            "path": "/getTokenSuperSet",
+            "view": AdministratorsReportToken,
+            "renderer": "string",
+        }
+    )
+    # --------------end administrator report --------------
     routes.append(
         {
             "name": "projectList",

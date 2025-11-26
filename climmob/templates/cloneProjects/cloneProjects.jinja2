@@ -1,7 +1,7 @@
 {% extends 'dashboard/dashboard.jinja2' %}
 
 {% block title %}
-    <title>{{ _("ClimMob | Clone a project") }}</title>
+    <title>{{ _("ClimMob | Duplicate project") }}</title>
 {% endblock title %}
 
 {% block css %}
@@ -31,7 +31,7 @@
 
 
 {% block pageheading %}
-    {% set _title= _("Clone a project") %}
+    {% set _title= _("Duplicate project") %}
     {% set _linkWiki=""%}
     {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
@@ -225,13 +225,13 @@
                                             </div>
                                         </div>
                                         <button type="button" onclick="location.href='{{ request.route_url("cloneProject", _query={"stage":2, "user": dataworking["slt_project_by_owner"].split("___")[0],"project":dataworking["slt_project_by_owner"].split("___")[1] }) }}'" class="btn btn-primary pull-left">{{ _("Previous") }}</button>
-                                        <button type="submit" name="btn_addNewProject" id="btn_addNewProject" class="btn btn-primary pull-right">{{ _("Create clone") }}</button>
+                                        <button type="submit" name="btn_addNewProject" id="btn_addNewProject" class="btn btn-primary pull-right">{{ _("Duplicate project") }}</button>
                                     {% endif %}
 
                                     {% if stage ==4 %}
                                         <div class="row">
                                             <div style="width: 100%; text-align: center; margin: 40px">
-                                                <h2 >{{ _("The project was successfully cloned.") }}</h2>
+                                                <h2 >{{ _("The project was successfully duplicated.") }}</h2>
                                                 <h2><b>{{ _("Please check that the information is correct and that the projects have the same structure.") }}</b></h2>
                                             </div>
 
