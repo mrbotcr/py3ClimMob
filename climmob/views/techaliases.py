@@ -54,7 +54,6 @@ class newalias_view(privateView):
                             existAlias = findTechalias(formdata, self.request)
                             if alias not in addd:
                                 if existAlias == False:
-                                    print(f"form: {formdata}")
                                     added, message = addTechAlias(
                                         formdata, self.request
                                     )
@@ -187,7 +186,7 @@ class ImportAliasView(privateView):
         error_summary = {}
         print(body)
 
-        tech = self.request.crop_index_api.get_tech_by_id(body["q"])
+        tech = self.request.crop_index_api.get_tech_by_id(body["ext_alias_id"])
 
         new_alias = {
             "alias_name": tech["default_display_name"],
@@ -220,5 +219,9 @@ class ImportAliasView(privateView):
         if not success:
             error_summary["dberror"] = added_tech
             return {"error_summary": error_summary}
+
+        self.request.session.flash(
+            self._("The technology option was successfully imported")
+        )
 
         return {"error_summary": error_summary}

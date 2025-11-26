@@ -29,11 +29,15 @@
             <div class="ibox-content">
                 {% set error_summary=error_summary_import %}
                 {% include 'snippets/error.jinja2' %}
+                <div class="text-center">
+                    <p>{{ _("Import technology options from external sources like Genesys") }}</p>
+                </div>
+                <br>
                 <div class="form-group"
                      style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1em;">
-                    <label class="col-sm-3 control-label" for="q">{{ _('Search') }}</label>
+                    <label class="col-sm-3 control-label" for="to_import_alias_id">{{ _('Search') }}</label>
                     <div class="col-sm-9">
-                        <select id="q" name="q" class="form-control inputForQuestionSelect"
+                        <select id="to_import_alias_id" name="ext_alias_id" class="form-control inputForQuestionSelect"
                                 style="width: 100%; !important;" required form="import_alias_form">
                             <option value=""></option>
                         </select>
@@ -42,7 +46,7 @@
                 <br>
                 <section id="synonym-section">
                     <h4>{{ _("Synonyms") }}:</h4>
-                    <table id="synonyms" class="table table-stripped" style="width: 100%;">
+                    <table id="synonyms-search-table" class="table table-stripped" style="width: 100%;">
                         <thead>
                         <tr>
                             <th>{{ _("Name") }}</th>
@@ -53,7 +57,7 @@
                 <hr>
                 <section id="references-section">
                     <h4>{{ _("Cross-references") }}:</h4>
-                    <table id="references" class="table table-stripped" style="width: 100%;">
+                    <table id="references-search-table" class="table table-stripped" style="width: 100%;">
                         <thead>
                         <tr>
                             <th>{{ _("Name") }}</th>
@@ -92,7 +96,7 @@
     }
 
     $(document).ready(function () {
-        const synonymsTable = $('#synonyms').DataTable({
+        const synonymsSearchTable = $('#synonyms-search-table').DataTable({
             columns: [
                 {data: "name"}
             ],
@@ -104,7 +108,7 @@
             },
         });
 
-        const referencesTable = $('#references').DataTable({
+        const referencesSearchTable = $('#references-search-table').DataTable({
             columns: [
                 {data: "name"},
                 {
@@ -134,10 +138,10 @@
             },
         });
 
-        $('#q').on('change', function () {
+        $('#to_import_alias_id').on('change', function () {
             if ($(this).val() === "" || $(this).val() === null) {
-                synonymsTable.clear().draw()
-                referencesTable.clear().draw();
+                synonymsSearchTable.clear().draw()
+                referencesSearchTable.clear().draw();
                 return;
             }
             $.ajax({
@@ -147,8 +151,8 @@
                     "Authorization": "Api-key {{ request.registry.settings.get('crop_index.api_key') }}"
                 },
                 success: function (response) {
-                    synonymsTable.clear().rows.add(response.synonyms).draw();
-                    referencesTable.clear().rows.add(response.source).draw();
+                    synonymsSearchTable.clear().rows.add(response.synonyms).draw();
+                    referencesSearchTable.clear().rows.add(response.source).draw();
                 },
                 error: function (err) {
                     console.error('Error:', err);
@@ -156,7 +160,7 @@
             });
         });
 
-        $("#q").select2({
+        $("#to_import_alias_id").select2({
             data: [],
             minimumInputLength: 3,
             templateResult: formatOption,

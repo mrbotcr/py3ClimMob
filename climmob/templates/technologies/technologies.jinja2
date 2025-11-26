@@ -121,6 +121,9 @@
                     <br>
                     <hr>
                     <h4>{{ _("List of technology options:") }}</h4>
+                    <div class="text-center">
+                        <p>{{ _("Editing or deleting is disabled for varieties that are part of a project") }}</p>
+                    </div>
                     <div class="activity-stream" id="div_show_alias" style="overflow-y: scroll; max-height: calc(100vh - 495px);">
 
                     </div>
@@ -150,6 +153,10 @@
 
         <div class="col-md-4" id="div_search_technology_genesys" style="display: none" >
             {% include 'snippets/technologies/genesys-search.jinja2' %}
+        </div>
+
+        <div class="col-md-4" id="div_edit_external_technology" style="display: none" >
+            {% include 'snippets/technologies/genesys-edit.jinja2' %}
         </div>
 
         <div class="col-md-4" id="div_create_technology_option" style="display: none" >
@@ -426,8 +433,9 @@
             $("#div_show_create_alias").css("display","none");
             $("#div_show_import_alias").css("display","none");
             hideImportAlias()
+            hideImportedAlias()
 
-            $("#q").val("").trigger('change.select2').trigger('change');
+            $("#to_import_alias_id").val("").trigger('change.select2').trigger('change');
 
             var URL= "{{ request.route_url('getUserTechnologyDetails',user="__user_name__", technologyid="__techid__") }}"
             URL= URL.replace("__user_name__",user_name).replace("__techid__", tech_id)
@@ -471,7 +479,13 @@
                 {
                     var arrayForAlias = JSON.stringify(tech.tech_alias[i]).replace(/(')/g, "\\u0027");
                     if(tech.tech_alias[i].quantity == 0 & tech.user_name == "{{ activeUser.login }}"){
-                        allHTML +="<div class='stream' style='padding:4px 0' onclick='showAlias(\""+tech.user_name+"\",\""+tech.tech_id+"\",\""+tech.tech_alias[i].alias_id+"\")' id='option"+tech.tech_alias[i].alias_id+"'>"
+                        allHTML +="<div class='stream' style='padding:4px 0' "
+                        if (tech.tech_alias[i].source) {
+                            allHTML += "onclick='showImportedAlias(\""+tech.user_name+"\",\""+tech.tech_id+"\",\""+tech.tech_alias[i].alias_id+"\")'"
+                        } else {
+                            allHTML += "onclick='showAlias(\""+tech.user_name+"\",\""+tech.tech_id+"\",\""+tech.tech_alias[i].alias_id+"\")'"
+                        }
+                        allHTML += " id='option"+tech.tech_alias[i].alias_id+"'>"
                         allHTML +="<div class='stream-badge'>"
                         /*allHTML +="<i class='fa fa-thumb-tack' style='color:#1ab394'></i>"*/
                         /*allHTML +="<i class='fa fa-thumb-tack' style='color:#1ab394'></i>"*/
@@ -488,7 +502,7 @@
                     allHTML +="<p style='font-size:14px; margin:initial; display: inline-block'>"+tech.tech_alias[i].alias_name+"</p>"
                     if (tech.tech_alias[i].source) {
                         const sources = tech.tech_alias[i].source.map(item => item.name).join(", ");
-                        allHTML += `<p class='by' style='margin-left: 10px; color: #1ab394; font-size: 10px; display: inline-block'>{{ _('from') }} ${sources}{#{{ technology.user_fullname[0:12] }} {% if technology.user_fullname|length > 12 %}...{% endif %} #}</p>`
+                        allHTML += `<p class='by' style='margin-left: 10px; color: #1ab394; font-size: 10px; display: inline'>{{ _('from') }} ${sources}</p>`
                     }
                     allHTML +="</div>"
                     allHTML +="</div>"
@@ -547,8 +561,9 @@
 
         function showImportAlias(){
             hideCreateAlias()
+            hideImportedAlias()
 
-            $("#q").val("").trigger('change.select2').trigger('change');
+            $("#to_import_alias_id").val("").trigger('change.select2').trigger('change');
             $("#div_search_technology_genesys").css('display','initial')
         }
 
@@ -558,6 +573,7 @@
 
         function showCreateAlias(){
             hideImportAlias()
+            hideImportedAlias()
 
             $("#alias_name").prop('required',false);
             $("#alias_name_insert").prop('required',true);
@@ -586,6 +602,7 @@
         function showAlias(user_name, tech_id, alias_id)
         {
             hideImportAlias()
+            hideImportedAlias()
 
             var URL= "{{ request.route_url('getUserTechnologyAliasDetails',user="__user_name__", technologyid="__techid__", aliasid="__aliasid__") }}"
             URL= URL.replace("__user_name__",user_name).replace("__techid__", tech_id).replace("__aliasid__", alias_id)
@@ -619,6 +636,33 @@
                 $("#div_update_option").css('display','initial')
                 $("#div_create_technology_option").css('display','initial')
                 $("#alias_name").focus();
+            });
+        }
+
+        function hideImportedAlias(){
+            $("#div_edit_external_technology").css('display','none')
+        }
+
+        function showImportedAlias(user_name, tech_id, alias_id)
+        {
+            hideImportAlias()
+            hideCreateAlias()
+
+            var URL= "{{ request.route_url('getUserTechnologyAliasDetails',user="__user_name__", technologyid="__techid__", aliasid="__aliasid__") }}"
+            URL= URL.replace("__user_name__",user_name).replace("__techid__", tech_id).replace("__aliasid__", alias_id)
+
+            $.get(URL, function(data, status){
+                const alias = data;
+                $("#option"+alias.alias_id).iCheck('check');
+                cleanSectionsOptions()
+                cleanBtsTechnologyOptions()
+                $("#external_alias_name").val(alias.alias_name)
+                $("#alias_id").val(alias.alias_id)
+                $("#div_edit_external_technology").css('display','initial')
+                $("#btn_delete_external_technology_option").css('display','initial')
+                console.log(alias)
+                synonymsEditTable.clear().rows.add(alias.synonyms).draw();
+                referencesEditTable.clear().rows.add(alias.source).draw();
             });
         }
 

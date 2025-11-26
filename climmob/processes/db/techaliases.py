@@ -52,6 +52,7 @@ def getTechsAlias(idtech, request):
         for imported_tech_option in imported_tech_options:
             if alias["alias_id"] == imported_tech_option["alias_id"]:
                 alias["source"] = imported_tech_option["data"]["source"]
+                alias["synonyms"] = imported_tech_option["data"]["synonyms"]
 
     return result
 

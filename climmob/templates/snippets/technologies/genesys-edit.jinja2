@@ -1,0 +1,137 @@
+{% block css %}
+    {% cssresource request,'coreresources','icheck' %}
+    {% cssresource request,'coreresources','datatables' %}
+    {% cssresource request,'coreresources','sweet' %}
+    {% cssresource request,'coreresources','footable' %}
+    {% cssresource request,'coreresources','select2' %}
+{% endblock css %}
+
+{% block topScripts %}
+    {% jsresource request,'coreresources','footable' %}
+    {% jsresource request,'coreresources','icheck' %}
+    {% jsresource request,'coreresources','technologies' %}
+    {% jsresource request,'coreresources','datatables' %}
+    {% jsresource request,'coreresources','sweet' %}
+    {% include 'snippets/delete.jinja2' %}
+    {% jsresource request,'coreresources','select2' %}
+{% endblock topScripts %}
+
+
+
+<div class="ibox float-e-margins">
+    <div class="ibox-title">
+        <h5>{{ _("Technology options details") }}</h5>
+        <div class="ibox-tools">
+            <button id="btn_cancel_external_technology_options" class="btn btn-xs btn-default pull-right "><i
+                    class="fa fa-close"></i> {{ _("Clear and close form") }} </button>
+        </div>
+    </div>
+    <div class="ibox-content">
+        <form class="form-horizontal formElement" id="form_technology_options" role="form" method="post"
+              action="{{ request.url }}">
+            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+            <input type="text" class="form-control tech_id" value="{{ dataworking.tech_id }}" name="tech_id"
+                   style="display: none">
+            <input type="text" class="form-control " value="{{ dataworking.alias_id }}" id="external_alias_id"
+                   name="alias_id" style="display: none">
+
+            <div id="div_update_external_option">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">{{ _('Name:') }}</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" value="{{ dataworking.alias_name }}"
+                               id="external_alias_name" disabled
+                               name="alias_name" placeholder=" " required=""
+                               oninvalid="this.setCustomValidity('{{ _("Write the technology option name.") }}')"
+                               onchange="this.setCustomValidity('')">
+                    </div>
+                </div>
+            </div>
+
+            <section id="synonym-section">
+                <h4>{{ _("Synonyms") }}:</h4>
+                <table id="synonyms-edit-table" class="table table-stripped" style="width: 100%;">
+                    <thead>
+                    <tr>
+                        <th>{{ _("Name") }}</th>
+                    </tr>
+                    </thead>
+                </table>
+            </section>
+            <hr>
+            <section id="references-section">
+                <h4>{{ _("Cross-references") }}:</h4>
+                <table id="references-edit-table" class="table table-stripped" style="width: 100%;">
+                    <thead>
+                    <tr>
+                        <th>{{ _("Name") }}</th>
+                        <th>{{ _("Link") }}</th>
+                    </tr>
+                    </thead>
+                </table>
+            </section>
+
+            <br>
+            <button class="btn btn-danger pull-left BtnTechnologyOptions"
+                    id="btn_delete_external_technology_option" onclick="deleteTechnologyOption()" type="button"
+                    title="{{ _("Delete option") }}"><i class="fa fa-trash"></i> {{ _("Delete option") }}</button>
+        </form>
+        <br>
+        <br>
+    </div>
+</div>
+
+<script>
+    $(document).on("click", ".copy-btn", function () {
+        const text = $(this).data("href");
+        navigator.clipboard.writeText(text);
+    });
+
+    $("#btn_cancel_external_technology_options").click(function () {
+        $('.i-checkOption').iCheck('uncheck');
+        hideImportedAlias()
+    });
+
+    const synonymsEditTable = $('#synonyms-edit-table').DataTable({
+        columns: [
+            {data: "name"}
+        ],
+        dom: 't',
+        paging: true,
+        ordering: false,
+        language: {
+            emptyTable: "{{ _("No items to display") }}"
+        },
+    });
+
+    const referencesEditTable = $('#references-edit-table').DataTable({
+        columns: [
+            {data: "name"},
+            {
+                data: "base_url",
+                render: function (data, type, row) {
+                    const href = `${data}/a/${row.cross_reference_id}`;
+                    const text = href.substring(0, 32) || "";
+                    return `
+                            <a target="_blank" title="${href}" href="${href}">${text}...</a>
+                            <button
+                                class="copy-btn"
+                                data-href="${href}"
+                                style="border:none;background:none;cursor:pointer;margin-left:6px;"
+                                title="Copy link"
+                            >
+                                <i class="fa fa-copy"></i>
+                            </button>
+                        `;
+                }
+            }
+        ],
+        dom: 't',
+        paging: true,
+        ordering: false,
+        language: {
+            emptyTable: "{{ _("No items to display") }}"
+        },
+    });
+
+</script>
