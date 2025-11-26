@@ -525,11 +525,13 @@ def getUserProjects(user, request):
             .one()
         )[0]
         ##get the code of country and add the complete name in a string
-        project["country_name"] = mapFromSchema(
+        res_country = mapFromSchema(
             request.dbsession.query(Country.cnty_name)
             .filter(Country.cnty_cod == project["project_cnty"])
-            .one()
-        )["cnty_name"]
+            .first()
+        )
+        if res_country:
+            project["country_name"] = res_country["cnty_name"]
         project["technologies"] = searchTechnologiesInProject(
             project["project_id"], request
         )
