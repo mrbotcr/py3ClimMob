@@ -1,4 +1,4 @@
-from climmob.views.classes import publicView, privateView
+from climmob.views.classes import privateView
 from climmob.views.validators import (
     SectionOnlyForAdminValidator,
 )
@@ -6,8 +6,11 @@ import requests
 import json
 
 
-class AdministratorsReportToken(publicView):
+class AdministratorsReportToken(privateView):
+    validators = (SectionOnlyForAdminValidator,)
+
     def get(self):
+        self.returnRawViewResult = True
 
         headers = {"Content-type": "application/json"}
 
@@ -100,7 +103,6 @@ class AdministratorsReport(privateView):
                     ),
                     "size": 1020,
                 },
-
                 {
                     "name": "crops",
                     "dashboard": self.request.registry.settings.get(

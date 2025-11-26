@@ -142,6 +142,7 @@ class TestAdministratorsReport(ViewBaseTest):
     view_class = AdministratorsReport
 
     def setUp(self):
+        self.maxDiff = None
         super().setUp()
         self.request.registry.settings = dict(self.request.registry.settings)
         settings = self.request.registry.settings
@@ -150,18 +151,18 @@ class TestAdministratorsReport(ViewBaseTest):
         settings["analytics.dashboard.trials"] = "DashboardTrials"
         settings["analytics.dashboard.crops"] = "DashboardCrops"
 
-    def test_get(self):
+    def test_get_view(self):
         response = self.view.get()
         expected = {
             "sectionActive": "administratorsReport",
             "sections": [
+                {"name": "trials", "dashboard": "DashboardTrials", "size": 1290},
                 {"name": "users", "dashboard": "DashboardUsers", "size": 1030},
                 {
                     "name": "participants",
                     "dashboard": "DashboardParticipants",
                     "size": 1020,
                 },
-                {"name": "trials", "dashboard": "DashboardTrials", "size": 1290},
                 {"name": "crops", "dashboard": "DashboardCrops", "size": 1630},
             ],
         }
