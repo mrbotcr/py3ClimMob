@@ -127,9 +127,9 @@
                                     <th>{{ _("Crops") }}</th>
                                         <th>{{ _("Country") }}</th>
                                         {% if createBoton == true %}
-                                            <th>   {{ _("Duplicate") }} </th>
+                                            <th style="text-align: center">   {{ _("Duplicate") }} </th>
                                         {% endif %}
-                                            <th>   {{ _("Share") }} </th>
+                                            <th style="text-align: center">   {{ _("Share") }} </th>
 
                                     </tr>
 
@@ -223,12 +223,12 @@
                                             <td>
                                                 <p>{{ project["country_name"] }}</p>
                                             </td>
-                                            <td >
+                                            <td style="text-align: center">
                                                 {% if createBoton == true %}
                                                     <a href="{{ request.route_url('cloneProject', _query={"stage":2, "user": project.owner["user_name"],"project": project.project_cod}) }}"><i class="fa fa-copy"></i></a>
                                                 {% endif %}
                                             </td>
-                                            <td >
+                                            <td style="text-align: center">
                                                 <a href="{{ request.route_url('shareProject',user=project.owner["user_name"],project=project.project_cod) }}"><i class="fa fa-share-square-o"></i></a>
                                             </td>
                                         </tr>
