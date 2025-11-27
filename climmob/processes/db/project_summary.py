@@ -96,18 +96,26 @@ def get_user_project_summary(request, user):
 
 
 def get_recent_project_summary(request):
-    res = request.dbsession.query(ProjectSummary.psm_json).filter(
+    projects = request.dbsession.query(ProjectSummary).filter(
         func.json_unquote(
             func.json_extract(ProjectSummary.psm_json, "$.project_checked")
         )
         == "0"
     )
-    return [row.psm_json for row in res.all()]
+
+    user_projects = []
+
+    for row in projects.all():
+        row.psm_json["admin_user_name"] = row.admin_user_name
+        row.psm_json["admin_update_date"] = row.admin_update_date
+        user_projects.append(row.psm_json)
+
+    return user_projects
 
 
 def get_published_project_summary(request):
-    res = (
-        request.dbsession.query(ProjectSummary.psm_json)
+    projects = (
+        request.dbsession.query(ProjectSummary)
         .filter(
             func.json_unquote(
                 func.json_extract(ProjectSummary.psm_json, "$.project_checked")
@@ -121,7 +129,15 @@ def get_published_project_summary(request):
             == "1"
         )
     )
-    return [row.psm_json for row in res.all()]
+
+    user_projects = []
+
+    for row in projects.all():
+        row.psm_json["admin_user_name"] = row.admin_user_name
+        row.psm_json["admin_update_date"] = row.admin_update_date
+        user_projects.append(row.psm_json)
+
+    return user_projects
 
 
 def get_project_id_row(request, project_id):
