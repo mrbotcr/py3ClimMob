@@ -96,25 +96,28 @@ def get_user_project_summary(request, user):
 
 
 def get_recent_project_summary(request):
-    projects = request.dbsession.query(ProjectSummary).filter(
-        func.json_unquote(
-            func.json_extract(ProjectSummary.psm_json, "$.project_checked")
+    projects = mapFromSchema(
+        request.dbsession.query(ProjectSummary)
+        .filter(
+            func.json_unquote(
+                func.json_extract(ProjectSummary.psm_json, "$.project_checked")
+            )
+            == "0"
         )
-        == "0"
+        .all()
     )
 
     user_projects = []
-
-    for row in projects.all():
-        row.psm_json["admin_user_name"] = row.admin_user_name
-        row.psm_json["admin_update_date"] = row.admin_update_date
-        user_projects.append(row.psm_json)
+    for project in projects:
+        project["psm_json"]["admin_user_name"] = project["admin_user_name"]
+        project["psm_json"]["admin_update_date"] = project["admin_update_date"]
+        user_projects.append(project["psm_json"])
 
     return user_projects
 
 
 def get_published_project_summary(request):
-    projects = (
+    projects = mapFromSchema(
         request.dbsession.query(ProjectSummary)
         .filter(
             func.json_unquote(
@@ -128,14 +131,15 @@ def get_published_project_summary(request):
             )
             == "1"
         )
+        .all()
     )
 
     user_projects = []
 
-    for row in projects.all():
-        row.psm_json["admin_user_name"] = row.admin_user_name
-        row.psm_json["admin_update_date"] = row.admin_update_date
-        user_projects.append(row.psm_json)
+    for project in projects:
+        project["psm_json"]["admin_user_name"] = project["admin_user_name"]
+        project["psm_json"]["admin_update_date"] = project["admin_update_date"]
+        user_projects.append(project["psm_json"])
 
     return user_projects
 
