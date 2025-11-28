@@ -310,7 +310,7 @@
                             row += `<td data-column="${col.key}">${cellContent}<span class="d-none filter-value" hidden>${value || ''}</span></td>`;
 
                         }else if (col.type === "dropdown") {
-                            let optionsHtml = `<option value="" selected>{{ _("Choice an option") }}</option>`;
+                            let optionsHtml = `<option value="" selected>{{ _("Choose an option") }}</option>`;
                             $.each(col.options, function(key, id) {
                                 optionsHtml += `<option value="${id}" ${id === value ? 'selected="selected"' : ''}>${key}</option>`;
                             });

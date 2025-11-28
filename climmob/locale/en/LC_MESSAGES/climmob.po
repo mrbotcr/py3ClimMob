@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: climmob 3.3.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-11-27 14:42-0600\n"
+"POT-Creation-Date: 2025-11-28 08:37-0600\n"
 "PO-Revision-Date: 2021-06-01 09:47+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -1682,7 +1682,7 @@ msgid ""
 msgstr ""
 
 #: climmob/templates/email/curation_notification_email.jinja2:75
-msgid "is on copy and will be happy of help you."
+msgid "is on copy and will be happy to help you."
 msgstr ""
 
 #: climmob/templates/email/curation_notification_email.jinja2:77
@@ -2408,7 +2408,7 @@ msgid "Cancelled"
 msgstr ""
 
 #: climmob/templates/project/curationofprojects.jinja2:367
-msgid "We have not submit the data"
+msgid "We have not submitted the data"
 msgstr ""
 
 #: climmob/templates/project/modifyproject.jinja2:4
@@ -3754,7 +3754,7 @@ msgid " Download table "
 msgstr ""
 
 #: climmob/templates/projectsSummary/projectsSummaryCuration.jinja2:313
-msgid "Choice an option"
+msgid "Choose an option"
 msgstr ""
 
 #: climmob/templates/projectsSummary/projectsSummaryCuration.jinja2:328
@@ -8209,5 +8209,14 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "6. Structure to be cloned"
+#~ msgstr ""
+
+#~ msgid "is on copy and will be happy of help you."
+#~ msgstr ""
+
+#~ msgid "We have not submit the data"
+#~ msgstr ""
+
+#~ msgid "Choice an option"
 #~ msgstr ""
 
