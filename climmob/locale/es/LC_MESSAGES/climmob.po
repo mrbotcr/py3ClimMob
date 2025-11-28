@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: climmob 4.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-11-27 14:42-0600\n"
-"PO-Revision-Date: 2025-11-27 17:13-0600\n"
+"POT-Creation-Date: 2025-11-28 08:37-0600\n"
+"PO-Revision-Date: 2025-11-28 08:38-0600\n"
 "Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
 "Language: en\n"
@@ -1757,7 +1757,7 @@ msgstr ""
 "administrador y responder a este mensaje: "
 
 #: climmob/templates/email/curation_notification_email.jinja2:75
-msgid "is on copy and will be happy of help you."
+msgid "is on copy and will be happy to help you."
 msgstr "está incluido/a en copia y estará encantado/a de ayudarle."
 
 #: climmob/templates/email/curation_notification_email.jinja2:77
@@ -2555,7 +2555,7 @@ msgid "Cancelled"
 msgstr "Cancelado"
 
 #: climmob/templates/project/curationofprojects.jinja2:367
-msgid "We have not submit the data"
+msgid "We have not submitted the data"
 msgstr "No hemos enviado los datos"
 
 #: climmob/templates/project/modifyproject.jinja2:4
@@ -4023,7 +4023,7 @@ msgid " Download table "
 msgstr " Descargar tabla "
 
 #: climmob/templates/projectsSummary/projectsSummaryCuration.jinja2:313
-msgid "Choice an option"
+msgid "Choose an option"
 msgstr "Elegir una opción"
 
 # | msgid "Farmer selection"
