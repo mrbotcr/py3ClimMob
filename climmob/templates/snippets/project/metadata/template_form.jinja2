@@ -46,7 +46,7 @@
         {% else %}
 
             {% if JsonInfo["type"] in ["text","select one","integer", "select all that apply", "date"]%}
-                <div class="form-group" div-name="div_{{ JsonInfo.get("name", {}) }}">
+                <div {% if JsonInfo["show_interface"] == "no" %}style="display: none"{% endif %} class="form-group" div-name="div_{{ JsonInfo.get("name", {}) }}">
 
                     <div class="col-sm-12" >
                         <h3>{{ JsonInfo["label"][request.locale_name] }}  {% if ("bind" in JsonInfo.keys() and "required" in JsonInfo["bind"].keys() and JsonInfo["bind"]["required"] == "yes") or JsonInfo["name"][-6:] == '_other' %}{% else %}({{ _("Optional") }}){% endif %}</h3>
@@ -406,6 +406,14 @@
                         const newNameText = `${nameQuestion}*${counter}_other`;
                         $(this).attr("name-text-check", newNameText);
                     }
+                    if (currentNameText && currentNameText.includes('_standard')) {
+                        let nameQuestion = currentNameText.split('_standard')[0];
+                        if (nameQuestion.includes('*')){
+                            nameQuestion = nameQuestion.split('*')[0];
+                        }
+                        const newNameText = `${nameQuestion}*${counter}_standard`;
+                        $(this).attr("name-text-check", newNameText);
+                    }
                 }
                 $(this).val(''); // Limpia valores
             });
@@ -421,6 +429,14 @@
                         const newDivName = `${nameQuestion}*${counter}_other`;
                         $(this).attr('div-name', newDivName);
                     }
+                    if (divName && divName.includes('_standard')) {
+                        let nameQuestion = divName.split('_standard')[0];
+                        if (nameQuestion.includes('*')){
+                            nameQuestion = nameQuestion.split('*')[0];
+                        }
+                        const newDivName = `${nameQuestion}*${counter}_standard`;
+                        $(this).attr('div-name', newDivName);
+                    }
                 }
             });
 
@@ -430,6 +446,8 @@
                 $(this).select2({width: "100%"});
                 $(this).on('select2:select select2:unselect', function () {
                     toggleOtherField(this);
+                    charge_role_info(this)
+                    toggleStandardField(this);
                 });
             });
 
@@ -511,7 +529,6 @@
         if (repeatBlock) {
             repeatBlock.remove();
         }
-
     }
 
     function toggleOtherField(selectElement) {
@@ -523,6 +540,12 @@
         const textAreaNameOther = 'text_' + nameQuestion + '_other';
         const divElement = document.querySelector(`[div-name="${divNameOther}"]`);
         const textareaElement = document.querySelector(`[name-text-check="${textAreaNameOther}"]`);
+
+          if (selectElement.selectedOptions.length === 0) {
+            if (divElement) divElement.style.display = "none";
+            if (textareaElement) textareaElement.required = false;
+            return;
+        }
 
         let has_Other_selected = false;
         for (let option of selectedOptions) {
@@ -546,18 +569,67 @@
     // toggles the other field
     $('select[data-dropdown-id]').on('select2:select select2:unselect', function () {
         toggleOtherField(this);
+        charge_role_info(this);
+        toggleStandardField(this);
     });
 
     // Check the load of the page
     setTimeout(function () {
         $('select[data-dropdown-id]').each(function () {
             toggleOtherField(this);
+            toggleStandardField(this);
         });
     }, 200);
 
 
+    function charge_role_info(selectElement) {
 
+        const dropdownId = selectElement.dataset.dropdownId;
+        const nameQuestion = dropdownId.split('#')[1];
+        const divNameStandard = 'div_' + nameQuestion + '_standard';
+        const textAreaNameStandard = 'text_' + nameQuestion + '_standard';
+        const divElement = document.querySelector(`[div-name="${divNameStandard}"]`);
+        const textareaElement = document.querySelector(`[name-text-check="${textAreaNameStandard}"]`);
+        const selectedOption = selectElement.selectedOptions[0];
 
+        const standardName = selectedOption.getAttribute("standard_name");
+
+        if (standardName) {
+            textareaElement.value = standardName;
+        }
+    }
+
+    function toggleStandardField(selectElement) {
+        const dropdownId = selectElement.dataset.dropdownId;
+        const selectedOption = selectElement.selectedOptions[0];
+        const nameQuestion = dropdownId.split('#')[1];
+        const divNameStandard = 'div_' + nameQuestion + '_standard';
+        const textAreaNameStandard = 'text_' + nameQuestion + '_standard';
+        const divElement = document.querySelector(`[div-name="${divNameStandard}"]`);
+        const textareaElement = document.querySelector(`[name-text-check="${textAreaNameStandard}"]`);
+
+        if (selectElement.selectedOptions.length === 0) {
+            if (divElement) divElement.style.display = "none";
+            if (textareaElement) textareaElement.required = false;
+            return;
+        }
+
+        let has_info_standard_selected = false;
+        if (selectedOption.dataset.haveValue === "yes") {
+            has_info_standard_selected = true
+        }
+
+        if (has_info_standard_selected) {
+            if (divElement) divElement.style.display = "block";
+            if (textareaElement) textareaElement.required = true;
+        } else {
+            if (divElement) divElement.style.display = "none";
+            if (textareaElement) {
+                textareaElement.required = false;
+            }
+        }
+
+    }
 
 
 </script>

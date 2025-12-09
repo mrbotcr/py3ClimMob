@@ -44,7 +44,7 @@
                     <tr>
                         {% if "children" in JsonInfo.keys() %}
                             {% for child in JsonInfo["children"] recursive %}
-                                <th style="width:{{ 100/JsonInfo["children"]|length }}%; {% if child["show_interface"] =="no" %}display: none;{% endif %}">
+                                <th style="width:{% if child["Table_extra_space"] != "yes" %}{{ 80/JsonInfo["children"]|length }}{% else %}{{ 80*1.5/JsonInfo["children"]|length }}{% endif %}%; {% if child["show_interface"] =="no" %}display: none;{% endif %}">
                                     {{ child["label"][request.locale_name] }}
                                 </th>
                             {% endfor %}
