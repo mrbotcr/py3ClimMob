@@ -399,4 +399,15 @@ def register_products(config):
     )
     products.append(projectssummary)
 
+    jsonresults = addProduct(
+        "jsonresults", "json with the main information of the project"
+    )
+    addMetadataToProduct(jsonresults, "author", "Pablo Orozco")
+    addMetadataToProduct(jsonresults, "version", "1.0")
+    addMetadataToProduct(
+        jsonresults,
+        "Licence",
+        "Copyright 2026, MrBot Software Solutions",
+    )
+    products.append(jsonresults)
     return products

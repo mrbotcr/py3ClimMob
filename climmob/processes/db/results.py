@@ -7,6 +7,13 @@ from lxml import etree
 from climmob.models import Assessment, Question, Project, mapFromSchema
 from climmob.models.repository import sql_fetch_all, sql_fetch_one
 from climmob.processes import getCombinations
+from climmob.processes.db.project_location import get_location_by_id_with_details
+from climmob.processes.db.project_unit_of_analysis import (
+    get_unit_of_analysis_by_unit_of_analysis_id_details,
+)
+from climmob.processes.db.project_objectives import (
+    get_all_objectives_by_location_and_unit_of_analysis,
+)
 
 __all__ = ["getJSONResult", "getCombinationsData"]
 
@@ -564,6 +571,44 @@ def getJSONResult(
                     mappedData[key] = str(value)
                 if isinstance(value, decimal.Decimal):
                     mappedData[key] = str(value)
+
+            mappedData["project_location_name"] = get_location_by_id_with_details(
+                request, mappedData["project_location"]
+            ).get("plocation_name", None)
+            mappedData[
+                "project_unit_of_analysis_name"
+            ] = get_unit_of_analysis_by_unit_of_analysis_id_details(
+                request, mappedData["project_unit_of_analysis"]
+            ).get(
+                "puoa_name", None
+            )
+            mappedData["project_objectives"] = []
+
+            for obj in get_all_objectives_by_location_and_unit_of_analysis(
+                request,
+                mappedData["project_location"],
+                mappedData["project_unit_of_analysis"],
+            ):
+                mappedData["project_objectives"].append(obj["pobjective_name"])
+
+            from climmob.processes import getMetadataForProject
+
+            forms = getMetadataForProject(request, mappedData["project_id"])
+            project_documentation = []
+            for form in forms:
+                project_documentation.append(
+                    {
+                        "form": form["metadata_name"],
+                        "metadata": form["result"].get("pmf_json"),
+                    }
+                )
+
+            mappedData["project_documentation"] = {
+                "project_cod": mappedData["project_cod"],
+                "project_name": mappedData["project_name"],
+                "project_documentation": project_documentation,
+            }
+
             data["project"] = mappedData
 
             if includeRegistry:

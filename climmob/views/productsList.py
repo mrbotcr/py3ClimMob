@@ -39,6 +39,9 @@ from climmob.products.forms.form import create_document_form
 from climmob.products.generalReport.generalReport import create_general_report
 from climmob.products.packages.packages import create_packages_excell
 from climmob.products.qrpackages.qrpackages import create_qr_packages
+
+from climmob.products.jsonResults.jsonresults import create_json_results
+
 from climmob.views.classes import privateView
 from climmob.views.projectHelp.projectHelp import getImportantInformation
 from climmob.views.registry import getDataFormPreview
@@ -635,6 +638,17 @@ class generateProductView(privateView):
                     packages,
                     listOfLabels,
                 )
+
+        if productid == "jsonresults":
+            create_json_results(
+                userapikey=self.user.apikey,
+                locale=self.request.locale_name,
+                userOwner=activeProjectData["owner"]["user_name"],
+                projectId=activeProjectData["project_id"],
+                projectCod=activeProjectData["project_cod"],
+                cropname=activeProjectData["project_curated_cropname"],
+                request=self.request,
+            )
 
         self.returnRawViewResult = True
         return HTTPFound(

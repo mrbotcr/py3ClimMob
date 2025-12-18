@@ -176,7 +176,12 @@
                                                                                                                     {% endblock data_exchange_download_row %}
 
                                                                                                                 {% else %}
-                                                                                                                    {{ product.product_id }}
+                                                                                                                    {% if product.product_id == "jsonresults" %}
+                                                                                                                        {{ _("JSON Results") }}
+                                                                                                                    {% else %}
+
+                                                                                                                        {{ product.product_id }}
+                                                                                                                    {% endif %}
                                                                                                                 {% endif %}
                                                                                                             {% endif %}
                                                                                                         {% endif %}
