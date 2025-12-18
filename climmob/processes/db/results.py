@@ -14,6 +14,7 @@ from climmob.processes.db.project_unit_of_analysis import (
 from climmob.processes.db.project_objectives import (
     get_all_objectives_by_location_and_unit_of_analysis,
 )
+from climmob.processes.db.metadata_form import getMetadataForProject
 
 __all__ = ["getJSONResult", "getCombinationsData"]
 
@@ -591,8 +592,6 @@ def getJSONResult(
             ):
                 mappedData["project_objectives"].append(obj["pobjective_name"])
 
-            from climmob.processes import getMetadataForProject
-
             forms = getMetadataForProject(request, mappedData["project_id"])
             project_documentation = []
             for form in forms:
@@ -603,11 +602,7 @@ def getJSONResult(
                     }
                 )
 
-            mappedData["project_documentation"] = {
-                "project_cod": mappedData["project_cod"],
-                "project_name": mappedData["project_name"],
-                "project_documentation": project_documentation,
-            }
+            mappedData["project_documentation"] = project_documentation
 
             data["project"] = mappedData
 
