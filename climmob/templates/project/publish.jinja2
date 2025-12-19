@@ -1,0 +1,140 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob | Upload to Databricks") }}</title>
+{% endblock title %}
+
+{% block css %}
+    {% cssresource request,'coreresources','sweet' %}
+    {% cssresource request,'coreresources','toastr' %}
+    {% cssresource request,'coreresources','jsTree' %}
+    {% cssresource request,'coreresources','select2' %}
+    {% cssresource request,'coreresources','icheck' %}
+    {% cssresource request,'coreresources','tour' %}
+{% endblock css %}
+
+{% block pageheading %}
+    {% set _title= _("Upload to Databricks") %}
+    {% include 'snippets/menuheading.jinja2' %}
+{% endblock %}
+
+
+
+{% block pagecontent %}
+    <style>
+        .flex {
+            display: flex;
+        }
+
+        .flex-col {
+            flex-direction: column;
+        }
+
+        .align-i-center {
+            align-items: center;
+        }
+
+        .just-c-center {
+            justify-content: center;
+        }
+    </style>
+
+    {% if redirect == False %}
+        {% block upload_message %}
+            <div class="row flex flex-col align-i-center">
+                <div class="ibox col-md-6">
+                    <div class="ibox-content">
+                        <div class="flex flex-col align-i-center">
+                            <h2 class="font-bold text text-center">{{ _("You are going to publish all collected data to the selected destinations") }}</h2>
+                            <p>
+                            <div style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
+                                <h3>{{ _("Please read the following information carefully before continuing:") }}</h3>
+                                <p style="width: 50%; text-align: justify;">
+                                {{ _("You are responsible for selecting which questions in
+                                your form should be marked as sensitive. Only the questions explicitly marked as
+                                sensitive will have identifying details removed or transformed; questions not marked
+                                as sensitive will remain in their original form. If personal, private, or sensitive
+                                information appears in questions you did not mark as sensitive, that data will not be
+                                automatically protected. It is your sole responsibility to ensure that all sensitive
+                                questions are properly flagged before submission. ClimMob is not liable for any
+                                disclosure of sensitive information resulting from incorrect or incomplete sensitivity
+                                 settings. By continuing, you acknowledge that you understand and agree to these terms
+                                  and accept full responsibility for your anonymization choices.") }}</p>
+                            </div>
+                            <form id="databricks-upload-form" role="form" method="post"
+                                  class="flex flex-col align-i-center"
+                                  style="gap: 1em;"
+                                  action="{{ request.path }}">
+                                <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                                <label for="confirm" onclick="toggle_confirmation(this)">
+                                    <input type="checkbox" id="databricks-confirm"/>
+                                    Accept
+                                </label>
+                                <section class="flex flex-col">
+                                    <h3>Select destinations:</h3>
+                                    <label for="confirm" onclick="toggle_destiny(this, 'zenodo')">
+                                        <input type="checkbox" id="zenodo-chk" name="zenodo"/>
+                                        Zenodo
+                                    </label>
+                                    <label for="confirm" onclick="toggle_destiny(this, 'fairgrounds')">
+                                        <input type="checkbox" id="fairgrounds-chk" name="fairgrounds"/>
+                                        Fairgrounds
+                                    </label>
+                                </section>
+                                <button class="btn btn-primary" type="button" id="databricks-upload-btn" disabled
+                                        name="upload-btn" style="margin-top: 1em;"
+                                        onclick="upload_to_databricks(this)"> {{ _('Upload') }}</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <a class="btn btn-default"
+                   href="{{ request.route_url('dashboard') }}">{{ _("Go back") }}</a>
+            </div>
+        {% endblock upload_message %}
+    {% endif %}
+{% endblock %}
+
+{% if redirect == True %}
+    {% block toastr %}
+        {# Overwrite the toaster so it does not trigger the popup #}
+    {% endblock toastr %}
+{% endif %}
+
+{% block script %}
+    <script>
+        {% if redirect == True %}
+            window.top.location.href = "{{ request.route_url('dashboard') }}";
+        {% else %}
+            function toggle_confirmation(element) {
+                const form = element.closest('form');
+                if (!form) return;
+
+                const confirm = form.querySelector('#databricks-confirm');
+                const button = form.querySelector('#databricks-upload-btn');
+                button.disabled = !confirm.checked;
+            }
+
+            function toggle_destiny(element, destiny) {
+                const form = element.closest('form');
+                if (!form) return;
+
+                const confirm = form.querySelector('#databricks-confirm');
+                const button = form.querySelector('#databricks-upload-btn');
+                button.disabled = !confirm.checked;
+            }
+
+            function upload_to_databricks(element) {
+                console.log("upload_to_databricks");
+                console.log(element);
+                const form = element.closest('form');
+                if (!form) return;
+
+                const confirm = form.querySelector('#databricks-confirm');
+                if (confirm.checked) {
+                    form.submit();
+                }
+            }
+        {% endif %}
+    </script>
+{% endblock script %}

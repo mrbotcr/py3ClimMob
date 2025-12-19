@@ -239,6 +239,7 @@ from climmob.views.project import (
     CurationOfProjectsView,
     GetUnitOfAnalysisByLocationView,
     GetObjectivesByLocationAndUnitOfAnalysisView,
+    PublishProjectView,
 )
 from climmob.views.projectHelp.projectHelp import projectHelp_view
 from climmob.views.project_analysis import analysisDataView
@@ -563,6 +564,15 @@ def loadRoutes(config):
             "path": "/location/{locationid}/unitOfAnalysis/{unitofanalysisid}/getObjectives",
             "view": GetObjectivesByLocationAndUnitOfAnalysisView,
             "renderer": "json",
+        }
+    )
+
+    routes.append(
+        {
+            "name": "project_publish",
+            "path": "/user/{user}/project/{project}/publish",
+            "view": PublishProjectView,
+            "renderer": "project/publish.jinja2",
         }
     )
 

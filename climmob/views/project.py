@@ -939,3 +939,16 @@ class GetObjectivesByLocationAndUnitOfAnalysisView(privateView):
             return objectives
 
         return {}
+
+
+class PublishProjectView(privateView):
+    validators = (ProjectExistsValidator,)
+
+    def get(self):
+        self.returnRawViewResult = False
+        return {"activeUser": self.user, "redirect": False}
+
+    def post(self):
+        self.returnRawViewResult = True
+
+        return HTTPFound(location=self.request.route_url("dashboard"))

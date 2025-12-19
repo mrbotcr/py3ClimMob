@@ -1,0 +1,18 @@
+<div>
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+            <h5>{{ _("Publish data") }}</h5>
+        </div>
+        <div class="ibox-content">
+            <br>
+            <h3> {{ _("Lorem ipsum") }}</h3>
+            <br>
+            <a class="btn btn-success btn-rounded btn-block"
+               style="width: 100%; overflow: hidden;text-overflow: ellipsis;"
+               onclick="location.href = '{{ request.route_url('project_publish',user=activeProject["owner"].user_name, project=activeProject.project_cod) }}'">
+                <i class="fa fa-upload"></i>
+                {{ _("Publish") }}
+            </a>
+        </div>
+    </div>
+</div>
