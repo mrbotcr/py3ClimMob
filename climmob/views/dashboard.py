@@ -1,4 +1,6 @@
+import mysql.connector
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
+from sqlalchemy.exc import ProgrammingError
 
 import climmob.plugins as p
 from climmob.processes import (
@@ -43,12 +45,15 @@ class dashboard_view(privateView):
                 activeProjectData = getActiveProject(self.user.login, self.request)
 
                 schema = (
-                    activeProjectData["user_name"]
+                    activeProjectData["owner"]["user_name"]
                     + "_"
                     + activeProjectData["project_cod"]
                 )
 
-                project_is_anonymized = is_project_anonymized(schema)
+                try:
+                    project_is_anonymized = is_project_anonymized(schema)
+                except ProgrammingError:
+                    project_is_anonymized = False
 
                 session = self.request.session
                 session["activeProject"] = activeProjectId
@@ -119,10 +124,15 @@ class dashboard_view(privateView):
             activeProjectData = getActiveProject(self.user.login, self.request)
 
             schema = (
-                activeProjectData["user_name"] + "_" + activeProjectData["project_cod"]
+                activeProjectData["owner"]["user_name"]
+                + "_"
+                + activeProjectData["project_cod"]
             )
 
-            project_is_anonymized = is_project_anonymized(schema)
+            try:
+                project_is_anonymized = is_project_anonymized(schema)
+            except ProgrammingError:
+                project_is_anonymized = False
 
             if activeProjectData:
                 self.returnRawViewResult = True
