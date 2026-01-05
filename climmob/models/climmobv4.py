@@ -1492,3 +1492,28 @@ class ProjectSummary(Base):
     admin_update_date = Column(DateTime, nullable=True)
 
     Project = relationship("Project")
+
+
+class PublishStatus(Base):
+    __tablename__ = "publish_status"
+
+    publish_status_id = Column(Integer, primary_key=True, nullable=False)
+    publish_status_name = Column(Unicode(32), nullable=False)
+
+
+class ProjectPublishStatus(Base):
+    __tablename__ = "project_publish_status"
+
+    publish_status_id = Column(
+        Integer,
+        ForeignKey("publish_status.publish_status_id"),
+        primary_key=True,
+        nullable=False,
+    )
+    project_id = Column(
+        Unicode(64), ForeignKey("project.project_id"), primary_key=True, nullable=False
+    )
+    last_publish_user_name = Column(
+        Unicode(80), ForeignKey("user.user_name"), nullable=False
+    )
+    last_publish_date_time = Column(DateTime, nullable=False)
