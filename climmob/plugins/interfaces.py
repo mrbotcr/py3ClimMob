@@ -38,6 +38,7 @@ __all__ = [
     "IAssessments",
     "IProjectRegistry",
     "IUserFlow",
+    "IPublisher",
 ]
 
 
@@ -740,5 +741,11 @@ class IProjectRegistry(Interface):
 
 class IUserFlow(Interface):
     def register_user_flow(self, user, request):
+
+        """ """
+
+
+class IPublisher(Interface):
+    def publish(self, settings, user_in_session, path, project_id, crop_name):
 
         """ """
