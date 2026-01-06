@@ -50,7 +50,7 @@
                             <div style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
                                 <h3>{{ _("Please read the following information carefully before continuing:") }}</h3>
                                 <p style="width: 50%; text-align: justify;">
-                                {{ _("You are responsible for selecting which questions in
+                                    {{ _("You are responsible for selecting which questions in
                                 your form should be marked as sensitive. Only the questions explicitly marked as
                                 sensitive will have identifying details removed or transformed; questions not marked
                                 as sensitive will remain in their original form. If personal, private, or sensitive
@@ -72,14 +72,21 @@
                                 </label>
                                 <section class="flex flex-col">
                                     <h3>Select destinations:</h3>
-                                    <label for="confirm" onclick="toggle_destiny(this, 'zenodo')">
-                                        <input type="checkbox" id="zenodo-chk" name="zenodo"/>
-                                        Zenodo
+
+                                    <label>
+                                        <input type="checkbox" id="databricks-chk" name="destination"
+                                               value="databricks" disabled checked/>
+                                        Downloads
                                     </label>
-                                    <label for="confirm" onclick="toggle_destiny(this, 'fairgrounds')">
-                                        <input type="checkbox" id="fairgrounds-chk" name="fairgrounds"/>
-                                        Fairgrounds
-                                    </label>
+
+                                    {% for destination, label in destinations %}
+                                        <label>
+                                            <input type="checkbox" id="{{ destination }}-chk" name="destination"
+                                                   value="{{ destination }}" disabled checked/>
+                                            {{ label }}
+                                        </label>
+                                    {% endfor %}
+
                                 </section>
                                 <button class="btn btn-primary" type="button" id="databricks-upload-btn" disabled
                                         name="upload-btn" style="margin-top: 1em;"

@@ -947,7 +947,14 @@ class PublishProjectView(privateView):
 
     def get(self):
         self.returnRawViewResult = False
-        return {"activeUser": self.user, "redirect": False}
+        destinations = []
+        for plugin in p.PluginImplementations(p.IPublisher):
+            destinations.append((plugin.get_destination_name(), plugin.get_label()))
+        return {
+            "activeUser": self.user,
+            "redirect": False,
+            "destinations": destinations,
+        }
 
     def post(self):
         self.returnRawViewResult = True
