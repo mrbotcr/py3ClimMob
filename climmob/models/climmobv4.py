@@ -1513,7 +1513,6 @@ class ProjectPublishStatus(Base):
     project_id = Column(
         Unicode(64), ForeignKey("project.project_id"), primary_key=True, nullable=False
     )
-    last_publish_user_name = Column(
-        Unicode(80), ForeignKey("user.user_name"), nullable=False
-    )
-    last_publish_date_time = Column(DateTime, nullable=False)
+    destination = Column(Unicode(32), primary_key=True, nullable=False)
+    last_updated_by = Column(Unicode(80), ForeignKey("user.user_name"), nullable=False)
+    last_updated_at = Column(DateTime, nullable=False)

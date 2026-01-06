@@ -19,7 +19,7 @@ from pyramid.response import Response
 from pyramid.session import check_csrf_token
 
 import climmob.plugins as p
-from climmob.config.auth import getUserData, getUserByApiKey
+from climmob.config.auth import getUserData, getUserByApiKey, User
 from climmob.views.context.ApiContext import ApiContext
 from climmob.views.context.PrivateContext import PrivateContext
 from climmob.views.validators import Field, FieldValidator
@@ -356,7 +356,7 @@ class privateView(BaseView):
             request.add_response_callback(ResourceCallback)
         self.request = request
         self.context = PrivateContext(request)
-        self.user = None
+        self.user: User = None
         self._ = self.request.translate
         self.checkCrossPost = False
         self.classResult = {
