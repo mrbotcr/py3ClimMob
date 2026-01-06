@@ -12,6 +12,7 @@ def get_body_from_api_request(request) -> str:
         body = json.dumps(body)
     return body
 
+
 def get_settings(request):
     settings = {}
     for key, value in request.registry.settings.items():
