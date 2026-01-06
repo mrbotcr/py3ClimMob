@@ -51,3 +51,4 @@ from climmob.processes.db.project_location_unit_objective import *
 from climmob.processes.db.location_unit_of_analysis_objectives import *
 from climmob.processes.db.affiliation import *
 from climmob.processes.db.project_summary import *
+from climmob.processes.db.project_publish_status import *
