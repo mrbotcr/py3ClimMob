@@ -53,6 +53,7 @@ from climmob.processes import (
     delete_all_project_location_unit_objective,
     get_all_affiliations,
 )
+from climmob.products.jsonResults.jsonresults import create_json_results
 from climmob.views.classes import privateView
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 
@@ -950,5 +951,28 @@ class PublishProjectView(privateView):
 
     def post(self):
         self.returnRawViewResult = True
+        body = self.getPostDict()
+
+        project = getActiveProject(self.request.user, self.request)
+
+        user_apikey = self.user.apikey
+        locale = self.request.locale_name
+        user_owner = self.request.user
+        project_id = project["project_id"]
+        project_cod = self.request.project
+        cropname = project["project_curated_cropname"]
+        destinations = body.get("destination", [])
+
+        create_json_results(
+            user_apikey,
+            locale,
+            self.user.login,
+            user_owner,
+            project_id,
+            project_cod,
+            cropname,
+            destinations,
+            self.request,
+        )
 
         return HTTPFound(location=self.request.route_url("dashboard"))

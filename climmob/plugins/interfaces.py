@@ -749,3 +749,7 @@ class IPublisher(Interface):
     def publish(self, settings, user_in_session, path, project_id, crop_name):
 
         """ """
+
+    def get_destination_name(self):
+
+        """ """
