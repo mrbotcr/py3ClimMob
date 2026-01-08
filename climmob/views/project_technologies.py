@@ -21,9 +21,10 @@ from climmob.processes import (
     getActiveProject,
     getTheProjectIdForOwner,
     getProjectData,
-    getCombinationsData,
+    getCombinationsData, getUserTechById,
 )
 from climmob.views.classes import privateView
+from climmob.views.techaliases import ImportAliasView
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 
 
@@ -75,6 +76,8 @@ class projectTecnologies_view(privateView):
                 return HTTPFound(location=self.request.route_url("dashboard"))
 
             if self.request.method == "POST":
+                print(f"body: {self.request.POST}")
+                print(f"dataworking: {dataworking}")
                 if "btn_save_technologies" in self.request.POST:
                     postdata = self.getPostDict()
 
@@ -136,7 +139,7 @@ class projectTecnologies_view(privateView):
                     alias = prjTechAliases_view.processView(self)
                     techSee = getTechnology(postdata, self.request)
 
-                if "btn_add_alias" in self.request.POST:
+                if "btn_add_alias" in self.request.POST or "btn_import_technology" in self.request.POST:
                     postdata = self.getPostDict()
                     tech_id = postdata["tech_id"]
                     dataworking["project_id"] = activeProjectId
@@ -293,9 +296,20 @@ class prjTechAliasAdd_view(privateView):
             raise HTTPNotFound()
         else:
             if self.request.method == "POST":
-                if "btn_add_alias" in self.request.POST:
+                if "btn_add_alias" in self.request.POST or "btn_import_technology" in self.request.POST:
                     tdata = self.getPostDict()
-                    alias_name = tdata["txt_add_alias"]
+                    alias_name = tdata.get("txt_add_alias")
+                    if "btn_import_technology" in self.request.POST:
+                        # TODO: fix
+                        tech = self.request.crop_index_api.get_tech_by_id(tdata["ext_alias_id"])
+                        alias_name = tech["default_display_name"]
+                        imported_alias = {
+                            "id": tech["id"],
+                            "data": tech,
+                            "alias_id": added_tech["alias_id"],
+                            "tech_id": added_tech["tech_id"],
+                        }
+                        success, msg = add_external_tech_option(imported_alias, self.request)
                     if alias_name != "":
                         # add the object
                         dataworking["user_name"] = self.user.login

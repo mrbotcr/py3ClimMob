@@ -178,6 +178,16 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class='stream' style='padding:4px 0;' onclick='showImportAlias()' id="div_show_create_alias">
+                                <div class='stream-badge'>
+                                    <i class='fa fa-plus' style='color:#000000'></i>
+                                </div>
+                                <div class='stream-panel' style='margin-top:4px'>
+                                    <div class='stream-info'>
+                                        <button class="btn btn-primary btn-xs" style="font-size: 12px; background-color: #3c763d; border-color: #3c763d; font-weight: 600">{{ _("Import technology option") }}</button>
+                                    </div>
+                                </div>
+                            </div>
 
                             <form class="form-horizontal formElement" role="form" method="post" action="{{ request.path }}">
                                 <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
@@ -194,6 +204,11 @@
 
                     </div>
                 </div>
+            </div>
+
+            <div class="col-lg-4" id="div_search_technology_genesys" style="display: none" >
+                {% include 'snippets/technologies/genesys-search.jinja2' %}
+                <input hidden id="tech_name" value="{{ techSee.tech_name.lower() }}"/>
             </div>
 
             <div class="col-lg-4 " id="create_new_alias" {% if not error_summary%}style="display:none" {% endif %}>
@@ -297,6 +312,7 @@
             if ("{{ tech_id }}" !="")
             {
                 $("#tech{{ tech_id }}").addClass("tableHover2");
+                $("#import_alias_form input[name=tech_id]").val({{ tech_id }})
             }
         });
 
@@ -318,6 +334,21 @@
         function showCreateTechnology()
         {
             $("#create_new_alias").css("display","initial");
+        }
+
+        function showImportAlias(){
+            hideCreateAlias()
+
+            $("#to_import_alias_id").val("").trigger('change.select2').trigger('change');
+            $("#div_search_technology_genesys").css('display','initial')
+        }
+
+        function hideImportAlias(){
+            $("#div_search_technology_genesys").css('display','none')
+        }
+
+         function hideCreateAlias(){
+            $("#create_new_alias").css("display","none")
         }
 
 
