@@ -101,9 +101,33 @@
         <div class="col-md-4" id="div_create_technology" style="display: none" >
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>{{ _("Technology details for") }}:</h5><h5 style="margin-left: 7px" class="tech_name"></h5>
+                    <h5>{{ _("Create technology") }}</h5>
                     <div class="ibox-tools">
                         <button id="btn_cancel_technology"  class="btn btn-xs btn-default pull-right " ><i class="fa fa-close"></i> {{ _("Clear and close form") }} </button>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    {% set error_summary = error_summary_aux %}
+                    {% include 'snippets/error.jinja2' %}
+
+                    <form class="form-horizontal formElement" role="form" method="post" action="{{ request.url }}">
+                        {% include 'snippets/technologies/technologies-form.jinja2' %}
+
+                        <button style="display: none" class="btn btn-primary pull-right BtnTechnology" type="submit" id="btn_add_technology" name="btn_add_technology" > {{ _('Add and close') }}</button>
+                        <br>
+                        <br>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-md-4" id="div_technology_details" style="display: none" >
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>{{ _("Technology details for") }}:</h5><h5 style="margin-left: 5px" class="tech_name"></h5>
+                    <div class="ibox-tools">
+                        <button id="btn_cancel_technology"  class="btn btn-xs btn-default pull-right " ><i class="fa fa-close"></i> {{ _("Close") }} </button>
                     </div>
                 </div>
                 <div class="ibox-content">
@@ -114,7 +138,6 @@
                         {% include 'snippets/technologies/technologies-form.jinja2' %}
 
                         <button style="display: none" class="btn btn-danger pull-left BtnTechnology" id="btn_delete_technology" onclick="deleteTechnology()" type="button" title="{{ _("Delete technology") }}"><i class="fa fa-trash"></i> {{ _("Delete technology") }}</button>
-                        <button style="display: none" class="btn btn-primary pull-right BtnTechnology" type="submit" id="btn_add_technology" name="btn_add_technology" > {{ _('Add and close') }}</button>
                         <button style="display: none" class="btn btn-primary pull-right BtnTechnology" type="submit" id="btn_modify_technology" name="btn_modify_technology" > {{ _('Save and close') }}</button>
                         <br>
                         <br>
@@ -374,7 +397,7 @@
             {% else %}
                 {% if error_summary_aux %}
                     $("#btn_add_technology").css('display','initial')
-                    $("#div_create_technology").css('display','initial')
+                    $("#div_technology_details").css('display','initial')
                     $("#div_search_technology_genesys").css('display','initial')
                 {% endif%}
             {% endif %}
@@ -402,6 +425,7 @@
             $("#select_crop").val("0");
             $("#select_crop").trigger('change');*/
 
+            $("#div_technology_details").css('display','none')
             $("#div_create_technology").css('display','initial')
             $("#div_create_technology_option").css('display','none')
             $("#div_show_create_alias").css('display','none')
@@ -414,10 +438,14 @@
             $("#form_technology").show();
         }
 
+        function hideCreateTechnology() {
+            $("#div_create_technology").css('display','none')
+        }
+
         $("#btn_cancel_technology").click(function () {
             $('.i-checkTech').iCheck('uncheck');
             $("#btn_cancel_technology_options").click()
-            $("#div_create_technology").css('display','none')
+            $("#div_technology_details").css('display','none')
             $("#div_search_technology_genesys").css('display','none')
             $("#div_show_create_alias").css('display','none')
             $("#div_show_import_alias").css('display','none')
@@ -436,6 +464,8 @@
             $("#div_show_import_alias").css("display","none");
             hideImportAlias()
             hideImportedAlias()
+
+            hideCreateTechnology()
 
             $("#to_import_alias_id").val("").trigger('change.select2').trigger('change');
 
@@ -467,6 +497,7 @@
                 cleanBtsTechnology()
                 $(".tech_id").val(tech.tech_id)
                 $("#tech_name").val(tech.tech_name)
+                $(".tech_name").val(tech.tech_name)
                 $(".tech_name").text(tech.tech_name)
 
                 /*$("#croptaxonomy_code").val(tech.croptaxonomy_code);
@@ -563,7 +594,7 @@
                     $("#show_crops").addClass('btn-default');*/
                 }
 
-                $("#div_create_technology").css('display','initial')
+                $("#div_technology_details").css('display','initial')
                 $("#div_show_alias").css('display','block')
             });
         }

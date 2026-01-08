@@ -5,7 +5,7 @@
     <div class="col-sm-8">
         <input type="text" class="form-control tech_id" value="{{ dataworking.tech_id }}" id="tech_id" name="tech_id"
                style="display: none">
-        <input type="text" class="form-control" value="{{ dataworking.tech_name }}" id="tech_name" name="tech_name"
+        <input type="text" class="form-control tech_name" value="{{ dataworking.tech_name }}" id="tech_name" name="tech_name"
                required="" oninvalid="this.setCustomValidity('{{ _("Write the technology name.") }}')"
                onchange="this.setCustomValidity('')">
     </div>
