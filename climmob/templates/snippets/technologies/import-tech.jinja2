@@ -1,0 +1,208 @@
+{% block css %}
+    {% cssresource request,'coreresources','icheck' %}
+    {% cssresource request,'coreresources','datatables' %}
+    {% cssresource request,'coreresources','sweet' %}
+    {% cssresource request,'coreresources','footable' %}
+    {% cssresource request,'coreresources','select2' %}
+{% endblock css %}
+
+{% block topScripts %}
+    {% jsresource request,'coreresources','footable' %}
+    {% jsresource request,'coreresources','icheck' %}
+    {% jsresource request,'coreresources','technologies' %}
+    {% jsresource request,'coreresources','datatables' %}
+    {% jsresource request,'coreresources','sweet' %}
+    {% include 'snippets/delete.jinja2' %}
+    {% jsresource request,'coreresources','select2' %}
+{% endblock topScripts %}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="ibox">
+            <div class="ibox-title">
+                <h5>{{ _("Import technology option") }}</h5>
+                <div class="ibox-tools">
+                    <button id="btn_cancel_import_alias" class="btn btn-xs btn-default pull-right "><i
+                            class="fa fa-close"></i> {{ _("Clear and close form") }} </button>
+                </div>
+            </div>
+            <div class="ibox-content">
+                {% set error_summary=error_summary_import %}
+                {% include 'snippets/error.jinja2' %}
+                <div class="text-center">
+                    <p>{{ _("Import technology options from external sources like Genesys") }}</p>
+                </div>
+                <br>
+                <div class="form-group"
+                     style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1em;">
+                    <label class="col-sm-3 control-label" for="to_import_alias_id">{{ _('Search') }}</label>
+                    <div class="col-sm-9">
+                        <select id="to_import_alias_id" name="ext_alias_id" class="form-control inputForQuestionSelect"
+                                style="width: 100%; !important;" required form="import_alias_form">
+                            <option value=""></option>
+                        </select>
+                    </div>
+                </div>
+                <br>
+                <section id="synonym-section">
+                    <h4>{{ _("Synonyms") }}:</h4>
+                    <table id="synonyms-search-table" class="table table-stripped" style="width: 100%;">
+                        <thead>
+                        <tr>
+                            <th>{{ _("Name") }}</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </section>
+                <hr>
+                <section id="references-section">
+                    <h4>{{ _("Cross-references") }}:</h4>
+                    <table id="references-search-table" class="table table-stripped" style="width: 100%;">
+                        <thead>
+                        <tr>
+                            <th>{{ _("Name") }}</th>
+                            <th>{{ _("Link") }}</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </section>
+
+                <br>
+                <form method="POST" style="min-height: fit-content" id="import_alias_form" action="{{ request.url }}">
+                    <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                    <input type="hidden" name="tech_id">
+                    <button class="btn btn-primary pull-right" type="submit"
+                            id="btn_import_alias"
+                            name="btn_import_alias">{{ _('Add and close') }}</button>
+                </form>
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).on("click", ".copy-btn", function () {
+        const text = $(this).data("href");
+        navigator.clipboard.writeText(text);
+    });
+
+    function formatOption(item) {
+        if (item.default_display_name === undefined) {
+            return "{{ _("Select one option") }}"
+        }
+        return item.default_display_name + " (" + item.germplasm_genus + " " + item.germplasm_species + ')';
+    }
+
+    $(document).ready(function () {
+        const synonymsSearchTable = $('#synonyms-search-table').DataTable({
+            columns: [
+                {data: "name"}
+            ],
+            dom: 't',
+            paging: true,
+            ordering: false,
+            language: {
+                emptyTable: "{{ _("No items to display") }}"
+            },
+        });
+
+        const referencesSearchTable = $('#references-search-table').DataTable({
+            columns: [
+                {data: "name"},
+                {
+                    data: "base_url",
+                    render: function (data, type, row) {
+                        const href = `${data}/a/${row.cross_reference_id}`;
+                        const text = href.substring(0, 32) || "";
+                        return `
+                            <a target="_blank" title="${href}" href="${href}">${text}...</a>
+                            <button
+                                class="copy-btn"
+                                data-href="${href}"
+                                style="border:none;background:none;cursor:pointer;margin-left:6px;"
+                                title="Copy link"
+                            >
+                                <i class="fa fa-copy"></i>
+                            </button>
+                        `;
+                    }
+                }
+            ],
+            dom: 't',
+            paging: true,
+            ordering: false,
+            language: {
+                emptyTable: "{{ _("No items to display") }}"
+            },
+        });
+
+        $('#to_import_alias_id').on('change', function () {
+            if ($(this).val() === "" || $(this).val() === null) {
+                synonymsSearchTable.clear().draw()
+                referencesSearchTable.clear().draw();
+                return;
+            }
+            $.ajax({
+                url: '{{ request.registry.settings.get('crop_index.base_url') }}/germplasm/' + $(this).val(),
+                method: 'GET',
+                headers: {
+                    "Authorization": "Api-key {{ request.registry.settings.get('crop_index.api_key') }}"
+                },
+                success: function (response) {
+                    synonymsSearchTable.clear().rows.add(response.synonyms).draw();
+                    referencesSearchTable.clear().rows.add(response.source).draw();
+                },
+                error: function (err) {
+                    console.error('Error:', err);
+                }
+            });
+        });
+
+        $("#to_import_alias_id").select2({
+            data: [],
+            minimumInputLength: 3,
+            templateResult: formatOption,
+            templateSelection: formatOption,
+            placeholder: "Select an optionz",
+            allowClear: true,
+            ajax: {
+                url: "{{ request.registry.settings.get('crop_index.base_url') }}/germplasm",
+                dataType: 'json',
+                delay: 250,
+                headers: {
+                    "Authorization": "Api-key {{ request.registry.settings.get('crop_index.api_key') }}"
+                },
+                data: function (params) {
+                    return {
+                        crop: $("#tech_name").val().toLowerCase(),
+                        q: params.term,
+                        page: params.page,
+                        limit: 100,
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: data,
+                        pagination: {
+                            more: data.length === 10
+                        }
+                    };
+                },
+                cache: true
+            },
+            language: {
+                inputTooShort: function (args) {
+                    return "{{ _("Type at least 3 characters") }}";
+                }
+            }
+        });
+
+        $("#btn_cancel_import_alias").click(function () {
+            hideImportAlias()
+        });
+
+    });
+</script>
