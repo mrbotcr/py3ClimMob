@@ -101,7 +101,7 @@
         <div class="col-md-4" id="div_create_technology" style="display: none" >
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>{{ _("Technology details") }}</h5>
+                    <h5>{{ _("Technology details for") }}:</h5><h5 style="margin-left: 7px" class="tech_name"></h5>
                     <div class="ibox-tools">
                         <button id="btn_cancel_technology"  class="btn btn-xs btn-default pull-right " ><i class="fa fa-close"></i> {{ _("Clear and close form") }} </button>
                     </div>
@@ -116,10 +116,10 @@
                         <button style="display: none" class="btn btn-danger pull-left BtnTechnology" id="btn_delete_technology" onclick="deleteTechnology()" type="button" title="{{ _("Delete technology") }}"><i class="fa fa-trash"></i> {{ _("Delete technology") }}</button>
                         <button style="display: none" class="btn btn-primary pull-right BtnTechnology" type="submit" id="btn_add_technology" name="btn_add_technology" > {{ _('Add and close') }}</button>
                         <button style="display: none" class="btn btn-primary pull-right BtnTechnology" type="submit" id="btn_modify_technology" name="btn_modify_technology" > {{ _('Save and close') }}</button>
+                        <br>
+                        <br>
+                        <hr>
                     </form>
-                    <br>
-                    <br>
-                    <hr>
                     <h4>{{ _("List of technology options:") }}</h4>
                     <div class="text-center">
                         <p>{{ _("Editing or deleting is disabled for varieties that are part of a project") }}</p>
@@ -410,6 +410,8 @@
             if ($('.closeError').length) {
                 $(".closeError").click()
             }
+
+            $("#form_technology").show();
         }
 
         $("#btn_cancel_technology").click(function () {
@@ -441,11 +443,12 @@
             URL= URL.replace("__user_name__",user_name).replace("__techid__", tech_id)
             data = {};
 
+
+
             $("#import_alias_form input[name=tech_id]").val(tech_id)
 
             $.get(URL, function(data, status){
-                var tech = data;
-
+                const tech = data;
 
                 $("#tech"+tech.tech_id).addClass('tableHover2');
                 if (!$("#radio"+tech.tech_id).prop('checked')) {
@@ -546,9 +549,15 @@
                     /*$("#show_crops").prop('disabled', false);
                     $("#show_crops").addClass('btn-success');
                     $("#show_crops").removeClass('btn-default');*/
+                    if (tech.user_name === "bioversity")
+                        $("#form_technology").hide();
+                    else {
+                        $("#form_technology").show();
+                    }
                 }else{
                     $("#tech_name").prop('readonly',true)
                     $("#select_crop").prop('disabled', 'disabled');
+                    $("#form_technology").hide();
                     /*$("#show_crops").prop('disabled', true);
                     $("#show_crops").removeClass('btn-success');
                     $("#show_crops").addClass('btn-default');*/
