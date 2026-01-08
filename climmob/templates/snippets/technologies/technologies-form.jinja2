@@ -3,19 +3,11 @@
 <div class="form-group">
     <label class="col-sm-4 control-label">{{ _('Technology name') }}</label>
     <div class="col-sm-8">
-        <input type="text" class="form-control tech_id" value="{{ dataworking.tech_id }}" id="tech_id" name="tech_id" style="display: none">
-        <input type="text" class="form-control" value="{{ dataworking.tech_name }}" id="tech_name" name="tech_name" required="" oninvalid="this.setCustomValidity('{{ _("Write the technology name.") }}')" onchange="this.setCustomValidity('')">
-    </div>
-</div>
-
-<div class="form-group">
-    <label class="col-sm-4 control-label">{{ _('Crop taxonomy') }}</label>
-    <div class="col-sm-8">
-        <select id="select_crop" name="croptaxonomy_code"  class="form-control" style="width: 100%; !important;" required="" oninvalid="this.setCustomValidity('{{ _("Select one crop taxonomy.") }}')" onchange="this.setCustomValidity('')">
-            {% if dataworking["taxonomy_name"] %}
-                <option value="{{ dataworking["croptaxonomy_code"] }}">{{ dataworking["taxonomy_name"] }}</option>
-            {% endif %}
-        </select>
+        <input type="text" class="form-control tech_id" value="{{ dataworking.tech_id }}" id="tech_id" name="tech_id"
+               style="display: none">
+        <input type="text" class="form-control" value="{{ dataworking.tech_name }}" id="tech_name" name="tech_name"
+               required="" oninvalid="this.setCustomValidity('{{ _("Write the technology name.") }}')"
+               onchange="this.setCustomValidity('')">
     </div>
 </div>
 <hr>

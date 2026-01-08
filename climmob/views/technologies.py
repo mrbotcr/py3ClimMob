@@ -148,16 +148,13 @@ class newtechnology_view(privateView):
 
                     formdata["user_name"] = "bioversity"
                     existInGenLibrary = findTechInLibrary(formdata, self.request)
-                    if existInGenLibrary == False:
+                    if existInGenLibrary is False:
 
                         formdata["user_name"] = self.user.login
                         existInPersLibrary = findTechInLibrary(formdata, self.request)
-                        if existInPersLibrary == False:
+                        if existInPersLibrary is False:
                             formdata["user_name"] = self.user.login
-                            if "croptaxonomy_code" in formdata.keys():
-                                formdata["croptaxonomy_code"] = formdata[
-                                    "croptaxonomy_code"
-                                ].replace("'", "")
+                            formdata["croptaxonomy_code"] = 0  # Not a crop
                             added, message = addTechnology(formdata, self.request)
                             if not added:
                                 error_summary = {"dberror": message}
@@ -227,11 +224,6 @@ class modifytechnology_view(privateView):
                         )
                         if existInPersLibrary == False:
                             formdata["user_name"] = self.user.login
-
-                            if "croptaxonomy_code" in formdata.keys():
-                                formdata["croptaxonomy_code"] = formdata[
-                                    "croptaxonomy_code"
-                                ].replace("'", "")
 
                             update, message = updateTechnology(formdata, self.request)
                             if not update:
