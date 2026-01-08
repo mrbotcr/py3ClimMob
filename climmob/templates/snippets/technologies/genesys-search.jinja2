@@ -176,7 +176,7 @@
                 },
                 data: function (params) {
                     return {
-                        crop: $("#tech_name").val(),
+                        crop: $("#tech_name").val().toLowerCase(),
                         q: params.term,
                         page: params.page,
                         limit: 100,
