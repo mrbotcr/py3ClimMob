@@ -62,7 +62,10 @@ class technologies_view(privateView):
         nextPage = self.request.params.get("next")
 
         if self.request.method == "POST":
-            if "btn_add_technology" in self.request.POST:
+            if (
+                "btn_add_technology" in self.request.POST
+                or "btn_import_technology" in self.request.POST
+            ):
                 dict_return = newtechnology_view.processView(self)
                 dataworking = dict_return["formdata"]
                 error_summary_add = dict_return["error_summary"]
@@ -109,6 +112,7 @@ class technologies_view(privateView):
             if (
                 "btn_add_technology" not in self.request.POST
                 and "btn_modify_technology" not in self.request.POST
+                and "btn_import_technology" not in self.request.POST
                 and "btn_add_alias" not in self.request.POST
                 and "btn_modify_alias" not in self.request.POST
                 and "btn_import_alias" not in self.request.POST
@@ -140,7 +144,10 @@ class newtechnology_view(privateView):
         redirect = False
         formdata["tech_name"] = ""
         if self.request.method == "POST":
-            if "btn_add_technology" in self.request.POST:
+            if (
+                "btn_add_technology" in self.request.POST
+                or "btn_import_technology" in self.request.POST
+            ):
                 formdata = self.getPostDict()
                 del formdata["tech_id"]
                 formdata["user_name"] = self.user.login
@@ -155,6 +162,9 @@ class newtechnology_view(privateView):
                         if existInPersLibrary is False:
                             formdata["user_name"] = self.user.login
                             formdata["croptaxonomy_code"] = 0  # Not a crop
+                            if "btn_import_technology" in self.request.POST:
+                                formdata["user_name"] = "bioversity"
+                                formdata["croptaxonomy_code"] = -1  # Not defined
                             added, message = addTechnology(formdata, self.request)
                             if not added:
                                 error_summary = {"dberror": message}

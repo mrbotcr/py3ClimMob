@@ -1235,6 +1235,11 @@
             tourFieldAgent.restart();
         }
 
+        function capitalize(str) {
+            if (!str) return str;
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
         function setCookie(cookieName, cookieValue, nDays) {
             var today = new Date();
             var expire = new Date();

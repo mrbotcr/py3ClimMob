@@ -37,20 +37,20 @@
                      style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1em;">
                     <label class="col-sm-3 control-label" for="to_import_tech_id">{{ _('Search') }}</label>
                     <div class="col-sm-9">
-                        <select id="to_import_tech_id" name="ext_alias_id" class="form-control inputForQuestionSelect"
-                                style="width: 100%; !important;" required form="import_alias_form">
+                        <select id="to_import_tech_id" name="tech_name" class="form-control inputForQuestionSelect"
+                                style="width: 100%; !important;" required form="import_technology_form">
                             <option value=""></option>
                         </select>
                     </div>
                 </div>
                 <br>
                 <br>
-                <form method="POST" style="min-height: fit-content" id="import_alias_form" action="{{ request.url }}">
+                <form method="POST" style="min-height: fit-content" id="import_technology_form" action="{{ request.url }}">
                     <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                     <input type="hidden" name="tech_id">
                     <button class="btn btn-primary pull-right" type="submit"
                             id="btn_import_technology"
-                            name="btn_import_technology">{{ _('Add and close') }}</button>
+                            name="btn_import_technology">{{ _('Import and close') }}</button>
                 </form>
                 <br>
                 <br>
@@ -81,8 +81,8 @@
                     results: response.data
                         .filter(row => row.name)
                         .map(row => ({
-                            id: row.name,
-                            text: row.name
+                            id: capitalize(row.name),
+                            text: capitalize(row.name)
                         }))
                 })
             },
