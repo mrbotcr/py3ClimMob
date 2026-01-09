@@ -171,7 +171,7 @@
                     <div class="activity-stream" id="div_show_alias" style="overflow-y: scroll; max-height: calc(100vh - 495px);">
 
                     </div>
-                    <div class='stream' style='padding:4px 0; display: none' onclick='showImportAlias()' id="div_show_create_alias">
+                    <div class='stream' style='padding:4px 0; display: none' onclick='showImportAlias()' id="div_show_import_alias">
                         <div class='stream-badge'>
                             <i class='fa fa-plus' style='color:#000000'></i>
                         </div>
@@ -181,13 +181,13 @@
                             </div>
                         </div>
                     </div>
-                    <div class='stream' style='padding:4px 0; display: none' onclick='showCreateAlias()' id="div_show_import_alias">
+                    <div class='stream' style='padding:4px 0; display: none' onclick='showCreateAlias()' id="div_show_create_alias">
                         <div class='stream-badge'>
                             <i class='fa fa-plus' style='color:#000000'></i>
                         </div>
                         <div class='stream-panel' style='margin-top:4px'>
                             <div class='stream-info'>
-                                <button class="btn btn-primary btn-xs" style="font-size: 12px; background-color: #3c763d; border-color: #3c763d; font-weight: 600">{{ _("Create new technology option") }}</button>
+                                <button class="btn btn-primary btn-xs" style="font-size: 12px; background-color: #3c763d; border-color: #3c763d; font-weight: 600">{{ _("Create new technology optionz") }}</button>
                             </div>
                         </div>
                     </div>
@@ -424,7 +424,21 @@
             {% endif %}
         });
 
+        function showCreateAliasBtn() {
+            $("#div_show_create_alias").show()
+        }
 
+        function hideCreateAliasBtn() {
+            $("#div_show_create_alias").hide()
+        }
+
+        function showImportAliasBtn() {
+            $("#div_show_import_alias").show()
+        }
+
+        function hideImportAliasBtn() {
+            $("#div_show_import_alias").hide()
+        }
 
         function showCreateTechnology() {
             hideImportAlias()
@@ -450,8 +464,8 @@
             $("#div_technology_details").css('display','none')
             $("#div_create_technology").css('display','initial')
             $("#div_create_technology_option").css('display','none')
-            $("#div_show_create_alias").css('display','none')
-            $("#div_show_import_alias").css('display','none')
+            hideCreateAliasBtn()
+            hideImportAliasBtn()
 
             if ($('.closeError').length) {
                 $(".closeError").click()
@@ -483,8 +497,8 @@
             $("#btn_cancel_technology_options").click()
             $("#div_technology_details").css('display','none')
             $("#div_search_technology_genesys").css('display','none')
-            $("#div_show_create_alias").css('display','none')
-            $("#div_show_import_alias").css('display','none')
+            hideCreateAliasBtn()
+            hideImportAliasBtn()
             $('.footable tbody tr').siblings().removeClass('tableHover2');
         }
 
@@ -500,8 +514,8 @@
 
         function showVarietiesInTechnology(tech_id, user_name, closeError='yes') {
 
-            $("#div_show_create_alias").css("display","none");
-            $("#div_show_import_alias").css("display","none");
+            hideCreateAliasBtn()
+            hideImportAliasBtn()
             hideImportAlias()
             hideImportedAlias()
             hideImportTechnology()
@@ -594,8 +608,8 @@
                     {#allHTML +="</div>"#}
                     {#allHTML +="</div>"#}
                     {#allHTML +="</div>"#}
-                    $("#div_show_create_alias").css("display","block");
-                    $("#div_show_import_alias").css("display","block");
+                    showCreateAliasBtn()
+                    showImportAliasBtn()
                 }
 
                 $("#div_show_alias").html(allHTML)
