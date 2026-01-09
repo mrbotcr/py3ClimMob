@@ -100,7 +100,7 @@ class technologies_view(privateView):
                 error_summary_options = dict_return["error_summary"]
                 techSee = getUserTechById(dataworking["tech_id"], self.request)
 
-            if "btn_import_technology" in self.request.POST:
+            if "btn_import_alias" in self.request.POST:
                 result = ImportAliasView(self.request).post()
                 body = self.getPostDict()
                 error_summary_import = result["error_summary"]
@@ -111,7 +111,7 @@ class technologies_view(privateView):
                 and "btn_modify_technology" not in self.request.POST
                 and "btn_add_alias" not in self.request.POST
                 and "btn_modify_alias" not in self.request.POST
-                and "btn_import_technology" not in self.request.POST
+                and "btn_import_alias" not in self.request.POST
             ):
                 dataworking = self.getPostDict()
                 techSee = getUserTechById(dataworking["tech_id"], self.request)

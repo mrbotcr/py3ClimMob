@@ -139,7 +139,7 @@ class projectTecnologies_view(privateView):
                     alias = prjTechAliases_view.processView(self)
                     techSee = getTechnology(postdata, self.request)
 
-                if "btn_add_alias" in self.request.POST or "btn_import_technology" in self.request.POST:
+                if "btn_add_alias" in self.request.POST or "btn_import_alias" in self.request.POST:
                     postdata = self.getPostDict()
                     tech_id = postdata["tech_id"]
                     dataworking["project_id"] = activeProjectId
@@ -296,10 +296,10 @@ class prjTechAliasAdd_view(privateView):
             raise HTTPNotFound()
         else:
             if self.request.method == "POST":
-                if "btn_add_alias" in self.request.POST or "btn_import_technology" in self.request.POST:
+                if "btn_add_alias" in self.request.POST or "btn_import_alias" in self.request.POST:
                     tdata = self.getPostDict()
                     alias_name = tdata.get("txt_add_alias")
-                    if "btn_import_technology" in self.request.POST:
+                    if "btn_import_alias" in self.request.POST:
                         # TODO: fix
                         tech = self.request.crop_index_api.get_tech_by_id(tdata["ext_alias_id"])
                         alias_name = tech["default_display_name"]

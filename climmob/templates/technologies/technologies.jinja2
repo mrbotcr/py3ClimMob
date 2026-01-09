@@ -83,13 +83,30 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="stream" style="padding: 4px 0" onclick="showImportTechnology()">
+                        <div class="stream-badge">
+                            <i class="fa fa-plus" style="color:#000000"></i>
+                        </div>
+                        <div class="stream-panel" style="margin-top: 4px">
+                            <div class="stream-info">
+                                <button class="btn btn-primary btn-xs"
+                                        style="font-size: 12px; background-color: #3c763d; border-color: #3c763d; font-weight: 600">
+                                    {{ _("Import technology") }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="stream" style="padding: 4px 0" onclick="showCreateTechnology()">
                         <div class="stream-badge">
                             <i class="fa fa-plus" style="color:#000000"></i>
                         </div>
                         <div class="stream-panel" style="margin-top: 4px">
                             <div class="stream-info">
-                                <button class="btn btn-primary btn-xs" style="font-size: 12px; background-color: #3c763d; border-color: #3c763d; font-weight: 600">{{ _("Create new technology") }}</button>
+                                <button class="btn btn-primary btn-xs"
+                                        style="font-size: 12px; background-color: #3c763d; border-color: #3c763d; font-weight: 600">
+                                    {{ _("Create new technology") }}
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -98,12 +115,16 @@
             </div>
         </div>
 
+        <div class="col-md-4" id="div_import_technology" style="display: none" >
+            {% include 'snippets/technologies/import-tech.jinja2' %}
+        </div>
+
         <div class="col-md-4" id="div_create_technology" style="display: none" >
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
                     <h5>{{ _("Create technology") }}</h5>
                     <div class="ibox-tools">
-                        <button id="btn_cancel_technology"  class="btn btn-xs btn-default pull-right " ><i class="fa fa-close"></i> {{ _("Clear and close form") }} </button>
+                        <button id="btn_cancel_create_technology"  class="btn btn-xs btn-default pull-right " ><i class="fa fa-close"></i> {{ _("Clear and close form") }} </button>
                     </div>
                 </div>
                 <div class="ibox-content">
@@ -127,7 +148,7 @@
                 <div class="ibox-title">
                     <h5>{{ _("Technology details for") }}:</h5><h5 style="margin-left: 5px" class="tech_name"></h5>
                     <div class="ibox-tools">
-                        <button id="btn_cancel_technology"  class="btn btn-xs btn-default pull-right " ><i class="fa fa-close"></i> {{ _("Close") }} </button>
+                        <button id="btn_close_technology_details"  class="btn btn-xs btn-default pull-right " ><i class="fa fa-close"></i> {{ _("Close") }} </button>
                     </div>
                 </div>
                 <div class="ibox-content">
@@ -407,6 +428,7 @@
 
         function showCreateTechnology() {
             hideImportAlias()
+            hideImportTechnology()
             cleanBtsTechnologyOptions()
             cleanSectionsOptions()
             cleanBtsTechnology()
@@ -442,7 +464,21 @@
             $("#div_create_technology").css('display','none')
         }
 
-        $("#btn_cancel_technology").click(function () {
+        $("#btn_cancel_create_technology").click(function () {
+            hideCreateTechnology()
+        });
+
+        function showImportTechnology() {
+            $("#div_import_technology").show()
+            hideCreateTechnology()
+            hideTechnologyDetails()
+        }
+
+        function hideImportTechnology() {
+            $("#div_import_technology").hide()
+        }
+
+        function hideTechnologyDetails() {
             $('.i-checkTech').iCheck('uncheck');
             $("#btn_cancel_technology_options").click()
             $("#div_technology_details").css('display','none')
@@ -450,6 +486,10 @@
             $("#div_show_create_alias").css('display','none')
             $("#div_show_import_alias").css('display','none')
             $('.footable tbody tr').siblings().removeClass('tableHover2');
+        }
+
+        $("#btn_close_technology_details").click(function () {
+            hideTechnologyDetails()
         });
 
         $("#btn_cancel_technology_options").click(function(){
@@ -464,6 +504,7 @@
             $("#div_show_import_alias").css("display","none");
             hideImportAlias()
             hideImportedAlias()
+            hideImportTechnology()
 
             hideCreateTechnology()
 

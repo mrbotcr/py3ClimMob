@@ -22,7 +22,7 @@
             <div class="ibox-title">
                 <h5>{{ _("Import technology option") }}</h5>
                 <div class="ibox-tools">
-                    <button id="btn_cancel_import_tech" class="btn btn-xs btn-default pull-right "><i
+                    <button id="btn_cancel_import_alias" class="btn btn-xs btn-default pull-right "><i
                             class="fa fa-close"></i> {{ _("Clear and close form") }} </button>
                 </div>
             </div>
@@ -72,8 +72,8 @@
                     <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                     <input type="hidden" name="tech_id">
                     <button class="btn btn-primary pull-right" type="submit"
-                            id="btn_import_technology"
-                            name="btn_import_technology">{{ _('Add and close') }}</button>
+                            id="btn_import_alias"
+                            name="btn_import_alias">{{ _('Add and close') }}</button>
                 </form>
                 <br>
                 <br>
@@ -200,7 +200,7 @@
             }
         });
 
-        $("#btn_cancel_import_tech").click(function () {
+        $("#btn_cancel_import_alias").click(function () {
             hideImportAlias()
         });
 
