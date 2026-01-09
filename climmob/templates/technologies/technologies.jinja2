@@ -649,6 +649,14 @@
                     $("#show_crops").addClass('btn-default');*/
                 }
 
+                if (tech.user_name === "bioversity"){
+                    hideCreateAliasBtn()
+                    showImportAliasBtn()
+                } else {
+                    showCreateAliasBtn()
+                    hideImportAliasBtn()
+                }
+
                 $("#div_technology_details").css('display','initial')
                 $("#div_show_alias").css('display','block')
             });
