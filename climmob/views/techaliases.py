@@ -184,7 +184,6 @@ class ImportAliasView(privateView):
     def post(self):
         body = self.getPostDict()
         error_summary = {}
-        print(body)
 
         tech = self.request.crop_index_api.get_tech_by_id(body["ext_alias_id"])
 

@@ -1493,3 +1493,19 @@ class ProjectSummary(Base):
     admin_update_date = Column(DateTime, nullable=True)
 
     Project = relationship("Project")
+
+
+class ExternalTechOption(Base):
+    __tablename__ = "external_tech_option"
+
+    id = Column(Unicode(64), primary_key=True, nullable=False)
+    tech_id = Column(
+        ForeignKey("technology.tech_id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    alias_id = Column(
+        ForeignKey("techalias.alias_id", ondelete="CASCADE"),
+        nullable=False,
+    )
+
+    data = Column(JSON, nullable=False)

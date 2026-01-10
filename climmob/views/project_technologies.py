@@ -78,8 +78,6 @@ class projectTecnologies_view(privateView):
                 return HTTPFound(location=self.request.route_url("dashboard"))
 
             if self.request.method == "POST":
-                print(f"body: {self.request.POST}")
-                print(f"dataworking: {dataworking}")
                 if "btn_save_technologies" in self.request.POST:
                     postdata = self.getPostDict()
 
