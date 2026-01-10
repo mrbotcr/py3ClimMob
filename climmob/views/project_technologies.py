@@ -21,7 +21,8 @@ from climmob.processes import (
     getActiveProject,
     getTheProjectIdForOwner,
     getProjectData,
-    getCombinationsData, getUserTechById,
+    getCombinationsData,
+    get_external_tech_option_by_id,
 )
 from climmob.views.classes import privateView
 from climmob.views.techaliases import ImportAliasView
@@ -39,6 +40,7 @@ class projectTecnologies_view(privateView):
         dataworking = {}
         error_summary = {}
         error_summary2 = {}
+        error_summary_import = {}
         dataworking["alias_name"] = ""
         techSee = {}
         listOfCombinations = []
@@ -123,7 +125,10 @@ class projectTecnologies_view(privateView):
                     }
                     techSee = getTechnology(postdata, self.request)
 
-                if "btn_save_technologies_alias" in self.request.POST:
+                if (
+                    "btn_save_technologies_alias" in self.request.POST
+                    or "btn_import_alias" in self.request.POST
+                ):
                     postdata = self.getPostDict()
                     tech_id = postdata["tech_id"]
                     dataworking["project_id"] = activeProjectId
@@ -137,9 +142,10 @@ class projectTecnologies_view(privateView):
                         )
                     self.request.matchdict["tech_id"] = postdata["tech_id"]
                     alias = prjTechAliases_view.processView(self)
+                    error_summary_import = alias["error_summary_import"]
                     techSee = getTechnology(postdata, self.request)
 
-                if "btn_add_alias" in self.request.POST or "btn_import_alias" in self.request.POST:
+                if "btn_add_alias" in self.request.POST:
                     postdata = self.getPostDict()
                     tech_id = postdata["tech_id"]
                     dataworking["project_id"] = activeProjectId
@@ -185,6 +191,7 @@ class projectTecnologies_view(privateView):
                 "alias": alias,
                 "dataworking": dataworking,
                 "error_summary": error_summary,
+                "error_summary_import": error_summary_import,
                 "techSee": techSee,
                 "error_summary2": error_summary2,
                 "totalOfCombinations": totalOfCombinations,
@@ -196,6 +203,7 @@ class prjTechAliases_view(privateView):
     def processView(self):
 
         error_summary = {}
+        error_summary_import = {}
         dataworking = {}
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
@@ -211,8 +219,25 @@ class prjTechAliases_view(privateView):
             )
 
             if self.request.method == "POST":
-                if "btn_save_technologies_alias" in self.request.POST:
-                    postdata = self.getPostDict()
+                postdata = self.getPostDict()
+
+                if "btn_import_alias" in self.request.POST:
+                    result = ImportAliasView(self.request).post()
+                    error_summary_import = result["error_summary"]
+                    postdata["txt_technologies_included"] = ""
+                    postdata["txt_technologies_excluded"] = ""
+                    if not error_summary_import:
+                        imported = get_external_tech_option_by_id(
+                            postdata["ext_alias_id"], self.request
+                        )
+                        postdata[
+                            "txt_technologies_included"
+                        ] = f"element_{imported['alias_id']}_new,"
+
+                if not error_summary_import and (
+                    "btn_save_technologies_alias" in self.request.POST
+                    or "btn_import_alias" in self.request.POST
+                ):
                     if postdata["txt_technologies_included"] != "":
 
                         part = postdata["txt_technologies_included"][:-1].split(",")
@@ -257,6 +282,7 @@ class prjTechAliases_view(privateView):
                 "activeUser": self.user,
                 "dataworking": dataworking,
                 "error_summary": error_summary,
+                "error_summary_import": error_summary_import,
                 "AliasTechnology": AliasSearchTechnology(
                     technologyid, activeProjectId, self.request
                 ),
@@ -296,20 +322,9 @@ class prjTechAliasAdd_view(privateView):
             raise HTTPNotFound()
         else:
             if self.request.method == "POST":
-                if "btn_add_alias" in self.request.POST or "btn_import_alias" in self.request.POST:
+                if "btn_add_alias" in self.request.POST:
                     tdata = self.getPostDict()
-                    alias_name = tdata.get("txt_add_alias")
-                    if "btn_import_alias" in self.request.POST:
-                        # TODO: fix
-                        tech = self.request.crop_index_api.get_tech_by_id(tdata["ext_alias_id"])
-                        alias_name = tech["default_display_name"]
-                        imported_alias = {
-                            "id": tech["id"],
-                            "data": tech,
-                            "alias_id": added_tech["alias_id"],
-                            "tech_id": added_tech["tech_id"],
-                        }
-                        success, msg = add_external_tech_option(imported_alias, self.request)
+                    alias_name = tdata["txt_add_alias"]
                     if alias_name != "":
                         # add the object
                         dataworking["user_name"] = self.user.login

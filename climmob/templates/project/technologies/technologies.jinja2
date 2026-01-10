@@ -314,6 +314,9 @@
                 $("#tech{{ tech_id }}").addClass("tableHover2");
                 $("#import_alias_form input[name=tech_id]").val({{ tech_id }})
             }
+            {% if alias and error_summary_import %}
+                showImportAlias()
+            {% endif %}
         });
 
         $('.tableHover').on('click', 'tbody tr', function(event) {

@@ -1,10 +1,11 @@
 __all__ = [
     "add_external_tech_option",
+    "get_external_tech_option_by_id",
 ]
 
 from sqlalchemy import exists
 
-from climmob.models import mapToSchema
+from climmob.models import mapToSchema, mapFromSchema
 from climmob.models.climmobv4 import ExternalTechOption
 from climmob.processes import removeAlias
 
@@ -24,3 +25,12 @@ def add_external_tech_option(tech_option, request):
         return True, ""
     except Exception as e:
         return False, str(e)
+
+
+def get_external_tech_option_by_id(ext_id, request):
+    result = (
+        request.dbsession.query(ExternalTechOption)
+        .filter(ExternalTechOption.id == ext_id)
+        .one()
+    )
+    return mapFromSchema(result)
