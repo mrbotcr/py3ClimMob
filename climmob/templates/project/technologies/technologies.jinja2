@@ -168,7 +168,7 @@
                         </div>
 
                         {% if not onlySee %}
-                            <div class="stream" style="padding: 4px 0" onclick="showCreateTechnology()">
+                            <div class="stream" style="padding: 4px 0" onclick="showCreateAlias()" id="div_show_create_alias">
                                 <div class="stream-badge">
                                     <i class="fa fa-plus" style="color:#000000"></i>
                                 </div>
@@ -178,7 +178,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class='stream' style='padding:4px 0;' onclick='showImportAlias()' id="div_show_create_alias">
+                            <div class='stream' style='padding:4px 0;' onclick='showImportAlias()' id="div_show_import_alias">
                                 <div class='stream-badge'>
                                     <i class='fa fa-plus' style='color:#000000'></i>
                                 </div>
@@ -317,6 +317,13 @@
             {% if alias and error_summary_import %}
                 showImportAlias()
             {% endif %}
+            {% if alias %}
+                showImportAliasBtn()
+                {% if techSee.user_name != "bioversity" %}
+                    hideImportAliasBtn()
+                {% endif %}
+            {% endif %}
+            
         });
 
         $('.tableHover').on('click', 'tbody tr', function(event) {
@@ -334,9 +341,10 @@
             $("#btn_show_technology_alias_in_library").click()
         }
 
-        function showCreateTechnology()
+        function showCreateAlias()
         {
             $("#create_new_alias").css("display","initial");
+            hideImportAlias()
         }
 
         function showImportAlias(){
@@ -350,10 +358,22 @@
             $("#div_search_technology_genesys").css('display','none')
         }
 
-         function hideCreateAlias(){
+        function hideCreateAlias(){
             $("#create_new_alias").css("display","none")
         }
 
+       function showCreateAliasBtn() {
+           $("#div_show_create_alias").show()
+       }
+       function showImportAliasBtn() {
+           $("#div_show_import_alias").show()
+       }
+       function hideCreateAliasBtn() {
+           $("#div_show_create_alias").hide()
+       }
+       function hideImportAliasBtn() {
+           $("#div_show_import_alias").hide()
+       }
 
         $(".btn_cancel_technology_options").click(function(){
             $("#alias_in_project").css("display",'none')
