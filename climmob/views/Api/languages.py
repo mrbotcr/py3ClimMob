@@ -9,12 +9,24 @@ from climmob.processes import (
     getAllTranslationsOfPhrasesByLanguage,
     generalPhraseExistsWithID,
     savePhraseTranslation,
+    getListOfLanguages,
 )
 import datetime
 import json
 import re
 
 from pyramid.response import Response
+
+
+class GetCompleteListOfLanguages(apiView):
+    def get(self):
+        list_of_lang = getListOfLanguages(self.request)
+        response = Response(
+            status=200,
+            body=json.dumps(list_of_lang, ensure_ascii=False),
+            content_type="application/json; charset=utf-8",
+        )
+        return response
 
 
 class ReadListOfLanguagesView(apiView):

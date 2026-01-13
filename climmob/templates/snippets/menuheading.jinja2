@@ -31,9 +31,11 @@
                         {% set showTabsOfMenu = True %}
                         {% if showTabsOfMenu %}
                             <ol class="breadcrumb" style="{% if iconOfLibrary or svgOfTranslations%} background-color: rgba(255,255,255,0.1); color: black{% endif %}" >
-                                <li>
-                                    <a href="{{ request.route_url('dashboard') }}">{{ _("Project overview") }}</a>
-                                </li>
+                                {% if not removeBasicBreadcrumb %}
+                                    <li>
+                                        <a href="{{ request.route_url('dashboard') }}">{{ _("Projects") }}</a>
+                                    </li>
+                                {% endif %}
                                 {% for opt in extra %}
                                     <li>
                                         <a href="{{ opt[1] }}">{{ opt[0] }}</a>

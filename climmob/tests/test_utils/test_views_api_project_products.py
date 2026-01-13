@@ -1,12 +1,16 @@
 import json
 import unittest
 from datetime import datetime
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 from pyramid.response import Response
 
 from climmob.tests.test_utils.common import ViewBaseTest
-from climmob.views.Api.projectProducts import readProducts_view, downloadApi_view
+from climmob.views.Api.projectProducts import (
+    readProducts_view,
+    downloadApi_view,
+    GetListOfQuestionsByProject,
+)
 
 
 class TestReadProductsView(ViewBaseTest):
@@ -258,6 +262,186 @@ class TestDownloadApiView(ViewBaseTest):
             response.body.decode(),
         )
         mock_json_loads.assert_called_once()
+
+
+class TestGetListOfQuestionsByProject(ViewBaseTest):
+    view_class = GetListOfQuestionsByProject
+    request_body = json.dumps(
+        {"user_owner": "testuser", "project_cod": "testproject", "lang_code": "en"}
+    )
+
+    def setUp(self):
+        super().setUp()
+        self.active_project_id_patcher = patch(
+            "climmob.views.Api.projectProducts.getTheProjectIdForOwner"
+        )
+        self.registry_questions_patcher = patch(
+            "climmob.views.Api.projectProducts.get_registry_questions_by_project"
+        )
+        self.assessment_questions_patcher = patch(
+            "climmob.views.Api.projectProducts.get_assessment_questions_by_project"
+        )
+        self.language_exist_patcher = patch(
+            "climmob.views.Api.projectProducts.languageExistInI18n"
+        )
+        self.api_key_patcher = patch("climmob.views.classes.getUserByApiKey")
+
+        self.mock_project_id = self.active_project_id_patcher.start()
+        self.mock_registry_questions = self.registry_questions_patcher.start()
+        self.mock_assessment_questions = self.assessment_questions_patcher.start()
+        self.mock_language = self.language_exist_patcher.start()
+        self.mock_api_key = self.api_key_patcher.start()
+
+        self.mock_project_id.return_value = MagicMock(str, name="project_id")
+        self.mock_registry_questions.return_value = [
+            {
+                "question_id": 1,
+                "question_text": "Registry question 1",
+                "type": "registry",
+            }
+        ]
+        self.mock_assessment_questions.return_value = [
+            {
+                "question_id": 2,
+                "question_text": "Assessment question 1",
+                "type": "assessment",
+            }
+        ]
+        self.mock_language.return_value = True
+        self.mock_api_key.return_value = MagicMock(login="validuser")
+
+        self.addCleanup(self.mock_project_id.stop)
+        self.addCleanup(self.mock_registry_questions.stop)
+        self.addCleanup(self.mock_assessment_questions.stop)
+        self.addCleanup(self.mock_language.stop)
+        self.addCleanup(self.mock_api_key.stop)
+
+    def tearDown(self):
+        request_body_dict = json.loads(self.request_body)
+
+        if self.mock_project_id.called:
+            self.mock_project_id.assert_called_once_with(
+                request_body_dict["user_owner"],
+                request_body_dict["project_cod"],
+                self.view.request,
+            )
+        if self.mock_registry_questions.called:
+            self.mock_registry_questions.assert_called_once_with(
+                self.view.request, self.mock_project_id.return_value, "en"
+            )
+        if self.mock_assessment_questions.called:
+            self.mock_assessment_questions.assert_called_once_with(
+                self.view.request, self.mock_project_id.return_value, "en"
+            )
+        if self.mock_api_key.called:
+            self.mock_api_key.assert_called_once_with(
+                self.view.request.params["Apikey"], self.view.request
+            )
+
+    def test_get_no_ApiKey(self):
+        self.mock_api_key.return_value = None
+        _json = {
+            "user_owner": "testuser",
+            "project_cod": "testproject",
+            "lang_code": "aae",
+        }
+        self.view.request.params = {"Body": json.dumps(_json)}
+        response = self.view()
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.body, b"Apikey non-existent")
+
+    @patch("climmob.views.classes.update_last_login")
+    def test_get_no_user_owner(self, mock_update_last_login):
+
+        apiKey = "VALID_KEY"
+        _json = {"user_owner": "", "project_cod": "testproject", "lang_code": "aae"}
+
+        self.view.request.params = {"Apikey": apiKey, "Body": json.dumps(_json)}
+        response = self.view()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            response.body, b"The following fields require a value: user_owner"
+        )
+
+    @patch("climmob.views.classes.update_last_login")
+    def test_get_wrong_user_owner(self, mock_update_last_login):
+
+        apiKey = "VALID_KEY"
+        _json = {
+            "user_owner": "something",
+            "project_cod": "testproject",
+            "lang_code": "aae",
+        }
+
+        self.view.request.params = {"Apikey": apiKey, "Body": json.dumps(_json)}
+        response = self.view()
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.body, b"There is no a project with that code.")
+
+    @patch("climmob.views.classes.update_last_login")
+    def test_get_no_project_cod(self, mock_update_last_login):
+
+        apiKey = "VALID_KEY"
+        _json = {"user_owner": "", "project_cod": "", "lang_code": "aae"}
+
+        self.view.request.params = {"Apikey": apiKey, "Body": json.dumps(_json)}
+        response = self.view()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            response.body,
+            b"The following fields require a value: user_owner, project_cod",
+        )
+
+    @patch("climmob.views.classes.update_last_login")
+    def test_get_less_values(self, mock_update_last_login):
+        apiKey = "VALID_KEY"
+        self.view.request.params = {
+            "Apikey": apiKey,
+        }
+        response = self.view()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            response.body, b"The following fields are required: user_owner, project_cod"
+        )
+
+    def test_get_not_lang(self):
+        self.view.body = json.dumps(
+            {"user_owner": "testuser", "project_cod": "testproject", "lang_code": ""}
+        )
+
+        response = self.view.get()
+        self.assertEqual(response.status_code, 200)
+        self.mock_language.assert_called_once_with("en", self.view.request)
+
+    def test_get_no_lang_code(self):
+        self.view.body = json.dumps(
+            {"user_owner": "testuser", "project_cod": "testproject"}
+        )
+        response = self.view.get()
+        self.assertEqual(response.status_code, 200)
+        self.mock_language.assert_called_once_with("en", self.view.request)
+
+    def test_get_no_exist_lang_code(self):
+        self.view.body = json.dumps(
+            {
+                "user_owner": "testuser",
+                "project_cod": "testproject",
+                "lang_code": "Español",
+            }
+        )
+        self.mock_language.return_value = False
+        response = self.view.get()
+        self.assertEqual(response.status_code, 400)
+        self.mock_language.assert_called_once_with("Español", self.view.request)
+
+    def test_get_success(self):
+        response = self.view.get()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.body,
+            b'[{"question_id": 1, "question_text": "Registry question 1", "type": "registry"}, {"question_id": 2, "question_text": "Assessment question 1", "type": "assessment"}]',
+        )
+        self.mock_language.assert_called_once_with("en", self.view.request)
 
 
 if __name__ == "__main__":

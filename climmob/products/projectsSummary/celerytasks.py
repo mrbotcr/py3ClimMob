@@ -1,7 +1,22 @@
-from climmob.models import get_engine, get_session_factory, get_tm_session
-from climmob.models.repository import sql_execute
-from climmob.models.meta import Base
+import datetime
+import json
+import os
+import shutil as sh
+
+import numpy as np
+import pandas as pd
+import requests
+import transaction
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import NullPool
+
+from climmob.config.celery_app import celeryApp
+from climmob.config.celery_class import celeryTask
 from climmob.models import (
+    get_engine,
+    get_session_factory,
+    get_tm_session,
     Project,
     mapFromSchema,
     Registry,
@@ -21,21 +36,16 @@ from climmob.models import (
     ProjectObjectives,
     LocationUnitOfAnalysisObjectives,
     ProjectLocaUnitObjective,
+    initialize_schema,
 )
-import shutil as sh
-import pandas as pd
-import numpy as np
-import transaction
-import datetime
-import json
-import os
-
-from climmob.config.celery_app import celeryApp
-from climmob.config.celery_class import celeryTask
-
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine
-from sqlalchemy.pool import NullPool
+from climmob.models.meta import Base
+from climmob.models.repository import sql_execute
+from climmob.processes import (
+    add_project_summary,
+    update_project_summary,
+    get_project_summary,
+)
+from climmob.utility.project import ProjectActive, ProjectClimMobAnalytics
 
 
 def get_list_of_locations(dbsession):
@@ -435,7 +445,7 @@ def processTheProjectCoordinates(
 
             return averageLatitude, averageLongitude
 
-    return False, False
+    return None, None
 
 
 def getListOfProjects(dbsession):
@@ -467,6 +477,7 @@ def getListOfProjects(dbsession):
             ProjectType.prjtype_name,
             Project.project_location,
             Project.project_unit_of_analysis,
+            Project.project_checked,
         )
         .filter(Project.project_id == userProject.project_id)
         .filter(Project.project_cnty == Country.cnty_cod)
@@ -501,6 +512,7 @@ def getListOfProjects(dbsession):
             ProjectType.prjtype_name,
             Project.project_location,
             Project.project_unit_of_analysis,
+            Project.project_checked,
         )
         .filter(Project.project_id == userProject.project_id)
         .filter(Project.project_cnty.is_(None))
@@ -559,7 +571,12 @@ def createProjectsSummary(self, settings, otro):
     session_factory = get_session_factory(engine)
     with transaction.manager:
         dbsession = get_tm_session(session_factory, transaction.manager)
-        # try:
+
+        initialize_schema()
+
+        request = requests.Session()
+        request.dbsession = dbsession
+
         cantidad = 0
         listOfProjects = []
         listOfGenotypes = []
@@ -607,7 +624,7 @@ def createProjectsSummary(self, settings, otro):
                 crop = crop["taxonomy_name"]
 
             else:
-                crop = "No assigned"
+                crop = "Not assigned"
 
             if project["project_registration_and_analysis"] == 0:
                 project_type = "On-farm testing"
@@ -632,12 +649,13 @@ def createProjectsSummary(self, settings, otro):
                 "gender_woman": genderWoman,
                 "gender_other": genderOther,
                 "gender_unreported": int(num) - genderMan - genderWoman - genderOther,
-                "crop": crop,
+                "scientific_name": crop,
                 "technology": tech,
                 "startDate": startDate,
                 "endDate": endDate,
                 "instance_name": settings.get("analytics.instancename", ""),
                 "varieties_quantity": aliasNumber,
+                "project_checked": project["project_checked"],
             }
 
             registry, infoOfCoordinates = getTheFirstGeoPointQuestionCodeInRegistry(
@@ -691,7 +709,21 @@ def createProjectsSummary(self, settings, otro):
                 dbsession, project["project_id"]
             )
 
+            result["project_checked"] = project["project_checked"]
+
             listOfProjects.append(result)
+
+            data_project_summary = {}
+            data_project_summary["project_id"] = project["project_id"]
+            data_project_summary["psm_json"] = result
+
+            project_summary_exists = get_project_summary(project["project_id"], request)
+            if project_summary_exists:
+                update_project_summary(
+                    data_project_summary, project["project_id"], request
+                )
+            else:
+                add_project_summary(data_project_summary, request)
 
             resultGeno, genotypes = processForGetTheGenotypes(project["project_id"])
 
@@ -703,7 +735,8 @@ def createProjectsSummary(self, settings, otro):
                         "trial_pi": genotype.trial_pi,
                         "pi_email": genotype.pi_email,
                         "country": project["cnty_name"],
-                        "crop_name": genotype.crop_name,
+                        "crop_taxonomy": crop,
+                        "technology": genotype.crop_name,
                         "genotype": genotype.genotype,
                         "tech_id": genotype.tech_id,
                         "alias_id": genotype.alias_id,
@@ -737,159 +770,148 @@ def createProjectsSummary(self, settings, otro):
                     }
                     listOfDataCollectionMoments.append(resultDataCollectionMoment)
 
-        projectsSummary = "projectsSummary"
+        # projectsSummary = "projectsSummary"
         genotypesSummary = "genotypesSummary"
         dataCollectionMomentsSummary = "dataCollectionMomentsSummary"
 
-        with open(
-            os.path.join(
-                jsonLocation,
-                "{}_{}.json".format(
-                    projectsSummary, settings.get("analytics.instancename", "")
-                ),
-            ),
-            "w",
-        ) as json_data:
-            json.dump(listOfProjects, json_data, default=myconverter)
-
-        df = pd.read_json(
-            os.path.join(
-                jsonLocation,
-                "{}_{}.json".format(
-                    projectsSummary, settings.get("analytics.instancename", "")
-                ),
-            )
-        )
-        df.to_excel(
-            os.path.join(
-                jsonLocation,
-                "{}_{}.xlsx".format(
-                    projectsSummary, settings.get("analytics.instancename", "")
-                ),
-            ),
-            index=False,
+        create_json_exel_file(jsonLocation, genotypesSummary, settings, listOfGenotypes)
+        create_json_exel_file(
+            jsonLocation,
+            dataCollectionMomentsSummary,
+            settings,
+            listOfDataCollectionMoments,
         )
 
-        with open(
-            os.path.join(
-                jsonLocation,
-                "{}_{}.json".format(
-                    genotypesSummary, settings.get("analytics.instancename", "")
-                ),
-            ),
-            "w",
-        ) as jsongeno_data:
-            json.dump(listOfGenotypes, jsongeno_data, default=myconverter)
-
-        df = pd.read_json(
-            os.path.join(
-                jsonLocation,
-                "{}_{}.json".format(
-                    genotypesSummary, settings.get("analytics.instancename", "")
-                ),
-            )
-        )
-        df.to_excel(
-            os.path.join(
-                jsonLocation,
-                "{}_{}.xlsx".format(
-                    genotypesSummary, settings.get("analytics.instancename", "")
-                ),
-            ),
-            index=False,
-        )
-
-        with open(
-            os.path.join(
-                jsonLocation,
-                "{}_{}.json".format(
-                    dataCollectionMomentsSummary,
-                    settings.get("analytics.instancename", ""),
-                ),
-            ),
-            "w",
-        ) as jsondatacollection_data:
-            json.dump(
-                listOfDataCollectionMoments,
-                jsondatacollection_data,
-                default=myconverter,
-            )
-
-        df = pd.read_json(
-            os.path.join(
-                jsonLocation,
-                "{}_{}.json".format(
-                    dataCollectionMomentsSummary,
-                    settings.get("analytics.instancename", ""),
-                ),
-            )
-        )
-        df.to_excel(
-            os.path.join(
-                jsonLocation,
-                "{}_{}.xlsx".format(
-                    dataCollectionMomentsSummary,
-                    settings.get("analytics.instancename", ""),
-                ),
-            ),
-            index=False,
-        )
-
-        # except Exception as e:
-        #    print(str(e))
-        #    error = 1
     engine.dispose()
 
     if settings.get("analytics.active", "false") == "true":
         if settings.get("analytics.sqlalchemy.url", "") != settings.get(
             "sqlalchemy.url"
         ):
-            engine = create_engine(
-                settings.get("analytics.sqlalchemy.url", ""),
-                poolclass=NullPool,
-            )
-            Session = sessionmaker(bind=engine)
-            dbsession = Session()
 
-            try:
-                dbsession.execute(
-                    "DELETE FROM {} WHERE instance_name='{}'".format(
-                        "climmob_details", settings.get("analytics.instancename", "")
-                    )
-                )
+            for project in listOfProjects:
 
-                for project in listOfProjects:
-
-                    columns = project.keys()
-                    cols_comma_separated = ", ".join(columns)
-
-                    binds_comma_separated = ""
-                    for item in columns:
-                        before = ", "
-                        if binds_comma_separated == "":
-                            before = ""
-
-                        if project[item]:
-                            binds_comma_separated += (
-                                before + "'" + str(project[item]).replace("'", "") + "'"
-                            )
-                        else:
-                            binds_comma_separated += before + "null"
-
-                    sql = "INSERT INTO {} ({}) VALUES ({})".format(
-                        "climmob_details",
-                        cols_comma_separated,
-                        binds_comma_separated,
-                    )
-                    try:
-                        dbsession.execute(sql)
-                    except Exception as e:
-                        print(str(e))
-
-            except Exception as e:
-                print(str(e))
-
-            dbsession.commit()
-            dbsession.close()
+                process_with_project_for_analytics(settings, project)
 
     return ""
+
+
+def create_json_exel_file(
+    json_location, process_name, settings, dataCollection, column_order=None
+):
+    with open(
+        os.path.join(
+            json_location,
+            "{}_{}.json".format(
+                process_name, settings.get("analytics.instancename", "")
+            ),
+        ),
+        "w",
+    ) as jsonData:
+        json.dump(dataCollection, jsonData, default=myconverter)
+
+    df = pd.read_json(
+        os.path.join(
+            json_location,
+            "{}_{}.json".format(
+                process_name, settings.get("analytics.instancename", "")
+            ),
+        )
+    )
+
+    if column_order:
+        df = df[column_order]
+
+    df.to_excel(
+        os.path.join(
+            json_location,
+            "{}_{}.xlsx".format(
+                process_name, settings.get("analytics.instancename", "")
+            ),
+        ),
+        index=False,
+    )
+    return None
+
+
+def process_with_project_for_analytics(settings, project):
+    execute_sql_for_analytics(
+        settings,
+        "DELETE FROM climmob_curated_projects WHERE (project_id = '{}' and instance_name='{}');".format(
+            project["project_id"], project["instance_name"]
+        ),
+    )
+
+    if project["climmob_analytics"] == ProjectClimMobAnalytics.YES.value:
+        execute_sql_for_analytics(settings, create_insert_for_analytics(project))
+
+
+def create_insert_for_analytics(project):
+
+    status = "Active"
+    if project["project_active"] == ProjectActive.NO.value:
+        status = "Inactive"
+
+    sql = (
+        "INSERT INTO climmob_curated_projects "
+        " (user_owner,project_id,project_cod,projectTitle,projectDesc,project_pi,project_piorganization,project_piemail,"
+        " project_date,project_country,project_type,farmers_target,farmers_registered,gender_man,gender_woman,gender_other,"
+        " gender_unreported,crop,technology,startDate,endDate,instance_name,varieties_quantity,LatitudeRegistry,LongitudeRegistry,"
+        " LatitudeAssessment,LongitudeAssessment,affiliation,cropname,project_status,project_continent) "
+        'VALUES ("{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}",'
+        '"{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}");'.format(
+            project["user_owner"],
+            project["project_id"],
+            project["project_cod"],
+            project["projectTitle"],
+            project["projectDesc"][0:590],
+            project["project_pi"],
+            project["project_piorganization"],
+            project["project_piemail"],
+            project["project_date"],
+            project["project_country"],
+            project["project_location"],
+            project["farmers_target"],
+            project["farmers_registered"],
+            project["gender_man"],
+            project["gender_woman"],
+            project["gender_other"],
+            project["gender_unreported"],
+            project["scientific_name"],
+            project["technology"],
+            project["startDate"],
+            project["endDate"],
+            project["instance_name"],
+            project["varieties_quantity"],
+            project["LatitudeRegistry"],
+            project["LongitudeRegistry"],
+            project["LatitudeAssessment"],
+            project["LongitudeAssessment"],
+            project["affiliation"],
+            project["cropname"],
+            status,
+            project["project_continent"],
+        )
+    )
+
+    sql = sql.replace('"None"', "NULL").replace('""', "NULL")
+
+    return sql
+
+
+def execute_sql_for_analytics(settings, sql):
+    engine = create_engine(
+        settings.get("analytics.sqlalchemy.url", ""),
+        poolclass=NullPool,
+    )
+    Session = sessionmaker(bind=engine)
+    dbsession = Session()
+
+    try:
+        dbsession.execute(sql)
+
+    except Exception as e:
+        print(str(e))
+
+    dbsession.commit()
+    dbsession.close()

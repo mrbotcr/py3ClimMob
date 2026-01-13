@@ -1,7 +1,7 @@
 {% extends 'dashboard/dashboard.jinja2' %}
 
 {% block title %}
-    <title>{{ _("Project setup") }}</title>
+    <title>{{ _("Profile update") }}</title>
 {% endblock title %}
 
 {% block css %}
@@ -11,6 +11,18 @@
     {% cssresource request,'coreresources','tour' %}
     {% cssresource request,'coreresources','icheck' %}
     {% cssresource request,'coreresources','chosen' %}
+    {% cssresource request,'coreresources','sweetAlert' %}
+    <style>
+        .ibox.panel-warning {
+            border: 1px solid #f0ad4e !important;
+        }
+
+        .sweet-alert {
+    width: 800px;
+    margin-left: -400px;
+}
+    </style>
+
 {% endblock css %}
 
 {% block topScripts %}
@@ -21,10 +33,13 @@
     {% jsresource request,'coreresources','select2' %}
     {% jsresource request,'coreresources','icheck' %}
     {% jsresource request,'coreresources','chosen' %}
+    {% jsresource request,'coreresources','sweetAlert' %}
 {% endblock topScripts %}
 
 {% block pageheading %}
-    {% set _title= _("Project setup") %}
+    {% set _title= _("Profile update") %}
+    {% set removeBasicBreadcrumb = True %}
+    {% set extra =[[_("Projects"), ]] %}
     {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
 
@@ -39,7 +54,7 @@
 {#                </div>#}
                 <div class="ibox-content" >
 
-                    <form class="form-horizontal" role="form" method="post" action="{{ request.url }}">
+                    <form class="form-horizontal" id="project_form" role="form" method="post" action="{{ request.url }}">
 
                         <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
 
@@ -52,36 +67,44 @@
                             {% endfor %}
                         {% endif %}
 
-                        <div class="panel panel-warning">
-                            <div class="panel-heading">
-                                <h4><i class="fa fa-info-circle"></i> {{ _("Why do you have access to this screen?") }}</h4>
+                        <div class="panel panel-warning ibox">
+                            <div class="panel-heading ibox-title">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="col-lg-11" title="This information can be hidde with the arrow at right">
+                                             <h4> {{ _("Why does this matter?") }} <i class="fa fa-info-circle"></i></h4>
+                                        </div>
+                                        <div class="ibox-tools">
+                                            <a class="collapse-link">
+                                                <i style="color: white" class="fa fa-chevron-up"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="panel-body">
-                                <p>{{ _("To improve the quality of data collected through ClimMob and reduce maintenance costs, we need your help in correctly identifying the type of trials in your projects. By flagging test trials (e.g., training or demonstration projects), we can focus resources on managing active, real-world projects more effectively.") }}</p>
-                                <p>{{ _("Additionally, we want to better understand the status of each trial. Indicating whether a trial is completed or still ongoing helps us streamline project tracking and ensures we provide relevant support tailored to your project's current stage.") }}</p>
-                                <p>{{ _("Thank you for your cooperation in helping us enhance ClimMob’s efficiency and reliability!") }}</p>
+
+                            <div class="panel-body ibox-content" >
+                                <p>{{ _("Keeping your project profiles up to date is important. This will help to:") }}</p>
+                                <ul>
+                                    <li>{{ _("Publish data with accurate profile metadata.") }}</li>
+                                    <li>{{ _("Track project progress effectively.") }}</li>
+                                    <li>{{ _("Support ClimMob maintainers in providing assistance.") }}</li>
+                                     <li>{{ _("Remove outdated training data periodically to free memory.") }}</li>
+
+                                </ul>
+                                <p>{{ _("Thank you for your cooperation in helping us enhance ClimMob’s efficiency and reliability") }}</p>
+{#                                <p>{{ _("Please select the correct project type for each of your projects") }}:</p>#}
+{#                                <ul>#}
+{#                                    {% for type in listOfProjectTypes %}#}
+{#                                        {% if type.prjtype_id != 0 %}#}
+{#                                                <li><strong>{{ type.prjtype_name }}:</strong> {{ type.prjtype_description }}.</li>#}
+{#                                        {% endif %}#}
+{#                                    {% endfor %}#}
+{#                                </ul>#}
+
                             </div>
                         </div>
-
-                        <p>{{ _("Read about the following types of projects that have been defined for ClimMob") }}:</p>
-                        <table class="footable table table-bordered">
-                            <thead>
-                                <th>{{ _("Type") }}</th>
-                                <th>{{ _("Description") }}</th>
-                            </thead>
-                            <tbody>
-                                {% for type in listOfProjectTypes %}
-                                    {% if type.prjtype_id != 0 %}
-                                        <tr>
-                                            <td>{{ type.prjtype_name }}</td>
-                                            <td>{{ type.prjtype_description }}.</td>
-                                        </tr>
-                                    {% endif %}
-                                {% endfor %}
-                            </tbody>
-                        </table>
-
-                        <p><b>{{ _("Note") }}:</b> {{ _("Only real projects require full curation of all fields. For training projects, only the field “Type“ needs to be curated. Training projects will be automatically archived after 6 months to optimize the resource usage of the platform.") }}</p>
+                    {% if listOfProjects %}
 
                         <p>{{ _("Please use the following table to curate your projects") }}:</p>
                         <div class="table-responsive">
@@ -90,12 +113,25 @@
                                     <tr>
                                         <th style="vertical-align: middle">{{ _("Project ID")}}</th>
                                         <th style="vertical-align: middle">{{ _("Name") }}</th>
-                                        <th style="vertical-align: middle">{{ _("Type") }}</th>
-                                        <th style="vertical-align: middle">{{ _("Affiliation") }}</th>
+                                        <th title="
+                                            {%- set descriptions = [] -%}
+                                            {%- for type in listOfProjectTypes -%}
+                                                {%- if type.prjtype_id != 0 -%}
+                                                    {%- set prj_description = type.prjtype_name ~ ': ' ~ type.prjtype_description -%}
+                                                    {%- set descriptions = descriptions.append(prj_description) or descriptions -%}
+                                                {%- endif -%}
+                                            {%- endfor -%}
+                                            {{ descriptions | join('\n') }}"
+                                                    style="vertical-align: middle"><i class="fa fa-info-circle" style="color: #727576 "> </i> {{ _("Type") }}</th>
+                                        <th style="vertical-align: middle">{{ _("Organization") }}</th>
                                         <th style="vertical-align: middle">{{ _("Experimental site") }}</th>
                                         <th style="vertical-align: middle">{{ _("Unit of analysis") }}</th>
                                         <th style="vertical-align: middle">{{ _("Objectives") }}</th>
-                                        <th style="vertical-align: middle">{{ _("Check this box if this project has been finished.") }}</th>
+                                        <th style="vertical-align: middle"
+                                        title="{{ _("A project is considered finalized once it has
+                                         achieved its objectives, all planned phases have been completed, and no further data entries,
+                                          profile updates, or metadata changes are expected. At this stage, the project becomes ready for
+                                           inclusion in the 1000FARMS DataBase.") }}"><i class="fa fa-info-circle" style="color: #676a6c"> </i> {{ _("Set projects as finalized ") }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -148,14 +184,15 @@
                                 </tbody>
                             </table>
                         </div>
-
                         <input class="btn btn-primary pull-right" type="submit" id="btn_save_projects" name="btn_save_projects" value="{{ _('Save') }}">
                         <br>
                         <br>
-
+                    {% else %}
+                        <div style="text-align: center">
+                            <h3><i class="fa fa-tim"></i> {{ _("All projects have been curated. There are no pending projects to display.") }}</h3>
+                        </div>
+                    {% endif %}
                     </form>
-
-
                 </div>
             </div>
         </div>
@@ -294,6 +331,49 @@
                 });
             }
         });
+
+        $(document).ready(function() {
+            var project_form = $("#project_form");
+            var $btn = $("#btn_save_projects");
+            var $hidden = $("<input>")
+                .attr("type", "hidden")
+                .attr("name", $btn.attr("name"))
+                .val($btn.val());
+            project_form.append($hidden);
+            project_form.on("submit", function (e) {
+                e.preventDefault();
+                let checkboxes = project_form.find('input[type="checkbox"]');
+                var anyChecked = checkboxes.toArray().some(function(box){
+                    return $(box).prop('checked');
+                });
+                var currentForm = this;
+                if (anyChecked) {
+                    swal({
+                        title: '{{ _("Please confirm you want to finalized selected projects") }}',
+                        text: '{{ _("By finalizing the selected projects, you confirm that they have reached completion. This action will permanently lock all data entries and no further edits will be possible  for project profile and  metadata)") }}',
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#1ab394",
+                        confirmButtonText: "{{ _("Yes finalize projects") }}",
+                        cancelButtonText: "{{ _("No, cancel!") }}",
+                        closeOnConfirm: true,
+                        closeOnCancel: true
+                    },
+                    function(isConfirm){
+                        if (isConfirm) {
+                            HTMLFormElement.prototype.submit.call(currentForm);
+
+                        }else{
+                            swal("{{ _("Cancelled") }}", "{{ _("We have not submitted the data") }}", "error");
+                        }
+                    })
+                }
+                else{
+                    HTMLFormElement.prototype.submit.call(currentForm);
+                }
+            })
+        });
+
 
     </script>
 
