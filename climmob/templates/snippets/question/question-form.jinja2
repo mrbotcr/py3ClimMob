@@ -551,18 +551,24 @@
             <div class="col-sm-8" style="display: flex; align-items: center; justify-content: center; gap: 1em;">
                 <select required id="question_anonymity" name="question_anonymity" class="form-control inputForQuestionSelect">
                 </select>
-{#                TODO: Alternate tool tips dynamically#}
+{#                TODO: Alternate tool tips dynamically #}
+{#                REMOVAL  #}
 {#                <i class="fa fa-info-circle" title="This method completely removes the question from result.">#}
 {#                </i>#}
+{#                PSEUDO  #}
 {#                <i class="fa fa-info-circle"#}
-{#                   title="{{ _("This method anonymizes the source of the data.#}
-{#                   It allows responses to be tracked across forms without revealing#}
-{#                   the source's true ID.") }}">#}
+{#                   title="{{ _("Replaces the source ID with a unique code to protect identity while allowing data#}
+{#                   tracking across forms.") }}">#}
 {#                </i>#}
+{#                BINNING  #}
                 <i class="fa fa-info-circle" id="anonymity-description"
                    title="{{ _("This method anonymizes numerical values by grouping them into bins.
                                 Define the lower and upper bounds and an interval to determine the boundaries of each bin.") }}">
                 </i>
+{#                NOISE  #}
+{#                <i class="fa fa-info-circle" id="anonymity-description"#}
+{#                   title="{{ _("Displaces the location in a random direction.") }}">#}
+{#                </i>#}
             </div>
         </div>
         <div id="question-anonymization-params">
@@ -598,6 +604,12 @@
                     </label>
                     <div class="col-sm-8">
                         <input required type="number" step="any" id="anonymization-interval-input" name="anonym_param_interval" class="form-control inputForQuestion"/>
+                <span class="help-block m-b-none text-left">
+                            {{ _("Define specific ranges to group your data (e.g., age or yield). Setting custom bounds
+                            gives you full control over how your distribution is analyzed while ensuring privacy.
+                            Example: Entering 0 (Lower), 100 (Upper), and 10 (Interval) will automatically group your
+                            data into sets of 10 (0-10, 11-20, etc.).") }}
+                        </span>
                     </div>
                 </div>
             </div>
@@ -612,10 +624,12 @@
                         {{ _("Pseudonym") }}
                     </label>
                     <div class="col-sm-8">
-                        <input required id="anonymization-pseudonym-input" name="anonym_param_pseudonym" class="form-control inputForQuestion"/>
-                        <span class="help-block m-b-none text-left">{{ _("Enter the prefix you want for the anonymous ID.
-                        The curly braces {} must be included and will be automatically replaced with the unique package code.
-                        Example: Farmer-{}") }}</span>
+                        <input required id="anonymization-pseudonym-input" name="anonym_param_pseudonym"
+                               class="form-control inputForQuestion"/>
+                        <span class="help-block m-b-none text-left">
+                            {{ _("Enter the prefix for the anonymous ID. You must include {} as a placeholder,
+                            which will be replaced by a unique number. Example: Farmer-{} becomes Farmer-1") }}
+                        </span>
                     </div>
                 </div>
             </div>

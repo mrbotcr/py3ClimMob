@@ -55,7 +55,7 @@
                         CSV
                     </td>
                     <td>
-                        <a class="btn btn-success btn-rounded btn-block"
+                        <a class="btn btn-rounded btn-block"
                            href="{{ request.route_url(
                                 route,
                                 user=activeProject["owner"].user_name,
@@ -63,12 +63,12 @@
                                 formid=form_type,
                                 formatid='csv',
                                 codeid=ass_id) }}">
-                            <i class="fa fa-download"></i>
+                            <i class="fa fa-download text-success"></i>
                         </a>
                     </td>
                     {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
                         <td>
-                            <a class="btn btn-success btn-rounded btn-block"
+                            <a class="btn btn-rounded btn-block"
                                     {% if not project_is_anonymized %}
                                title="{{ _("Project is not anonymized") }}"
                                disabled
@@ -81,7 +81,7 @@
                                 formatid='csv',
                                 codeid=ass_id,
                                 _query={"anonymize": True}) }}">
-                                <i class="fa fa-download"></i>
+                                <i class="fa fa-download text-success "></i>
                             </a>
                         </td>
                     {% endif %}
@@ -92,7 +92,7 @@
                         XLSX
                     </td>
                     <td>
-                        <a class="btn btn-success btn-rounded btn-block"
+                        <a class="btn btn-rounded btn-block"
                            href="{{ request.route_url(
                                 route,
                                 user=activeProject["owner"].user_name,
@@ -100,12 +100,12 @@
                                 formid=form_type,
                                 codeid=ass_id,
                                 formatid='xlsx') }}">
-                            <i class="fa fa-download"></i>
+                            <i class="fa fa-download text-success"></i>
                         </a>
                     </td>
                     {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
                         <td>
-                            <a class="btn btn-success btn-rounded btn-block"
+                            <a class="btn btn-rounded btn-block"
                                     {% if not project_is_anonymized %}
                                title="{{ _("Project is not anonymized") }}"
                                disabled
@@ -118,7 +118,7 @@
                                 codeid=ass_id,
                                 formatid='xlsx',
                                 _query={"anonymize": True}) }}">
-                                <i class="fa fa-download"></i>
+                                <i class="fa fa-download text-success"></i>
                             </a>
                         </td>
                     {% endif %}
