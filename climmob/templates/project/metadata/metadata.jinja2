@@ -161,6 +161,21 @@
                     $("#spaceForPutTheForm").html(dataString[1])
                     $("#metadata_id").val(formId)
                     $("#div_for_show_form").css("display","block")
+
+                    //funtion in inspinia to make it collapsable
+                    $('.collapse-link').on('click', function () {
+                        var ibox = $(this).closest('div.ibox');
+                        var button = $(this).find('i');
+                        var content = ibox.children('.ibox-content');
+                        content.slideToggle(200);
+                        button.toggleClass('fa-chevron-up').toggleClass('fa-chevron-down');
+                        ibox.toggleClass('').toggleClass('border-bottom');
+                        setTimeout(function () {
+                            ibox.resize();
+                            ibox.find('[id^=map-]').resize();
+                        }, 50);
+                    });
+
                 });
             }
 
