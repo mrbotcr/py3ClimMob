@@ -12,6 +12,9 @@
                     <div>
                         <br>
                         <h3><b>{{ JsonInfo["label"][request.locale_name] }}</b></h3>
+                        {% if "hint" in JsonInfo.keys() %}
+                            <p>{{ JsonInfo["hint"][request.locale_name]}}</p>
+                        {% endif %}
                         <br>
                     </div>
                 {% endif %}
@@ -36,6 +39,9 @@
                     <div>
                         <br>
                         <h3><b>{{ JsonInfo["label"][request.locale_name] }}</b></h3>
+                        {% if "hint" in JsonInfo.keys() %}
+                            <p>{{ JsonInfo["hint"][request.locale_name]}}</p>
+                        {% endif %}
                         <br>
                     </div>
                 {% endif %}
