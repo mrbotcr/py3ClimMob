@@ -30,7 +30,7 @@ from climmob.processes import (
     deleteProjectPackages,
     update_project_status,
 )
-from climmob.processes.odk.api import storeJSONInMySQL
+from climmob.processes.odk.api import storeJSONInMySQL, review_multimedia_content
 from climmob.products import stopTasksByProcess
 from climmob.products.randomization.randomization import create_randomization
 from climmob.views.classes import apiView
@@ -1149,6 +1149,7 @@ def ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId):
         obligatoryQuestions = []
         possibleQuestions = ["clm_start", "clm_end", "_submitted_date"]
         searchQST162 = ""
+        media_questions = []
         for section in structure:
             for question in section["section_questions"]:
 
@@ -1159,6 +1160,14 @@ def ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId):
 
                 if question["question_requiredvalue"] == 1:
                     obligatoryQuestions.append(question["question_datafield"])
+
+                if question["question_dtype"] in ["video", "audio", "image"]:
+                    media_questions.append(
+                        {
+                            "type": question["question_dtype"],
+                            "datafield": question["question_datafield"],
+                        }
+                    )
 
         try:
             _json = json.loads(dataworking["json"])
@@ -1205,6 +1214,16 @@ def ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId):
                             ):
                                 _json["clm_deviceimei"] = "API_" + str(self.apiKey)
 
+                                media_result, error_message = review_multimedia_content(
+                                    media_questions, _json, self
+                                )
+                                if not media_result:
+                                    response = Response(
+                                        status=401,
+                                        body=error_message,
+                                    )
+                                    return response
+
                                 uniqueId = str(uuid.uuid1())
                                 path = os.path.join(
                                     self.request.registry.settings["user.repository"],
@@ -1217,9 +1236,30 @@ def ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId):
                                         uniqueId,
                                     ]
                                 )
+                                pathxml = os.path.join(
+                                    self.request.registry.settings["user.repository"],
+                                    *[
+                                        dataworking["user_owner"],
+                                        dataworking["project_cod"],
+                                        "data",
+                                        "reg",
+                                        "xml",
+                                        uniqueId,
+                                    ]
+                                )
 
                                 if not os.path.exists(path):
                                     os.makedirs(path)
+                                    if media_questions:
+                                        os.makedirs(pathxml)
+
+                                for file in self.request.POST.getall("media"):
+                                    filename = file.filename.lower()
+                                    full_path = os.path.join(pathxml, filename)
+                                    print(full_path)
+
+                                    with open(full_path, "wb") as f:
+                                        f.write(file.file.read())
 
                                 pathfinal = os.path.join(path, uniqueId + ".json")
 
