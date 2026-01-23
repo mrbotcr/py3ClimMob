@@ -681,7 +681,7 @@ def ApiAssessmentPushProcess(self, structure, dataworking, activeProjectId):
                             "datafield": question["question_datafield"],
                         }
                     )
-        print(possibleQuestions)
+
         try:
             _json = json.loads(dataworking["json"])
             _json["_submitted_date"] = datetime.datetime.now().strftime(
@@ -787,6 +787,12 @@ def ApiAssessmentPushProcess(self, structure, dataworking, activeProjectId):
                                 os.makedirs(path)
                                 if media_questions:
                                     os.makedirs(pathxml)
+                                    infoFile = os.path.join(
+                                        pathxml, str(uniqueId) + ".info"
+                                    )
+                                    file = open(infoFile, "w")
+                                    file.write(uniqueId + " API")
+                                    file.close()
 
                             for file in self.request.POST.getall("media"):
                                 filename = file.filename.lower()
@@ -867,10 +873,10 @@ def ApiAssessmentPushProcess(self, structure, dataworking, activeProjectId):
                     ),
                 )
                 return response
-        except:
+        except Exception as e:
             response = Response(
                 status=401,
-                body=self._("Error in the JSON sent by parameter."),
+                body=self._("Error in the JSON sent by parameter." + str(e)),
             )
             return response
     else:

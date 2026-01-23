@@ -1252,6 +1252,12 @@ def ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId):
                                     os.makedirs(path)
                                     if media_questions:
                                         os.makedirs(pathxml)
+                                        infoFile = os.path.join(
+                                            pathxml, str(uniqueId) + ".info"
+                                        )
+                                        file = open(infoFile, "w")
+                                        file.write(uniqueId + " API")
+                                        file.close()
 
                                 for file in self.request.POST.getall("media"):
                                     filename = file.filename.lower()
