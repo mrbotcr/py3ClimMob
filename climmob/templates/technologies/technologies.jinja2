@@ -22,6 +22,7 @@
     {% include 'snippets/delete.jinja2' %}
     {% jsresource request,'coreresources','tour' %}
     {% jsresource request,'coreresources','select2' %}
+
 {% endblock topScripts %}
 
 {% block pageheading %}
@@ -58,13 +59,12 @@
                     </div>
 
                     <input type="text" class="form-control form-control-sm m-b-xs" id="filter" placeholder="{{ _("Search technology") }}">
-                    <div class="activity-stream" style="overflow-y: scroll; max-height: calc(100vh - 380px);">
+                    <div class="activity-stream" style="overflow-y: scroll; max-height: calc(100vh - 510px);">
                         <table class="footable table table-stripped tableHover" data-page-size="50000" data-filter=#filter>
                             <thead>
                                 <tr>
                                     <th >{{ _("Technology")}}</th>
                                     <th style="text-align: center" data-type="numeric">{{  _("Number of options") }}</th>
-{#                                    <th></th>#}
                                 </tr>
                             </thead>
                             <tbody>
@@ -187,7 +187,7 @@
                         </div>
                         <div class='stream-panel' style='margin-top:4px'>
                             <div class='stream-info'>
-                                <button class="btn btn-primary btn-xs" style="font-size: 12px; background-color: #3c763d; border-color: #3c763d; font-weight: 600">{{ _("Create new technology optionz") }}</button>
+                                <button class="btn btn-primary btn-xs" style="font-size: 12px; background-color: #3c763d; border-color: #3c763d; font-weight: 600">{{ _("Create new technology option") }}</button>
                             </div>
                         </div>
                     </div>
@@ -486,6 +486,7 @@
             $("#div_import_technology").show()
             hideCreateTechnology()
             hideTechnologyDetails()
+            hideImportedAlias()
         }
 
         function hideImportTechnology() {
