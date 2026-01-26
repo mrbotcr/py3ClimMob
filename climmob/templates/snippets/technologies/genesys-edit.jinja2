@@ -70,14 +70,18 @@
                     </thead>
                 </table>
             </section>
-
-            <br>
-            <button class="btn btn-danger pull-left BtnTechnologyOptions"
-                    id="btn_delete_external_technology_option" onclick="deleteTechnologyOption()" type="button"
-                    title="{{ _("Delete option") }}"><i class="fa fa-trash"></i> {{ _("Delete option") }}</button>
+            {% if activeUser.login == "bioversity" %}
+                <br>
+                <button class="btn btn-danger pull-left BtnTechnologyOptions"
+                        id="btn_delete_external_technology_option" onclick="deleteTechnologyOption()"
+                        type="button" title="{{ _("Delete option") }}">
+                    <i class="fa fa-trash"></i>
+                    {{ _("Delete option") }}
+                </button>
+                <br>
+                <br>
+            {% endif %}
         </form>
-        <br>
-        <br>
     </div>
 </div>
 
