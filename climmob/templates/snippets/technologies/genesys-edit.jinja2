@@ -23,10 +23,13 @@
         <h5>{{ _("Technology options details") }}</h5>
         <div class="ibox-tools">
             <button id="btn_cancel_external_technology_options" class="btn btn-xs btn-default pull-right "><i
-                    class="fa fa-close"></i> {{ _("Clear and close form") }} </button>
+                    class="fa fa-close"></i> {{ _("Close") }} </button>
         </div>
     </div>
     <div class="ibox-content">
+        <div class="text-center">
+            <p>{{ _("Imported technology options cannot be edited nor deleted.") }}</p>
+        </div>
         <form class="form-horizontal formElement" id="form_technology_options" role="form" method="post"
               action="{{ request.url }}">
             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">

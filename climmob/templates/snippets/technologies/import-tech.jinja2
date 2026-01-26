@@ -30,7 +30,10 @@
                 {% set error_summary=error_summary_import %}
                 {% include 'snippets/error.jinja2' %}
                 <div class="text-center">
-                    <p>{{ _("Import technologies from external sources like GRIN or GBIF") }}</p>
+                    <p>{{ _("Import genotypes from external databases and frameworks such as GRIN (Germplasm Resources
+                    Information Network) and GBF (Global Biodiversity Framework). Genotypes that are not publicly
+                    indexed cannot be imported here. These genotypes can only be added within a project during the
+                    design phase, through the technology assignment step.") }}</p>
                 </div>
                 <br>
                 <div class="form-group"

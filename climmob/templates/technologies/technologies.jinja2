@@ -41,7 +41,7 @@
         <div class="col-md-4">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>{{ _("Technologies available") }}</h5>
+                    <h5>{{ _("Technology list") }}</h5>
                     <div class="ibox-tools">
                         {% if nextPage %}
                             <a class="btn btn-success btn-rounded  btn-xs" style="color: white" href="{{ nextPage }}"><i class="fa fa-reply"></i> {{ _('Back to assign technologies to the project') }}</a>
@@ -54,7 +54,7 @@
                     {% include 'snippets/error.jinja2' %}
 
                     <div class="text-center">
-                        <p>{{ _("Click on the row in the table to see the technology options of the technology") }}</p>
+                        <p>{{ _("Select a technology to view its details") }}</p>
                         <a class="btn btn-success btn-rounded  btn-xs" style="color: white" onclick="showHelp()"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a>
                     </div>
 
@@ -63,8 +63,8 @@
                         <table class="footable table table-stripped tableHover" data-page-size="50000" data-filter=#filter>
                             <thead>
                                 <tr>
-                                    <th >{{ _("Technology")}}</th>
-                                    <th style="text-align: center" data-type="numeric">{{  _("Number of options") }}</th>
+                                    <th >{{ _("Name")}}</th>
+                                    <th style="text-align: center" data-type="numeric">{{  _("Options") }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -91,7 +91,7 @@
                             <div class="stream-info">
                                 <button class="btn btn-primary btn-xs"
                                         style="font-size: 12px; background-color: #3c763d; border-color: #3c763d; font-weight: 600">
-                                    {{ _("Import technology") }}
+                                    {{ _("Import") }}
                                 </button>
                             </div>
                         </div>
@@ -105,7 +105,7 @@
                             <div class="stream-info">
                                 <button class="btn btn-primary btn-xs"
                                         style="font-size: 12px; background-color: #3c763d; border-color: #3c763d; font-weight: 600">
-                                    {{ _("Create new technology") }}
+                                    {{ _("Create new") }}
                                 </button>
                             </div>
                         </div>
@@ -130,7 +130,13 @@
                 <div class="ibox-content">
                     {% set error_summary = error_summary_aux %}
                     {% include 'snippets/error.jinja2' %}
-
+                    <div class="text-center">
+                        <p>{{ _("Technologies created in this
+                        library are stored exclusively in the user’s personal
+                        account and are not shared
+                        by default") }}</p>
+                        <br>
+                    </div>
                     <form class="form-horizontal formElement" role="form" method="post" action="{{ request.url }}">
                         {% include 'snippets/technologies/technologies-form.jinja2' %}
 
@@ -146,7 +152,7 @@
         <div class="col-md-4" id="div_technology_details" style="display: none" >
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>{{ _("Technology details for") }}:</h5><h5 style="margin-left: 5px" class="tech_name"></h5>
+                    <h5>{{ _("Details for") }}:</h5><h5 style="margin-left: 5px" class="tech_name"></h5>
                     <div class="ibox-tools">
                         <button id="btn_close_technology_details"  class="btn btn-xs btn-default pull-right " ><i class="fa fa-close"></i> {{ _("Close") }} </button>
                     </div>
@@ -158,13 +164,12 @@
                     <form class="form-horizontal formElement" id="form_technology" role="form" method="post" action="{{ request.url }}">
                         {% include 'snippets/technologies/technologies-form.jinja2' %}
 
-                        <button style="display: none" class="btn btn-danger pull-left BtnTechnology" id="btn_delete_technology" onclick="deleteTechnology()" type="button" title="{{ _("Delete technology") }}"><i class="fa fa-trash"></i> {{ _("Delete technology") }}</button>
-                        <button style="display: none" class="btn btn-primary pull-right BtnTechnology" type="submit" id="btn_modify_technology" name="btn_modify_technology" > {{ _('Save and close') }}</button>
+                        <button style="" class="btn btn-primary pull-right BtnTechnology" type="submit" id="btn_modify_technology" name="btn_modify_technology" > {{ _('Save and close') }}</button>
                         <br>
                         <br>
                         <hr>
                     </form>
-                    <h4>{{ _("List of technology options:") }}</h4>
+                    <h4>{{ _("Technology options:") }}</h4>
                     <div class="text-center">
                         <p>{{ _("Editing or deleting is disabled for varieties that are part of a project") }}</p>
                     </div>
@@ -187,9 +192,16 @@
                         </div>
                         <div class='stream-panel' style='margin-top:4px'>
                             <div class='stream-info'>
-                                <button class="btn btn-primary btn-xs" style="font-size: 12px; background-color: #3c763d; border-color: #3c763d; font-weight: 600">{{ _("Create new technology option") }}</button>
+                                <button class="btn btn-primary btn-xs" style="font-size: 12px; background-color: #3c763d; border-color: #3c763d; font-weight: 600">{{ _("Create new") }}</button>
                             </div>
                         </div>
+                    </div>
+
+                    <div id="div_delete_technology">
+                        <hr>
+                        <button form="form_technology" style="display: none" class="btn btn-danger pull-right BtnTechnology" id="btn_delete_technology" onclick="deleteTechnology()" type="button" title="{{ _("Delete technology") }}"><i class="fa fa-trash"></i> {{ _("Delete technology") }}</button>
+                        <br>
+                        <br>
                     </div>
                 </div>
             </div>
@@ -523,6 +535,8 @@
 
             hideCreateTechnology()
 
+            $("#div_delete_technology").hide()
+
             $("#to_import_alias_id").val("").trigger('change.select2').trigger('change');
 
             var URL= "{{ request.route_url('getUserTechnologyDetails',user="__user_name__", technologyid="__techid__") }}"
@@ -622,6 +636,8 @@
                         $("#form_technology").hide();
                     else {
                         $("#form_technology").show();
+                        $("#btn_modify_technology").show();
+                        $("#div_delete_technology").show()
                     }
                 }else{
                     $("#tech_name").prop('readonly',true)

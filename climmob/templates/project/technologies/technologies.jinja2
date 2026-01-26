@@ -29,7 +29,7 @@
         <div class="col-lg-12">
             <div class="ibox-content" style="padding: 10px">
                 <p style="margin: 0px">
-                    {{ _("Here you can specify the technology options you want to compare in your tricot experiment. We recommend you select a pool of 7 to 20 technology options. Technologies can be crops or fertilizer, and options are different varieties or types.") }}
+                    {{ _("Here you can define the technology options to be compared in your tricot experiment. We recommend selecting between 7 and 20 options. Technologies may include crops or inputs, and each option represents a specific variety or type.") }}
                 </p>
             </div>
         </div>
@@ -46,7 +46,7 @@
         <div class="col-lg-4 " >
             <div class="ibox float-e-margins" >
                 <div class="ibox-title">
-                    <h5>{{ _("Assign technology and technology options") }}</h5>
+                    <h5>{{ _("Select technologies") }}</h5>
                     <div class="ibox-tools">
                         {% if not onlySee %}<a class="btn btn-success btn-rounded  btn-xs" style="color: white" href="{{ request.route_url('usertechnologies',_query={'next': request.url}) }}"><i class="fa fa-plus-square"></i> {{  _("Add new technology") }}</a> {% endif %}
                     </div>
@@ -58,7 +58,7 @@
                     {% set error_summary = auxError %}
 
                     <div class="text-center">
-                        <p>{{ _("Click on the row in the table to see the technology options of the technology") }}</p>
+                        <p>{{ _("Select a row to assign specific options") }}</p>
                         <a class="btn btn-success btn-rounded  btn-xs" style="color: white" onclick="showHelp()"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a>
                     </div>
 
@@ -68,9 +68,9 @@
                         <table class="footable  table table-stripped tableHover" data-page-size="50000" data-filter=#filter>
                             <thead>
                                 <tr>
-                                    <th >{{ _("Technology")}}</th>
-                                    <th style="text-align: center" data-type="numeric">{{  _("Available in the library") }}</th>
-                                    <th style="text-align: center" data-type="numeric"> {{ _("Selected for the project") }}</th>
+                                    <th >{{ _("Name")}}</th>
+                                    <th style="text-align: center" data-type="numeric">{{  _("Available in library") }}</th>
+                                    <th style="text-align: center" data-type="numeric"> {{ _("Assigned to project") }}</th>
 {#                                    <th></th>#}
                                 </tr>
                             </thead>
@@ -130,9 +130,9 @@
             <div class="col-lg-4 " id="alias_in_project">
                 <div class="ibox float-e-margins" >
                     <div class="ibox-title">
-                        <div id="title_for_options"><h5>{{ _("Technology options for") }}: {{ techSee.tech_name }}</h5></div>
+                        <div id="title_for_options"><h5>{{ _("Options for") }}: {{ techSee.tech_name }}</h5></div>
                         <div class="ibox-tools">
-                            <button   class="btn btn-xs btn-default pull-right btn_cancel_technology_options" ><i class="fa fa-close"></i> {{ _("Close selection") }} </button>
+                            <button   class="btn btn-xs btn-default pull-right btn_cancel_technology_options" ><i class="fa fa-close"></i> {{ _("Close") }} </button>
                         </div>
                     </div>
                     <div class="ibox-content animated fadeInRightBig" >
@@ -222,7 +222,7 @@
                     <div class="ibox-content animated fadeInRightBig" >
 
                         {% include 'snippets/error.jinja2' %}
-                        <p style="font-size: 14px">{{ _("Create an new technology option just for this project") }}</p>
+                        <p style="font-size: 14px">{{ _("Create an option specific to this project.") }}</p>
                         <br>
                         <div class="error-desc">
                             <form class="form-horizontal formElement" method="post" action="{{ request.path }}">
@@ -390,7 +390,7 @@
                         {
                             element: "#div_for_help",
                             title: "{{ _("Select technology and technology options") }}",
-                            content: "<p><b>1</b>. {{ _("Click on the row in the table to see the technology options of the technology") }}.</p><br><p><b>2</b>. {{ _("Select and check the technology options you want to add to the project") }}.</p><br><p><b>3.</b> {{ _("Save the information") }}.</p><br><img src='{{ request.url_for_static('gif/using_technologies.gif') }}'/>",
+                            content: "<p><b>1</b>. {{ _("Select a row to assign specific options") }}.</p><br><p><b>2</b>. {{ _("Select and check the technology options you want to add to the project") }}.</p><br><p><b>3.</b> {{ _("Save the information") }}.</p><br><img src='{{ request.url_for_static('gif/using_technologies.gif') }}'/>",
                             placement: "bottom"
                         }
                        ],
