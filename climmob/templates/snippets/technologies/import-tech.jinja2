@@ -45,7 +45,8 @@
                 </div>
                 <br>
                 <br>
-                <form method="POST" style="min-height: fit-content" id="import_technology_form" action="{{ request.url }}">
+                <form method="POST" style="min-height: fit-content" id="import_technology_form"
+                      action="{{ request.url }}">
                     <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                     <input type="hidden" name="tech_id">
                     <button class="btn btn-primary pull-right" type="submit"
@@ -54,11 +55,17 @@
                 </form>
                 <br>
                 <br>
+                <br>
+                <div class="text-center">
+                    <p>{{ _("Can´t find the technology you are looking for?") }}
+                        {% block request_technology_btn %}
+                        {% endblock request_technology_btn %}
+                    </p>
+                </div>
             </div>
         </div>
     </div>
 </div>
-
 <script>
     $(document).ready(function () {
         $('#to_import_tech_id').select2({
