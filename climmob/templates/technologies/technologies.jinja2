@@ -167,9 +167,6 @@
                         <hr>
                     </form>
                     <h4>{{ _("Technology options:") }}</h4>
-                    <div class="text-center">
-                        <p>{{ _("Editing or deleting is disabled for varieties that are part of a project") }}</p>
-                    </div>
                     <div class="activity-stream" id="div_show_alias" style="overflow-y: scroll; max-height: calc(100vh - 495px);">
 
                     </div>
@@ -179,7 +176,7 @@
                         </div>
                         <div class='stream-panel' style='margin-top:4px'>
                             <div class='stream-info'>
-                                <button class="btn btn-primary btn-xs" style="font-size: 12px; background-color: #3c763d; border-color: #3c763d; font-weight: 600">{{ _("Import technology option") }}</button>
+                                <button class="btn btn-primary btn-xs" style="font-size: 12px; background-color: #3c763d; border-color: #3c763d; font-weight: 600">{{ _("Import") }}</button>
                             </div>
                         </div>
                     </div>
@@ -576,13 +573,18 @@
                 $("#select_crop").trigger('change');
 
                 let allHTML = ""
+                if (tech.tech_alias.length === 0) {
+                    allHTML += '<div class="text-center"><p>{{ _("No options available yet") }}</p></div>';
+                } else {
+                    allHTML += '<div class="text-center"><p>{{ _("Technology options linked to a project cannot be edited nor deleted") }}</p></div>';
+                }
                 for(var i=0; i<tech.tech_alias.length; i++)
                 {
                     var arrayForAlias = JSON.stringify(tech.tech_alias[i]).replace(/(')/g, "\\u0027");
                     const allow_edit = tech.tech_alias[i].quantity === 0 & tech.user_name === "{{ activeUser.login }}"
                     allHTML +="<div class='stream' style='padding:4px 0' "
                     if (tech.tech_alias[i].source) {
-                        allHTML += "onclick='showImportedAlias(\""+tech.user_name+"\",\""+tech.tech_id+"\",\""+tech.tech_alias[i].alias_id+"\")'"
+                        allHTML += "onclick='showImportedAlias(\""+tech.user_name+"\",\""+tech.tech_id+"\",\""+tech.tech_alias[i].alias_id+"\", " + allow_edit + ")'"
                     } else {
                         allHTML += "onclick='showAlias(\""+tech.user_name+"\",\""+tech.tech_id+"\",\""+tech.tech_alias[i].alias_id+"\", " + allow_edit + ")'"
                     }
@@ -744,7 +746,7 @@
             $("#div_edit_external_technology").css('display','none')
         }
 
-        function showImportedAlias(user_name, tech_id, alias_id)
+        function showImportedAlias(user_name, tech_id, alias_id, allow_edit)
         {
             hideImportAlias()
             hideCreateAlias()
@@ -761,7 +763,11 @@
                 $("#alias_id").val(alias.alias_id)
                 $("#div_edit_external_technology").css('display','initial')
                 $("#btn_delete_external_technology_option").css('display','initial')
-                console.log(alias)
+                if (allow_edit) {
+                    $("#div_delete_external_technology_option").show()
+                } else {
+                    $("#div_delete_external_technology_option").hide()
+                }
                 synonymsEditTable.clear().rows.add(alias.synonyms).draw();
                 referencesEditTable.clear().rows.add(alias.source).draw();
             });
