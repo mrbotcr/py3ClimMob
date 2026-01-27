@@ -67,7 +67,7 @@ class newalias_view(privateView):
 
                     if badalias == "":
                         self.request.session.flash(
-                            self._("The technology options were successfully created")
+                            self._("Technology options created successfully")
                         )
                         redirect = True
                     else:
@@ -113,7 +113,7 @@ class deletealias_view(privateView):
                 return {"status": 400, "error": message}
             else:
                 self.request.session.flash(
-                    self._("The technology option was successfully removed")
+                    self._("Technology option removed successfully")
                 )
                 self.returnRawViewResult = True
                 return {"status": 200}
@@ -154,7 +154,7 @@ class modifyalias_view(privateView):
                             error_summary = {"dberror": message}
                         else:
                             self.request.session.flash(
-                                self._("The technology option was successfully edited")
+                                self._("Technology option edited successfully")
                             )
                             redirect = True
                     else:
@@ -220,7 +220,7 @@ class ImportAliasView(privateView):
             return {"error_summary": error_summary}
 
         self.request.session.flash(
-            self._("The technology option was successfully imported")
+            self._("Technology option imported successfully")
         )
 
         return {"error_summary": error_summary}

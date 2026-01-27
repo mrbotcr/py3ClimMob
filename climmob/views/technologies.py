@@ -169,9 +169,14 @@ class newtechnology_view(privateView):
                             if not added:
                                 error_summary = {"dberror": message}
                             else:
-                                self.request.session.flash(
-                                    self._("The technology was created successfully")
-                                )
+                                if "btn_add_technology" in self.request.POST:
+                                    self.request.session.flash(
+                                        self._("Technology created successfully")
+                                    )
+                                elif "btn_import_technology" in self.request.POST:
+                                    self.request.session.flash(
+                                        self._("Technology imported successfully")
+                                    )
                                 redirect = True
                         else:
                             error_summary = {
@@ -240,7 +245,7 @@ class modifytechnology_view(privateView):
                                 error_summary = {"dberror": message}
                             else:
                                 self.request.session.flash(
-                                    self._("The technology was successfully edited")
+                                    self._("Technology edited successfully")
                                 )
                                 redirect = True
                         else:
@@ -293,16 +298,12 @@ class deletetechnology_view(privateView):
                 self.returnRawViewResult = True
                 return {"status": 400, "error": message}
             else:
-                self.request.session.flash(
-                    self._("The technology was successfully removed")
-                )
+                self.request.session.flash(self._("Technology removed successfully"))
                 self.returnRawViewResult = True
                 return {"status": 200}
 
         if redirect:
-            self.request.session.flash(
-                self._("The technology was deleted successfully")
-            )
+            self.request.session.flash(self._("Technology deleted successfully"))
 
         return {
             "activeUser": self.user,
