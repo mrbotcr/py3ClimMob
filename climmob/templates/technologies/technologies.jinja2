@@ -83,30 +83,27 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="stream" style="padding: 4px 0" onclick="showImportTechnology()">
-                        <div class="stream-badge">
-                            <i class="fa fa-plus" style="color:#000000"></i>
-                        </div>
-                        <div class="stream-panel" style="margin-top: 4px">
-                            <div class="stream-info">
-                                <button class="btn btn-primary btn-xs"
-                                        style="font-size: 12px; background-color: #3c763d; border-color: #3c763d; font-weight: 600">
-                                    {{ _("Import") }}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="stream" style="padding: 4px 0" onclick="showCreateTechnology()">
+                    <div class="stream" style="padding: 4px 0; display: flex; margin-top: 1em;">
                         <div class="stream-badge">
                             <i class="fa fa-plus" style="color:#000000"></i>
                         </div>
-                        <div class="stream-panel" style="margin-top: 4px">
-                            <div class="stream-info">
-                                <button class="btn btn-primary btn-xs"
-                                        style="font-size: 12px; background-color: #3c763d; border-color: #3c763d; font-weight: 600">
-                                    {{ _("Create new") }}
-                                </button>
+                        <div style="display: flex; gap: 1em">
+                            <div class="stream-panel" style="margin-top: 4px; margin-left: 0;" onclick="showImportTechnology()">
+                                <div class="stream-info">
+                                    <button class="btn btn-primary btn-xs"
+                                            style="font-size: 12px; background-color: #3c763d; border-color: #3c763d; font-weight: 600">
+                                        {{ _("Import") }}
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="stream-panel" style="margin-top: 4px;margin-left: 0;" onclick="showCreateTechnology()">
+                                <div class="stream-info">
+                                    <button class="btn btn-primary btn-xs"
+                                            style="font-size: 12px; background-color: #3c763d; border-color: #3c763d; font-weight: 600">
+                                        {{ _("Create new") }}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
