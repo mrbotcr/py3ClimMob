@@ -137,6 +137,11 @@
                     </div>
                     <div class="ibox-content animated fadeInRightBig" >
                         <p><b>{{ _("Select to add") }}</b></p>
+                        {% if not alias.AliasTechnologyInProject and
+                              not alias.AliasExtraTechnologyInProject and
+                              not alias.AliasTechnology %}
+                            <div class="text-center"><p>{{ _("No options available yet") }}</p></div>
+                        {% endif %}
                         <div style="overflow-x: hidden; overflow-y: scroll; max-height: calc(100vh - {% if onlySee == False %}385{% else %}310{% endif %}px);">
                             <table class="footable table table-stripped" data-page-size="50000">
 
