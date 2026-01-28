@@ -691,7 +691,7 @@ def ApiAssessmentPushProcess(self, structure, dataworking, activeProjectId):
             permitedKeys = True
             for key in _json.keys():
                 if key not in possibleQuestions:
-                    print(key)
+                    # print(key)
                     permitedKeys = False
 
             if permitedKeys:
@@ -797,7 +797,7 @@ def ApiAssessmentPushProcess(self, structure, dataworking, activeProjectId):
                             for file in self.request.POST.getall("media"):
                                 filename = file.filename.lower()
                                 full_path = os.path.join(pathxml, filename)
-                                print(full_path)
+                                # print(full_path)
 
                                 with open(full_path, "wb") as f:
                                     f.write(file.file.read())
