@@ -1234,18 +1234,21 @@ class TestApiAssessmentPushProcess(unittest.TestCase):
                         "question_datafield": "package_id",
                         "question_requiredvalue": 1,
                         "question_dtype2": 1,
+                        "question_dtype": "qst",
                     },
                     {
                         "question_code": "QST163",
                         "question_datafield": "farmer_code",
                         "question_requiredvalue": 1,
                         "question_dtype2": 1,
+                        "question_dtype": "qst",
                     },
                     {
                         "question_code": "QST999",
                         "question_datafield": "some_data",
                         "question_requiredvalue": 1,
                         "question_dtype2": 9,
+                        "question_dtype": "qst",
                     },
                 ]
             }
@@ -1272,18 +1275,21 @@ class TestApiAssessmentPushProcess(unittest.TestCase):
                         "question_datafield": "package_id",
                         "question_requiredvalue": 1,
                         "question_dtype2": 1,
+                        "question_dtype": "qst",
                     },
                     {
                         "question_code": "QST163",
                         "question_datafield": "farmer_code",
                         "question_requiredvalue": 1,
                         "question_dtype2": 1,
+                        "question_dtype": "qst",
                     },
                     {
                         "question_code": "QST999",
                         "question_datafield": "some_data",
                         "question_requiredvalue": 1,
                         "question_dtype2": 9,
+                        "question_dtype": "qst",
                     },
                 ]
             }
@@ -1322,18 +1328,21 @@ class TestApiAssessmentPushProcess(unittest.TestCase):
                         "question_datafield": "package_id",
                         "question_requiredvalue": 1,
                         "question_dtype2": 1,
+                        "question_dtype": "qst",
                     },
                     {
                         "question_code": "QST163",
                         "question_datafield": "farmer_code",
                         "question_requiredvalue": 1,
                         "question_dtype2": 1,
+                        "question_dtype": "qst",
                     },
                     {
                         "question_code": "QST999",
                         "question_datafield": "some_data",
                         "question_requiredvalue": 1,
                         "question_dtype2": 9,
+                        "question_dtype": "qst",
                     },
                 ]
             }
@@ -1370,18 +1379,21 @@ class TestApiAssessmentPushProcess(unittest.TestCase):
                         "question_datafield": "package_id",
                         "question_requiredvalue": 1,
                         "question_dtype2": 1,
+                        "question_dtype": "qst",
                     },
                     {
                         "question_code": "QST163",
                         "question_datafield": "farmer_code",
                         "question_requiredvalue": 1,
                         "question_dtype2": 1,
+                        "question_dtype": "qst",
                     },
                     {
                         "question_code": "QST999",
                         "question_datafield": "some_data",
                         "question_requiredvalue": 1,
                         "question_dtype2": 9,
+                        "question_dtype": "qst",
                     },
                 ]
             }
@@ -1419,18 +1431,21 @@ class TestApiAssessmentPushProcess(unittest.TestCase):
                         "question_datafield": "package_id",
                         "question_requiredvalue": 1,
                         "question_dtype2": 1,
+                        "question_dtype": "qst",
                     },
                     {
                         "question_code": "QST163",
                         "question_datafield": "farmer_code",
                         "question_requiredvalue": 1,
                         "question_dtype2": 1,
+                        "question_dtype": "qst",
                     },
                     {
                         "question_code": "QST999",
                         "question_datafield": "some_data",
                         "question_requiredvalue": 1,
                         "question_dtype2": 9,
+                        "question_dtype": "qst",
                     },
                 ]
             }
@@ -1468,24 +1483,28 @@ class TestApiAssessmentPushProcess(unittest.TestCase):
                         "question_datafield": "package_id",
                         "question_requiredvalue": 1,
                         "question_dtype2": 1,
+                        "question_dtype": "qst",
                     },
                     {
                         "question_code": "QST163",
                         "question_datafield": "farmer_code",
                         "question_requiredvalue": 1,
                         "question_dtype2": 1,
+                        "question_dtype": "qst",
                     },
                     {
                         "question_code": "QST999",
                         "question_datafield": "option_1",
                         "question_requiredvalue": 1,
                         "question_dtype2": 9,
+                        "question_dtype": "qst",
                     },
                     {
                         "question_code": "QST999",
                         "question_datafield": "option_2",
                         "question_requiredvalue": 1,
                         "question_dtype2": 9,
+                        "question_dtype": "qst",
                     },
                 ]
             }
@@ -1536,18 +1555,21 @@ class TestApiAssessmentPushProcess(unittest.TestCase):
                         "question_datafield": "package_id",
                         "question_requiredvalue": 1,
                         "question_dtype2": 1,
+                        "question_dtype": "qst",
                     },
                     {
                         "question_code": "QST163",
                         "question_datafield": "farmer_code",
                         "question_requiredvalue": 1,
                         "question_dtype2": 1,
+                        "question_dtype": "qst",
                     },
                     {
                         "question_code": "QST999",
                         "question_datafield": "option_1",
                         "question_requiredvalue": 1,
                         "question_dtype2": 9,
+                        "question_dtype": "qst",
                     },
                 ]
             }
@@ -1591,18 +1613,21 @@ class TestApiAssessmentPushProcess(unittest.TestCase):
                         "question_datafield": "package_id",
                         "question_requiredvalue": 1,
                         "question_dtype2": 1,
+                        "question_dtype": "qst",
                     },
                     {
                         "question_code": "QST163",
                         "question_datafield": "farmer_code",
                         "question_requiredvalue": 1,
                         "question_dtype2": 1,
+                        "question_dtype": "qst",
                     },
                     {
                         "question_code": "QST999",
                         "question_datafield": "option_1",
                         "question_requiredvalue": 1,
                         "question_dtype2": 9,
+                        "question_dtype": "qst",
                     },
                 ]
             }

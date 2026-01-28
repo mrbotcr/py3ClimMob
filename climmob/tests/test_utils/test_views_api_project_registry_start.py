@@ -2957,6 +2957,7 @@ class TestApiRegistrationPushProcess(unittest.TestCase):
                         "question_code": "QST162",
                         "question_datafield": "package_id",
                         "question_requiredvalue": 1,
+                        "question_dtype": "qst",
                     },
                 ]
             }
@@ -2982,11 +2983,13 @@ class TestApiRegistrationPushProcess(unittest.TestCase):
                         "question_code": "QST162",
                         "question_datafield": "package_id",
                         "question_requiredvalue": 1,
+                        "question_dtype": "qst",
                     },
                     {
                         "question_code": "QST999",
                         "question_datafield": "some_data",
                         "question_requiredvalue": 1,
+                        "question_dtype": "qst",
                     },
                 ]
             }
@@ -3015,11 +3018,13 @@ class TestApiRegistrationPushProcess(unittest.TestCase):
                         "question_code": "QST162",
                         "question_datafield": "package_id",
                         "question_requiredvalue": 1,
+                        "question_dtype": "qst",
                     },
                     {
                         "question_code": "QST999",
                         "question_datafield": "some_data",
                         "question_requiredvalue": 1,
+                        "question_dtype": "qst",
                     },
                 ]
             }
@@ -3051,11 +3056,13 @@ class TestApiRegistrationPushProcess(unittest.TestCase):
                         "question_code": "QST162",
                         "question_datafield": "package_id",
                         "question_requiredvalue": 1,
+                        "question_dtype": "qst",
                     },
                     {
                         "question_code": "QST999",
                         "question_datafield": "some_data",
                         "question_requiredvalue": 1,
+                        "question_dtype": "qst",
                     },
                 ]
             }
@@ -3080,11 +3087,13 @@ class TestApiRegistrationPushProcess(unittest.TestCase):
                         "question_code": "QST162",
                         "question_datafield": "package_id",
                         "question_requiredvalue": 1,
+                        "question_dtype": "qst",
                     },
                     {
                         "question_code": "QST999",
                         "question_datafield": "some_data",
                         "question_requiredvalue": 1,
+                        "question_dtype": "qst",
                     },
                 ]
             }
@@ -3110,11 +3119,13 @@ class TestApiRegistrationPushProcess(unittest.TestCase):
                         "question_code": "QST162",
                         "question_datafield": "package_id",
                         "question_requiredvalue": 1,
+                        "question_dtype": "qst",
                     },
                     {
                         "question_code": "QST999",
                         "question_datafield": "some_data",
                         "question_requiredvalue": 1,
+                        "question_dtype": "qst",
                     },
                 ]
             }
@@ -3147,11 +3158,13 @@ class TestApiRegistrationPushProcess(unittest.TestCase):
                         "question_code": "QST162",
                         "question_datafield": "package_id",
                         "question_requiredvalue": 1,
+                        "question_dtype": "qst",
                     },
                     {
                         "question_code": "QST999",
                         "question_datafield": "some_data",
                         "question_requiredvalue": 1,
+                        "question_dtype": "qst",
                     },
                 ]
             }
@@ -3207,11 +3220,13 @@ class TestApiRegistrationPushProcess(unittest.TestCase):
                         "question_code": "QST162",
                         "question_datafield": "package_id",
                         "question_requiredvalue": 1,
+                        "question_dtype": "qst",
                     },
                     {
                         "question_code": "QST999",
                         "question_datafield": "some_data",
                         "question_requiredvalue": 1,
+                        "question_dtype": "qst",
                     },
                 ]
             }
