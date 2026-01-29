@@ -219,8 +219,6 @@ class ImportAliasView(privateView):
             error_summary["dberror"] = added_tech
             return {"error_summary": error_summary}
 
-        self.request.session.flash(
-            self._("Technology option imported successfully")
-        )
+        self.request.session.flash(self._("Technology option imported successfully"))
 
         return {"error_summary": error_summary}
