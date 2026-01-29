@@ -128,10 +128,10 @@
                     {% set error_summary = error_summary_aux %}
                     {% include 'snippets/error.jinja2' %}
                     <div class="text-center">
-                        <p>{{ _("Technologies created in this
-                        library are stored exclusively in the user’s personal
-                        account and are not shared
-                        by default") }}</p>
+                        <p>{{ _("Technologies created here are personal and not shared by default.
+                        Use this option for non-crop technologies (e.g. training or testing purposes).
+                        For crops not found in the library, please import the technology from an indexed
+                        database or request it from the support team") }}</p>
                         <br>
                     </div>
                     <form class="form-horizontal formElement" role="form" method="post" action="{{ request.url }}">
