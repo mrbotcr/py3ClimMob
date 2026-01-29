@@ -241,14 +241,15 @@
                                 </div>
                             </div>
                         </div>
-
-                        <br>
-                        <button style="display: none" class="btn btn-danger pull-left BtnTechnologyOptions" id="btn_delete_technology_option" onclick="deleteTechnologyOption()" type="button" title="{{ _("Delete option") }}"><i class="fa fa-trash"></i> {{ _("Delete option") }}</button>
-                        <input style="display: none" class="btn btn-primary pull-right BtnTechnologyOptions" type="submit" id="btn_add_alias" name="btn_add_alias" value="{{ _('Add and close') }}"></input>
-                        <input style="display: none" class="btn btn-primary pull-right BtnTechnologyOptions" type="submit" id="btn_modify_alias" name="btn_modify_alias" value="{{ _('Save and close') }}"></input>
+                        <div class="btn-group" style="width: 100%;">
+                            <br>
+                            <button style="display: none" class="btn btn-danger pull-left BtnTechnologyOptions" id="btn_delete_technology_option" onclick="deleteTechnologyOption()" type="button" title="{{ _("Delete option") }}"><i class="fa fa-trash"></i> {{ _("Delete option") }}</button>
+                            <input style="display: none" class="btn btn-primary pull-right BtnTechnologyOptions" type="submit" id="btn_add_alias" name="btn_add_alias" value="{{ _('Add and close') }}"></input>
+                            <input style="display: none" class="btn btn-primary pull-right BtnTechnologyOptions" type="submit" id="btn_modify_alias" name="btn_modify_alias" value="{{ _('Save and close') }}"></input>
+                            <br>
+                            <br>
+                        </div>
                     </form>
-                    <br>
-                    <br>
                 </div>
             </div>
         </div>
@@ -448,6 +449,9 @@
 
         function showCreateTechnology() {
             hideImportAlias()
+            hideImportedAlias()
+            hideCreateTechnology()
+            hideTechnologyDetails()
             hideImportTechnology()
             cleanBtsTechnologyOptions()
             cleanSectionsOptions()
@@ -573,15 +577,15 @@
                 $("#select_crop").trigger('change');
 
                 let allHTML = ""
+                const user_is_tech_owner = tech.user_name === "{{ activeUser.login }}"
                 if (tech.tech_alias.length === 0) {
                     allHTML += '<div class="text-center"><p>{{ _("No options available yet") }}</p></div>';
-                } else {
+                } else  if (user_is_tech_owner) {
                     allHTML += '<div class="text-center"><p>{{ _("Technology options linked to a project cannot be edited nor deleted") }}</p></div>';
                 }
                 for(var i=0; i<tech.tech_alias.length; i++)
                 {
-                    var arrayForAlias = JSON.stringify(tech.tech_alias[i]).replace(/(')/g, "\\u0027");
-                    const allow_edit = tech.tech_alias[i].quantity === 0 & tech.user_name === "{{ activeUser.login }}"
+                    const allow_edit = tech.tech_alias[i].quantity === 0 & user_is_tech_owner
                     allHTML +="<div class='stream' style='padding:4px 0' "
                     if (tech.tech_alias[i].source) {
                         allHTML += "onclick='showImportedAlias(\""+tech.user_name+"\",\""+tech.tech_id+"\",\""+tech.tech_alias[i].alias_id+"\", " + allow_edit + ")'"
@@ -729,12 +733,15 @@
                 $("#alias_name_insert").prop('required',false);
                 cleanSectionsOptions()
                 cleanBtsTechnologyOptions()
+                $("#form_technology_options .btn-group").hide()
+
                 $("#alias_name").val(alias.alias_name)
                 $("#alias_id").val(alias.alias_id)
                 $("#div_update_option").css('display','initial')
                 if (allow_edit) {
                     $("#btn_delete_technology_option").css('display','initial')
                     $("#btn_modify_alias").css('display','initial')
+                    $("#form_technology_options .btn-group").css('display','initial')
                 }
                 $("#div_update_option input").prop('disabled', !allow_edit)
                 $("#div_create_technology_option").css('display','initial')
