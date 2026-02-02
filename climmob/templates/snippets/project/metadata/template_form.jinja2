@@ -4,6 +4,9 @@
     {% endif %}
 
     {% macro recursiveFunction(JsonInfo ,repeat_index=0) %}
+        {% set relevant = JsonInfo.get('bind', {}).get('relevant') %}
+        {% set data_relevant = JsonInfo.get('data_relevant') %}
+
         {% if JsonInfo["type"] in ["group", "repeat","survey"] %}
 
             {% if JsonInfo["name"] not in ["meta"] %}
@@ -16,7 +19,11 @@
                     </div>
                 {% endif %}
 
-                <div class="{{ JsonInfo["type"] }} {{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}" name="{{ JsonInfo["name"] }}" {% if JsonInfo["type"] %}id="{{ JsonInfo["name"] }}"{% endif %}  style="border: 2px solid {% if JsonInfo["type"] == "repeat" %}#1ab394{% else %}#e7eaec{% endif %}; padding: 20px; margin-bottom: 20px">
+                <div class="{{ JsonInfo["type"] }} {{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}" name="{{ JsonInfo["name"] }}"
+                     {% if JsonInfo["type"] %}id="{{ JsonInfo["name"] }}"{% endif %}  style="border: 2px solid {% if JsonInfo["type"] == "repeat" %}#1ab394{% else %}#e7eaec{% endif %}; padding: 20px; margin-bottom: 20px"
+                     {% if relevant %}  data-depends-on="{{ relevant }}" {% endif %}
+                     {% if data_relevant %}  data-relevant="{{ data_relevant }}" {% endif %}
+                >
 
 
                     {% if JsonInfo["type"] == "repeat" %}
@@ -37,7 +44,10 @@
                 </div>
 
                 {% if JsonInfo["type"] == "repeat"  %}
-                    <button type="button" class="btn btn-primary duplicate-repeat" onclick="duplicateRepeatBlock($(this),'{{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}')" {% if onlySee or ("allow_more" in JsonInfo.keys() and JsonInfo["allow_more"] == "no") %}style="display: none" {% endif %}><i class="fa fa-plus"></i> {{ _('Add other') }}</button><br>
+                    <button type="button" class="btn btn-primary duplicate-repeat"
+                            {% if relevant %}  data-depends-on="{{ relevant }}" {% endif %}
+                            {% if data_relevant %}  data-relevant="{{ data_relevant }}" {% endif %}
+                            onclick="duplicateRepeatBlock($(this),'{{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}')" {% if onlySee or ("allow_more" in JsonInfo.keys() and JsonInfo["allow_more"] == "no") %}style="display: none" {% endif %}><i class="fa fa-plus"></i> {{ _('Add other') }}</button><br>
                     <hr>
 
                 {% endif %}
@@ -46,10 +56,13 @@
         {% else %}
 
             {% if JsonInfo["type"] in ["text","select one","integer", "select all that apply", "date"]%}
-                <div {% if JsonInfo["show_interface"] == "no" %}style="display: none"{% endif %} class="form-group" div-name="div_{{ JsonInfo.get("name", {}) }}">
+                <div {% if JsonInfo["show_interface"] == "no" %}style="display: none"{% endif %}
+                        {% if relevant %}  data-depends-on="{{ relevant }}" {% endif %}
+                        {% if data_relevant %}  data-relevant="{{ data_relevant }}" {% endif %}
+                     class="form-group" div-name="div_{{ JsonInfo.get("name", {}) }}">
 
                     <div class="col-sm-12" >
-                        <h3>{{ JsonInfo["label"][request.locale_name] }}  {% if ("bind" in JsonInfo.keys() and "required" in JsonInfo["bind"].keys() and JsonInfo["bind"]["required"] == "yes") or JsonInfo["name"][-6:] == '_other' %}{% else %}({{ _("Optional") }}){% endif %}</h3>
+                        <h3>{{ JsonInfo["label"][request.locale_name] }}  {% if ("bind" in JsonInfo.keys() and "required" in JsonInfo["bind"].keys() and JsonInfo["bind"]["required"] == "yes") or JsonInfo["name"][-6:] == '_other' or  relevant  %}{% else %}({{ _("Optional") }}){% endif %}</h3>
                         {% if "hint" in JsonInfo.keys() %} <p>{{ JsonInfo["hint"][request.locale_name] }}</p>{% endif %}
 
                         {% include inputs %}
@@ -146,13 +159,6 @@
     function showData(postData){
         methodRecursiveToShowInformation(postData, $("#spaceForPutTheForm"))
     }
-
-    {#function searchIntoDictionary(name){#}
-    {#    dictionary = {{ dictionary }}#}
-    {#    for (const key in dictionary) {#}
-    {#        if (dictionary[key]["name"] === name)#}
-    {#            return dictionary[key]["type"]#}
-    {#    }    }#}
 
 
     function methodRecursiveToShowInformation(postData, parentElement) {
@@ -448,6 +454,7 @@
                     toggleOtherField(this);
                     charge_role_info(this)
                     toggleStandardField(this);
+                    toggleConfirmationGroup(this);
                 });
             });
 
@@ -531,6 +538,52 @@
         }
     }
 
+function toggleConfirmationGroup(selectElement) {
+
+    const dropdownId = selectElement.dataset.dropdownId;
+    if (!dropdownId) {
+        return;
+    }
+    const masterFieldName = dropdownId.split('#')[1];
+    const selectedOptions = Array.from(selectElement.selectedOptions);
+    const selectedRelevants = selectedOptions
+        .map(opt => opt.dataset.relevant)
+        .filter(Boolean);
+
+    const dependentDivs = document.querySelectorAll(
+      `[data-depends-on="${masterFieldName}"]`
+    );
+
+    dependentDivs.forEach((div, i) => {
+        const divRelevant = div.dataset.relevant;
+
+        let shouldShow;
+        if (selectedRelevants.length === 0) {
+            shouldShow = !divRelevant;
+        } else {
+            shouldShow = !divRelevant || selectedRelevants.includes(divRelevant);
+        }
+        if (shouldShow) {
+            div.style.display = '';
+            div.querySelectorAll('input, select, textarea').forEach(field => {
+                field.required = true;
+            });
+        } else {
+            div.style.display = 'none';
+
+            div.querySelectorAll('input, select, textarea').forEach(field => {
+                field.required = false;
+                field.value = '';
+
+                if (field.tagName === 'SELECT') {
+                    field.dispatchEvent(
+                        new Event('change', { bubbles: true })
+                    );
+                }
+            });
+        }
+    });
+}
     function toggleOtherField(selectElement) {
 
         const dropdownId = selectElement.dataset.dropdownId;
@@ -541,7 +594,7 @@
         const divElement = document.querySelector(`[div-name="${divNameOther}"]`);
         const textareaElement = document.querySelector(`[name-text-check="${textAreaNameOther}"]`);
 
-          if (selectElement.selectedOptions.length === 0) {
+        if (selectElement.selectedOptions.length === 0) {
             if (divElement) divElement.style.display = "none";
             if (textareaElement) textareaElement.required = false;
             return;
@@ -571,6 +624,7 @@
         toggleOtherField(this);
         charge_role_info(this);
         toggleStandardField(this);
+        toggleConfirmationGroup(this);
     });
 
     // Check the load of the page
@@ -578,6 +632,7 @@
         $('select[data-dropdown-id]').each(function () {
             toggleOtherField(this);
             toggleStandardField(this);
+            toggleConfirmationGroup(this);
         });
     }, 200);
 
@@ -629,6 +684,16 @@
             }
         }
 
+    }
+
+    function integerDependsIfOtherWasSet(sourceField, targetFieldName){
+        const targetField = document.getElementsByName(targetFieldName)[0];
+        if (!targetField) return;
+        if (sourceField.value && sourceField.value.trim() !== '') {
+            targetField.removeAttribute('required')
+        } else {
+            targetField.setAttribute('required', 'required');
+        }
     }
 
 

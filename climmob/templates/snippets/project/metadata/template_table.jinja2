@@ -4,6 +4,10 @@
     {% endif %}
 
     {% macro recursiveFunction(JsonInfo ,repeat_index=0, requireLabel=True) %}
+
+        {% set relevant = JsonInfo.get('bind', {}).get('relevant') %}
+        {% set data_relevant = JsonInfo.get('data_relevant') %}
+
         {% if JsonInfo["type"] in ["group", "survey"] %}
 
             {% if JsonInfo["name"] not in ["meta"] %}
@@ -19,7 +23,10 @@
                     </div>
                 {% endif %}
 
-                <div class="{{ JsonInfo["type"] }} {{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}" name="{{ JsonInfo["name"] }}" {% if JsonInfo["type"] %}id="{{ JsonInfo["name"] }}"{% endif %}  style="border: 2px solid {% if JsonInfo["type"] == "repeat" %}#1ab394{% else %}#e7eaec{% endif %}; padding: 20px; margin-bottom: 20px">
+                <div class="{{ JsonInfo["type"] }} {{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}" name="{{ JsonInfo["name"] }}" {% if JsonInfo["type"] %}id="{{ JsonInfo["name"] }}"{% endif %}  style="border: 2px solid {% if JsonInfo["type"] == "repeat" %}#1ab394{% else %}#e7eaec{% endif %}; padding: 20px; margin-bottom: 20px"
+                     {% if relevant %}  data-depends-on="{{ relevant }}" {% endif %}
+                     {% if data_relevant %}  data-relevant="{{ data_relevant }}" {% endif %}
+                >
 
                     {% if "children" in JsonInfo.keys() %}
                         {% for child in JsonInfo["children"] recursive %}
@@ -50,7 +57,10 @@
                     <tr>
                         {% if "children" in JsonInfo.keys() %}
                             {% for child in JsonInfo["children"] recursive %}
-                                <th style="width:{% if child["Table_extra_space"] != "yes" %}{{ 80/JsonInfo["children"]|length }}{% else %}{{ 80*1.5/JsonInfo["children"]|length }}{% endif %}%; {% if child["show_interface"] =="no" %}display: none;{% endif %}">
+                                <th
+                                        {% if relevant %}  data-depends-on="{{ relevant }}" {% endif %}
+                                        {% if data_relevant %}  data-relevant="{{ data_relevant }}" {% endif %}
+                                        style="width:{% if child["Table_extra_space"] != "yes" %}{{ 80/JsonInfo["children"]|length }}{% else %}{{ 80*1.5/JsonInfo["children"]|length }}{% endif %}%; {% if child["show_interface"] =="no" %}display: none;{% endif %}">
                                     {{ child["label"][request.locale_name] }}
                                 </th>
                             {% endfor %}
@@ -59,15 +69,21 @@
                     <tr>
                         {% if "children" in JsonInfo.keys() %}
                             {% for child in JsonInfo["children"] recursive %}
-                                <td {% if child["show_interface"] =="no" %}style="display: none"{% endif %}>
+                                <td {% if child["show_interface"] =="no" %}style="display: none"{% endif %}
+                                {% if relevant %}  data-depends-on="{{ relevant }}" {% endif %}
+                            {% if data_relevant %}  data-relevant="{{ data_relevant }}" {% endif %}>
                                     {{ recursiveFunction(child, repeat_index, False) }}
+
                                 </td>
                             {% endfor %}
                         {% endif %}
                     </tr>
                 </table>
 
-                <button type="button" class="btn btn-primary duplicate-repeat" onclick="duplicateRepeatBlock($(this),'{{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}')" {% if onlySee or ("allow_more" in JsonInfo.keys() and JsonInfo["allow_more"] == "no") %}style="display: none" {% endif %}><i class="fa fa-plus"></i> {{ _('Add other row') }}</button><br>
+                <button type="button" class="btn btn-primary duplicate-repeat"
+                        {% if relevant %}  data-depends-on="{{ relevant }}" {% endif %}
+                        {% if data_relevant %}  data-relevant="{{ data_relevant }}" {% endif %}
+                        onclick="duplicateRepeatBlock($(this),'{{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}')" {% if onlySee or ("allow_more" in JsonInfo.keys() and JsonInfo["allow_more"] == "no") %}style="display: none" {% endif %}><i class="fa fa-plus"></i> {{ _('Add other row') }}</button><br>
                 <hr>
 
             {% endif %}
@@ -77,9 +93,11 @@
             {% if JsonInfo["type"] in ["text","select one","integer", "select all that apply", "date"] %}
 
                 {% if requireLabel %}
-                    <div class="form-group">
+                    <div class="form-group"
+                            {% if relevant %}  data-depends-on="{{ relevant }}" {% endif %}
+                            {% if data_relevant %}  data-relevant="{{ data_relevant }}" {% endif %}>
 
-                        <div class="col-sm-12">
+                        <div class="col-sm-12" >
                             <h3>{{ JsonInfo["label"][request.locale_name] }} {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"].keys() and JsonInfo["bind"]["required"] == "yes" %}{% else %}({{ _("Optional") }}){% endif %}</h3>
                             {% if "hint" in JsonInfo.keys() %} <p>{{ JsonInfo["hint"][request.locale_name] }}</p>{% endif %}
 
@@ -180,14 +198,6 @@
     function showData(postData){
         methodRecursiveToShowInformation(postData, $("#spaceForPutTheForm"))
     }
-
-    {#function searchIntoDictionary(name){#}
-    {#    dictionary = {{ dictionary }}#}
-    {#    for (const key in dictionary) {#}
-    {#        if (dictionary[key]["name"] === name)#}
-    {#            return dictionary[key]["type"]#}
-    {#    }    }#}
-
 
     function methodRecursiveToShowInformation(postData, parentElement) {
         if (typeof postData === "object" && postData !== null) {
@@ -440,6 +450,7 @@
                 $(this).select2({width: "100%"});
                 $(this).on('select2:select select2:unselect', function () {
                     toggleOtherField(this);
+                    toggleConfirmationGroup(this);
                 })
             });
 
@@ -559,15 +570,83 @@
     // toggles the other field
     $('select[data-dropdown-id]').on('select2:select select2:unselect', function () {
         toggleOtherField(this);
+        toggleConfirmationGroup(this);
     });
 
     // Check the load of the page
     setTimeout(function () {
         $('select[data-dropdown-id]').each(function () {
             toggleOtherField(this);
+            toggleConfirmationGroup(this);
         });
     }, 200);
 
+    function integerDependsIfOtherWasSet(sourceField, targetFieldName){
+        const targetField = document.getElementsByName(targetFieldName)[0];
+        if (!targetField) return;
+        console.log("paso")
+        if (sourceField.value && sourceField.value.trim() !== '') {
+            targetField.removeAttribute('required')
+        } else {
+            targetField.setAttribute('required', 'required');
+        }
+    }
+
+
+    function resolveContainer(el) {
+        if (el.tagName === 'TR') return el;
+        if (el.tagName === 'TD' || el.tagName === 'TH') return el;
+
+        return el.closest('td, th, tr') || el;
+    }
+
+    function toggleConfirmationGroup(selectElement) {
+
+    const dropdownId = selectElement.dataset.dropdownId;
+    if (!dropdownId) {
+        return;
+    }
+    const masterFieldName = dropdownId.split('#')[1].split('*'[0]);
+
+    const selectedOptions = Array.from(selectElement.selectedOptions);
+    const selectedRelevants = selectedOptions
+        .map(opt => opt.dataset.relevant)
+        .filter(Boolean);
+
+    const dependentDivs = document.querySelectorAll(
+      `[data-depends-on="${masterFieldName}"]`
+    );
+
+    dependentDivs.forEach((div, i) => {
+        const divRelevant = div.dataset.relevant;
+
+        let shouldShow;
+        if (selectedRelevants.length === 0) {
+            shouldShow = !divRelevant;
+        } else {
+            shouldShow = !divRelevant || selectedRelevants.includes(divRelevant);
+        }
+        if (shouldShow) {
+            div.style.display = '';
+            div.querySelectorAll('input, select, textarea').forEach(field => {
+                field.required = true;
+            });
+        } else {
+            div.style.display = 'none';
+
+            div.querySelectorAll('input, select, textarea').forEach(field => {
+                field.required = false;
+                field.value = '';
+
+                if (field.tagName === 'SELECT') {
+                    field.dispatchEvent(
+                        new Event('change', { bubbles: true })
+                    );
+                }
+            });
+        }
+    });
+}
 
 
 </script>
