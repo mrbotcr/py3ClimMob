@@ -449,8 +449,8 @@
             newRepeat.find('.chosen-select').each(function() {
                 $(this).select2({width: "100%"});
                 $(this).on('select2:select select2:unselect', function () {
-                    toggleOtherField(this);
                     toggleConfirmationGroup(this);
+                    toggleOtherField(this);
                 })
             });
 
@@ -569,15 +569,15 @@
 
     // toggles the other field
     $('select[data-dropdown-id]').on('select2:select select2:unselect', function () {
-        toggleOtherField(this);
         toggleConfirmationGroup(this);
+        toggleOtherField(this);
     });
 
     // Check the load of the page
     setTimeout(function () {
         $('select[data-dropdown-id]').each(function () {
-            toggleOtherField(this);
             toggleConfirmationGroup(this);
+            toggleOtherField(this);
         });
     }, 200);
 
@@ -602,51 +602,56 @@
 
     function toggleConfirmationGroup(selectElement) {
 
-    const dropdownId = selectElement.dataset.dropdownId;
-    if (!dropdownId) {
-        return;
+        const dropdownId = selectElement.dataset.dropdownId;
+        if (!dropdownId) {
+            return;
+        }
+        const masterFieldName = dropdownId.split('#')[1].split('*'[0]);
+
+        const selectedOptions = Array.from(selectElement.selectedOptions);
+        const selectedRelevants = selectedOptions
+            .map(opt => opt.dataset.relevant)
+            .filter(Boolean);
+
+        const dependentDivs = document.querySelectorAll(
+          `[data-depends-on="${masterFieldName}"]:not([div-name])`
+        );
+
+        dependentDivs.forEach((div, i) => {
+            const divRelevant = div.dataset.relevant;
+
+            let shouldShow;
+            if (selectedRelevants.length === 0) {
+                shouldShow = !divRelevant;
+            } else {
+                shouldShow = !divRelevant || selectedRelevants.includes(divRelevant);
+            }
+            if (shouldShow) {
+                div.style.display = '';
+                div.querySelectorAll('input, select, textarea').forEach(field => {
+                    field.required = true;
+                    if(field.tagName === 'SELECT'){
+                    div.querySelectorAll('select').forEach(select => {
+                        toggleOtherField(select);
+                    });
+                    }
+                });
+            } else {
+                div.style.display = 'none';
+
+                div.querySelectorAll('input, select, textarea').forEach(field => {
+                    field.required = false;
+                    field.value = '';
+
+                    if (field.tagName === 'SELECT') {
+                        field.dispatchEvent(
+                            new Event('change', { bubbles: true })
+                        );
+                    }
+                });
+            }
+        });
     }
-    const masterFieldName = dropdownId.split('#')[1].split('*'[0]);
-
-    const selectedOptions = Array.from(selectElement.selectedOptions);
-    const selectedRelevants = selectedOptions
-        .map(opt => opt.dataset.relevant)
-        .filter(Boolean);
-
-    const dependentDivs = document.querySelectorAll(
-      `[data-depends-on="${masterFieldName}"]`
-    );
-
-    dependentDivs.forEach((div, i) => {
-        const divRelevant = div.dataset.relevant;
-
-        let shouldShow;
-        if (selectedRelevants.length === 0) {
-            shouldShow = !divRelevant;
-        } else {
-            shouldShow = !divRelevant || selectedRelevants.includes(divRelevant);
-        }
-        if (shouldShow) {
-            div.style.display = '';
-            div.querySelectorAll('input, select, textarea').forEach(field => {
-                field.required = true;
-            });
-        } else {
-            div.style.display = 'none';
-
-            div.querySelectorAll('input, select, textarea').forEach(field => {
-                field.required = false;
-                field.value = '';
-
-                if (field.tagName === 'SELECT') {
-                    field.dispatchEvent(
-                        new Event('change', { bubbles: true })
-                    );
-                }
-            });
-        }
-    });
-}
 
 
 </script>
