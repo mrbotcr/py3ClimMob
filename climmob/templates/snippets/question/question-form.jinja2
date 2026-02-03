@@ -557,13 +557,11 @@
 {#                </i>#}
 {#                PSEUDO  #}
 {#                <i class="fa fa-info-circle"#}
-{#                   title="{{ _("Replaces the source ID with a unique code to protect identity while allowing data#}
-{#                   tracking across forms.") }}">#}
+{#                   title="{{ _("Replaces the source ID with a unique code to protect identity while allowing data tracking across forms.") }}">#}
 {#                </i>#}
 {#                BINNING  #}
                 <i class="fa fa-info-circle" id="anonymity-description"
-                   title="{{ _("This method anonymizes numerical values by grouping them into bins.
-                                Define the lower and upper bounds and an interval to determine the boundaries of each bin.") }}">
+                   title="{{ _("This method anonymizes numerical values by grouping them into bins. Define the lower and upper bounds and an interval to determine the boundaries of each bin.") }}">
                 </i>
 {#                NOISE  #}
 {#                <i class="fa fa-info-circle" id="anonymity-description"#}
@@ -573,26 +571,16 @@
         </div>
         <div id="question-anonymization-params">
             <div id="range-params">
-                <div class="form-group" id="anonymization-lower-bound-div">
+                 <div class="form-group" id="anonymization-bounds-div">
                     <label class="col-sm-4 control-label" for="anonymization-lower-bound-input">
                         <i class="fa fa-info-circle"
-                           title="{{ _("The lowest possible data value to be included in the aggregation bins.") }}">
+                           title="{{ _("The lowest and highest possible data values to be included in the aggregation bins.") }}">
                         </i>
-                        {{ _("Lower bound") }}
+                        {{ _("Bounds") }}
                     </label>
-                    <div class="col-sm-8">
-                        <input required type="number" step="any" id="anonymization-lower-bound-input" name="anonym_param_lower_bound" class="form-control inputForQuestion"/>
-                    </div>
-                </div>
-                <div class="form-group" id="anonymization-upper-bound-div">
-                    <label class="col-sm-4 control-label" for="anonymization-upper-bound-input">
-                        <i class="fa fa-info-circle"
-                           title="{{ _("The highest possible data value to be included in the aggregation bins.") }}">
-                        </i>
-                        {{ _("Upper bound") }}
-                    </label>
-                    <div class="col-sm-8">
-                        <input required type="number" step="any" id="anonymization-upper-bound-input" name="anonym_param_upper_bound" class="form-control inputForQuestion"/>
+                    <div class="col-sm-8" style="display: flex; gap: 1em;">
+                        <input required type="number" placeholder="Lower" step="any" id="anonymization-lower-bound-input" name="anonym_param_lower_bound" class="form-control inputForQuestion"/>
+                        <input required type="number" placeholder="Upper" step="any" id="anonymization-upper-bound-input" name="anonym_param_upper_bound" class="form-control inputForQuestion"/>
                     </div>
                 </div>
                 <div class="form-group" id="anonymization-interval-div">
@@ -604,12 +592,11 @@
                     </label>
                     <div class="col-sm-8">
                         <input required type="number" step="any" id="anonymization-interval-input" name="anonym_param_interval" class="form-control inputForQuestion"/>
-                <span class="help-block m-b-none text-left">
-                            {{ _("Define specific ranges to group your data (e.g., age or yield). Setting custom bounds
-                            gives you full control over how your distribution is analyzed while ensuring privacy.
-                            Example: Entering 0 (Lower), 100 (Upper), and 10 (Interval) will automatically group your
-                            data into sets of 10 (0-10, 11-20, etc.).") }}
-                        </span>
+                    <span class="help-block m-b-none text-left">
+                        {{ _("Group your data into specific ranges. Setting custom bounds ensures privacy while
+                        maintaining control over data distribution. Example: 0 (lower), 100 (upper), and 10 (Interval)
+                        creates groups of 10 (0-10, 11-20, etc.).") }}
+                    </span>
                     </div>
                 </div>
             </div>
