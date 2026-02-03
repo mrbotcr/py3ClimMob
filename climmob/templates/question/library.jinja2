@@ -297,15 +297,24 @@
         function setAnonymityInputsDisplay(show, anonymity=-1) {
             const display = show ? 'block' : 'none'
             anonymity_container.css('display', display);
+            $('.anonymity-description').css('display', 'none');
             anonymity_inputs_selector.prop('disabled', true);
             $('#question-anonymization-params > *').css('display', 'none');
             if (anonymity === {{ QuestionAnonymity.PSEUDONYM }}) {
                 $('#pseudonym-params').css('display', 'block');
                 $('#pseudonym-params input').prop('disabled', false);
+                $('#anonymity-description-pseudo').css('display', 'block');
             }
             else if (anonymity === {{ QuestionAnonymity.RANGE }}) {
                 $('#range-params').css('display', 'block');
                 $('#range-params input').prop('disabled', false);
+                $('#anonymity-description-range').css('display', 'block');
+            }
+            else if (anonymity === {{ QuestionAnonymity.REMOVE }}) {
+                $('#anonymity-description-remove').css('display', 'block');
+            }
+            else if (anonymity === {{ QuestionAnonymity.NOISE }}) {
+                $('#anonymity-description-noise').css('display', 'block');
             }
         }
 
