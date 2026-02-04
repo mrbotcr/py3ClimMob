@@ -451,10 +451,12 @@
             newRepeat.find('.chosen-select').each(function() {
                 $(this).select2({width: "100%"});
                 $(this).on('select2:select select2:unselect', function () {
+
+                    toggleConfirmationGroup(this);
                     toggleOtherField(this);
                     charge_role_info(this)
                     toggleStandardField(this);
-                    toggleConfirmationGroup(this);
+
                 });
             });
 
@@ -539,7 +541,6 @@
     }
 
 function toggleConfirmationGroup(selectElement) {
-
     const dropdownId = selectElement.dataset.dropdownId;
     if (!dropdownId) {
         return;
@@ -551,7 +552,7 @@ function toggleConfirmationGroup(selectElement) {
         .filter(Boolean);
 
     const dependentDivs = document.querySelectorAll(
-      `[data-depends-on="${masterFieldName}"]`
+        `[data-depends-on="${masterFieldName}"]:not([div-name])`
     );
 
     dependentDivs.forEach((div, i) => {
@@ -567,6 +568,11 @@ function toggleConfirmationGroup(selectElement) {
             div.style.display = '';
             div.querySelectorAll('input, select, textarea').forEach(field => {
                 field.required = true;
+                if(field.tagName === 'SELECT'){
+                    div.querySelectorAll('select').forEach(select => {
+                        toggleOtherField(select);
+                    });
+                }
             });
         } else {
             div.style.display = 'none';
@@ -574,7 +580,6 @@ function toggleConfirmationGroup(selectElement) {
             div.querySelectorAll('input, select, textarea').forEach(field => {
                 field.required = false;
                 field.value = '';
-
                 if (field.tagName === 'SELECT') {
                     field.dispatchEvent(
                         new Event('change', { bubbles: true })
@@ -582,8 +587,50 @@ function toggleConfirmationGroup(selectElement) {
                 }
             });
         }
+            const specialBlocks = document.querySelectorAll(
+            `.form-group[div-name][data-depends-on="${masterFieldName}"]`
+        );
+
+        specialBlocks.forEach(block => {
+
+            const hasDependentFieldInside = block.querySelector(
+                'input[data-depends-on], textarea[data-depends-on], select[data-depends-on]'
+            );
+
+            if (!hasDependentFieldInside) return;
+
+            const blockRelevant = block.dataset.relevant;
+
+            let shouldShow;
+            if (selectedRelevants.length === 0) {
+                shouldShow = !blockRelevant;
+            } else {
+                shouldShow = !blockRelevant || selectedRelevants.includes(blockRelevant);
+            }
+
+            const visualBlock = block.querySelector('.col-sm-12');
+
+            if (visualBlock) {
+                visualBlock.style.display = shouldShow ? 'block' : 'none';
+            }
+
+            block.querySelectorAll('input, textarea, select').forEach(field => {
+                field.required = shouldShow;
+
+                if (!shouldShow) {
+                    field.value = '';
+                    if (field.tagName === 'SELECT') {
+                        field.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                }
+            });
+        });
     });
 }
+
+
+
+
     function toggleOtherField(selectElement) {
 
         const dropdownId = selectElement.dataset.dropdownId;
@@ -621,18 +668,18 @@ function toggleConfirmationGroup(selectElement) {
 
     // toggles the other field
     $('select[data-dropdown-id]').on('select2:select select2:unselect', function () {
+        toggleConfirmationGroup(this);
         toggleOtherField(this);
         charge_role_info(this);
         toggleStandardField(this);
-        toggleConfirmationGroup(this);
     });
 
     // Check the load of the page
     setTimeout(function () {
         $('select[data-dropdown-id]').each(function () {
+            toggleConfirmationGroup(this);
             toggleOtherField(this);
             toggleStandardField(this);
-            toggleConfirmationGroup(this);
         });
     }, 200);
 

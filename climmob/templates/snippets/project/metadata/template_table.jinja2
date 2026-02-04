@@ -13,7 +13,7 @@
             {% if JsonInfo["name"] not in ["meta"] %}
 
                 {% if "label" in JsonInfo.keys() %}
-                    <div>
+                    <div style="position: sticky; left: 0;top: 0; z-index: 59; background-color: white; width: 150%">
                         <br>
                         <h3><b>{{ JsonInfo["label"][request.locale_name] }}</b></h3>
                         {% if "hint" in JsonInfo.keys() %}
@@ -23,10 +23,9 @@
                     </div>
                 {% endif %}
 
-                <div class="{{ JsonInfo["type"] }} {{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}" name="{{ JsonInfo["name"] }}" {% if JsonInfo["type"] %}id="{{ JsonInfo["name"] }}"{% endif %}  style="border: 2px solid {% if JsonInfo["type"] == "repeat" %}#1ab394{% else %}#e7eaec{% endif %}; padding: 20px; margin-bottom: 20px"
+                <div class="{{ JsonInfo["type"] }} {{ JsonInfo["type"] }}_{{ JsonInfo["name"] }} table-responsive" name="{{ JsonInfo["name"] }}" {% if JsonInfo["type"] %}id="{{ JsonInfo["name"] }}"{% endif %}  style="border: 2px solid {% if JsonInfo["type"] == "repeat" %}#1ab394{% else %}#e7eaec{% endif %}; padding-left: 20px;padding-right: 20px; margin-bottom: 20px;  {% if  JsonInfo["type"] == "group"  %} max-height: 800px;  margin-top: 20px; {% endif %}"
                      {% if relevant %}  data-depends-on="{{ relevant }}" {% endif %}
-                     {% if data_relevant %}  data-relevant="{{ data_relevant }}" {% endif %}
-                >
+                     {% if data_relevant %}  data-relevant="{{ data_relevant }}" {% endif %} >
 
                     {% if "children" in JsonInfo.keys() %}
                         {% for child in JsonInfo["children"] recursive %}
@@ -43,7 +42,7 @@
             {% if JsonInfo["name"] not in ["meta"] %}
 
                 {% if "label" in JsonInfo.keys() %}
-                    <div>
+                    <div style="position: sticky; left: 0;top: 0; z-index: 59; background-color: white; width: 150%" >
                         <br>
                         <h3><b>{{ JsonInfo["label"][request.locale_name] }}</b></h3>
                         {% if "hint" in JsonInfo.keys() %}
@@ -53,14 +52,14 @@
                     </div>
                 {% endif %}
 
-                <table class="table table-striped table-bordered {{ JsonInfo["type"] }} {{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}" name="{{ JsonInfo["name"] }}" style="table-layout: fixed;" >
-                    <tr>
+                <table class="table table-striped table-bordered {{ JsonInfo["type"] }} {{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}" name="{{ JsonInfo["name"] }}" style="table-layout: fixed; will-change: transform;" >
+                    <tr style="position: sticky; left: 0;top: 90px; z-index: 99999 !important; " >
                         {% if "children" in JsonInfo.keys() %}
                             {% for child in JsonInfo["children"] recursive %}
                                 <th
                                         {% if relevant %}  data-depends-on="{{ relevant }}" {% endif %}
                                         {% if data_relevant %}  data-relevant="{{ data_relevant }}" {% endif %}
-                                        style="width:{% if child["Table_extra_space"] != "yes" %}{{ 80/JsonInfo["children"]|length }}{% else %}{{ 80*1.5/JsonInfo["children"]|length }}{% endif %}%; {% if child["show_interface"] =="no" %}display: none;{% endif %}">
+                                        style="width:{% if child["size_on_table"] %}{{  child["size_on_table"] }}{% else %}{{ 200 }}{% endif %}px; {% if child["show_interface"] =="no" %}display: none;{% endif %};">
                                     {{ child["label"][request.locale_name] }}
                                 </th>
                             {% endfor %}
@@ -71,7 +70,11 @@
                             {% for child in JsonInfo["children"] recursive %}
                                 <td {% if child["show_interface"] =="no" %}style="display: none"{% endif %}
                                 {% if relevant %}  data-depends-on="{{ relevant }}" {% endif %}
-                            {% if data_relevant %}  data-relevant="{{ data_relevant }}" {% endif %}>
+                                        {% if data_relevant %}  data-relevant="{{ data_relevant }}" {% endif %}
+                                        {% if child["bind"] and "jr:requiredMsg" in child["bind"] %}
+                                            customMessage = "{{ child["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}"
+                                        {% endif %}
+                                >
                                     {{ recursiveFunction(child, repeat_index, False) }}
 
                                 </td>
@@ -449,8 +452,8 @@
             newRepeat.find('.chosen-select').each(function() {
                 $(this).select2({width: "100%"});
                 $(this).on('select2:select select2:unselect', function () {
-                    toggleOtherField(this);
                     toggleConfirmationGroup(this);
+                    toggleOtherField(this);
                 })
             });
 
@@ -569,27 +572,35 @@
 
     // toggles the other field
     $('select[data-dropdown-id]').on('select2:select select2:unselect', function () {
-        toggleOtherField(this);
         toggleConfirmationGroup(this);
+        toggleOtherField(this);
     });
 
     // Check the load of the page
     setTimeout(function () {
         $('select[data-dropdown-id]').each(function () {
-            toggleOtherField(this);
             toggleConfirmationGroup(this);
+            toggleOtherField(this);
         });
     }, 200);
 
     function integerDependsIfOtherWasSet(sourceField, targetFieldName){
-        const targetField = document.getElementsByName(targetFieldName)[0];
+        const this_row = sourceField.closest('tr');
+        if (!this_row) return;
+        const targetField = this_row.querySelector(`[name="${targetFieldName}"]`);
         if (!targetField) return;
-        console.log("paso")
         if (sourceField.value && sourceField.value.trim() !== '') {
             targetField.removeAttribute('required')
         } else {
             targetField.setAttribute('required', 'required');
         }
+        document.addEventListener('change', function(e){
+
+    const td = e.target.closest('td');
+    if (td && td.classList.contains('is-invalid')) {
+        td.classList.remove('is-invalid');
+    }
+});
     }
 
 
@@ -602,51 +613,111 @@
 
     function toggleConfirmationGroup(selectElement) {
 
-    const dropdownId = selectElement.dataset.dropdownId;
-    if (!dropdownId) {
-        return;
-    }
-    const masterFieldName = dropdownId.split('#')[1].split('*'[0]);
-
-    const selectedOptions = Array.from(selectElement.selectedOptions);
-    const selectedRelevants = selectedOptions
-        .map(opt => opt.dataset.relevant)
-        .filter(Boolean);
-
-    const dependentDivs = document.querySelectorAll(
-      `[data-depends-on="${masterFieldName}"]`
-    );
-
-    dependentDivs.forEach((div, i) => {
-        const divRelevant = div.dataset.relevant;
-
-        let shouldShow;
-        if (selectedRelevants.length === 0) {
-            shouldShow = !divRelevant;
-        } else {
-            shouldShow = !divRelevant || selectedRelevants.includes(divRelevant);
+        const dropdownId = selectElement.dataset.dropdownId;
+        if (!dropdownId) {
+            return;
         }
-        if (shouldShow) {
-            div.style.display = '';
-            div.querySelectorAll('input, select, textarea').forEach(field => {
-                field.required = true;
-            });
-        } else {
-            div.style.display = 'none';
+        const masterFieldName = dropdownId.split('#')[1].split('*'[0]);
 
-            div.querySelectorAll('input, select, textarea').forEach(field => {
-                field.required = false;
-                field.value = '';
+        const selectedOptions = Array.from(selectElement.selectedOptions);
+        const selectedRelevants = selectedOptions
+            .map(opt => opt.dataset.relevant)
+            .filter(Boolean);
 
-                if (field.tagName === 'SELECT') {
-                    field.dispatchEvent(
-                        new Event('change', { bubbles: true })
-                    );
-                }
-            });
+        const dependentDivs = document.querySelectorAll(
+          `[data-depends-on="${masterFieldName}"]:not([div-name])`
+        );
+
+        dependentDivs.forEach((div, i) => {
+            const divRelevant = div.dataset.relevant;
+
+            let shouldShow;
+            if (selectedRelevants.length === 0) {
+                shouldShow = !divRelevant;
+            } else {
+                shouldShow = !divRelevant || selectedRelevants.includes(divRelevant);
+            }
+            if (shouldShow) {
+                div.style.display = '';
+                div.querySelectorAll('input, select, textarea').forEach(field => {
+                    field.required = true;
+                    if(field.tagName === 'SELECT'){
+                    div.querySelectorAll('select').forEach(select => {
+                        toggleOtherField(select);
+                    });
+                    }
+                });
+            } else {
+                div.style.display = 'none';
+
+                div.querySelectorAll('input, select, textarea').forEach(field => {
+                    field.required = false;
+                    field.value = '';
+
+                    if (field.tagName === 'SELECT') {
+                        field.dispatchEvent(
+                            new Event('change', { bubbles: true })
+                        );
+                    }
+                });
+            }
+        });
+    }
+
+document.addEventListener('input', function(e){
+        const td = e.target.closest('td');
+        if (td && td.classList.contains('is-invalid')) {
+            td.classList.remove('is-invalid');
+            const msg = td.querySelector('.td-error-msg');
+            if (msg) msg.remove();
         }
     });
-}
 
+document.addEventListener('change', function(e){
+
+    const td = e.target.closest('td');
+    if (td && td.classList.contains('is-invalid')) {
+        td.classList.remove('is-invalid');
+    }
+});
+
+$(document).on('select2:select', 'select', function (e) {
+    const td = this.closest('td');
+    if (td) td.classList.remove('is-invalid');
+     td.classList.remove('is-invalid');
+    const msg = td.querySelector('.td-error-msg');
+    if (msg) msg.remove();
+});
+
+document.addEventListener('invalid', function(e){
+    e.preventDefault();
+    const target = e.target;
+    const td = target.closest('td');
+    if (td) {
+        td.classList.add('is-invalid');
+    }
+
+
+
+    const oldMsg = td.querySelector('.td-error-msg');
+    if (oldMsg) oldMsg.remove();
+    const msg = document.createElement('div');
+    msg.className = 'td-error-msg';
+
+    if($(td).attr("custommessage")) {
+        msg.textContent = $(td).attr("custommessage");
+    }else {
+        msg.textContent = target.validationMessage
+    }
+    td.appendChild(msg);
+
+}, true);
+
+document.addEventListener('submit', function(e){
+    const form = e.target;
+    if (!form.checkValidity()) {
+        e.preventDefault();
+    }
+})
 
 </script>

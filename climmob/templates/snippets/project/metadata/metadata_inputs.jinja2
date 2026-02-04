@@ -80,10 +80,6 @@
     {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %}
            required=""
     {% endif %}
-           oninvalid="this.setCustomValidity(
-               '{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{
-                   JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')"
-           onchange="this.setCustomValidity('')"
             {% if relevant %}  data-depends-on="{{ relevant }}" {% endif %}
             {% if data_relevant %}  data-relevant="{{ data_relevant }}" {% endif %}
     >
