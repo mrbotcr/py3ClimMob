@@ -13,7 +13,7 @@
             {% if JsonInfo["name"] not in ["meta"] %}
 
                 {% if "label" in JsonInfo.keys() %}
-                    <div style="position: sticky; left: 0;top: 0; z-index: 59; background-color: white; width: 150%">
+                    <div style="position: sticky; left: 0;top: 0; z-index: 59; background-color: white; width: 103%">
                         <br>
                         <h3><b>{{ JsonInfo["label"][request.locale_name] }}</b></h3>
                         {% if "hint" in JsonInfo.keys() %}
@@ -42,7 +42,7 @@
             {% if JsonInfo["name"] not in ["meta"] %}
 
                 {% if "label" in JsonInfo.keys() %}
-                    <div style="position: sticky; left: 0;top: 0; z-index: 59; background-color: white; width: 150%" >
+                    <div stickyname="stickyA" style="position: sticky; left: 0;top: 0; z-index: 59; background-color: white; width: 103%" >
                         <br>
                         <h3><b>{{ JsonInfo["label"][request.locale_name] }}</b></h3>
                         {% if "hint" in JsonInfo.keys() %}
@@ -52,8 +52,8 @@
                     </div>
                 {% endif %}
 
-                <table class="table table-striped table-bordered {{ JsonInfo["type"] }} {{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}" name="{{ JsonInfo["name"] }}" style="table-layout: fixed; will-change: transform;" >
-                    <tr style="position: sticky; left: 0;top: 90px; z-index: 99999 !important; " >
+                <table class="table table-striped table-bordered {{ JsonInfo["type"] }} {{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}" name="{{ JsonInfo["name"] }}" style="table-layout: fixed; will-change: transform; overflow-x: clip;" >
+                    <tr  stickyname="stickyB" style="position: sticky; left: 0;; z-index: 99999 !important; " >
                         {% if "children" in JsonInfo.keys() %}
                             {% for child in JsonInfo["children"] recursive %}
                                 <th
@@ -719,5 +719,16 @@ document.addEventListener('submit', function(e){
         e.preventDefault();
     }
 })
+
+
+const a = document.querySelector('[stickyname="stickyA"]');
+const b = document.querySelector('[stickyname="stickyB"]');
+
+const ro = new ResizeObserver(() => {
+    const alturaA = a.getBoundingClientRect().height;
+    b.style.top = alturaA + 'px';
+});
+
+ro.observe(a);
 
 </script>
