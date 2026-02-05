@@ -196,11 +196,17 @@
                 $("#metadata_id").val("")
                 $("#div_for_show_form").css("display","none")
             });
-/*
-            $('.tableHover').on('mouseenter', 'tbody tr', function(event) {
-                $(this).addClass('tableHover2').siblings().removeClass('tableHover2');
-            });
-*/
+
+            function updateSticky(stickyA,stickyB){
+                var a = document.querySelector('[stickyname="'+stickyA+'"]');
+                var b = document.querySelector('[stickyname="'+stickyB+'"]');
+
+                var ro = new ResizeObserver(() => {
+                    var alturaA = a.getBoundingClientRect().height;
+                    b.style.top = alturaA + 'px';
+                });
+                ro.observe(a);
+            }
         </script>
 
     </div>
