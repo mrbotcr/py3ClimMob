@@ -4,21 +4,29 @@
 {% endif %}
 
 {% macro recursiveFunction(JsonInfo ,repeat_index=0, requireLabel=True) %}
-    {% if JsonInfo["type"] in ["group", "survey"] %}
+{% set relevant = JsonInfo.get('bind', {}).get('relevant') %}
+        {% set data_relevant = JsonInfo.get('data_relevant') %}
+
+        {% if JsonInfo["type"] in ["group", "survey"] %}
 
         {% if JsonInfo["name"] not in ["meta"] %}
 
             {% if "label" in JsonInfo.keys() %}
-                <div>
+                <div style="position: sticky; left: 0;top: 0; z-index: 59; background-color: white; width: 103%">
                     <br>
                     <h3><b>{{ JsonInfo["label"][request.locale_name] }}</b></h3>
+                        {% if "hint" in JsonInfo.keys() %}
+                            <p>{{ JsonInfo["hint"][request.locale_name]}}</p>
+                        {% endif %}
                     <br>
                 </div>
             {% endif %}
 
-            <div class="{{ JsonInfo["type"] }} {{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}"
+            <div class="{{ JsonInfo["type"] }} {{ JsonInfo["type"] }}_{{ JsonInfo["name"] }} table-responsive"
                  name="{{ JsonInfo["name"] }}" {% if JsonInfo["type"] %}id="{{ JsonInfo["name"] }}"{% endif %}
-                 style="border: 2px solid {% if JsonInfo["type"] == "repeat" %}#1ab394{% else %}#e7eaec{% endif %}; padding: 20px; margin-bottom: 20px">
+                 style="border: 2px solid {% if JsonInfo["type"] == "repeat" %}#1ab394{% else %}#e7eaec{% endif %}; padding-left: 20px;padding-right: 20px; margin-bottom: 20px;  {% if  JsonInfo["type"] == "group"  %} max-height: 800px;  margin-top: 20px; {% endif %}"
+                     {% if relevant %}  data-depends-on="{{ relevant }}" {% endif %}
+                     {% if data_relevant %}  data-relevant="{{ data_relevant }}" {% endif %} >
 
                 {% if "children" in JsonInfo.keys() %}
                     {% for child in JsonInfo["children"] recursive %}
@@ -35,19 +43,25 @@
         {% if JsonInfo["name"] not in ["meta"] %}
 
             {% if "label" in JsonInfo.keys() %}
-                <div>
+                <div stickyname="sticky_{{ JsonInfo["name"] }}_A" style="position: sticky; left: 0;top: 0; z-index: 59; background-color: white; width: 103%" >
                     <br>
                     <h3><b>{{ JsonInfo["label"][request.locale_name] }}</b></h3>
+                        {% if "hint" in JsonInfo.keys() %}
+                            <p>{{ JsonInfo["hint"][request.locale_name]}}</p>
+                        {% endif %}
                     <br>
                 </div>
             {% endif %}
 
             <table class="table table-striped table-bordered {{ JsonInfo["type"] }} {{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}"
-                   name="{{ JsonInfo["name"] }}" style="table-layout: fixed;">
-                <tr>
+                   name="{{ JsonInfo["name"] }}" style="table-layout: fixed; will-change: transform; overflow-x: clip;">
+                <tr  stickyname="sticky_{{ JsonInfo["name"] }}_B" style="position: sticky; left: 0;; z-index: 99999 !important; " >
                     {% if "children" in JsonInfo.keys() %}
                         {% for child in JsonInfo["children"] recursive %}
-                            <th style="width:{{ 100/JsonInfo["children"]|length }}%; {% if child["show_interface"] =="no" %}display: none;{% endif %}">
+                            <th
+                                        {% if relevant %}  data-depends-on="{{ relevant }}" {% endif %}
+                                        {% if data_relevant %}  data-relevant="{{ data_relevant }}" {% endif %}
+                                        style="width:{% if child["size_on_table"] %}{{  child["size_on_table"] }}{% else %}{{ 200 }}{% endif %}px; {% if child["show_interface"] =="no" %}display: none;{% endif %};">
                                 {{ child["label"][request.locale_name] }}
                             </th>
                         {% endfor %}
@@ -56,8 +70,15 @@
                 <tr>
                     {% if "children" in JsonInfo.keys() %}
                         {% for child in JsonInfo["children"] recursive %}
-                            <td {% if child["show_interface"] =="no" %}style="display: none"{% endif %}>
-                                {{ recursiveFunction(child, repeat_index, False) }}
+                            <td {% if child["show_interface"] =="no" %}style="display: none"{% endif %}
+                                {% if relevant %}  data-depends-on="{{ relevant }}" {% endif %}
+                                        {% if data_relevant %}  data-relevant="{{ data_relevant }}" {% endif %}
+                                        {% if child["bind"] and "jr:requiredMsg" in child["bind"] %}
+                                            customMessage = "{{ child["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}"
+                                        {% endif %}
+                                >
+                                    {{ recursiveFunction(child, repeat_index, False) }}
+
                             </td>
                         {% endfor %}
                     {% endif %}
@@ -65,8 +86,13 @@
             </table>
 
             {% if not onlySee %}
+                <script>
+                    updateSticky("sticky_{{ JsonInfo["name"] }}_A", "sticky_{{ JsonInfo["name"] }}_B" )
+                </script>
+
                 <button type="button" class="btn btn-primary duplicate-repeat"
-                        onclick="duplicateRepeatBlock($(this),'{{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}')"
+                       {% if relevant %}  data-depends-on="{{ relevant }}" {% endif %}
+                        {% if data_relevant %}  data-relevant="{{ data_relevant }}" {% endif %} onclick="duplicateRepeatBlock($(this),'{{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}')"
                         {% if onlySee or ("allow_more" in JsonInfo.keys() and JsonInfo["allow_more"] == "no") %}style="display: none" {% endif %}>
                     <i class="fa fa-plus"></i> {{ _('Add other row') }}</button><br>
             {% endif %}
@@ -79,9 +105,11 @@
         {% if JsonInfo["type"] in ["text","select one","integer", "select all that apply", "date"] %}
 
             {% if requireLabel %}
-                <div class="form-group">
+                <div class="form-group"
+                            {% if relevant %}  data-depends-on="{{ relevant }}" {% endif %}
+                            {% if data_relevant %}  data-relevant="{{ data_relevant }}" {% endif %}>
 
-                    <div class="col-sm-12">
+                    <div class="col-sm-12" >
                         <h3>{{ JsonInfo["label"][request.locale_name] }}
                             {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"].keys() and JsonInfo["bind"]["required"] == "yes" %}{% else %}
                                 ({{ _("Optional") }}){% endif %}</h3>
@@ -183,14 +211,6 @@
     function showData(postData) {
         methodRecursiveToShowInformation(postData, $("#spaceForPutTheForm"))
     }
-
-    {#function searchIntoDictionary(name){#}
-    {#    dictionary = {{ dictionary }}#}
-    {#    for (const key in dictionary) {#}
-    {#        if (dictionary[key]["name"] === name)#}
-    {#            return dictionary[key]["type"]#}
-    {#    }    }#}
-
 
     function methodRecursiveToShowInformation(postData, parentElement) {
         if (typeof postData === "object" && postData !== null) {
@@ -431,6 +451,7 @@
             newRepeat.find('.chosen-select').each(function () {
                 $(this).select2({width: "100%"});
                 $(this).on('select2:select select2:unselect', function () {
+                    toggleConfirmationGroup(this);
                     toggleOtherField(this);
                 })
             });
@@ -549,15 +570,156 @@
 
     // toggles the other field
     $('select[data-dropdown-id]').on('select2:select select2:unselect', function () {
+        toggleConfirmationGroup(this);
         toggleOtherField(this);
     });
 
     // Check the load of the page
     setTimeout(function () {
         $('select[data-dropdown-id]').each(function () {
+            toggleConfirmationGroup(this);
             toggleOtherField(this);
+
+        });
+        $('[data-depends_on]').each(function () {
+            integerDependsIfOtherWasSet(this, $(this).data('depends_on'));
         });
     }, 200);
 
+    function integerDependsIfOtherWasSet(sourceField, targetFieldName){
+        const this_row = sourceField.closest('tr');
+        if (!this_row) return;
+        const targetField = this_row.querySelector(`[name="${targetFieldName}"]`);
+        if (!targetField) return;
+        if (sourceField.value && sourceField.value.trim() !== '') {
+            targetField.removeAttribute('required')
+        } else {
+            targetField.setAttribute('required', 'required');
+        }
+        document.addEventListener('change', function(e){
+
+    const td = e.target.closest('td');
+    if (td && td.classList.contains('is-invalid')) {
+        td.classList.remove('is-invalid');
+    }
+});
+    }
+
+
+    function resolveContainer(el) {
+        if (el.tagName === 'TR') return el;
+        if (el.tagName === 'TD' || el.tagName === 'TH') return el;
+
+        return el.closest('td, th, tr') || el;
+    }
+
+    function toggleConfirmationGroup(selectElement) {
+
+        const dropdownId = selectElement.dataset.dropdownId;
+        if (!dropdownId) {
+            return;
+        }
+        const masterFieldName = dropdownId.split('#')[1].split('*'[0]);
+
+        const selectedOptions = Array.from(selectElement.selectedOptions);
+        const selectedRelevants = selectedOptions
+            .map(opt => opt.dataset.relevant)
+            .filter(Boolean);
+
+        const dependentDivs = document.querySelectorAll(
+          `[data-depends-on="${masterFieldName}"]:not([div-name])`
+        );
+
+        dependentDivs.forEach((div, i) => {
+            const divRelevant = div.dataset.relevant;
+
+            let shouldShow;
+            if (selectedRelevants.length === 0) {
+                shouldShow = !divRelevant;
+            } else {
+                shouldShow = !divRelevant || selectedRelevants.includes(divRelevant);
+            }
+            if (shouldShow) {
+                div.style.display = '';
+                div.querySelectorAll('input, select, textarea').forEach(field => {
+                    field.required = true;
+                    if(field.tagName === 'SELECT'){
+                    div.querySelectorAll('select').forEach(select => {
+                        toggleOtherField(select);
+                    });
+                    }
+                });
+            } else {
+                div.style.display = 'none';
+
+                div.querySelectorAll('input, select, textarea').forEach(field => {
+                    field.required = false;
+                    field.value = '';
+
+                    if (field.tagName === 'SELECT') {
+                        field.dispatchEvent(
+                            new Event('change', { bubbles: true })
+                        );
+                    }
+                });
+            }
+        });
+    }
+
+document.addEventListener('input', function(e){
+        const td = e.target.closest('td');
+        if (td && td.classList.contains('is-invalid')) {
+            td.classList.remove('is-invalid');
+            const msg = td.querySelector('.td-error-msg');
+            if (msg) msg.remove();
+        }
+    });
+
+document.addEventListener('change', function(e){
+
+    const td = e.target.closest('td');
+    if (td && td.classList.contains('is-invalid')) {
+        td.classList.remove('is-invalid');
+    }
+});
+
+$(document).on('select2:select', 'select', function (e) {
+    const td = this.closest('td');
+    if (td) td.classList.remove('is-invalid');
+     td.classList.remove('is-invalid');
+    const msg = td.querySelector('.td-error-msg');
+    if (msg) msg.remove();
+});
+
+document.addEventListener('invalid', function(e){
+    e.preventDefault();
+    const target = e.target;
+    const td = target.closest('td');
+    if (td) {
+        td.classList.add('is-invalid');
+    }
+
+
+
+    const oldMsg = td.querySelector('.td-error-msg');
+    if (oldMsg) oldMsg.remove();
+    const msg = document.createElement('div');
+    msg.className = 'td-error-msg';
+
+    if($(td).attr("custommessage")) {
+        msg.textContent = $(td).attr("custommessage");
+    }else {
+        msg.textContent = target.validationMessage
+    }
+    td.appendChild(msg);
+
+}, true);
+
+document.addEventListener('submit', function(e){
+    const form = e.target;
+    if (!form.checkValidity()) {
+        e.preventDefault();
+    }
+})
 
 </script>

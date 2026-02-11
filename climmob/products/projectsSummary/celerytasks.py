@@ -445,7 +445,7 @@ def processTheProjectCoordinates(
 
             return averageLatitude, averageLongitude
 
-    return False, False
+    return None, None
 
 
 def getListOfProjects(dbsession):
@@ -864,7 +864,7 @@ def create_insert_for_analytics(project):
             project["project_id"],
             project["project_cod"],
             project["projectTitle"],
-            project["projectDesc"],
+            project["projectDesc"][0:590],
             project["project_pi"],
             project["project_piorganization"],
             project["project_piemail"],

@@ -791,3 +791,89 @@ def storeSubmission(userid, userEnum, request):
         return False, error
     # except:
     #     return False,500
+
+
+def review_multimedia_content(media_questions, _json, self):
+
+    ALLOWED = {
+        "image": {
+            "mime": ("image/jpeg", "image/png"),
+            "ext": (".jpg", ".jpeg", ".png"),
+            "folder": "images",
+        },
+        "audio": {
+            "mime": ("audio/mpeg", "audio/wav", "audio/ogg"),
+            "ext": (".mp3", ".wav", ".ogg"),
+            "folder": "audio",
+        },
+        "video": {
+            "mime": ("video/mp4", "video/quicktime"),
+            "ext": (".mp4", ".mov"),
+            "folder": "video",
+        },
+    }
+
+    for media_question in media_questions:
+        if media_question["datafield"] in _json.keys():
+            if _json[media_question["datafield"]] != "":
+                file_found = False
+                for file in self.request.POST.getall("media"):
+                    filename = file.filename.lower()
+                    mime = file.type
+                    ext = os.path.splitext(filename)[1]
+
+                    if _json[media_question["datafield"]] == filename:
+                        media_type = None
+                        for t, cfg in ALLOWED.items():
+                            if mime in cfg["mime"] and ext in cfg["ext"]:
+                                media_type = t
+                                break
+
+                        if not media_type:
+                            return (
+                                False,
+                                "ERROR: The file named: {} does not have a permitted type.".format(
+                                    filename
+                                ),
+                            )
+
+                        if media_type != media_question["type"]:
+                            return (
+                                False,
+                                "ERROR: The file named: {} in question: {} does not match the required file type: {}.".format(
+                                    filename,
+                                    media_question["datafield"],
+                                    media_question["type"],
+                                ),
+                            )
+
+                        file_found = True
+                        break
+
+                if not file_found:
+
+                    return (
+                        False,
+                        "ERROR: The file named: {} from question: {} was not sent.".format(
+                            _json[media_question["datafield"]],
+                            media_question["datafield"],
+                        ),
+                    )
+
+    for file in self.request.POST.getall("media"):
+        filename = file.filename.lower()
+        file_found = False
+        for media_question in media_questions:
+            if media_question["datafield"] in _json.keys():
+                if _json[media_question["datafield"]] == filename:
+                    file_found = True
+
+        if not file_found:
+            return (
+                False,
+                "ERROR: The file named: {} does not correspond to any file defined in the json.".format(
+                    filename
+                ),
+            )
+
+    return True, ""
