@@ -796,7 +796,9 @@
 
                                 {% endblock supportTicketLink %}
 
-                                {% include 'snippets/dashboard/publish_panel.jinja2' %}
+                                {% if activeProject.project_status == 3 %} {# Project finalized #}
+                                    {% include 'snippets/dashboard/publish_panel.jinja2' %}
+                                {% endif %}
 
                             </div>
                         </div>
