@@ -57,10 +57,33 @@
                 </div>
                 <div class="ibox-content">
                     <p>
-                        {{ _('By finalizing this project, you confirm that it has reached completion. This action will permanently lock all data entries, profile settings, and metadata, so no further edits will be allowed. Please review the project details carefully before proceeding.
-
-') }}
+                        {{ _('By finalizing this project, you confirm that it has reached completion. This action will permanently lock all data entries, profile settings, and metadata, so no further edits will be allowed. Please review the project details carefully before proceeding.') }}
                     </p>
+                    {% set total_ass_records = 0 %}
+                    {%  for assessment in progress["assessments"] %}
+                       {% if assessment["ass_status"] == 1 or assessment["ass_status"] == 2 %}
+                           {% set total_ass_records = total_ass_records + assessment["asstotal"] %}
+                       {% endif %}
+                    {% endfor %}
+                    {% if (total_ass_records > 5 or (project_info.project_registration_and_analysis == 1 and progress.regtotal >=5))
+                        and progress.metadata == False %}
+                        <div class="panel panel-warning">
+                            <div class="panel-heading">
+                                <i class="fa fa-warning">
+                                {{ _("Important:")}}
+                                    </i>
+                            </div>
+                            <div class="panel-body">
+                                <p>
+                                    {{ _("The Analysis module
+                                    requires the 'Trial documentation' step to be completed to generate results. If you finalize
+                                    while this step is pending, you will be unable to access the Analysis section due to these data
+                                    requirements.") }}
+                                </p>
+                            </div>
+                        </div>
+                    {% endif %}
+
                     <div class="row d-flex justify-content-center align-items-center">
                         <div class="col-lg-4">
                             <table class="table table-bordered table-striped">

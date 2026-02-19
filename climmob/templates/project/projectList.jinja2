@@ -87,6 +87,7 @@
         {% set createBoton = false %}
     {% endif %}
 
+
     <div class="row">
         <div class="col-lg-12">
 
@@ -129,13 +130,24 @@
                                         {% if createBoton == true %}
                                             <th style="text-align: center">   {{ _("Duplicate") }} </th>
                                         {% endif %}
-                                            <th style="text-align: center">   {{ _("Share") }} </th>
+                                        <th style="text-align: center">   {{ _("Share") }} </th>
+                                        <th style="text-align: center">{{ _("Finalized") }}</th>
 
                                     </tr>
 
                                 </thead>
                                 <tbody>
                                     {% for project in userProjects %}
+                                        {% set can_edit = true %}
+                                        {% if project.project_status == 3 %}
+                                            {% set can_edit = false %}
+                                        {% endif %}
+
+                                        {% set is_owner = false %}
+                                        {% if activeUser.login == project.owner.user_name %}
+                                            {% set is_owner = True %}
+                                        {% endif %}
+
                                         <tr onclick="window.location = '{{ request.route_url('dashboard', _query={'user':project["owner"].user_name, "project": project.project_cod}) }}';">
 {#                                            <td style="width: 165px" class="text-center">#}
 {#                                                <div class="i-checks" style="text-align: center" >#}
@@ -231,6 +243,22 @@
                                             <td style="text-align: center">
                                                 <a href="{{ request.route_url('shareProject',user=project.owner["user_name"],project=project.project_cod) }}"><i class="fa fa-share-square-o"></i></a>
                                             </td>
+                                            {% if is_owner %}
+                                                {% if can_edit %}
+
+                                                    <td style="text-align: center">
+                                                        <a href="{{ request.route_url('finishproject',user=project.owner["user_name"],project=project.project_cod) }}">
+                                                            <span class="badge badge-success"><i class="fa fa-send"></i></span>
+                                                        </a>
+                                                    </td>
+                                                {% else %}
+                                                    <td style="text-align: center">
+                                                        <span class="badge badge-primary"><i class="fa fa-check-square-o"></i></span>
+                                                    </td>
+                                                {% endif %}
+                                            {% else %}
+                                                <td style="text-align: center"><p>Not allowed</p></td>
+                                            {% endif %}
                                         </tr>
                                     {% endfor %}
 

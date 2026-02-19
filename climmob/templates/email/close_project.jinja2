@@ -44,12 +44,10 @@
             <p>{{ _('The project details are as follows:') }}</p>
             <br>
             <ul>{{ _('Project name') }}: <strong>{{ project_info["project_name"] }}</strong></ul>
-{#            <p>{{ _('Project Code') }}: <strong>{{ project_info["project_cod"] }}</strong></p>#}
-            <ul>{{ _('Project Principal investigation') }}: <strong>{{ project_info["project_pi"] }}</strong></ul>
+            <ul>{{ _('Project principal investigator') }}: <strong>{{ project_info["project_pi"] }}</strong></ul>
             <ul>{{ _('Owner') }}: <strong>{{ project_info["owner"]["user_name"] }}</strong></ul>
             <ul>{{ _('Country') }}: <strong>{{ project_info["project_cnty"] }}</strong></ul>
             <ul>{{ _('Crop name') }}: <strong>{{ project_info["project_curated_cropname"] }}</strong></ul>
-{#            <p>{{ _('Affiliation') }}: <strong>{{ project_info["project_affiliation"] }}</strong></p#}
             <ul>{{ _('Creation date') }}: <strong>{{ project_info["project_creationdate"] }}</strong></ul>
             <ul>{{ _('Progress') }}:
                 <strong>
@@ -81,6 +79,7 @@
                     {{ _("Finalized") }}
                 {% endif %}</strong></ul>
             <br>
+            <p style="margin-bottom: 20px;"><a href="{{ link }}">{{ _('Can you curate the project at this moment? Please click here') }}</a></p>
             <p style="margin-bottom: 15px;">{{ _('Thank you for collaborating in the 1000FARMS Network monitoring!') }}</p>
         {% endblock email_message %}
 

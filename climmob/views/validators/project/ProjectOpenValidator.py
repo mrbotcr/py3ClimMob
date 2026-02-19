@@ -32,7 +32,7 @@ class ProjectOpenValidator(BaseValidator):
                 self.view.request.method = "GET"
                 raise HTTPForbidden(
                     self._(
-                        "This project has been finalized and can no longer be modified. You do not have access to make changes."
+                        "This project has been finalized and is now in read-only mode. Modifications are no longer permitted to ensure the integrity of the final data."
                     )
                 )
         elif issubclass(self.view.__class__, apiView):
@@ -45,7 +45,7 @@ class ProjectOpenValidator(BaseValidator):
                 if project_status == ProjectStatus.FINALIZED.value:
                     raise HTTPForbidden(
                         self._(
-                            "This project has been finalized and can no longer be modified. You do not have access to make changes."
+                            "This project has been finalized and is now in read-only mode. Modifications are no longer permitted to ensure the integrity of the final data."
                         )
                     )
 

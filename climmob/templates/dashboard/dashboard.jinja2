@@ -311,7 +311,7 @@
                         <div class="ibox ">
                             <div class="ibox-title">
                                 <h5>
-                                    Project Finalized
+                                    {{ _("Project Finalized") }}
                                     <span class="badge badge-success"><i class="fa fa-check-square-o"></i></span>
 
                                 </h5>
@@ -325,7 +325,7 @@
                                 </div>
                                 </div>
                             <div class="ibox-content">
-                                <p>The project has been successfully finalized.</p>
+                                <p>{{ _("The project has been successfully finalized") }}.</p>
                             </div>
                         </div>
                         {% endif %}
@@ -1035,7 +1035,7 @@
                                 {% if hasActiveProject and can_edit and activeProject["access_type"] in [1] and activeUser.login == activeProject.owner.user_name %}
                                     <div class="ibox float-e-margins">
                                         <div class="ibox-title">
-                                            <h5>{{ _("Project finalization.") }}</h5>
+                                            <h5>{{ _("Project finalization") }}</h5>
                                             <div class="ibox-tools">
                                                 <a class="collapse-link">
                                                     <i class="fa fa-chevron-up"></i>
@@ -1045,7 +1045,7 @@
 
                                         <div class="ibox-content">
                                             <p>
-                                                {{ _("A project is considered finalized once it has achieved its objectives, all planned phases have been completed, and no further data entries, profile updates, or metadata changes are expected.") }}
+                                                {{ _("Finalizing a project is recommended once all objectives have been met and all planned phases are complete. Please ensure that no further data entries, profile updates, or metadata changes are required before proceeding.") }}
                                             </p>
                                             <div>
                                                 <button onclick="location.href='{{ request.route_url('finishproject', user = activeProject.owner.user_name, project= activeProject.project_cod) }}'"

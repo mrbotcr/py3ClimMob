@@ -54,6 +54,8 @@ from climmob.processes import (
     get_all_affiliations,
     update_project_status,
     getAllUserAdmin,
+    getProjectProgress,
+    setActiveProject,
 )
 from climmob.utility.email import (
     render_template,
@@ -968,9 +970,22 @@ class FinishProjectView(privateView):
     )
 
     def get(self):
+        request_activeUSer = self.request.user
+        request_activeProjectCod = self.request.project
+        activeProjectId = getTheProjectIdForOwner(
+            request_activeUSer, request_activeProjectCod, self.request
+        )
+        setActiveProject(self.user.login, activeProjectId, self.request)
         project_info = getActiveProject(self.user.login, self.request)
+        progress, pcompleted = getProjectProgress(
+            self.user.login,
+            project_info["project_cod"],
+            project_info["project_id"],
+            self.request,
+        )
         return {
             "project_info": project_info,
+            "progress": progress,
         }
 
     def post(self):
@@ -984,7 +999,9 @@ class FinishProjectView(privateView):
             self.send_email_notification(project_info)
             self.returnRawViewResult = True
             self.request.session.flash(
-                self._("The project has been successfully finalized. Thank you for your dedication!. Congratulations!!!")
+                self._(
+                    "The project has been successfully finalized. Thank you for your dedication! Congratulations!"
+                )
             )
             return HTTPFound(location=self.request.route_url("dashboard"))
         else:
@@ -1002,15 +1019,13 @@ class FinishProjectView(privateView):
             )
             return False
 
-        # admin_users = getAllUserAdmin(self.request)
-        recipients = [("Pablo Orozco", "porozco@mrbotcr.com"),
-                      # ("Marilyn Manrow ", "mmanrow@mrbotcr.com")
-                      ]
-        # for admin_user in admin_users:
-        #     recipients.append((admin_user["user_fullname"], admin_user["user_email"]))
-        # if not recipients:
-        #     log.warning("Email didn't send. No recipients found.")
-        #     return False
+        admin_users = getAllUserAdmin(self.request)
+        recipients = []
+        for admin_user in admin_users:
+            recipients.append((admin_user["user_fullname"], admin_user["user_email"]))
+        if not recipients:
+            log.warning("Email didn't send. No recipients found.")
+            return False
 
         subject = (
             "✅  Project " + str(project_info["project_cod"]) + " has been finalized"
@@ -1018,7 +1033,12 @@ class FinishProjectView(privateView):
         try:
             text = render_template(
                 "email/close_project.jinja2",
-                {"date": datetime.datetime.now(), "project_info": project_info, "_": _},
+                {
+                    "date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "project_info": project_info,
+                    "_": _,
+                    "link" : self.request.route_url("projectsSummaryRecent")
+                },
             )
         except Exception as e:
             log.error(f"Error rendering email template: {e}")
@@ -1031,7 +1051,6 @@ class FinishProjectView(privateView):
         except Exception as e:
             log.error(f"Error building email message: {e}")
             return False
-
         try:
             recipient_emails = [email for _, email in recipients]
             email_sender = EmailSender(self.request.registry.settings)
