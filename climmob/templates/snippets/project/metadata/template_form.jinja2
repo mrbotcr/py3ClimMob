@@ -657,11 +657,13 @@ function toggleConfirmationGroup(selectElement) {
         if (has_Other_selected) {
             if (divElement) divElement.style.display = "block";
             if (textareaElement) textareaElement.required = true;
+            textareaElement.checkValidity();
         } else {
             if (divElement) divElement.style.display = "none";
             if (textareaElement) {
                 textareaElement.required = false;
                 textareaElement.value = '';
+                textareaElement.setCustomValidity("");
             }
         }
     }
@@ -743,5 +745,26 @@ function toggleConfirmationGroup(selectElement) {
         }
     }
 
+document.addEventListener("input", function (e) {
+
+    if (e.target.matches(".ror-field")) {
+
+        const input = e.target;
+        const regex = /^https:\/\/ror\.org\/[0-9]{2}[a-z0-9]{7}$/;
+        const value = input.value.trim();
+
+        if (value !== "" && !regex.test(value)) {
+            input.setCustomValidity(
+                "Invalid format. Must be:https://ror.org/00xxxxxxx"
+            );
+        } else if(value === "https://ror.org/00xxxxxxx"){
+            input.setCustomValidity(
+                "This is an example, use a real direction")
+        } else {
+            input.setCustomValidity("");
+        }
+    }
+
+});
 
 </script>
