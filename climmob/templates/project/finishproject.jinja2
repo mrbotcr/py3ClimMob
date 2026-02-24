@@ -6,7 +6,6 @@
 
 {% block pageheading %}
     {% set _title= _("Confirm project finalization") %}
-    {% set _linkWiki="https://climmob.net/blog/wiki/cancel-form/" %}
     {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
 
@@ -22,6 +21,7 @@
 
 {% block topScripts %}
     {% jsresource request,'coreresources','sweet' %}
+    {% jsresource request,'coreresources','toastr' %}
 {% endblock topScripts %}
 
 {% block pagecontent %}
@@ -65,24 +65,6 @@
                            {% set total_ass_records = total_ass_records + assessment["asstotal"] %}
                        {% endif %}
                     {% endfor %}
-                    {% if (total_ass_records > 5 or (project_info.project_registration_and_analysis == 1 and progress.regtotal >=5))
-                        and progress.metadata == False %}
-                        <div class="panel panel-warning">
-                            <div class="panel-heading">
-                                <i class="fa fa-warning">
-                                {{ _("Important:")}}
-                                    </i>
-                            </div>
-                            <div class="panel-body">
-                                <p>
-                                    {{ _("The Analysis module
-                                    requires the 'Trial documentation' step to be completed to generate results. If you finalize
-                                    while this step is pending, you will be unable to access the Analysis section due to these data
-                                    requirements.") }}
-                                </p>
-                            </div>
-                        </div>
-                    {% endif %}
 
                     <div class="row d-flex justify-content-center align-items-center">
                         <div class="col-lg-4">
@@ -181,6 +163,29 @@
             </div>
         </div>
     {% endif %}
+
+<script>
+    {% if (total_ass_records > 5 or (project_info.project_registration_and_analysis == 1 and progress.regtotal >=5))
+                        and progress.metadata == False %}
+         var data_title="{{ _("Missing Analysis Requirements") }}"
+        var data_text="{{ _("Trial documentation' step is pending. Finalizing now will permanently disable the Analysis module for this project.") }}"
+            window.onload = function sweet (){
+                swal({ html: true,
+                    title: data_title,
+                    text:data_text,
+                    type: 'warning',
+                    showCancelButton: true,
+                    cancelButtonText: 'Continue without Analysis',
+                    confirmButtonText: 'Complete Trial Documentation',
+                    customClass: 'wide-swal'
+                }, function(isConfirm) {if (isConfirm) {
+                    const url = "{{ request.route_url(
+                        'Metadata', user=project_info['user_name'], project=project_info['project_cod']) }}";
+                        location.href = url;
+                }});return false;
+            }
+        {% endif %}
+</script>
 
 {% endblock pagecontent %}
 
