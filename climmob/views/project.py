@@ -619,6 +619,12 @@ class ModifyProjectView(privateView):
                                 ] = location_unit_of_analysis[
                                     "registration_and_analysis"
                                 ]
+                            else:
+                                data[
+                                    "project_registration_and_analysis"
+                                ] = cdata[
+                                "project_registration_and_analysis"
+                                ]
 
                             if "usingTemplate" in data.keys():
                                 if data["usingTemplate"] != "":
