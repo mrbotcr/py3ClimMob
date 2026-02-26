@@ -1,11 +1,11 @@
 {% set relevant = JsonInfo.get('bind', {}).get('relevant') %}
-{% set validate_rol = JsonInfo.get('validate_rol',{}) %}
+{% set validate_ror = JsonInfo.get('validate_ror',{}) %}
 {% if JsonInfo["type"] == "text" %}
 
-    <textarea class="form-control {% if validate_rol == 'yes' %}ror-field{% endif %}" rows="2" name-text-check="text_{{ JsonInfo["name"] }}" name="{{ JsonInfo["name"] }}" {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %} required="" {% endif %} {% if validate_rol != 'yes' %} oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')" {% if onlySee %} disabled {% endif %} {% if "allow_changes" in JsonInfo.keys() and JsonInfo["allow_changes"] == "no" %} disabled {% endif %}{% endif %}
+    <textarea class="form-control {% if validate_ror == 'yes' %}ror-field{% endif %}" rows="2" name-text-check="text_{{ JsonInfo["name"] }}" name="{{ JsonInfo["name"] }}" {% if "bind" in JsonInfo.keys() and "required" in JsonInfo["bind"] and JsonInfo["bind"]["required"] == "yes" %} required="" {% endif %} {% if validate_ror != 'yes' %} oninvalid="this.setCustomValidity('{% if "bind" in JsonInfo.keys() and "jr:requiredMsg" in JsonInfo["bind"].keys() %}{{ JsonInfo["bind"]["jr:requiredMsg"][request.locale_name].replace("'"," ") }}{% endif %}')" onchange="this.setCustomValidity('')" {% if onlySee %} disabled {% endif %} {% if "allow_changes" in JsonInfo.keys() and JsonInfo["allow_changes"] == "no" %} disabled {% endif %}{% endif %}
     {% if relevant %}  data-depends-on="{{ relevant }}" {% endif %}
     {% if data_relevant %}  data-relevant="{{ data_relevant }}" {% endif %}
-    {% if validate_rol == 'yes' %} required {% endif %}
+    {% if validate_ror == 'yes' %} required {% endif %}
     ></textarea>
 
 {% elif JsonInfo["type"] == "select one" %}
