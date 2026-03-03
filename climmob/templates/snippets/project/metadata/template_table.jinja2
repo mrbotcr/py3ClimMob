@@ -127,6 +127,8 @@
 
 
 <script>
+    var container = document.getElementById("spaceForPutTheForm");
+
     if (typeof window.counter === 'undefined') {
         window.counter = 1;
     }
@@ -436,10 +438,17 @@
                     const newNameDropdown = `${nameQuestion}*${counter}`; //
                     $(this).attr("data-dropdown-id", newNameDropdown);
                 }
-
                 if ($(this).is('textarea')) {
                     const currentNameText = $(this).attr('name-text-check');
-                    if (currentNameText && currentNameText.includes('_other')) {
+                    if (currentNameText && currentNameText.includes('_standard_other')) {
+                        let nameQuestion = currentNameText.split('_standard_other')[0];
+                        if (nameQuestion.includes('*')){
+                            nameQuestion = nameQuestion.split('*')[0];
+                        }
+                        const newNameText = `${nameQuestion}*${counter}_standard_other`;
+                        $(this).attr("name-text-check", newNameText);
+                    }
+                    else if (currentNameText && currentNameText.includes('_other')) {
                         let nameQuestion = currentNameText.split('_other')[0];
                         if (nameQuestion.includes('*')){
                             nameQuestion = nameQuestion.split('*')[0];
@@ -447,8 +456,15 @@
                         const newNameText = `${nameQuestion}*${counter}_other`;
                         $(this).attr("name-text-check", newNameText);
                     }
-                }
+                    else if (currentNameText && currentNameText.includes('_standard')) {
+                        let nameQuestion = currentNameText.split('_standard')[0];
+                        if (nameQuestion.includes('*')){
+                            nameQuestion = nameQuestion.split('*')[0];
+                        }
+                        const newNameText = `${nameQuestion}*${counter}_standard`;
+                        $(this).attr("name-text-check", newNameText);}
                 $(this).val(''); // Limpia valores
+                }
             });
 
             lastRow.after(newRepeat);
@@ -457,6 +473,7 @@
                 $(this).select2({width: "100%"});
                 $(this).on('select2:select select2:unselect', function () {
                     toggleConfirmationGroup(this);
+                    set_standard_field(this)
                     toggleOtherField(this);
                 })
             });
@@ -541,7 +558,7 @@
 
     }
 
-        function toggleOtherField(selectElement) {
+    function toggleOtherField(selectElement) {
 
         const dropdownId = selectElement.dataset.dropdownId;
         const selectedOptions = selectElement.selectedOptions;
@@ -551,6 +568,8 @@
         const divElement = document.querySelector(`[div-name="${divNameOther}"]`);
         const textareaElement = document.querySelector(`[name-text-check="${textAreaNameOther}"]`);
 
+        const textAreaNameStandardOther = 'text_' + nameQuestion + '_standard_other';
+        const textareaElementStandard = document.querySelector(`[name-text-check="${textAreaNameStandardOther}"]`);
         let has_Other_selected = false;
         for (let option of selectedOptions) {
             if (option.dataset.isOther === "yes"  ) {
@@ -559,10 +578,14 @@
             }
         }
         if (has_Other_selected) {
-            if (divElement) divElement.style.display = "block";
+
             if (textareaElement){
                 textareaElement.required = true;
                 textareaElement.style.display = "block";
+            }
+            if (textareaElementStandard) {
+                textareaElementStandard.required = !(textareaElementStandard.classList && textareaElementStandard.classList.contains("ror-field"));
+                textareaElementStandard.style.display = "block";
             }
         } else {
             if (divElement) divElement.style.display = "none";
@@ -571,6 +594,12 @@
                 textareaElement.value = '';
                 textareaElement.style.display = "none";
             }
+            if (textareaElementStandard) {
+                textareaElementStandard.required = false;
+                textareaElementStandard.value = '';
+                textareaElementStandard.setCustomValidity("");
+                textareaElementStandard.style.display = "none";
+            }
         }
     }
 
@@ -578,6 +607,8 @@
     $('select[data-dropdown-id]').on('select2:select select2:unselect', function () {
         toggleConfirmationGroup(this);
         toggleOtherField(this);
+        set_standard_field(this);
+        toggleStandardField(this);
     });
 
     // Check the load of the page
@@ -585,12 +616,61 @@
         $('select[data-dropdown-id]').each(function () {
             toggleConfirmationGroup(this);
             toggleOtherField(this);
+            toggleStandardField(this);
 
         });
         $('[data-depends_on]').each(function () {
             integerDependsIfOtherWasSet(this, $(this).data('depends_on'));
         });
     }, 200);
+
+    function set_standard_field(selectElement) {
+
+        const dropdownId = selectElement.dataset.dropdownId;
+        const nameQuestion = dropdownId.split('#')[1];
+        const textAreaNameStandard = 'text_' + nameQuestion + '_standard';
+        const textareaElement = document.querySelector(`[name-text-check="${textAreaNameStandard}"]`);
+        const selectedOption = selectElement.selectedOptions[0];
+
+        const standardName = selectedOption
+            ? selectedOption.getAttribute("standard_name")
+            : null;
+
+        if (textareaElement) {
+            textareaElement.value = standardName;
+        }
+    }
+    //standad only works with select one
+    function toggleStandardField(selectElement) {
+        const dropdownId = selectElement.dataset.dropdownId;
+        const selectedOption = selectElement.selectedOptions[0];
+        const nameQuestion = dropdownId.split('#')[1];
+        const textAreaNameStandard = 'text_' + nameQuestion + '_standard';
+        const textareaElement = document.querySelector(`[name-text-check="${textAreaNameStandard}"]`);
+
+        if (selectElement.selectedOptions.length === 0) {
+            if (textareaElement) textareaElement.required = false;
+            return;
+        }
+        const standardName = selectedOption
+            ? selectedOption.getAttribute("standard_name")
+            : null;
+
+        if (standardName) {
+
+            if (textareaElement) {
+                textareaElement.required = true;
+                textareaElement.style.display = "block";
+            }
+        } else {
+
+            if (textareaElement) {
+                textareaElement.required = false;
+                textareaElement.style.display = "none";
+
+            }
+        }
+    }
 
     function integerDependsIfOtherWasSet(sourceField, targetFieldName){
         const this_row = sourceField.closest('tr');
@@ -603,12 +683,11 @@
             targetField.setAttribute('required', 'required');
         }
         document.addEventListener('change', function(e){
-
-    const td = e.target.closest('td');
-    if (td && td.classList.contains('is-invalid')) {
-        td.classList.remove('is-invalid');
-    }
-});
+            const td = e.target.closest('td');
+            if (td && td.classList.contains('is-invalid')) {
+                td.classList.remove('is-invalid');
+            }
+        });
     }
 
 
@@ -672,24 +751,57 @@
         });
     }
 
-document.addEventListener('input', function(e){
-        const td = e.target.closest('td');
+container.addEventListener('input', function(e){
+
+    const td = e.target.closest('td');
         if (td && td.classList.contains('is-invalid')) {
             td.classList.remove('is-invalid');
             const msg = td.querySelector('.td-error-msg');
             if (msg) msg.remove();
         }
+
+    if (e.target.matches(".ror-field")) {
+            const input = e.target;
+            const regex = /^https:\/\/ror\.org\/[0-9]{2}[a-z0-9]{7}$/;
+            const value = (input.value || "").trim();
+
+            if((value.length)!==0) {
+                input.setAttribute('required', 'required');
+                if (value !== "" && !regex.test(value)) {
+                    input.setCustomValidity(
+                        "Invalid format. Must be:https://ror.org/00xxxxxxx"
+                    );
+                } else if (value === "https://ror.org/00xxxxxxx") {
+                    input.setCustomValidity(
+                        "This is an example, use a real direction")
+                } else {
+                    input.setCustomValidity("");
+                }
+            }
+        }
+
+    if (e.target.matches(".check-int")){
+        const input = e.target;
+        const value = (input.value || "").trim();
+        const digits = parseInt(input.dataset.digits, 10);
+        if (value.length !== digits) {
+            input.setCustomValidity(`Must have ${digits} digits`);
+        } else if (!/^\d+$/.test(value)) {
+        input.setCustomValidity("Must be numeric");
+        } else {
+            input.setCustomValidity("");
+        }
+    }
     });
 
-document.addEventListener('change', function(e){
-
+container.addEventListener('change', function(e){
     const td = e.target.closest('td');
     if (td && td.classList.contains('is-invalid')) {
         td.classList.remove('is-invalid');
     }
 });
 
-$(document).on('select2:select', 'select', function (e) {
+$(container).on('select2:select', 'select', function (e) {
     const td = this.closest('td');
     if (td) td.classList.remove('is-invalid');
      td.classList.remove('is-invalid');
@@ -697,16 +809,13 @@ $(document).on('select2:select', 'select', function (e) {
     if (msg) msg.remove();
 });
 
-document.addEventListener('invalid', function(e){
+container.addEventListener('invalid', function(e){
     e.preventDefault();
     const target = e.target;
     const td = target.closest('td');
     if (td) {
         td.classList.add('is-invalid');
     }
-
-
-
     const oldMsg = td.querySelector('.td-error-msg');
     if (oldMsg) oldMsg.remove();
     const msg = document.createElement('div');
@@ -718,10 +827,9 @@ document.addEventListener('invalid', function(e){
         msg.textContent = target.validationMessage
     }
     td.appendChild(msg);
-
 }, true);
 
-document.addEventListener('submit', function(e){
+container.addEventListener('submit', function(e){
     const form = e.target;
     if (!form.checkValidity()) {
         e.preventDefault();
