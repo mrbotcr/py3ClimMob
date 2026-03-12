@@ -2,45 +2,38 @@ import math
 import random
 
 
-def add_noise_to_gps_coordinates(lat, lon, radius):
+def add_noise_to_gps_coordinates(
+    lat: float, lon: float, min_radius: float, max_radius: float
+) -> tuple[str, str]:
     """
-    Add noise to a geographical coordinate by choosing a random point within a radius.
-
-    Parameters:
-    lat (float): Latitude of the original coordinate.
-    lon (float): Longitude of the original coordinate.
-    radius (float): Radius in meters within which to choose a random point.
-
-    Returns:
-    tuple: A tuple containing the new latitude and longitude.
+    Generate a random point between min_radius and max_radius (meters)
+    around the original coordinate.
     """
-    try:
-        # Earth radius in meters
-        earth_radius = 6378137
 
-        # Convert radius from meters to degrees latitude
-        radius_lat = radius / (earth_radius * (math.pi / 180))
+    earth_radius = 6378137  # meters
 
-        # Convert radius from meters to degrees longitude, adjusted by latitude
-        radius_lon = radius / (
-            earth_radius * (math.pi / 180) * math.cos(math.radians(lat))
-        )
+    # Convert lat/lon to radians
+    lat_rad = math.radians(lat)
+    lon_rad = math.radians(lon)
 
-        # Random angle in radians
-        angle = random.uniform(0, 2 * math.pi)
+    # Uniform distribution in area (important!)
+    distance = math.sqrt(random.uniform(min_radius**2, max_radius**2))
 
-        # Random distance factor for uniform distribution in a circle
-        factor = math.sqrt(random.uniform(0, 1))
+    # Angular distance
+    angular_distance = distance / earth_radius
 
-        # Calculate deltas
-        delta_lat = factor * radius_lat * math.cos(angle)
-        delta_lon = factor * radius_lon * math.sin(angle)
+    # Random bearing
+    bearing = random.uniform(0, 2 * math.pi)
 
-        # New latitude and longitude
-        new_lat = lat + delta_lat
-        new_lon = lon + delta_lon
+    # Destination point formula
+    new_lat_rad = math.asin(
+        math.sin(lat_rad) * math.cos(angular_distance)
+        + math.cos(lat_rad) * math.sin(angular_distance) * math.cos(bearing)
+    )
 
-        return str(new_lat), str(new_lon)
-    except Exception as e:
-        print(e)
-        return "Error", "Error"
+    new_lon_rad = lon_rad + math.atan2(
+        math.sin(bearing) * math.sin(angular_distance) * math.cos(lat_rad),
+        math.cos(angular_distance) - math.sin(lat_rad) * math.sin(new_lat_rad),
+    )
+
+    return str(math.degrees(new_lat_rad)), str(math.degrees(new_lon_rad))
