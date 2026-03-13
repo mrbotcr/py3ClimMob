@@ -158,6 +158,7 @@ def get_question_by_field_name(field_name, questions):
             rf"(char_{q.question_code}_(pos|neg))"
             rf"$"
         )
-        if re.fullmatch(pattern, field_name):
+        # Since the database is using utf8mb4_unicode_ci, it is necessary to ignore case
+        if re.fullmatch(pattern, field_name, flags=re.IGNORECASE):
             return q
     return None
