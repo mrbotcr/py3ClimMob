@@ -376,7 +376,15 @@ def getData(
             fields.append(select_field_builder.build())
 
     if anonymize:
-        to_remove_keys = ["instancename", "deviceimei", "cal_qst163", "clc_after"]
+        to_remove_keys = [
+            "instancename",
+            "deviceimei",
+            "cal_qst163",
+            "clc_after",
+            "_submitted_by",
+            "_xform_id_string",
+            "_clc_before",
+        ]
         tmp_fields = fields.copy()
         fields = []
         for field in tmp_fields:
