@@ -273,7 +273,7 @@ def getRegistryQuestions(
         " SELECT regsection.section_id,regsection.section_name,regsection.section_content,regsection.section_order,regsection.section_private,"
         " question.question_id,COALESCE(i18n_question.lang_code,question.question_lang) as language, COALESCE(i18n_question.question_desc,question.question_desc) as question_desc, COALESCE(i18n_question.question_name, question.question_name) as question_name,question.question_notes,question.question_dtype, "
         " COALESCE(i18n_question.question_posstm, question.question_posstm) as question_posstm, COALESCE(i18n_question.question_negstm ,question.question_negstm) as question_negstm, COALESCE(i18n_question.question_perfstmt, question.question_perfstmt) as question_perfstmt,IFNULL(registry.question_order,0) as question_order,"
-        " question.question_reqinreg,question.question_tied, question.question_notobserved, question.question_requiredvalue, question.question_quantitative, question.user_name, (select user_fullname from user where user_name=question.user_name) as user_fullname FROM regsection "
+        " question.question_reqinreg,question.question_tied, question.question_notobserved, question.question_requiredvalue, question.question_quantitative, question.user_name, question.question_sensitive, question.question_anonymity, question.question_code, (select user_fullname from user where user_name=question.user_name) as user_fullname FROM regsection "
         " LEFT JOIN registry ON  registry.section_project_id = regsection.project_id AND registry.section_id = regsection.section_id "
         " LEFT JOIN i18n_question ON registry.question_id = i18n_question.question_id  AND i18n_question.lang_code = '"
         + language
