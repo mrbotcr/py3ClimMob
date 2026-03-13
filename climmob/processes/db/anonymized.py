@@ -108,7 +108,7 @@ def anonymize_questions(request, form, form_id, project_id, user_owner, project_
             )
 
     if not to_anonymize:
-        return True
+        return True, ""
 
     for field in to_anonymize:
         anonymize_field_value(field, registry_id, request)
