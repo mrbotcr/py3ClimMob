@@ -311,3 +311,29 @@ def is_project_anonymized(schema):
 
     result = sql_execute(query).first()
     return result["count_matches"] == 1
+
+
+def get_anonymized_count_by_form_id_and_col_name(schema, form_id, col_name):
+    query = f"""
+    SELECT 
+        COUNT(*) AS count 
+    FROM 
+        {schema}.anonymized 
+    WHERE 
+        form_id='{form_id}' 
+        AND col_name='{col_name}'
+    """
+
+    result = sql_fetch_all(query)
+    return result[0]["count"]
+
+def get_anonymized_count(schema):
+    query = f"""
+    SELECT 
+        COUNT(*) AS count 
+    FROM 
+        {schema}.anonymized
+    """
+
+    result = sql_fetch_all(query)
+    return result[0]["count"]
