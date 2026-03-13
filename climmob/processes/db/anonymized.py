@@ -1,12 +1,19 @@
 import re
 from datetime import datetime, date
 
-from climmob.processes import get_project_cod_by_id, get_owner_user_name_by_project_id
-from climmob.processes.db.results import getJSONResult
 from climmob.models.repository import sql_execute
+from climmob.processes.db.project import (
+    get_project_cod_by_id,
+)
+from climmob.processes.db.userproject import (
+    get_owner_user_name_by_project_id,
+)
 from climmob.processes.db.anonymization_params import get_anonymization_params_as_dict
 from climmob.processes.db.question import (
     get_sensitive_questions_anonymity_by_project_id,
+)
+from climmob.processes.db.results import (
+    getJSONResult,
 )
 from climmob.utility import (
     get_question_by_field_name,
@@ -25,6 +32,57 @@ __all__ = [
 ]
 
 
+def add_to_anonymization_summary(
+    summary: dict, field_name: str, reg_id: str, ignored: bool
+):
+    if field_name not in summary:
+        summary[field_name] = {"anonymized": [], "ignored": []}
+    if ignored:
+        summary[field_name]["ignored"].append(reg_id)
+    else:
+        summary[field_name]["anonymized"].append(reg_id)
+
+
+def reduce_anonymization_summary(summary: dict):
+    for field_name, info in summary.items():
+        info["anonymized"] = summarize_int_list(info["anonymized"])
+        info["ignored"] = summarize_int_list(info["ignored"])
+
+
+def summarize_int_list(lst: list):
+    if not lst:
+        return None
+    lst = sorted(lst, key=lambda x: int(x))
+    summarized = []
+    start = lst[0]
+    end = lst[0]
+    for i in range(1, len(lst)):
+        if int(lst[i]) == int(end) + 1:
+            end = lst[i]
+        else:
+            if start == end:
+                summarized.append(str(start))
+            else:
+                summarized.append(f"{start}-{end}")
+            start = lst[i]
+            end = lst[i]
+    if start == end:
+        summarized.append(str(start))
+    else:
+        summarized.append(f"{start}-{end}")
+    return ", ".join(summarized)
+
+
+def show_anonymization_summary(summary: dict, project_code, project_id, user_owner):
+    print(
+        f"Anonymization summary for project {user_owner}/{project_code} ({project_id}):"
+    )
+    for field_name, info in summary.items():
+        print(
+            f'"{field_name}"\t\tanonymized: {info["anonymized"]}; \t\tignored: {info["ignored"]}'
+        )
+
+
 def anonymize_project(project_id, request):
     project_code = get_project_cod_by_id(project_id, request)
     user_owner = get_owner_user_name_by_project_id(project_id, request)
@@ -35,6 +93,8 @@ def anonymize_project(project_id, request):
     )["data"]
 
     schema = user_owner + "_" + project_code
+
+    summary = {}
 
     pattern = r"(REG|(ASS(.+?)))_(.*)"
     for entry in project_collected_data:
@@ -72,8 +132,15 @@ def anonymize_project(project_id, request):
             if not success:
                 if msg.startswith("Duplicate entry for package"):
                     # To ignore entries that are already anonymized
+                    add_to_anonymization_summary(
+                        summary, field["field_name"], reg_id, True
+                    )
                     continue
                 return False, msg
+            add_to_anonymization_summary(summary, field["field_name"], reg_id, False)
+
+    reduce_anonymization_summary(summary)
+    show_anonymization_summary(summary, project_code, project_id, user_owner)
 
     return True, ""
 
