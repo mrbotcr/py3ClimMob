@@ -14,7 +14,12 @@ from climmob.processes.db.question import (
     get_assessment_key_question,
 )
 
-__all__ = ["getJSONResult", "getCombinationsData"]
+__all__ = [
+    "getJSONResult",
+    "getCombinationsData",
+    "get_registry_submission_count",
+    "get_assessment_submission_count",
+]
 
 from climmob.utility import get_question_by_field_name, QuestionAnonymity
 
@@ -459,6 +464,29 @@ def getData(
                 dct[key] = str(value)
         result.append(dct)
     return result
+
+
+def get_registry_submission_count(user_owner, project_cod):
+    sql = (
+        "SELECT count(*)" + " FROM " + user_owner + "_" + project_cod + ".REG_geninfo "
+    )
+    data = sql_fetch_all(sql)
+    return data[0][0]
+
+
+def get_assessment_submission_count(user_owner, project_cod, assessment_code):
+    sql = (
+        "SELECT count(*)"
+        + " FROM "
+        + user_owner
+        + "_"
+        + project_cod
+        + ".ASS"
+        + assessment_code
+        + "_geninfo"
+    )
+    data = sql_fetch_all(sql)
+    return data[0][0]
 
 
 def getImportantFields(projectId, request):
