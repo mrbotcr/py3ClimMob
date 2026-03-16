@@ -2,12 +2,19 @@ import logging
 import re
 from datetime import datetime, date
 
+from climmob.processes import (
+    getRegistryQuestions,
+    getProjectAssessments,
+    getAssessmentQuestions,
+)
+
 log = logging.getLogger(__name__)
 
 from climmob.models.repository import sql_execute, sql_fetch_all
 
 from climmob.processes.db.project import (
     get_project_cod_by_id,
+    getProjectData,
 )
 from climmob.processes.db.userproject import (
     get_owner_user_name_by_project_id,
@@ -18,6 +25,8 @@ from climmob.processes.db.question import (
 )
 from climmob.processes.db.results import (
     getJSONResult,
+    get_registry_submission_count,
+    get_assessment_submission_count,
 )
 from climmob.utility import (
     get_question_by_field_name,
@@ -35,6 +44,7 @@ __all__ = [
     "is_project_anonymized",
     "get_anonymized_count_by_form_id_and_col_name",
     "get_anonymized_count",
+    "get_anonymization_percentage",
 ]
 
 
@@ -353,3 +363,92 @@ def get_anonymized_count(schema):
 
     result = sql_fetch_all(query)
     return result[0]["count"]
+
+
+def get_anonymization_percentage(project_id: str, request) -> float:
+    """
+    Checks against form structure to calculate percentage based on number
+    of fields that should be anonymized.
+    Also considers that some fields might be anonymized and others not,
+    so it calculates the percentage based on the number of fields that are
+    anonymized vs the total number of fields that should be anonymized.
+    """
+    project_code = get_project_cod_by_id(project_id, request)
+    user_owner = get_owner_user_name_by_project_id(project_id, request)
+
+    projectDetails = getProjectData(project_id, request)
+
+    if projectDetails["project_regstatus"] == 0:
+        print("Registry not started yet. Anonymization percentage is 0%.")
+        return 0
+
+    reg_count = get_registry_submission_count(user_owner, project_code)
+    print(f"Registry submission count: {reg_count}")
+
+    counts = {"-": reg_count}
+
+    expected_count = 0
+
+    projectLabels = [
+        projectDetails["project_label_a"],
+        projectDetails["project_label_b"],
+        projectDetails["project_label_c"],
+    ]
+    registry_questions = getRegistryQuestions(
+        user_owner,
+        project_id,
+        request,
+        projectLabels,
+        onlyShowTheBasicQuestions=True,
+    )
+    questions = []
+    for q in registry_questions:
+        if not q["question_sensitive"] or q["question_sensitive"] == 0:
+            continue
+        new = {
+            "form_id": "-",
+            "id": q["question_id"],  # just for debug
+            "anonymity": q["question_anonymity"],  # just for debug
+            "question_code": q["question_code"],
+        }
+        questions.append(new)
+        expected_count += reg_count
+
+    assessments = getProjectAssessments(project_id, request)
+
+    for assessment in assessments:
+        if assessment["Assessment"].ass_status == 0:
+            continue
+        code = assessment["Assessment"].ass_cod
+        count = get_assessment_submission_count(user_owner, project_code, code)
+        counts[code] = count
+        assessment_questions = getAssessmentQuestions(
+            user_owner,
+            project_id,
+            code,
+            request,
+            projectLabels,
+            onlyShowTheBasicQuestions=True,
+        )
+
+        for q in assessment_questions:
+            if not q["question_sensitive"] or q["question_sensitive"] == 0:
+                continue
+            new = {
+                "form_id": code,
+                "id": q["question_id"],  # just for debug
+                "anonymity": q["question_anonymity"],  # just for debug
+                "question_code": q["question_code"],
+            }
+            questions.append(new)
+            expected_count += count
+    for q in questions:
+        count = get_anonymized_count_by_form_id_and_col_name(
+            user_owner + "_" + project_code, q["form_id"], q["question_code"]
+        )
+        print(
+            f"anonymized count for {q['question_code']}: {count} of {counts[q['form_id']]} -> {count / counts[q['form_id']] * 100 if counts[q['form_id']] > 0 else 0}%"
+        )
+    found_count = get_anonymized_count(user_owner + "_" + project_code)
+    print(f"Total anonymized count: {found_count} of {expected_count}")
+    return found_count / expected_count * 100 if expected_count > 0 else 0
