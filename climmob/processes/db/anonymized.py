@@ -1,7 +1,11 @@
+import logging
 import re
 from datetime import datetime, date
 
-from climmob.models.repository import sql_execute
+log = logging.getLogger(__name__)
+
+from climmob.models.repository import sql_execute, sql_fetch_all
+
 from climmob.processes.db.project import (
     get_project_cod_by_id,
 )
@@ -29,6 +33,8 @@ __all__ = [
     "update_anonymized",
     "anonymize_project",
     "is_project_anonymized",
+    "get_anonymized_count_by_form_id_and_col_name",
+    "get_anonymized_count",
 ]
 
 
@@ -88,6 +94,8 @@ def anonymize_project(project_id, request):
     user_owner = get_owner_user_name_by_project_id(project_id, request)
     questions = get_sensitive_questions_anonymity_by_project_id(project_id, request)
 
+    matches = {q.question_code: False for q in questions}
+
     project_collected_data = getJSONResult(
         user_owner, project_id, project_code, request
     )["data"]
@@ -111,6 +119,7 @@ def anonymize_project(project_id, request):
                 question
                 and question.question_anonymity != QuestionAnonymity.REMOVE.value
             ):
+                matches[question.question_code] = True
                 if match.group(1) == "REG":
                     form_id = "-"
                 else:
@@ -138,6 +147,12 @@ def anonymize_project(project_id, request):
                     continue
                 return False, msg
             add_to_anonymization_summary(summary, field["field_name"], reg_id, False)
+
+    for q_code, matched in matches.items():
+        if not matched:
+            log.warning(
+                f"Question with code {q_code} was not matched with any field in the collected data."
+            )
 
     reduce_anonymization_summary(summary)
     show_anonymization_summary(summary, project_code, project_id, user_owner)
@@ -326,6 +341,7 @@ def get_anonymized_count_by_form_id_and_col_name(schema, form_id, col_name):
 
     result = sql_fetch_all(query)
     return result[0]["count"]
+
 
 def get_anonymized_count(schema):
     query = f"""
