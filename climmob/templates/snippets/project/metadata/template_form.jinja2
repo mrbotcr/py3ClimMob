@@ -404,15 +404,22 @@
 
                 if ($(this).is('textarea')) {
                     const currentNameText = $(this).attr('name-text-check');
-                    if (currentNameText && currentNameText.includes('_other')) {
+
+                    if (currentNameText && currentNameText.includes('_standard_other')) {
+                        let nameQuestion = currentNameText.split('_standard_other')[0];
+                        if (nameQuestion.includes('*')){
+                            nameQuestion = nameQuestion.split('*')[0];
+                        }
+                        const newNameText = `${nameQuestion}*${counter}_standard_other`;
+                        $(this).attr("name-text-check", newNameText);
+                    }else if (currentNameText && currentNameText.includes('_other')) {
                         let nameQuestion = currentNameText.split('_other')[0];
                         if (nameQuestion.includes('*')){
                             nameQuestion = nameQuestion.split('*')[0];
                         }
                         const newNameText = `${nameQuestion}*${counter}_other`;
                         $(this).attr("name-text-check", newNameText);
-                    }
-                    if (currentNameText && currentNameText.includes('_standard')) {
+                    }else if (currentNameText && currentNameText.includes('_standard')) {
                         let nameQuestion = currentNameText.split('_standard')[0];
                         if (nameQuestion.includes('*')){
                             nameQuestion = nameQuestion.split('*')[0];
@@ -427,15 +434,21 @@
             newRepeat.find('div').each(function () {
                 if ($(this).hasClass('form-group')) {
                     const divName = $(this).attr('div-name');
-                    if (divName && divName.includes('_other')) {
+                    if (divName && divName.includes('_standard_other')) {
+                        let nameQuestion = divName.split('_standard_other')[0];
+                        if (nameQuestion.includes('*')){
+                            nameQuestion = nameQuestion.split('*')[0];
+                        }
+                        const newDivName = `${nameQuestion}*${counter}_standard_other`;
+                        $(this).attr('div-name', newDivName);
+                    }else if (divName && divName.includes('_other')) {
                         let nameQuestion = divName.split('_other')[0];
                         if (nameQuestion.includes('*')){
                             nameQuestion = nameQuestion.split('*')[0];
                         }
                         const newDivName = `${nameQuestion}*${counter}_other`;
                         $(this).attr('div-name', newDivName);
-                    }
-                    if (divName && divName.includes('_standard')) {
+                    }else if (divName && divName.includes('_standard')) {
                         let nameQuestion = divName.split('_standard')[0];
                         if (nameQuestion.includes('*')){
                             nameQuestion = nameQuestion.split('*')[0];
@@ -454,7 +467,7 @@
 
                     toggleConfirmationGroup(this);
                     toggleOtherField(this);
-                    charge_role_info(this)
+                    set_standard_field(this)
                     toggleStandardField(this);
 
                 });
@@ -628,9 +641,6 @@ function toggleConfirmationGroup(selectElement) {
     });
 }
 
-
-
-
     function toggleOtherField(selectElement) {
 
         const dropdownId = selectElement.dataset.dropdownId;
@@ -641,9 +651,16 @@ function toggleConfirmationGroup(selectElement) {
         const divElement = document.querySelector(`[div-name="${divNameOther}"]`);
         const textareaElement = document.querySelector(`[name-text-check="${textAreaNameOther}"]`);
 
+        const divNameStandardOther = 'div_' + nameQuestion + '_standard_other';
+        const textAreaNameStandardOther = 'text_' + nameQuestion + '_standard_other';
+        const divElementStandard = document.querySelector(`[div-name="${divNameStandardOther}"]`);
+        const textareaElementStandard = document.querySelector(`[name-text-check="${textAreaNameStandardOther}"]`);
+
         if (selectElement.selectedOptions.length === 0) {
             if (divElement) divElement.style.display = "none";
             if (textareaElement) textareaElement.required = false;
+            if (divElementStandard) divElementStandard.style.display = "none";
+            if (textareaElementStandard) textareaElementStandard.required = false;
             return;
         }
 
@@ -656,12 +673,26 @@ function toggleConfirmationGroup(selectElement) {
         }
         if (has_Other_selected) {
             if (divElement) divElement.style.display = "block";
-            if (textareaElement) textareaElement.required = true;
+            if (textareaElement) {
+                textareaElement.required = true;
+            }
+            if (divElementStandard) divElementStandard.style.display = "block";
+            if (textareaElementStandard){
+                textareaElementStandard.required = !(textareaElementStandard.classList && textareaElementStandard.classList.contains("ror-field"));
+            }
+            textareaElement.checkValidity();
         } else {
             if (divElement) divElement.style.display = "none";
             if (textareaElement) {
                 textareaElement.required = false;
                 textareaElement.value = '';
+                textareaElement.setCustomValidity("");
+            }
+            if (divElementStandard) divElementStandard.style.display = "none";
+            if (textareaElementStandard) {
+                textareaElementStandard.required = false;
+                textareaElementStandard.value = '';
+                textareaElementStandard.setCustomValidity("");
             }
         }
     }
@@ -670,7 +701,7 @@ function toggleConfirmationGroup(selectElement) {
     $('select[data-dropdown-id]').on('select2:select select2:unselect', function () {
         toggleConfirmationGroup(this);
         toggleOtherField(this);
-        charge_role_info(this);
+        set_standard_field(this);
         toggleStandardField(this);
     });
 
@@ -684,19 +715,14 @@ function toggleConfirmationGroup(selectElement) {
     }, 200);
 
 
-    function charge_role_info(selectElement) {
-
+    function set_standard_field(selectElement) {
         const dropdownId = selectElement.dataset.dropdownId;
         const nameQuestion = dropdownId.split('#')[1];
-        const divNameStandard = 'div_' + nameQuestion + '_standard';
         const textAreaNameStandard = 'text_' + nameQuestion + '_standard';
-        const divElement = document.querySelector(`[div-name="${divNameStandard}"]`);
         const textareaElement = document.querySelector(`[name-text-check="${textAreaNameStandard}"]`);
         const selectedOption = selectElement.selectedOptions[0];
-
         const standardName = selectedOption.getAttribute("standard_name");
-
-        if (standardName) {
+        if (textareaElement) {
             textareaElement.value = standardName;
         }
     }
@@ -705,32 +731,25 @@ function toggleConfirmationGroup(selectElement) {
         const dropdownId = selectElement.dataset.dropdownId;
         const selectedOption = selectElement.selectedOptions[0];
         const nameQuestion = dropdownId.split('#')[1];
-        const divNameStandard = 'div_' + nameQuestion + '_standard';
         const textAreaNameStandard = 'text_' + nameQuestion + '_standard';
-        const divElement = document.querySelector(`[div-name="${divNameStandard}"]`);
         const textareaElement = document.querySelector(`[name-text-check="${textAreaNameStandard}"]`);
 
         if (selectElement.selectedOptions.length === 0) {
-            if (divElement) divElement.style.display = "none";
             if (textareaElement) textareaElement.required = false;
             return;
         }
-
-        let has_info_standard_selected = false;
-        if (selectedOption.dataset.haveValue === "yes") {
-            has_info_standard_selected = true
-        }
-
-        if (has_info_standard_selected) {
-            if (divElement) divElement.style.display = "block";
-            if (textareaElement) textareaElement.required = true;
+        const standardName = selectedOption
+            ? selectedOption.getAttribute("standard_name")
+            : null;
+        if (standardName) {
+            if (textareaElement){
+                textareaElement.required = true;
+            }
         } else {
-            if (divElement) divElement.style.display = "none";
             if (textareaElement) {
                 textareaElement.required = false;
             }
         }
-
     }
 
     function integerDependsIfOtherWasSet(sourceField, targetFieldName){
@@ -743,5 +762,28 @@ function toggleConfirmationGroup(selectElement) {
         }
     }
 
+    document.addEventListener("input", function (e) {
+
+        if (e.target.matches(".ror-field")) {
+
+            const input = e.target;
+            const regex = /^https:\/\/ror\.org\/[0-9]{2}[a-z0-9]{7}$/;
+            const value = (input.value || "").trim();
+
+            if((value.length)!==0) {
+                input.setAttribute('required', 'required');
+                if (value !== "" && !regex.test(value)) {
+                    input.setCustomValidity(
+                        "Invalid format. Must be:https://ror.org/00xxxxxxx"
+                    );
+                } else if (value === "https://ror.org/00xxxxxxx") {
+                    input.setCustomValidity(
+                        "This is an example, use a real direction")
+                } else {
+                    input.setCustomValidity("");
+                }
+            }
+        }
+    });
 
 </script>
