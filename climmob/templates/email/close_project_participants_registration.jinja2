@@ -26,48 +26,36 @@
         }
     </style>
 </head>
-<body>
-<div class="email-container">
+<body><div class="email-container">
     {% block email_body %}
         {% block email_hello %}
-            <p style="margin-bottom: 15px;"><strong>{{ _('Dear 1000FARMS Administrator') }},</strong></p>
+            <p style="margin-bottom: 15px;"><strong>{{ _('Dear user') }},</strong></p>
         {% endblock email_hello %}
 
         {% block email_message %}
             <p style="margin-bottom: 15px;">
-                {{ _('Please be advised that Project ') }}
-                <strong>{{ project_info["project_cod"] }}</strong> {{ _('was officially finalized today, ') }} {{ date }}.
+                {{ _('We would like to inform you that the project ') }}
+                <strong>{{ project_info["project_cod"] }} - {{ project_info["project_name"] }}</strong>
+                {{ _('has been officially finalized ') }}.
             </p>
             <p style="margin-bottom: 15px;">
-                {{ _('From this point forward, all project-related tasks, data entries, and activities are permanently locked.') }}
+                {{ _('As part of the project lifecycle in ClimMob, once it is finalized, all related activities are
+                closed and the project becomes locked for further modifications') }}.
             </p>
-            <p>{{ _('The project details are as follows:') }}</p>
+            <p>
+            {{ _("This means that no additional data entries, edits, or updates can be made") }}.
+            </p>
+            <p>{{ _('You may still access the project to review its information and results according to the access
+            permissions previously granted by the project owner') }}.</p>
+            <p>
+            {{ _("If applicable, and provided the project meets the minimum requirements, you will also be able to
+            generate and access an analysis report from the platform.") }}
+            </p>
+            <p><strong>Project details:</strong></p>
             <br>
             <ul>{{ _('Project name') }}: <strong>{{ project_info["project_name"] }}</strong></ul>
             <ul>{{ _('Project principal investigator') }}: <strong>{{ project_info["project_pi"] }}</strong></ul>
-            <ul>{{ _('Owner') }}: <strong>{{ project_info["owner"]["user_name"] }}</strong></ul>
             <ul>{{ _('Country') }}: <strong>{{ project_info["project_cnty"] }}</strong></ul>
-            <ul>{{ _('Crop name') }}: <strong>{{ project_info["project_curated_cropname"] }}</strong></ul>
-            <ul>{{ _('Creation date') }}: <strong>{{ project_info["project_creationdate"] }}</strong></ul>
-            <ul>{{ _('Progress') }}:
-                <strong>
-                    {% if project_info.project_regstatus == 0 %}
-                        {{ _("Registration not yet started") }}
-                    {% else %}
-                        {% if project_info.project_regstatus == 1 %}
-                            {{ _("Registration ongoing") }}
-                        {% else %}
-                            {% if project_info.project_regstatus == 2 %}
-                                {% if project_info.project_assstatus == 0 %}
-                                    {{ _("Registration closed") }}
-                                {% else %}
-                                    {{ _("Trial data collection / Analysis ongoing") }}
-                                {% endif %}
-                            {% endif %}
-                        {% endif %}
-                    {% endif %}
-                </strong>
-            </ul>
             <ul>{{ _('Status') }}: <strong>
                 {% if project_info["project_status"] == 0 %}
                     {{ _("Undefined") }}
@@ -79,8 +67,8 @@
                     {{ _("Finalized") }}
                 {% endif %}</strong></ul>
             <br>
-            <p style="margin-bottom: 20px;">{{ _('Would you like to curate the project at this moment?') }} <a href="{{ link }}">{{ _('Please click here') }}</a></p>
-            <p style="margin-bottom: 15px;">{{ _('Thank you for collaborating in the 1000FARMS Network monitoring!') }}</p>
+            <p>{{ _("If you have questions regarding the project or its outcomes, please contact the project owner or the principal investigator.") }}</p>
+            <p style="margin-bottom: 15px;">{{ _('Thank you for your participation and collaboration.') }}.</p>
         {% endblock email_message %}
 
         {% block email_goodbye %}
@@ -92,3 +80,5 @@
 </div>
 </body>
 </html>
+
+

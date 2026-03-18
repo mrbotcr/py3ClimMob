@@ -56,6 +56,7 @@ from climmob.processes import (
     getAllUserAdmin,
     getProjectProgress,
     setActiveProject,
+    get_collaborators_in_project,
 )
 from climmob.utility.email import (
     render_template,
@@ -620,10 +621,8 @@ class ModifyProjectView(privateView):
                                     "registration_and_analysis"
                                 ]
                             else:
-                                data[
+                                data["project_registration_and_analysis"] = cdata[
                                     "project_registration_and_analysis"
-                                ] = cdata[
-                                "project_registration_and_analysis"
                                 ]
 
                             if "usingTemplate" in data.keys():
@@ -984,14 +983,21 @@ class FinishProjectView(privateView):
         setActiveProject(self.user.login, activeProjectId, self.request)
         project_info = getActiveProject(self.user.login, self.request)
         progress, pcompleted = getProjectProgress(
-            self.user.login,
+            request_activeUSer,
             project_info["project_cod"],
             project_info["project_id"],
             self.request,
         )
+        total_ass_records = 0
+        for assessment in progress["assessments"]:
+            if assessment["ass_status"] == 1 or assessment["ass_status"] == 2:
+                total_ass_records = total_ass_records + assessment["asstotal"]
+
         return {
             "project_info": project_info,
             "progress": progress,
+            "total_ass_records": total_ass_records,
+
         }
 
     def post(self):
@@ -1003,6 +1009,7 @@ class FinishProjectView(privateView):
 
         if success:
             self.send_email_notification(project_info)
+            self.send_collaborators_email_notification(project_info)
             self.returnRawViewResult = True
             self.request.session.flash(
                 self._(
@@ -1043,7 +1050,56 @@ class FinishProjectView(privateView):
                     "date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     "project_info": project_info,
                     "_": _,
-                    "link" : self.request.route_url("projectsSummaryRecent")
+                    "link": self.request.route_url("projectsSummaryRecent"),
+                    "logo": self.request.url_for_static("landing/climmob2.png"),
+                },
+            )
+        except Exception as e:
+            log.error(f"Error rendering email template: {e}")
+            return False
+
+        try:
+            msg = build_email_message_multiple_recipients(
+                text, subject, recipients, mail_from
+            )
+        except Exception as e:
+            log.error(f"Error building email message: {e}")
+            return False
+        try:
+            recipient_emails = [email for _, email in recipients]
+            email_sender = EmailSender(self.request.registry.settings)
+            email_sender.send_email(recipient_emails, msg)
+            return True
+        except Exception as e:
+            log.error(f"Error sending email: {e}")
+            return False
+
+    def send_collaborators_email_notification(self, project_info):
+        _ = self.request.translate
+        mail_from = self.request.registry.settings.get("email.from", None)
+        if mail_from is None:
+            log.error(
+                "ClimMob has no email settings in place. Email service is disabled."
+            )
+            return False
+        related_collaborators = get_collaborators_in_project(self.request, project_info["project_id"] )
+        recipients = [("Pablo O.", "porozco@mrbotcr.com")]
+        for collaborator in related_collaborators:
+            recipients.append((collaborator["user_fullname"], collaborator["user_email"]))
+        if not recipients:
+            log.warning("Email didn't send. No recipients found.")
+            return False
+
+        subject = (
+                "Project " + str(project_info["project_cod"]) + " has been finalized"
+        )
+        try:
+            text = render_template(
+                "email/close_project_participants_registration.jinja2",
+                {
+                    "project_info": project_info,
+                    "_": _,
+                    "logo": self.request.url_for_static('landing/climmob2.png')
                 },
             )
         except Exception as e:

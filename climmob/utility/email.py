@@ -47,6 +47,7 @@ def build_email_message_multiple_recipients(body, subject, recipients, mail_from
 
     return msg
 
+
 class EmailSender:
     def __init__(self, settings):
         self.smtp_server = settings.get("email.server", "localhost")

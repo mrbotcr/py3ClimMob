@@ -41,13 +41,6 @@ class CleanErrorLogsView(privateView):
         )
         formId = self.request.matchdict["formid"]
         proData = getProjectData(activeProjectId, self.request)
-        # this stops also the get
-        if proData["project_status"] == ProjectStatus.FINALIZED.value:
-            raise HTTPForbidden(
-                self._(
-                    "This project has been finalized and is now in read-only mode. Modifications are no longer permitted to ensure the integrity of the final data."
-                )
-            )
         try:
             codeId = self.request.matchdict["codeid"]
 
@@ -84,6 +77,15 @@ class CleanErrorLogsView(privateView):
 
                         # POST
                         if self.request.method == "POST":
+                            if (
+                                proData["project_status"]
+                                == ProjectStatus.FINALIZED.value
+                            ):
+                                raise HTTPForbidden(
+                                    self._(
+                                        "This project has been finalized and is now in read-only mode. Modifications are no longer permitted to ensure the integrity of the final data."
+                                    )
+                                )
                             dataworking = self.getPostDict()
                             if "submit" in dataworking.keys():
                                 if formId == "registry":

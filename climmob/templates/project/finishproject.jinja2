@@ -14,7 +14,16 @@
     <style>
     .wide-swal {
         width: 800px !important;
-}
+    }
+    .sweet-alert button.confirm {
+        background-color: #1ab394 !important;
+    }
+    .sweet-alert button.cancel {
+        border : 1px solid #1ab394 !important;
+        border-color: #1AB394 !important;
+        background-color: transparent;
+        color: #1ab394
+    }
     </style>
 {% endblock css %}
 
@@ -49,25 +58,15 @@
 {% endset %}
 
     {% if can_edit %}
-        <div class="row">
+        <div class="row col-lg-4">
             <div class="ibox">
                 <div class="ibox-title">
-                    <h5> {{ _('Confirmation details') }} </h5> <span
-                        class="label label-warning">{{ _('Warning') }}</span>
+                    <h5> {{ _('Confirmation details') }} </h5>
+                    <span class="label label-warning">{{ _('Warning') }}</span>
                 </div>
                 <div class="ibox-content">
-                    <p>
-                        {{ _('By finalizing this project, you confirm that it has reached completion. This action will permanently lock all data entries, profile settings, and metadata, so no further edits will be allowed. Please review the project details carefully before proceeding.') }}
-                    </p>
-                    {% set total_ass_records = 0 %}
-                    {%  for assessment in progress["assessments"] %}
-                       {% if assessment["ass_status"] == 1 or assessment["ass_status"] == 2 %}
-                           {% set total_ass_records = total_ass_records + assessment["asstotal"] %}
-                       {% endif %}
-                    {% endfor %}
-
                     <div class="row d-flex justify-content-center align-items-center">
-                        <div class="col-lg-4">
+                        <div class="col-lg">
                             <table class="table table-bordered table-striped">
                                 <thead>
                                 <tr>
@@ -126,22 +125,19 @@
                     <p>
                         {{ _('If you are sure about it please, press the button.') }}
                     </p>
-                    <a class="btn btn-primary btn-rounded btn-outline btn-block"
-                       data-title="{{ _('Please confirm you want to finalize the project:') }}<br><i>{{ project_info['project_name'] }}</i> <br> {{ _('Progress:') }} <i> {{ progress_status }} </i>"
+                    <a class="btn btn-primary btn-rounded btn-block"
+                       data-title="{{ _('Do you want to finalize the project') }}?<br><i>{{ project_info['project_name'] }}</i>"
                        onclick="swal({ html: true,
                        title: this.getAttribute('data-title'),
-                       type: 'warning',
                        showCancelButton: true,
                        cancelButtonText: 'Cancel',
                        customClass: 'wide-swal'
                        }, function(isConfirm) {if (isConfirm) {document.getElementById('finishForm').submit();}});return false;">
                         <i class="fa fa-check-square-o"></i>
-                        {{ _('Confirm finalization of this project') }}
+                        {{ _('Confirm project finalization') }}
                     </a>
                     <form id="finishForm" method="POST" action="{{ request.url }}">
-
                         <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
-
                     </form>
                 </div>
             </div>
@@ -152,8 +148,8 @@
         <div class="row">
             <div class="ibox">
                 <div class="ibox-title">
-                    <h5> {{ _('Thanks for confirm the finish of your project') }} </h5> <span
-                        class="label label-success">{{ _('Success') }}</span>
+                    <h5>{{ _('Thanks for confirm the finish of your project') }}</h5>
+                    <span class="label label-success">{{ _('Success') }}</span>
                 </div>
                 <div class="ibox-content">
                     <p>
@@ -163,11 +159,13 @@
             </div>
         </div>
     {% endif %}
-
+{{ total_ass_records }}
+{{ project_info.project_registration_and_analysis }}
+{{ progress.regtotal }}
 <script>
     {% if (total_ass_records > 5 or (project_info.project_registration_and_analysis == 1 and progress.regtotal >=5))
                         and progress.metadata == False %}
-         var data_title="{{ _("Missing trial analysis") }}"
+        var data_title="{{ _("Missing trial documentation") }}"
         var data_text="{{ _("Trial documentation' step is pending. Finalizing now will permanently disable the Analysis module for this project.") }}"
             window.onload = function sweet (){
                 swal({ html: true,

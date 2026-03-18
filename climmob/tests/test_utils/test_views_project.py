@@ -1614,6 +1614,9 @@ class TestFinishProjectView(ViewBaseTest):
         super().setUp()
         self.view.context.active_project_id = 1
 
+        self.view.request.user = "test_user"
+        self.view.request.project = "PRJ001"
+
         self.view.request.registry.settings = {"email.from": "email_send@test.com"}
         self.view.project_info = {
             "project_cod": MagicMock(name="fake_code"),
@@ -1666,7 +1669,10 @@ class TestFinishProjectView(ViewBaseTest):
         self.mock_text.return_value = "rendered email body"
         self.mock_datetime.now.strftime.return_value = fake_now
         self.mock_msg.return_value = "some text to add to the email body"
-        self.mock_progress.return_value = {"data_progress": "result_data"}, True
+        self.mock_progress.return_value = {
+            "data_progress": "result_data",
+            "assessments": [{"ass_status": 1, "asstotal": 1}],
+        }, True
 
         self.view.request.matchdict = {"project": "PRJ001"}
         self.mock_get_project_id.return_value = (MagicMock(name="fake_id"),)
@@ -1686,7 +1692,7 @@ class TestFinishProjectView(ViewBaseTest):
     def tearDown(self):
         if self.mock_get_project_id.called:
             self.mock_get_project_id.assert_called_once_with(
-                self.view.user.login, "PRJ001", self.view.request
+                self.view.request.user, "PRJ001", self.view.request
             )
 
         if self.mock_set_active_project.called:
@@ -1713,6 +1719,8 @@ class TestFinishProjectView(ViewBaseTest):
                     "date": self.mock_datetime.now.return_value.strftime.return_value,
                     "project_info": self.view.project_info,
                     "_": self.view.request.translate,
+                    "link": self.view.request.route_url("projectsSummaryRecent"),
+                    "logo": self.view.request.url_for_static("landing/climmob2.png"),
                 },
             )
         if self.mock_msg.called:
@@ -1739,7 +1747,11 @@ class TestFinishProjectView(ViewBaseTest):
             response,
             {
                 "project_info": self.mock_project_info.return_value,
-                "progress": {"data_progress": "result_data"},
+                "progress": {
+                    "data_progress": "result_data",
+                    "assessments": [{"ass_status": 1, "asstotal": 1}],
+                },
+                "total_ass_records": 1,
             },
         )
 
