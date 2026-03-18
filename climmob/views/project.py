@@ -56,6 +56,7 @@ from climmob.processes import (
 from climmob.products.jsonResults.jsonresults import create_json_results
 from climmob.views.classes import privateView
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
+from climmob.views.validators.project.IsProjectOwnerValidator import IsProjectOwnerValidator
 
 
 class GetTemplatesByTypeOfProjectView(privateView):
@@ -943,7 +944,7 @@ class GetObjectivesByLocationAndUnitOfAnalysisView(privateView):
 
 
 class PublishProjectView(privateView):
-    validators = (ProjectExistsValidator,)
+    validators = (ProjectExistsValidator, IsProjectOwnerValidator)
 
     def get(self):
         self.returnRawViewResult = False
