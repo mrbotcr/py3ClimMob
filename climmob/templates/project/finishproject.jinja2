@@ -127,8 +127,13 @@
                     </p>
                     <a class="btn btn-primary btn-rounded btn-block"
                        data-title="{{ _('Do you want to finalize the project') }}?<br><i>{{ project_info['project_name'] }}</i>"
+                       data-text="{{ _("Trial documentation' step is pending. Finalizing now will permanently disable the Analysis module for this project.") }}"
+                       data-icon="{% if (total_ass_records > 5 or (project_info.project_registration_and_analysis == 1 and progress.regtotal >=5))
+                        and progress.metadata == False %}Warning{% endif %} "
                        onclick="swal({ html: true,
                        title: this.getAttribute('data-title'),
+                       text: this.getAttribute('data-text'),
+                       type: this.getAttribute('data-icon'),
                        showCancelButton: true,
                        cancelButtonText: 'Cancel',
                        customClass: 'wide-swal'
@@ -159,33 +164,6 @@
             </div>
         </div>
     {% endif %}
-{{ total_ass_records }}
-{{ project_info.project_registration_and_analysis }}
-{{ progress.regtotal }}
-<script>
-    {% if (total_ass_records > 5 or (project_info.project_registration_and_analysis == 1 and progress.regtotal >=5))
-                        and progress.metadata == False %}
-        var data_title="{{ _("Missing trial documentation") }}"
-        var data_text="{{ _("Trial documentation' step is pending. Finalizing now will permanently disable the Analysis module for this project.") }}"
-            window.onload = function sweet (){
-                swal({ html: true,
-                    title: data_title,
-                    text:data_text,
-                    type: 'warning',
-                    showCancelButton: true,
-                    cancelButtonText: 'Continue without Analysis',
-                    confirmButtonText: 'Complete Trial Documentation',
-                    customClass: 'wide-swal'
-                }, function(isConfirm) {if (isConfirm) {
-                    const url = "{{ request.route_url(
-                        'Metadata', user=project_info['user_name'], project=project_info['project_cod']) }}";
-                        location.href = url;
-                }});return false;
-            }
-        {% endif %}
-</script>
-
 {% endblock pagecontent %}
-
 {% block script %}
 {% endblock script %}
