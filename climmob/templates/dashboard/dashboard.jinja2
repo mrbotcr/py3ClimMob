@@ -102,9 +102,6 @@
                             </li>
                         {% endblock mainavheader %}
                         {% block mainavitems %}
-{#                            <li {% if sectionActive == "addproject" %} class="active"{% endif %}>#}
-{#                                <a href="{{ request.route_url('newproject') }}"><i class="fa fa-plus nav-label"></i> <span class="nav-label">{{ _('New project') }}</span></a>#}
-{#                            </li>#}
                                 {% if hasActiveProject %}
                                         <li {% if not sectionActive %}class="active" {% endif %}>
                                             <a href="{{ request.route_url('dashboard') }}"><i class="fa fa-th-large"></i> <span
@@ -408,7 +405,6 @@
                                                         {% else %}
                                                             {% if progress.technology and progress.techalias %}
                                                                 <span class="label label-success">{{ _("Completed") }}</span>
-{#                                                            {% endif %}#}
                                                             {% elif can_edit %}
                                                                 {% if progress.technology and not progress.techalias %}
                                                                     <span class="label label-warning"
@@ -469,12 +465,12 @@
                                                        style="text-align: left;width: 100%; overflow: hidden;text-overflow: ellipsis;"
                                                        href="{{ request.route_url('assessment',user=activeProject["owner"].user_name, project=activeProject.project_cod) }}"><i
                                                             class="fa fa-balance-scale"></i> {{ _("5. Prepare trial data collection") }}
-                                                        {% if progress.assessments|length > 0 %}
-                                                            <span class="label b-r-xl label-default"
+                                                            {% if progress.assessments|length > 0 %}
+                                                                <span class="label b-r-xl label-default"
                                                                   style="background-color: white; color: black; float: right!important; margin-top: 2px"
-                                                                  title="{{ progress.assessments|length }} {{ _(" data collection moments created") }}">{{ progress.assessments|length }} {{ _("forms") }}</span> {% endif %}
+                                                                  title="{{ progress.assessments|length }} {{ _(" data collection moments created") }}">{{ progress.assessments|length }} {{ _("forms") }}</span>
+                                                            {% endif %}
                                                     </a>
-
                                                 </div>
                                                 <div class="col-md-3">
                                                     <p style="margin-top: 8px; text-align: center">
@@ -849,7 +845,7 @@
                                             {% endif %}
                                             {% if not can_edit and progress.regtotal == 0  %}
                                                 <p>
-                                                This project has been finalized. Now the project is blocked.
+                                                {{ _("This project has been finalized. Now the project is blocked") }}
                                                 </p>
                                             {% endif %}
 
@@ -1106,7 +1102,7 @@
                                                 </button>
                                                 {% else %}
                                                     <p>
-                                                    {{ _('This project has been finalized. The project is now locked, and no further data entries, profile updates, or metadata changes are allowed.')  }}
+                                                    {{ _('This project has been finalized')  }}.
                                                     </p>
                                                 {% endif %}
                                             {% else %}

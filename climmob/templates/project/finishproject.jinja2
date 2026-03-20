@@ -34,15 +34,12 @@
 {% endblock topScripts %}
 
 {% block pagecontent %}
-    {% if error %}
-        <div class="alert alert-danger">{{ error }}</div>
-    {% endif %}
+
 
     {% set can_edit = True %}
     {% if activeProject.project_status == 3 %}
         {% set can_edit = False %}
     {% endif %}
-
 {% set progress_status %}
     {% if project_info.project_regstatus == 0 %}
         {{ _("Registration not yet started") }}
@@ -56,110 +53,177 @@
         {% endif %}
     {% endif %}
 {% endset %}
+{% set flag_assessments_errors =
+    progress.assessments | selectattr('errors', 'ne', 0) | list
+%}
+
+{% set flag_registration_errors = progress.get('regerrors', 0) != 0 %}
 
     {% if can_edit %}
-        <div class="row col-lg-4">
-            <div class="ibox">
-                <div class="ibox-title">
-                    <h5> {{ _('Confirmation details') }} </h5>
-                    <span class="label label-warning">{{ _('Warning') }}</span>
-                </div>
-                <div class="ibox-content">
-                    <div class="row d-flex justify-content-center align-items-center">
-                        <div class="col-lg">
-                            <table class="table table-bordered table-striped">
-                                <thead>
-                                <tr>
-                                    <th>{{ _('Field name') }}</th>
-                                    <th>{{ _('Value') }}</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr>
-                                    <td>{{ _('Project name') }}</td>
-                                    <td>{{ project_info["project_name"] }}</td>
-                                </tr>
-                                <tr>
-                                    <td>{{ _('Creation date') }}</td>
-                                    <td>{{ project_info["project_creationdate"] }}</td>
-                                </tr>
-                                <tr>
-                                    <td>{{ _('Progress') }}</td>
-                                    <td>
-                                    {% if project_info.project_regstatus == 0 %}
-                                        {{ _("Registration not yet started") }}
-                                    {% else %}
-                                        {% if project_info.project_regstatus == 1 %}
-                                            {{ _("Registration ongoing") }}
-                                        {% else %}
-                                            {% if project_info.project_regstatus == 2 %}
-                                                {% if project_info.project_assstatus == 0 %}
-                                                    {{ _("Registration closed") }}
-                                                {% else %}
-                                                    {{ _("Trial data collection / Analysis ongoing") }}
-                                                {% endif %}
-                                            {% endif %}
-                                        {% endif %}
-                                    {% endif %}
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>{{ _('Project Status') }}</td>
-                                    <td>
-                                        {% if project_info["project_status"] == 0 %}
-                                            {{ _("Undefined") }}
-                                        {% elif project_info["project_status"] == 1 %}
-                                            {{ _("Definition") }}
-                                        {% elif project_info["project_status"] == 2 %}
-                                            {{ _("In progress") }}
-                                        {% elif project_info["project_status"] == 3 %}
-                                            {{ _("Finalized") }}
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
+        <div class="row " >
+            <div class="col-lg-6">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h5> {{ _('Confirmation details') }} </h5>
                     </div>
-                    <p>
-                        {{ _('If you are sure about it please, press the button.') }}
-                    </p>
-                    <a class="btn btn-primary btn-rounded btn-block"
-                       data-title="{{ _('Do you want to finalize the project') }}?<br><i>{{ project_info['project_name'] }}</i>"
-                       data-text="{{ _("Trial documentation' step is pending. Finalizing now will permanently disable the Analysis module for this project.") }}"
-                       data-icon="{% if (total_ass_records > 5 or (project_info.project_registration_and_analysis == 1 and progress.regtotal >=5))
-                        and progress.metadata == False %}Warning{% endif %} "
-                       onclick="swal({ html: true,
-                       title: this.getAttribute('data-title'),
-                       text: this.getAttribute('data-text'),
-                       type: this.getAttribute('data-icon'),
-                       showCancelButton: true,
-                       cancelButtonText: 'Cancel',
-                       customClass: 'wide-swal'
-                       }, function(isConfirm) {if (isConfirm) {document.getElementById('finishForm').submit();}});return false;">
-                        <i class="fa fa-check-square-o"></i>
-                        {{ _('Confirm project finalization') }}
-                    </a>
-                    <form id="finishForm" method="POST" action="{{ request.url }}">
-                        <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
-                    </form>
-                </div>
-            </div>
-        </div>
-    {% endif %}
+                    <div class="ibox-content">
+                        <div class="row d-flex justify-content-center align-items-center">
+                            <div class="col-lg">
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                      <tr>
+                                        <th>{{ _('Field name') }}</th>
+                                        <th>{{ _('Status') }}</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>{{ _('Project name') }}</td>
+                                        <td>{{ project_info["project_name"] }}</td>
+                                    </tr>
+                                     <tr>
+                                        <td>{{ _('Project Status') }}</td>
+                                        <td>
+                                            {% if project_info["project_status"] == 0 %}
+                                                {{ _("Undefined") }}
+                                            {% elif project_info["project_status"] == 1 %}
+                                                {{ _("Definition") }}
+                                            {% elif project_info["project_status"] == 2 %}
+                                                {{ _("In progress") }}
+                                            {% elif project_info["project_status"] == 3 %}
+                                                {{ _("Finalized") }}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <thead><tr>
+                                        <th colspan="2" style="text-align: center">{{ _('Project progress summary') }}</th>
+                                    </tr>
+                                    <tr>
+                                        </thead>
+                                        <td><p>{{ _("1. Project profile") }}</p></td>
+                                        <td style="text-align: center">
+                                            <span class="label label-success">{{ _("Completed") }}</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><p>{{ _("2. Assign field agents") }}</p></td>
+                                        <td style="text-align: center">
+                                            {% if progress.enumerators %}
+                                                <span class="label label-success">{{ _("Completed") }}</span>
+                                            {% else %}
+                                                <span class="label label-default">{{ _("Incomplete") }}</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><p>{{ _("3. Assign technologies") }}</p></td>
+                                        <td style="text-align: center">
+                                            {% if progress.technology and progress.techalias %}
+                                                <span class="label label-success">{{ _("Completed") }}</span>
+                                            {% else %}
+                                                <span class="label label-default">{{ _("Incomplete") }}</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><p>
+                                            {% if project_info.project_registration_and_analysis == 0 %}
+                                                {{ _("4. Prepare participant registration form") }}
+                                            {% else %}
+                                                {{ _("4. Participant registration and trial data collection") }}
+                                            {% endif %}
+                                        </p></td>
+                                        <td style="text-align: center">
+                                            {% if progress.registry %}
+                                                <span class="label label-success">{{ _("Completed") }}</span>
+                                            {% else %}
+                                                <span class="label label-default">{{ _("Incomplete") }}</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% if project_info.project_registration_and_analysis == 0 %}
+                                        <tr>
+                                            <td><p>{{ _("5. Prepare trial data collection") }}</p></td>
+                                            <td style="text-align: center">
+                                                {% if progress.assessment %}
+                                                    <span class="label label-success">{{ _("Completed") }}</span>
+                                                {% else %}
+                                                    <span class="label label-default">{{ _("Incomplete") }}</span>
 
-    {% if not can_edit %}
-        <div class="row">
-            <div class="ibox">
-                <div class="ibox-title">
-                    <h5>{{ _('Thanks for confirm the finish of your project') }}</h5>
-                    <span class="label label-success">{{ _('Success') }}</span>
-                </div>
-                <div class="ibox-content">
-                    <p>
-                        {{ _('Thanks for confirm the finish of your project. We really appreciate your effort.') }}
-                    </p>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                    <tr>
+                                        <td><p>
+                                            {% if project_info.project_registration_and_analysis == 1 %}
+                                                {{ _("5. Trial documentation") }}
+                                            {% else %}
+                                                {{ _("6. Trial documentation") }}
+                                            {% endif %}
+                                                </p></td>
+                                        <td style="text-align: center" >
+                                            {% if progress.metadata == True %}
+                                                <span class="label label-success" >{{ _("Completed") }}'</span>
+                                            {% else %}
+                                                <span class="label label-default" >{{ _("Incomplete") }}</span>
+                                                <a href="{{ request.route_url('Metadata' , user=project_info["owner"].user_name, project=project_info.project_cod) }}" >
+                                                    <span class="label label-warning" title='{{ _("Trial documentation step is pending. Finalizing now will permanently disable the Analysis module for this project.") }}'><i class="fa fa-info-circle"></i> {{ _('Warning') }}</span></a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <thead><tr><th colspan="2" style="text-align: center">{{ _("Field data") }}</th></tr></thead>
+                                    <tr>
+                                        <td><p>{{ _("Data Collection") }}</p></td>
+                                        <td style="text-align: center">
+                                            {% if (total_ass_records > 5 or
+                                            (project_info.project_registration_and_analysis == 1 and progress.regtotal >=5)) %}
+                                                <span class="label label-success">{{ _("Completed") }}</span>
+                                            {% else %}
+                                                <span class="label label-default">{{ _("Incomplete") }}</span>
+                                            {% endif %}
+                                            {% if flag_assessments_errors or flag_registration_errors %}
+                                                <a href="{{ request.route_url('dashboard') }}"><span class="label label-warning" title="{{ _("If you don't resolve these conflicts now, you won't be able to resolve them later once the project is finished.") }}"><i class="fa fa-info-circle"></i> {{ _('Warning') }}</span></a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><p>{{ _("Analysis") }}</p></td>
+                                        <td style="text-align: center">
+                                            {% if (total_ass_records > 5 or
+                                            (project_info.project_registration_and_analysis == 1 and progress.regtotal >=5))
+                                            and progress.metadata == True %}
+                                                <span class="label label-success">{{ _("Allowed") }}</span>
+                                            {% else %}
+                                                <span class="label label-danger" title="{{ _("There are not enough valid submissions to run the analysis, or the trial documentation is incomplete") }}"><i class="fa fa-info-circle"></i> {{ _('Not Allowed') }}</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <a class="btn btn-primary btn-rounded btn-block btn-outline" href="{{ request.route_url('dashboard') }}">
+                            <i class="fa fa-arrow-circle-o-left" ></i> {{ _("Go back to project overview") }}</a>
+                        <br>
+                        <a class="btn btn-primary btn-rounded btn-block"
+                           data-title="{{ _('Do you want to finalize the project') }}?<br><br><i><strong>{{ project_info['project_name'] }}</strong></i>"
+                           data-text="{{ _("Finalize now will definitely disable future project's modification") }}"
+                           onclick="swal({ html: true,
+                           title: this.getAttribute('data-title'),
+                           text: this.getAttribute('data-text'),
+                           type: 'warning',
+                           showCancelButton: true,
+                           cancelButtonText: 'Cancel',
+                           customClass: 'wide-swal'
+                           }, function(isConfirm) {if (isConfirm) {document.getElementById('finishForm').submit();}});return false;">
+                            <i class="fa fa-check-square-o"></i>
+                            {{ _('Confirm project finalization') }}
+                        </a>
+                        <form id="finishForm" method="POST" action="{{ request.url }}">
+                            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
