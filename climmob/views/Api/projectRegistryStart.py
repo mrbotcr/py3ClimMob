@@ -7,6 +7,7 @@ from xml.dom import minidom
 from pyramid.response import Response
 
 from climmob.processes import (
+    thereIsAnEqualEnumIdInTheProject,
     projectExists,
     projectRegStatus,
     createCombinations,
@@ -1147,7 +1148,7 @@ class PushJsonToRegistryView(apiView):
 def ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId):
     if structure:
         obligatoryQuestions = []
-        possibleQuestions = ["clm_start", "clm_end", "_submitted_date"]
+        possibleQuestions = ["clm_start", "clm_end", "_submitted_date", "_submitted_by"]
         searchQST162 = ""
         media_questions = []
         for section in structure:
@@ -1196,6 +1197,18 @@ def ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId):
                             paramsWithoutData.append(key)
 
                     if dataInParams:
+
+                        if "_submitted_by" in _json.keys():
+                            if not thereIsAnEqualEnumIdInTheProject(
+                                _json["_submitted_by"], activeProjectId, self.request
+                            ):
+                                response = Response(
+                                    status=401,
+                                    body=self._(
+                                        "There is no field agent with that ID assigned to the project. Please check the key: _submitted_by"
+                                    ),
+                                )
+                                return response
 
                         if not "clm_start" in _json.keys() or _json["clm_start"] == "":
                             _json["clm_start"] = datetime.datetime.now().strftime(
