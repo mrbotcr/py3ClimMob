@@ -3043,7 +3043,7 @@ class TestApiRegistrationPushProcess(unittest.TestCase):
         self.assertEqual(response.status, "401 Unauthorized")
         self.assertEqual(
             response.body,
-            b"Error in the JSON sent by parameter. Check the permited Keys: ['clm_start', 'clm_end', '_submitted_date', 'package_id', 'some_data']",
+            b"Error in the JSON sent by parameter. Check the permited Keys: ['clm_start', 'clm_end', '_submitted_date', '_submitted_by', 'package_id', 'some_data']",
         )
 
     def test_api_registration_data_in_param_empty(
