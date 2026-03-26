@@ -130,16 +130,6 @@
                                 </thead>
                                 <tbody>
                                     {% for project in userProjects %}
-                                        {% set can_edit = true %}
-                                        {% if project.project_status == 3 %}
-                                            {% set can_edit = false %}
-                                        {% endif %}
-
-                                        {% set is_owner = false %}
-                                        {% if activeUser.login == project.owner.user_name %}
-                                            {% set is_owner = True %}
-                                        {% endif %}
-
                                         <tr onclick="window.location = '{{ request.route_url('dashboard', _query={'user':project["owner"].user_name, "project": project.project_cod}) }}';">
 
                                             <td>
@@ -177,7 +167,7 @@
                                             </td>
                                             <td>
                                                 <p>
-                                                    {% if not can_edit %}
+                                                    {% if project.project_status == 3 %}
                                                         {{ _("Finalized") }}
                                                     {% else %}
                                                         {% if project.project_regstatus == 0 %}
