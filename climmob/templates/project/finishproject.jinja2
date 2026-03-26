@@ -61,50 +61,43 @@
 
     {% if can_edit %}
         <div class="row " >
-            <div class="col-lg-6">
+            <div class="col-lg-5">
                 <div class="ibox">
                     <div class="ibox-title">
                         <h5> {{ _('Confirmation details') }} </h5>
                     </div>
                     <div class="ibox-content">
-                        <div class="row d-flex justify-content-center align-items-center">
-                            <div class="col-lg">
-                                <table class="table table-bordered table-striped">
+                    <div class="row d-flex justify-content-center align-items-center" style="padding: 5px 10px 7px;">
+                            <div >
+
+                                <p><strong>{{ _('Project name') }}:</strong> {{ project_info["project_name"] }}</p>
+                                <p><strong>{{ _('Project status') }}:</strong>
+                                    {% if project_info["project_status"] == 0 %}
+                                        {{ _("Undefined") }}
+                                    {% elif project_info["project_status"] == 1 %}
+                                        {{ _("Definition") }}
+                                    {% elif project_info["project_status"] == 2 %}
+                                        {{ _("In progress") }}
+                                    {% elif project_info["project_status"] == 3 %}
+                                        {{ _("Finalized") }}
+                                    {% endif %}
+                                </p>
+                                <br>
+
+                                <table class="table table-bordered" style="table-layout: auto; width: auto;">
+
                                     <thead>
-                                      <tr>
-                                        <th>{{ _('Field name') }}</th>
-                                        <th>{{ _('Status') }}</th>
-                                    </tr>
+                                        <tr>
+                                            <th colspan="2" style="text-align: center">{{ _('Project progress') }}</th>
+                                        </tr>
                                     </thead>
-                                    <tbody>
                                     <tr>
-                                        <td>{{ _('Project name') }}</td>
-                                        <td>{{ project_info["project_name"] }}</td>
-                                    </tr>
-                                     <tr>
-                                        <td>{{ _('Project Status') }}</td>
-                                        <td>
-                                            {% if project_info["project_status"] == 0 %}
-                                                {{ _("Undefined") }}
-                                            {% elif project_info["project_status"] == 1 %}
-                                                {{ _("Definition") }}
-                                            {% elif project_info["project_status"] == 2 %}
-                                                {{ _("In progress") }}
-                                            {% elif project_info["project_status"] == 3 %}
-                                                {{ _("Finalized") }}
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-                                    <thead><tr>
-                                        <th colspan="2" style="text-align: center">{{ _('Project progress summary') }}</th>
-                                    </tr>
-                                    <tr>
-                                        </thead>
                                         <td><p>{{ _("1. Project profile") }}</p></td>
                                         <td style="text-align: center">
                                             <span class="label label-success">{{ _("Completed") }}</span>
                                         </td>
                                     </tr>
+
                                     <tr>
                                         <td><p>{{ _("2. Assign field agents") }}</p></td>
                                         <td style="text-align: center">
@@ -172,7 +165,7 @@
                                             {% endif %}
                                         </td>
                                     </tr>
-                                    <thead><tr><th colspan="2" style="text-align: center">{{ _("Field data") }}</th></tr></thead>
+                                    <thead><tr><th colspan="2" style="text-align: center">{{ _("Fiel data status") }}</th></tr></thead>
                                     <tr>
                                         <td><p>{{ _("Data Collection") }}</p></td>
                                         <td style="text-align: center">
@@ -199,30 +192,31 @@
                                             {% endif %}
                                         </td>
                                     </tr>
-                                    </tbody>
+
                                 </table>
+
+                                <a class="btn btn-primary btn-rounded btn-block btn-outline" href="{{ request.route_url('dashboard') }}">
+                                    <i class="fa fa-arrow-circle-o-left" ></i> {{ _("Go back to project overview") }}</a>
+                                <br>
+                                <a class="btn btn-primary btn-rounded btn-block"
+                                   data-title="{{ _('Do you want to finalize the project') }}?<br><br><i><strong>{{ project_info['project_name'] }}</strong></i>"
+                                   data-text="{{ _("Finalize now will definitely disable future project's modification") }}"
+                                   onclick="swal({ html: true,
+                                   title: this.getAttribute('data-title'),
+                                   text: this.getAttribute('data-text'),
+                                   type: 'warning',
+                                   showCancelButton: true,
+                                   cancelButtonText: 'Cancel',
+                                   customClass: 'wide-swal'
+                                   }, function(isConfirm) {if (isConfirm) {document.getElementById('finishForm').submit();}});return false;">
+                                    <i class="fa fa-check-square-o"></i>
+                                    {{ _('Confirm project finalization') }}
+                                </a>
+                                <form id="finishForm" method="POST" action="{{ request.url }}">
+                                    <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                                </form>
                             </div>
                         </div>
-                        <a class="btn btn-primary btn-rounded btn-block btn-outline" href="{{ request.route_url('dashboard') }}">
-                            <i class="fa fa-arrow-circle-o-left" ></i> {{ _("Go back to project overview") }}</a>
-                        <br>
-                        <a class="btn btn-primary btn-rounded btn-block"
-                           data-title="{{ _('Do you want to finalize the project') }}?<br><br><i><strong>{{ project_info['project_name'] }}</strong></i>"
-                           data-text="{{ _("Finalize now will definitely disable future project's modification") }}"
-                           onclick="swal({ html: true,
-                           title: this.getAttribute('data-title'),
-                           text: this.getAttribute('data-text'),
-                           type: 'warning',
-                           showCancelButton: true,
-                           cancelButtonText: 'Cancel',
-                           customClass: 'wide-swal'
-                           }, function(isConfirm) {if (isConfirm) {document.getElementById('finishForm').submit();}});return false;">
-                            <i class="fa fa-check-square-o"></i>
-                            {{ _('Confirm project finalization') }}
-                        </a>
-                        <form id="finishForm" method="POST" action="{{ request.url }}">
-                            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
-                        </form>
                     </div>
                 </div>
             </div>
