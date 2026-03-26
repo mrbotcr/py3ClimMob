@@ -106,16 +106,10 @@
                     </div>
                     <div class="ibox-content">
                         {% if userProjects %}
-{#                            <div class="text-left">#}
-{#                                <p>{{ _("Click on the row of the table to change the project in the \"Project overview\" section") }}.  <a class="btn btn-success btn-rounded  btn-xs" style="color: white" onclick="showHelp()"><i class="fa fa-question-circle"></i> {{  _("Show help") }}</a></p>#}
-{##}
-{#                                <br><br>#}
-{#                            </div>#}
 
                             <table class="display nowrap table table-stripped display " data-filter=#filter id="all-projects">
                                 <thead>
                                     <tr>
-{#                                        <th title="{{ _("Click on the row of the table to change the project in the \"Project overview\" section") }}.">{{ _("Project overview") }} <i class="fa fa-info-circle"> </i></th>#}
                                         <th>{{ _("Project ID") }}</th>
                                         <th>{{ _("Project name") }}</th>
                                         <th>{{ _("Owner") }}</th>
@@ -131,8 +125,6 @@
                                             <th style="text-align: center">   {{ _("Duplicate") }} </th>
                                         {% endif %}
                                         <th style="text-align: center">   {{ _("Share") }} </th>
-                                        <th style="text-align: center">{{ _("Finalized") }}</th>
-
                                     </tr>
 
                                 </thead>
@@ -149,16 +141,6 @@
                                         {% endif %}
 
                                         <tr onclick="window.location = '{{ request.route_url('dashboard', _query={'user':project["owner"].user_name, "project": project.project_cod}) }}';">
-{#                                            <td style="width: 165px" class="text-center">#}
-{#                                                <div class="i-checks" style="text-align: center" >#}
-{#                                                    <label>#}
-{#                                                        <input name="check_project" type="radio" {% if project.project_dashboard == 1%}checked{% endif %} urlRedirect="{{ request.route_url('dashboard', _query={'user':project["owner"].user_name, "project": project.project_cod}) }}"> <i></i>#}
-{#                                                    </label>#}
-{#                                                </div>#}
-{#                                                {% if project.project_dashboard == 1%}#}
-{#                                                    <i class="fa fa-dot-circle-o " style="font-size: 30px; color: #1ab394"></i>#}
-{#                                                {% endif %}#}
-{#                                            </td>#}
 
                                             <td>
                                                 <p>{{ project.project_cod }}</p>
@@ -171,7 +153,6 @@
                                             </td>
 
                                             <td>
-{#                                                <i class="fa fa-user-circle-o" style="font-size: 30px"></i><br>#}
                                                 <p>
                                                     {% if project.access_type== 1 %}
                                                         {{ _("Owner") }}
@@ -195,26 +176,21 @@
                                                 <p>{{ project.project_piemail }}</p>
                                             </td>
                                             <td>
-
                                                 <p>
-                                                    {% if project.project_regstatus == 0 %}
-                                                        {{ _("Design") }}
+                                                    {% if not can_edit %}
+                                                        {{ _("Finalized") }}
                                                     {% else %}
-                                                        {% if project.project_regstatus == 1 %}
-                                                            {{ _("Registration") }}
+                                                        {% if project.project_regstatus == 0 %}
+                                                            {{ _("Design") }}
                                                         {% else %}
-                                                            {% if project.project_regstatus == 2 %}
-
-                                                                {% if project.project_assstatus == 0 %}
-                                                                    {{ _("Data collection") }}
-                                                                {% else %}
+                                                            {% if project.project_regstatus == 1 %}
+                                                                {{ _("Registration") }}
+                                                            {% else %}
+                                                                {% if project.project_regstatus == 2 %}
                                                                     {{ _("Data collection") }}
                                                                 {% endif %}
-
                                                             {% endif %}
-
                                                         {% endif %}
-
                                                     {% endif %}
                                                 </p>
 
@@ -243,22 +219,6 @@
                                             <td style="text-align: center">
                                                 <a href="{{ request.route_url('shareProject',user=project.owner["user_name"],project=project.project_cod) }}"><i class="fa fa-share-square-o"></i></a>
                                             </td>
-                                            {% if is_owner %}
-                                                {% if can_edit %}
-
-                                                    <td style="text-align: center">
-                                                        <a href="{{ request.route_url('finishproject',user=project.owner["user_name"],project=project.project_cod) }}">
-                                                            <span class="badge badge-success"><i class="fa fa-send"></i></span>
-                                                        </a>
-                                                    </td>
-                                                {% else %}
-                                                    <td style="text-align: center">
-                                                        <span class="badge badge-primary"><i class="fa fa-check-square-o"></i></span>
-                                                    </td>
-                                                {% endif %}
-                                            {% else %}
-                                                <td style="text-align: center"><p>Not allowed</p></td>
-                                            {% endif %}
                                         </tr>
                                     {% endfor %}
 
@@ -316,7 +276,6 @@
                     columnDefs: [
                         {target: -1, columnControl: [], orderable: false },
                         {target: -2, columnControl: [], orderable: false },
-                        {target: -3, columnControl: [], orderable: false },
                         {
                             targets: hiddenIndexes,
                             visible: false,
