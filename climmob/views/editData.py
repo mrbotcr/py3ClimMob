@@ -1,6 +1,6 @@
 import os
 
-from pyramid.httpexceptions import HTTPNotFound, HTTPFound
+from pyramid.httpexceptions import HTTPNotFound, HTTPFound, HTTPServerError
 
 from climmob.processes import (
     getQuestionsStructure,
@@ -11,9 +11,11 @@ from climmob.processes import (
     getActiveProject,
     projectExists,
     getJSONResult,
+    get_project_anonymization_status,
 )
 from climmob.products.analysisdata.analysisdata import create_raw_data
 from climmob.products.errorLogDocument.errorLogDocument import create_error_log_document
+from climmob.utility import AnonymizationStatus
 from climmob.views.classes import privateView
 from climmob.views.editDataDB import (
     getNamesEditByColums,
@@ -34,6 +36,8 @@ class downloadDataView(privateView):
         includeAssessment = True
         code = ""
 
+        ready_for_creating = True
+
         if not projectExists(
             self.user.login, activeProjectUser, activeProjectCod, self.request
         ):
@@ -43,6 +47,25 @@ class downloadDataView(privateView):
             activeProjectId = getTheProjectIdForOwner(
                 activeProjectUser, activeProjectCod, self.request
             )
+
+            if anonymize:
+                anonymization_status = get_project_anonymization_status(
+                    activeProjectId, self.request
+                )
+
+                if anonymization_status == AnonymizationStatus.NOT_STARTED.value:
+                    ready_for_creating = False
+                    # TODO: Start anonymization process and set status to IN_PROGRESS
+                    pass
+                elif anonymization_status == AnonymizationStatus.IN_PROGRESS.value:
+                    ready_for_creating = False
+                    pass
+                elif anonymization_status == AnonymizationStatus.COMPLETED.value:
+                    pass
+                else:
+                    raise HTTPServerError(
+                        f"Unknown anonymization status: {anonymization_status}"
+                    )
 
             if formId == "registry":
                 formId = "Registration"
@@ -55,16 +78,20 @@ class downloadDataView(privateView):
                 else:
                     raise HTTPNotFound()
 
-        info = getJSONResult(
-            activeProjectUser,
-            activeProjectId,
-            activeProjectCod,
-            self.request,
-            includeRegistry,
-            includeAssessment,
-            code,
-            anonymize=anonymize,
-        )
+        # TODO: always get info inside celery task
+        info = getJSONResult
+
+        if ready_for_creating:
+            info = getJSONResult(
+                activeProjectUser,
+                activeProjectId,
+                activeProjectCod,
+                self.request,
+                includeRegistry,
+                includeAssessment,
+                code,
+                anonymize=anonymize,
+            )
 
         if formatId not in ["csv", "xlsx"]:
             raise HTTPNotFound()
