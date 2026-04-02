@@ -85,8 +85,13 @@ class productsView(climmobPrivateView):
         productsAvailable = []
         assessments = []
 
-        schema = activeProjectData["user_name"] + "_" + activeProjectData["project_cod"]
+        schema = (
+            activeProjectData["owner"]["user_name"]
+            + "_"
+            + activeProjectData["project_cod"]
+        )
 
+        # TODO: use new method, status or percentage
         project_is_anonymized = is_project_anonymized(schema)
 
         if activeProjectData:
