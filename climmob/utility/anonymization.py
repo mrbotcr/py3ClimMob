@@ -1,5 +1,10 @@
 import math
 import random
+from enum import Enum, IntEnum
+
+
+def _(x):
+    return x
 
 
 def add_noise_to_gps_coordinates(
@@ -41,3 +46,15 @@ def add_noise_to_gps_coordinates(
 
     except (TypeError, ValueError, AttributeError):
         return 0.0, 0.0
+
+
+class AnonymizationStatus(IntEnum):
+    NOT_STARTED = 1
+    IN_PROGRESS = 2
+    COMPLETED = 3
+
+
+class AnonymizationStatusLabel(Enum):
+    NOT_STARTED = _("Not started")
+    IN_PROGRESS = _("In progress")
+    COMPLETED = _("Completed")

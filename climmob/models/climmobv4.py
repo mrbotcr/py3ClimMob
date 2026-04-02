@@ -727,6 +727,29 @@ class Project(Base):
     country = relationship("Country")
 
 
+class AnonymizationStatus(Base):
+    __tablename__ = "anonymization_status"
+
+    anonymization_status_id = Column(Integer, primary_key=True, nullable=False)
+    anonymization_status_name = Column(Unicode(32), nullable=False)
+
+
+class ProjectAnonymizationStatus(Base):
+    __tablename__ = "project_anonymization_status"
+
+    anonymization_status_id = Column(
+        Integer,
+        ForeignKey("anonymization_status.anonymization_status_id"),
+        primary_key=True,
+        nullable=False,
+    )
+    project_id = Column(
+        Unicode(64), ForeignKey("project.project_id"), primary_key=True, nullable=False
+    )
+    last_updated_by = Column(Unicode(80), ForeignKey("user.user_name"), nullable=False)
+    last_updated_at = Column(DateTime, nullable=False)
+
+
 class Qstoption(Base):
     __tablename__ = "qstoption"
     __table_args__ = ({"mysql_engine": "InnoDB", "mysql_charset": "utf8"},)
