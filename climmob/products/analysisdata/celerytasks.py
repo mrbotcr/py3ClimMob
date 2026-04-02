@@ -7,7 +7,22 @@ from climmob.plugins.utilities import climmobCeleryTask
 
 
 @celeryApp.task(base=climmobCeleryTask)
-def create_raw_data_file(path, info, name_output, file_type):
+def create_raw_data_file(path, info, name_output, file_type, start_anonymization=False):
+
+    # TODO: let info be {
+    #      func_name: func_name -> str,
+    #      args: args -> tuple
+    #  }
+    #  function name may not be needed if it is always the same...
+
+    print(f"PATH: {path}")
+    print(f"NAME_OUTPUT: {name_output}")
+
+    if start_anonymization:
+        # Call the anonymization process here
+        # Get anonymized info
+        info = info()
+        pass
 
     path_out = os.path.join(path, "outputs")
     if not os.path.exists(path):

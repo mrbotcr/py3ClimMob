@@ -20,6 +20,7 @@ def create_raw_data(
     code,
     file_type="csv",
     anonymized=False,
+    start_anonymization=False,
 ):
     # We create the plugin directory if it does not exists and return it
     extra = "-anonymized" if anonymized else ""
@@ -35,7 +36,7 @@ def create_raw_data(
     )
     # We call the Celery task that will generate the output packages.pdf
     task = create_raw_data_file.apply_async(
-        (path, info, name_output, file_type), queue="ClimMob"
+        (path, info, name_output, file_type, start_anonymization), queue="ClimMob"
     )
     # We register the instance of the output with the task ID of celery
     # This will go to the products table that then you can monitor and use
