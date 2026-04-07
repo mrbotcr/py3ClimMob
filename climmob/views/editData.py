@@ -36,7 +36,7 @@ class downloadDataView(privateView):
         includeAssessment = True
         code = ""
 
-        ready_for_creating = True
+        start_anonymization = False
 
         if not projectExists(
             self.user.login, activeProjectUser, activeProjectCod, self.request
@@ -54,18 +54,7 @@ class downloadDataView(privateView):
                 )
 
                 if anonymization_status == AnonymizationStatus.NOT_STARTED.value:
-                    ready_for_creating = False
-                    # TODO: Start anonymization process and set status to IN_PROGRESS
-                    pass
-                elif anonymization_status == AnonymizationStatus.IN_PROGRESS.value:
-                    ready_for_creating = False
-                    pass
-                elif anonymization_status == AnonymizationStatus.COMPLETED.value:
-                    pass
-                else:
-                    raise HTTPServerError(
-                        f"Unknown anonymization status: {anonymization_status}"
-                    )
+                    start_anonymization = True
 
             if formId == "registry":
                 formId = "Registration"
@@ -78,20 +67,18 @@ class downloadDataView(privateView):
                 else:
                     raise HTTPNotFound()
 
-        # TODO: always get info inside celery task
-        info = getJSONResult
-
-        if ready_for_creating:
-            info = getJSONResult(
-                activeProjectUser,
-                activeProjectId,
-                activeProjectCod,
-                self.request,
-                includeRegistry,
-                includeAssessment,
-                code,
-                anonymize=anonymize,
-            )
+        result_getter = {
+            "func_name": "getJSONResult",
+            "args": {
+                "userOwner": activeProjectUser,
+                "projectId": activeProjectId,
+                "projectCod": activeProjectCod,
+                "includeRegistry": includeRegistry,
+                "includeAssessment": includeAssessment,
+                "assessmentCode": code,
+                "anonymize": anonymize,
+            },
+        }
 
         if formatId not in ["csv", "xlsx"]:
             raise HTTPNotFound()
@@ -100,12 +87,13 @@ class downloadDataView(privateView):
             activeProjectUser,
             activeProjectId,
             activeProjectCod,
-            info,
+            result_getter,
             self.request,
             formId,
             code,
             file_type=formatId,
             anonymized=anonymize,
+            start_anonymization=start_anonymization,
         )
 
         format_extra = "xlsx_" if formatId == "xlsx" else ""

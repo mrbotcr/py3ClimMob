@@ -318,38 +318,46 @@ class generateProductView(privateView):
                 infoProduct[2] = infoProduct[3]
                 infoProduct[3] = infoProduct[4]
             if infoProduct[2] == "Registration":
-                info = getJSONResult(
-                    activeProjectData["owner"]["user_name"],
-                    activeProjectData["project_id"],
-                    activeProjectData["project_cod"],
-                    self.request,
-                    includeAssessment=False,
-                    anonymize=anonymized,
-                )
+                result_getter = {
+                    "func_name": "getJSONResult",
+                    "args": {
+                        "userOwner": activeProjectData["owner"]["user_name"],
+                        "projectId": activeProjectData["project_id"],
+                        "projectCod": activeProjectData["project_cod"],
+                        "includeAssessment": False,
+                        "anonymize": anonymized,
+                    },
+                }
+
             else:
                 if infoProduct[2] == "Assessment":
-                    info = getJSONResult(
-                        activeProjectData["owner"]["user_name"],
-                        activeProjectData["project_id"],
-                        activeProjectData["project_cod"],
-                        self.request,
-                        assessmentCode=infoProduct[3],
-                        anonymize=anonymized,
-                    )
+                    result_getter = {
+                        "func_name": "getJSONResult",
+                        "args": {
+                            "userOwner": activeProjectData["owner"]["user_name"],
+                            "projectId": activeProjectData["project_id"],
+                            "projectCod": activeProjectData["project_cod"],
+                            "assessmentCode": infoProduct[3],
+                            "anonymize": anonymized,
+                        },
+                    }
+
                 else:
-                    info = getJSONResult(
-                        activeProjectData["owner"]["user_name"],
-                        activeProjectData["project_id"],
-                        activeProjectData["project_cod"],
-                        self.request,
-                        anonymize=anonymized,
-                    )
+                    result_getter = {
+                        "func_name": "getJSONResult",
+                        "args": {
+                            "userOwner": activeProjectData["owner"]["user_name"],
+                            "projectId": activeProjectData["project_id"],
+                            "projectCod": activeProjectData["project_cod"],
+                            "anonymize": anonymized,
+                        },
+                    }
 
             create_raw_data(
                 activeProjectData["owner"]["user_name"],
                 activeProjectData["project_id"],
                 activeProjectData["project_cod"],
-                info,
+                result_getter,
                 self.request,
                 infoProduct[2],
                 infoProduct[3],

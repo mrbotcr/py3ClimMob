@@ -8,13 +8,14 @@ from climmob.products.climmob_products import (
     createProductDirectory,
     registerProductInstance,
 )
+from climmob.utility import get_settings
 
 
 def create_raw_data(
     user_owner,
     project_id,
     project_cod,
-    info,
+    result_getter,
     request,
     form,
     code,
@@ -35,8 +36,19 @@ def create_raw_data(
         request, user_owner, project_cod, f"data{file_type}{extra}"
     )
     # We call the Celery task that will generate the output packages.pdf
+    settings = get_settings(request)
+    request_attrs = {
+        "settings": settings,
+        "locale_name": request.locale_name,
+    }
+    file = {
+        "path": path,
+        "name_output": name_output,
+        "file_type": file_type,
+    }
     task = create_raw_data_file.apply_async(
-        (path, info, name_output, file_type, start_anonymization), queue="ClimMob"
+        (request_attrs, project_id, file, result_getter, start_anonymization),
+        queue="ClimMob",
     )
     # We register the instance of the output with the task ID of celery
     # This will go to the products table that then you can monitor and use

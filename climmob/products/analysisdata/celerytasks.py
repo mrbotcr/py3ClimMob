@@ -3,39 +3,55 @@ import os
 import pandas as pd
 
 from climmob.config.celery_app import celeryApp
+from climmob.models.repository import create_request
 from climmob.plugins.utilities import climmobCeleryTask
+from climmob.processes import getJSONResult, anonymize_project
 
 
 @celeryApp.task(base=climmobCeleryTask)
-def create_raw_data_file(path, info, name_output, file_type, start_anonymization=False):
+def create_raw_data_file(
+    request_attrs, project_id, file, result_getter, start_anonymization=False
+):
+    print(f"PATH: {file['path']}")
+    print(f"NAME_OUTPUT: {file['name_output']}")
 
-    # TODO: let info be {
-    #      func_name: func_name -> str,
-    #      args: args -> tuple
-    #  }
-    #  function name may not be needed if it is always the same...
+    result = None
 
-    print(f"PATH: {path}")
-    print(f"NAME_OUTPUT: {name_output}")
+    with create_request(**request_attrs) as request:
+        if start_anonymization:
+            success, msg = anonymize_project(project_id, request)
+            if success:
+                # TODO: mark anonymization status as completed
+                pass
+            else:
+                # TODO: handle the error case
+                pass
+            pass
 
-    if start_anonymization:
-        # Call the anonymization process here
-        # Get anonymized info
-        info = info()
-        pass
+        result_getter["args"]["request"] = request
+        if result_getter["func_name"] == "getJSONResult":
+            result = getJSONResult(**result_getter["args"])
+        else:
+            raise ValueError(f"Unexpected function name: {result_getter['func_name']}")
 
-    path_out = os.path.join(path, "outputs")
-    if not os.path.exists(path):
-        os.makedirs(path)
+    path_out = os.path.join(file["path"], "outputs")
+    if not os.path.exists(file["path"]):
+        os.makedirs(file["path"])
         os.makedirs(path_out)
 
-    replace_options_with_labels(info)
+    replace_options_with_labels(result)
 
-    df = pd.DataFrame(info["data"])
-    if file_type == "xlsx":
-        df.to_excel(os.path.join(path_out, name_output) + f".{file_type}", index=False)
-    elif file_type == "csv":
-        df.to_csv(os.path.join(path_out, name_output) + f".{file_type}", index=False)
+    df = pd.DataFrame(result["data"])
+    if file["file_type"] == "xlsx":
+        df.to_excel(
+            os.path.join(path_out, file["name_output"]) + f".{file['file_type']}",
+            index=False,
+        )
+    elif file["file_type"] == "csv":
+        df.to_csv(
+            os.path.join(path_out, file["name_output"]) + f".{file['file_type']}",
+            index=False,
+        )
 
 
 def replace_options_with_labels(data):

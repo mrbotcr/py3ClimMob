@@ -106,6 +106,7 @@ class analysisDataView(privateView):
             raise HTTPNotFound()
 
 
+# TODO: test
 def processToGenerateTheReport(
     activeProjectData, request, variables, infosheet, variablesSplit, combinationRerence
 ):
@@ -134,6 +135,16 @@ def processToGenerateTheReport(
                                 )
 
     locale = request.locale_name
+
+    result_getter = {
+        "func_name": "getJSONResult",
+        "args": {
+            "userOwner": activeProjectData["owner"]["user_name"],
+            "projectId": activeProjectData["project_id"],
+            "projectCod": activeProjectData["project_cod"],
+        },
+    }
+
     info = getJSONResult(
         activeProjectData["owner"]["user_name"],
         activeProjectData["project_id"],
@@ -159,7 +170,7 @@ def processToGenerateTheReport(
         activeProjectData["owner"]["user_name"],
         activeProjectData["project_id"],
         activeProjectData["project_cod"],
-        info,
+        result_getter,
         request,
         "Report",
         "",
