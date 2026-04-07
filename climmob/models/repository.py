@@ -53,7 +53,11 @@ def execute_two_sqls(sql1, sql2):
 
 
 @contextmanager
-def create_request(settings):
+def create_request(settings: dict, locale_name: str):
+    class Registry:
+        def __init__(self):
+            self.settings: dict = settings
+
     engine = get_engine(settings)
     Base.metadata.create_all(engine)
 
@@ -65,6 +69,8 @@ def create_request(settings):
 
         request = requests.Session()
         request.dbsession = dbsession
+        request.registry = Registry()
+        request.locale_name = locale_name
 
         yield request
 
