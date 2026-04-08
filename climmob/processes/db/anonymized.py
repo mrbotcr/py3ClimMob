@@ -38,9 +38,8 @@ __all__ = [
 ]
 
 
-def add_to_anonymization_summary(
-    summary: dict, field_name: str, reg_id: str, ignored: bool
-):
+def add_to_anonymization_summary(summary: dict, field, reg_id: str, ignored: bool):
+    field_name = field["form_name"] + "_" + field["field_name"]
     if field_name not in summary:
         summary[field_name] = {"anonymized": [], "ignored": []}
     if ignored:
@@ -115,23 +114,28 @@ def anonymize_project(project_id, request):
             if match is None:
                 continue
             question = get_question_by_field_name(match.group(4), questions)
-            if (
-                question
-                and question.question_anonymity != QuestionAnonymity.REMOVE.value
-            ):
-                matches[question.question_code] = True
-                if match.group(1) == "REG":
-                    form_id = "-"
-                else:
-                    form_id = match.group(3)
-                to_anonymize.append(
-                    {
-                        "field_name": match.group(4),
-                        "value": entry[key],
-                        "question": question,
-                        "form_id": form_id,
-                    }
-                )
+
+            if not question:
+                continue
+
+            matches[question.question_code] = True
+
+            if question.question_anonymity == QuestionAnonymity.REMOVE.value:
+                continue
+
+            if match.group(1) == "REG":
+                form_id = "-"
+            else:
+                form_id = match.group(3)
+            to_anonymize.append(
+                {
+                    "field_name": match.group(4),
+                    "value": entry[key],
+                    "question": question,
+                    "form_id": form_id,
+                    "form_name": match.group(1),
+                }
+            )
 
         for field in to_anonymize:
             anonymize_field_value(field, reg_id, request)
@@ -141,12 +145,10 @@ def anonymize_project(project_id, request):
             if not success:
                 if msg.startswith("Duplicate entry for package"):
                     # To ignore entries that are already anonymized
-                    add_to_anonymization_summary(
-                        summary, field["field_name"], reg_id, True
-                    )
+                    add_to_anonymization_summary(summary, field, reg_id, True)
                     continue
                 return False, msg
-            add_to_anonymization_summary(summary, field["field_name"], reg_id, False)
+            add_to_anonymization_summary(summary, field, reg_id, False)
 
     for q_code, matched in matches.items():
         if not matched:
