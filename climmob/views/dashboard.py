@@ -1,6 +1,4 @@
-import mysql.connector
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
-from sqlalchemy.exc import ProgrammingError
 
 import climmob.plugins as p
 from climmob.processes import (
@@ -17,7 +15,6 @@ from climmob.processes import (
     AssessmentsInformation,
     seeProgress,
     getTheProjectIdForOwner,
-    is_project_anonymized,
 )
 from climmob.views.classes import privateView, publicView
 
@@ -43,17 +40,6 @@ class dashboard_view(privateView):
                 setActiveProject(self.user.login, activeProjectId, self.request)
 
                 activeProjectData = getActiveProject(self.user.login, self.request)
-
-                schema = (
-                    activeProjectData["owner"]["user_name"]
-                    + "_"
-                    + activeProjectData["project_cod"]
-                )
-
-                try:
-                    project_is_anonymized = is_project_anonymized(schema)
-                except ProgrammingError:
-                    project_is_anonymized = False
 
                 session = self.request.session
                 session["activeProject"] = activeProjectId
@@ -113,7 +99,6 @@ class dashboard_view(privateView):
                         activeProjectCod,
                         self.request,
                     ),
-                    "project_is_anonymized": project_is_anonymized,
                 }
                 for plugin in p.PluginImplementations(p.IDashBoard):
                     context = plugin.before_returning_dashboard_context(
@@ -122,17 +107,6 @@ class dashboard_view(privateView):
                 return context
         else:
             activeProjectData = getActiveProject(self.user.login, self.request)
-
-            schema = (
-                activeProjectData["owner"]["user_name"]
-                + "_"
-                + activeProjectData["project_cod"]
-            )
-
-            try:
-                project_is_anonymized = is_project_anonymized(schema)
-            except ProgrammingError:
-                project_is_anonymized = False
 
             if activeProjectData:
                 self.returnRawViewResult = True
@@ -153,7 +127,6 @@ class dashboard_view(privateView):
                     "progress": {},
                     "pcompleted": 0,
                     "allassclosed": False,
-                    "project_is_anonymized": project_is_anonymized,
                 }
                 for plugin in p.PluginImplementations(p.IDashBoard):
                     context = plugin.before_returning_dashboard_context(

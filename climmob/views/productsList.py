@@ -29,7 +29,7 @@ from climmob.processes import (
     get_registry_logs,
     get_assessment_logs,
     getPrjLangDefaultInProject,
-    is_project_anonymized,
+    get_project_anonymization_status,
 )
 from climmob.products import product_found
 from climmob.products.analysisdata.analysisdata import create_raw_data
@@ -40,6 +40,7 @@ from climmob.products.forms.form import create_document_form
 from climmob.products.generalReport.generalReport import create_general_report
 from climmob.products.packages.packages import create_packages_excell
 from climmob.products.qrpackages.qrpackages import create_qr_packages
+from climmob.utility import AnonymizationStatus
 from climmob.views.classes import privateView
 from climmob.views.projectHelp.projectHelp import getImportantInformation
 from climmob.views.registry import getDataFormPreview
@@ -91,21 +92,21 @@ class productsView(climmobPrivateView):
             + activeProjectData["project_cod"]
         )
 
-        # TODO: use new method, status or percentage
-        project_is_anonymized = is_project_anonymized(schema)
-
         if activeProjectData:
 
             products = getDataProduct(activeProjectData["project_id"], self.request)
 
             for product in products:
 
-                if product["product_id"] in [
-                    "datacsv-anonymized",
-                    "dataxlsx-anonymized",
-                ] and (
-                    not project_is_anonymized
-                    or self.request.registry.settings.get("module.dataprivacy", "false")
+                if (
+                    product["product_id"]
+                    in [
+                        "datacsv-anonymized",
+                        "dataxlsx-anonymized",
+                    ]
+                    and self.request.registry.settings.get(
+                        "module.dataprivacy", "false"
+                    )
                     == "false"
                 ):
                     continue
@@ -167,7 +168,6 @@ class productsView(climmobPrivateView):
             "Products": productsAvailable,
             "assessments": assessments,
             "sectionActive": "productlist",
-            "project_is_anonymized": project_is_anonymized,
         }
 
 

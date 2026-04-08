@@ -41,8 +41,6 @@ __all__ = [
     "delete_anonymized_values_by_form_id_and_reg_id",
     "update_anonymized",
     "anonymize_project",
-    "is_project_anonymized",
-    "get_anonymized_count_by_form_id_and_col_name",
     "get_anonymized_count",
     "get_anonymization_percentage",
 ]
@@ -319,38 +317,6 @@ def delete_anonymized_values_by_form_id_and_reg_id(schema, form_id, reg_id):
         f"AND reg_id='{reg_id}'"
     )
     sql_execute(query)
-
-
-def is_project_anonymized(schema):
-    query = f"""
-    SELECT 
-        (SELECT 
-                COUNT(DISTINCT reg_id) AS count 
-            FROM 
-                {schema}.anonymized 
-            WHERE 
-                form_id = '-') = (SELECT 
-                COUNT(qst162) AS count 
-            FROM 
-                {schema}.REG_geninfo) AS count_matches """
-
-    result = sql_execute(query).first()
-    return result["count_matches"] == 1
-
-
-def get_anonymized_count_by_form_id_and_col_name(schema, form_id, col_name):
-    query = f"""
-    SELECT 
-        COUNT(*) AS count 
-    FROM 
-        {schema}.anonymized 
-    WHERE 
-        form_id='{form_id}' 
-        AND col_name='{col_name}'
-    """
-
-    result = sql_fetch_all(query)
-    return result[0]["count"]
 
 
 def get_anonymized_count(schema):

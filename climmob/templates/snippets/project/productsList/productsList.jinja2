@@ -360,7 +360,7 @@
             </tr>
         {% endif %}
 
-        {% if project_is_anonymized and request.registry.settings.get("module.dataprivacy", "false") != "false"%}
+        {% if request.registry.settings.get("module.dataprivacy", "false") != "false"%}
             {% if changes["projectDataCollectedXLSX-anonymized"] %}
                 <tr>
                     <td>{{ _("Information collected in all the project in .XLSX format (anonymized)") }}</td>
