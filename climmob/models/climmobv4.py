@@ -740,7 +740,6 @@ class ProjectAnonymizationStatus(Base):
     anonymization_status_id = Column(
         Integer,
         ForeignKey("anonymization_status.anonymization_status_id"),
-        primary_key=True,
         nullable=False,
     )
     project_id = Column(
