@@ -353,6 +353,14 @@ class generateProductView(privateView):
                         },
                     }
 
+            start_anonymization = False
+            if anonymized:
+                anonymization_status = get_project_anonymization_status(
+                    activeProjectData["project_id"], self.request
+                )
+                if anonymization_status == AnonymizationStatus.NOT_STARTED.value:
+                    start_anonymization = True
+
             create_raw_data(
                 activeProjectData["owner"]["user_name"],
                 activeProjectData["project_id"],
@@ -363,6 +371,7 @@ class generateProductView(privateView):
                 infoProduct[3],
                 file_type=file_type,
                 anonymized=anonymized,
+                start_anonymization=start_anonymization,
             )
 
         if productid == "documentform":
