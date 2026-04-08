@@ -383,7 +383,6 @@ def get_anonymization_percentage(project_id: str, request) -> float:
         return 0
 
     reg_count = get_registry_submission_count(user_owner, project_code)
-    print(f"Registry submission count: {reg_count}")
 
     counts = {"-": reg_count}
 
@@ -412,14 +411,15 @@ def get_anonymization_percentage(project_id: str, request) -> float:
             "question_code": q["question_code"],
         }
         questions.append(new)
-        expected_count += reg_count
+        if q["question_anonymity"] != QuestionAnonymity.REMOVE.value:
+            expected_count += reg_count
 
     assessments = getProjectAssessments(project_id, request)
 
     for assessment in assessments:
-        if assessment["Assessment"].ass_status == 0:
+        if assessment["ass_status"] == 0:
             continue
-        code = assessment["Assessment"].ass_cod
+        code = assessment["ass_cod"]
         count = get_assessment_submission_count(user_owner, project_code, code)
         counts[code] = count
         assessment_questions = getAssessmentQuestions(
@@ -441,13 +441,18 @@ def get_anonymization_percentage(project_id: str, request) -> float:
                 "question_code": q["question_code"],
             }
             questions.append(new)
-            expected_count += count
+            if q["question_anonymity"] != QuestionAnonymity.REMOVE.value:
+                expected_count += count
     for q in questions:
-        count = get_anonymized_count_by_form_id_and_col_name(
-            user_owner + "_" + project_code, q["form_id"], q["question_code"]
-        )
+        expected_count_per_form = 0
+        count = 0
+        if q["anonymity"] != QuestionAnonymity.REMOVE.value:
+            expected_count_per_form = counts[q['form_id']]
+            count = get_anonymized_count_by_form_id_and_col_name(
+                user_owner + "_" + project_code, q["form_id"], q["question_code"]
+            )
         print(
-            f"anonymized count for {q['question_code']}: {count} of {counts[q['form_id']]} -> {count / counts[q['form_id']] * 100 if counts[q['form_id']] > 0 else 0}%"
+            f"anonymized count for {q['question_code']}: {count} of {expected_count_per_form} -> {count / expected_count_per_form * 100 if expected_count_per_form > 0 else 0}%"
         )
     found_count = get_anonymized_count(user_owner + "_" + project_code)
     print(f"Total anonymized count: {found_count} of {expected_count}")
