@@ -53,7 +53,7 @@ class downloadDataView(privateView):
                     activeProjectId, self.request
                 )
 
-                if anonymization_status == AnonymizationStatus.NOT_STARTED.value:
+                if anonymization_status == AnonymizationStatus.NOT_STARTED:
                     start_anonymization = True
 
             if formId == "registry":

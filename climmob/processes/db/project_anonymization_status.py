@@ -1,26 +1,27 @@
 import datetime
 
 from climmob.models.climmobv4 import ProjectAnonymizationStatus
+from climmob.processes.db.anonymized import get_anonymization_percentage
 from climmob.utility import AnonymizationStatus
 
 
-def get_project_anonymization_status(project_id, request):
+def get_project_anonymization_status(project_id, request) -> int:
     query = request.dbsession.query(
         ProjectAnonymizationStatus.anonymization_status_id
     ).filter(ProjectAnonymizationStatus.project_id == project_id)
 
     res = query.first()
     if res is None:
-        # TODO: Check percentage of anonymized data and set status accordingly
-        #  if 100% set to COMPLETED,
-        #  else set to NOT_STARTED
-        anonymization_status_id = AnonymizationStatus.NOT_STARTED.value
-        set_project_anonymization_status(project_id, anonymization_status_id, request)
+        perc = get_anonymization_percentage(project_id, request)
+        if perc == 100.0:
+            anon_status = AnonymizationStatus.COMPLETED
+        else:
+            anon_status = AnonymizationStatus.NOT_STARTED
+        set_project_anonymization_status(project_id, anon_status.value, request)
         print(
-            f"Anonymization status for project_id {project_id} not found. Setting to NOT_STARTED."
+            f"Anonymization status for project_id {project_id} not found. Setting to {anon_status.name}."
         )
-        return anonymization_status_id
-    print(f"Status: {res.anonymization_status_id}")
+        return anon_status.value
     return res.anonymization_status_id
 
 

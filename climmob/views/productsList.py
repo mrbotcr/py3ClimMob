@@ -358,7 +358,7 @@ class generateProductView(privateView):
                 anonymization_status = get_project_anonymization_status(
                     activeProjectData["project_id"], self.request
                 )
-                if anonymization_status == AnonymizationStatus.NOT_STARTED.value:
+                if anonymization_status == AnonymizationStatus.NOT_STARTED:
                     start_anonymization = True
 
             create_raw_data(
