@@ -136,13 +136,10 @@ def processToGenerateTheReport(
 
     locale = request.locale_name
 
-    result_getter = {
-        "func_name": "getJSONResult",
-        "args": {
-            "userOwner": activeProjectData["owner"]["user_name"],
-            "projectId": activeProjectData["project_id"],
-            "projectCod": activeProjectData["project_cod"],
-        },
+    result_params = {
+        "userOwner": activeProjectData["owner"]["user_name"],
+        "projectId": activeProjectData["project_id"],
+        "projectCod": activeProjectData["project_cod"],
     }
 
     info = getJSONResult(
@@ -170,7 +167,7 @@ def processToGenerateTheReport(
         activeProjectData["owner"]["user_name"],
         activeProjectData["project_id"],
         activeProjectData["project_cod"],
-        result_getter,
+        result_params,
         request,
         "Report",
         "",

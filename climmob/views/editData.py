@@ -67,17 +67,14 @@ class downloadDataView(privateView):
                 else:
                     raise HTTPNotFound()
 
-        result_getter = {
-            "func_name": "getJSONResult",
-            "args": {
-                "userOwner": activeProjectUser,
-                "projectId": activeProjectId,
-                "projectCod": activeProjectCod,
-                "includeRegistry": includeRegistry,
-                "includeAssessment": includeAssessment,
-                "assessmentCode": code,
-                "anonymize": anonymize,
-            },
+        result_params = {
+            "userOwner": activeProjectUser,
+            "projectId": activeProjectId,
+            "projectCod": activeProjectCod,
+            "includeRegistry": includeRegistry,
+            "includeAssessment": includeAssessment,
+            "assessmentCode": code,
+            "anonymize": anonymize,
         }
 
         if formatId not in ["csv", "xlsx"]:
@@ -87,7 +84,7 @@ class downloadDataView(privateView):
             activeProjectUser,
             activeProjectId,
             activeProjectCod,
-            result_getter,
+            result_params,
             self.request,
             formId,
             code,

@@ -15,7 +15,7 @@ def create_raw_data(
     user_owner,
     project_id,
     project_cod,
-    result_getter,
+    result_params,
     request,
     form,
     code,
@@ -47,7 +47,7 @@ def create_raw_data(
         "file_type": file_type,
     }
     task = create_raw_data_file.apply_async(
-        (request_attrs, project_id, file, result_getter, start_anonymization),
+        (request_attrs, project_id, file, result_params, start_anonymization),
         queue="ClimMob",
     )
     # We register the instance of the output with the task ID of celery

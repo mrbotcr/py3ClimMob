@@ -15,12 +15,10 @@ from climmob.utility import AnonymizationStatus
 
 @celeryApp.task(base=climmobCeleryTask)
 def create_raw_data_file(
-    request_attrs, project_id, file, result_getter, start_anonymization=False
+    request_attrs, project_id, file, result_params, start_anonymization=False
 ):
     print(f"PATH: {file['path']}")
     print(f"NAME_OUTPUT: {file['name_output']}")
-
-    result = None
 
     with create_request(**request_attrs) as request:
         if start_anonymization:
@@ -39,11 +37,8 @@ def create_raw_data_file(
                 pass
             pass
 
-        result_getter["args"]["request"] = request
-        if result_getter["func_name"] == "getJSONResult":
-            result = getJSONResult(**result_getter["args"])
-        else:
-            raise ValueError(f"Unexpected function name: {result_getter['func_name']}")
+        result_params["request"] = request
+        result = getJSONResult(**result_params)
 
     path_out = os.path.join(file["path"], "outputs")
     if not os.path.exists(file["path"]):
