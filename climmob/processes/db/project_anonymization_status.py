@@ -25,9 +25,9 @@ def get_project_anonymization_status(project_id, request):
 
 
 def set_project_anonymization_status(project_id, anonymization_status_id, request):
-    query = request.dbsession.query(
-        ProjectAnonymizationStatus.anonymization_status_id
-    ).filter(ProjectAnonymizationStatus.project_id == project_id)
+    query = request.dbsession.query(ProjectAnonymizationStatus).filter(
+        ProjectAnonymizationStatus.project_id == project_id
+    )
 
     if query.first() is None:
         project_anonymization_status = ProjectAnonymizationStatus(

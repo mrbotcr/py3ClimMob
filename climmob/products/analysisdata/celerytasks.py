@@ -5,7 +5,12 @@ import pandas as pd
 from climmob.config.celery_app import celeryApp
 from climmob.models.repository import create_request
 from climmob.plugins.utilities import climmobCeleryTask
-from climmob.processes import getJSONResult, anonymize_project
+from climmob.processes import (
+    getJSONResult,
+    anonymize_project,
+    set_project_anonymization_status,
+)
+from climmob.utility import AnonymizationStatus
 
 
 @celeryApp.task(base=climmobCeleryTask)
@@ -19,10 +24,12 @@ def create_raw_data_file(
 
     with create_request(**request_attrs) as request:
         if start_anonymization:
+            anonymization_status_id = AnonymizationStatus.IN_PROGRESS.value
+            set_project_anonymization_status(project_id, anonymization_status_id, request)
             success, msg = anonymize_project(project_id, request)
             if success:
-                # TODO: mark anonymization status as completed
-                pass
+                anonymization_status_id = AnonymizationStatus.COMPLETED.value
+                set_project_anonymization_status(project_id, anonymization_status_id, request)
             else:
                 # TODO: handle the error case
                 pass
