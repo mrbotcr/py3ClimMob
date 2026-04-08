@@ -25,11 +25,15 @@ def create_raw_data_file(
     with create_request(**request_attrs) as request:
         if start_anonymization:
             anonymization_status_id = AnonymizationStatus.IN_PROGRESS.value
-            set_project_anonymization_status(project_id, anonymization_status_id, request)
+            set_project_anonymization_status(
+                project_id, anonymization_status_id, request
+            )
             success, msg = anonymize_project(project_id, request)
             if success:
                 anonymization_status_id = AnonymizationStatus.COMPLETED.value
-                set_project_anonymization_status(project_id, anonymization_status_id, request)
+                set_project_anonymization_status(
+                    project_id, anonymization_status_id, request
+                )
             else:
                 # TODO: handle the error case
                 pass
@@ -78,7 +82,7 @@ def replace_options_with_labels(data):
             for field in assessment["fields"]:
                 if (
                     field["rtable"] is not None
-                    and row["ASS" + assessment["code"] + "_" + field["name"]]
+                    and row.get("ASS" + assessment["code"] + "_" + field["name"])
                     is not None
                 ):
                     result = get_option_label(
