@@ -406,8 +406,6 @@ def get_anonymization_percentage(project_id: str, request) -> float:
             continue
         new = {
             "form_id": "-",
-            "id": q["question_id"],  # just for debug
-            "anonymity": q["question_anonymity"],  # just for debug
             "question_code": q["question_code"],
         }
         questions.append(new)
@@ -436,24 +434,10 @@ def get_anonymization_percentage(project_id: str, request) -> float:
                 continue
             new = {
                 "form_id": code,
-                "id": q["question_id"],  # just for debug
-                "anonymity": q["question_anonymity"],  # just for debug
                 "question_code": q["question_code"],
             }
             questions.append(new)
             if q["question_anonymity"] != QuestionAnonymity.REMOVE.value:
                 expected_count += count
-    for q in questions:
-        expected_count_per_form = 0
-        count = 0
-        if q["anonymity"] != QuestionAnonymity.REMOVE.value:
-            expected_count_per_form = counts[q['form_id']]
-            count = get_anonymized_count_by_form_id_and_col_name(
-                user_owner + "_" + project_code, q["form_id"], q["question_code"]
-            )
-        print(
-            f"anonymized count for {q['question_code']}: {count} of {expected_count_per_form} -> {count / expected_count_per_form * 100 if expected_count_per_form > 0 else 0}%"
-        )
     found_count = get_anonymized_count(user_owner + "_" + project_code)
-    print(f"Total anonymized count: {found_count} of {expected_count}")
     return found_count / expected_count * 100 if expected_count > 0 else 0
