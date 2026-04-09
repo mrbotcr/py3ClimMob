@@ -15,13 +15,12 @@ def create_raw_data(
     user_owner,
     project_id,
     project_cod,
-    result_params,
+    result_params,  # TODO: simplify. There are repeated params
     request,
     form,
     code,
     file_type="csv",
     anonymized=False,
-    start_anonymization=False,
 ):
     # We create the plugin directory if it does not exists and return it
     extra = "-anonymized" if anonymized else ""
@@ -48,7 +47,7 @@ def create_raw_data(
         "type": file_type,
     }
     task = create_raw_data_file.apply_async(
-        (request_attrs, project_id, file, result_params, start_anonymization),
+        (request_attrs, project_id, file, result_params),
         queue="ClimMob",
     )
     # We register the instance of the output with the task ID of celery

@@ -26,6 +26,7 @@ class ReadDataOfProjectViewApi(apiView):
     )
 
     def get(self):
+        # TODO: Discuss response content when is not COMPLETED
         response = Response(
             status="200",
             body=json.dumps(

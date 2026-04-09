@@ -29,7 +29,6 @@ from climmob.processes import (
     get_registry_logs,
     get_assessment_logs,
     getPrjLangDefaultInProject,
-    get_project_anonymization_status,
 )
 from climmob.products import product_found
 from climmob.products.analysisdata.analysisdata import create_raw_data
@@ -40,7 +39,6 @@ from climmob.products.forms.form import create_document_form
 from climmob.products.generalReport.generalReport import create_general_report
 from climmob.products.packages.packages import create_packages_excell
 from climmob.products.qrpackages.qrpackages import create_qr_packages
-from climmob.utility import AnonymizationStatus
 from climmob.views.classes import privateView
 from climmob.views.projectHelp.projectHelp import getImportantInformation
 from climmob.views.registry import getDataFormPreview
@@ -344,14 +342,6 @@ class generateProductView(privateView):
                         "anonymize": anonymized,
                     }
 
-            start_anonymization = False
-            if anonymized:
-                anonymization_status = get_project_anonymization_status(
-                    activeProjectData["project_id"], self.request
-                )
-                if anonymization_status == AnonymizationStatus.NOT_STARTED:
-                    start_anonymization = True
-
             create_raw_data(
                 activeProjectData["owner"]["user_name"],
                 activeProjectData["project_id"],
@@ -362,7 +352,6 @@ class generateProductView(privateView):
                 infoProduct[3],
                 file_type=file_type,
                 anonymized=anonymized,
-                start_anonymization=start_anonymization,
             )
 
         if productid == "documentform":

@@ -1,6 +1,6 @@
 import os
 
-from pyramid.httpexceptions import HTTPNotFound, HTTPFound, HTTPServerError
+from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 
 from climmob.processes import (
     getQuestionsStructure,
@@ -11,11 +11,9 @@ from climmob.processes import (
     getActiveProject,
     projectExists,
     getJSONResult,
-    get_project_anonymization_status,
 )
 from climmob.products.analysisdata.analysisdata import create_raw_data
 from climmob.products.errorLogDocument.errorLogDocument import create_error_log_document
-from climmob.utility import AnonymizationStatus
 from climmob.views.classes import privateView
 from climmob.views.editDataDB import (
     getNamesEditByColums,
@@ -36,8 +34,6 @@ class downloadDataView(privateView):
         includeAssessment = True
         code = ""
 
-        start_anonymization = False
-
         if not projectExists(
             self.user.login, activeProjectUser, activeProjectCod, self.request
         ):
@@ -47,14 +43,6 @@ class downloadDataView(privateView):
             activeProjectId = getTheProjectIdForOwner(
                 activeProjectUser, activeProjectCod, self.request
             )
-
-            if anonymize:
-                anonymization_status = get_project_anonymization_status(
-                    activeProjectId, self.request
-                )
-
-                if anonymization_status == AnonymizationStatus.NOT_STARTED:
-                    start_anonymization = True
 
             if formId == "registry":
                 formId = "Registration"
@@ -90,7 +78,6 @@ class downloadDataView(privateView):
             code,
             file_type=formatId,
             anonymized=anonymize,
-            start_anonymization=start_anonymization,
         )
 
         format_extra = "xlsx_" if formatId == "xlsx" else ""
