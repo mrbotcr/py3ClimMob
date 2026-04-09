@@ -52,9 +52,11 @@ class AnonymizationStatus(IntEnum):
     NOT_STARTED = 1
     IN_PROGRESS = 2
     COMPLETED = 3
+    ERROR = 4
 
 
 class AnonymizationStatusLabel(Enum):
     NOT_STARTED = _("Not started")
     IN_PROGRESS = _("In progress")
     COMPLETED = _("Completed")
+    ERROR = _("Error")
