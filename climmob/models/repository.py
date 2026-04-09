@@ -53,7 +53,7 @@ def execute_two_sqls(sql1, sql2):
 
 
 @contextmanager
-def create_request(settings: dict, locale_name: str):
+def create_request(settings: dict, locale_name: str, user_in_session: str):
     class Registry:
         def __init__(self):
             self.settings: dict = settings
@@ -71,6 +71,7 @@ def create_request(settings: dict, locale_name: str):
         request.dbsession = dbsession
         request.registry = Registry()
         request.locale_name = locale_name
+        request.user_in_session = user_in_session
 
         yield request
 

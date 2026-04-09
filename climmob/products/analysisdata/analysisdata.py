@@ -40,6 +40,7 @@ def create_raw_data(
     request_attrs = {
         "settings": settings,
         "locale_name": request.locale_name,
+        "user_in_session": request.user_in_session,
     }
     file = {
         "product_path": product_path,
