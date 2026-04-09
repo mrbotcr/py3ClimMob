@@ -13,6 +13,7 @@ from climmob.models import (
     get_session_factory,
     get_tm_session,
     initialize_schema,
+    add_modules_to_schema,
 )
 
 
@@ -61,8 +62,8 @@ def create_request(settings: dict, locale_name: str, user_in_session: str):
     session_factory = get_session_factory(engine)
     with transaction.manager:
         dbsession = get_tm_session(session_factory, transaction.manager)
-
-        initialize_schema()
+        modules_allowed = ["climmob.models.climmobv4"]
+        add_modules_to_schema(modules_allowed)
 
         request = requests.Session()
         request.dbsession = dbsession
@@ -70,6 +71,9 @@ def create_request(settings: dict, locale_name: str, user_in_session: str):
         request.registry.settings = settings
         request.locale_name = locale_name
         request.user_in_session = user_in_session
+        request.translate = lambda x: x
+
+        initialize_schema()
 
         yield request
 
