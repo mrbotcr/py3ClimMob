@@ -21,7 +21,6 @@ def create_raw_data_file(request_attrs, project_id, file, result_params):
     print(f"NAME_OUTPUT: {file['name']}")
     output_path = os.path.join(file["product_path"], "outputs")
     file_path = os.path.join(output_path, file["name"]) + f'.{file["type"]}'
-
     if os.path.exists(file_path):
         os.remove(file_path)
 

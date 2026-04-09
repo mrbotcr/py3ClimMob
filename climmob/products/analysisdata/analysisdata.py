@@ -20,10 +20,9 @@ def create_raw_data(
     form,
     code,
     file_type="csv",
-    anonymized=False,
 ):
     # We create the plugin directory if it does not exists and return it
-    extra = "-anonymized" if anonymized else ""
+    extra = "-anonymized" if result_params.get("anonymize") else ""
 
     file_name = form + f"_data{extra}"
     if code != "":

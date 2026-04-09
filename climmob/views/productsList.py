@@ -351,7 +351,6 @@ class generateProductView(privateView):
                 infoProduct[2],
                 infoProduct[3],
                 file_type=file_type,
-                anonymized=anonymized,
             )
 
         if productid == "documentform":

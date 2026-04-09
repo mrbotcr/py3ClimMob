@@ -77,7 +77,6 @@ class downloadDataView(privateView):
             formId,
             code,
             file_type=formatId,
-            anonymized=anonymize,
         )
 
         format_extra = "xlsx_" if formatId == "xlsx" else ""
