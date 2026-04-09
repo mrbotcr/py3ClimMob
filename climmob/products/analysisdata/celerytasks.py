@@ -9,6 +9,7 @@ from climmob.processes import (
     getJSONResult,
     anonymize_project,
     set_project_anonymization_status,
+    get_anonymization_percentage,
 )
 from climmob.utility import AnonymizationStatus
 
@@ -27,20 +28,22 @@ def create_raw_data_file(
 
     with create_request(**request_attrs) as request:
         if start_anonymization:
-            anonymization_status_id = AnonymizationStatus.IN_PROGRESS.value
             set_project_anonymization_status(
-                project_id, anonymization_status_id, request
+                project_id, AnonymizationStatus.IN_PROGRESS.value, request
             )
             success, msg = anonymize_project(project_id, request)
-            if success:
-                anonymization_status_id = AnonymizationStatus.COMPLETED.value
+
+            perc = get_anonymization_percentage(project_id, request)
+
+            if success and perc == 100.0:
                 set_project_anonymization_status(
-                    project_id, anonymization_status_id, request
+                    project_id, AnonymizationStatus.COMPLETED.value, request
                 )
-            else:
-                # TODO: handle the error case
-                pass
-            pass
+            if not success or perc < 100.0:
+                set_project_anonymization_status(
+                    project_id, AnonymizationStatus.ERROR.value, request
+                )
+                return
 
         result_params["request"] = request
         result = getJSONResult(**result_params)
