@@ -1,5 +1,6 @@
 from contextlib import contextmanager
 
+import pyramid
 import requests
 import transaction
 from sqlalchemy import create_engine
@@ -54,10 +55,6 @@ def execute_two_sqls(sql1, sql2):
 
 @contextmanager
 def create_request(settings: dict, locale_name: str, user_in_session: str):
-    class Registry:
-        def __init__(self):
-            self.settings: dict = settings
-
     engine = get_engine(settings)
     Base.metadata.create_all(engine)
 
@@ -69,7 +66,8 @@ def create_request(settings: dict, locale_name: str, user_in_session: str):
 
         request = requests.Session()
         request.dbsession = dbsession
-        request.registry = Registry()
+        request.registry = pyramid.registry.Registry
+        request.registry.settings = settings
         request.locale_name = locale_name
         request.user_in_session = user_in_session
 
