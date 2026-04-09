@@ -17,8 +17,13 @@ from climmob.utility import AnonymizationStatus
 def create_raw_data_file(
     request_attrs, project_id, file, result_params, start_anonymization=False
 ):
-    print(f"PATH: {file['path']}")
-    print(f"NAME_OUTPUT: {file['name_output']}")
+    print(f"PATH: {file['product_path']}")
+    print(f"NAME_OUTPUT: {file['name']}")
+    output_path = os.path.join(file["product_path"], "outputs")
+    file_path = os.path.join(output_path, file["name"]) + f'.{file["type"]}'
+
+    if os.path.exists(file_path):
+        os.remove(file_path)
 
     with create_request(**request_attrs) as request:
         if start_anonymization:
@@ -40,22 +45,22 @@ def create_raw_data_file(
         result_params["request"] = request
         result = getJSONResult(**result_params)
 
-    path_out = os.path.join(file["path"], "outputs")
-    if not os.path.exists(file["path"]):
-        os.makedirs(file["path"])
-        os.makedirs(path_out)
+    output_path = os.path.join(file["product_path"], "outputs")
+    if not os.path.exists(file["product_path"]):
+        os.makedirs(file["product_path"])
+        os.makedirs(output_path)
 
     replace_options_with_labels(result)
 
     df = pd.DataFrame(result["data"])
-    if file["file_type"] == "xlsx":
+    if file["type"] == "xlsx":
         df.to_excel(
-            os.path.join(path_out, file["name_output"]) + f".{file['file_type']}",
+            os.path.join(output_path, file["name"]) + f".{file['type']}",
             index=False,
         )
-    elif file["file_type"] == "csv":
+    elif file["type"] == "csv":
         df.to_csv(
-            os.path.join(path_out, file["name_output"]) + f".{file['file_type']}",
+            os.path.join(output_path, file["name"]) + f".{file['type']}",
             index=False,
         )
 

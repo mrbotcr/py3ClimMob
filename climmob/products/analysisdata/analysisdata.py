@@ -26,13 +26,13 @@ def create_raw_data(
     # We create the plugin directory if it does not exists and return it
     extra = "-anonymized" if anonymized else ""
 
-    name_output = form + f"_data{extra}"
+    file_name = form + f"_data{extra}"
     if code != "":
-        name_output += "_" + code
+        file_name += "_" + code
 
-    name_output += "_" + project_cod
+    file_name += "_" + project_cod
 
-    path = createProductDirectory(
+    product_path = createProductDirectory(
         request, user_owner, project_cod, f"data{file_type}{extra}"
     )
     # We call the Celery task that will generate the output packages.pdf
@@ -42,9 +42,9 @@ def create_raw_data(
         "locale_name": request.locale_name,
     }
     file = {
-        "path": path,
-        "name_output": name_output,
-        "file_type": file_type,
+        "product_path": product_path,
+        "name": file_name,
+        "type": file_type,
     }
     task = create_raw_data_file.apply_async(
         (request_attrs, project_id, file, result_params, start_anonymization),
@@ -69,7 +69,7 @@ def create_raw_data(
     registerProductInstance(
         project_id,
         f"data{file_type}{extra}",
-        name_output + f".{file_type}",
+        file_name + f".{file_type}",
         mimetype,
         process_name,
         task.id,
