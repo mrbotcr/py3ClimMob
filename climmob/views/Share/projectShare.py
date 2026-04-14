@@ -14,6 +14,7 @@ from climmob.processes import (
     get_collaborators_in_project,
     remove_collaborator,
     getAccessTypeForProject,
+    setActiveProject,
 )
 from climmob.views.classes import privateView
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
@@ -32,6 +33,7 @@ class projectShare_view(privateView):
         activeProjectId = getTheProjectIdForOwner(
             activeProjectUser, activeProjectCod, self.request
         )
+        setActiveProject(self.user.login, activeProjectId, self.request)
 
         accessType = getAccessTypeForProject(
             self.user.login, activeProjectId, self.request

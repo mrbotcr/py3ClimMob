@@ -52,7 +52,7 @@
             <br>
             <ul>{{ _('Project name') }}: <strong>{{ project_info["project_name"] }}</strong></ul>
             <ul>{{ _('Project principal investigator') }}: <strong>{{ project_info["project_pi"] }}</strong></ul>
-            <ul>{{ _('Country') }}: <strong>{{ project_info["project_cnty"] }}</strong></ul>
+            <ul>{{ _('Country') }}: <strong>{{ project_info["Country"].cnty_name }}</strong></ul>
             <ul>{{ _('Status') }}: <strong>
                 {% if project_info["project_status"] == 0 %}
                     {{ _("Undefined") }}
@@ -65,7 +65,7 @@
                 {% endif %}</strong></ul>
             <br>
             <p>{{ _("If you have questions regarding the project or its outcomes, please contact the project owner or the principal investigator.") }}</p>
-            <p style="margin-bottom: 15px;">{{ _('Thank you for your participation and collaboration.') }}.</p>
+            <p style="margin-bottom: 15px;">{{ _('Thank you for your participation and collaboration') }}.</p>
         {% endblock email_message %}
 
         {% block email_goodbye %}

@@ -984,8 +984,8 @@ class FinishProjectView(privateView):
         project_info = getActiveProject(self.user.login, self.request)
         progress, pcompleted = getProjectProgress(
             request_activeUSer,
-            project_info["project_cod"],
-            project_info["project_id"],
+            request_activeProjectCod,
+            activeProjectId,
             self.request,
         )
         total_ass_records = 0
@@ -997,7 +997,6 @@ class FinishProjectView(privateView):
             "project_info": project_info,
             "progress": progress,
             "total_ass_records": total_ass_records,
-
         }
 
     def post(self):
@@ -1082,24 +1081,26 @@ class FinishProjectView(privateView):
                 "ClimMob has no email settings in place. Email service is disabled."
             )
             return False
-        related_collaborators = get_collaborators_in_project(self.request, project_info["project_id"] )
-        recipients = [("Pablo O.", "porozco@mrbotcr.com")]
+        related_collaborators = get_collaborators_in_project(
+            self.request, project_info["project_id"]
+        )
+        recipients = []
         for collaborator in related_collaborators:
-            recipients.append((collaborator["user_fullname"], collaborator["user_email"]))
+            recipients.append(
+                (collaborator["user_fullname"], collaborator["user_email"])
+            )
         if not recipients:
             log.warning("Email didn't send. No recipients found.")
             return False
 
-        subject = (
-                "Project " + str(project_info["project_cod"]) + " has been finalized"
-        )
+        subject = "Project " + str(project_info["project_cod"]) + " has been finalized"
         try:
             text = render_template(
                 "email/close_project_participants_registration.jinja2",
                 {
                     "project_info": project_info,
                     "_": _,
-                    "logo": self.request.url_for_static('landing/climmob2.png')
+                    "logo": self.request.url_for_static("landing/climmob2.png"),
                 },
             )
         except Exception as e:
