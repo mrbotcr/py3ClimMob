@@ -56,9 +56,6 @@ class downloadDataView(privateView):
                     raise HTTPNotFound()
 
         result_params = {
-            "userOwner": activeProjectUser,
-            "projectId": activeProjectId,
-            "projectCod": activeProjectCod,
             "includeRegistry": includeRegistry,
             "includeAssessment": includeAssessment,
             "assessmentCode": code,
@@ -69,9 +66,11 @@ class downloadDataView(privateView):
             raise HTTPNotFound()
 
         create_raw_data(
-            activeProjectUser,
-            activeProjectId,
-            activeProjectCod,
+            {
+                "userOwner": activeProjectUser,
+                "projectId": activeProjectId,
+                "projectCod": activeProjectCod,
+            },
             result_params,
             self.request,
             formId,

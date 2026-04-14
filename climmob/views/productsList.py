@@ -315,37 +315,21 @@ class generateProductView(privateView):
             if file_type == "xlsx":
                 infoProduct[2] = infoProduct[3]
                 infoProduct[3] = infoProduct[4]
+
+            result_params = {"anonymize": anonymized}
+
             if infoProduct[2] == "Registration":
-                result_params = {
+                result_params["includeAssessment"] = False
+            else:
+                if infoProduct[2] == "Assessment":
+                    result_params["assessmentCode"] = infoProduct[3]
+
+            create_raw_data(
+                {
                     "userOwner": activeProjectData["owner"]["user_name"],
                     "projectId": activeProjectData["project_id"],
                     "projectCod": activeProjectData["project_cod"],
-                    "includeAssessment": False,
-                    "anonymize": anonymized,
-                }
-
-            else:
-                if infoProduct[2] == "Assessment":
-                    result_params = {
-                        "userOwner": activeProjectData["owner"]["user_name"],
-                        "projectId": activeProjectData["project_id"],
-                        "projectCod": activeProjectData["project_cod"],
-                        "assessmentCode": infoProduct[3],
-                        "anonymize": anonymized,
-                    }
-
-                else:
-                    result_params = {
-                        "userOwner": activeProjectData["owner"]["user_name"],
-                        "projectId": activeProjectData["project_id"],
-                        "projectCod": activeProjectData["project_cod"],
-                        "anonymize": anonymized,
-                    }
-
-            create_raw_data(
-                activeProjectData["owner"]["user_name"],
-                activeProjectData["project_id"],
-                activeProjectData["project_cod"],
+                },
                 result_params,
                 self.request,
                 infoProduct[2],

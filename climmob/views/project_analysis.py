@@ -136,12 +136,6 @@ def processToGenerateTheReport(
 
     locale = request.locale_name
 
-    result_params = {
-        "userOwner": activeProjectData["owner"]["user_name"],
-        "projectId": activeProjectData["project_id"],
-        "projectCod": activeProjectData["project_cod"],
-    }
-
     info = getJSONResult(
         activeProjectData["owner"]["user_name"],
         activeProjectData["project_id"],
@@ -164,10 +158,12 @@ def processToGenerateTheReport(
     )
 
     create_raw_data(
-        activeProjectData["owner"]["user_name"],
-        activeProjectData["project_id"],
-        activeProjectData["project_cod"],
-        result_params,
+        {
+            "userOwner": activeProjectData["owner"]["user_name"],
+            "projectId": activeProjectData["project_id"],
+            "projectCod": activeProjectData["project_cod"],
+        },
+        {},
         request,
         "Report",
         "",

@@ -17,8 +17,6 @@ from climmob.utility import AnonymizationStatus
 
 @celeryApp.task(base=climmobCeleryTask)
 def create_raw_data_file(request_attrs, project_id, file, result_params):
-    print(f"PATH: {file['product_path']}")
-    print(f"NAME_OUTPUT: {file['name']}")
     output_path = os.path.join(file["product_path"], "outputs")
     file_path = os.path.join(output_path, file["name"]) + f'.{file["type"]}'
     if os.path.exists(file_path):

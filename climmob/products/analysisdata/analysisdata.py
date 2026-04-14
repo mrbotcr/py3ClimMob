@@ -12,10 +12,8 @@ from climmob.utility import get_settings
 
 
 def create_raw_data(
-    user_owner,
-    project_id,
-    project_cod,
-    result_params,  # TODO: simplify. There are repeated params
+    project,
+    result_params,
     request,
     form,
     code,
@@ -28,10 +26,10 @@ def create_raw_data(
     if code != "":
         file_name += "_" + code
 
-    file_name += "_" + project_cod
+    file_name += "_" + project["projectCod"]
 
     product_path = createProductDirectory(
-        request, user_owner, project_cod, f"data{file_type}{extra}"
+        request, project["userOwner"], project["projectCod"], f"data{file_type}{extra}"
     )
     # We call the Celery task that will generate the output packages.pdf
     settings = get_settings(request)
@@ -45,8 +43,9 @@ def create_raw_data(
         "name": file_name,
         "type": file_type,
     }
+    result_params.update(project)
     task = create_raw_data_file.apply_async(
-        (request_attrs, project_id, file, result_params),
+        (request_attrs, project["projectId"], file, result_params),
         queue="ClimMob",
     )
     # We register the instance of the output with the task ID of celery
@@ -66,7 +65,7 @@ def create_raw_data(
     )
 
     registerProductInstance(
-        project_id,
+        project["projectId"],
         f"data{file_type}{extra}",
         file_name + f".{file_type}",
         mimetype,
@@ -79,15 +78,20 @@ def create_raw_data(
         there_are_multimedia = False
         if form == "Registration":
             there_are_multimedia = registryHaveQuestionOfMultimediaType(
-                request, project_id
+                request, project["projectId"]
             )
 
         if form == "Assessment":
             there_are_multimedia = assessmentHaveQuestionOfMultimediaType(
-                request, project_id, code
+                request, project["projectId"], code
             )
 
         if there_are_multimedia:
             plugin.start_multimedia_download(
-                request, user_owner, project_id, project_cod, form, code
+                request,
+                project["userOwner"],
+                project["projectId"],
+                project["projectCod"],
+                form,
+                code,
             )
