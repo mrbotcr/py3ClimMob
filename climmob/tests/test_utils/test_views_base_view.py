@@ -49,9 +49,9 @@ class TestHomeView(ViewBaseTest):
     view_class = HomeView
 
     def test_get_always_redirects_to_login(self):
-        res = self.view.get("/", status=302)
+        res = self.view.get()
 
-        assert res.status_int == 302
+        assert res.status_code == 302
         assert res.location.endswith("/login")
 
     #####----------------------------this test was comment because the HomeView does not going to be showed
