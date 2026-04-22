@@ -70,6 +70,10 @@ class RefreshSessionTokensView(publicView):
 
 class HomeView(publicView):
     def get(self):
+        showMainPage = False
+        if not showMainPage:
+            return HTTPFound(location=self.request.route_url("login"))
+
         cookies = self.request.cookies
         if "climmob_cookie_question" in cookies.keys():
             ask_for_cookies = False

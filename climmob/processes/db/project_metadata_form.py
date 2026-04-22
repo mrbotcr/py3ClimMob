@@ -58,6 +58,13 @@ def knowIfTheProjectMetadataIsComplete(request, projectId):
             func.count(ProjectMetadataForm.project_id).label("quantity_completed")
         )
         .filter(ProjectMetadataForm.project_id == projectId)
+        .filter(
+            ProjectMetadataForm.metadata_id.in_(
+                request.dbsession.query(MetadataForm.metadata_id).filter(
+                    MetadataForm.metadata_active == 1
+                )
+            )
+        )
         .one()
     )
     return (

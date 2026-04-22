@@ -115,7 +115,7 @@
 
                     <form class="form-horizontal" id="form_metadata" role="form" method="post" action="{{ request.url }}" >
 
-                        <div class="form-horizontal">
+                        <div class="form-horizontal" id="mainSpaceForm">
                             <div id="spaceForPutTheForm"></div>
                         </div>
 
@@ -158,6 +158,8 @@
                 $.get(URL, function (dataString, status) {
                     dataString = dataString.split("@@@@@@@@@@")
                     $("#spaceForPutTheTitle").text("{{ _("Form") }}: "+dataString[0])
+                    $("#spaceForPutTheForm").remove();
+                    $("#mainSpaceForm").append('<div id="spaceForPutTheForm"></div>');
                     $("#spaceForPutTheForm").html(dataString[1])
                     $("#metadata_id").val(formId)
                     $("#div_for_show_form").css("display","block")
@@ -197,7 +199,11 @@
             function updateSticky(stickyA,stickyB){
                 var a = document.querySelector('[stickyname="'+stickyA+'"]');
                 var b = document.querySelector('[stickyname="'+stickyB+'"]');
-
+                if (!b) return;
+                if (!a){
+                    b.style.top = '0px';
+                    return;
+                }
                 var ro = new ResizeObserver(() => {
                     var alturaA = a.getBoundingClientRect().height;
                     b.style.top = alturaA + 'px';
