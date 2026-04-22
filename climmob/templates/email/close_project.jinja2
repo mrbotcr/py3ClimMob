@@ -36,7 +36,7 @@
         {% block email_message %}
             <p style="margin-bottom: 15px;">
                 {{ _('Please be advised that Project ') }}
-                <strong>{{ project_info["project_cod"] }}</strong> {{ _('was officially finalized today, ') }} {{ date }}.
+                <strong>{{ project_info["project_cod"] }}</strong> {{ _('was officially close today, ') }} {{ date }}.
             </p>
             <p style="margin-bottom: 15px;">
                 {{ _('From this point forward, all project-related tasks, data entries, and activities are permanently locked.') }}
@@ -76,10 +76,10 @@
                 {% elif project_info["project_status"] == 2 %}
                     {{ _("In progress") }}
                 {% elif project_info["project_status"] == 3 %}
-                    {{ _("Finalized") }}
+                    {{ _("Closed") }}
                 {% endif %}</strong></ul>
             <br>
-            <p style="margin-bottom: 20px;">{{ _('Would you like to curate the project at this moment?') }} <a href="{{ link }}">{{ _('Please click here') }}</a></p>
+            <p style="margin-bottom: 20px;">{{ _('Would you like to add this project to your network dashboard?') }} <a href="{{ link }}">{{ _('Go to ClimMob') }}</a></p>
             <p style="margin-bottom: 15px;">{{ _('Thank you for collaborating in the 1000FARMS Network monitoring!') }}</p>
         {% endblock email_message %}
 

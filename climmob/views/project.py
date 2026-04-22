@@ -1012,7 +1012,7 @@ class FinishProjectView(privateView):
             self.returnRawViewResult = True
             self.request.session.flash(
                 self._(
-                    "The project has been successfully finalized. Thank you for your dedication! Congratulations!"
+                    "The project has been successfully closed. Thank you for your dedication! Congratulations!"
                 )
             )
             return HTTPFound(location=self.request.route_url("dashboard"))

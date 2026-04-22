@@ -29,26 +29,20 @@
 <body><div class="email-container">
     {% block email_body %}
         {% block email_hello %}
-            <p style="margin-bottom: 15px;"><strong>{{ _('Dear user') }},</strong></p>
+            <p style="margin-bottom: 15px;"><strong>{{ _('Congratulations!') }},</strong></p>
         {% endblock email_hello %}
 
         {% block email_message %}
             <p style="margin-bottom: 15px;">
-                {{ _('We would like to inform you that the project ') }}
+                {{ _('Your project ') }}
                 <strong>{{ project_info["project_cod"] }} - {{ project_info["project_name"] }}</strong>
-                {{ _('has been officially finalized') }}.
+                {{ _('is locked now') }}.
             </p>
             <p style="margin-bottom: 15px;">
-                {{ _('As part of the project lifecycle in ClimMob, once it is finalized, all related activities are
-                closed and the project becomes locked for further modifications') }}. {{ _("This means that no additional data entries, edits, or updates can be made") }}.
+                {{ _('Information and results are still available for review') }}. <strong>{{ _("Next steps") }}:</strong>
+                {{ _('Analyze your results and publish your data!') }}
             </p>
-            <p> {{ _('You may still access the project to review its information and results according to the access
-            permissions previously granted by the project owner') }}.</p>
-            <p>
-            {{ _("If applicable, and provided the project meets the minimum requirements, you will also be able to
-            generate and access an analysis report from the platform.") }}
-            </p>
-            <p><strong>Project details:</strong></p>
+            <p><strong>{{ _("Project details") }}:</strong></p>
             <br>
             <ul>{{ _('Project name') }}: <strong>{{ project_info["project_name"] }}</strong></ul>
             <ul>{{ _('Project principal investigator') }}: <strong>{{ project_info["project_pi"] }}</strong></ul>
@@ -61,11 +55,10 @@
                 {% elif project_info["project_status"] == 2 %}
                     {{ _("In progress") }}
                 {% elif project_info["project_status"] == 3 %}
-                    {{ _("Finalized") }}
+                    {{ _("Closed") }}
                 {% endif %}</strong></ul>
             <br>
-            <p>{{ _("If you have questions regarding the project or its outcomes, please contact the project owner or the principal investigator.") }}</p>
-            <p style="margin-bottom: 15px;">{{ _('Thank you for your participation and collaboration') }}.</p>
+            <p style="margin-bottom: 15px;">{{ _('Thank you for using ClimMob and contributing to its growing community of practice') }}.</p>
         {% endblock email_message %}
 
         {% block email_goodbye %}

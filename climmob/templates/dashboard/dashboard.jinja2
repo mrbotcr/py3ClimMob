@@ -621,7 +621,7 @@
                                                     {% else %}
                                                         <div style="text-align: left; padding-left: 10px" >
                                                             <p>
-                                                                {{ _("You can not start the trial data collection once the project was finalized") }}
+                                                                {{ _("You can not start the trial data collection once the project was closed") }}
                                                             </p>
                                                         </div>
                                                     {% endif %}
@@ -671,7 +671,7 @@
                                                                              class="progress-bar {{ pbtype }}"></div>
                                                                     </div>
                                                                 {% else %}
-                                                                    <div class="small" style="text-align: left">{{ _("Project Finalized") }}</div>
+                                                                    <div class="small" style="text-align: left">{{ _("Close project") }}</div>
                                                                 {% endif %}
                                                             </td>
                                                             <td style="vertical-align: middle;text-align: center; width: 10%">
@@ -814,7 +814,7 @@
                                                                 </div>
                                                                 {% else %}
                                                                     <div class="text-center">
-                                                                        <p>{{ _("Project finalized, for the integrity of the data you can not make changes") }}</p>
+                                                                        <p>{{ _("Project closed, for the integrity of the data you can not make changes") }}</p>
                                                                     </div>
                                                                 {% endif %}
                                                         {% else %}
@@ -845,7 +845,7 @@
                                             {% endif %}
                                             {% if not can_edit and progress.regtotal == 0  %}
                                                 <p>
-                                                {{ _("This project has been finalized. Now the project is blocked") }}
+                                                {{ _("This project has been closed. Now the project is blocked") }}
                                                 </p>
                                             {% endif %}
 
@@ -887,7 +887,7 @@
                                                                                 {% endif %}
                                                                             {% endif %}
                                                                         {% else %}
-                                                                             <div class="small" style="text-align: left">{{ _("Project Finalized") }}</div>
+                                                                             <div class="small" style="text-align: left">{{ _("Project closed") }}</div>
                                                                         {% endif %}
                                                                         <div class="progress progress-mini">
                                                                             <div style="width: {{ assessment.assperc }}%;"
@@ -1055,7 +1055,7 @@
                                                                 <a class="btn btn-primary btn-rounded " href="{{ request.route_url('Metadata', user=activeProject["owner"].user_name, project=activeProject.project_cod) }}"><i class="fa fa-file-text"></i> {{ _("Trial documentation") }}</a>
                                                             </div>
                                                         {% else %}
-                                                            {{ _("Project finalized without the requirements to do the analysis") }}
+                                                            {{ _("Project closed without the requirements to do the analysis") }}
                                                         {% endif %}
                                                     {% endif %}
                                                 {% else %}
@@ -1065,7 +1065,7 @@
                                                 {% if can_edit %}
                                                     {{ _("The project does not meet the requirements to run the analysis.") }}
                                                 {% else %}
-                                                    {{ _("Project finalized without the requirements to do the analysis") }}
+                                                    {{ _("Project closed without the requirements to do the analysis") }}
                                                 {% endif %}
                                             {% endif %}
                                             <br>
@@ -1078,9 +1078,7 @@
                                         <div class="ibox-title">
                                             <h5>
                                                 {% if can_edit %}
-                                                    {{ _("Project finalization") }}
-                                                {% else %}
-                                                    {{ _("Project finalized") }}
+                                                    {{ _("Close project") }}
                                                 {% endif %}
                                             </h5>
                                             <div class="ibox-tools">
@@ -1094,19 +1092,19 @@
                                             {% if hasActiveProject and activeProject["access_type"] in [1] and activeUser.login == activeProject.owner.user_name %}
                                                 {% if can_edit %}
                                                     <p>
-                                                    {{ _("Finalizing a project is recommended once all objectives have been met and all planned phases are complete. Please ensure that no further data entries, profile updates, or metadata changes are required before proceeding.") }}
+                                                    {{ _("Closing a project is recommended once all objectives have been met and all planned phases are complete. Please ensure that no further data entries, profile updates, or metadata changes are required before proceeding.") }}
                                                     </p>
                                                     <button onclick="location.href='{{ request.route_url('finishproject', user = activeProject.owner.user_name, project= activeProject.project_cod) }}'"
                                                         class="btn btn-primary btn-rounded btn-block">
-                                                    <i class="fa fa-check-square"></i> {{ _('Set as finalized') }}
+                                                    <i class="fa fa-check-square"></i> {{ _('Close project') }}
                                                 </button>
                                                 {% else %}
                                                     <p>
-                                                    {{ _('This project has been finalized')  }}.
+                                                    {{ _('This project has been closed') }}.
                                                     </p>
                                                 {% endif %}
                                             {% else %}
-                                                <p>{{ _("This an action only can be by proyect owner") }}</p>
+                                                <p>{{ _("This action can only be performed by the project owner") }}.</p>
                                             {% endif %}
                                         </div>
                                     </div>
