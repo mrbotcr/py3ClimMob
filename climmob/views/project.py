@@ -1006,6 +1006,22 @@ class FinishProjectView(privateView):
         )
         project_info = getActiveProject(self.user.login, self.request)
 
+        progress, pcompleted = getProjectProgress(
+            self.request.user,
+            self.request.project,
+            getTheProjectIdForOwner(
+                self.request.user, self.request.project, self.request
+            ),
+            self.request,
+        )
+        total_ass_records = 0
+        for assessment in progress["assessments"]:
+            if assessment["ass_status"] == 1 or assessment["ass_status"] == 2:
+                total_ass_records = total_ass_records + assessment["asstotal"]
+
+        project_info["total_ass_records"] = total_ass_records
+        project_info["progress"] = progress
+
         if success:
             self.send_email_notification(project_info)
             self.send_collaborators_email_notification(project_info)
@@ -1040,7 +1056,7 @@ class FinishProjectView(privateView):
             return False
 
         subject = (
-            "✅  Project " + str(project_info["project_cod"]) + " has been finalized"
+            "✅  Project " + str(project_info["project_cod"]) + " has been closed"
         )
         try:
             text = render_template(
@@ -1093,7 +1109,7 @@ class FinishProjectView(privateView):
             log.warning("Email didn't send. No recipients found.")
             return False
 
-        subject = "Project " + str(project_info["project_cod"]) + " has been finalized"
+        subject = "Project " + str(project_info["project_cod"]) + " has been closed"
         try:
             text = render_template(
                 "email/close_project_participants_registration.jinja2",
