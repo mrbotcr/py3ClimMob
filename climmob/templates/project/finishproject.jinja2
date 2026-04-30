@@ -186,7 +186,8 @@
                                             {% if flag_assessments_errors or flag_registration_errors %}
                                                 <br>
                                                 <div>
-                                                    <a href="{{ request.route_url('dashboard') }}"><span class="label label-warning" title="{{ _("If you don't resolve these conflicts now, you won't be able to resolve them later once the project is finished.") }}"><i class="fa fa-info-circle"></i> {{ _('Warning') }}</span></a>
+                                                    <a href="{{ request.route_url('dashboard') }}"><span class="label label-warning" title="{{ _("Submissions with conflicts are pending resolution. If you don’t resolve them now, they cannot be fixed once the project is closed.
+                                                    ") }}"><i class="fa fa-info-circle"></i> {{ _('Warning') }}</span></a>
                                                 </div>
                                             {% endif %}
                                         </td>
@@ -199,7 +200,8 @@
                                             and progress.metadata == True %}
                                                 <span class="label label-success">{{ _("Available") }}</span>
                                             {% else %}
-                                                <span class="label label-danger" title="{{ _("There are not enough valid submissions to run the analysis, or the trial documentation is incomplete") }}"><i class="fa fa-info-circle"></i> {{ _('Unavailable') }}</span>
+                                                <span class="label label-danger" title="{{ _("The analysis cannot be generated because the trial documentation is not yet complete or there are not enough valid submissions.
+                                                ") }}"><i class="fa fa-info-circle"></i> {{ _('Unavailable') }}</span>
                                             {% endif %}
                                         </td>
                                     </tr>
