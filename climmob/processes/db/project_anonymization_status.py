@@ -2,6 +2,11 @@ import datetime
 
 from climmob.models.climmobv4 import ProjectAnonymizationStatus
 
+__all__ = [
+    "get_project_anonymization_status",
+    "set_project_anonymization_status",
+]
+
 
 def get_project_anonymization_status(project_id, request) -> int | None:
     query = request.dbsession.query(
@@ -28,8 +33,10 @@ def set_project_anonymization_status(project_id, anonymization_status_id, reques
         )
         request.dbsession.add(project_anonymization_status)
     else:
-        query.update({
-            "anonymization_status_id": anonymization_status_id,
-            "last_updated_by": request.user_in_session,
-            "last_updated_at": datetime.datetime.now(),
-        })
+        query.update(
+            {
+                "anonymization_status_id": anonymization_status_id,
+                "last_updated_by": request.user_in_session,
+                "last_updated_at": datetime.datetime.now(),
+            }
+        )

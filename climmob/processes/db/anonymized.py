@@ -2,16 +2,20 @@ import logging
 import re
 from datetime import datetime, date
 
-from climmob.processes import (
-    getRegistryQuestions,
-    getProjectAssessments,
-    getAssessmentQuestions,
-)
-
 log = logging.getLogger(__name__)
 
 from climmob.models.repository import sql_execute, sql_fetch_all
 
+from climmob.processes.db.assessment import (
+    getProjectAssessments,
+    getAssessmentQuestions,
+)
+from climmob.processes.db.project_anonymization_status import (
+    get_project_anonymization_status,
+)
+from climmob.processes.db.registry import (
+    getRegistryQuestions,
+)
 from climmob.processes.db.project import (
     get_project_cod_by_id,
     getProjectData,
@@ -33,6 +37,7 @@ from climmob.utility import (
     QuestionAnonymity,
     add_noise_to_gps_coordinates,
     QuestionType,
+    AnonymizationStatus,
 )
 
 __all__ = [
@@ -43,6 +48,7 @@ __all__ = [
     "anonymize_project",
     "get_anonymized_count",
     "get_anonymization_percentage",
+    "project_needs_to_start_anonymization",
 ]
 
 
@@ -407,3 +413,20 @@ def get_anonymization_percentage(project_id: str, request) -> float:
                 expected_count += count
     found_count = get_anonymized_count(user_owner + "_" + project_code)
     return found_count / expected_count * 100 if expected_count > 0 else 0
+
+
+def project_needs_to_start_anonymization(project_id: str, request) -> bool:
+    start_anonymization = True
+
+    perc = get_anonymization_percentage(project_id, request)
+
+    if perc == 100.0:
+        start_anonymization = False
+    else:
+        anonymization_status = get_project_anonymization_status(project_id, request)
+
+        # NOT_STARTED, COMPLETED, ERROR and None leave start_anonymization = True
+        if anonymization_status == AnonymizationStatus.IN_PROGRESS:
+            start_anonymization = False
+
+    return start_anonymization

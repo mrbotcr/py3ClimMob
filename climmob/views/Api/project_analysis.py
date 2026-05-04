@@ -10,7 +10,9 @@ from climmob.processes import (
     getProjectData,
     getTheProjectIdForOwner,
     getAccessTypeForProject,
+    project_needs_to_start_anonymization,
 )
+from climmob.products.analysisdata.analysisdata import create_raw_data
 from climmob.views.classes import apiView
 from climmob.views.project_analysis import processToGenerateTheReport
 from climmob.views.validators import TextField
@@ -27,6 +29,24 @@ class ReadDataOfProjectViewApi(apiView):
 
     def get(self):
         # TODO: Discuss response content when is not COMPLETED
+
+        if project_needs_to_start_anonymization(
+            self.context.active_project_id, self.request
+        ):
+            create_raw_data(
+                {
+                    "userOwner": self.context.body["user_owner"],
+                    "projectId": self.context.active_project_id,
+                    "projectCod": self.context.body["project_cod"],
+                },
+                {"anonymize": True},
+                self.request,
+                "Report",
+                "",
+            )
+
+            return Response(status="204")
+
         response = Response(
             status="200",
             body=json.dumps(
