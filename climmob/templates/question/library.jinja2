@@ -316,6 +316,9 @@
             else if (anonymity === {{ QuestionAnonymity.NOISE }}) {
                 $('#anonymity-description-noise').css('display', 'block');
             }
+            else if (anonymity === {{ QuestionAnonymity.MONTH_YEAR }}) {
+                $('#anonymity-description-month-year').css('display', 'block');
+            }
         }
 
         function clean_anonymization_section() {
