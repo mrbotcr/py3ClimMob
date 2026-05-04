@@ -544,6 +544,7 @@ class apiView(BaseView):
             apiKey = self.request.params["Apikey"]
             self.apiKey = apiKey
             self.user = getUserByApiKey(apiKey, self.request)
+            self.request.user_in_session = self.user.login
 
             if self.user == None:
                 response = Response(
