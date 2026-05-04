@@ -7,6 +7,7 @@ from xml.dom import minidom
 from pyramid.response import Response
 
 from climmob.processes import (
+    thereIsAnEqualEnumIdInTheProject,
     projectExists,
     projectAsessmentStatus,
     getProjectProgress,
@@ -25,7 +26,7 @@ from climmob.processes import (
     getAccessTypeForProject,
     update_project_status,
 )
-from climmob.processes.odk.api import storeJSONInMySQL
+from climmob.processes.odk.api import storeJSONInMySQL, review_multimedia_content
 from climmob.products.forms.form import create_document_form
 from climmob.views.classes import apiView
 from climmob.views.registry import getDataFormPreview
@@ -651,9 +652,10 @@ def ApiAssessmentPushProcess(self, structure, dataworking, activeProjectId):
             self.request,
         )
         obligatoryQuestions = []
-        possibleQuestions = ["clm_start", "clm_end", "_submitted_date"]
+        possibleQuestions = ["clm_start", "clm_end", "_submitted_date", "_submitted_by"]
         searchQST163 = ""
         groupsForValidation = {}
+        media_questions = []
         for section in structure:
             for question in section["section_questions"]:
 
@@ -673,6 +675,14 @@ def ApiAssessmentPushProcess(self, structure, dataworking, activeProjectId):
                 if question["question_code"] == "QST163":
                     searchQST163 = question["question_datafield"]
 
+                if question["question_dtype"] in ["video", "audio", "image"]:
+                    media_questions.append(
+                        {
+                            "type": question["question_dtype"],
+                            "datafield": question["question_datafield"],
+                        }
+                    )
+
         try:
             _json = json.loads(dataworking["json"])
             _json["_submitted_date"] = datetime.datetime.now().strftime(
@@ -682,6 +692,7 @@ def ApiAssessmentPushProcess(self, structure, dataworking, activeProjectId):
             permitedKeys = True
             for key in _json.keys():
                 if key not in possibleQuestions:
+                    # print(key)
                     permitedKeys = False
 
             if permitedKeys:
@@ -700,6 +711,18 @@ def ApiAssessmentPushProcess(self, structure, dataworking, activeProjectId):
                             paramsWithoutData.append(key)
 
                     if dataInParams:
+
+                        if "_submitted_by" in _json.keys():
+                            if not thereIsAnEqualEnumIdInTheProject(
+                                _json["_submitted_by"], activeProjectId, self.request
+                            ):
+                                response = Response(
+                                    status=401,
+                                    body=self._(
+                                        "There is no field agent with that ID assigned to the project. Please check the key: _submitted_by"
+                                    ),
+                                )
+                                return response
 
                         if not "clm_start" in _json.keys() or _json["clm_start"] == "":
                             _json["clm_start"] = datetime.datetime.now().strftime(
@@ -736,6 +759,17 @@ def ApiAssessmentPushProcess(self, structure, dataworking, activeProjectId):
 
                             # I don't validate el identify of the farmer because the ODK return error if not exist
                             _json["clm_deviceimei"] = "API_" + str(self.apiKey)
+
+                            media_result, error_message = review_multimedia_content(
+                                media_questions, _json, self
+                            )
+                            if not media_result:
+                                response = Response(
+                                    status=401,
+                                    body=error_message,
+                                )
+                                return response
+
                             uniqueId = str(uuid.uuid1())
                             path = os.path.join(
                                 self.request.registry.settings["user.repository"],
@@ -749,9 +783,37 @@ def ApiAssessmentPushProcess(self, structure, dataworking, activeProjectId):
                                     uniqueId,
                                 ]
                             )
+                            pathxml = os.path.join(
+                                self.request.registry.settings["user.repository"],
+                                *[
+                                    dataworking["user_owner"],
+                                    dataworking["project_cod"],
+                                    "data",
+                                    "ass",
+                                    dataworking["ass_cod"],
+                                    "xml",
+                                    uniqueId,
+                                ]
+                            )
 
                             if not os.path.exists(path):
                                 os.makedirs(path)
+                                if media_questions:
+                                    os.makedirs(pathxml)
+                                    infoFile = os.path.join(
+                                        pathxml, str(uniqueId) + ".info"
+                                    )
+                                    file = open(infoFile, "w")
+                                    file.write(uniqueId + " API")
+                                    file.close()
+
+                            for file in self.request.POST.getall("media"):
+                                filename = file.filename.lower()
+                                full_path = os.path.join(pathxml, filename)
+                                # print(full_path)
+
+                                with open(full_path, "wb") as f:
+                                    f.write(file.file.read())
 
                             pathfinal = os.path.join(path, uniqueId + ".json")
 
@@ -824,10 +886,10 @@ def ApiAssessmentPushProcess(self, structure, dataworking, activeProjectId):
                     ),
                 )
                 return response
-        except:
+        except Exception as e:
             response = Response(
                 status=401,
-                body=self._("Error in the JSON sent by parameter."),
+                body=self._("Error in the JSON sent by parameter." + str(e)),
             )
             return response
     else:

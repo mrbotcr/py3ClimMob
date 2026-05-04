@@ -4,6 +4,9 @@
     {% endif %}
 
     {% macro recursiveFunction(JsonInfo ,repeat_index=0) %}
+        {% set relevant = JsonInfo.get('bind', {}).get('relevant') %}
+        {% set data_relevant = JsonInfo.get('data_relevant') %}
+
         {% if JsonInfo["type"] in ["group", "repeat","survey"] %}
 
             {% if JsonInfo["name"] not in ["meta"] %}
@@ -16,7 +19,11 @@
                     </div>
                 {% endif %}
 
-                <div class="{{ JsonInfo["type"] }} {{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}" name="{{ JsonInfo["name"] }}" {% if JsonInfo["type"] %}id="{{ JsonInfo["name"] }}"{% endif %}  style="border: 2px solid {% if JsonInfo["type"] == "repeat" %}#1ab394{% else %}#e7eaec{% endif %}; padding: 20px; margin-bottom: 20px">
+                <div class="{{ JsonInfo["type"] }} {{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}" name="{{ JsonInfo["name"] }}"
+                     {% if JsonInfo["type"] %}id="{{ JsonInfo["name"] }}"{% endif %}  style="border: 2px solid {% if JsonInfo["type"] == "repeat" %}#1ab394{% else %}#e7eaec{% endif %}; padding: 20px; margin-bottom: 20px"
+                     {% if relevant %}  data-depends-on="{{ relevant }}" {% endif %}
+                     {% if data_relevant %}  data-relevant="{{ data_relevant }}" {% endif %}
+                >
 
 
                     {% if JsonInfo["type"] == "repeat" %}
@@ -37,7 +44,10 @@
                 </div>
 
                 {% if JsonInfo["type"] == "repeat"  %}
-                    <button type="button" class="btn btn-primary duplicate-repeat" onclick="duplicateRepeatBlock($(this),'{{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}')" {% if onlySee or ("allow_more" in JsonInfo.keys() and JsonInfo["allow_more"] == "no") %}style="display: none" {% endif %}><i class="fa fa-plus"></i> {{ _('Add other') }}</button><br>
+                    <button type="button" class="btn btn-primary duplicate-repeat"
+                            {% if relevant %}  data-depends-on="{{ relevant }}" {% endif %}
+                            {% if data_relevant %}  data-relevant="{{ data_relevant }}" {% endif %}
+                            onclick="duplicateRepeatBlock($(this),'{{ JsonInfo["type"] }}_{{ JsonInfo["name"] }}')" {% if onlySee or ("allow_more" in JsonInfo.keys() and JsonInfo["allow_more"] == "no") %}style="display: none" {% endif %}><i class="fa fa-plus"></i> {{ _('Add other') }}</button><br>
                     <hr>
 
                 {% endif %}
@@ -46,10 +56,13 @@
         {% else %}
 
             {% if JsonInfo["type"] in ["text","select one","integer", "select all that apply", "date"]%}
-                <div class="form-group" div-name="div_{{ JsonInfo.get("name", {}) }}">
+                <div {% if JsonInfo["show_interface"] == "no" %}style="display: none"{% endif %}
+                        {% if relevant %}  data-depends-on="{{ relevant }}" {% endif %}
+                        {% if data_relevant %}  data-relevant="{{ data_relevant }}" {% endif %}
+                     class="form-group" div-name="div_{{ JsonInfo.get("name", {}) }}">
 
                     <div class="col-sm-12" >
-                        <h3>{{ JsonInfo["label"][request.locale_name] }}  {% if ("bind" in JsonInfo.keys() and "required" in JsonInfo["bind"].keys() and JsonInfo["bind"]["required"] == "yes") or JsonInfo["name"][-6:] == '_other' %}{% else %}({{ _("Optional") }}){% endif %}</h3>
+                        <h3>{{ JsonInfo["label"][request.locale_name] }}  {% if ("bind" in JsonInfo.keys() and "required" in JsonInfo["bind"].keys() and JsonInfo["bind"]["required"] == "yes") or JsonInfo["name"][-6:] == '_other' or  relevant  %}{% else %}({{ _("Optional") }}){% endif %}</h3>
                         {% if "hint" in JsonInfo.keys() %} <p>{{ JsonInfo["hint"][request.locale_name] }}</p>{% endif %}
 
                         {% include inputs %}
@@ -146,13 +159,6 @@
     function showData(postData){
         methodRecursiveToShowInformation(postData, $("#spaceForPutTheForm"))
     }
-
-    {#function searchIntoDictionary(name){#}
-    {#    dictionary = {{ dictionary }}#}
-    {#    for (const key in dictionary) {#}
-    {#        if (dictionary[key]["name"] === name)#}
-    {#            return dictionary[key]["type"]#}
-    {#    }    }#}
 
 
     function methodRecursiveToShowInformation(postData, parentElement) {
@@ -398,12 +404,27 @@
 
                 if ($(this).is('textarea')) {
                     const currentNameText = $(this).attr('name-text-check');
-                    if (currentNameText && currentNameText.includes('_other')) {
+
+                    if (currentNameText && currentNameText.includes('_standard_other')) {
+                        let nameQuestion = currentNameText.split('_standard_other')[0];
+                        if (nameQuestion.includes('*')){
+                            nameQuestion = nameQuestion.split('*')[0];
+                        }
+                        const newNameText = `${nameQuestion}*${counter}_standard_other`;
+                        $(this).attr("name-text-check", newNameText);
+                    }else if (currentNameText && currentNameText.includes('_other')) {
                         let nameQuestion = currentNameText.split('_other')[0];
                         if (nameQuestion.includes('*')){
                             nameQuestion = nameQuestion.split('*')[0];
                         }
                         const newNameText = `${nameQuestion}*${counter}_other`;
+                        $(this).attr("name-text-check", newNameText);
+                    }else if (currentNameText && currentNameText.includes('_standard')) {
+                        let nameQuestion = currentNameText.split('_standard')[0];
+                        if (nameQuestion.includes('*')){
+                            nameQuestion = nameQuestion.split('*')[0];
+                        }
+                        const newNameText = `${nameQuestion}*${counter}_standard`;
                         $(this).attr("name-text-check", newNameText);
                     }
                 }
@@ -413,12 +434,26 @@
             newRepeat.find('div').each(function () {
                 if ($(this).hasClass('form-group')) {
                     const divName = $(this).attr('div-name');
-                    if (divName && divName.includes('_other')) {
+                    if (divName && divName.includes('_standard_other')) {
+                        let nameQuestion = divName.split('_standard_other')[0];
+                        if (nameQuestion.includes('*')){
+                            nameQuestion = nameQuestion.split('*')[0];
+                        }
+                        const newDivName = `${nameQuestion}*${counter}_standard_other`;
+                        $(this).attr('div-name', newDivName);
+                    }else if (divName && divName.includes('_other')) {
                         let nameQuestion = divName.split('_other')[0];
                         if (nameQuestion.includes('*')){
                             nameQuestion = nameQuestion.split('*')[0];
                         }
                         const newDivName = `${nameQuestion}*${counter}_other`;
+                        $(this).attr('div-name', newDivName);
+                    }else if (divName && divName.includes('_standard')) {
+                        let nameQuestion = divName.split('_standard')[0];
+                        if (nameQuestion.includes('*')){
+                            nameQuestion = nameQuestion.split('*')[0];
+                        }
+                        const newDivName = `${nameQuestion}*${counter}_standard`;
                         $(this).attr('div-name', newDivName);
                     }
                 }
@@ -429,7 +464,12 @@
             newRepeat.find('.chosen-select').each(function() {
                 $(this).select2({width: "100%"});
                 $(this).on('select2:select select2:unselect', function () {
+
+                    toggleConfirmationGroup(this);
                     toggleOtherField(this);
+                    set_standard_field(this)
+                    toggleStandardField(this);
+
                 });
             });
 
@@ -511,8 +551,95 @@
         if (repeatBlock) {
             repeatBlock.remove();
         }
-
     }
+
+function toggleConfirmationGroup(selectElement) {
+    const dropdownId = selectElement.dataset.dropdownId;
+    if (!dropdownId) {
+        return;
+    }
+    const masterFieldName = dropdownId.split('#')[1];
+    const selectedOptions = Array.from(selectElement.selectedOptions);
+    const selectedRelevants = selectedOptions
+        .map(opt => opt.dataset.relevant)
+        .filter(Boolean);
+
+    const dependentDivs = document.querySelectorAll(
+        `[data-depends-on="${masterFieldName}"]:not([div-name])`
+    );
+
+    dependentDivs.forEach((div, i) => {
+        const divRelevant = div.dataset.relevant;
+
+        let shouldShow;
+        if (selectedRelevants.length === 0) {
+            shouldShow = !divRelevant;
+        } else {
+            shouldShow = !divRelevant || selectedRelevants.includes(divRelevant);
+        }
+        if (shouldShow) {
+            div.style.display = '';
+            div.querySelectorAll('input, select, textarea').forEach(field => {
+                field.required = true;
+                if(field.tagName === 'SELECT'){
+                    div.querySelectorAll('select').forEach(select => {
+                        toggleOtherField(select);
+                    });
+                }
+            });
+        } else {
+            div.style.display = 'none';
+
+            div.querySelectorAll('input, select, textarea').forEach(field => {
+                field.required = false;
+                field.value = '';
+                if (field.tagName === 'SELECT') {
+                    field.dispatchEvent(
+                        new Event('change', { bubbles: true })
+                    );
+                }
+            });
+        }
+            const specialBlocks = document.querySelectorAll(
+            `.form-group[div-name][data-depends-on="${masterFieldName}"]`
+        );
+
+        specialBlocks.forEach(block => {
+
+            const hasDependentFieldInside = block.querySelector(
+                'input[data-depends-on], textarea[data-depends-on], select[data-depends-on]'
+            );
+
+            if (!hasDependentFieldInside) return;
+
+            const blockRelevant = block.dataset.relevant;
+
+            let shouldShow;
+            if (selectedRelevants.length === 0) {
+                shouldShow = !blockRelevant;
+            } else {
+                shouldShow = !blockRelevant || selectedRelevants.includes(blockRelevant);
+            }
+
+            const visualBlock = block.querySelector('.col-sm-12');
+
+            if (visualBlock) {
+                visualBlock.style.display = shouldShow ? 'block' : 'none';
+            }
+
+            block.querySelectorAll('input, textarea, select').forEach(field => {
+                field.required = shouldShow;
+
+                if (!shouldShow) {
+                    field.value = '';
+                    if (field.tagName === 'SELECT') {
+                        field.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                }
+            });
+        });
+    });
+}
 
     function toggleOtherField(selectElement) {
 
@@ -524,6 +651,19 @@
         const divElement = document.querySelector(`[div-name="${divNameOther}"]`);
         const textareaElement = document.querySelector(`[name-text-check="${textAreaNameOther}"]`);
 
+        const divNameStandardOther = 'div_' + nameQuestion + '_standard_other';
+        const textAreaNameStandardOther = 'text_' + nameQuestion + '_standard_other';
+        const divElementStandard = document.querySelector(`[div-name="${divNameStandardOther}"]`);
+        const textareaElementStandard = document.querySelector(`[name-text-check="${textAreaNameStandardOther}"]`);
+
+        if (selectElement.selectedOptions.length === 0) {
+            if (divElement) divElement.style.display = "none";
+            if (textareaElement) textareaElement.required = false;
+            if (divElementStandard) divElementStandard.style.display = "none";
+            if (textareaElementStandard) textareaElementStandard.required = false;
+            return;
+        }
+
         let has_Other_selected = false;
         for (let option of selectedOptions) {
             if (option.dataset.isOther === "yes"  ) {
@@ -533,31 +673,117 @@
         }
         if (has_Other_selected) {
             if (divElement) divElement.style.display = "block";
-            if (textareaElement) textareaElement.required = true;
+            if (textareaElement) {
+                textareaElement.required = true;
+            }
+            if (divElementStandard) divElementStandard.style.display = "block";
+            if (textareaElementStandard){
+                textareaElementStandard.required = !(textareaElementStandard.classList && textareaElementStandard.classList.contains("ror-field"));
+            }
+            textareaElement.checkValidity();
         } else {
             if (divElement) divElement.style.display = "none";
             if (textareaElement) {
                 textareaElement.required = false;
                 textareaElement.value = '';
+                textareaElement.setCustomValidity("");
+            }
+            if (divElementStandard) divElementStandard.style.display = "none";
+            if (textareaElementStandard) {
+                textareaElementStandard.required = false;
+                textareaElementStandard.value = '';
+                textareaElementStandard.setCustomValidity("");
             }
         }
     }
 
     // toggles the other field
     $('select[data-dropdown-id]').on('select2:select select2:unselect', function () {
+        toggleConfirmationGroup(this);
         toggleOtherField(this);
+        set_standard_field(this);
+        toggleStandardField(this);
     });
 
     // Check the load of the page
     setTimeout(function () {
         $('select[data-dropdown-id]').each(function () {
+            toggleConfirmationGroup(this);
             toggleOtherField(this);
+            toggleStandardField(this);
         });
     }, 200);
 
 
+    function set_standard_field(selectElement) {
+        const dropdownId = selectElement.dataset.dropdownId;
+        const nameQuestion = dropdownId.split('#')[1];
+        const textAreaNameStandard = 'text_' + nameQuestion + '_standard';
+        const textareaElement = document.querySelector(`[name-text-check="${textAreaNameStandard}"]`);
+        const selectedOption = selectElement.selectedOptions[0];
+        const standardName = selectedOption.getAttribute("standard_name");
+        if (textareaElement) {
+            textareaElement.value = standardName;
+        }
+    }
 
+    function toggleStandardField(selectElement) {
+        const dropdownId = selectElement.dataset.dropdownId;
+        const selectedOption = selectElement.selectedOptions[0];
+        const nameQuestion = dropdownId.split('#')[1];
+        const textAreaNameStandard = 'text_' + nameQuestion + '_standard';
+        const textareaElement = document.querySelector(`[name-text-check="${textAreaNameStandard}"]`);
 
+        if (selectElement.selectedOptions.length === 0) {
+            if (textareaElement) textareaElement.required = false;
+            return;
+        }
+        const standardName = selectedOption
+            ? selectedOption.getAttribute("standard_name")
+            : null;
+        if (standardName) {
+            if (textareaElement){
+                textareaElement.required = true;
+            }
+        } else {
+            if (textareaElement) {
+                textareaElement.required = false;
+            }
+        }
+    }
 
+    function integerDependsIfOtherWasSet(sourceField, targetFieldName){
+        const targetField = document.getElementsByName(targetFieldName)[0];
+        if (!targetField) return;
+        if (sourceField.value && sourceField.value.trim() !== '') {
+            targetField.removeAttribute('required')
+        } else {
+            targetField.setAttribute('required', 'required');
+        }
+    }
+
+    document.addEventListener("input", function (e) {
+
+        if (e.target.matches(".ror-field")) {
+
+            const input = e.target;
+            const regex = /^https:\/\/ror\.org\/[0-9]{2}[a-z0-9]{7}$/;
+            const value = (input.value || "").trim();
+
+            if((value.length)!==0) {
+                input.setAttribute('required', 'required');
+                if (value !== "" && !regex.test(value)) {
+                    input.setCustomValidity(
+                        "Invalid format. Must be:https://ror.org/00xxxxxxx"
+                    );
+                } else if (value === "https://ror.org/00xxxxxxx") {
+                    input.setCustomValidity(
+                        "This is an example, use a real direction")
+                } else {
+                    input.setCustomValidity("");
+                }
+            }
+        }
+    });
 
 </script>

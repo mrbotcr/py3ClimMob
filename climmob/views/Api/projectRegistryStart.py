@@ -7,6 +7,7 @@ from xml.dom import minidom
 from pyramid.response import Response
 
 from climmob.processes import (
+    thereIsAnEqualEnumIdInTheProject,
     projectExists,
     projectRegStatus,
     createCombinations,
@@ -30,7 +31,7 @@ from climmob.processes import (
     deleteProjectPackages,
     update_project_status,
 )
-from climmob.processes.odk.api import storeJSONInMySQL
+from climmob.processes.odk.api import storeJSONInMySQL, review_multimedia_content
 from climmob.products import stopTasksByProcess
 from climmob.products.randomization.randomization import create_randomization
 from climmob.views.classes import apiView
@@ -1147,8 +1148,9 @@ class PushJsonToRegistryView(apiView):
 def ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId):
     if structure:
         obligatoryQuestions = []
-        possibleQuestions = ["clm_start", "clm_end", "_submitted_date"]
+        possibleQuestions = ["clm_start", "clm_end", "_submitted_date", "_submitted_by"]
         searchQST162 = ""
+        media_questions = []
         for section in structure:
             for question in section["section_questions"]:
 
@@ -1159,6 +1161,14 @@ def ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId):
 
                 if question["question_requiredvalue"] == 1:
                     obligatoryQuestions.append(question["question_datafield"])
+
+                if question["question_dtype"] in ["video", "audio", "image"]:
+                    media_questions.append(
+                        {
+                            "type": question["question_dtype"],
+                            "datafield": question["question_datafield"],
+                        }
+                    )
 
         try:
             _json = json.loads(dataworking["json"])
@@ -1188,6 +1198,18 @@ def ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId):
 
                     if dataInParams:
 
+                        if "_submitted_by" in _json.keys():
+                            if not thereIsAnEqualEnumIdInTheProject(
+                                _json["_submitted_by"], activeProjectId, self.request
+                            ):
+                                response = Response(
+                                    status=401,
+                                    body=self._(
+                                        "There is no field agent with that ID assigned to the project. Please check the key: _submitted_by"
+                                    ),
+                                )
+                                return response
+
                         if not "clm_start" in _json.keys() or _json["clm_start"] == "":
                             _json["clm_start"] = datetime.datetime.now().strftime(
                                 "%Y-%m-%d %H:%M:%S"
@@ -1205,6 +1227,16 @@ def ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId):
                             ):
                                 _json["clm_deviceimei"] = "API_" + str(self.apiKey)
 
+                                media_result, error_message = review_multimedia_content(
+                                    media_questions, _json, self
+                                )
+                                if not media_result:
+                                    response = Response(
+                                        status=401,
+                                        body=error_message,
+                                    )
+                                    return response
+
                                 uniqueId = str(uuid.uuid1())
                                 path = os.path.join(
                                     self.request.registry.settings["user.repository"],
@@ -1217,9 +1249,36 @@ def ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId):
                                         uniqueId,
                                     ]
                                 )
+                                pathxml = os.path.join(
+                                    self.request.registry.settings["user.repository"],
+                                    *[
+                                        dataworking["user_owner"],
+                                        dataworking["project_cod"],
+                                        "data",
+                                        "reg",
+                                        "xml",
+                                        uniqueId,
+                                    ]
+                                )
 
                                 if not os.path.exists(path):
                                     os.makedirs(path)
+                                    if media_questions:
+                                        os.makedirs(pathxml)
+                                        infoFile = os.path.join(
+                                            pathxml, str(uniqueId) + ".info"
+                                        )
+                                        file = open(infoFile, "w")
+                                        file.write(uniqueId + " API")
+                                        file.close()
+
+                                for file in self.request.POST.getall("media"):
+                                    filename = file.filename.lower()
+                                    full_path = os.path.join(pathxml, filename)
+                                    # print(full_path)
+
+                                    with open(full_path, "wb") as f:
+                                        f.write(file.file.read())
 
                                 pathfinal = os.path.join(path, uniqueId + ".json")
 
