@@ -28,8 +28,6 @@ class ReadDataOfProjectViewApi(apiView):
     )
 
     def get(self):
-        # TODO: Discuss response content when is not COMPLETED
-
         if project_needs_to_start_anonymization(
             self.context.active_project_id, self.request
         ):
@@ -45,7 +43,12 @@ class ReadDataOfProjectViewApi(apiView):
                 "",
             )
 
-            return Response(status="204")
+            return Response(
+                status="200",
+                body=self._(
+                    "ClimMob is currently generating the shareable values for your project. Please try again in a moment."
+                ),
+            )
 
         response = Response(
             status="200",
