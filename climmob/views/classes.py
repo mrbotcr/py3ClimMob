@@ -379,6 +379,7 @@ class privateView(BaseView):
             login_data = literal_eval(login_data)
             if login_data["group"] == "mainApp":
                 self.user = getUserData(login_data["login"], self.request)
+                self.request.user_in_session = self.user.login
                 self.classResult["activeUser"] = self.user
                 if self.user == None:
                     return HTTPFound(location=self.request.route_url("login"))

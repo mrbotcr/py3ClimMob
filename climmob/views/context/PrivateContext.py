@@ -17,5 +17,5 @@ class PrivateContext(BaseContext):
     @cached_property
     def access_type(self):
         return getAccessTypeForProject(
-            self.request.user, self.active_project_id, self.request
+            self.request.user_in_session, self.active_project_id, self.request
         )
