@@ -65,6 +65,7 @@ __all__ = [
     "getProjectFullDetailsById",
     "getProjectsByUserThatRequireSetup",
     "update_project_status",
+    "get_project_status",
 ]
 
 
@@ -958,3 +959,13 @@ def update_project_status(project_id, status, request):
         return True
     except Exception as e:
         return False, str(e)
+
+
+def get_project_status(project_id, request):
+    result = (
+        request.dbsession.query(Project.project_status)
+        .filter(Project.project_id == project_id)
+        .one()
+    )
+    result = mapFromSchema(result)
+    return result["project_status"]

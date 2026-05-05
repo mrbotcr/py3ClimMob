@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, IntEnum
 
 
 class ProjectAccessType(Enum):
@@ -6,6 +6,13 @@ class ProjectAccessType(Enum):
     ADMIN = 2
     EDITOR = 3
     MEMBER = 4
+
+
+class ProjectStatus(IntEnum):
+    UNDEFINED = 0
+    DEFINITION = 1
+    IN_PROGRESS = 2
+    FINALIZED = 3
 
 
 class ProjectAdmin(Enum):
