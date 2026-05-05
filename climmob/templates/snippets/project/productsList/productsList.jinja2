@@ -69,21 +69,21 @@
                     {% elif product.product_id == "datacsv-anonymized" %}
                         {% if product.process_name == "create_data-anonymized_Report_" %}
                             {% if changes.update({'projectDataCollectedCSV-anonymized': false }) %}{% endif %}
-                            {{ _("Information collected in all the project in .CSV format (anonymized)") }}
+                            {{ _("Information collected in all the project in .CSV format (shareable)") }}
                         {% elif product.process_name == "create_data-anonymized_Registration_" %}
-                            {{ _("Information collected in the participant registration form in .CSV format (anonymized)") }}
+                            {{ _("Information collected in the participant registration form in .CSV format (shareable)") }}
                         {% else %}
-                            {{ _("Information collected in the trial data collection moment form") }}: {{ product.extraInformation.ass_desc }} {{ _("in .CSV format (anonymized)") }}
+                            {{ _("Information collected in the trial data collection moment form") }}: {{ product.extraInformation.ass_desc }} {{ _("in .CSV format (shareable)") }}
                         {% endif %}
 
                     {% elif product.product_id == "dataxlsx-anonymized" %}
                         {% if product.process_name == "create_data-anonymized_xlsx_Report_" %}
                             {% if changes.update({'projectDataCollectedXLSX-anonymized': false }) %}{% endif %}
-                            {{ _("Information collected in all the project in .XLSX format (anonymized)") }}
+                            {{ _("Information collected in all the project in .XLSX format (shareable)") }}
                         {% elif product.process_name == "create_data-anonymized_xlsx_Registration_" %}
-                            {{ _("Information collected in the participant registration form in .XLSX format (anonymized)") }}
+                            {{ _("Information collected in the participant registration form in .XLSX format (shareable)") }}
                         {% else %}
-                            {{ _("Information collected in the trial data collection moment form") }}: {{ product.extraInformation.ass_desc }} {{ _("in .XLSX format (anonymized)") }}
+                            {{ _("Information collected in the trial data collection moment form") }}: {{ product.extraInformation.ass_desc }} {{ _("in .XLSX format (shareable)") }}
                         {% endif %}
 
                     {% else %}
@@ -363,7 +363,7 @@
         {% if request.registry.settings.get("module.dataprivacy", "false") != "false"%}
             {% if changes["projectDataCollectedXLSX-anonymized"] %}
                 <tr>
-                    <td>{{ _("Information collected in all the project in .XLSX format (anonymized)") }}</td>
+                    <td>{{ _("Information collected in all the project in .XLSX format (shareable)") }}</td>
                     <td></td>
                     <td></td>
                     <td class="text-center">
@@ -375,7 +375,7 @@
 
             {% if changes["projectDataCollectedCSV-anonymized"] %}
                 <tr>
-                    <td>{{ _("Information collected in all the project in .CSV format (anonymized)") }}</td>
+                    <td>{{ _("Information collected in all the project in .CSV format (shareable)") }}</td>
                     <td></td>
                     <td></td>
                     <td class="text-center">

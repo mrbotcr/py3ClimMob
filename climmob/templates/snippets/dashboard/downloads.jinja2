@@ -42,9 +42,9 @@
                 <thead>
                 <tr>
                     <th>{{ _('File Type') }}</th>
-                    <th>{{ _('Raw') }}</th>
+                    <th>{{ _('Raw Data') }}</th>
                     {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
-                        <th>{{ _('Anonymized') }}</th>
+                        <th>{{ _('Shareable Data') }}</th>
                     {% endif %}
                 </tr>
                 </thead>

@@ -535,7 +535,12 @@
 {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
 
     <div class="form-group">
-        <label class="col-sm-4 control-label" for="ckb_question_as_sensitive">{{ _("Contains personal or sensitive data") }} </label>
+        <label class="col-sm-4 control-label" for="ckb_question_as_sensitive">
+            <i class="fa fa-info-circle"
+               title="{{ _( "Data that is protected, not for reasons of privacy protection but for strategic or institutional reasons.") }}">
+            </i>
+            {{ _("Contains confidential information") }}
+        </label>
         <div class="col-sm-8">
             <div class="switch">
                 <input type="checkbox" id="ckb_question_as_sensitive" class="inputForQuestionCheck"
@@ -547,7 +552,7 @@
     </div>
     <div id="question-anonymity-div">
         <div class="form-group">
-            <label class="col-sm-4 control-label" for="question_anonymity">{{ _("Anonymization method") }}</label>
+            <label class="col-sm-4 control-label" for="question_anonymity">{{ _("Privacy-preserving method") }}</label>
             <div class="col-sm-8" style="display: flex; align-items: center; justify-content: center; gap: 1em;">
                 <select required id="question_anonymity" name="question_anonymity" class="form-control inputForQuestionSelect">
                 </select>
