@@ -32,12 +32,12 @@ class ProjectOpenValidator(BaseValidator):
                 self.view.request.method = "GET"
                 raise HTTPForbidden(
                     self._(
-                        "This project has been finalized and is now in read-only mode. Modifications are no longer permitted to ensure the integrity of the final data."
+                        "This project has been closed and is now in read-only mode. Modifications are no longer permitted to ensure the integrity of the final data."
                     )
                 )
         elif issubclass(self.view.__class__, apiView):
             if self.view.request.method in {"POST", "PUT", "DELETE"}:
-                body = json.loads(self.view.request.POST["Body"])
+                body = json.loads(self.view.body)
                 project_id = getTheProjectIdForOwner(
                     body["user_owner"], body["project_cod"], self.view.request
                 )
@@ -45,7 +45,7 @@ class ProjectOpenValidator(BaseValidator):
                 if project_status == ProjectStatus.FINALIZED.value:
                     raise HTTPForbidden(
                         self._(
-                            "This project has been finalized and is now in read-only mode. Modifications are no longer permitted to ensure the integrity of the final data."
+                            "This project has been closed and is now in read-only mode. Modifications are no longer permitted to ensure the integrity of the final data."
                         )
                     )
 

@@ -8,7 +8,6 @@ from pyramid.response import Response
 
 from climmob.processes import (
     thereIsAnEqualEnumIdInTheProject,
-    projectExists,
     projectAsessmentStatus,
     getProjectProgress,
     checkAssessments,
@@ -26,622 +25,454 @@ from climmob.processes import (
     getAccessTypeForProject,
     update_project_status,
 )
+from climmob.views.Api.projectRegistryStart import functionForProcessAndValidateUpdate
 from climmob.processes.odk.api import storeJSONInMySQL, review_multimedia_content
 from climmob.products.forms.form import create_document_form
 from climmob.views.classes import apiView
 from climmob.views.registry import getDataFormPreview
+from climmob.views.validators import TextField
+from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
+from climmob.views.validators.project import (
+    ProjectOpenValidator,
+)
 
 
 class CreateProjectAssessmentView(apiView):
-    def processView(self):
-        if self.request.method == "POST":
-            obligatory = ["project_cod", "user_owner", "ass_cod"]
-            dataworking = json.loads(self.body)
+    valid_fields = (
+        TextField("project_cod"),
+        TextField("user_owner"),
+        TextField("ass_cod"),
+    )
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
 
-            if sorted(obligatory) == sorted(dataworking.keys()):
-                dataworking["user_name"] = self.user.login
+    def post(self):
+        dataworking = json.loads(self.body)
+        dataworking["user_name"] = self.user.login
+        activeProjectId = getTheProjectIdForOwner(
+            dataworking["user_owner"],
+            dataworking["project_cod"],
+            self.request,
+        )
+        accessType = getAccessTypeForProject(
+            self.user.login, activeProjectId, self.request
+        )
 
-                dataInParams = True
-                for key in dataworking.keys():
-                    if dataworking[key] == "":
-                        dataInParams = False
-
-                if dataInParams:
-                    exitsproject = projectExists(
-                        self.user.login,
-                        dataworking["user_owner"],
-                        dataworking["project_cod"],
+        if accessType in [4]:
+            response = Response(
+                status=401,
+                body=self._(
+                    "The access assigned for this project does not allow you to do this action."
+                ),
+            )
+            return response
+        progress, pcompleted = getProjectProgress(
+            dataworking["user_owner"],
+            dataworking["project_cod"],
+            activeProjectId,
+            self.request,
+        )
+        if progress["regsubmissions"] == 2:
+            if projectAsessmentStatus(
+                activeProjectId,
+                dataworking["ass_cod"],
+                self.request,
+            ):
+                if progress["assessment"] == True:
+                    checkPass, errors = checkAssessments(
+                        activeProjectId,
+                        dataworking["ass_cod"],
                         self.request,
                     )
-                    if exitsproject:
-
-                        activeProjectId = getTheProjectIdForOwner(
-                            dataworking["user_owner"],
-                            dataworking["project_cod"],
-                            self.request,
-                        )
-                        accessType = getAccessTypeForProject(
-                            self.user.login, activeProjectId, self.request
-                        )
-
-                        if accessType in [4]:
-                            response = Response(
-                                status=401,
-                                body=self._(
-                                    "The access assigned for this project does not allow you to do this action."
-                                ),
-                            )
-                            return response
-                        progress, pcompleted = getProjectProgress(
-                            dataworking["user_owner"],
-                            dataworking["project_cod"],
+                    if checkPass:
+                        sectionOfThePackageCode = getTheGroupOfThePackageCodeAssessment(
                             activeProjectId,
+                            dataworking["ass_cod"],
                             self.request,
                         )
-                        if progress["regsubmissions"] == 2:
-                            if projectAsessmentStatus(
+                        projectDetails = getProjectData(activeProjectId, self.request)
+                        listOfLabels = [
+                            projectDetails["project_label_a"],
+                            projectDetails["project_label_b"],
+                            projectDetails["project_label_c"],
+                        ]
+
+                        correct = generateAssessmentFiles(
+                            dataworking["user_owner"],
+                            activeProjectId,
+                            dataworking["project_cod"],
+                            dataworking["ass_cod"],
+                            self.request,
+                            sectionOfThePackageCode,
+                            listOfLabels,
+                        )
+                        if correct[0]["result"]:
+                            setAssessmentIndividualStatus(
                                 activeProjectId,
                                 dataworking["ass_cod"],
+                                1,
                                 self.request,
-                            ):
-                                if progress["assessment"] == True:
-                                    checkPass, errors = checkAssessments(
+                            )
+
+                            ncombs, packages = getPackages(
+                                dataworking["user_owner"],
+                                activeProjectId,
+                                self.request,
+                            )
+
+                            languages = projectDetails["languages"]
+                            if languages:
+                                for lang in languages:
+                                    (data, finalCloseQst,) = getDataFormPreview(
+                                        self,
+                                        dataworking["user_owner"],
                                         activeProjectId,
-                                        dataworking["ass_cod"],
-                                        self.request,
+                                        assessmentid=dataworking["ass_cod"],
+                                        language=lang["lang_code"],
                                     )
-                                    if checkPass:
-                                        sectionOfThePackageCode = (
-                                            getTheGroupOfThePackageCodeAssessment(
-                                                activeProjectId,
-                                                dataworking["ass_cod"],
-                                                self.request,
-                                            )
-                                        )
-                                        projectDetails = getProjectData(
-                                            activeProjectId, self.request
-                                        )
-                                        listOfLabels = [
-                                            projectDetails["project_label_a"],
-                                            projectDetails["project_label_b"],
-                                            projectDetails["project_label_c"],
-                                        ]
 
-                                        correct = generateAssessmentFiles(
-                                            dataworking["user_owner"],
-                                            activeProjectId,
-                                            dataworking["project_cod"],
-                                            dataworking["ass_cod"],
-                                            self.request,
-                                            sectionOfThePackageCode,
-                                            listOfLabels,
-                                        )
-                                        if correct[0]["result"]:
-                                            setAssessmentIndividualStatus(
-                                                activeProjectId,
-                                                dataworking["ass_cod"],
-                                                1,
-                                                self.request,
-                                            )
+                                    lang["Data"] = data
 
-                                            ncombs, packages = getPackages(
-                                                dataworking["user_owner"],
-                                                activeProjectId,
-                                                self.request,
-                                            )
-
-                                            languages = projectDetails["languages"]
-                                            if languages:
-                                                for lang in languages:
-                                                    (
-                                                        data,
-                                                        finalCloseQst,
-                                                    ) = getDataFormPreview(
-                                                        self,
-                                                        dataworking["user_owner"],
-                                                        activeProjectId,
-                                                        assessmentid=dataworking[
-                                                            "ass_cod"
-                                                        ],
-                                                        language=lang["lang_code"],
-                                                    )
-
-                                                    lang["Data"] = data
-
-                                                dataPreviewInMultipleLanguages = (
-                                                    languages
-                                                )
-                                            else:
-                                                (
-                                                    data,
-                                                    finalCloseQst,
-                                                ) = getDataFormPreview(
-                                                    self,
-                                                    dataworking["user_owner"],
-                                                    activeProjectId,
-                                                    assessmentid=dataworking["ass_cod"],
-                                                    language="en",
-                                                )
-                                                dataPreviewInMultipleLanguages = [
-                                                    {
-                                                        "lang_code": self.request.locale_name,
-                                                        "lang_name": "Default",
-                                                        "Data": data,
-                                                    }
-                                                ]
-
-                                            create_document_form(
-                                                self.request,
-                                                self.request.locale_name,
-                                                dataworking["user_owner"],
-                                                activeProjectId,
-                                                dataworking["project_cod"],
-                                                "Assessment",
-                                                dataworking["ass_cod"],
-                                                dataPreviewInMultipleLanguages,
-                                                listOfLabels,
-                                            )
-
-                                            update_project_status(
-                                                activeProjectId, 2, self.request
-                                            )
-
-                                            response = Response(
-                                                status=200,
-                                                body=self._("Data collection started."),
-                                            )
-                                            return response
-                                        else:
-                                            response = Response(
-                                                status=401,
-                                                body=self._(
-                                                    "There has been a problem in the creation of the basic structure of the project, this may be due to something wrong with the form. Contact the ClimMob team with the next message to get the solution to the problem"
-                                                )
-                                                + ": "
-                                                + (
-                                                    correct[0]["error"].decode("utf-8")
-                                                    if isinstance(
-                                                        correct[0]["error"], bytes
-                                                    )
-                                                    else correct[0]["error"]
-                                                ),
-                                            )
-                                            return response
-
-                                    else:
-                                        response = Response(
-                                            status=401,
-                                            body=json.dumps({"errors": errors}),
-                                        )
-                                        return response
-                                else:
-                                    response = Response(
-                                        status=401,
-                                        body=self._(
-                                            "You must have created the assessment forms."
-                                        ),
-                                    )
-                                    return response
+                                dataPreviewInMultipleLanguages = languages
                             else:
-                                response = Response(
-                                    status=401,
-                                    body=self._("Data collection has already started."),
+                                (data, finalCloseQst,) = getDataFormPreview(
+                                    self,
+                                    dataworking["user_owner"],
+                                    activeProjectId,
+                                    assessmentid=dataworking["ass_cod"],
+                                    language="en",
                                 )
-                                return response
+                                dataPreviewInMultipleLanguages = [
+                                    {
+                                        "lang_code": self.request.locale_name,
+                                        "lang_name": "Default",
+                                        "Data": data,
+                                    }
+                                ]
+
+                            create_document_form(
+                                self.request,
+                                self.request.locale_name,
+                                dataworking["user_owner"],
+                                activeProjectId,
+                                dataworking["project_cod"],
+                                "Assessment",
+                                dataworking["ass_cod"],
+                                dataPreviewInMultipleLanguages,
+                                listOfLabels,
+                            )
+
+                            update_project_status(activeProjectId, 2, self.request)
+
+                            response = Response(
+                                status=200,
+                                body=self._("Data collection started."),
+                            )
+                            return response
                         else:
                             response = Response(
                                 status=401,
                                 body=self._(
-                                    "You cannot add data collection moments. You alreaday started data collection."
+                                    "There has been a problem in the creation of the basic structure of the project, this may be due to something wrong with the form. Contact the ClimMob team with the next message to get the solution to the problem"
+                                )
+                                + ": "
+                                + (
+                                    correct[0]["error"].decode("utf-8")
+                                    if isinstance(correct[0]["error"], bytes)
+                                    else correct[0]["error"]
                                 ),
                             )
                             return response
+
                     else:
                         response = Response(
                             status=401,
-                            body=self._("There is not project with that code."),
+                            body=json.dumps({"errors": errors}),
                         )
                         return response
                 else:
                     response = Response(
-                        status=401, body=self._("Not all parameters have data.")
+                        status=401,
+                        body=self._("You must have created the assessment forms."),
                     )
                     return response
             else:
-                response = Response(status=401, body=self._("Error in the JSON."))
+                response = Response(
+                    status=401,
+                    body=self._("Data collection has already started."),
+                )
                 return response
         else:
-            response = Response(status=401, body=self._("Only accepts POST method."))
+            response = Response(
+                status=401,
+                body=self._(
+                    "You cannot add data collection moments. You already started data collection."
+                ),
+            )
             return response
 
 
 class CancelAssessmentApiView(apiView):
-    def processView(self):
-        if self.request.method == "POST":
-            obligatory = ["project_cod", "user_owner", "ass_cod"]
-            dataworking = json.loads(self.body)
+    valid_fields = (
+        TextField("project_cod"),
+        TextField("user_owner"),
+        TextField("ass_cod"),
+    )
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
 
-            if sorted(obligatory) == sorted(dataworking.keys()):
-                dataworking["user_name"] = self.user.login
+    def post(self):
+        dataworking = json.loads(self.body)
+        dataworking["user_name"] = self.user.login
+        activeProjectId = getTheProjectIdForOwner(
+            dataworking["user_owner"],
+            dataworking["project_cod"],
+            self.request,
+        )
+        accessType = getAccessTypeForProject(
+            self.user.login, activeProjectId, self.request
+        )
 
-                dataInParams = True
-                for key in dataworking.keys():
-                    if dataworking[key] == "":
-                        dataInParams = False
+        if accessType in [4]:
+            response = Response(
+                status=401,
+                body=self._(
+                    "The access assigned for this project does not allow you to cancel the assessment."
+                ),
+            )
+            return response
 
-                if dataInParams:
-                    exitsproject = projectExists(
-                        self.user.login,
-                        dataworking["user_owner"],
-                        dataworking["project_cod"],
-                        self.request,
-                    )
-                    if exitsproject:
+        if isAssessmentOpen(
+            activeProjectId,
+            dataworking["ass_cod"],
+            self.request,
+        ):
 
-                        activeProjectId = getTheProjectIdForOwner(
-                            dataworking["user_owner"],
-                            dataworking["project_cod"],
-                            self.request,
-                        )
-                        accessType = getAccessTypeForProject(
-                            self.user.login, activeProjectId, self.request
-                        )
+            setAssessmentIndividualStatus(
+                activeProjectId,
+                dataworking["ass_cod"],
+                0,
+                self.request,
+            )
 
-                        if accessType in [4]:
-                            response = Response(
-                                status=401,
-                                body=self._(
-                                    "The access assigned for this project does not allow you to cancel the assessment."
-                                ),
-                            )
-                            return response
+            response = Response(status=200, body=self._("Cancel data collection"))
+            return response
 
-                        if not projectAsessmentStatus(
-                            activeProjectId,
-                            dataworking["ass_cod"],
-                            self.request,
-                        ):
-
-                            setAssessmentIndividualStatus(
-                                activeProjectId,
-                                dataworking["ass_cod"],
-                                0,
-                                self.request,
-                            )
-
-                            response = Response(
-                                status=200, body=self._("Cancel data collection")
-                            )
-                            return response
-
-                        else:
-                            response = Response(
-                                status=401,
-                                body=self._(
-                                    "Data collection has not started. You cannot cancel it."
-                                ),
-                            )
-                            return response
-                    else:
-                        response = Response(
-                            status=401,
-                            body=self._("There is no project with that code."),
-                        )
-                        return response
-                else:
-                    response = Response(
-                        status=401, body=self._("Not all parameters have data.")
-                    )
-                    return response
-            else:
-                response = Response(status=401, body=self._("Error in the JSON."))
-                return response
         else:
-            response = Response(status=401, body=self._("Only accepts POST method."))
+            response = Response(
+                status=401,
+                body=self._("Data collection has not started. You cannot cancel it."),
+            )
             return response
 
 
 class CloseAssessmentApiView(apiView):
-    def processView(self):
-        if self.request.method == "POST":
-            obligatory = ["project_cod", "user_owner", "ass_cod"]
-            dataworking = json.loads(self.body)
+    valid_fields = (
+        TextField("project_cod"),
+        TextField("user_owner"),
+        TextField("ass_cod"),
+    )
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
 
-            if sorted(obligatory) == sorted(dataworking.keys()):
-                dataworking["user_name"] = self.user.login
+    def post(self):
 
-                dataInParams = True
-                for key in dataworking.keys():
-                    if dataworking[key] == "":
-                        dataInParams = False
+        dataworking = json.loads(self.body)
+        dataworking["user_name"] = self.user.login
+        activeProjectId = getTheProjectIdForOwner(
+            dataworking["user_owner"],
+            dataworking["project_cod"],
+            self.request,
+        )
+        accessType = getAccessTypeForProject(
+            self.user.login, activeProjectId, self.request
+        )
 
-                if dataInParams:
-                    exitsproject = projectExists(
-                        self.user.login,
-                        dataworking["user_owner"],
-                        dataworking["project_cod"],
-                        self.request,
-                    )
-                    if exitsproject:
+        if accessType in [4]:
+            response = Response(
+                status=401,
+                body=self._(
+                    "The access assigned for this project does not allow you to cancel the assessment."
+                ),
+            )
+            return response
 
-                        activeProjectId = getTheProjectIdForOwner(
-                            dataworking["user_owner"],
-                            dataworking["project_cod"],
-                            self.request,
-                        )
-                        accessType = getAccessTypeForProject(
-                            self.user.login, activeProjectId, self.request
-                        )
+        if not projectAsessmentStatus(
+            activeProjectId,
+            dataworking["ass_cod"],
+            self.request,
+        ):
+            if assessmentExists(
+                activeProjectId,
+                dataworking["ass_cod"],
+                self.request,
+            ):
 
-                        if accessType in [4]:
-                            response = Response(
-                                status=401,
-                                body=self._(
-                                    "The access assigned for this project does not allow you to cancel the assessment."
-                                ),
-                            )
-                            return response
+                setAssessmentIndividualStatus(
+                    activeProjectId,
+                    dataworking["ass_cod"],
+                    2,
+                    self.request,
+                )
+                response = Response(status=200, body=self._("Data collection closed."))
+                return response
 
-                        if not projectAsessmentStatus(
-                            activeProjectId,
-                            dataworking["ass_cod"],
-                            self.request,
-                        ):
-                            if assessmentExists(
-                                activeProjectId,
-                                dataworking["ass_cod"],
-                                self.request,
-                            ):
-
-                                setAssessmentIndividualStatus(
-                                    activeProjectId,
-                                    dataworking["ass_cod"],
-                                    2,
-                                    self.request,
-                                )
-                                response = Response(
-                                    status=200, body=self._("Data collection closed.")
-                                )
-                                return response
-
-                            else:
-                                response = Response(
-                                    status=401,
-                                    body=self._(
-                                        "There is no data collection with that code."
-                                    ),
-                                )
-                                return response
-                        else:
-                            response = Response(
-                                status=401,
-                                body=self._(
-                                    "Data collection has not started. You cannot cancel it."
-                                ),
-                            )
-                            return response
-                    else:
-                        response = Response(
-                            status=401,
-                            body=self._("There is no project with that code."),
-                        )
-                        return response
-                else:
-                    response = Response(
-                        status=401, body=self._("Not all parameters have data.")
-                    )
-                    return response
             else:
-                response = Response(status=401, body=self._("Error in the JSON."))
+                response = Response(
+                    status=401,
+                    body=self._("There is no data collection with that code."),
+                )
                 return response
         else:
-            response = Response(status=401, body=self._("Only accepts POST method."))
+            response = Response(
+                status=401,
+                body=self._("Data collection has not started. You cannot cancel it."),
+            )
             return response
 
 
 class ReadAssessmentStructureView(apiView):
-    def processView(self):
-        if self.request.method == "GET":
-            obligatory = ["project_cod", "user_owner", "ass_cod"]
-            try:
-                dataworking = json.loads(self.body)
-            except:
+    valid_fields = (
+        TextField("project_cod"),
+        TextField("user_owner"),
+        TextField("ass_cod"),
+    )
+    validators = (ProjectExistsValidator,)
+
+    def get(self):
+        dataworking = json.loads(self.body)
+        dataworking["user_name"] = self.user.login
+        dataworking["section_private"] = None
+        activeProjectId = getTheProjectIdForOwner(
+            dataworking["user_owner"],
+            dataworking["project_cod"],
+            self.request,
+        )
+
+        if not projectAsessmentStatus(
+            activeProjectId,
+            dataworking["ass_cod"],
+            self.request,
+        ):
+            if assessmentExists(
+                activeProjectId,
+                dataworking["ass_cod"],
+                self.request,
+            ):
                 response = Response(
-                    status=401,
-                    body=self._(
-                        "Error in the JSON, It does not have the 'body' parameter."
+                    status=200,
+                    body=json.dumps(
+                        generateStructureForInterfaceForms(
+                            dataworking["user_owner"],
+                            activeProjectId,
+                            dataworking["project_cod"],
+                            "assessment",
+                            self.request,
+                            ass_cod=dataworking["ass_cod"],
+                        )
                     ),
                 )
                 return response
-
-            if sorted(obligatory) == sorted(dataworking.keys()):
-                dataworking["user_name"] = self.user.login
-                dataworking["section_private"] = None
-
-                dataInParams = True
-                for key in dataworking.keys():
-                    if dataworking[key] == "":
-                        dataInParams = False
-
-                if dataInParams:
-                    exitsproject = projectExists(
-                        self.user.login,
-                        dataworking["user_owner"],
-                        dataworking["project_cod"],
-                        self.request,
-                    )
-                    if exitsproject:
-
-                        activeProjectId = getTheProjectIdForOwner(
-                            dataworking["user_owner"],
-                            dataworking["project_cod"],
-                            self.request,
-                        )
-
-                        if not projectAsessmentStatus(
-                            activeProjectId,
-                            dataworking["ass_cod"],
-                            self.request,
-                        ):
-                            if assessmentExists(
-                                activeProjectId,
-                                dataworking["ass_cod"],
-                                self.request,
-                            ):
-                                response = Response(
-                                    status=200,
-                                    body=json.dumps(
-                                        generateStructureForInterfaceForms(
-                                            dataworking["user_owner"],
-                                            activeProjectId,
-                                            dataworking["project_cod"],
-                                            "assessment",
-                                            self.request,
-                                            ass_cod=dataworking["ass_cod"],
-                                        )
-                                    ),
-                                )
-                                return response
-                            else:
-                                response = Response(
-                                    status=401,
-                                    body=self._(
-                                        "There is no data collection with that code."
-                                    ),
-                                )
-                                return response
-                        else:
-                            response = Response(
-                                status=401,
-                                body=self._("Data collection has not started."),
-                            )
-                            return response
-                    else:
-                        response = Response(
-                            status=401,
-                            body=self._("There is no project with that code."),
-                        )
-                        return response
-                else:
-                    response = Response(
-                        status=401, body=self._("Not all parameters have data.")
-                    )
-                    return response
             else:
-                response = Response(status=401, body=self._("Error in the JSON."))
+                response = Response(
+                    status=401,
+                    body=self._("There is no data collection with that code."),
+                )
                 return response
         else:
-            response = Response(status=401, body=self._("Only accepts GET method."))
+            response = Response(
+                status=401,
+                body=self._("Data collection has not started."),
+            )
             return response
 
 
 class PushJsonToAssessmentView(apiView):
-    def processView(self):
-        if self.request.method == "POST":
-            obligatory = ["project_cod", "user_owner", "ass_cod", "json"]
-            dataworking = json.loads(self.body)
+    valid_fields = (
+        TextField("project_cod"),
+        TextField("user_owner"),
+        TextField("ass_cod"),
+        TextField("json"),
+    )
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
 
-            if sorted(obligatory) == sorted(dataworking.keys()):
-                dataworking["user_name"] = self.user.login
+    def post(self):
+        dataworking = json.loads(self.body)
+        dataworking["user_name"] = self.user.login
+        activeProjectId = getTheProjectIdForOwner(
+            dataworking["user_owner"],
+            dataworking["project_cod"],
+            self.request,
+        )
+        accessType = getAccessTypeForProject(
+            self.user.login, activeProjectId, self.request
+        )
 
-                dataInParams = True
-                for key in dataworking.keys():
-                    if dataworking[key] == "":
-                        dataInParams = False
+        if accessType in [4]:
+            response = Response(
+                status=401,
+                body=self._(
+                    "The access assigned for this project does not allow you to push information."
+                ),
+            )
+            return response
 
-                if dataInParams:
-                    exitsproject = projectExists(
-                        self.user.login,
+        if assessmentExists(
+            activeProjectId,
+            dataworking["ass_cod"],
+            self.request,
+        ):
+            if not projectAsessmentStatus(
+                activeProjectId,
+                dataworking["ass_cod"],
+                self.request,
+            ):
+                if isAssessmentOpen(
+                    activeProjectId,
+                    dataworking["ass_cod"],
+                    self.request,
+                ):
+                    structure = generateStructureForInterfaceForms(
                         dataworking["user_owner"],
+                        activeProjectId,
                         dataworking["project_cod"],
+                        "assessment",
                         self.request,
+                        ass_cod=dataworking["ass_cod"],
                     )
-                    if exitsproject:
 
-                        activeProjectId = getTheProjectIdForOwner(
-                            dataworking["user_owner"],
-                            dataworking["project_cod"],
-                            self.request,
-                        )
-                        accessType = getAccessTypeForProject(
-                            self.user.login, activeProjectId, self.request
-                        )
+                    return ApiAssessmentPushProcess(
+                        self, structure, dataworking, activeProjectId
+                    )
 
-                        if accessType in [4]:
-                            response = Response(
-                                status=401,
-                                body=self._(
-                                    "The access assigned for this project does not allow you to push information."
-                                ),
-                            )
-                            return response
-
-                        if assessmentExists(
-                            activeProjectId,
-                            dataworking["ass_cod"],
-                            self.request,
-                        ):
-                            if not projectAsessmentStatus(
-                                activeProjectId,
-                                dataworking["ass_cod"],
-                                self.request,
-                            ):
-                                if isAssessmentOpen(
-                                    activeProjectId,
-                                    dataworking["ass_cod"],
-                                    self.request,
-                                ):
-                                    structure = generateStructureForInterfaceForms(
-                                        dataworking["user_owner"],
-                                        activeProjectId,
-                                        dataworking["project_cod"],
-                                        "assessment",
-                                        self.request,
-                                        ass_cod=dataworking["ass_cod"],
-                                    )
-
-                                    return ApiAssessmentPushProcess(
-                                        self, structure, dataworking, activeProjectId
-                                    )
-
-                                else:
-                                    response = Response(
-                                        status=401,
-                                        body=self._(
-                                            "Data collection is closed. After you close data collection, no more data can be entered."
-                                        ),
-                                    )
-                                    return response
-                            else:
-                                response = Response(
-                                    status=401,
-                                    body=self._("Data collection has not started."),
-                                )
-                                return response
-                        else:
-                            response = Response(
-                                status=401,
-                                body=self._(
-                                    "There is no data collection with that code."
-                                ),
-                            )
-                            return response
-                    else:
-                        response = Response(
-                            status=401,
-                            body=self._("There is no project with that code."),
-                        )
-                        return response
                 else:
                     response = Response(
-                        status=401, body=self._("Not all parameters have data.")
+                        status=401,
+                        body=self._(
+                            "Data collection is closed. After you close data collection, no more data can be entered."
+                        ),
                     )
                     return response
             else:
-                response = Response(status=401, body=self._("Error in the JSON."))
+                response = Response(
+                    status=401,
+                    body=self._("Data collection has not started."),
+                )
                 return response
         else:
-            response = Response(status=401, body=self._("Only accepts POST method."))
+            response = Response(
+                status=401,
+                body=self._("There is no data collection with that code."),
+            )
             return response
 
 
@@ -901,223 +732,153 @@ def ApiAssessmentPushProcess(self, structure, dataworking, activeProjectId):
 
 
 class ReadAssessmentDataView(apiView):
-    def processView(self):
-        if self.request.method == "GET":
-            obligatory = ["project_cod", "user_owner", "ass_cod"]
-            try:
-                dataworking = json.loads(self.body)
-            except:
+    valid_fields = (
+        TextField("project_cod"),
+        TextField("user_owner"),
+        TextField("ass_cod"),
+    )
+    validators = (ProjectExistsValidator,)
+
+    def get(self):
+        dataworking = json.loads(self.body)
+        dataworking["user_name"] = self.user.login
+        dataworking["section_private"] = None
+        activeProjectId = getTheProjectIdForOwner(
+            dataworking["user_owner"],
+            dataworking["project_cod"],
+            self.request,
+        )
+
+        if not projectAsessmentStatus(
+            activeProjectId,
+            dataworking["ass_cod"],
+            self.request,
+        ):
+            if assessmentExists(
+                activeProjectId,
+                dataworking["ass_cod"],
+                self.request,
+            ):
+                info = getJSONResult(
+                    dataworking["user_owner"],
+                    activeProjectId,
+                    dataworking["project_cod"],
+                    self.request,
+                    True,
+                    True,
+                    dataworking["ass_cod"],
+                )
+
+                newJson = {
+                    "structure": info["assessments"][0],
+                    "data": info["data"],
+                }
+
                 response = Response(
-                    status=401,
-                    body=self._(
-                        "Error in the JSON, It does not have the 'body' parameter."
-                    ),
+                    status=200,
+                    body=json.dumps(newJson),
                 )
                 return response
-
-            if sorted(obligatory) == sorted(dataworking.keys()):
-                dataworking["user_name"] = self.user.login
-                dataworking["section_private"] = None
-
-                dataInParams = True
-                for key in dataworking.keys():
-                    if dataworking[key] == "":
-                        dataInParams = False
-
-                if dataInParams:
-                    exitsproject = projectExists(
-                        self.user.login,
-                        dataworking["user_owner"],
-                        dataworking["project_cod"],
-                        self.request,
-                    )
-                    if exitsproject:
-
-                        activeProjectId = getTheProjectIdForOwner(
-                            dataworking["user_owner"],
-                            dataworking["project_cod"],
-                            self.request,
-                        )
-
-                        if not projectAsessmentStatus(
-                            activeProjectId,
-                            dataworking["ass_cod"],
-                            self.request,
-                        ):
-                            if assessmentExists(
-                                activeProjectId,
-                                dataworking["ass_cod"],
-                                self.request,
-                            ):
-                                info = getJSONResult(
-                                    dataworking["user_owner"],
-                                    activeProjectId,
-                                    dataworking["project_cod"],
-                                    self.request,
-                                    True,
-                                    True,
-                                    dataworking["ass_cod"],
-                                )
-
-                                newJson = {
-                                    "structure": info["assessments"][0],
-                                    "data": info["data"],
-                                }
-
-                                response = Response(
-                                    status=200,
-                                    body=json.dumps(newJson),
-                                )
-                                return response
-                            else:
-                                response = Response(
-                                    status=401,
-                                    body=self._(
-                                        "There is no data collection with that code."
-                                    ),
-                                )
-                                return response
-                        else:
-                            response = Response(
-                                status=401,
-                                body=self._("Data collection has not started."),
-                            )
-                            return response
-                    else:
-                        response = Response(
-                            status=401,
-                            body=self._("There is no project with that code."),
-                        )
-                        return response
-                else:
-                    response = Response(
-                        status=401, body=self._("Not all parameters have data.")
-                    )
-                    return response
             else:
-                response = Response(status=401, body=self._("Error in the JSON."))
+                response = Response(
+                    status=401,
+                    body=self._("There is no data collection with that code."),
+                )
                 return response
         else:
-            response = Response(status=401, body=self._("Only accepts GET method."))
+            response = Response(
+                status=401,
+                body=self._("Data collection has not started."),
+            )
             return response
 
 
-from climmob.views.Api.projectRegistryStart import functionForProcessAndValidateUpdate
-
-
 class AssessmentDataCleaningView(apiView):
-    def processView(self):
-        if self.request.method == "POST":
-            obligatory = ["project_cod", "user_owner", "ass_cod", "json"]
-            dataworking = json.loads(self.body)
+    valid_fields = (
+        TextField("project_cod"),
+        TextField("user_owner"),
+        TextField("ass_cod"),
+        TextField("json"),
+    )
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
 
-            if sorted(obligatory) == sorted(dataworking.keys()):
-                dataworking["user_name"] = self.user.login
+    def post(self):
+        dataworking = json.loads(self.body)
+        dataworking["user_name"] = self.user.login
+        activeProjectId = getTheProjectIdForOwner(
+            dataworking["user_owner"],
+            dataworking["project_cod"],
+            self.request,
+        )
+        accessType = getAccessTypeForProject(
+            self.user.login, activeProjectId, self.request
+        )
 
-                dataInParams = True
-                for key in dataworking.keys():
-                    if dataworking[key] == "":
-                        dataInParams = False
+        if accessType in [4]:
+            response = Response(
+                status=401,
+                body=self._(
+                    "The access assigned for this project does not allow you to push information."
+                ),
+            )
+            return response
 
-                if dataInParams:
-                    exitsproject = projectExists(
-                        self.user.login,
+        if assessmentExists(
+            activeProjectId,
+            dataworking["ass_cod"],
+            self.request,
+        ):
+            if not projectAsessmentStatus(
+                activeProjectId,
+                dataworking["ass_cod"],
+                self.request,
+            ):
+                if isAssessmentOpen(
+                    activeProjectId,
+                    dataworking["ass_cod"],
+                    self.request,
+                ):
+
+                    structure = generateStructureForInterfaceForms(
+                        dataworking["user_owner"],
+                        activeProjectId,
+                        dataworking["project_cod"],
+                        "assessment",
+                        self.request,
+                        ass_cod=dataworking["ass_cod"],
+                    )
+
+                    return functionForProcessAndValidateUpdate(
+                        self,
+                        structure,
+                        dataworking,
+                        activeProjectId,
                         dataworking["user_owner"],
                         dataworking["project_cod"],
-                        self.request,
+                        "ass",
+                        code=dataworking["ass_cod"],
                     )
-                    if exitsproject:
 
-                        activeProjectId = getTheProjectIdForOwner(
-                            dataworking["user_owner"],
-                            dataworking["project_cod"],
-                            self.request,
-                        )
-                        accessType = getAccessTypeForProject(
-                            self.user.login, activeProjectId, self.request
-                        )
-
-                        if accessType in [4]:
-                            response = Response(
-                                status=401,
-                                body=self._(
-                                    "The access assigned for this project does not allow you to push information."
-                                ),
-                            )
-                            return response
-
-                        if assessmentExists(
-                            activeProjectId,
-                            dataworking["ass_cod"],
-                            self.request,
-                        ):
-                            if not projectAsessmentStatus(
-                                activeProjectId,
-                                dataworking["ass_cod"],
-                                self.request,
-                            ):
-                                if isAssessmentOpen(
-                                    activeProjectId,
-                                    dataworking["ass_cod"],
-                                    self.request,
-                                ):
-
-                                    structure = generateStructureForInterfaceForms(
-                                        dataworking["user_owner"],
-                                        activeProjectId,
-                                        dataworking["project_cod"],
-                                        "assessment",
-                                        self.request,
-                                        ass_cod=dataworking["ass_cod"],
-                                    )
-
-                                    return functionForProcessAndValidateUpdate(
-                                        self,
-                                        structure,
-                                        dataworking,
-                                        activeProjectId,
-                                        dataworking["user_owner"],
-                                        dataworking["project_cod"],
-                                        "ass",
-                                        code=dataworking["ass_cod"],
-                                    )
-
-                                else:
-                                    response = Response(
-                                        status=401,
-                                        body=self._(
-                                            "Data collection is closed. After you close data collection, no more data can be entered."
-                                        ),
-                                    )
-                                    return response
-                            else:
-                                response = Response(
-                                    status=401,
-                                    body=self._("Data collection has not started."),
-                                )
-                                return response
-                        else:
-                            response = Response(
-                                status=401,
-                                body=self._(
-                                    "There is no data collection with that code."
-                                ),
-                            )
-                            return response
-                    else:
-                        response = Response(
-                            status=401,
-                            body=self._("There is no project with that code."),
-                        )
-                        return response
                 else:
                     response = Response(
-                        status=401, body=self._("Not all parameters have data.")
+                        status=401,
+                        body=self._(
+                            "Data collection is closed. After you close data collection, no more data can be entered."
+                        ),
                     )
                     return response
             else:
-                response = Response(status=401, body=self._("Error in the JSON."))
+                response = Response(
+                    status=401,
+                    body=self._("Data collection has not started."),
+                )
                 return response
         else:
-            response = Response(status=401, body=self._("Only accepts POST method."))
+            response = Response(
+                status=401,
+                body=self._("There is no data collection with that code."),
+            )
             return response

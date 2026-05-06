@@ -806,7 +806,7 @@ class TestProjectOpenValidatorPrivateView(unittest.TestCase):
             self.validator.run()
         self.assertEqual(
             str(cm.exception),
-            "This project has been finalized and is now in read-only mode. Modifications are no longer permitted to ensure the integrity of the final data.",
+            "This project has been closed and is now in read-only mode. Modifications are no longer permitted to ensure the integrity of the final data.",
         )
         self.assertEqual(self.view.request.method, "GET")
 
@@ -852,6 +852,7 @@ class TestProjectOpenValidatorAPI(unittest.TestCase):
             "other_data": "value",
         }
         self.view.request.POST = {"Body": json.dumps(post_data)}
+        self.view.body = json.dumps(post_data)
 
         self.project_id_owner_patcher = patch.object(pov_mod, "getTheProjectIdForOwner")
         self.project_status_patcher = patch.object(pov_mod, "get_project_status")
@@ -878,12 +879,12 @@ class TestProjectOpenValidatorAPI(unittest.TestCase):
                 self.view.request,
             )
 
-    def test_api_post_method_with_finalized_project_should_raise_forbidden(self):
+    def test_api_post_method_with_closed_project_should_raise_forbidden(self):
         """Checks the trigger of the HTTPForbidden when it is close"""
         with self.assertRaises(HTTPForbidden) as context:
             self.validator.run()
         self.assertEqual(
-            "This project has been finalized and is now in read-only mode. Modifications are no longer permitted to ensure the integrity of the final data.",
+            "This project has been closed and is now in read-only mode. Modifications are no longer permitted to ensure the integrity of the final data.",
             str(context.exception),
         )
 

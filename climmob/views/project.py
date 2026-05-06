@@ -1055,9 +1055,7 @@ class FinishProjectView(privateView):
             log.warning("Email didn't send. No recipients found.")
             return False
 
-        subject = (
-            "✅  Project " + str(project_info["project_cod"]) + " has been closed"
-        )
+        subject = "✅  Project " + str(project_info["project_cod"]) + " has been closed"
         try:
             text = render_template(
                 "email/close_project.jinja2",

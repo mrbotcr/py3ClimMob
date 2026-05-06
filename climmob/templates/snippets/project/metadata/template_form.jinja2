@@ -783,6 +783,9 @@ function toggleConfirmationGroup(selectElement) {
                 } else {
                     input.setCustomValidity("");
                 }
+            }else{
+            input.removeAttribute('required');
+            input.setCustomValidity("");
             }
         }
     });

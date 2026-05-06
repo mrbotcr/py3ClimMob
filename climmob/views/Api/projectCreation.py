@@ -39,6 +39,7 @@ from climmob.processes import (
     add_project_location_unit_objective,
     delete_all_project_location_unit_objective,
 )
+from climmob.utility.project import ProjectAccessType
 from climmob.views.classes import apiView
 from climmob.views.project import function_create_clone
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
@@ -1305,7 +1306,7 @@ class DeleteProjectViewApi(apiView):
                     self.user.login, activeProjectId, self.request
                 )
 
-                if accessType in [4]:
+                if accessType in [ProjectAccessType.MEMBER.value]:
                     response = Response(
                         status=401,
                         body=self._(

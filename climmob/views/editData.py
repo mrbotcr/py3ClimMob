@@ -204,15 +204,14 @@ class EditDataView(privateView):
         activeProjectId = getTheProjectIdForOwner(
             activeProjectUser, activeProjectCod, self.request
         )
+        if not formId in ["registry", "assessment"]:
+            raise HTTPNotFound()
 
         if formId == "registry":
             formId = "reg"
-        else:
-            if formId == "assessment":
-                formId = "ass"
-                code = self.request.matchdict["codeid"]
-            else:
-                raise HTTPNotFound()
+        elif formId == "assessment":
+            formId = "ass"
+            code = self.request.matchdict["codeid"]
 
         path = os.path.join(
             self.request.registry.settings["user.repository"],

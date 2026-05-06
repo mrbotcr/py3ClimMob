@@ -170,8 +170,7 @@ from climmob.views.basic_views import (
     HomeView,
     HealthView,
     NotFoundView,
-    # ForbiddenView,
-    Forbidden,
+    ForbiddenView,
     LoginView,
     RegisterView,
     LogoutView,
@@ -2264,9 +2263,7 @@ def loadRoutes(config):
     appendToRoutes(routes)
 
     config.add_notfound_view(NotFoundView, renderer="404.jinja2")
-    # config.add_forbidden_view(ForbiddenView, renderer="403.jinja2")
-
-    config.add_forbidden_view(Forbidden, renderer="403.jinja2")
+    config.add_forbidden_view(ForbiddenView, renderer="403.jinja2")
 
     # Custom mapping can happen here AFTER the host maps
     for plugin in p.PluginImplementations(p.IRoutes):

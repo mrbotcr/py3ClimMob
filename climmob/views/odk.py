@@ -36,7 +36,7 @@ class FormlistView(odkView):
 
 class FormListByProjectView(odkView):
     def processView(self):
-        ##send the form data to odk collect
+        """send the form data to odk collect"""
         userOwner = self.request.matchdict["user"]
         projectCod = self.request.matchdict["project"]
         userCollaborator = self.request.matchdict["collaborator"]
@@ -95,7 +95,8 @@ class PushView(odkView):
 
 
 class SubmissionView(odkView):
-    ##recive the forms
+    """receive the forms"""
+
     def processView(self):
         userid = self.request.matchdict["userid"]
         if self.request.method == "HEAD":
@@ -208,7 +209,7 @@ class SubmissionByProjectView(odkView):
 
 class XMLFormView(odkView):
     def processView(self):
-        ##allows to download the form in the odk Collect
+        """allows to download the form in the odk Collect"""
         user = self.request.matchdict["user"]
         projectUserOwner = self.request.matchdict["userowner"]
         projectCod = self.request.matchdict["project"]

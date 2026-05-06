@@ -45,9 +45,15 @@
     {% include 'snippets/expired_session.jinja2' %}
 {% endif %}
 
+{% set is_open = True %}
 {% set can_edit = True %}
-{% if activeProject.project_status == 3 %}
-    {% set can_edit = False %}
+{% if hasActiveProject %}
+    {% if activeProject.project_status == 3 %}
+        {% set is_open = False %}
+    {% endif %}
+    {% if activeProject["access_type"] in [4] %}
+       {% set can_edit = False %}
+   {% endif %}
 {% endif %}
 
 {% set withsidebar = [] %}
@@ -277,8 +283,10 @@
                                             </td>
                                         {% endblock project_heading_info %}
                                     </tr>
+
+
                                     <tr>
-                                        <td style="vertical-align: middle">
+                                        <td style="vertical-align: middle">revisar!!!!
                                             {{ activeProject.project_abstract }}
                                         </td>
                                     </tr>
@@ -368,11 +376,11 @@
                                                         <p style="margin-top: 8px; text-align: center"><span
                                                                 class="label
                                                                     {% if progress.enumerators %}label-success
-                                                                    {% elif can_edit %}label-danger
+                                                                    {% elif is_open %}label-danger
                                                                     {% else %}label-default{% endif %}">
                                                             {% if progress.enumerators %}
                                                                 {{ _("Completed") }}
-                                                            {% elif can_edit %}
+                                                            {% elif is_open %}
                                                                 {{ _("Validation") }}
                                                             {% else %}
                                                                 {{ _("Incomplete") }}
@@ -405,7 +413,7 @@
                                                         {% else %}
                                                             {% if progress.technology and progress.techalias %}
                                                                 <span class="label label-success">{{ _("Completed") }}</span>
-                                                            {% elif can_edit %}
+                                                            {% elif is_open %}
                                                                 {% if progress.technology and not progress.techalias %}
                                                                     <span class="label label-warning"
                                                                           title="There are assigned treatments but without levels">{{ _("Partial") }}</span>
@@ -449,7 +457,7 @@
                                                 <p style="margin-top: 8px; text-align: center;">
                                                     {% if progress.registry %}
                                                         <span class="label label-success">{{ _("Completed") }}</span>
-                                                    {% elif can_edit %}
+                                                    {% elif is_open %}
                                                         <span class="label label-danger">{{ _("Pending") }}</span>
                                                     {% else %}
                                                         <span class="label label-default">{{ _("Incomplete") }}</span>
@@ -476,7 +484,7 @@
                                                     <p style="margin-top: 8px; text-align: center">
                                                         {% if progress.assessment %}
                                                             <span class="label label-success">{{ _("Completed") }}</span>
-                                                        {% elif can_edit %}
+                                                        {% elif is_open %}
                                                             <span class="label label-danger">{{ _("Pending") }}</span>
                                                         {% else %}
                                                             <span class="label label-default">{{ _("Incomplete") }}</span>
@@ -505,7 +513,7 @@
                                                 <p style="margin-top: 8px; text-align: center;">
                                                     {% if progress.metadata %}
                                                         <span class="label label-success">{{ _("Completed") }}</span>
-                                                    {% elif can_edit %}
+                                                    {% elif is_open %}
                                                         <span class="label label-danger">{{ _("Pending") }}</span>
                                                     {% else %}
                                                         <span class="label label-default">{{ _("Incomplete") }}</span>
@@ -556,78 +564,80 @@
 
                                 {% if activeProject["project_template"] != 1 %}
                                     {% if activeProject.project_registration_and_analysis != 1 %}
-                                        <div class="ibox float-e-margins">
-                                            <div class="ibox-title">
-                                                <div class="ibox-tools">
-                                                    <div class="row">
-                                                        <div class="col-md-8">
-                                                            <h5>
-                                                                {% if can_edit %}
-                                                                    {{ _("Start trial data collection moments") }}
-                                                                {% else %}
-                                                                    {{ _("Trial data collection moments") }}
-                                                                {% endif %}
-                                                            </h5>
+                                        {% if can_edit %}
+                                            <div class="ibox float-e-margins">
+                                                <div class="ibox-title">
+                                                    <div class="ibox-tools">
+                                                        <div class="row">
+                                                            <div class="col-md-8">
+                                                                <h5>
+                                                                    {% if is_open %}
+                                                                        {{ _("Start trial data collection moments") }}
+                                                                    {% else %}
+                                                                        {{ _("Trial data collection moments") }}
+                                                                    {% endif %}
+                                                                </h5>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="ibox-content">
-                                                <div class="row">
-                                                    {% if can_edit %}
-                                                        {% if progress["enumerators"] and progress["technology"] and progress["techalias"] and progress["registry"] and progress["assessment"] and progress.regsubmissions == 2 %}
-                                                            <div class="col-md-12">
-                                                                <br>
-                                                                {% if progress.usableAssessments|length > 0 %}
-                                                                    {% include 'snippets/error.jinja2' %}
-                                                                    <form class="formElement" id="start_assessment"
-                                                                          role="form" method="post"
-                                                                          action="{{ request.route_url("startassessments",user=activeProject["owner"].user_name, project=activeProject.project_cod) }}">
-                                                                        <div class="form-group">
-                                                                            <label>{{ _("Select the form to start the trial data collection") }}</label>
-                                                                            <select id="assessment_id" name="assessment_id"
-                                                                                    class="form-control">
-                                                                                {% for assessment in progress["usableAssessments"] %}
-                                                                                    <option value="{{ assessment.ass_cod }}">{{ assessment.ass_desc }}</option>
-                                                                                {% endfor %}
-                                                                            </select>
+                                                <div class="ibox-content">
+                                                    <div class="row">
+                                                        {% if is_open %}
+                                                            {% if progress["enumerators"] and progress["technology"] and progress["techalias"] and progress["registry"] and progress["assessment"] and progress.regsubmissions == 2 %}
+                                                                <div class="col-md-12">
+                                                                    <br>
+                                                                    {% if progress.usableAssessments|length > 0 %}
+                                                                        {% include 'snippets/error.jinja2' %}
+                                                                        <form class="formElement" id="start_assessment"
+                                                                              role="form" method="post"
+                                                                              action="{{ request.route_url("startassessments",user=activeProject["owner"].user_name, project=activeProject.project_cod) }}">
+                                                                            <div class="form-group">
+                                                                                <label>{{ _("Select the form to start the trial data collection") }}</label>
+                                                                                <select id="assessment_id" name="assessment_id"
+                                                                                        class="form-control">
+                                                                                    {% for assessment in progress["usableAssessments"] %}
+                                                                                        <option value="{{ assessment.ass_cod }}">{{ assessment.ass_desc }}</option>
+                                                                                    {% endfor %}
+                                                                                </select>
+                                                                            </div>
+                                                                            <input type="hidden" name="csrf_token"
+                                                                                   value="{{ request.session.get_csrf_token() }}">
+                                                                            <button id="start_assessment_button"
+                                                                                    class="btn btn-primary btn-rounded btn-block"
+                                                                                    type="submit"
+                                                                                    name="start_assessment_button"><i
+                                                                                    class="fa fa-play"></i> {{ _("Start an trial data collection moment") }}
+                                                                            </button>
+                                                                        </form>
+                                                                    {% else %}
+                                                                        <div style="text-align: left; padding-left: 10px" >
+                                                                            <p>{{ _("You already start all the data collection moments") }}</p>
                                                                         </div>
-                                                                        <input type="hidden" name="csrf_token"
-                                                                               value="{{ request.session.get_csrf_token() }}">
-                                                                        <button id="start_assessment_button"
-                                                                                class="btn btn-primary btn-rounded btn-block"
-                                                                                type="submit"
-                                                                                name="start_assessment_button"><i
-                                                                                class="fa fa-play"></i> {{ _("Start an trial data collection moment") }}
-                                                                        </button>
-                                                                    </form>
-                                                                {% else %}
-                                                                    <div style="text-align: left; padding-left: 10px" >
-                                                                        <p>{{ _("You already start all the data collection moments") }}</p>
-                                                                    </div>
-                                                                {% endif %}
-                                                            </div>
-                                                        {% else %}
-                                                            <div class="col-md-12">
-                                                                <div class="text-center">
-                                                                    <p>
-                                                                    {% if can_edit %}
-                                                                        {{ _("You can start the trial data collection once the registration of participants is closed and the project definition is completed") }}
                                                                     {% endif %}
-                                                                    </p>
                                                                 </div>
+                                                            {% else %}
+                                                                <div class="col-md-12">
+                                                                    <div class="text-center">
+                                                                        <p>
+                                                                        {% if is_open %}
+                                                                            {{ _("You can start the trial data collection once the registration of participants is closed and the project definition is completed") }}
+                                                                        {% endif %}
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            {% endif %}
+                                                        {% else %}
+                                                            <div style="text-align: left; padding-left: 10px" >
+                                                                <p>
+                                                                    {{ _("You can not start the trial data collection once the project was closed") }}
+                                                                </p>
                                                             </div>
                                                         {% endif %}
-                                                    {% else %}
-                                                        <div style="text-align: left; padding-left: 10px" >
-                                                            <p>
-                                                                {{ _("You can not start the trial data collection once the project was closed") }}
-                                                            </p>
-                                                        </div>
-                                                    {% endif %}
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        {% endif %}
                                     {% endif %}
                                 {% endif %}
 
@@ -647,7 +657,7 @@
                                                                 <h5 style=" margin: initial">{{ _("Participant registration") }}</h5>
                                                             </td>
                                                             <td style="vertical-align: middle; text-align: center">
-                                                                {% if can_edit %}
+                                                                {% if is_open %}
                                                                     {% set pbtype = "progress-bar-info" %}
                                                                     {% if progress.regsubmissions == 0 %}
                                                                         <div class="small"
@@ -687,26 +697,32 @@
                                         </div>
                                         <div class="ibox-content"{% if progress.regsubmissions == 2 %}style="display: none"{% endif %}>
 
-                                            {% if progress.regsubmissions == 0 and can_edit %}
+                                            {% if progress.regsubmissions == 0 and is_open %}
                                                 <div class="row">
-                                                    {% if progress.enumerators == true and progress.technology == true and progress.techalias == true and progress.registry == true %}
-                                                        <div class="col-md-12">
-                                                            <button class="btn btn-primary btn-rounded btn-block"
-                                                                    onclick="location.href='{{ request.route_url('combinations',user=activeProject["owner"].user_name, project=activeProject.project_cod,  _query={"stage": 1}) }}'">
-                                                                <i class="fa fa-play"></i> {{ _("Generate packages with technology options") }}
-                                                                <br/>
-                                                                {{ _("and open the registration of participants") }}
-                                                            </button>
-                                                        </div>
+                                                    {% if can_edit %}
+                                                        {% if progress.enumerators == true and progress.technology == true and progress.techalias == true and progress.registry == true %}
+                                                            <div class="col-md-12">
+                                                                <button class="btn btn-primary btn-rounded btn-block"
+                                                                        onclick="location.href='{{ request.route_url('combinations',user=activeProject["owner"].user_name, project=activeProject.project_cod,  _query={"stage": 1}) }}'">
+                                                                    <i class="fa fa-play"></i> {{ _("Generate packages with technology options") }}
+                                                                    <br/>
+                                                                    {{ _("and open the registration of participants") }}
+                                                                </button>
+                                                            </div>
+                                                        {% else %}
+                                                            <div class="col-md-12">
+                                                                <div>{{ _("You can start the registration of participants once the project has assigned field agents, technology and its options have been selected and a registration form has been prepared") }}</div>
+                                                            </div>
+                                                        {% endif %}
                                                     {% else %}
                                                         <div class="col-md-12">
-                                                            <div class="text-center">{{ _("You can start the registration of participants once the project has assigned field agents, technology and its options have been selected and a registration form has been prepared") }}</div>
+                                                            {{ _("The participant registration form is not yet available") }}
                                                         </div>
                                                     {% endif %}
                                                 </div>
                                             {% endif %}
 
-                                            {% if ((progress.regsubmissions == 1  or progress.regsubmissions == 2 ) and can_edit ) or (progress.regtotal > 0)  %}
+                                            {% if ((progress.regsubmissions == 1  or progress.regsubmissions == 2 ) and is_open ) or (progress.regtotal > 0)  %}
                                                 <div class="row">
                                                     <div class="col-md-12">
                                                         <h3>{{ _("Statistics") }}</h3>
@@ -733,16 +749,16 @@
                                                                 <td>{{ _("Last submission") }}</td>
                                                                 <td>{{ progress.lastreg }}</td>
                                                             </tr>
-                                                            {% if progress.regsubmissions == 1 and can_edit %}
+                                                            {% if progress.regsubmissions == 1 and is_open %}
+                                                                {% if can_edit %}
+                                                                    {% block upload_data_registry %}
 
-                                                                {% block upload_data_registry %}
+                                                                    {% endblock upload_data_registry %}
 
-                                                                {% endblock upload_data_registry %}
+                                                                    {% block enketo_information_registry %}
 
-                                                                {% block enketo_information_registry %}
-
-                                                                {% endblock enketo_information_registry %}
-
+                                                                    {% endblock enketo_information_registry %}
+                                                                {% endif %}
                                                             {% endif %}
 
                                                             <tr>
@@ -752,7 +768,7 @@
                                                                            style="width: 100%; overflow: hidden;text-overflow: ellipsis;"
                                                                            href="{{ request.route_url('EditDataRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry') }}"><i
                                                                                 class="fa fa-table"></i>
-                                                                           {% if can_edit %}
+                                                                           {% if is_open and can_edit %}
                                                                                 {{ _("View and edit data") }}
                                                                            {% else %}
                                                                                 {{ _('View data') }}
@@ -795,55 +811,57 @@
                                             {% endif %}
                                             {% if progress.regsubmissions == 1  or progress.regsubmissions == 2 %}
                                                 <div class="row">
-                                                    {% if progress.regsubmissions == 1 %}
-                                                        {% if progress.regtotal > 0 %}
-                                                            {% if can_edit %}
-                                                                <div class="col-md-6">
-                                                                    <button onclick="location.href ='{{ request.route_url('closeregistry',user=activeProject["owner"].user_name, project=activeProject.project_cod) }}'"
-                                                                            class="btn btn-danger btn-rounded btn-block"
-                                                                            href="#"><i
-                                                                            class="fa fa-stop"></i> {{ _("Finish registration") }}
-                                                                    </button>
-                                                                </div>
-                                                                <div class="col-md-6">
-                                                                    <button onclick="location.href ='{{ request.route_url('cancelregistry',user=activeProject["owner"].user_name, project=activeProject.project_cod) }}'"
-                                                                            class="btn btn-danger btn-rounded btn-block"
-                                                                            href="#"><i
-                                                                            class="fa fa-undo"></i> {{ _("Cancel registration") }}
-                                                                    </button>
-                                                                </div>
-                                                                {% else %}
-                                                                    <div class="text-center">
-                                                                        <p>{{ _("Project closed, for the integrity of the data you can not make changes") }}</p>
+                                                    {% if can_edit %}
+                                                        {% if progress.regsubmissions == 1 %}
+                                                            {% if progress.regtotal > 0 %}
+                                                                {% if is_open %}
+                                                                    <div class="col-md-6">
+                                                                        <button onclick="location.href ='{{ request.route_url('closeregistry',user=activeProject["owner"].user_name, project=activeProject.project_cod) }}'"
+                                                                                class="btn btn-danger btn-rounded btn-block"
+                                                                                href="#"><i
+                                                                                class="fa fa-stop"></i> {{ _("Finish registration") }}
+                                                                        </button>
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        <button onclick="location.href ='{{ request.route_url('cancelregistry',user=activeProject["owner"].user_name, project=activeProject.project_cod) }}'"
+                                                                                class="btn btn-danger btn-rounded btn-block"
+                                                                                href="#"><i
+                                                                                class="fa fa-undo"></i> {{ _("Cancel registration") }}
+                                                                        </button>
+                                                                    </div>
+                                                                    {% else %}
+                                                                        <div class="text-center">
+                                                                            <p>{{ _("Project closed, for the integrity of the data you can not make changes") }}</p>
+                                                                        </div>
+                                                                    {% endif %}
+                                                            {% else %}
+                                                                {% if is_open %}
+                                                                    <div class="col-md-12">
+                                                                        <button onclick="location.href = '{{ request.route_url('cancelregistry', user=activeProject["owner"].user_name, project=activeProject.project_cod) }}'"
+                                                                                class="btn btn-danger btn-rounded btn-block"
+                                                                                href="#"><i
+                                                                                class="fa fa-undo"></i> {{ _("Cancel registration") }}
+                                                                        </button>
                                                                     </div>
                                                                 {% endif %}
-                                                        {% else %}
-                                                            {% if can_edit %}
-                                                                <div class="col-md-12">
-                                                                    <button onclick="location.href = '{{ request.route_url('cancelregistry', user=activeProject["owner"].user_name, project=activeProject.project_cod) }}'"
+                                                            {% endif %}
+                                                        {% endif %}
+                                                        {% if progress.regsubmissions == 2 and is_open %}
+
+                                                            <div class="col-md-12">
+                                                                {% if progress.assessments|length == 0 %}
+                                                                    <button onclick="location.href = '{{ request.route_url('cancelregistry',user=activeProject["owner"].user_name, project=activeProject.project_cod) }}'"
                                                                             class="btn btn-danger btn-rounded btn-block"
                                                                             href="#"><i
                                                                             class="fa fa-undo"></i> {{ _("Cancel registration") }}
                                                                     </button>
-                                                                </div>
-                                                            {% endif %}
+                                                                {% endif %}
+                                                            </div>
                                                         {% endif %}
-                                                    {% endif %}
-                                                    {% if progress.regsubmissions == 2 and can_edit %}
-
-                                                        <div class="col-md-12">
-                                                            {% if progress.assessments|length == 0 %}
-                                                                <button onclick="location.href = '{{ request.route_url('cancelregistry',user=activeProject["owner"].user_name, project=activeProject.project_cod) }}'"
-                                                                        class="btn btn-danger btn-rounded btn-block"
-                                                                        href="#"><i
-                                                                        class="fa fa-undo"></i> {{ _("Cancel registration") }}
-                                                                </button>
-                                                            {% endif %}
-                                                        </div>
                                                     {% endif %}
                                                 </div>
                                             {% endif %}
-                                            {% if not can_edit and progress.regtotal == 0  %}
+                                            {% if not is_open and progress.regtotal == 0  %}
                                                 <p>
                                                 {{ _("This project has been closed. Now the project is blocked") }}
                                                 </p>
@@ -868,7 +886,7 @@
                                                                     </td>
                                                                     <td style="vertical-align: middle; text-align: center">
                                                                         {% set pbtype = "progress-bar-info" %}
-                                                                        {% if can_edit %}
+                                                                        {% if is_open %}
                                                                             {% if progress.asssubmissions == 0 %}
                                                                                 <div class="small"
                                                                                      style="text-align: left">{{ _("Not yet started") }}</div>
@@ -935,15 +953,17 @@
                                                                     <td>{{ assessment.lastass }}</td>
                                                                 </tr>
 
-                                                                {% if assessment.ass_status == 1 and can_edit %}
+                                                                {% if assessment.ass_status == 1 and is_open %}
+                                                                    {% if can_edit %}
 
-                                                                    {% block upload_data_assessment scoped %}
+                                                                        {% block upload_data_assessment scoped %}
 
-                                                                    {% endblock upload_data_assessment %}
+                                                                        {% endblock upload_data_assessment %}
 
-                                                                    {% block enketo_information_assessment scoped %}
+                                                                        {% block enketo_information_assessment scoped %}
 
-                                                                    {% endblock enketo_information_assessment %}
+                                                                        {% endblock enketo_information_assessment %}
+                                                                    {% endif %}
 
                                                                 {% endif %}
 
@@ -956,7 +976,7 @@
                                                                                    style="width: 100%; overflow: hidden;text-overflow: ellipsis;"
                                                                                    href="{{ request.route_url('EditDataAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod) }}"
                                                                                    href="#"><i class="fa fa-table"></i>
-                                                                                    {% if can_edit %}
+                                                                                    {% if is_open and can_edit %}
                                                                                         {{ _("View and edit data") }} {% else %}
                                                                                         {{ _('View data') }} {% endif %}
                                                                                 </a>
@@ -998,39 +1018,39 @@
                                                             </table>
                                                         </div>
                                                     </div>
-                                                {% if can_edit %}
-                                                    <div class="row">
-                                                        {% if assessment.asstotal > 0 %}
-                                                            <div class="col-md-6">
-                                                                {% if assessment.ass_status == 1 %}
-                                                                    <a class="btn btn-danger btn-rounded btn-block"
-                                                                       style="width: 100%; overflow: hidden;text-overflow: ellipsis;"
-                                                                       onclick="location.href = '{{ request.route_url('closeassessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}'"><i
-                                                                            class="fa fa-stop"></i> {{ _("Finish") }} {{ assessment.ass_desc }}
-                                                                    </a>
-                                                                {% endif %}
-                                                            </div>
-                                                            <div class="col-md-6">
-                                                                {% if assessment.ass_status == 1 %}
-                                                                    <a class="btn btn-danger btn-rounded btn-block"
-                                                                       style="width: 100%; overflow: hidden;text-overflow: ellipsis;"
-                                                                       onclick="location.href = '{{ request.route_url('cancelassessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}'"><i
-                                                                            class="fa fa-stop"></i> {{ _("Cancel") }} {{ assessment.ass_desc }}
-                                                                    </a>
-                                                                {% endif %}
-                                                            </div>
-                                                        {% else %}
-                                                            <div class="col-md-12">
-                                                                {% if assessment.ass_status == 1 %}
-                                                                    <a class="btn btn-danger btn-rounded btn-block"
-                                                                       style="width: 100%; overflow: hidden;text-overflow: ellipsis;"
-                                                                       onclick="location.href = '{{ request.route_url('cancelassessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}'"><i
-                                                                            class="fa fa-stop"></i> {{ _("Cancel") }} {{ assessment.ass_desc }}
-                                                                    </a>
-                                                                {% endif %}
-                                                            </div>
-                                                        {% endif %}
-                                                    </div>
+                                                    {% if is_open and can_edit %}
+                                                        <div class="row">
+                                                            {% if assessment.asstotal > 0 %}
+                                                                <div class="col-md-6">
+                                                                    {% if assessment.ass_status == 1 %}
+                                                                        <a class="btn btn-danger btn-rounded btn-block"
+                                                                           style="width: 100%; overflow: hidden;text-overflow: ellipsis;"
+                                                                           onclick="location.href = '{{ request.route_url('closeassessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}'"><i
+                                                                                class="fa fa-stop"></i> {{ _("Finish") }} {{ assessment.ass_desc }}
+                                                                        </a>
+                                                                    {% endif %}
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    {% if assessment.ass_status == 1 %}
+                                                                        <a class="btn btn-danger btn-rounded btn-block"
+                                                                           style="width: 100%; overflow: hidden;text-overflow: ellipsis;"
+                                                                           onclick="location.href = '{{ request.route_url('cancelassessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}'"><i
+                                                                                class="fa fa-stop"></i> {{ _("Cancel") }} {{ assessment.ass_desc }}
+                                                                        </a>
+                                                                    {% endif %}
+                                                                </div>
+                                                            {% else %}
+                                                                <div class="col-md-12">
+                                                                    {% if assessment.ass_status == 1 %}
+                                                                        <a class="btn btn-danger btn-rounded btn-block"
+                                                                           style="width: 100%; overflow: hidden;text-overflow: ellipsis;"
+                                                                           onclick="location.href = '{{ request.route_url('cancelassessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}'"><i
+                                                                                class="fa fa-stop"></i> {{ _("Cancel") }} {{ assessment.ass_desc }}
+                                                                        </a>
+                                                                    {% endif %}
+                                                                </div>
+                                                            {% endif %}
+                                                        </div>
                                                     {% endif %}
                                                 </div>
                                             </div>
@@ -1045,11 +1065,11 @@
                                         </div>
                                         <div class="ibox-content">
                                             {% if total_ass_records > 5 or (activeProject.project_registration_and_analysis == 1 and progress.regtotal >=5)%}
-                                                {%  if activeProject["access_type"] not in [4] %}
+                                                {%  if can_edit %}
                                                     {% if progress.metadata %}
                                                         <a class="btn btn-success btn-rounded btn-block" style="width: 100%; overflow: hidden;text-overflow: ellipsis;" onclick="location.href = '{{request.route_url('createAnalysis')}}' "><i class="fa fa-bar-chart-o"></i> {{ _("Start analysis") }}</a>
                                                     {% else %}
-                                                        {% if can_edit %}
+                                                        {% if is_open %}
                                                             <div class="text-center">
                                                                 {{ _("To do the data analysis you must complete the section: ") }}<br><br>
                                                                 <a class="btn btn-primary btn-rounded " href="{{ request.route_url('Metadata', user=activeProject["owner"].user_name, project=activeProject.project_cod) }}"><i class="fa fa-file-text"></i> {{ _("Trial documentation") }}</a>
@@ -1062,7 +1082,7 @@
                                                     {{ _("Your access type do not allow to generate the analysis") }}
                                                 {% endif %}
                                             {% else %}
-                                                {% if can_edit %}
+                                                {% if is_open %}
                                                     {{ _("The project does not meet the requirements to run the analysis.") }}
                                                 {% else %}
                                                     {{ _("Project closed without the requirements to do the analysis") }}
@@ -1077,7 +1097,7 @@
                                     <div class="ibox float-e-margins">
                                         <div class="ibox-title">
                                             <h5>
-                                                {% if can_edit %}
+                                                {% if is_open %}
                                                     {{ _("Close project") }}
                                                 {% endif %}
                                             </h5>
@@ -1089,22 +1109,22 @@
                                         </div>
 
                                         <div class="ibox-content">
-                                            {% if hasActiveProject and activeProject["access_type"] in [1] and activeUser.login == activeProject.owner.user_name %}
-                                                {% if can_edit %}
+                                            {% if is_open %}
+                                                {% if hasActiveProject and activeProject["access_type"] in [1] and activeUser.login == activeProject.owner.user_name %}
                                                     <p>
-                                                    {{ _("Closing a project is recommended once all objectives have been met and all planned phases are complete. Please ensure that no further data entries, profile updates, or metadata changes are required before proceeding.") }}
+                                                        {{ _("Closing a project is recommended once all objectives have been met and all planned phases are complete. Please ensure that no further data entries, profile updates, or metadata changes are required before proceeding.") }}
                                                     </p>
                                                     <button onclick="location.href='{{ request.route_url('finishproject', user = activeProject.owner.user_name, project= activeProject.project_cod) }}'"
                                                         class="btn btn-primary btn-rounded btn-block">
-                                                    <i class="fa fa-check-square"></i> {{ _('Close project') }}
-                                                </button>
+                                                        <i class="fa fa-check-square"></i> {{ _('Close project') }}
+                                                    </button>
                                                 {% else %}
                                                     <p>
-                                                    {{ _('This project has been closed') }}.
+                                                    {{ _("This action can only be performed by the project owner") }}.
                                                     </p>
                                                 {% endif %}
                                             {% else %}
-                                                <p>{{ _("This action can only be performed by the project owner") }}.</p>
+                                                <p>{{ _('This project has been closed') }}.</p>
                                             {% endif %}
                                         </div>
                                     </div>

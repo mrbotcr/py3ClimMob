@@ -1733,7 +1733,7 @@ class TestFinishProjectView(ViewBaseTest):
                 self.mock_text.return_value,
                 "✅  Project "
                 + str(self.mock_get_project_id.return_value["project_cod"])
-                + " has been finalized",
+                + " has been closed",
                 [("name1", "email1"), ("name2", "email2")],
                 self.view.request.registry.settings["email.from"],
             )
